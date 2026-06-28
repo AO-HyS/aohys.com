@@ -51,4 +51,4 @@ The first schema includes:
 - `caseStudyMetadata`
 - `resumeVersions`
 
-The public `leads.submit` mutation validates through `src/lead-intake.ts` before inserting into Convex. Tests exercise this boundary without direct database coupling.
+The public `leads.submit` mutation validates through `src/lead-intake.ts` before inserting into Convex. Reusable normalization and assertion primitives come from `@aohys/core` instead of staying embedded in feature code. Tests exercise this boundary without direct database coupling.

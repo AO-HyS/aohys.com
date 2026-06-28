@@ -20,6 +20,7 @@ The root `package.json` pins pnpm through `packageManager`. The root `verify` co
 | `apps/site` | Astro public site for SEO pages, bilingual routes, metadata, sitemap, and public shell. |
 | `apps/dashboard` | Future private dashboard surface under `/dashboard`. |
 | `apps/backend` | Convex backend surface for leads, content, media, settings, resume, auth, and dashboard workflows. |
+| `packages/core` | Shared TypeScript primitives used across app and package boundaries. |
 | `packages/environment` | Environment Contract implementation for provider variable definitions and validation. |
 | `packages/content-graph` | Public Content Graph implementation for stable content IDs, bilingual routes, SEO metadata, sitemap behavior, and private route exclusions. |
 | `packages/dashboard-ui` | Future Dashboard UI Kit implementation over the dashboard primitive adapter. |
@@ -31,6 +32,7 @@ The root `package.json` pins pnpm through `packageManager`. The root `verify` co
 The foundation is intentionally shallow on implementation and strict on seams:
 
 - Public routes should use `packages/content-graph` for identity, localized paths, metadata, sitemap rules, and private route exclusions.
+- Reusable primitives should live in `packages/core` once they cross a single feature boundary or are likely to repeat across apps.
 - App and backend code should use `packages/environment` for provider variable classification and validation.
 - Dashboard routes should use `packages/dashboard-ui` once the private dashboard exists.
 - Deployment and smoke checks should collect in `packages/release-train` and root scripts.

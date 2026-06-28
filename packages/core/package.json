@@ -1,19 +1,21 @@
 {
-  "name": "@aohys/backend",
+  "name": "@aohys/core",
   "version": "0.0.0",
   "private": true,
-  "description": "Convex backend surface for AOHYS leads, content, media, and dashboard workflows.",
+  "description": "Shared primitives for AOHYS packages and apps.",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
   "scripts": {
     "build": "tsc --noEmit -p tsconfig.json",
-    "codegen": "convex codegen --typecheck=disable",
     "lint": "tsc --noEmit -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run"
-  },
-  "dependencies": {
-    "@aohys/core": "workspace:*",
-    "convex": "^1.42.0"
   },
   "devDependencies": {
     "@types/node": "^26.0.1",

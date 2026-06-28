@@ -1,3 +1,5 @@
+import { assertOneOf, trimToUndefined } from "@aohys/core";
+
 export const LEAD_INTENTS = [
   "project",
   "hiring",
@@ -44,21 +46,6 @@ interface PrepareLeadOptions {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function trimOptional(value: string | undefined): string | undefined {
-  const trimmed = value?.trim();
-  return trimmed ? trimmed : undefined;
-}
-
-function assertInList<T extends string>(
-  value: string,
-  allowedValues: readonly T[],
-  fieldName: string,
-): asserts value is T {
-  if (!allowedValues.includes(value as T)) {
-    throw new Error(`${fieldName} is not supported.`);
-  }
-}
-
 export function prepareLeadIntake(
   input: LeadIntakeInput,
   options: PrepareLeadOptions = {},
@@ -67,11 +54,11 @@ export function prepareLeadIntake(
   const email = input.email.trim().toLowerCase();
   const message = input.message.trim();
   const sourcePath = input.sourcePath.trim();
-  const company = trimOptional(input.company);
-  const referrer = trimOptional(input.referrer);
+  const company = trimToUndefined(input.company);
+  const referrer = trimToUndefined(input.referrer);
 
-  assertInList(input.intent, LEAD_INTENTS, "intent");
-  assertInList(input.locale, LEAD_LOCALES, "locale");
+  assertOneOf(input.intent, LEAD_INTENTS, "intent");
+  assertOneOf(input.locale, LEAD_LOCALES, "locale");
 
   if (name.length < 2 || name.length > 120) {
     throw new Error("name must be between 2 and 120 characters.");
