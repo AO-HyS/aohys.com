@@ -106,6 +106,12 @@ The visual implementation will follow the Impeccable process and the approved de
 - Use Cloudflare and Wrangler for deployment workflows and environment management.
 - Use Cloudflare for DNS, canonical domain handling, redirects, media delivery, and performance.
 - Redirect `aohys.net` to `aohys.com` with a permanent redirect.
+- Use a protected Release Train: feature branches promote into `develop`, and `develop` promotes into `main`.
+- Treat `develop` as the shared development and preview branch.
+- Treat `main` as the production source of truth for `aohys.com`.
+- Protect both `develop` and `main`; do not rely on direct pushes for release work.
+- Keep release scripts, GitHub Actions, Cloudflare Preview/Production behavior, environment validation, and smoke checks behind one Release Train module.
+- Record the release decision in `docs/adr/0001-protected-release-train.md` and the operational shape in `docs/release-train.md`.
 - Decide between Cloudflare Images, R2, or a combined approach before implementing production media originals and variants.
 - Store image/media metadata in Convex while allowing Cloudflare to own storage and optimization concerns.
 - Use PostHog for controlled pageviews, explicit events, dashboards, and error capture.
@@ -152,6 +158,7 @@ The visual implementation will follow the Impeccable process and the approved de
 - The primary high-level test seam for contact is end-to-end lead submission in a safe environment: submit the public form, verify the lead is stored, verify notification behavior, verify validation/errors, and verify analytics do not capture sensitive message content.
 - The primary high-level test seam for dashboard access is authenticated browser behavior: unauthorized users cannot access dashboard content, the allowlisted admin can access it, and private routes are noindexed.
 - The primary deployment seam is Cloudflare/Wrangler smoke testing: validate build output, environment wiring, canonical domain behavior, redirects, and production/preview smoke checks.
+- Release Train tests should validate observable release behavior: local verification, Cloudflare-compatible build output, preview smoke checks, production smoke checks, and branch/source assumptions.
 - The visual QA seam is Impeccable-backed browser review: use the approved design context, check typography, color, spatial rhythm, responsive behavior, motion, UX copy, and slop-pattern avoidance.
 - Public page tests should cover the home page, case study index, one case study detail page, architecture page, resume page, contact page, and privacy page in both language trees where applicable.
 - SEO tests should verify canonical URLs, localized alternates, page titles, meta descriptions, robots behavior, sitemap inclusion/exclusion, and dashboard noindex.
@@ -188,3 +195,4 @@ The visual implementation will follow the Impeccable process and the approved de
 - The first implementation issue is repository/monorepo foundation because every later issue depends on having Git, package management, workspace structure, and local commands.
 - The first implementation command after issue planning should be `$impeccable craft AOHYS public site shell`.
 - The implementation phase must account for Git initialization, GitHub organization repo creation, Convex setup, Wrangler setup, Cloudflare domain/redirect work, PostHog setup, Resend DNS verification, and later dashboard/auth work.
+- Release architecture now lives in `docs/release-train.md`.
