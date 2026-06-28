@@ -10,6 +10,8 @@ Release Train: `docs/release-train.md`
 
 Environment Contract: `docs/environment-contract.md`
 
+Public Content Graph: `docs/public-content-graph.md`
+
 ## Published Issues
 
 | Issue | Title |
@@ -56,7 +58,7 @@ Build the first demoable public shell in Astro: global layout, navigation, foote
 
 **User stories covered:** 5, 6, 7, 8, 24, 25, 35, 36, 38, 39.
 
-Add the full V1 public route map in English and Spanish with localized slugs, canonical metadata, language alternates, sitemap/robots behavior, privacy route, contact route, architecture route, resume route, case-study index, and route-level smoke checks.
+Add the full V1 Public Content Graph and public route map in English and Spanish with stable content IDs, localized slugs, canonical metadata, language alternates, sitemap/robots behavior, privacy route, contact route, architecture route, resume route, case-study index, and route-level smoke checks.
 
 ### 4. Home Page Proof Narrative
 
@@ -64,7 +66,7 @@ Add the full V1 public route map in English and Spanish with localized slugs, ca
 
 **User stories covered:** 1, 2, 3, 11, 12, 26, 31, 32, 33, 34, 47, 48, 49, 50, 51, 52, 70.
 
-Implement the real home page narrative: Alejandro-first hero, selected outcomes proof ledger, dark architecture-stage section, case-study previews, engineering practice section, contact CTA, and responsive/accessible visual QA.
+Implement the real home page narrative from Public Content Graph nodes: Alejandro-first hero, selected outcomes proof ledger, dark architecture-stage section, case-study previews, engineering practice section, contact CTA, and responsive/accessible visual QA.
 
 ### 5. Architecture and Public Code Sample Page
 
@@ -72,7 +74,7 @@ Implement the real home page narrative: Alejandro-first hero, selected outcomes 
 
 **User stories covered:** 9, 10, 26, 27, 28, 29, 30, 64, 65.
 
-Build the architecture page explaining the public source framing, public/private boundaries, deploy path, auth, media, analytics, email, privacy, and operational decisions. Include links to the README and source once the repository is available.
+Build the architecture page as a Public Content Graph node explaining the public source framing, public/private boundaries, deploy path, auth, media, analytics, email, privacy, and operational decisions. Include links to the README and source once the repository is available.
 
 ### 6. Case Study Template and Casa Roca Detail
 
@@ -80,7 +82,7 @@ Build the architecture page explaining the public source framing, public/private
 
 **User stories covered:** 11, 32, 34, 46, 47, 50.
 
-Create the reusable case-study detail experience using the agreed structure, then ship Casa Roca as the first complete production-proof case study with public evidence, confidentiality notes, responsive layout, and SEO metadata.
+Create the reusable case-study detail experience from graph-backed case-study nodes, then ship Casa Roca as the first complete production-proof case study with public evidence, confidentiality notes, responsive layout, and SEO metadata.
 
 ### 7. Remaining Selected Work Case Studies
 
@@ -88,7 +90,7 @@ Create the reusable case-study detail experience using the agreed structure, the
 
 **User stories covered:** 11, 46, 48, 49, 50, 51, 52.
 
-Add The Barber Central, Nutri Plan, Enterprise Systems, and Engineering Practice using the same case-study system. Each entry should distinguish production, active build, private build, enterprise/confidential work, and practice/process proof.
+Add The Barber Central, Nutri Plan, Enterprise Systems, and Engineering Practice using the same graph-backed case-study system. Each entry should distinguish production, active build, private build, enterprise/confidential work, and practice/process proof.
 
 ### 8. Resume Page and ATS-Friendly PDF
 
@@ -96,7 +98,7 @@ Add The Barber Central, Nutri Plan, Enterprise Systems, and Engineering Practice
 
 **User stories covered:** 4, 53, 54, 59.
 
-Build the dynamic resume page and downloadable PDF path. The resume should be readable, ATS-friendly, single-column, text-based, SEO-aware, and linked back to the dynamic site.
+Build the dynamic resume page and downloadable PDF path as graph-backed public content. The resume should be readable, ATS-friendly, single-column, text-based, SEO-aware, and linked back to the dynamic site.
 
 ### 9. Convex Backend Foundation
 
@@ -152,7 +154,7 @@ Build the first real dashboard workflow: list incoming leads, view details, upda
 
 **User stories covered:** 17, 18, 19, 20, 43, 44, 45, 46, 59, 60.
 
-Build dashboard workflows for case-study content, media metadata, site settings, and resume content. Include Cloudflare media integration once the product choice is decided.
+Build dashboard workflows for case-study content, media metadata, site settings, and resume content. Include Cloudflare media integration once the product choice is decided, and preserve Public Content Graph invariants when dashboard workflows publish public content.
 
 ### 16. Privacy, Security, and Launch Hardening
 
@@ -160,7 +162,7 @@ Build dashboard workflows for case-study content, media metadata, site settings,
 
 **User stories covered:** 21, 22, 38, 39, 41, 58, 59.
 
-Harden the launch surface: privacy page accuracy, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, Environment Contract separation, Release Train readiness checks, production smoke checks, and browser QA.
+Harden the launch surface: privacy page accuracy, Public Content Graph sitemap/robots behavior, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, Environment Contract separation, Release Train readiness checks, production smoke checks, and browser QA.
 
 ### 17. Public README and Source Evaluation Package
 
@@ -168,22 +170,24 @@ Harden the launch surface: privacy page accuracy, dashboard noindex validation, 
 
 **User stories covered:** 9, 10, 28, 29, 30, 61, 62, 67, 68, 69.
 
-Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, Environment Contract, Release Train, license boundaries, and no-contribution framing.
+Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, Public Content Graph, Environment Contract, Release Train, license boundaries, and no-contribution framing.
 
 ## Architecture Review Notes
 
-The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module. The second selected candidate is the Environment Contract module.
+The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module. The second selected candidate is the Environment Contract module. The third selected candidate is the Public Content Graph module.
 
 Expected order for architecture deepening:
 
 1. Release Train. Completed in documentation and issues.
-2. Environment Contract. Current architecture focus.
-3. Public Content Graph.
+2. Environment Contract. Completed in documentation and issues.
+3. Public Content Graph. Current architecture focus.
 4. Dashboard UI Kit.
 
 The Release Train should create locality for deployment rules and leverage for future agents. Branch protection, GitHub Actions, Wrangler, Cloudflare Preview/Production, environment validation, and smoke checks should not be scattered across unrelated issue work.
 
 The Environment Contract should create locality for secrets, public variables, provider outputs, and environment validation. App code, dashboard code, Convex functions, and release workflows should cross the same validation seam instead of reading ad hoc provider variables directly.
+
+The Public Content Graph should create locality for bilingual routes, SEO metadata, sitemap eligibility, evidence assets, case-study structure, resume content, and future dashboard publishing. Astro route files should consume the graph rather than becoming independent sources of content truth.
 
 ## Granularity Notes
 

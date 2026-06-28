@@ -60,6 +60,26 @@ _Avoid_: Live preview, main environment
 The stable map of public content identities, locales, routes, metadata, sitemap eligibility, and evidence relationships.
 _Avoid_: Page list, route config
 
+**Content Node**:
+A public content identity with locale variants, route information, metadata, sitemap behavior, and evidence relationships.
+_Avoid_: Page file, route file
+
+**Content ID**:
+The stable internal identifier for a public content node, independent of its title or localized slug.
+_Avoid_: Slug, URL, filename
+
+**Locale Variant**:
+A localized expression of a content node, including language, route path, copy, metadata, and alternates.
+_Avoid_: Translation file, duplicate page
+
+**Localized Slug**:
+The human-readable route segment for a locale variant.
+_Avoid_: Content ID, route key
+
+**Evidence Asset**:
+A public-safe screenshot, URL, generated image, diagram, source link, or artifact that supports a claim on the site.
+_Avoid_: Decoration, media blob
+
 **Dashboard UI Kit**:
 The private dashboard module that presents AOHYS-specific workflow surfaces while using lower-level UI primitives as implementation details.
 _Avoid_: shadcn screens, component dump

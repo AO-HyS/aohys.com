@@ -36,6 +36,10 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Resend DNS: Verify Cloudflare DNS before production, especially SPF alignment for Resend.
 - i18n: English is default at `/`; Spanish lives under `/es/`.
 - Slugs: Public section slugs are localized; internal IDs remain stable.
+- Public Content Graph: stable content IDs own route paths, locale variants, SEO metadata, sitemap eligibility, and evidence relationships.
+- Content source of truth: public pages should resolve through the graph instead of duplicating slugs, metadata, alternates, and sitemap rules in each route file.
+- Content safety: evidence assets must carry public-safe usage intent and alt text; private work details, private data, and dashboard routes are excluded from the public graph.
+- Content documentation: The canonical content planning document is `docs/public-content-graph.md`; the architectural decision is `docs/adr/0003-public-content-graph.md`.
 - Dashboard language: English only.
 - Release Train: `develop` is the Development Branch, `main` is the Production Branch, and both branches should be protected.
 - Promotion flow: feature branches target `develop`; production promotion moves from `develop` to `main` through a pull request, Cloudflare deployment checks, and smoke verification.
@@ -173,14 +177,15 @@ Resume pages should be typography-first, ATS-friendly, and visibly linked to the
 1. Initialize the Git repo and monorepo in this workspace.
 2. Establish the Release Train expectations in documentation, branch protection, baseline verification commands, and GitHub issue scope.
 3. Establish the Environment Contract expectations in documentation, issue scope, and future validation gates.
-4. Scaffold `apps/site` as the Astro public site with Cloudflare/Wrangler compatibility in mind.
-5. Add shared design tokens, font loading, global layout, metadata helpers, i18n routing, sitemap/robots basics, and the home shell.
-6. Build public V1 route skeletons in English and Spanish.
-7. Implement the first real home page with the approved visual system.
-8. Run browser QA for desktop and mobile, then use Impeccable polish on the visible public home.
-9. Add case study detail content and resume content.
-10. Add contact form integration with Convex and Resend.
-11. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
+4. Establish the Public Content Graph expectations in documentation, route scope, SEO rules, and future dashboard publishing rules.
+5. Scaffold `apps/site` as the Astro public site with Cloudflare/Wrangler compatibility in mind.
+6. Add shared design tokens, font loading, global layout, metadata helpers, i18n routing, sitemap/robots basics, and the home shell.
+7. Build public V1 route skeletons in English and Spanish.
+8. Implement the first real home page with the approved visual system.
+9. Run browser QA for desktop and mobile, then use Impeccable polish on the visible public home.
+10. Add case study detail content and resume content.
+11. Add contact form integration with Convex and Resend.
+12. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
 
 Next Impeccable command after this document:
 

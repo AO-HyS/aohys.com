@@ -31,7 +31,7 @@ For each issue:
 
 ### Public Site
 
-Highest seam: run the built or dev Astro site and inspect user-visible routes.
+Highest seam: run the built or dev Astro site and inspect user-visible routes resolved from the Public Content Graph.
 
 Use for:
 
@@ -44,6 +44,21 @@ Use for:
 - Contact page UI.
 - Privacy page.
 - Responsive layout and a11y smoke checks.
+
+### Public Content Graph
+
+Highest seam: graph-backed route and metadata resolution.
+
+Use for:
+
+- Stable content ID to localized route mapping.
+- Canonical URL generation.
+- Language alternate generation.
+- Sitemap eligibility.
+- Robots/noindex behavior.
+- Case-study content shape.
+- Resume route/PDF relationship.
+- Evidence asset safety and alt text requirements.
 
 ### Backend and Contact
 
@@ -102,12 +117,12 @@ Use for:
 | --- | --- | --- |
 | #2 Repository and Monorepo Foundation | CLI project commands | `verify` command runs from a fresh checkout and reports the current project state without app code, including Environment Contract documentation links. |
 | #3 Public Astro Shell With Design Tokens | Public home route | Home route renders with global layout, approved fonts/tokens loaded, and no console errors. |
-| #4 Bilingual Routing, SEO, and Public Page Skeletons | Public route map | `/` and `/es/` render with correct canonical and language alternate metadata. |
-| #5 Home Page Proof Narrative | Public home route | Visitor sees Alejandro-first positioning, primary CTA, and selected-work proof section. |
-| #6 Architecture and Public Code Sample Page | Architecture route | Architecture page explains public/private boundaries and links to repo context. |
-| #7 Case Study Template and Casa Roca Detail | Case-study detail route | Casa Roca page renders the complete case-study structure with public evidence and confidentiality note. |
-| #8 Remaining Selected Work Case Studies | Case-study index and detail routes | Each selected work entry appears in the index and links to a detail page with the correct project status. |
-| #9 Resume Page and ATS-Friendly PDF | Resume route and PDF artifact | Resume page renders semantic sections and the PDF artifact is text-based and downloadable. |
+| #4 Bilingual Routing, SEO, and Public Page Skeletons | Public Content Graph and public route map | Stable content IDs for `/` and `/es/` resolve to localized routes with correct canonical and language alternate metadata. |
+| #5 Home Page Proof Narrative | Graph-backed public home route | Visitor sees Alejandro-first positioning, primary CTA, and selected-work proof section sourced from graph-backed content. |
+| #6 Architecture and Public Code Sample Page | Graph-backed architecture route | Architecture page explains public/private boundaries and links to repo context, with sitemap and metadata behavior from the graph. |
+| #7 Case Study Template and Casa Roca Detail | Graph-backed case-study detail route | Casa Roca page renders the complete case-study structure with public evidence and confidentiality note. |
+| #8 Remaining Selected Work Case Studies | Graph-backed case-study index and detail routes | Each selected work entry appears in the index and links to a detail page with the correct project status. |
+| #9 Resume Page and ATS-Friendly PDF | Graph-backed resume route and PDF artifact | Resume page renders semantic sections and the PDF artifact is text-based, downloadable, and linked from the graph. |
 | #10 Convex Backend Foundation | Convex public API/functions and Environment Contract | A valid lead-like payload can be validated through the public function boundary without direct DB coupling, and Convex variables map to the current environment. |
 | #11 Contact Lead Capture With Email Notification | Contact form and Environment Contract | A valid contact submission stores a lead, sends notification through the email adapter, and records only safe analytics metadata when provider settings validate. |
 | #12 PostHog Analytics and Error Capture | Analytics adapter and Environment Contract | Pageview and conversion events are explicit, environment-aware, and do not include contact message text. |
@@ -157,3 +172,5 @@ Refactor only after a vertical behavior is green. In this repo, expected refacto
 - Treating protected `develop` and `main` as documentation-only branch names instead of release behavior to verify.
 - Letting provider dashboards become invisible sources of truth for production secrets.
 - Reading environment variables ad hoc across app modules instead of through the Environment Contract seam.
+- Duplicating slugs, canonical URLs, language alternates, sitemap rules, or case-study structure across individual route files.
+- Letting dashboard publishing mutate public content without preserving Public Content Graph invariants.
