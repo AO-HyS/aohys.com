@@ -2,7 +2,9 @@
 node_modules/
 dist/
 build/
+coverage/
 .astro/
+.turbo/
 .wrangler/
 .dev.vars
 .env
@@ -13,7 +15,9 @@ build/
 .agents/
 .claude/
 .codex/
+.cursor/
 .expect/
 .gemini/
 .impeccable/config.local.json
 .opencode/
+.vscode/

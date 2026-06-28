@@ -1,0 +1,13 @@
+{
+  "name": "@aohys/backend",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Convex backend surface for AOHYS leads, content, media, and dashboard workflows.",
+  "type": "module",
+  "scripts": {
+    "build": "node ../../scripts/package-task.mjs build @aohys/backend",
+    "lint": "node ../../scripts/package-task.mjs lint @aohys/backend",
+    "typecheck": "node ../../scripts/package-task.mjs typecheck @aohys/backend",
+    "test": "node ../../scripts/package-task.mjs test @aohys/backend"
+  }
+}

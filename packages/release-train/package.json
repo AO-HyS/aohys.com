@@ -1,0 +1,13 @@
+{
+  "name": "@aohys/release-train",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Release Train verification and deployment workflow package.",
+  "type": "module",
+  "scripts": {
+    "build": "node ../../scripts/package-task.mjs build @aohys/release-train",
+    "lint": "node ../../scripts/package-task.mjs lint @aohys/release-train",
+    "typecheck": "node ../../scripts/package-task.mjs typecheck @aohys/release-train",
+    "test": "node ../../scripts/package-task.mjs test @aohys/release-train"
+  }
+}
