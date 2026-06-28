@@ -74,7 +74,7 @@ Use for:
 
 ### Dashboard
 
-Highest seam: authenticated browser behavior against the dashboard shell.
+Highest seam: authenticated browser behavior against the Dashboard UI Kit shell and workflow surfaces.
 
 Use for:
 
@@ -83,6 +83,9 @@ Use for:
 - Content/media settings.
 - Resume management.
 - Dashboard noindex and private routing.
+- Workflow state surfaces.
+- Mobile behavior at 390px.
+- No duplicate controls with the same meaning.
 
 ### Deployment
 
@@ -127,11 +130,11 @@ Use for:
 | #11 Contact Lead Capture With Email Notification | Contact form and Environment Contract | A valid contact submission stores a lead, sends notification through the email adapter, and records only safe analytics metadata when provider settings validate. |
 | #12 PostHog Analytics and Error Capture | Analytics adapter and Environment Contract | Pageview and conversion events are explicit, environment-aware, and do not include contact message text. |
 | #13 Cloudflare and Wrangler Deployment Path | Release Train and Wrangler/build commands | Cloudflare-compatible build command completes and exposes documented output for preview and production smoke testing. |
-| #14 Better Auth and Private Dashboard Shell | Dashboard route and Environment Contract | Anonymous visitor cannot access `/dashboard`; allowlisted admin can reach the shell, and auth origins/secrets validate for the current environment. |
-| #15 Dashboard Lead Review Workflow | Authenticated dashboard | Admin can view a newly submitted lead and update its review status. |
-| #16 Dashboard Content and Media Workflow | Authenticated dashboard | Admin can create or update one public content/media metadata item with alt text and safe validation. |
-| #17 Privacy, Security, and Launch Hardening | Production-like smoke suite | Public routes, dashboard protection, privacy copy, analytics privacy, and contact error states pass launch smoke checks. |
-| #18 Public README and Source Evaluation Package | Repository documentation | README gives an evaluator enough information to run, inspect, and understand the repo without private credentials. |
+| #14 Better Auth and Private Dashboard Shell | Dashboard route, Environment Contract, and Dashboard UI Kit | Anonymous visitor cannot access `/dashboard`; allowlisted admin can reach the shell, auth origins/secrets validate, and the shell exposes navigation plus operational overview. |
+| #15 Dashboard Lead Review Workflow | Dashboard UI Kit lead workflow surface | Admin can view a newly submitted lead, update its review status, and see loading/empty/error/saved states. |
+| #16 Dashboard Content and Media Workflow | Dashboard UI Kit content/media workflow surfaces | Admin can create or update one public content/media metadata item with alt text, safe validation, and Public Content Graph invariants preserved. |
+| #17 Privacy, Security, and Launch Hardening | Production-like smoke suite | Public routes, dashboard protection, dashboard mobile/state behavior, privacy copy, analytics privacy, and contact error states pass launch smoke checks. |
+| #18 Public README and Source Evaluation Package | Repository documentation | README gives an evaluator enough information to run, inspect, and understand the repo without private credentials, including dashboard architecture. |
 
 ## Issue Body Guidance
 
@@ -174,3 +177,5 @@ Refactor only after a vertical behavior is green. In this repo, expected refacto
 - Reading environment variables ad hoc across app modules instead of through the Environment Contract seam.
 - Duplicating slugs, canonical URLs, language alternates, sitemap rules, or case-study structure across individual route files.
 - Letting dashboard publishing mutate public content without preserving Public Content Graph invariants.
+- Composing private dashboard routes directly from primitive UI everywhere instead of using Dashboard UI Kit workflow surfaces.
+- Treating mobile dashboard usability as a late polish pass.

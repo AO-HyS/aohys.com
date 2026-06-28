@@ -57,6 +57,10 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Public V1 pages ES: `/es/`, `/es/casos`, `/es/casos/casa-roca`, `/es/casos/the-barber-central`, `/es/casos/nutri-plan`, `/es/casos/sistemas-enterprise`, `/es/practica`, `/es/arquitectura`, `/es/cv`, `/es/contacto`, `/es/privacidad`.
 - Dashboard V1 sections: Overview, Leads, Case studies, Media, Site settings, Resume.
 - Dashboard overview: Operational checklist and quick links, not embedded analytics.
+- Dashboard UI Kit: private dashboard routes should use AOHYS workflow surfaces instead of composing raw primitives directly.
+- Dashboard primitive adapter: use shadcn/ui as editable source primitives behind the Dashboard UI Kit implementation.
+- Dashboard mobile: validate dashboard workflows at 390px, avoid horizontal overflow, keep visible tap targets at least 44px, and do not render duplicate mobile/desktop controls with the same meaning.
+- Dashboard documentation: The canonical dashboard planning document is `docs/dashboard-ui-kit.md`; the architectural decision is `docs/adr/0004-dashboard-ui-kit.md`.
 - Case study structure: Problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance, public evidence, confidentiality note.
 - Case study ordering: Casa Roca as production proof; The Barber Central as modern technical flagship; Nutri Plan as active private build; Enterprise Systems as scale/credibility; Engineering Practice as current AI-assisted process.
 - Casa Roca: Present with real name and public link to `casa-roca.mx`.
@@ -178,14 +182,15 @@ Resume pages should be typography-first, ATS-friendly, and visibly linked to the
 2. Establish the Release Train expectations in documentation, branch protection, baseline verification commands, and GitHub issue scope.
 3. Establish the Environment Contract expectations in documentation, issue scope, and future validation gates.
 4. Establish the Public Content Graph expectations in documentation, route scope, SEO rules, and future dashboard publishing rules.
-5. Scaffold `apps/site` as the Astro public site with Cloudflare/Wrangler compatibility in mind.
-6. Add shared design tokens, font loading, global layout, metadata helpers, i18n routing, sitemap/robots basics, and the home shell.
-7. Build public V1 route skeletons in English and Spanish.
-8. Implement the first real home page with the approved visual system.
-9. Run browser QA for desktop and mobile, then use Impeccable polish on the visible public home.
-10. Add case study detail content and resume content.
-11. Add contact form integration with Convex and Resend.
-12. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
+5. Establish the Dashboard UI Kit expectations in documentation, dashboard route scope, mobile behavior, and future shadcn/ui adapter rules.
+6. Scaffold `apps/site` as the Astro public site with Cloudflare/Wrangler compatibility in mind.
+7. Add shared design tokens, font loading, global layout, metadata helpers, i18n routing, sitemap/robots basics, and the home shell.
+8. Build public V1 route skeletons in English and Spanish.
+9. Implement the first real home page with the approved visual system.
+10. Run browser QA for desktop and mobile, then use Impeccable polish on the visible public home.
+11. Add case study detail content and resume content.
+12. Add contact form integration with Convex and Resend.
+13. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
 
 Next Impeccable command after this document:
 

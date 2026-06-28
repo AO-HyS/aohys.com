@@ -83,3 +83,15 @@ _Avoid_: Decoration, media blob
 **Dashboard UI Kit**:
 The private dashboard module that presents AOHYS-specific workflow surfaces while using lower-level UI primitives as implementation details.
 _Avoid_: shadcn screens, component dump
+
+**Dashboard Primitive Adapter**:
+The low-level UI source implementation used inside the Dashboard UI Kit, initially shadcn/ui.
+_Avoid_: Dashboard interface, design system
+
+**Dashboard Surface**:
+A private dashboard area that supports a coherent admin workflow such as leads, content, media, settings, resume, or overview.
+_Avoid_: Page, tab, component
+
+**Workflow State**:
+A named operational state a dashboard surface must represent, such as loading, empty, validation error, unauthorized, save pending, or saved.
+_Avoid_: UI edge case, spinner state
