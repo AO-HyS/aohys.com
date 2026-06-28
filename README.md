@@ -19,8 +19,10 @@ Planning and issue breakdown are in progress. Implementation will start from the
 - [TDD plan](docs/aohys-tdd-plan.md)
 - [Release Train](docs/release-train.md)
 - [Environment Contract](docs/environment-contract.md)
+- [Public Content Graph](docs/public-content-graph.md)
 - [ADR 0001: Protected Release Train](docs/adr/0001-protected-release-train.md)
 - [ADR 0002: Environment Contract Source of Truth](docs/adr/0002-environment-contract-source-of-truth.md)
+- [ADR 0003: Public Content Graph](docs/adr/0003-public-content-graph.md)
 
 ## Source Boundary
 

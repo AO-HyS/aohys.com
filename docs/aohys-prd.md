@@ -97,6 +97,10 @@ The visual implementation will follow the Impeccable process and the approved de
 - Use Astro for the public SEO surface because the public pages need speed, prerendering, semantic HTML, metadata control, and excellent content performance.
 - Use English as the default public language and Spanish under stable `/es/` routes.
 - Use localized public slugs while keeping internal content identifiers stable.
+- Use a Public Content Graph with stable content IDs, explicit locale variants, localized slugs, SEO metadata, sitemap eligibility, and evidence relationships.
+- Keep route generation, metadata helpers, sitemap generation, case-study templates, resume rendering, and future dashboard publishing behind the Public Content Graph seam.
+- Exclude `/dashboard`, private operational surfaces, draft content, and unsafe private-work details from public sitemap eligibility.
+- Record the content decision in `docs/adr/0003-public-content-graph.md` and the operational shape in `docs/public-content-graph.md`.
 - Use React with Vite and TanStack Router for the private dashboard.
 - Keep the private dashboard in English only.
 - Host all public and private surfaces under one domain, with the dashboard under `/dashboard`.
@@ -166,6 +170,7 @@ The visual implementation will follow the Impeccable process and the approved de
 - The primary deployment seam is Cloudflare/Wrangler smoke testing: validate build output, environment wiring, canonical domain behavior, redirects, and production/preview smoke checks.
 - Release Train tests should validate observable release behavior: local verification, Cloudflare-compatible build output, preview smoke checks, production smoke checks, and branch/source assumptions.
 - Environment Contract tests should validate observable configuration behavior: missing required values fail, safe local placeholders pass local validation, and production validation rejects preview/local provider targets.
+- Public Content Graph tests should validate observable route and metadata behavior: stable IDs resolve to English/Spanish paths, canonical URLs and language alternates are correct, sitemap eligibility is explicit, and private dashboard routes remain excluded.
 - The visual QA seam is Impeccable-backed browser review: use the approved design context, check typography, color, spatial rhythm, responsive behavior, motion, UX copy, and slop-pattern avoidance.
 - Public page tests should cover the home page, case study index, one case study detail page, architecture page, resume page, contact page, and privacy page in both language trees where applicable.
 - SEO tests should verify canonical URLs, localized alternates, page titles, meta descriptions, robots behavior, sitemap inclusion/exclusion, and dashboard noindex.
@@ -204,3 +209,4 @@ The visual implementation will follow the Impeccable process and the approved de
 - The implementation phase must account for Git initialization, GitHub organization repo creation, Convex setup, Wrangler setup, Cloudflare domain/redirect work, PostHog setup, Resend DNS verification, and later dashboard/auth work.
 - Release architecture now lives in `docs/release-train.md`.
 - Environment architecture now lives in `docs/environment-contract.md`.
+- Public content architecture now lives in `docs/public-content-graph.md`.
