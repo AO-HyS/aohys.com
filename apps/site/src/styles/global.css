@@ -188,6 +188,8 @@ svg {
 .architecture-map,
 .boundary-note,
 .case-study-hero,
+.case-study-index-hero,
+.selected-work-index,
 .case-study-detail,
 .case-study-evidence,
 .case-study-confidentiality {
@@ -718,6 +720,13 @@ h2 {
   padding-block: clamp(4rem, 9vw, 7rem) clamp(2.5rem, 6vw, 5rem);
 }
 
+.case-study-index-hero {
+  display: grid;
+  align-items: end;
+  min-height: min(640px, calc(100svh - 78px));
+  padding-block: clamp(4rem, 9vw, 7rem) clamp(2.5rem, 6vw, 5rem);
+}
+
 .case-study-hero-copy {
   max-width: 66rem;
 }
@@ -734,11 +743,17 @@ h2 {
 }
 
 .case-study-status span,
+.selected-work-row span,
+.selected-work-row em,
 .evidence-link span {
   color: var(--color-muted);
   font-family: var(--font-display);
   font-size: var(--text-small);
   font-weight: 680;
+}
+
+.selected-work-row em {
+  font-style: normal;
 }
 
 .case-study-status strong {
@@ -749,14 +764,41 @@ h2 {
 }
 
 .case-study-detail,
+.selected-work-index,
 .case-study-evidence {
   padding-block: clamp(2rem, 5vw, 4.5rem);
 }
 
 .case-study-rows,
+.selected-work-rows,
 .evidence-list {
   display: grid;
   border-block-start: 1px solid var(--color-dark);
+}
+
+.selected-work-row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.2fr) minmax(10rem, 0.22fr) minmax(0, 1fr) minmax(9rem, 0.2fr);
+  gap: clamp(1rem, 2vw, 2rem);
+  align-items: center;
+  min-height: 8rem;
+  border-block-end: 1px solid var(--color-rule);
+  color: inherit;
+  text-decoration: none;
+}
+
+.selected-work-row strong {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: var(--weight-heading);
+  line-height: 1.12;
+}
+
+.selected-work-row p {
+  margin: 0;
+  color: var(--color-muted);
+  line-height: 1.55;
+  text-wrap: pretty;
 }
 
 .case-study-row,
@@ -974,6 +1016,7 @@ h2 {
   .architecture-page-hero,
   .architecture-row,
   .case-study-hero,
+  .selected-work-row,
   .case-study-row,
   .evidence-link,
   .practice-item,
@@ -992,6 +1035,10 @@ h2 {
   }
 
   .case-study-hero {
+    min-height: auto;
+  }
+
+  .case-study-index-hero {
     min-height: auto;
   }
 

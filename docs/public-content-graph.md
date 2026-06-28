@@ -45,6 +45,7 @@ Initial IDs:
 | `case-study:the-barber-central` | `/case-studies/the-barber-central` | `/es/casos/the-barber-central` | case study |
 | `case-study:nutri-plan` | `/case-studies/nutri-plan` | `/es/casos/nutri-plan` | case study |
 | `case-study:enterprise-systems` | `/case-studies/enterprise-systems` | `/es/casos/sistemas-enterprise` | case study |
+| `case-study:engineering-practice` | `/case-studies/engineering-practice` | `/es/casos/practica-de-ingenieria` | case study |
 | `practice` | `/practice` | `/es/practica` | practice page |
 | `architecture` | `/architecture` | `/es/arquitectura` | architecture page |
 | `resume` | `/resume` | `/es/cv` | resume page |
@@ -136,3 +137,5 @@ The current home tracer also uses the graph for the public proof narrative: sele
 The architecture page also resolves its public source framing through the graph. Its content owns the public/private boundary note, source links, Release Train, Environment Contract, Public Content Graph, and provider responsibility sections for English and Spanish routes.
 
 Casa Roca is the first complete graph-backed case study. `case-study:casa-roca` owns its localized status label, overview, problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance notes, public evidence link, alt text, and confidentiality note. Case-study routes without complete detail content continue to render skeleton route pages until their public-safe content is added.
+
+The selected-work index is also graph-backed. It resolves Casa Roca, The Barber Central, Nutri Plan, Enterprise Systems, and Engineering Practice from stable case-study IDs, localized paths, explicit project statuses, public-safe evidence labels, and the same confidentiality-aware detail shape.

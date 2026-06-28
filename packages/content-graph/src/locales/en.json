@@ -185,7 +185,54 @@
     "primaryActionLabel": "Discuss operations software",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Back to selected work",
-    "secondaryActionContentId": "case-studies"
+    "secondaryActionContentId": "case-studies",
+    "caseStudyContent": {
+      "statusLabel": "Active build",
+      "overview": "The Barber Central is an active product build for service businesses that need booking, operations, customer communication, and payments to work as one system.",
+      "problem": {
+        "title": "Problem",
+        "body": "Local service businesses often run bookings, reminders, staff operations, and payments across disconnected tools, which makes growth harder and creates avoidable manual work."
+      },
+      "businessOutcome": {
+        "title": "Business outcome",
+        "body": "The product direction centers the daily operating workflow: book clients, manage availability, communicate clearly, and keep the business moving without stitching tools together by hand."
+      },
+      "role": {
+        "title": "Role",
+        "body": "Product architecture, workflow modeling, full-stack implementation planning, booking flow decisions, payments readiness, customer communication, and quality gates for an active build."
+      },
+      "constraints": {
+        "title": "Constraints",
+        "body": "The build is still in development, so public proof must avoid private business data, unfinished dashboard internals, secrets, and customer records while still showing the product judgment."
+      },
+      "architectureDecisions": {
+        "title": "Architecture decisions",
+        "body": "Use a modern full-stack app shape with a realtime backend, authenticated dashboard boundaries, graph-backed public narrative, and provider integrations treated as explicit operational seams."
+      },
+      "executionHighlights": {
+        "title": "Execution highlights",
+        "body": "The work covers booking IA, operations dashboard shape, provider setup, environment discipline, and manual browser QA for flows where auth, origin, and preview behavior matter."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Quality, security, and performance",
+        "body": "The project emphasizes protected environments, explicit verification commands, browser QA, source checks, and careful handling of auth/provider configuration before public launch."
+      },
+      "publicEvidenceTitle": "Public evidence",
+      "publicEvidence": [
+        {
+          "label": "Development preview",
+          "description": "Public-safe summary of an active product build; screenshots and preview URLs can be added after final sanitation.",
+          "href": "/case-studies/the-barber-central",
+          "altText": "Public-safe development preview summary for The Barber Central",
+          "kind": "development-preview",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Confidentiality note",
+        "body": "Only the public-safe product direction is shown. Private implementation details, secrets, test data, customer records, provider dashboards, and unpublished business information stay private."
+      }
+    }
   },
   "case-study:nutri-plan": {
     "path": "/case-studies/nutri-plan",
@@ -195,7 +242,54 @@
     "primaryActionLabel": "Plan a product workflow",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Back to selected work",
-    "secondaryActionContentId": "case-studies"
+    "secondaryActionContentId": "case-studies",
+    "caseStudyContent": {
+      "statusLabel": "Private build",
+      "overview": "Nutri Plan is a private product system for nutrition workflows, dashboards, mobile access, and operational clarity across several surfaces.",
+      "problem": {
+        "title": "Problem",
+        "body": "Nutrition operations need connected client records, plans, dashboards, and mobile experiences, but the domain becomes fragile when workflow state is split across unrelated tools."
+      },
+      "businessOutcome": {
+        "title": "Business outcome",
+        "body": "The build organizes the product around real operational roles and shared backend state so the system can support client work, admin work, and mobile access from one model."
+      },
+      "role": {
+        "title": "Role",
+        "body": "Product workflow architecture, dashboard planning, backend state modeling, mobile surface coordination, quality practice, and release discipline for a private active build."
+      },
+      "constraints": {
+        "title": "Constraints",
+        "body": "The product is private, so the public case study can discuss architecture and outcomes only at a safe level without exposing patient-like records, business data, private code, or internal workflows."
+      },
+      "architectureDecisions": {
+        "title": "Architecture decisions",
+        "body": "Keep the backend as a shared source of truth, separate public landing concerns from private dashboard/mobile workflows, and make environment and QA gates part of release readiness."
+      },
+      "executionHighlights": {
+        "title": "Execution highlights",
+        "body": "The work spans landing, dashboard, admin dashboard, mobile app, Convex-backed state, route QA, preview verification, and operational parity with the reference system."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Quality, security, and performance",
+        "body": "The project uses functional QA, route sweeps, environment separation, protected release branches, and preview validation when auth, routing, UI, or behavior changes."
+      },
+      "publicEvidenceTitle": "Public evidence",
+      "publicEvidence": [
+        {
+          "label": "Sanitized preview",
+          "description": "Public-safe private-build summary; production screenshots should be sanitized before they become visual evidence.",
+          "href": "/case-studies/nutri-plan",
+          "altText": "Public-safe sanitized preview summary for Nutri Plan",
+          "kind": "development-preview",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Confidentiality note",
+        "body": "This case does not publish private product code, client records, health-related data, credentials, private dashboard screens, or operational provider details."
+      }
+    }
   },
   "case-study:enterprise-systems": {
     "path": "/case-studies/enterprise-systems",
@@ -205,7 +299,111 @@
     "primaryActionLabel": "Talk about complex systems",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Read architecture notes",
-    "secondaryActionContentId": "architecture"
+    "secondaryActionContentId": "architecture",
+    "caseStudyContent": {
+      "statusLabel": "Enterprise/confidential",
+      "overview": "Enterprise systems work is presented through public-safe outcomes: escalation ownership, payment plans, cashback, customs workflows, backend delivery, and reliability in complex environments.",
+      "problem": {
+        "title": "Problem",
+        "body": "Large systems accumulate operational edge cases, integration pressure, and support escalations where the cost of unclear ownership is high."
+      },
+      "businessOutcome": {
+        "title": "Business outcome",
+        "body": "The value is reliable delivery under constraints: untangling escalations, shipping backend workflows, and improving operational paths without exposing confidential employer or client material."
+      },
+      "role": {
+        "title": "Role",
+        "body": "Backend delivery, escalation leadership, payment-plan and cashback work, customs workflow implementation, cross-team coordination, and production-minded problem solving."
+      },
+      "constraints": {
+        "title": "Constraints",
+        "body": "Specific code, incidents, customer data, employer systems, and internal metrics are confidential. The case study must stay at the level of patterns, responsibilities, and outcomes."
+      },
+      "architectureDecisions": {
+        "title": "Architecture decisions",
+        "body": "Work from the business workflow backward, isolate risky integration points, keep operational contracts explicit, and favor maintainable backend paths over clever one-off fixes."
+      },
+      "executionHighlights": {
+        "title": "Execution highlights",
+        "body": "Public-safe examples include payment plan workflows, cashback implementation, customs handling, escalation ownership, and backend delivery across complex organizational contexts."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Quality, security, and performance",
+        "body": "The work depends on careful change management, production awareness, data sensitivity, clear handoffs, and testing around workflows where mistakes become operational risk."
+      },
+      "publicEvidenceTitle": "Public evidence",
+      "publicEvidence": [
+        {
+          "label": "Confidential summary",
+          "description": "Public-safe enterprise summary without private employer, customer, incident, or source-code details.",
+          "href": "/case-studies/enterprise-systems",
+          "altText": "Public-safe confidential summary for enterprise systems work",
+          "kind": "private-system",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Confidentiality note",
+        "body": "No private employer code, customer data, incidents, internal metrics, credentials, or proprietary architecture details are published in this public case study."
+      }
+    }
+  },
+  "case-study:engineering-practice": {
+    "path": "/case-studies/engineering-practice",
+    "title": "Engineering practice",
+    "summary": "Modern agent-assisted engineering framed through planning, QA, architecture, observability, deploys, and documentation.",
+    "seoDescription": "Engineering Practice explains Alejandro Ortiz Corro's modern agent-assisted software delivery process across planning, QA, architecture, observability, deployment, and documentation.",
+    "primaryActionLabel": "Review the source sample",
+    "primaryActionContentId": "architecture",
+    "secondaryActionLabel": "Start a conversation",
+    "secondaryActionContentId": "contact",
+    "caseStudyContent": {
+      "statusLabel": "Engineering practice",
+      "overview": "Engineering Practice is the operating system behind the work: structured discovery, TDD, agent-assisted implementation, browser QA, release discipline, observability, and documentation.",
+      "problem": {
+        "title": "Problem",
+        "body": "Modern software work moves quickly, but speed without architecture, tests, review, and production checks produces fragile systems and weak evidence."
+      },
+      "businessOutcome": {
+        "title": "Business outcome",
+        "body": "A repeatable engineering process lets projects move faster while still producing inspectable decisions, safer releases, better handoffs, and stronger confidence for business stakeholders."
+      },
+      "role": {
+        "title": "Role",
+        "body": "Technical planning, architecture review, TDD flow, agent orchestration, browser QA, release train discipline, source-quality checks, and documentation as part of delivery."
+      },
+      "constraints": {
+        "title": "Constraints",
+        "body": "The process should demonstrate modern AI-assisted work without pretending every private client project is public or reducing delivery quality to tool choice."
+      },
+      "architectureDecisions": {
+        "title": "Architecture decisions",
+        "body": "Use clear seams, graph-backed public content, explicit environment contracts, protected branches, focused tests, and manual browser verification for visible behavior."
+      },
+      "executionHighlights": {
+        "title": "Execution highlights",
+        "body": "This public site itself is the process evidence: PR review, TDD tracers, Impeccable visual checks, GitHub issue flow, release documentation, and browser QA."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Quality, security, and performance",
+        "body": "Quality includes source checks, type checks, behavior tests, build verification, visual QA, no private data in public routes, and deployment paths that can be audited."
+      },
+      "publicEvidenceTitle": "Public evidence",
+      "publicEvidence": [
+        {
+          "label": "Process evidence",
+          "description": "Public source, tests, documentation, and PR history show the engineering workflow behind the site.",
+          "href": "https://github.com/AO-HyS/aohys.com",
+          "altText": "Public-safe process evidence for AOHYS engineering practice",
+          "kind": "architecture-note",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Confidentiality note",
+        "body": "The process is public where this repository is public. Private client code, private product code, credentials, screenshots, and operational data remain outside this sample."
+      }
+    }
   },
   "practice": {
     "path": "/practice",

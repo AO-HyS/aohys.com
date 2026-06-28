@@ -4,6 +4,7 @@ import {
   LOCALES,
   MissingLocaleVariantError,
   getArchitecturePageContent,
+  getCaseStudyIndexContent,
   getCaseStudyPageContent,
   getHomePageContent,
   getLanguageAlternates,
@@ -32,6 +33,12 @@ describe("Public Content Graph", () => {
     );
     expect(getLocalizedPath("case-study:enterprise-systems", "es")).toBe(
       "/es/casos/sistemas-enterprise",
+    );
+    expect(getLocalizedPath("case-study:engineering-practice", "en")).toBe(
+      "/case-studies/engineering-practice",
+    );
+    expect(getLocalizedPath("case-study:engineering-practice", "es")).toBe(
+      "/es/casos/practica-de-ingenieria",
     );
   });
 
@@ -76,8 +83,8 @@ describe("Public Content Graph", () => {
 
   it("derives sitemap entries from graph eligibility", () => {
     const publicRoutes = getPublicRouteMap();
-    expect(publicRoutes).toHaveLength(22);
-    expect(new Set(publicRoutes.map((route) => `${route.id}:${route.locale}`)).size).toBe(22);
+    expect(publicRoutes).toHaveLength(24);
+    expect(new Set(publicRoutes.map((route) => `${route.id}:${route.locale}`)).size).toBe(24);
     expect(publicRoutes.every((route) => route.node.sitemap.include === true)).toBe(true);
 
     const sitemapUrls = getSitemapEntries().map((entry) => entry.url);
@@ -125,6 +132,34 @@ describe("Public Content Graph", () => {
     expect(englishArchitecture.sections.every((section) => section.body.length > 40)).toBe(true);
     expect(spanishArchitecture.heading).toBe("Muestra pública, trabajo privado.");
     expect(spanishArchitecture.sourceLinks[0]?.href).toBe("https://github.com/AO-HyS/aohys.com");
+  });
+
+  it("returns selected work index entries with localized paths and statuses", () => {
+    const englishIndex = getCaseStudyIndexContent("en");
+    const spanishIndex = getCaseStudyIndexContent("es");
+
+    expect(englishIndex.entries.map((entry) => entry.contentId)).toEqual([
+      "case-study:casa-roca",
+      "case-study:the-barber-central",
+      "case-study:nutri-plan",
+      "case-study:enterprise-systems",
+      "case-study:engineering-practice",
+    ]);
+    expect(englishIndex.entries.map((entry) => entry.statusLabel)).toEqual([
+      "Production proof",
+      "Active build",
+      "Private build",
+      "Enterprise/confidential",
+      "Engineering practice",
+    ]);
+    expect(spanishIndex.entries.map((entry) => entry.path)).toEqual([
+      "/es/casos/casa-roca",
+      "/es/casos/the-barber-central",
+      "/es/casos/nutri-plan",
+      "/es/casos/sistemas-enterprise",
+      "/es/casos/practica-de-ingenieria",
+    ]);
+    expect(spanishIndex.entries.every((entry) => entry.evidenceLabel.length > 6)).toBe(true);
   });
 
   it("returns Casa Roca case-study content with public-safe evidence", () => {

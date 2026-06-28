@@ -27,7 +27,7 @@ function includesAlternate(html: string, hreflang: string, href: string) {
 describe("built public routes", () => {
   it("renders every graph route with canonical SEO and language alternates", () => {
     const routes = getPublicRouteMap();
-    expect(routes).toHaveLength(22);
+    expect(routes).toHaveLength(24);
 
     for (const route of routes) {
       const html = readDist(routeHtmlPath(route.path));
@@ -132,6 +132,52 @@ describe("built public routes", () => {
     expect(spanishCasaRocaHtml).toContain("Nota de confidencialidad");
     expect(spanishCasaRocaHtml).toContain('href="https://casa-roca.mx"');
     expect(spanishCasaRocaHtml).toContain('aria-label="Evidencia pública segura del sitio en producción de Casa Roca"');
+  });
+
+  it("renders the selected work index and remaining case-study statuses from the graph", () => {
+    const indexHtml = readDist("case-studies/index.html");
+    const spanishIndexHtml = readDist("es/casos/index.html");
+    const barberHtml = readDist("case-studies/the-barber-central/index.html");
+    const nutriPlanHtml = readDist("case-studies/nutri-plan/index.html");
+    const enterpriseHtml = readDist("case-studies/enterprise-systems/index.html");
+    const engineeringPracticeHtml = readDist("case-studies/engineering-practice/index.html");
+
+    expect(indexHtml).toContain('data-case-study-index-content-id="case-studies"');
+    expect(indexHtml).toContain('href="/case-studies/casa-roca"');
+    expect(indexHtml).toContain('href="/case-studies/the-barber-central"');
+    expect(indexHtml).toContain('href="/case-studies/nutri-plan"');
+    expect(indexHtml).toContain('href="/case-studies/enterprise-systems"');
+    expect(indexHtml).toContain('href="/case-studies/engineering-practice"');
+    expect(indexHtml).toContain("Production proof");
+    expect(indexHtml).toContain("Active build");
+    expect(indexHtml).toContain("Private build");
+    expect(indexHtml).toContain("Enterprise/confidential");
+    expect(indexHtml).toContain("Engineering practice");
+
+    expect(spanishIndexHtml).toContain('data-case-study-index-content-id="case-studies"');
+    expect(spanishIndexHtml).toContain('href="/es/casos/casa-roca"');
+    expect(spanishIndexHtml).toContain('href="/es/casos/the-barber-central"');
+    expect(spanishIndexHtml).toContain('href="/es/casos/nutri-plan"');
+    expect(spanishIndexHtml).toContain('href="/es/casos/sistemas-enterprise"');
+    expect(spanishIndexHtml).toContain('href="/es/casos/practica-de-ingenieria"');
+    expect(spanishIndexHtml).toContain("Prueba en producción");
+    expect(spanishIndexHtml).toContain("Build activo");
+    expect(spanishIndexHtml).toContain("Build privado");
+    expect(spanishIndexHtml).toContain("Enterprise/confidencial");
+    expect(spanishIndexHtml).toContain("Práctica de ingeniería");
+
+    expect(barberHtml).toContain('data-case-study-content-id="case-study:the-barber-central"');
+    expect(barberHtml).toContain("Active build");
+    expect(barberHtml).toContain("Development preview");
+    expect(nutriPlanHtml).toContain('data-case-study-content-id="case-study:nutri-plan"');
+    expect(nutriPlanHtml).toContain("Private build");
+    expect(nutriPlanHtml).toContain("Sanitized preview");
+    expect(enterpriseHtml).toContain('data-case-study-content-id="case-study:enterprise-systems"');
+    expect(enterpriseHtml).toContain("Enterprise/confidential");
+    expect(enterpriseHtml).toContain("Confidential summary");
+    expect(engineeringPracticeHtml).toContain('data-case-study-content-id="case-study:engineering-practice"');
+    expect(engineeringPracticeHtml).toContain("Engineering practice");
+    expect(engineeringPracticeHtml).toContain("Process evidence");
   });
 
   it("emits sitemap and robots behavior from the public graph", () => {

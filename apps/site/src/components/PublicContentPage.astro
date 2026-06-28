@@ -1,6 +1,7 @@
 ---
 import {
   getArchitecturePageContent,
+  getCaseStudyIndexContent,
   getCaseStudyPageContent,
   getHomePageContent,
   getLocalizedPath,
@@ -17,10 +18,12 @@ const { route } = Astro.props;
 const { id, locale, node, variant } = route;
 const isHome = id === "home";
 const isArchitecture = id === "architecture";
+const isCaseStudyIndex = node.type === "case-study-index";
 const isCaseStudy = node.type === "case-study";
 const copy = getUiCopy(locale).publicPage;
 const homeContent = isHome ? getHomePageContent(locale) : undefined;
 const architectureContent = isArchitecture ? getArchitecturePageContent(locale) : undefined;
+const caseStudyIndexContent = isCaseStudyIndex ? getCaseStudyIndexContent(locale) : undefined;
 const caseStudyContent = isCaseStudy ? getCaseStudyPageContent(id, locale) : undefined;
 const caseStudySections = caseStudyContent ? [
   caseStudyContent.problem,
@@ -196,6 +199,37 @@ const secondaryHref = actionHref(variant.secondaryActionContentId);
 
       <section class="boundary-note" aria-label={architectureContent.heading}>
         <p>{architectureContent.boundaryNote}</p>
+      </section>
+    </>
+  ) : isCaseStudyIndex && caseStudyIndexContent ? (
+    <>
+      <section class="case-study-index-hero" aria-labelledby="case-study-index-title" data-case-study-index-content-id={id}>
+        <div class="case-study-hero-copy">
+          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <h1 id="case-study-index-title">{caseStudyIndexContent.heading}</h1>
+          <p class="hero-lead">{caseStudyIndexContent.intro}</p>
+          <div class="hero-actions" aria-label={copy.actions}>
+            {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          </div>
+        </div>
+      </section>
+
+      <section class="selected-work-index" aria-labelledby="selected-work-title">
+        <div class="section-heading">
+          <h2 id="selected-work-title">{caseStudyIndexContent.heading}</h2>
+          <p class="section-intro">{caseStudyIndexContent.intro}</p>
+        </div>
+        <div class="selected-work-rows">
+          {caseStudyIndexContent.entries.map((entry) => (
+            <a class="selected-work-row" href={entry.path}>
+              <span>{entry.statusLabel}</span>
+              <strong>{entry.title}</strong>
+              <p>{entry.summary}</p>
+              <em>{entry.evidenceLabel}</em>
+            </a>
+          ))}
+        </div>
       </section>
     </>
   ) : isCaseStudy && caseStudyContent ? (
