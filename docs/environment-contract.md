@@ -57,6 +57,20 @@ Local development can receive `CONVEX_URL`, `CONVEX_SITE_URL`, and `CONVEX_DEPLO
 
 The public contact form uses `PUBLIC_CONTACT_ENDPOINT`, a browser-safe build value that should point at the Convex HTTP action `/contact` for the current environment. That endpoint is public by design; provider secrets stay in Convex/GitHub Environment variables.
 
+PostHog browser configuration is intentionally public because the key and host are used by the browser SDK. Preview and production must still use separate GitHub Environment values so analytics streams do not drift together. Autocapture is a public policy value and starts as `false`; pageviews, conversion events, and error events are emitted explicitly by the public site.
+
+Current explicit PostHog events:
+
+| Event | Emitted by | Privacy rule |
+| --- | --- | --- |
+| `$pageview` | Astro public layout browser client | Content ID, locale, path, canonical URL, and environment only |
+| `contact_form_viewed` | Contact route form view hook | No contact field values |
+| `contact_form_submit_attempted` | Contact form submit hook | No contact field values |
+| `contact_form_submit_failed` | Contact form failure dispatch | Failure reason only; no message, email, name, phone, or company |
+| `whatsapp_cta_clicked` | Public WhatsApp CTAs | CTA target only |
+| `email_cta_clicked` | Public email CTAs | CTA target only |
+| `lead_submitted` | Convex contact workflow | Backend-safe conversion metadata only; no message text or contact identity |
+
 ## Provider Responsibilities
 
 | Provider | Contract responsibility |

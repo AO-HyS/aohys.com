@@ -73,4 +73,41 @@ describe("Convex Environment Contract", () => {
 
     expect(validPreview).toEqual({ ok: true, errors: [] });
   });
+
+  it("classifies PostHog browser values as public and keeps autocapture explicit", () => {
+    const definitions = getEnvironmentVariableDefinitions().filter(
+      (definition) => definition.provider === "posthog",
+    );
+
+    expect(definitions).toEqual([
+      expect.objectContaining({
+        name: "PUBLIC_POSTHOG_KEY",
+        classification: "public-build-value",
+        exposure: "public-browser",
+        requiredIn: ["preview", "production"],
+      }),
+      expect.objectContaining({
+        name: "PUBLIC_POSTHOG_HOST",
+        classification: "public-build-value",
+        exposure: "public-browser",
+        requiredIn: ["local", "preview", "production"],
+      }),
+      expect.objectContaining({
+        name: "PUBLIC_POSTHOG_AUTOCAPTURE",
+        classification: "policy-value",
+        exposure: "public-browser",
+        requiredIn: ["local", "preview", "production"],
+      }),
+    ]);
+
+    const missingPostHog = validateEnvironmentContract("production", {
+      ...validPreviewValues,
+      AOHYS_ENV: "production",
+      PUBLIC_SITE_URL: "https://aohys.com",
+      PUBLIC_POSTHOG_KEY: undefined,
+    });
+
+    expect(missingPostHog.ok).toBe(false);
+    expect(missingPostHog.errors).toContain("PUBLIC_POSTHOG_KEY is required for production.");
+  });
 });

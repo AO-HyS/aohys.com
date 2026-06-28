@@ -157,7 +157,7 @@ const directEmailHref = `mailto:${publicContactEmail}`;
         </div>
         <div class="contact-actions" aria-label={copy.actions}>
           <a class="button button-primary" href={homeContent.emailHref}>{homeContent.emailLabel}</a>
-          <a class="button button-whatsapp" href={homeContent.whatsappHref}>{homeContent.whatsappLabel}</a>
+          <a class="button button-whatsapp" href={homeContent.whatsappHref} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="home_contact_band">{homeContent.whatsappLabel}</a>
         </div>
       </section>
     </>
@@ -436,8 +436,8 @@ const directEmailHref = `mailto:${publicContactEmail}`;
           <h1 id="contact-title">{variant.title}</h1>
           <p class="hero-lead">{variant.summary}</p>
           <div class="contact-direct-actions" aria-label={copy.actions}>
-            <a class="button button-whatsapp" href={publicWhatsAppUrl}>{contactCopy.whatsappLabel}</a>
-            <a class="button button-secondary" href={directEmailHref}>{contactCopy.emailLabel}</a>
+            <a class="button button-whatsapp" href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_hero">{contactCopy.whatsappLabel}</a>
+            <a class="button button-secondary" href={directEmailHref} data-analytics-event="email_cta_clicked" data-analytics-target="contact_hero">{contactCopy.emailLabel}</a>
           </div>
         </div>
 
@@ -450,6 +450,9 @@ const directEmailHref = `mailto:${publicContactEmail}`;
           data-success-message={contactCopy.successMessage}
           data-error-message={contactCopy.errorMessage}
           data-endpoint-missing={contactCopy.endpointMissing}
+          data-analytics-view="contact_form_viewed"
+          data-analytics-submit="contact_form_submit_attempted"
+          data-analytics-target="contact_form"
         >
           <div class="contact-form-heading">
             <h2>{contactCopy.formTitle}</h2>
@@ -525,13 +528,19 @@ const directEmailHref = `mailto:${publicContactEmail}`;
             <button class="button button-primary" type="submit" data-submit-label={contactCopy.submitLabel} data-sending-label={contactCopy.sendingLabel}>
               {contactCopy.submitLabel}
             </button>
-            <p>{contactCopy.fallbackText} <a href={publicWhatsAppUrl}>{contactCopy.whatsappLabel}</a></p>
+            <p>{contactCopy.fallbackText} <a href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_form_fallback">{contactCopy.whatsappLabel}</a></p>
           </div>
           <p class="contact-status" role="status" data-contact-status></p>
         </form>
       </section>
 
       <script>
+        const dispatchContactAnalytics = (event: string, properties: Record<string, string> = {}) => {
+          window.dispatchEvent(new CustomEvent("aohys:analytics", {
+            detail: { event, properties },
+          }));
+        };
+
         for (const form of document.querySelectorAll("[data-contact-form]")) {
           const endpoint = form instanceof HTMLFormElement ? form.dataset.contactEndpoint : "";
           const status = form.querySelector("[data-contact-status]");
@@ -558,6 +567,9 @@ const directEmailHref = `mailto:${publicContactEmail}`;
               if (status) {
                 status.textContent = form.dataset.endpointMissing ?? "";
               }
+              dispatchContactAnalytics("contact_form_submit_failed", {
+                failure_reason: "endpoint_missing",
+              });
               return;
             }
 
@@ -590,6 +602,9 @@ const directEmailHref = `mailto:${publicContactEmail}`;
                 status.textContent = form.dataset.successMessage ?? "";
               }
             } catch {
+              dispatchContactAnalytics("contact_form_submit_failed", {
+                failure_reason: "request_failed",
+              });
               if (status) {
                 status.textContent = form.dataset.errorMessage ?? "";
               }
