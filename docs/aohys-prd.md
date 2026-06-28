@@ -112,6 +112,12 @@ The visual implementation will follow the Impeccable process and the approved de
 - Protect both `develop` and `main`; do not rely on direct pushes for release work.
 - Keep release scripts, GitHub Actions, Cloudflare Preview/Production behavior, environment validation, and smoke checks behind one Release Train module.
 - Record the release decision in `docs/adr/0001-protected-release-train.md` and the operational shape in `docs/release-train.md`.
+- Use an Environment Contract with `local`, `preview`, and `production` as the stable environment names.
+- Use GitHub Environments as the source of truth for deploy-time preview and production secrets.
+- Keep `.env.local` local-only and uncommitted; use `.env.example` for names and safe placeholders.
+- Treat provider dashboard changes as setup or recovery actions that must be reconciled back into GitHub Environments before the next deployment.
+- Keep environment validation behind one Environment Contract module used by local commands, release workflows, Cloudflare, Convex, Better Auth, PostHog, and Resend setup.
+- Record the environment decision in `docs/adr/0002-environment-contract-source-of-truth.md` and the operational shape in `docs/environment-contract.md`.
 - Decide between Cloudflare Images, R2, or a combined approach before implementing production media originals and variants.
 - Store image/media metadata in Convex while allowing Cloudflare to own storage and optimization concerns.
 - Use PostHog for controlled pageviews, explicit events, dashboards, and error capture.
@@ -159,6 +165,7 @@ The visual implementation will follow the Impeccable process and the approved de
 - The primary high-level test seam for dashboard access is authenticated browser behavior: unauthorized users cannot access dashboard content, the allowlisted admin can access it, and private routes are noindexed.
 - The primary deployment seam is Cloudflare/Wrangler smoke testing: validate build output, environment wiring, canonical domain behavior, redirects, and production/preview smoke checks.
 - Release Train tests should validate observable release behavior: local verification, Cloudflare-compatible build output, preview smoke checks, production smoke checks, and branch/source assumptions.
+- Environment Contract tests should validate observable configuration behavior: missing required values fail, safe local placeholders pass local validation, and production validation rejects preview/local provider targets.
 - The visual QA seam is Impeccable-backed browser review: use the approved design context, check typography, color, spatial rhythm, responsive behavior, motion, UX copy, and slop-pattern avoidance.
 - Public page tests should cover the home page, case study index, one case study detail page, architecture page, resume page, contact page, and privacy page in both language trees where applicable.
 - SEO tests should verify canonical URLs, localized alternates, page titles, meta descriptions, robots behavior, sitemap inclusion/exclusion, and dashboard noindex.
@@ -196,3 +203,4 @@ The visual implementation will follow the Impeccable process and the approved de
 - The first implementation command after issue planning should be `$impeccable craft AOHYS public site shell`.
 - The implementation phase must account for Git initialization, GitHub organization repo creation, Convex setup, Wrangler setup, Cloudflare domain/redirect work, PostHog setup, Resend DNS verification, and later dashboard/auth work.
 - Release architecture now lives in `docs/release-train.md`.
+- Environment architecture now lives in `docs/environment-contract.md`.
