@@ -1,0 +1,13 @@
+{
+  "name": "@aohys/environment",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Environment Contract implementation package.",
+  "type": "module",
+  "scripts": {
+    "build": "node ../../scripts/package-task.mjs build @aohys/environment",
+    "lint": "node ../../scripts/package-task.mjs lint @aohys/environment",
+    "typecheck": "node ../../scripts/package-task.mjs typecheck @aohys/environment",
+    "test": "node ../../scripts/package-task.mjs test @aohys/environment"
+  }
+}

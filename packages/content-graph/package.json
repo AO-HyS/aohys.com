@@ -1,0 +1,13 @@
+{
+  "name": "@aohys/content-graph",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Public Content Graph implementation package.",
+  "type": "module",
+  "scripts": {
+    "build": "node ../../scripts/package-task.mjs build @aohys/content-graph",
+    "lint": "node ../../scripts/package-task.mjs lint @aohys/content-graph",
+    "typecheck": "node ../../scripts/package-task.mjs typecheck @aohys/content-graph",
+    "test": "node ../../scripts/package-task.mjs test @aohys/content-graph"
+  }
+}

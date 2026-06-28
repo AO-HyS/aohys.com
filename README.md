@@ -6,7 +6,29 @@ This repository is being built as a working sample of engineering standards: pub
 
 ## Status
 
-Planning and issue breakdown are in progress. Implementation will start from the approved PRD and vertical-slice issues.
+Repository foundation is available. App scaffolding starts from the approved PRD and vertical-slice issues.
+
+## Local Development
+
+Use pnpm from the repository root.
+
+```sh
+pnpm install
+pnpm verify
+```
+
+The current foundation includes placeholder package commands so the monorepo can be verified before Astro, Convex, and dashboard code are scaffolded.
+
+## Workspace
+
+- [Workspace foundation](docs/workspace.md)
+- `apps/site`: future Astro public SEO surface.
+- `apps/dashboard`: future private dashboard surface under `/dashboard`.
+- `apps/backend`: future Convex backend surface.
+- `packages/environment`: future Environment Contract implementation.
+- `packages/content-graph`: future Public Content Graph implementation.
+- `packages/dashboard-ui`: future Dashboard UI Kit implementation.
+- `packages/release-train`: future Release Train checks and smoke helpers.
 
 ## Planning Documents
 
@@ -30,4 +52,10 @@ Planning and issue breakdown are in progress. Implementation will start from the
 
 The site code is public as a working example. This is not a community open-source product, and private client or product code is not public.
 
-Code will be MIT licensed. Content, brand, copy, resume material, case-study material, images, and assets are reserved unless stated otherwise.
+Code is MIT licensed. Content, brand, copy, resume material, case-study material, images, and assets are reserved unless stated otherwise.
+
+This repo intentionally does not include a contribution workflow.
+
+## Environment
+
+Copy `.env.example` to `.env.local` for local development. Real local secrets stay uncommitted; preview and production deploy-time values belong in GitHub Environments according to the [Environment Contract](docs/environment-contract.md).
