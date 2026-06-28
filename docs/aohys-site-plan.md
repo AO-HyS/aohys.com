@@ -50,6 +50,7 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Environment source of truth: GitHub Environments own deploy-time preview and production secrets; `.env.local` is local-only and uncommitted.
 - Environment validation: Release Train gates should fail before deploy if required values are missing, secrets drift, or provider targets point to the wrong environment.
 - Environment documentation: The canonical environment planning document is `docs/environment-contract.md`; the architectural decision is `docs/adr/0002-environment-contract-source-of-truth.md`.
+- Convex backend foundation: `apps/backend` owns the Convex schema, generated bindings, and first public lead intake mutation. The initial dev deployment is `dev/aohys-local`; preview and production values remain GitHub Environment responsibilities.
 - CTA: Primary CTA is neutral: "Start a conversation" / "Hablemos"; contact form captures lead intent.
 - Privacy: Include serious minimal privacy pages from V1; no newsletter in V1.
 - CV: `/resume` is the primary dynamic resume URL; `/es/cv` is the Spanish route. The downloadable PDF lives at `/downloads/alejandro-ortiz-corro-resume.pdf`.

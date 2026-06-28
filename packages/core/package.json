@@ -1,8 +1,8 @@
 {
-  "name": "@aohys/environment",
+  "name": "@aohys/core",
   "version": "0.0.0",
   "private": true,
-  "description": "Environment Contract implementation package.",
+  "description": "Shared primitives for AOHYS packages and apps.",
   "type": "module",
   "exports": {
     ".": {
