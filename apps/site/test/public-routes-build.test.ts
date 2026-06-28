@@ -211,6 +211,30 @@ describe("built public routes", () => {
     expect(readFileSync(pdfPath).subarray(0, 5).toString("utf8")).toBe("%PDF-");
   });
 
+  it("renders the contact form with consent, preferred contact path, and WhatsApp fallback", () => {
+    const contactHtml = readDist("contact/index.html");
+    const spanishContactHtml = readDist("es/contacto/index.html");
+
+    expect(contactHtml).toContain('data-contact-content-id="contact"');
+    expect(contactHtml).toContain('data-contact-form');
+    expect(contactHtml).toContain('name="preferredContactPath"');
+    expect(contactHtml).toContain('name="consentToContact"');
+    expect(contactHtml).toContain('name="website"');
+    expect(contactHtml).toContain('name="formStartedAt"');
+    expect(contactHtml).toContain('name="message"');
+    expect(contactHtml).toContain("WhatsApp");
+    expect(contactHtml).toContain("I understand AOHYS will use this information to respond to my request.");
+
+    expect(spanishContactHtml).toContain('data-contact-content-id="contact"');
+    expect(spanishContactHtml).toContain('data-contact-form');
+    expect(spanishContactHtml).toContain('name="preferredContactPath"');
+    expect(spanishContactHtml).toContain('name="consentToContact"');
+    expect(spanishContactHtml).toContain('name="website"');
+    expect(spanishContactHtml).toContain('name="formStartedAt"');
+    expect(spanishContactHtml).toContain("WhatsApp");
+    expect(spanishContactHtml).toContain("Entiendo que AOHYS usará esta información para responder mi solicitud.");
+  });
+
   it("emits sitemap and robots behavior from the public graph", () => {
     const sitemap = readDist("sitemap.xml");
     const robots = readDist("robots.txt");

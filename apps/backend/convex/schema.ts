@@ -23,17 +23,28 @@ const leadStatusValidator = v.union(
   v.literal("closed"),
 );
 
+const preferredContactPathValidator = v.union(
+  v.literal("email"),
+  v.literal("whatsapp"),
+);
+
 export default defineSchema({
   leads: defineTable({
     name: v.string(),
     email: v.string(),
     company: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    preferredContactPath: v.optional(preferredContactPathValidator),
+    consentToContact: v.optional(v.boolean()),
     intent: leadIntentValidator,
     message: v.string(),
     sourcePath: v.string(),
     locale: localeValidator,
     referrer: v.optional(v.string()),
     status: leadStatusValidator,
+    spamSignals: v.optional(v.object({
+      elapsedMs: v.optional(v.number()),
+    })),
     createdAt: v.number(),
     updatedAt: v.number(),
   })

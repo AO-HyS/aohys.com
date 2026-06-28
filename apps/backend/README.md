@@ -38,6 +38,9 @@ Preview and production values belong in GitHub Environments:
 | `CONVEX_SITE_URL` | Provider output | HTTP actions URL. |
 | `CONVEX_DEPLOYMENT` | Provider output | Deployment selector. |
 | `CONVEX_DEPLOY_KEY` | Server secret | CI/release deploy key. Never expose to browser bundles. |
+| `PUBLIC_CONTACT_ENDPOINT` | Public build value | Browser-safe endpoint for the public contact form, usually `${CONVEX_SITE_URL}/contact`. |
+| `PUBLIC_POSTHOG_KEY` | Public build value | Used by the contact workflow only for safe conversion metadata. |
+| `RESEND_API_KEY` | Server secret | Used by the contact workflow for notification delivery. |
 
 Manual Convex dashboard changes are acceptable during setup or recovery, but durable deploy-time values must be copied back to the matching GitHub Environment.
 
@@ -52,3 +55,5 @@ The first schema includes:
 - `resumeVersions`
 
 The public `leads.submit` mutation validates through `src/lead-intake.ts` before inserting into Convex. Reusable normalization and assertion primitives come from `@aohys/core` instead of staying embedded in feature code. Tests exercise this boundary without direct database coupling.
+
+The public contact endpoint is implemented as a Convex HTTP action at `/contact`. It validates the submission, persists the lead through an internal mutation, sends a Resend notification through an injected provider adapter, and captures a PostHog conversion event with metadata only.

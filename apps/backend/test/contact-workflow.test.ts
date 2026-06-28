@@ -1,0 +1,143 @@
+import { describe, expect, it, vi } from "vitest";
+import { submitContactLead } from "../src/contact-workflow.js";
+
+const validProviderValues = {
+  AOHYS_ENV: "preview",
+  PUBLIC_SITE_URL: "https://preview.aohys.com",
+  PUBLIC_CONTACT_ENDPOINT: "https://patient-bird-955.convex.site/contact",
+  CONVEX_URL: "https://patient-bird-955.convex.cloud",
+  CONVEX_DEPLOYMENT: "preview:aohys-preview",
+  CONVEX_SITE_URL: "https://patient-bird-955.convex.site",
+  CONVEX_DEPLOY_KEY: "preview-deploy-key",
+  PUBLIC_POSTHOG_KEY: "phc_preview",
+  PUBLIC_POSTHOG_HOST: "https://us.i.posthog.com",
+  PUBLIC_POSTHOG_AUTOCAPTURE: "false",
+  RESEND_API_KEY: "re_preview",
+  RESEND_FROM: "Alejandro Ortiz <contact@aohys.com>",
+  LEAD_NOTIFICATION_EMAIL: "alejandro.ortiz@aohys.com",
+  BETTER_AUTH_SECRET: "preview-secret",
+  BETTER_AUTH_URL: "https://preview.aohys.com",
+  ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+  CLOUDFLARE_ACCOUNT_ID: "cloudflare-account",
+  CLOUDFLARE_PROJECT_NAME: "aohys-com",
+  CLOUDFLARE_IMAGES_ACCOUNT_HASH: "images-hash",
+  PUBLIC_CONTACT_EMAIL: "alejandro.ortiz@aohys.com",
+  PUBLIC_WHATSAPP_URL: "https://wa.me/522299020825",
+};
+
+describe("contact lead workflow", () => {
+  it("stores a valid lead, sends a notification, and captures only safe analytics metadata", async () => {
+    const persistedLeads: unknown[] = [];
+    const notifications: unknown[] = [];
+    const analyticsEvents: unknown[] = [];
+
+    const result = await submitContactLead(
+      {
+        name: "  Alejandro Ortiz  ",
+        email: "  ALEJANDRO.ORTIZ@AOHYS.COM ",
+        company: " AOHYS ",
+        phone: " +52 229 902 0825 ",
+        preferredContactPath: "whatsapp",
+        intent: "project",
+        message: "I need a bilingual product site with a private dashboard.",
+        sourcePath: "/contact",
+        locale: "en",
+        referrer: "https://aohys.com/resume",
+        consentToContact: true,
+        website: "",
+        formStartedAt: 1_788_000_000_000,
+      },
+      {
+        environment: "preview",
+        values: validProviderValues,
+        now: 1_788_000_003_500,
+        adapters: {
+          persistLead: async (lead) => {
+            persistedLeads.push(lead);
+            return { leadId: "lead_123" };
+          },
+          sendNotification: async (notification) => {
+            notifications.push(notification);
+            return { notificationId: "email_123" };
+          },
+          captureAnalyticsEvent: async (event) => {
+            analyticsEvents.push(event);
+          },
+        },
+      },
+    );
+
+    expect(result).toEqual({
+      leadId: "lead_123",
+      notificationId: "email_123",
+      status: "new",
+    });
+    expect(persistedLeads).toHaveLength(1);
+    expect(persistedLeads[0]).toMatchObject({
+      name: "Alejandro Ortiz",
+      email: "alejandro.ortiz@aohys.com",
+      company: "AOHYS",
+      phone: "+52 229 902 0825",
+      preferredContactPath: "whatsapp",
+      consentToContact: true,
+      status: "new",
+    });
+    expect(notifications[0]).toMatchObject({
+      leadId: "lead_123",
+      to: "alejandro.ortiz@aohys.com",
+      from: "Alejandro Ortiz <contact@aohys.com>",
+      replyTo: "alejandro.ortiz@aohys.com",
+    });
+    expect(analyticsEvents[0]).toMatchObject({
+      event: "lead_submitted",
+      distinctId: "lead:lead_123",
+      properties: {
+        intent: "project",
+        preferredContactPath: "whatsapp",
+        locale: "en",
+        sourcePath: "/contact",
+        hasCompany: true,
+        hasPhone: true,
+      },
+    });
+    expect(JSON.stringify(analyticsEvents[0])).not.toContain(
+      "I need a bilingual product site",
+    );
+    expect(JSON.stringify(analyticsEvents[0])).not.toContain(
+      "alejandro.ortiz@aohys.com",
+    );
+  });
+
+  it("fails clearly before persistence when contact provider settings are missing", async () => {
+    const persistLead = vi.fn(async () => ({ leadId: "lead_123" }));
+
+    await expect(
+      submitContactLead(
+        {
+          name: "Alejandro Ortiz",
+          email: "alejandro.ortiz@aohys.com",
+          preferredContactPath: "email",
+          intent: "project",
+          message: "I need help shipping a product workflow.",
+          sourcePath: "/contact",
+          locale: "en",
+          consentToContact: true,
+        },
+        {
+          environment: "preview",
+          values: {
+            ...validProviderValues,
+            RESEND_API_KEY: undefined,
+            PUBLIC_POSTHOG_KEY: undefined,
+          },
+          adapters: {
+            persistLead,
+            sendNotification: async () => ({ notificationId: "email_123" }),
+            captureAnalyticsEvent: async () => undefined,
+          },
+        },
+      ),
+    ).rejects.toThrow(/Contact providers are not configured:.*RESEND_API_KEY.*PUBLIC_POSTHOG_KEY/s);
+    expect(persistLead).not.toHaveBeenCalled();
+  });
+});

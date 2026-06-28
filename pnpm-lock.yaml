@@ -13,6 +13,9 @@ importers:
       '@aohys/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@aohys/environment':
+        specifier: workspace:*
+        version: link:../../packages/environment
       convex:
         specifier: ^1.42.0
         version: 1.42.0

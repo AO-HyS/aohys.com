@@ -55,6 +55,8 @@ Current Convex variables:
 
 Local development can receive `CONVEX_URL`, `CONVEX_SITE_URL`, and `CONVEX_DEPLOYMENT` from `convex deployment create --select` or `convex dev`, stored in uncommitted `apps/backend/.env.local`. Preview and production values must be copied into GitHub Environments.
 
+The public contact form uses `PUBLIC_CONTACT_ENDPOINT`, a browser-safe build value that should point at the Convex HTTP action `/contact` for the current environment. That endpoint is public by design; provider secrets stay in Convex/GitHub Environment variables.
+
 ## Provider Responsibilities
 
 | Provider | Contract responsibility |
@@ -83,6 +85,7 @@ Required checks:
 - PostHog autocapture policy is explicit for each environment;
 - Convex deployment target is environment-appropriate.
 - Convex deploy keys are never exposed through `PUBLIC_` browser variables.
+- Contact submissions have Convex, Resend, and PostHog settings before accepting a lead.
 
 ## Release Train Dependency
 

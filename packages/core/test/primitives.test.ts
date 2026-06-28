@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { assertOneOf, trimToUndefined } from "../src/index.js";
+import { assertOneOf, escapeHtml, trimToUndefined } from "../src/index.js";
 
 describe("shared primitives", () => {
   it("normalizes optional string input without preserving blank values", () => {
@@ -18,6 +18,12 @@ describe("shared primitives", () => {
     value = "unsupported";
     expect(() => assertOneOf(value, allowed, "intent")).toThrow(
       "intent is not supported.",
+    );
+  });
+
+  it("escapes text before embedding it in HTML strings", () => {
+    expect(escapeHtml('<script>alert("x")</script> & copy')).toBe(
+      "&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt; &amp; copy",
     );
   });
 });

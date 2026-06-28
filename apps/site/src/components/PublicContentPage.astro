@@ -22,7 +22,9 @@ const isArchitecture = id === "architecture";
 const isCaseStudyIndex = node.type === "case-study-index";
 const isCaseStudy = node.type === "case-study";
 const isResume = node.type === "resume";
+const isContact = node.type === "contact";
 const copy = getUiCopy(locale).publicPage;
+const contactCopy = getUiCopy(locale).contactForm;
 const homeContent = isHome ? getHomePageContent(locale) : undefined;
 const architectureContent = isArchitecture ? getArchitecturePageContent(locale) : undefined;
 const caseStudyIndexContent = isCaseStudyIndex ? getCaseStudyIndexContent(locale) : undefined;
@@ -44,6 +46,10 @@ function actionHref(contentId?: ContentId): string | undefined {
 
 const primaryHref = actionHref(variant.primaryActionContentId);
 const secondaryHref = actionHref(variant.secondaryActionContentId);
+const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
+const publicContactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL ?? "alejandro.ortiz@aohys.com";
+const publicWhatsAppUrl = import.meta.env.PUBLIC_WHATSAPP_URL ?? "https://wa.me/522299020825";
+const directEmailHref = `mailto:${publicContactEmail}`;
 ---
 
 {
@@ -421,6 +427,181 @@ const secondaryHref = actionHref(variant.secondaryActionContentId);
           ))}
         </div>
       </section>
+    </>
+  ) : isContact ? (
+    <>
+      <section class="contact-form-section" aria-labelledby="contact-title" data-contact-content-id={id}>
+        <div class="contact-form-copy">
+          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <h1 id="contact-title">{variant.title}</h1>
+          <p class="hero-lead">{variant.summary}</p>
+          <div class="contact-direct-actions" aria-label={copy.actions}>
+            <a class="button button-whatsapp" href={publicWhatsAppUrl}>{contactCopy.whatsappLabel}</a>
+            <a class="button button-secondary" href={directEmailHref}>{contactCopy.emailLabel}</a>
+          </div>
+        </div>
+
+        <form
+          class="contact-form"
+          method="post"
+          action={contactEndpoint || directEmailHref}
+          data-contact-form
+          data-contact-endpoint={contactEndpoint}
+          data-success-message={contactCopy.successMessage}
+          data-error-message={contactCopy.errorMessage}
+          data-endpoint-missing={contactCopy.endpointMissing}
+        >
+          <div class="contact-form-heading">
+            <h2>{contactCopy.formTitle}</h2>
+            <p>{contactCopy.formIntro}</p>
+          </div>
+
+          <label class="field-label">
+            <span>{contactCopy.nameLabel}</span>
+            <input name="name" type="text" autocomplete="name" required />
+          </label>
+
+          <div class="field-grid">
+            <label class="field-label">
+              <span>{contactCopy.emailLabel}</span>
+              <input name="email" type="email" autocomplete="email" required />
+            </label>
+            <label class="field-label">
+              <span>{contactCopy.phoneLabel}</span>
+              <input name="phone" type="tel" autocomplete="tel" />
+            </label>
+          </div>
+
+          <label class="field-label">
+            <span>{contactCopy.companyLabel}</span>
+            <input name="company" type="text" autocomplete="organization" />
+          </label>
+
+          <div class="field-grid">
+            <label class="field-label">
+              <span>{contactCopy.intentLabel}</span>
+              <select name="intent" required>
+                <option value="project">{contactCopy.intentProject}</option>
+                <option value="hiring">{contactCopy.intentHiring}</option>
+                <option value="architecture-review">{contactCopy.intentArchitecture}</option>
+                <option value="website">{contactCopy.intentWebsite}</option>
+                <option value="other">{contactCopy.intentOther}</option>
+              </select>
+            </label>
+
+            <fieldset class="contact-choice">
+              <legend>{contactCopy.preferredContactLabel}</legend>
+              <label>
+                <input name="preferredContactPath" type="radio" value="email" required checked />
+                <span>{contactCopy.preferredEmail}</span>
+              </label>
+              <label>
+                <input name="preferredContactPath" type="radio" value="whatsapp" required />
+                <span>{contactCopy.preferredWhatsApp}</span>
+              </label>
+            </fieldset>
+          </div>
+
+          <label class="field-label">
+            <span>{contactCopy.messageLabel}</span>
+            <textarea name="message" rows="6" required></textarea>
+          </label>
+
+          <label class="consent-row">
+            <input name="consentToContact" type="checkbox" value="true" required />
+            <span>{contactCopy.consentLabel}</span>
+          </label>
+
+          <label class="contact-honeypot" aria-hidden="true">
+            <span>Website</span>
+            <input name="website" type="text" autocomplete="off" tabindex="-1" />
+          </label>
+          <input name="formStartedAt" type="hidden" value="" />
+          <input name="sourcePath" type="hidden" value={route.path} />
+          <input name="locale" type="hidden" value={locale} />
+          <input name="referrer" type="hidden" value="" />
+
+          <div class="contact-submit-row">
+            <button class="button button-primary" type="submit" data-submit-label={contactCopy.submitLabel} data-sending-label={contactCopy.sendingLabel}>
+              {contactCopy.submitLabel}
+            </button>
+            <p>{contactCopy.fallbackText} <a href={publicWhatsAppUrl}>{contactCopy.whatsappLabel}</a></p>
+          </div>
+          <p class="contact-status" role="status" data-contact-status></p>
+        </form>
+      </section>
+
+      <script>
+        for (const form of document.querySelectorAll("[data-contact-form]")) {
+          const endpoint = form instanceof HTMLFormElement ? form.dataset.contactEndpoint : "";
+          const status = form.querySelector("[data-contact-status]");
+          const startedAt = form.querySelector('input[name="formStartedAt"]');
+          const referrer = form.querySelector('input[name="referrer"]');
+          const submitButton = form.querySelector('button[type="submit"]');
+
+          if (startedAt instanceof HTMLInputElement) {
+            startedAt.value = String(Date.now());
+          }
+
+          if (referrer instanceof HTMLInputElement) {
+            referrer.value = document.referrer;
+          }
+
+          form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            if (!(form instanceof HTMLFormElement)) {
+              return;
+            }
+
+            if (!endpoint) {
+              if (status) {
+                status.textContent = form.dataset.endpointMissing ?? "";
+              }
+              return;
+            }
+
+            const formData = new FormData(form);
+            const payload = Object.fromEntries(formData.entries());
+            payload.consentToContact = formData.get("consentToContact") === "true" ? "true" : "";
+
+            if (submitButton instanceof HTMLButtonElement) {
+              submitButton.disabled = true;
+              submitButton.textContent = submitButton.dataset.sendingLabel ?? submitButton.textContent;
+            }
+
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  ...payload,
+                  consentToContact: payload.consentToContact === "true",
+                  formStartedAt: Number(payload.formStartedAt),
+                }),
+              });
+
+              if (!response.ok) {
+                throw new Error("Contact request failed.");
+              }
+
+              form.reset();
+              if (status) {
+                status.textContent = form.dataset.successMessage ?? "";
+              }
+            } catch {
+              if (status) {
+                status.textContent = form.dataset.errorMessage ?? "";
+              }
+            } finally {
+              if (submitButton instanceof HTMLButtonElement) {
+                submitButton.disabled = false;
+                submitButton.textContent = submitButton.dataset.submitLabel ?? submitButton.textContent;
+              }
+            }
+          });
+        }
+      </script>
     </>
   ) : (
     <>

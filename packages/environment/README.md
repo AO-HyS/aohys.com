@@ -21,3 +21,13 @@ The current contract classifies these Convex values:
 | `CONVEX_DEPLOY_KEY` | Server secret | Server-only |
 
 No Convex variable is currently exposed through a `PUBLIC_` browser prefix. Dashboard/client exposure should be introduced deliberately in a later dashboard issue if needed.
+
+## Contact Coverage
+
+The public contact form uses `PUBLIC_CONTACT_ENDPOINT` as a browser-safe build value. That value points at the Convex HTTP action for the active environment; Resend, PostHog, and Convex deploy secrets stay server-only.
+
+| Variable | Class | Exposure |
+| --- | --- | --- |
+| `PUBLIC_CONTACT_ENDPOINT` | Public build value | Public browser |
+| `RESEND_API_KEY` | Server secret | Server-only |
+| `PUBLIC_POSTHOG_KEY` | Public build value | Public browser |

@@ -74,5 +74,32 @@
         "text": "Canonical URLs, language alternates, robots, and sitemap inclusion share one source."
       }
     ]
+  },
+  "contactForm": {
+    "formTitle": "Tell me what you need to ship.",
+    "formIntro": "Share the goal, context, and best way to reach you. I will reply directly.",
+    "nameLabel": "Name",
+    "emailLabel": "Email",
+    "companyLabel": "Company",
+    "phoneLabel": "Phone or WhatsApp",
+    "intentLabel": "What is this about?",
+    "intentProject": "Project build",
+    "intentHiring": "Hiring conversation",
+    "intentArchitecture": "Architecture review",
+    "intentWebsite": "Website or landing page",
+    "intentOther": "Other",
+    "preferredContactLabel": "Preferred contact path",
+    "preferredEmail": "Email",
+    "preferredWhatsApp": "WhatsApp",
+    "messageLabel": "Message",
+    "messagePlaceholder": "What needs to exist, improve, launch, or become reliable?",
+    "consentLabel": "I understand AOHYS will use this information to respond to my request.",
+    "submitLabel": "Send request",
+    "sendingLabel": "Sending...",
+    "successMessage": "Request received. I will reply directly.",
+    "errorMessage": "The form could not send right now. Use WhatsApp or email directly.",
+    "endpointMissing": "Contact endpoint is not configured for this environment.",
+    "whatsappLabel": "WhatsApp Me",
+    "fallbackText": "Prefer direct contact?"
   }
 }
