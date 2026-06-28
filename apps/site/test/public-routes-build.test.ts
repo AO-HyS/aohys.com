@@ -54,6 +54,29 @@ describe("built public routes", () => {
     expect(spanishHomeHtml).toContain('href="/es/casos"');
   });
 
+  it("renders the graph-backed home proof narrative in both languages", () => {
+    const homeHtml = readDist("index.html");
+    const spanishHomeHtml = readDist("es/index.html");
+
+    expect(homeHtml).toContain('data-home-content-id="home"');
+    expect(homeHtml).toContain("Alejandro Ortiz Corro turns business goals into product systems people can trust.");
+    expect(homeHtml).toContain("Selected outcomes");
+    expect(homeHtml).toContain('href="/case-studies/casa-roca"');
+    expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
+    expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
+    expect(homeHtml).toContain('href="/case-studies/enterprise-systems"');
+    expect(homeHtml).toContain('aria-label="Public-safe evidence for Casa Roca"');
+    expect(homeHtml).toContain("WhatsApp");
+    expect(homeHtml).not.toContain("Cloudflare · Convex · PostHog · Resend");
+
+    expect(spanishHomeHtml).toContain('data-home-content-id="home"');
+    expect(spanishHomeHtml).toContain("Alejandro Ortiz Corro convierte objetivos de negocio en sistemas confiables.");
+    expect(spanishHomeHtml).toContain("Resultados seleccionados");
+    expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
+    expect(spanishHomeHtml).toContain('aria-label="Evidencia pública segura de Casa Roca"');
+    expect(spanishHomeHtml).toContain("WhatsApp");
+  });
+
   it("emits sitemap and robots behavior from the public graph", () => {
     const sitemap = readDist("sitemap.xml");
     const robots = readDist("robots.txt");
