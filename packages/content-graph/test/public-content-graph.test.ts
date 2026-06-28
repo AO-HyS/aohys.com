@@ -3,6 +3,7 @@ import {
   DEFAULT_LOCALE,
   LOCALES,
   MissingLocaleVariantError,
+  getHomePageContent,
   getLanguageAlternates,
   getLocaleVariant,
   getLocalizedPath,
@@ -82,6 +83,26 @@ describe("Public Content Graph", () => {
     expect(sitemapUrls).toContain("https://aohys.com/es/");
     expect(sitemapUrls).toContain("https://aohys.com/es/casos/sistemas-enterprise");
     expect(sitemapUrls.some((url) => url.includes("/dashboard"))).toBe(false);
+  });
+
+  it("returns graph-backed home narrative with localized case-study paths and safe evidence", () => {
+    const englishHome = getHomePageContent("en");
+    const spanishHome = getHomePageContent("es");
+
+    expect(englishHome.headline).toContain("Alejandro Ortiz Corro");
+    expect(englishHome.selectedOutcomes).toHaveLength(4);
+    expect(englishHome.selectedOutcomes.map((outcome) => outcome.path)).toEqual([
+      "/case-studies/casa-roca",
+      "/case-studies/the-barber-central",
+      "/case-studies/nutri-plan",
+      "/case-studies/enterprise-systems",
+    ]);
+    expect(englishHome.selectedOutcomes.every((outcome) => outcome.evidence.publicSafe)).toBe(true);
+    expect(englishHome.selectedOutcomes.every((outcome) => outcome.evidence.altText.length > 20)).toBe(
+      true,
+    );
+    expect(spanishHome.selectedOutcomes[0]?.path).toBe("/es/casos/casa-roca");
+    expect(spanishHome.whatsappHref).toMatch(/^https:\/\/wa\.me\/52/);
   });
 
   it("fails explicitly when a locale variant is missing", () => {

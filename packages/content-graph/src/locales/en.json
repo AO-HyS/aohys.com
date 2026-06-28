@@ -7,7 +7,108 @@
     "primaryActionLabel": "Start a conversation",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "View selected work",
-    "secondaryActionContentId": "case-studies"
+    "secondaryActionContentId": "case-studies",
+    "homeContent": {
+      "headline": "Alejandro Ortiz Corro turns business goals into product systems people can trust.",
+      "deck": "I help teams turn ambiguous product goals into secure, maintainable software: public sites that can be found, operations tools that reduce friction, and backend systems that hold up when work gets complex.",
+      "proofBoardLabel": "AOHYS public proof board",
+      "proofBoardTitle": "Public source sample, private client work.",
+      "proofBoardBody": "This site is being built in public so technical evaluators can inspect the architecture, i18n, SEO, quality gates, release path, and operating judgment behind the work.",
+      "selectedOutcomesHeading": "Selected outcomes",
+      "selectedOutcomesIntro": "A short ledger of public-safe proof: production work, active builds, private product systems, and enterprise delivery experience.",
+      "selectedOutcomes": [
+        {
+          "contentId": "case-study:casa-roca",
+          "label": "Production proof",
+          "title": "Casa Roca",
+          "outcome": "A public business site shaped for trust, search visibility, performance care, and release discipline.",
+          "role": "Public site delivery, SEO surface, deployment discipline.",
+          "evidence": {
+            "label": "Public site",
+            "altText": "Public-safe evidence for Casa Roca",
+            "kind": "public-site",
+            "publicSafe": true
+          }
+        },
+        {
+          "contentId": "case-study:the-barber-central",
+          "label": "Active product build",
+          "title": "The Barber Central",
+          "outcome": "Booking and operations workflows organized around the way a local service business actually runs.",
+          "role": "Product architecture, booking flow, payments, customer communication.",
+          "evidence": {
+            "label": "Development preview",
+            "altText": "Public-safe evidence for The Barber Central",
+            "kind": "development-preview",
+            "publicSafe": true
+          }
+        },
+        {
+          "contentId": "case-study:nutri-plan",
+          "label": "Private product system",
+          "title": "Nutri Plan",
+          "outcome": "Structured client workflows, plans, and operational clarity for a product still under private development.",
+          "role": "Workflow design, private operations, quality practice.",
+          "evidence": {
+            "label": "Sanitized preview",
+            "altText": "Public-safe evidence for Nutri Plan",
+            "kind": "development-preview",
+            "publicSafe": true
+          }
+        },
+        {
+          "contentId": "case-study:enterprise-systems",
+          "label": "Enterprise systems",
+          "title": "Enterprise systems",
+          "outcome": "Escalation ownership, payment plans, cashback, customs workflows, and backend delivery in complex environments.",
+          "role": "Backend delivery, escalations, reliability, confidentiality.",
+          "evidence": {
+            "label": "Confidential summary",
+            "altText": "Public-safe evidence for enterprise systems",
+            "kind": "private-system",
+            "publicSafe": true
+          }
+        }
+      ],
+      "architectureHeading": "The site itself is the sample.",
+      "architectureBody": "Public SEO pages and private operations share one domain, but the boundaries are deliberate. Visitors see the proof; private dashboard work stays authenticated, noindex, and operational.",
+      "architectureStages": [
+        {
+          "label": "Public surface",
+          "text": "Astro pages resolve from stable content IDs, localized slugs, canonical URLs, and sitemap rules."
+        },
+        {
+          "label": "Private surface",
+          "text": "Dashboard routes stay out of public search and will use authenticated workflows instead of public content shortcuts."
+        },
+        {
+          "label": "Release path",
+          "text": "Feature branches move into develop first; production promotion is a separate review path into main."
+        }
+      ],
+      "practiceHeading": "Modern engineering practice is part of the deliverable.",
+      "practiceBody": "The way the work is planned, tested, reviewed, localized, deployed, and observed matters as much as the first screen.",
+      "practicePoints": [
+        {
+          "label": "AI-assisted delivery",
+          "text": "Agents help accelerate implementation, but the bar remains architecture, review, testing, and working software."
+        },
+        {
+          "label": "Quality gates",
+          "text": "Behavior tests, source checks, browser QA, and protected branch flow keep the sample honest."
+        },
+        {
+          "label": "Business fit",
+          "text": "Technology choices are evidence. The work starts with the outcome the system needs to create."
+        }
+      ],
+      "contactHeading": "Start with the outcome you need.",
+      "contactBody": "Send the role, project, architecture problem, or workflow you want to improve. I will reply with the next useful step.",
+      "emailLabel": "Email Alejandro",
+      "emailHref": "mailto:alejandro.ortiz@aohys.com",
+      "whatsappLabel": "WhatsApp",
+      "whatsappHref": "https://wa.me/522299020825"
+    }
   },
   "case-studies": {
     "path": "/case-studies",

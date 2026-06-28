@@ -130,3 +130,5 @@ The Public Content Graph is tested with Vitest through route and metadata behavi
 - missing locale variants fail explicitly.
 
 Astro route smoke tests consume the built site output instead of using ad hoc Node assertions. Later tracers should cover richer case-study content shape, resume/PDF relationships, evidence asset safety, and dashboard publishing invariants.
+
+The current home tracer also uses the graph for the public proof narrative: selected outcomes resolve to localized case-study paths, evidence entries carry public-safe labels and accessible text, and the contact CTA keeps the institutional email plus WhatsApp path in the same locale-aware content seam.

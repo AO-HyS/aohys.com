@@ -1,5 +1,6 @@
 ---
 import {
+  getHomePageContent,
   getLocalizedPath,
   type ContentId,
   type PublicRoute,
@@ -14,6 +15,7 @@ const { route } = Astro.props;
 const { id, locale, node, variant } = route;
 const isHome = id === "home";
 const copy = getUiCopy(locale).publicPage;
+const homeContent = isHome ? getHomePageContent(locale) : undefined;
 
 function actionHref(contentId?: ContentId): string | undefined {
   return contentId ? getLocalizedPath(contentId, locale) : undefined;
@@ -24,14 +26,14 @@ const secondaryHref = actionHref(variant.secondaryActionContentId);
 ---
 
 {
-  isHome ? (
+  isHome && homeContent ? (
     <>
-      <section class="hero-section" aria-labelledby="home-title">
+      <section class="hero-section home-proof-hero" aria-labelledby="home-title" data-home-content-id={id}>
         <div class="hero-copy">
           <p class="signal-line">{copy.signal}</p>
-          <h1 id="home-title">{variant.summary}</h1>
+          <h1 id="home-title">{homeContent.headline}</h1>
           <p class="hero-lead">
-            {copy.homeLead}
+            {homeContent.deck}
           </p>
           <div class="hero-actions" aria-label={copy.actions}>
             {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
@@ -39,50 +41,96 @@ const secondaryHref = actionHref(variant.secondaryActionContentId);
           </div>
         </div>
 
-        <figure class="proof-board" aria-label={copy.boardLabel}>
-          <div class="artifact artifact-large">
+        <figure class="proof-board home-proof-board" aria-label={homeContent.proofBoardLabel}>
+          <div class="artifact artifact-large board-sheet">
             <span class="artifact-label">{copy.publicSample}</span>
-            <strong>aohys.com</strong>
-            <p>{copy.shellProof}</p>
+            <strong>{homeContent.proofBoardTitle}</strong>
+            <p>{homeContent.proofBoardBody}</p>
           </div>
-          <div class="artifact artifact-line">
+          <div class="board-route outcome-route">
             <span>{copy.outcome}</span>
-            <strong>{copy.outcomeText}</strong>
+            <strong>{homeContent.selectedOutcomesHeading}</strong>
           </div>
-          <div class="artifact artifact-line mint">
+          <div class="board-route architecture-route">
             <span>{copy.architecture}</span>
-            <strong>{copy.architectureText}</strong>
+            <strong>{homeContent.architectureHeading}</strong>
           </div>
-          <div class="artifact artifact-line sky">
+          <div class="board-route review-route">
             <span>{copy.reviewPath}</span>
             <strong>{copy.reviewPathText}</strong>
           </div>
-          <svg class="proof-lines" viewBox="0 0 520 360" role="img" aria-label="Connections between outcomes, architecture, and release proof">
-            <path d="M108 92 C178 56 254 52 340 96" />
-            <path d="M118 174 C210 216 298 220 420 178" />
-            <path d="M196 272 C258 238 322 238 386 276" />
-            <circle cx="108" cy="92" r="6" />
-            <circle cx="340" cy="96" r="6" />
-            <circle cx="420" cy="178" r="6" />
-            <circle cx="196" cy="272" r="6" />
-            <circle cx="386" cy="276" r="6" />
+          <svg class="proof-lines" viewBox="0 0 520 360" role="img" aria-label="Connections between outcomes, architecture, and review path">
+            <path d="M112 92 C184 58 264 58 344 100" />
+            <path d="M126 185 C218 226 318 226 426 178" />
+            <path d="M196 282 C260 242 334 242 398 286" />
+            <circle cx="112" cy="92" r="6" />
+            <circle cx="344" cy="100" r="6" />
+            <circle cx="426" cy="178" r="6" />
+            <circle cx="196" cy="282" r="6" />
+            <circle cx="398" cy="286" r="6" />
           </svg>
         </figure>
       </section>
 
-      <section class="ledger-section" aria-labelledby="ledger-title">
+      <section class="ledger-section selected-outcomes" aria-labelledby="ledger-title" data-home-section="selected-outcomes">
         <div class="section-heading">
           <p class="signal-line">{copy.proofHeadingSignal}</p>
-          <h2 id="ledger-title">{copy.proofHeading}</h2>
+          <h2 id="ledger-title">{homeContent.selectedOutcomesHeading}</h2>
+          <p class="section-intro">{homeContent.selectedOutcomesIntro}</p>
         </div>
-        <div class="proof-ledger">
-          {copy.proofRows.map((row) => (
-            <a class="ledger-row" href={getLocalizedPath(row.contentId as ContentId, locale)}>
-              <span>{row.label}</span>
-              <strong>{row.text}</strong>
-              <em>{row.action}</em>
+        <div class="outcome-ledger">
+          {homeContent.selectedOutcomes.map((outcome) => (
+            <a class="outcome-row" href={outcome.path}>
+              <span class="outcome-label">{outcome.label}</span>
+              <strong>{outcome.title}</strong>
+              <p>{outcome.outcome}</p>
+              <figure class="outcome-evidence" aria-label={outcome.evidence.altText}>
+                <span>{outcome.evidence.label}</span>
+                <em>{outcome.role}</em>
+              </figure>
             </a>
           ))}
+        </div>
+      </section>
+
+      <section class="architecture-stage" aria-labelledby="home-architecture-title" data-home-section="architecture">
+        <div class="architecture-copy">
+          <h2 id="home-architecture-title">{homeContent.architectureHeading}</h2>
+          <p>{homeContent.architectureBody}</p>
+        </div>
+        <div class="architecture-track" aria-label={homeContent.architectureHeading}>
+          {homeContent.architectureStages.map((stage) => (
+            <div class="architecture-step">
+              <span>{stage.label}</span>
+              <p>{stage.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="practice-section" aria-labelledby="practice-title" data-home-section="practice">
+        <div class="section-heading">
+          <h2 id="practice-title">{homeContent.practiceHeading}</h2>
+          <p class="section-intro">{homeContent.practiceBody}</p>
+        </div>
+        <div class="practice-list">
+          {homeContent.practicePoints.map((point) => (
+            <div class="practice-item">
+              <span>{point.label}</span>
+              <p>{point.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="contact-band" aria-labelledby="home-contact-title" data-home-section="contact">
+        <div>
+          <h2 id="home-contact-title">{homeContent.contactHeading}</h2>
+          <p>{homeContent.contactBody}</p>
+        </div>
+        <div class="contact-actions" aria-label={copy.actions}>
+          <a class="button button-primary" href={homeContent.emailHref}>{homeContent.emailLabel}</a>
+          <a class="button button-whatsapp" href={homeContent.whatsappHref}>{homeContent.whatsappLabel}</a>
         </div>
       </section>
     </>

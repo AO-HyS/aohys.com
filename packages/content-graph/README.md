@@ -10,6 +10,7 @@ Astro routes, sitemap generation, metadata helpers, resume rendering, case-study
 - English and Spanish route paths;
 - canonical URLs and language alternates;
 - localized titles, summaries, SEO titles, and SEO descriptions;
+- graph-backed home proof narrative, selected outcomes, evidence labels, and contact CTA data;
 - sitemap eligibility;
 - private dashboard route exclusions;
 - explicit failures when a locale variant is missing.
@@ -19,6 +20,7 @@ Astro routes, sitemap generation, metadata helpers, resume rendering, case-study
 - `getPublicRouteMap()` lists all public route variants.
 - `resolvePublicPath(pathname)` resolves a URL path to its graph route or returns `null` for unknown/private paths.
 - `getLocalizedPath(contentId, locale)` returns the route path for a stable content ID.
+- `getHomePageContent(locale)` returns the localized home proof narrative with graph-backed case-study paths.
 - `getSeoMetadata(contentId, locale)` returns canonical, alternates, robots, title, and description.
 - `getSitemapEntries()` returns graph-approved sitemap entries.
 

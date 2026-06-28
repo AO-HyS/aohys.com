@@ -164,6 +164,8 @@ Recommended home sequence:
 5. Engineering practice: agent-assisted workflow, QA discipline, observability, deployment, and documentation as current practice.
 6. Contact: form, email, and large but discreet WhatsApp CTA.
 
+Current implementation status: the first real home pass is graph-backed and includes Alejandro-first copy, selected outcome rows, a dark architecture section, engineering practice rows, institutional email, and WhatsApp CTA. Future case-study issues should replace proof placeholders with sanitized screenshots and richer detail pages.
+
 Case study pages should use the same proof-ledger rhythm:
 
 - Problem.

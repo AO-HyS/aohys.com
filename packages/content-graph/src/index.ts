@@ -43,6 +43,51 @@ export interface LocaleVariant {
   secondaryActionContentId?: ContentId;
 }
 
+export interface EvidenceAsset {
+  label: string;
+  altText: string;
+  kind: "public-site" | "development-preview" | "private-system" | "architecture-note";
+  publicSafe: boolean;
+}
+
+export interface HomeOutcome {
+  contentId: ContentId;
+  path: string;
+  label: string;
+  title: string;
+  outcome: string;
+  role: string;
+  evidence: EvidenceAsset;
+}
+
+export interface HomeStage {
+  label: string;
+  text: string;
+}
+
+export interface HomePageContent {
+  headline: string;
+  deck: string;
+  proofBoardLabel: string;
+  proofBoardTitle: string;
+  proofBoardBody: string;
+  selectedOutcomesHeading: string;
+  selectedOutcomesIntro: string;
+  selectedOutcomes: HomeOutcome[];
+  architectureHeading: string;
+  architectureBody: string;
+  architectureStages: HomeStage[];
+  practiceHeading: string;
+  practiceBody: string;
+  practicePoints: HomeStage[];
+  contactHeading: string;
+  contactBody: string;
+  emailLabel: string;
+  emailHref: string;
+  whatsappLabel: string;
+  whatsappHref: string;
+}
+
 export interface SitemapRule {
   include: boolean;
   changefreq?: "weekly" | "monthly";
@@ -92,6 +137,9 @@ interface LocalizedContentEntry {
   primaryActionContentId?: ContentId;
   secondaryActionLabel?: string;
   secondaryActionContentId?: ContentId;
+  homeContent?: Omit<HomePageContent, "selectedOutcomes"> & {
+    selectedOutcomes: Array<Omit<HomeOutcome, "path">>;
+  };
 }
 
 type ContentDictionary = Record<ContentId, LocalizedContentEntry>;
@@ -283,6 +331,22 @@ export function getLocaleVariant(
 
 export function getLocalizedPath(contentId: ContentId | string, locale: Locale): string {
   return getLocaleVariant(contentId, locale).path;
+}
+
+export function getHomePageContent(locale: Locale): HomePageContent {
+  const home = getDictionaryEntry("home", locale);
+
+  if (!home.homeContent) {
+    throw new Error(`Home content is missing for locale "${locale}".`);
+  }
+
+  return {
+    ...home.homeContent,
+    selectedOutcomes: home.homeContent.selectedOutcomes.map((outcome) => ({
+      ...outcome,
+      path: getLocalizedPath(outcome.contentId, locale),
+    })),
+  };
 }
 
 export function getLanguageAlternates(contentId: ContentId | string): Record<Locale | "x-default", string> {
