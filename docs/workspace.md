@@ -19,8 +19,8 @@ The root `package.json` pins pnpm through `packageManager`. The root `verify` co
 | --- | --- |
 | `apps/site` | Astro public site for SEO pages, bilingual routes, metadata, sitemap, and public shell. |
 | `apps/dashboard` | Future private dashboard surface under `/dashboard`. |
-| `apps/backend` | Future Convex backend surface for leads, content, media, settings, resume, auth, and dashboard workflows. |
-| `packages/environment` | Future Environment Contract implementation. |
+| `apps/backend` | Convex backend surface for leads, content, media, settings, resume, auth, and dashboard workflows. |
+| `packages/environment` | Environment Contract implementation for provider variable definitions and validation. |
 | `packages/content-graph` | Public Content Graph implementation for stable content IDs, bilingual routes, SEO metadata, sitemap behavior, and private route exclusions. |
 | `packages/dashboard-ui` | Future Dashboard UI Kit implementation over the dashboard primitive adapter. |
 | `packages/release-train` | Future Release Train checks, deploy helpers, and smoke-check helpers. |
@@ -31,10 +31,10 @@ The root `package.json` pins pnpm through `packageManager`. The root `verify` co
 The foundation is intentionally shallow on implementation and strict on seams:
 
 - Public routes should use `packages/content-graph` for identity, localized paths, metadata, sitemap rules, and private route exclusions.
-- App and backend code should use `packages/environment` once provider wiring begins.
+- App and backend code should use `packages/environment` for provider variable classification and validation.
 - Dashboard routes should use `packages/dashboard-ui` once the private dashboard exists.
 - Deployment and smoke checks should collect in `packages/release-train` and root scripts.
-- Convex code should live under `apps/backend` until issue #10 defines the final backend layout.
+- Convex code lives under `apps/backend/convex`; generated bindings in `apps/backend/convex/_generated` are committed because backend functions typecheck against them.
 
 ## Environment Files
 
