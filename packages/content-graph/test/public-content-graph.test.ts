@@ -11,6 +11,7 @@ import {
   getLocaleVariant,
   getLocalizedPath,
   getPublicRouteMap,
+  getResumePageContent,
   getSeoMetadata,
   getSitemapEntries,
   isPrivateRoute,
@@ -160,6 +161,32 @@ describe("Public Content Graph", () => {
       "/es/casos/practica-de-ingenieria",
     ]);
     expect(spanishIndex.entries.every((entry) => entry.evidenceLabel.length > 6)).toBe(true);
+  });
+
+  it("returns resume content with a PDF artifact and localized dynamic context links", () => {
+    const englishResume = getResumePageContent("en");
+    const spanishResume = getResumePageContent("es");
+
+    expect(englishResume.name).toBe("Alejandro Ortiz Corro");
+    expect(englishResume.role).toBe("Senior Frontend Developer");
+    expect(englishResume.pdf).toMatchObject({
+      href: "/downloads/alejandro-ortiz-corro-resume.pdf",
+      fileName: "alejandro-ortiz-corro-resume.pdf",
+    });
+    expect(englishResume.summary.join(" ")).toMatch(/React|TypeScript|Next\.js|AI-assisted/i);
+    expect(englishResume.contextLinks.map((link) => link.href)).toEqual([
+      "/case-studies",
+      "/architecture",
+      "/contact",
+    ]);
+
+    expect(spanishResume.role).toBe("Desarrollador Frontend Senior");
+    expect(spanishResume.contextTitle).toBe("Contexto dinámico del CV");
+    expect(spanishResume.contextLinks.map((link) => link.href)).toEqual([
+      "/es/casos",
+      "/es/arquitectura",
+      "/es/contacto",
+    ]);
   });
 
   it("returns Casa Roca case-study content with public-safe evidence", () => {

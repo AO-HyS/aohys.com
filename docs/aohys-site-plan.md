@@ -52,8 +52,8 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Environment documentation: The canonical environment planning document is `docs/environment-contract.md`; the architectural decision is `docs/adr/0002-environment-contract-source-of-truth.md`.
 - CTA: Primary CTA is neutral: "Start a conversation" / "Hablemos"; contact form captures lead intent.
 - Privacy: Include serious minimal privacy pages from V1; no newsletter in V1.
-- CV: `/resume` is the primary dynamic resume URL; PDF should be ATS-first, single-column, text-based, and human-readable.
-- Resume SEO: Update summary and content for ATS/robots, with a link back to the dynamic site.
+- CV: `/resume` is the primary dynamic resume URL; `/es/cv` is the Spanish route. The downloadable PDF lives at `/downloads/alejandro-ortiz-corro-resume.pdf`.
+- Resume SEO: Resume content is graph-backed, ATS-readable, linked to the PDF artifact, and linked back to dynamic site context.
 - Public V1 pages EN: `/`, `/case-studies`, `/case-studies/casa-roca`, `/case-studies/the-barber-central`, `/case-studies/nutri-plan`, `/case-studies/enterprise-systems`, `/case-studies/engineering-practice`, `/practice`, `/architecture`, `/resume`, `/contact`, `/privacy`.
 - Public V1 pages ES: `/es/`, `/es/casos`, `/es/casos/casa-roca`, `/es/casos/the-barber-central`, `/es/casos/nutri-plan`, `/es/casos/sistemas-enterprise`, `/es/casos/practica-de-ingenieria`, `/es/practica`, `/es/arquitectura`, `/es/cv`, `/es/contacto`, `/es/privacidad`.
 - Dashboard V1 sections: Overview, Leads, Case studies, Media, Site settings, Resume.
@@ -182,7 +182,9 @@ Case study pages should use the same proof-ledger rhythm:
 - Public evidence.
 - Confidentiality note.
 
-Resume pages should be typography-first, ATS-friendly, and visibly linked to the dynamic site. Do not over-design the resume surface in a way that hurts parsing or readability.
+Resume page status: `/resume` and `/es/cv` now render graph-backed semantic CV content, localized metadata, contact links, dynamic context links, and a downloadable ATS-first PDF artifact. The PDF is generated from the English graph content with `apps/site/scripts/build-resume-pdf.py` and is intentionally single-column and text-based.
+
+Resume pages should remain typography-first, ATS-friendly, and visibly linked to the dynamic site. Do not over-design the resume surface in a way that hurts parsing or readability.
 
 ## Implementation Sequence
 
@@ -212,5 +214,4 @@ $impeccable craft AOHYS public site shell
 - Final Resend DNS verification and SPF update in Cloudflare.
 - Final business WhatsApp number after Meta verification is complete.
 - Exact sanitized screenshots and development URLs to use for The Barber Central and Nutri Plan.
-- Updated ATS-first resume content and PDF generation/storage approach.
 - Whether GitHub Issues can be disabled on `AO-HyS/aohys.com` after repo creation.

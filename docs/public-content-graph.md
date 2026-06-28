@@ -82,6 +82,14 @@ Case-study nodes should additionally carry:
 - quality/security/performance notes;
 - public evidence links or assets.
 
+Resume nodes should additionally carry:
+
+- name, role, location, and contact links;
+- ATS-friendly professional summary;
+- selected impact, key projects, professional experience, skills, education, and languages;
+- PDF artifact metadata including href, filename, label, and description;
+- dynamic context links back to richer site routes.
+
 ## Sitemap And Robots Rules
 
 Public sitemap eligibility should come from the graph, not from route-file assumptions.
@@ -139,3 +147,5 @@ The architecture page also resolves its public source framing through the graph.
 Casa Roca is the first complete graph-backed case study. `case-study:casa-roca` owns its localized status label, overview, problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance notes, public evidence link, alt text, and confidentiality note. Case-study routes without complete detail content continue to render skeleton route pages until their public-safe content is added.
 
 The selected-work index is also graph-backed. It resolves Casa Roca, The Barber Central, Nutri Plan, Enterprise Systems, and Engineering Practice from stable case-study IDs, localized paths, explicit project statuses, public-safe evidence labels, and the same confidentiality-aware detail shape.
+
+The resume route is graph-backed as well. `resume` resolves `/resume` and `/es/cv`, owns localized semantic CV content, exposes the `/downloads/alejandro-ortiz-corro-resume.pdf` artifact, and links back to selected work, architecture, and contact routes so ATS readers can move into richer dynamic context.

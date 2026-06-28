@@ -149,6 +149,73 @@ export interface CaseStudyIndexContent {
   entries: CaseStudyIndexEntry[];
 }
 
+export interface ResumeLink {
+  label: string;
+  href: string;
+  text: string;
+}
+
+export interface ResumePdfArtifact {
+  label: string;
+  href: string;
+  fileName: string;
+  description: string;
+}
+
+export interface ResumeHighlight {
+  label: string;
+  text: string;
+}
+
+export interface ResumeProject {
+  title: string;
+  summary: string;
+  bullets: string[];
+}
+
+export interface ResumeExperience {
+  role: string;
+  company: string;
+  period: string;
+  bullets: string[];
+}
+
+export interface ResumeSkillGroup {
+  label: string;
+  items: string[];
+}
+
+export interface ResumeEducation {
+  degree: string;
+  institution: string;
+  period: string;
+}
+
+export interface ResumePageContent {
+  name: string;
+  role: string;
+  location: string;
+  intro: string;
+  pdf: ResumePdfArtifact;
+  contactLinks: ResumeLink[];
+  contextTitle: string;
+  contextLinks: ResumeLink[];
+  summaryTitle: string;
+  summary: string[];
+  highlightsTitle: string;
+  highlights: ResumeHighlight[];
+  projectsTitle: string;
+  projects: ResumeProject[];
+  experienceTitle: string;
+  experience: ResumeExperience[];
+  skillsTitle: string;
+  skills: ResumeSkillGroup[];
+  educationTitle: string;
+  education: ResumeEducation[];
+  languagesTitle: string;
+  languages: string[];
+}
+
 export interface SitemapRule {
   include: boolean;
   changefreq?: "weekly" | "monthly";
@@ -203,6 +270,7 @@ interface LocalizedContentEntry {
   };
   architectureContent?: ArchitecturePageContent;
   caseStudyContent?: CaseStudyPageContent;
+  resumeContent?: ResumePageContent;
 }
 
 type ContentDictionary = Record<ContentId, LocalizedContentEntry>;
@@ -472,6 +540,16 @@ export function getCaseStudyIndexContent(locale: Locale): CaseStudyIndexContent 
       };
     }),
   };
+}
+
+export function getResumePageContent(locale: Locale): ResumePageContent {
+  const resume = getDictionaryEntry("resume", locale);
+
+  if (!resume.resumeContent) {
+    throw new Error(`Resume content is missing for locale "${locale}".`);
+  }
+
+  return resume.resumeContent;
 }
 
 export function getLanguageAlternates(contentId: ContentId | string): Record<Locale | "x-default", string> {

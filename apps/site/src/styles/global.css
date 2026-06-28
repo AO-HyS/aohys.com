@@ -192,7 +192,10 @@ svg {
 .selected-work-index,
 .case-study-detail,
 .case-study-evidence,
-.case-study-confidentiality {
+.case-study-confidentiality,
+.resume-hero,
+.resume-section,
+.resume-context {
   width: var(--container);
   margin-inline: auto;
 }
@@ -856,6 +859,143 @@ h2 {
   text-wrap: pretty;
 }
 
+.resume-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.34fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: end;
+  min-height: min(720px, calc(100svh - 78px));
+  padding-block: clamp(4rem, 9vw, 7rem) clamp(2.5rem, 6vw, 5rem);
+}
+
+.resume-identity {
+  max-width: 68rem;
+}
+
+.resume-role {
+  margin: 0 0 1rem;
+  color: var(--color-muted);
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-heading);
+  line-height: 1.12;
+}
+
+.resume-contact {
+  display: grid;
+  gap: 0.85rem;
+  border-block: 1px solid var(--color-dark);
+  padding-block: 1rem;
+}
+
+.resume-contact > span,
+.resume-row span,
+.resume-entry-heading span {
+  color: var(--color-muted);
+  font-family: var(--font-display);
+  font-size: var(--text-small);
+  font-weight: 680;
+}
+
+.resume-contact a {
+  display: grid;
+  min-height: 44px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.resume-contact strong {
+  font-family: var(--font-display);
+  font-size: var(--text-caption);
+  font-weight: 680;
+}
+
+.resume-contact a span {
+  overflow-wrap: anywhere;
+}
+
+.resume-section,
+.resume-context {
+  padding-block: clamp(2rem, 5vw, 4.5rem);
+}
+
+.resume-copy {
+  display: grid;
+  gap: 1rem;
+  max-width: 86ch;
+  border-block-start: 1px solid var(--color-dark);
+  padding-block-start: 1.4rem;
+}
+
+.resume-copy p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--text-lead);
+  line-height: var(--leading-lead);
+  text-wrap: pretty;
+}
+
+.resume-ledger,
+.resume-long-list,
+.resume-context-links {
+  display: grid;
+  border-block-start: 1px solid var(--color-dark);
+}
+
+.resume-row {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.28fr) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 3rem);
+  border-block-end: 1px solid var(--color-rule);
+  padding-block: 1.35rem;
+}
+
+.resume-row p {
+  max-width: 82ch;
+  margin: 0;
+  color: var(--color-muted);
+  text-wrap: pretty;
+}
+
+.resume-row strong {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-weight: 680;
+}
+
+.resume-entry {
+  display: grid;
+  gap: 0.75rem;
+  border-block-end: 1px solid var(--color-rule);
+  padding-block: 1.6rem;
+}
+
+.resume-entry-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.resume-entry h3 {
+  font-size: var(--text-h3);
+  letter-spacing: 0;
+}
+
+.resume-entry p,
+.resume-entry ul {
+  max-width: 86ch;
+  margin: 0;
+  color: var(--color-muted);
+  text-wrap: pretty;
+}
+
+.resume-entry ul {
+  display: grid;
+  gap: 0.45rem;
+  padding-inline-start: 1.25rem;
+}
+
 .ledger-row {
   display: grid;
   grid-template-columns: minmax(8rem, 0.42fr) minmax(0, 1fr) auto;
@@ -1016,9 +1156,12 @@ h2 {
   .architecture-page-hero,
   .architecture-row,
   .case-study-hero,
+  .resume-hero,
   .selected-work-row,
   .case-study-row,
   .evidence-link,
+  .resume-row,
+  .resume-entry-heading,
   .practice-item,
   .contact-band,
   .route-proof-item,
@@ -1039,6 +1182,10 @@ h2 {
   }
 
   .case-study-index-hero {
+    min-height: auto;
+  }
+
+  .resume-hero {
     min-height: auto;
   }
 

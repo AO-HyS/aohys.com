@@ -487,7 +487,238 @@
     "primaryActionLabel": "Contact Alejandro",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Read architecture notes",
-    "secondaryActionContentId": "architecture"
+    "secondaryActionContentId": "architecture",
+    "resumeContent": {
+      "name": "Alejandro Ortiz Corro",
+      "role": "Senior Frontend Developer",
+      "location": "Mexico",
+      "intro": "Senior Frontend Developer with 9+ years of experience building high-performance web applications, enterprise workflows, product systems, and modern AI-assisted engineering practices.",
+      "pdf": {
+        "label": "Download ATS PDF",
+        "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
+        "fileName": "alejandro-ortiz-corro-resume.pdf",
+        "description": "Single-column, text-based PDF for applicant tracking systems and hiring reviews."
+      },
+      "contactLinks": [
+        {
+          "label": "Email",
+          "href": "mailto:alejandro.ortiz@aohys.com",
+          "text": "alejandro.ortiz@aohys.com"
+        },
+        {
+          "label": "Phone",
+          "href": "tel:+522299020825",
+          "text": "+52 229 902 0825"
+        },
+        {
+          "label": "LinkedIn",
+          "href": "https://www.linkedin.com/in/alejandrortizcrr/",
+          "text": "linkedin.com/in/alejandrortizcrr"
+        },
+        {
+          "label": "GitHub",
+          "href": "https://github.com/corrortiz",
+          "text": "github.com/corrortiz"
+        },
+        {
+          "label": "Portfolio",
+          "href": "https://aohys.com",
+          "text": "aohys.com"
+        }
+      ],
+      "contextTitle": "Dynamic resume context",
+      "contextLinks": [
+        {
+          "label": "Selected work",
+          "href": "/case-studies",
+          "text": "Production proof, active builds, private product systems, and enterprise delivery."
+        },
+        {
+          "label": "Architecture",
+          "href": "/architecture",
+          "text": "Public source sample, release train, environment contract, and public/private boundaries."
+        },
+        {
+          "label": "Contact",
+          "href": "/contact",
+          "text": "Hiring, architecture review, product systems, and software project conversations."
+        }
+      ],
+      "summaryTitle": "Professional summary",
+      "summary": [
+        "Senior Frontend Developer with 9+ years of experience specializing in React, TypeScript, Next.js, product architecture, performance, SEO, and maintainable UI systems.",
+        "Proven delivery across enterprise systems, startup products, healthcare workflows, e-commerce platforms, and public business sites, including systems serving 30.5M+ monthly users.",
+        "Experienced with Next.js as a backend surface, backend workflow delivery, escalation ownership, payment plans, cashback, customs workflows, and cross-functional product execution.",
+        "Modern AI-assisted engineering practitioner using agents, TDD, browser QA, release discipline, observability, and documentation to turn ambiguous goals into reliable software."
+      ],
+      "highlightsTitle": "Selected impact",
+      "highlights": [
+        {
+          "label": "30.5M+ monthly users",
+          "text": "Contributed to e-commerce platform work at Datazone/AutoZone with SEO, performance, React, and React Native modernization."
+        },
+        {
+          "label": "80% load-time reduction",
+          "text": "Executed major Next.js migration work at Tala Mobile, reducing load times from 3-5 seconds to under 1 second."
+        },
+        {
+          "label": "Mission-critical dispatch",
+          "text": "Implemented keyboard dispatch workflows for a major US emergency response platform with zero-error tolerance requirements."
+        },
+        {
+          "label": "Public source sample",
+          "text": "Built this site as an inspectable source sample for SEO, i18n, content graph, QA, branch protection, and release practice."
+        }
+      ],
+      "projectsTitle": "Key projects",
+      "projects": [
+        {
+          "title": "Emergency Response Dispatch System",
+          "summary": "Mission-critical emergency response platform used during the pandemic.",
+          "bullets": [
+            "Implemented complex keyboard dispatch workflows with React, Redux Saga, TypeScript, and Cypress.",
+            "Covered dispatch scenarios with comprehensive testing around zero-error tolerance workflows.",
+            "Contributed to software used for coordinating emergency responses."
+          ]
+        },
+        {
+          "title": "CARE Customer Support Management System",
+          "summary": "Enterprise customer support platform with performance-sensitive internal workflows.",
+          "bullets": [
+            "Built and improved React, TypeScript, Redux, and Next.js surfaces for internal teams.",
+            "Reduced page load times from 3-5 seconds to under 1 second through performance-focused migration work.",
+            "Implemented real-time updates and complex state management features."
+          ]
+        },
+        {
+          "title": "AOHYS Product Systems",
+          "summary": "Private and public product work across service business workflows, nutrition workflows, public sites, and this source sample.",
+          "bullets": [
+            "Built public-safe case studies for Casa Roca, The Barber Central, Nutri Plan, enterprise systems, and engineering practice.",
+            "Designed public/private boundaries so portfolio evidence is visible while private client and product work stays protected.",
+            "Uses modern agent-assisted delivery, TDD, browser QA, source-quality gates, and release documentation."
+          ]
+        }
+      ],
+      "experienceTitle": "Professional experience",
+      "experience": [
+        {
+          "role": "Senior Frontend Developer",
+          "company": "Tala Mobile",
+          "period": "2023 - Present",
+          "bullets": [
+            "Executed major Next.js migration work that reduced load times from 3-5 seconds to under 1 second.",
+            "Contributed to CARE internal system development and enhancement.",
+            "Implemented product workflows based on team and stakeholder requirements, including backend-oriented delivery through Next.js surfaces.",
+            "Worked across escalations, payment plans, cashback, customs workflows, and cross-functional delivery."
+          ]
+        },
+        {
+          "role": "Senior Frontend Developer",
+          "company": "Drift",
+          "period": "2022 - 2023",
+          "bullets": [
+            "Developed and maintained a video recording Chrome extension.",
+            "Built and enhanced analytics dashboards for marketing playbook performance tracking.",
+            "Created data visualization tools for customer interaction insights.",
+            "Optimized dashboard performance and user experience for marketing teams."
+          ]
+        },
+        {
+          "role": "Software Engineer",
+          "company": "Prenuvo",
+          "period": "2021 - 2022",
+          "bullets": [
+            "Delivered full-stack product features in a fast-paced medical imaging startup environment.",
+            "Implemented critical features for healthcare platform workflows.",
+            "Improved application performance and user experience.",
+            "Collaborated with cross-functional teams to define and ship product functionality."
+          ]
+        },
+        {
+          "role": "Engineer Associate System IT-Development",
+          "company": "Datazone/AutoZone",
+          "period": "2020 - 2021",
+          "bullets": [
+            "Contributed to e-commerce platform development serving 30.5M+ monthly users.",
+            "Implemented SEO optimizations and performance improvements.",
+            "Participated in systems modernization using React and React Native.",
+            "Enhanced mobile application features and user experience."
+          ]
+        },
+        {
+          "role": "Application Development Senior Analyst",
+          "company": "Accenture",
+          "period": "2018 - 2020",
+          "bullets": [
+            "Modernized a 30+ year-old legacy application using React and Redux.",
+            "Implemented TDD practices and modern component architecture.",
+            "Mentored team members on React and Redux best practices.",
+            "Collaborated with international teams across multiple time zones."
+          ]
+        },
+        {
+          "role": "Senior Software Engineering",
+          "company": "NEORIS/CEMEX",
+          "period": "2018",
+          "bullets": [
+            "Developed features for CEMEX GO, serving 12,000+ users across 23 countries.",
+            "Implemented critical bug fixes and performance improvements.",
+            "Refactored legacy code to modern React standards.",
+            "Mentored team members on frontend best practices."
+          ]
+        },
+        {
+          "role": "Software Developer",
+          "company": "AO HyS",
+          "period": "2015 - 2018",
+          "bullets": [
+            "Founded and operated an independent development studio.",
+            "Delivered custom solutions for healthcare and e-commerce clients.",
+            "Implemented full-stack solutions using React, Node.js, and related technologies.",
+            "Managed client relationships and project deliverables."
+          ]
+        }
+      ],
+      "skillsTitle": "Technical skills",
+      "skills": [
+        {
+          "label": "Frontend",
+          "items": ["React", "TypeScript", "JavaScript", "Redux", "Redux Saga", "HTML5", "CSS3", "Accessibility"]
+        },
+        {
+          "label": "Full-stack and backend",
+          "items": ["Next.js", "Node.js", "Java working knowledge", "API workflows", "Operational backends"]
+        },
+        {
+          "label": "Testing and quality",
+          "items": ["TDD", "Cypress", "Jest", "React Testing Library", "Vitest", "Browser QA", "CI/CD"]
+        },
+        {
+          "label": "Product and delivery",
+          "items": ["Performance optimization", "SEO", "Server-side rendering", "Agile/Scrum", "Release discipline", "Observability"]
+        },
+        {
+          "label": "Modern AI practice",
+          "items": ["Agent-assisted development", "LLM workflows", "Prompted implementation review", "AI-assisted QA"]
+        }
+      ],
+      "educationTitle": "Education",
+      "education": [
+        {
+          "degree": "Bachelor of Engineering, Software Development",
+          "institution": "UNAD - Open and Distance University of Mexico",
+          "period": "2014 - 2018"
+        },
+        {
+          "degree": "Bachelor of Business Administration, Maritime Trade",
+          "institution": "ITBOCA - Technological Institute of Boca del Rio",
+          "period": "2004 - 2008"
+        }
+      ],
+      "languagesTitle": "Languages",
+      "languages": ["English - Fluent", "Spanish - Native"]
+    }
   },
   "contact": {
     "path": "/contact",
