@@ -8,6 +8,8 @@ TDD plan: `docs/aohys-tdd-plan.md`
 
 Release Train: `docs/release-train.md`
 
+Environment Contract: `docs/environment-contract.md`
+
 ## Published Issues
 
 | Issue | Title |
@@ -38,7 +40,7 @@ Release Train: `docs/release-train.md`
 
 **User stories covered:** 61, 62, 63, 66, 67, 68.
 
-Create the public repository foundation: Git initialization, package manager/workspace setup, monorepo structure, baseline commands, lint/type/build placeholders, environment documentation, Release Train documentation hooks, and initial README/license boundaries. This is the prefactoring slice that makes later vertical slices easy to build and review.
+Create the public repository foundation: Git initialization, package manager/workspace setup, monorepo structure, baseline commands, lint/type/build placeholders, Environment Contract documentation hooks, Release Train documentation hooks, and initial README/license boundaries. This is the prefactoring slice that makes later vertical slices easy to build and review.
 
 ### 2. Public Astro Shell With Design Tokens
 
@@ -102,7 +104,7 @@ Build the dynamic resume page and downloadable PDF path. The resume should be re
 
 **User stories covered:** 14, 16, 17, 18, 19, 20, 44, 56, 57, 59, 60.
 
-Set up Convex for application state and define the first production-shaped data model for leads, media metadata, site settings, case-study metadata, and resume versions. Include dev/prod environment notes and safe validation boundaries.
+Set up Convex for application state and define the first production-shaped data model for leads, media metadata, site settings, case-study metadata, and resume versions. Include Environment Contract mapping for local, preview, and production deployment variables and safe validation boundaries.
 
 ### 10. Contact Lead Capture With Email Notification
 
@@ -110,7 +112,7 @@ Set up Convex for application state and define the first production-shaped data 
 
 **User stories covered:** 12, 13, 14, 15, 39, 40, 55, 56, 58.
 
-Implement the public contact flow end-to-end: intent capture, form validation, spam resistance baseline, Convex lead persistence, Resend notification, PostHog explicit event, privacy-safe analytics behavior, email fallback messaging, and WhatsApp CTA.
+Implement the public contact flow end-to-end: intent capture, form validation, spam resistance baseline, Convex lead persistence, Resend notification, PostHog explicit event, privacy-safe analytics behavior, email fallback messaging, WhatsApp CTA, and Environment Contract validation for provider settings.
 
 ### 11. PostHog Analytics and Error Capture
 
@@ -118,7 +120,7 @@ Implement the public contact flow end-to-end: intent capture, form validation, s
 
 **User stories covered:** 39, 40, 41, 42, 65.
 
-Wire explicit PostHog pageviews, selected conversion events, environment separation, disabled autocapture, and frontend error capture. Verify that sensitive contact message content is not captured.
+Wire explicit PostHog pageviews, selected conversion events, Environment Contract separation, disabled autocapture, and frontend error capture. Verify that sensitive contact message content is not captured.
 
 ### 12. Cloudflare and Wrangler Deployment Path
 
@@ -126,7 +128,7 @@ Wire explicit PostHog pageviews, selected conversion events, environment separat
 
 **User stories covered:** 24, 25, 28, 29, 30, 43, 66.
 
-Configure Wrangler, Cloudflare-compatible builds, the protected Release Train, preview/production deploy flow, environment documentation, canonical domain behavior, `aohys.net` to `aohys.com` redirect, and deployment smoke checks.
+Configure Wrangler, Cloudflare-compatible builds, the protected Release Train, preview/production deploy flow, Environment Contract validation, canonical domain behavior, `aohys.net` to `aohys.com` redirect, and deployment smoke checks.
 
 ### 13. Better Auth and Private Dashboard Shell
 
@@ -134,7 +136,7 @@ Configure Wrangler, Cloudflare-compatible builds, the protected Release Train, p
 
 **User stories covered:** 16, 21, 22, 23, 35, 36, 59.
 
-Create the private dashboard shell with Better Auth, Convex integration, admin allowlist, protected route behavior, noindex/robots protection, dashboard layout, and operational overview.
+Create the private dashboard shell with Better Auth, Convex integration, admin allowlist, protected route behavior, noindex/robots protection, dashboard layout, operational overview, and Environment Contract validation for auth origins/secrets.
 
 ### 14. Dashboard Lead Review Workflow
 
@@ -158,7 +160,7 @@ Build dashboard workflows for case-study content, media metadata, site settings,
 
 **User stories covered:** 21, 22, 38, 39, 41, 58, 59.
 
-Harden the launch surface: privacy page accuracy, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, environment separation, Release Train readiness checks, production smoke checks, and browser QA.
+Harden the launch surface: privacy page accuracy, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, Environment Contract separation, Release Train readiness checks, production smoke checks, and browser QA.
 
 ### 17. Public README and Source Evaluation Package
 
@@ -166,20 +168,22 @@ Harden the launch surface: privacy page accuracy, dashboard noindex validation, 
 
 **User stories covered:** 9, 10, 28, 29, 30, 61, 62, 67, 68, 69.
 
-Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, Release Train, license boundaries, and no-contribution framing.
+Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, Environment Contract, Release Train, license boundaries, and no-contribution framing.
 
 ## Architecture Review Notes
 
-The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module.
+The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module. The second selected candidate is the Environment Contract module.
 
 Expected order for architecture deepening:
 
-1. Release Train.
-2. Environment Contract.
+1. Release Train. Completed in documentation and issues.
+2. Environment Contract. Current architecture focus.
 3. Public Content Graph.
 4. Dashboard UI Kit.
 
 The Release Train should create locality for deployment rules and leverage for future agents. Branch protection, GitHub Actions, Wrangler, Cloudflare Preview/Production, environment validation, and smoke checks should not be scattered across unrelated issue work.
+
+The Environment Contract should create locality for secrets, public variables, provider outputs, and environment validation. App code, dashboard code, Convex functions, and release workflows should cross the same validation seam instead of reading ad hoc provider variables directly.
 
 ## Granularity Notes
 

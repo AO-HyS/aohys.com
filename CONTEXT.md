@@ -44,6 +44,18 @@ _Avoid_: Full test suite, manual glance
 The shared agreement for environment names, public variables, secrets, provider wiring, and validation across local, preview, and production.
 _Avoid_: Env notes, secret checklist
 
+**Local Environment**:
+The developer-machine environment used for local implementation and verification without production secrets.
+_Avoid_: Development branch, local production
+
+**Preview Environment**:
+The non-production deployment environment used to verify pull requests and the Development Branch before production promotion.
+_Avoid_: Staging if it means a separate product stage, temporary production
+
+**Production Environment**:
+The live deployment environment for the canonical `aohys.com` public site and private dashboard.
+_Avoid_: Live preview, main environment
+
 **Public Content Graph**:
 The stable map of public content identities, locales, routes, metadata, sitemap eligibility, and evidence relationships.
 _Avoid_: Page list, route config
