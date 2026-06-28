@@ -50,6 +50,14 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     description: "Canonical URL for the current public site environment.",
   },
   {
+    name: "PUBLIC_CONTACT_ENDPOINT",
+    provider: "core",
+    classification: "public-build-value",
+    exposure: "public-browser",
+    requiredIn: ["local", "preview", "production"],
+    description: "Public contact submission endpoint, backed by the Convex HTTP action.",
+  },
+  {
     name: "CONVEX_URL",
     provider: "convex",
     classification: "provider-output",

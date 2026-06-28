@@ -157,6 +157,7 @@ includesAll("docs/workspace.md", [
 includesAll(".env.example", [
   "AOHYS_ENV=local",
   "PUBLIC_SITE_URL=http://localhost:4321",
+  "PUBLIC_CONTACT_ENDPOINT=",
   "PUBLIC_POSTHOG_KEY=",
   "CONVEX_URL=",
   "RESEND_API_KEY=",

@@ -51,6 +51,7 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Environment validation: Release Train gates should fail before deploy if required values are missing, secrets drift, or provider targets point to the wrong environment.
 - Environment documentation: The canonical environment planning document is `docs/environment-contract.md`; the architectural decision is `docs/adr/0002-environment-contract-source-of-truth.md`.
 - Convex backend foundation: `apps/backend` owns the Convex schema, generated bindings, and first public lead intake mutation. The initial dev deployment is `dev/aohys-local`; preview and production values remain GitHub Environment responsibilities.
+- Contact workflow: `/contact` and `/es/contacto` render a real bilingual form with preferred contact path, consent, spam honeypot, direct email, and WhatsApp fallback. Submissions target the Convex HTTP action `/contact`, which persists leads, sends Resend notifications, and captures PostHog conversion metadata without message text or contact identity.
 - CTA: Primary CTA is neutral: "Start a conversation" / "Hablemos"; contact form captures lead intent.
 - Privacy: Include serious minimal privacy pages from V1; no newsletter in V1.
 - CV: `/resume` is the primary dynamic resume URL; `/es/cv` is the Spanish route. The downloadable PDF lives at `/downloads/alejandro-ortiz-corro-resume.pdf`.
@@ -165,7 +166,7 @@ Recommended home sequence:
 5. Engineering practice: agent-assisted workflow, QA discipline, observability, deployment, and documentation as current practice.
 6. Contact: form, email, and large but discreet WhatsApp CTA.
 
-Current implementation status: the first real home pass is graph-backed and includes Alejandro-first copy, selected outcome rows, a dark architecture section, engineering practice rows, institutional email, and WhatsApp CTA. Future case-study issues should replace proof placeholders with sanitized screenshots and richer detail pages.
+Current implementation status: the first real home pass is graph-backed and includes Alejandro-first copy, selected outcome rows, a dark architecture section, engineering practice rows, institutional email, and WhatsApp CTA. The dedicated contact route now owns the full lead capture UI and provider-backed submission path. Future case-study issues should replace proof placeholders with sanitized screenshots and richer detail pages.
 
 Architecture page status: `/architecture` and `/es/arquitectura` now render graph-backed public source framing, public/private boundary copy, Release Train, Environment Contract, Public Content Graph, provider responsibilities, and GitHub source/documentation links.
 
@@ -200,7 +201,7 @@ Resume pages should remain typography-first, ATS-friendly, and visibly linked to
 9. Implement the first real home page with the approved visual system.
 10. Run browser QA for desktop and mobile, then use Impeccable polish on the visible public home.
 11. Add case study detail content and resume content.
-12. Add contact form integration with Convex and Resend.
+12. Add contact form integration with Convex and Resend. Current status: implemented with Convex HTTP action, provider adapters, and PostHog safe conversion metadata.
 13. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
 
 Next Impeccable command after this document:

@@ -7,6 +7,7 @@ import {
 const validPreviewValues = {
   AOHYS_ENV: "preview",
   PUBLIC_SITE_URL: "https://preview.aohys.com",
+  PUBLIC_CONTACT_ENDPOINT: "https://aohys-preview.convex.site/contact",
   CONVEX_URL: "https://aohys-preview.convex.cloud",
   CONVEX_DEPLOYMENT: "preview:aohys-preview",
   CONVEX_SITE_URL: "https://aohys-preview.convex.site",
@@ -51,6 +52,14 @@ describe("Convex Environment Contract", () => {
       exposure: "server-only",
     });
     expect(definitions.every((definition) => !definition.name.startsWith("PUBLIC_"))).toBe(true);
+
+    expect(getEnvironmentVariableDefinitions()).toContainEqual(
+      expect.objectContaining({
+        name: "PUBLIC_CONTACT_ENDPOINT",
+        classification: "public-build-value",
+        exposure: "public-browser",
+      }),
+    );
 
     const missingPreview = validateEnvironmentContract("preview", {
       ...validPreviewValues,

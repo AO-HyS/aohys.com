@@ -74,5 +74,32 @@
         "text": "Canonical, alternates de idioma, robots y sitemap comparten una fuente de verdad."
       }
     ]
+  },
+  "contactForm": {
+    "formTitle": "Cuéntame qué necesitas construir.",
+    "formIntro": "Comparte el objetivo, contexto y la mejor forma de contactarte. Responderé directamente.",
+    "nameLabel": "Nombre",
+    "emailLabel": "Correo",
+    "companyLabel": "Empresa",
+    "phoneLabel": "Teléfono o WhatsApp",
+    "intentLabel": "¿De qué se trata?",
+    "intentProject": "Construcción de producto",
+    "intentHiring": "Conversación laboral",
+    "intentArchitecture": "Revisión de arquitectura",
+    "intentWebsite": "Sitio web o landing",
+    "intentOther": "Otro",
+    "preferredContactLabel": "Forma preferida de contacto",
+    "preferredEmail": "Correo",
+    "preferredWhatsApp": "WhatsApp",
+    "messageLabel": "Mensaje",
+    "messagePlaceholder": "¿Qué necesita existir, mejorar, lanzarse o volverse confiable?",
+    "consentLabel": "Entiendo que AOHYS usará esta información para responder mi solicitud.",
+    "submitLabel": "Enviar solicitud",
+    "sendingLabel": "Enviando...",
+    "successMessage": "Solicitud recibida. Responderé directamente.",
+    "errorMessage": "El formulario no pudo enviarse ahora. Usa WhatsApp o correo directo.",
+    "endpointMissing": "El endpoint de contacto no está configurado para este ambiente.",
+    "whatsappLabel": "Escríbeme por WhatsApp",
+    "fallbackText": "¿Prefieres contacto directo?"
   }
 }
