@@ -12,6 +12,7 @@ Astro routes, sitemap generation, metadata helpers, resume rendering, case-study
 - localized titles, summaries, SEO titles, and SEO descriptions;
 - graph-backed home proof narrative, selected outcomes, evidence labels, and contact CTA data;
 - graph-backed architecture/source-framing content and source documentation links;
+- graph-backed case-study detail content, public evidence, and confidentiality notes;
 - sitemap eligibility;
 - private dashboard route exclusions;
 - explicit failures when a locale variant is missing.
@@ -23,6 +24,7 @@ Astro routes, sitemap generation, metadata helpers, resume rendering, case-study
 - `getLocalizedPath(contentId, locale)` returns the route path for a stable content ID.
 - `getHomePageContent(locale)` returns the localized home proof narrative with graph-backed case-study paths.
 - `getArchitecturePageContent(locale)` returns the localized architecture page framing and source links.
+- `getCaseStudyPageContent(contentId, locale)` returns localized case-study detail content when a case study has a complete public page.
 - `getSeoMetadata(contentId, locale)` returns canonical, alternates, robots, title, and description.
 - `getSitemapEntries()` returns graph-approved sitemap entries.
 

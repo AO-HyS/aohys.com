@@ -168,6 +168,8 @@ Current implementation status: the first real home pass is graph-backed and incl
 
 Architecture page status: `/architecture` and `/es/arquitectura` now render graph-backed public source framing, public/private boundary copy, Release Train, Environment Contract, Public Content Graph, provider responsibilities, and GitHub source/documentation links.
 
+Case study status: Casa Roca now uses the reusable graph-backed case-study detail template at `/case-studies/casa-roca` and `/es/casos/casa-roca`, including problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance, public evidence, and confidentiality note. The remaining case studies intentionally stay on skeleton routes until their dedicated issue fills public-safe detail.
+
 Case study pages should use the same proof-ledger rhythm:
 
 - Problem.

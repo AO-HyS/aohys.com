@@ -128,7 +128,54 @@
     "primaryActionLabel": "Start a similar build",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Back to selected work",
-    "secondaryActionContentId": "case-studies"
+    "secondaryActionContentId": "case-studies",
+    "caseStudyContent": {
+      "statusLabel": "Production proof",
+      "overview": "Casa Roca is a live hospitality website for a boutique stay in Roca Partida, Veracruz. The public case study focuses on trust, discoverability, performance-minded delivery, and the separation between public marketing pages and private operations.",
+      "problem": {
+        "title": "Problem",
+        "body": "The business needed a public web presence that could communicate place, experience, and credibility without exposing the operational systems behind reservations, media management, and private administration."
+      },
+      "businessOutcome": {
+        "title": "Business outcome",
+        "body": "A production website gives Casa Roca a public destination for guests, search traffic, brand trust, and direct inquiry paths while keeping the operational back office separate from the public proof surface."
+      },
+      "role": {
+        "title": "Role",
+        "body": "Public site delivery, bilingual surface planning, SEO metadata, release verification, performance care, and a clear boundary between public pages and private operational workflows."
+      },
+      "constraints": {
+        "title": "Constraints",
+        "body": "The case study can show the live public website and architecture decisions, but it must avoid private booking data, admin dashboard details, credentials, internal code, and operational records."
+      },
+      "architectureDecisions": {
+        "title": "Architecture decisions",
+        "body": "Keep public pages fast and inspectable, treat bilingual content and SEO metadata as first-class concerns, and separate public evidence from private business workflows so the site can be presented safely."
+      },
+      "executionHighlights": {
+        "title": "Execution highlights",
+        "body": "The work emphasized clear hospitality positioning, localized public routes, production deployment discipline, content safety, and a public evidence path that can be reviewed without privileged access."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Quality, security, and performance",
+        "body": "The public surface is verified as live production evidence, avoids sensitive operational data, uses explicit metadata, and is framed around fast, stable, search-readable pages."
+      },
+      "publicEvidenceTitle": "Public evidence",
+      "publicEvidence": [
+        {
+          "label": "Production website",
+          "description": "Live public Casa Roca website used as production-safe evidence.",
+          "href": "https://casa-roca.mx",
+          "altText": "Public-safe evidence for the Casa Roca production website",
+          "kind": "public-site",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Confidentiality note",
+        "body": "Only the public website and public-safe delivery context are shown here. Private client code, booking records, admin workflows, credentials, analytics, and operational data remain private."
+      }
+    }
   },
   "case-study:the-barber-central": {
     "path": "/case-studies/the-barber-central",
