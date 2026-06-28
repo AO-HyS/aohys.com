@@ -24,6 +24,7 @@ export type ContentId =
   | "case-study:the-barber-central"
   | "case-study:nutri-plan"
   | "case-study:enterprise-systems"
+  | "case-study:engineering-practice"
   | "practice"
   | "architecture"
   | "resume"
@@ -133,6 +134,21 @@ export interface CaseStudyPageContent {
   confidentialityNote: CaseStudySection;
 }
 
+export interface CaseStudyIndexEntry {
+  contentId: ContentId;
+  path: string;
+  title: string;
+  summary: string;
+  statusLabel: string;
+  evidenceLabel: string;
+}
+
+export interface CaseStudyIndexContent {
+  heading: string;
+  intro: string;
+  entries: CaseStudyIndexEntry[];
+}
+
 export interface SitemapRule {
   include: boolean;
   changefreq?: "weekly" | "monthly";
@@ -204,6 +220,14 @@ const contentByLocale = {
   es: esContent,
 } as Record<Locale, ContentDictionary>;
 
+const CASE_STUDY_IDS = [
+  "case-study:casa-roca",
+  "case-study:the-barber-central",
+  "case-study:nutri-plan",
+  "case-study:enterprise-systems",
+  "case-study:engineering-practice",
+] as const satisfies readonly ContentId[];
+
 const baseNodes = [
   {
     id: "home",
@@ -240,6 +264,12 @@ const baseNodes = [
     type: "case-study",
     status: "published",
     sitemap: { include: true, changefreq: "monthly", priority: 0.76 },
+  },
+  {
+    id: "case-study:engineering-practice",
+    type: "case-study",
+    status: "published",
+    sitemap: { include: true, changefreq: "monthly", priority: 0.74 },
   },
   {
     id: "practice",
@@ -416,6 +446,32 @@ export function getCaseStudyPageContent(contentId: ContentId | string, locale: L
   const caseStudy = getDictionaryEntry(contentId, locale);
 
   return caseStudy.caseStudyContent;
+}
+
+export function getCaseStudyIndexContent(locale: Locale): CaseStudyIndexContent {
+  const indexVariant = getLocaleVariant("case-studies", locale);
+
+  return {
+    heading: indexVariant.title,
+    intro: indexVariant.summary,
+    entries: CASE_STUDY_IDS.map((contentId) => {
+      const variant = getLocaleVariant(contentId, locale);
+      const caseStudyContent = getCaseStudyPageContent(contentId, locale);
+
+      if (!caseStudyContent) {
+        throw new Error(`Case study index entry "${contentId}" is missing detail content in locale "${locale}".`);
+      }
+
+      return {
+        contentId,
+        path: variant.path,
+        title: variant.title,
+        summary: variant.summary,
+        statusLabel: caseStudyContent.statusLabel,
+        evidenceLabel: caseStudyContent.publicEvidence[0]?.label ?? caseStudyContent.publicEvidenceTitle,
+      };
+    }),
+  };
 }
 
 export function getLanguageAlternates(contentId: ContentId | string): Record<Locale | "x-default", string> {

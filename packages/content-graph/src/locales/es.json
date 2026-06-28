@@ -185,7 +185,54 @@
     "primaryActionLabel": "Hablar de software operativo",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
-    "secondaryActionContentId": "case-studies"
+    "secondaryActionContentId": "case-studies",
+    "caseStudyContent": {
+      "statusLabel": "Build activo",
+      "overview": "The Barber Central es un producto activo para negocios de servicios que necesitan reservaciones, operaciones, comunicación con clientes y pagos trabajando como un solo sistema.",
+      "problem": {
+        "title": "Problema",
+        "body": "Los negocios locales de servicios suelen manejar reservas, recordatorios, personal y pagos en herramientas desconectadas, lo que complica crecer y crea trabajo manual evitable."
+      },
+      "businessOutcome": {
+        "title": "Resultado de negocio",
+        "body": "La dirección de producto se centra en el workflow diario: reservar clientes, administrar disponibilidad, comunicar con claridad y mover el negocio sin unir herramientas a mano."
+      },
+      "role": {
+        "title": "Rol",
+        "body": "Arquitectura de producto, modelado de workflows, planeación full-stack, decisiones de booking, preparación para pagos, comunicación con clientes y quality gates para un build activo."
+      },
+      "constraints": {
+        "title": "Restricciones",
+        "body": "El producto sigue en desarrollo, por lo que la prueba pública debe evitar datos privados, detalles internos del dashboard, secretos y registros de clientes sin ocultar el criterio de producto."
+      },
+      "architectureDecisions": {
+        "title": "Decisiones de arquitectura",
+        "body": "Usar una app full-stack moderna con backend realtime, límites autenticados de dashboard, narrativa pública desde el grafo e integraciones de proveedores tratadas como seams operativos explícitos."
+      },
+      "executionHighlights": {
+        "title": "Ejecución",
+        "body": "El trabajo cubre IA de booking, forma del dashboard operativo, setup de proveedores, disciplina de ambiente y browser QA manual para flujos donde auth, origin y preview importan."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Calidad, seguridad y rendimiento",
+        "body": "El proyecto enfatiza entornos protegidos, comandos de verificación explícitos, browser QA, source checks y manejo cuidadoso de auth/configuración de proveedores antes del lanzamiento público."
+      },
+      "publicEvidenceTitle": "Evidencia pública",
+      "publicEvidence": [
+        {
+          "label": "Preview de desarrollo",
+          "description": "Resumen público seguro de un producto activo; screenshots y URLs de preview se pueden agregar después de sanitizarlos.",
+          "href": "/es/casos/the-barber-central",
+          "altText": "Resumen público seguro del preview de desarrollo de The Barber Central",
+          "kind": "development-preview",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Nota de confidencialidad",
+        "body": "Sólo se muestra la dirección de producto pública segura. Detalles privados de implementación, secretos, datos de prueba, registros de clientes, dashboards de proveedores e información no publicada permanecen privados."
+      }
+    }
   },
   "case-study:nutri-plan": {
     "path": "/es/casos/nutri-plan",
@@ -195,7 +242,54 @@
     "primaryActionLabel": "Planear un flujo de producto",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
-    "secondaryActionContentId": "case-studies"
+    "secondaryActionContentId": "case-studies",
+    "caseStudyContent": {
+      "statusLabel": "Build privado",
+      "overview": "Nutri Plan es un sistema privado de producto para workflows de nutrición, dashboards, acceso móvil y claridad operativa entre varias superficies.",
+      "problem": {
+        "title": "Problema",
+        "body": "Las operaciones de nutrición necesitan expedientes, planes, dashboards y experiencias móviles conectadas, pero el dominio se vuelve frágil cuando el estado vive en herramientas separadas."
+      },
+      "businessOutcome": {
+        "title": "Resultado de negocio",
+        "body": "El build organiza el producto alrededor de roles operativos reales y backend compartido para soportar trabajo con clientes, administración y móvil desde un mismo modelo."
+      },
+      "role": {
+        "title": "Rol",
+        "body": "Arquitectura de workflows de producto, planeación de dashboards, modelado de estado backend, coordinación de superficie móvil, práctica de calidad y disciplina de release para un build privado."
+      },
+      "constraints": {
+        "title": "Restricciones",
+        "body": "El producto es privado; el caso público sólo puede hablar de arquitectura y resultados a un nivel seguro sin exponer registros tipo paciente, datos de negocio, código privado o workflows internos."
+      },
+      "architectureDecisions": {
+        "title": "Decisiones de arquitectura",
+        "body": "Mantener el backend como fuente compartida de verdad, separar landing pública de workflows privados de dashboard/mobile, e incluir ambiente y QA gates como parte de release readiness."
+      },
+      "executionHighlights": {
+        "title": "Ejecución",
+        "body": "El trabajo abarca landing, dashboard, admin dashboard, app móvil, estado con Convex, route QA, verificación de preview y paridad operativa con el sistema de referencia."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Calidad, seguridad y rendimiento",
+        "body": "El proyecto usa QA funcional, route sweeps, separación de ambientes, ramas protegidas de release y validación en preview cuando cambian auth, routing, UI o comportamiento."
+      },
+      "publicEvidenceTitle": "Evidencia pública",
+      "publicEvidence": [
+        {
+          "label": "Preview sanitizado",
+          "description": "Resumen público seguro de un build privado; los screenshots de producción deben sanitizarse antes de ser evidencia visual.",
+          "href": "/es/casos/nutri-plan",
+          "altText": "Resumen público seguro del preview sanitizado de Nutri Plan",
+          "kind": "development-preview",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Nota de confidencialidad",
+        "body": "Este caso no publica código privado del producto, registros de clientes, datos relacionados con salud, credenciales, pantallas privadas de dashboard ni detalles operativos de proveedores."
+      }
+    }
   },
   "case-study:enterprise-systems": {
     "path": "/es/casos/sistemas-enterprise",
@@ -205,7 +299,111 @@
     "primaryActionLabel": "Hablar de sistemas complejos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
-    "secondaryActionContentId": "architecture"
+    "secondaryActionContentId": "architecture",
+    "caseStudyContent": {
+      "statusLabel": "Enterprise/confidencial",
+      "overview": "El trabajo en sistemas enterprise se presenta mediante resultados públicos seguros: escalations, payment plans, cashback, customs workflows, backend delivery y confiabilidad en ambientes complejos.",
+      "problem": {
+        "title": "Problema",
+        "body": "Los sistemas grandes acumulan edge cases operativos, presión de integraciones y escalations de soporte donde la falta de ownership claro cuesta caro."
+      },
+      "businessOutcome": {
+        "title": "Resultado de negocio",
+        "body": "El valor está en entregar con confiabilidad bajo restricciones: destrabar escalations, construir workflows backend y mejorar caminos operativos sin exponer material confidencial."
+      },
+      "role": {
+        "title": "Rol",
+        "body": "Backend delivery, liderazgo en escalations, trabajo en payment plans y cashback, implementación de customs workflows, coordinación entre equipos y resolución con mentalidad de producción."
+      },
+      "constraints": {
+        "title": "Restricciones",
+        "body": "Código específico, incidentes, datos de clientes, sistemas internos y métricas son confidenciales. El caso debe quedarse en patrones, responsabilidades y resultados."
+      },
+      "architectureDecisions": {
+        "title": "Decisiones de arquitectura",
+        "body": "Trabajar desde el workflow de negocio hacia atrás, aislar puntos riesgosos de integración, mantener contratos operativos explícitos y preferir caminos backend mantenibles."
+      },
+      "executionHighlights": {
+        "title": "Ejecución",
+        "body": "Ejemplos públicos seguros incluyen payment plan workflows, implementación de cashback, manejo de customs, ownership de escalations y backend delivery en contextos organizacionales complejos."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Calidad, seguridad y rendimiento",
+        "body": "El trabajo depende de change management cuidadoso, awareness de producción, sensibilidad de datos, handoffs claros y pruebas alrededor de workflows con riesgo operativo."
+      },
+      "publicEvidenceTitle": "Evidencia pública",
+      "publicEvidence": [
+        {
+          "label": "Resumen confidencial",
+          "description": "Resumen enterprise público seguro sin detalles privados de empleadores, clientes, incidentes ni código fuente.",
+          "href": "/es/casos/sistemas-enterprise",
+          "altText": "Resumen público seguro de trabajo confidencial en sistemas enterprise",
+          "kind": "private-system",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Nota de confidencialidad",
+        "body": "No se publica código privado de empleadores, datos de clientes, incidentes, métricas internas, credenciales ni detalles propietarios de arquitectura."
+      }
+    }
+  },
+  "case-study:engineering-practice": {
+    "path": "/es/casos/practica-de-ingenieria",
+    "title": "Práctica de ingeniería",
+    "summary": "Ingeniería moderna asistida por agentes explicada con planeación, QA, arquitectura, observabilidad, deploys y documentación.",
+    "seoDescription": "Práctica de ingeniería explica el proceso moderno de Alejandro Ortiz Corro con agentes, QA, arquitectura, observabilidad, despliegue y documentación.",
+    "primaryActionLabel": "Revisar la muestra pública",
+    "primaryActionContentId": "architecture",
+    "secondaryActionLabel": "Hablemos",
+    "secondaryActionContentId": "contact",
+    "caseStudyContent": {
+      "statusLabel": "Práctica de ingeniería",
+      "overview": "La práctica de ingeniería es el sistema operativo detrás del trabajo: discovery estructurado, TDD, implementación con agentes, browser QA, release discipline, observabilidad y documentación.",
+      "problem": {
+        "title": "Problema",
+        "body": "El software moderno se mueve rápido, pero velocidad sin arquitectura, pruebas, revisión y checks de producción produce sistemas frágiles y evidencia débil."
+      },
+      "businessOutcome": {
+        "title": "Resultado de negocio",
+        "body": "Un proceso repetible permite avanzar más rápido mientras produce decisiones inspeccionables, releases más seguros, mejores handoffs y más confianza para stakeholders."
+      },
+      "role": {
+        "title": "Rol",
+        "body": "Planeación técnica, revisión de arquitectura, flujo TDD, orquestación de agentes, browser QA, disciplina de release train, source-quality checks y documentación como parte del delivery."
+      },
+      "constraints": {
+        "title": "Restricciones",
+        "body": "El proceso debe demostrar trabajo moderno con IA sin fingir que cada proyecto privado es público ni reducir la calidad de entrega a elección de herramientas."
+      },
+      "architectureDecisions": {
+        "title": "Decisiones de arquitectura",
+        "body": "Usar seams claros, contenido público desde el grafo, environment contracts explícitos, ramas protegidas, pruebas enfocadas y verificación manual de navegador para comportamiento visible."
+      },
+      "executionHighlights": {
+        "title": "Ejecución",
+        "body": "Este sitio público es la evidencia del proceso: PR review, TDD tracers, checks visuales de Impeccable, flujo de issues, documentación de release y browser QA."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Calidad, seguridad y rendimiento",
+        "body": "Calidad incluye source checks, type checks, pruebas de comportamiento, build verification, visual QA, cero datos privados en rutas públicas y deploy paths auditables."
+      },
+      "publicEvidenceTitle": "Evidencia pública",
+      "publicEvidence": [
+        {
+          "label": "Evidencia de proceso",
+          "description": "Source público, pruebas, documentación e historial de PRs muestran el workflow de ingeniería detrás del sitio.",
+          "href": "https://github.com/AO-HyS/aohys.com",
+          "altText": "Evidencia pública segura de la práctica de ingeniería de AOHYS",
+          "kind": "architecture-note",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Nota de confidencialidad",
+        "body": "El proceso es público donde este repositorio es público. Código privado de clientes, código privado de producto, credenciales, screenshots y datos operativos quedan fuera de esta muestra."
+      }
+    }
   },
   "practice": {
     "path": "/es/practica",

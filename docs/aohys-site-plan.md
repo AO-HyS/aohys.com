@@ -54,8 +54,8 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Privacy: Include serious minimal privacy pages from V1; no newsletter in V1.
 - CV: `/resume` is the primary dynamic resume URL; PDF should be ATS-first, single-column, text-based, and human-readable.
 - Resume SEO: Update summary and content for ATS/robots, with a link back to the dynamic site.
-- Public V1 pages EN: `/`, `/case-studies`, `/case-studies/casa-roca`, `/case-studies/the-barber-central`, `/case-studies/nutri-plan`, `/case-studies/enterprise-systems`, `/practice`, `/architecture`, `/resume`, `/contact`, `/privacy`.
-- Public V1 pages ES: `/es/`, `/es/casos`, `/es/casos/casa-roca`, `/es/casos/the-barber-central`, `/es/casos/nutri-plan`, `/es/casos/sistemas-enterprise`, `/es/practica`, `/es/arquitectura`, `/es/cv`, `/es/contacto`, `/es/privacidad`.
+- Public V1 pages EN: `/`, `/case-studies`, `/case-studies/casa-roca`, `/case-studies/the-barber-central`, `/case-studies/nutri-plan`, `/case-studies/enterprise-systems`, `/case-studies/engineering-practice`, `/practice`, `/architecture`, `/resume`, `/contact`, `/privacy`.
+- Public V1 pages ES: `/es/`, `/es/casos`, `/es/casos/casa-roca`, `/es/casos/the-barber-central`, `/es/casos/nutri-plan`, `/es/casos/sistemas-enterprise`, `/es/casos/practica-de-ingenieria`, `/es/practica`, `/es/arquitectura`, `/es/cv`, `/es/contacto`, `/es/privacidad`.
 - Dashboard V1 sections: Overview, Leads, Case studies, Media, Site settings, Resume.
 - Dashboard overview: Operational checklist and quick links, not embedded analytics.
 - Dashboard UI Kit: private dashboard routes should use AOHYS workflow surfaces instead of composing raw primitives directly.
@@ -168,7 +168,7 @@ Current implementation status: the first real home pass is graph-backed and incl
 
 Architecture page status: `/architecture` and `/es/arquitectura` now render graph-backed public source framing, public/private boundary copy, Release Train, Environment Contract, Public Content Graph, provider responsibilities, and GitHub source/documentation links.
 
-Case study status: Casa Roca now uses the reusable graph-backed case-study detail template at `/case-studies/casa-roca` and `/es/casos/casa-roca`, including problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance, public evidence, and confidentiality note. The remaining case studies intentionally stay on skeleton routes until their dedicated issue fills public-safe detail.
+Case study status: the selected-work index and all primary case-study detail routes now use graph-backed content. Casa Roca, The Barber Central, Nutri Plan, Enterprise Systems, and Engineering Practice carry localized status labels, public-safe evidence, confidentiality notes, and the agreed problem/outcome/role/constraints/architecture/execution/quality structure.
 
 Case study pages should use the same proof-ledger rhythm:
 
