@@ -1,5 +1,6 @@
 ---
 import {
+  getArchitecturePageContent,
   getHomePageContent,
   getLocalizedPath,
   type ContentId,
@@ -14,8 +15,10 @@ interface Props {
 const { route } = Astro.props;
 const { id, locale, node, variant } = route;
 const isHome = id === "home";
+const isArchitecture = id === "architecture";
 const copy = getUiCopy(locale).publicPage;
 const homeContent = isHome ? getHomePageContent(locale) : undefined;
+const architectureContent = isArchitecture ? getArchitecturePageContent(locale) : undefined;
 
 function actionHref(contentId?: ContentId): string | undefined {
   return contentId ? getLocalizedPath(contentId, locale) : undefined;
@@ -132,6 +135,55 @@ const secondaryHref = actionHref(variant.secondaryActionContentId);
           <a class="button button-primary" href={homeContent.emailHref}>{homeContent.emailLabel}</a>
           <a class="button button-whatsapp" href={homeContent.whatsappHref}>{homeContent.whatsappLabel}</a>
         </div>
+      </section>
+    </>
+  ) : isArchitecture && architectureContent ? (
+    <>
+      <section class="architecture-page-hero" aria-labelledby="architecture-title" data-architecture-content-id={id}>
+        <div class="architecture-page-copy">
+          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <h1 id="architecture-title">{architectureContent.heading}</h1>
+          <p class="hero-lead">{architectureContent.deck}</p>
+          <div class="hero-actions" aria-label={copy.actions}>
+            {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          </div>
+        </div>
+
+        <aside class="source-index" aria-label={architectureContent.sourceLabel}>
+          <strong>{architectureContent.sourceLabel}</strong>
+          <div class="source-links">
+            {architectureContent.sourceLinks.map((link) => (
+              <a href={link.href}>{link.label}</a>
+            ))}
+          </div>
+        </aside>
+      </section>
+
+      <section class="architecture-map" aria-labelledby="architecture-map-title">
+        <div class="section-heading">
+          <h2 id="architecture-map-title">{variant.title}</h2>
+          <p class="section-intro">{variant.summary}</p>
+        </div>
+        <div class="architecture-rows">
+          {architectureContent.sections.map((section) => (
+            <article class="architecture-row">
+              <h3>{section.title}</h3>
+              <p>{section.body}</p>
+              {section.links && (
+                <div class="source-links inline">
+                  {section.links.map((link) => (
+                    <a href={link.href}>{link.label}</a>
+                  ))}
+                </div>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="boundary-note" aria-label={architectureContent.heading}>
+        <p>{architectureContent.boundaryNote}</p>
       </section>
     </>
   ) : (

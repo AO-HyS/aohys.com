@@ -54,6 +54,7 @@ describe("public site source quality", () => {
     expect(source).not.toMatch(/repeating-linear-gradient/i);
     expect(source).not.toMatch(/border-radius:\s*(3[2-9]|[4-9][0-9])px/i);
     expect(globalCss).not.toMatch(/#[0-9a-fA-F]{3,8}|rgba?\(/);
+    expect(globalCss).not.toMatch(/letter-spacing:\s*-/);
     expect(globalCss).not.toMatch(/font-size:\s*clamp\([^;]*vw/i);
     expect(globalCss).not.toMatch(/--text-[^:]+:\s*clamp\([^;]*vw/i);
     expect(source).not.toMatch(/lorem/i);

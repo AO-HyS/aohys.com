@@ -77,6 +77,29 @@ describe("built public routes", () => {
     expect(spanishHomeHtml).toContain("WhatsApp");
   });
 
+  it("renders the architecture public source framing in both languages", () => {
+    const architectureHtml = readDist("architecture/index.html");
+    const spanishArchitectureHtml = readDist("es/arquitectura/index.html");
+
+    expect(architectureHtml).toContain('data-architecture-content-id="architecture"');
+    expect(architectureHtml).toContain("Public source sample, private client work.");
+    expect(architectureHtml).toContain("client and product code stays private");
+    expect(architectureHtml).toContain("Release Train");
+    expect(architectureHtml).toContain("Environment Contract");
+    expect(architectureHtml).toContain("Public Content Graph");
+    expect(architectureHtml).toContain('href="https://github.com/AO-HyS/aohys.com"');
+    expect(architectureHtml).toContain('href="https://github.com/AO-HyS/aohys.com/blob/develop/docs/release-train.md"');
+    expect(architectureHtml).not.toMatch(/client (or|and) product code is public/i);
+
+    expect(spanishArchitectureHtml).toContain('data-architecture-content-id="architecture"');
+    expect(spanishArchitectureHtml).toContain("Muestra pública, trabajo privado.");
+    expect(spanishArchitectureHtml).toContain("el código de clientes y productos permanece privado");
+    expect(spanishArchitectureHtml).toContain("Release Train");
+    expect(spanishArchitectureHtml).toContain("Environment Contract");
+    expect(spanishArchitectureHtml).toContain("Public Content Graph");
+    expect(spanishArchitectureHtml).toContain('href="https://github.com/AO-HyS/aohys.com"');
+  });
+
   it("emits sitemap and robots behavior from the public graph", () => {
     const sitemap = readDist("sitemap.xml");
     const robots = readDist("robots.txt");
