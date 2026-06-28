@@ -1,0 +1,28 @@
+---
+const navItems = [
+  { href: "/case-studies", label: "Selected work" },
+  { href: "/architecture", label: "Architecture" },
+  { href: "/resume", label: "Resume" },
+  { href: "/contact", label: "Contact" },
+];
+---
+
+<header class="site-header">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <nav class="site-nav" aria-label="Primary">
+    <a class="brand-lockup" href="/" aria-label="AOHYS home">
+      <span class="brand-mark" aria-hidden="true">AO</span>
+      <span class="brand-text">
+        <span>AOH&amp;S</span>
+        <small>Public source site</small>
+      </span>
+    </a>
+    <div class="nav-links">
+      {
+        navItems.map((item) => (
+          <a href={item.href}>{item.label}</a>
+        ))
+      }
+    </div>
+  </nav>
+</header>

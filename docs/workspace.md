@@ -17,7 +17,7 @@ The root `package.json` pins pnpm through `packageManager`. The root `verify` co
 
 | Path | Role |
 | --- | --- |
-| `apps/site` | Future Astro public site for SEO pages, bilingual routes, metadata, sitemap, and public shell. |
+| `apps/site` | Astro public site for SEO pages, bilingual routes, metadata, sitemap, and public shell. |
 | `apps/dashboard` | Future private dashboard surface under `/dashboard`. |
 | `apps/backend` | Future Convex backend surface for leads, content, media, settings, resume, auth, and dashboard workflows. |
 | `packages/environment` | Future Environment Contract implementation. |
