@@ -162,6 +162,7 @@ svg {
 .nav-links a,
 .footer-links a {
   min-height: 44px;
+  min-width: 44px;
   display: inline-flex;
   align-items: center;
   text-decoration-thickness: 1px;
@@ -169,7 +170,9 @@ svg {
 }
 
 .hero-section,
-.ledger-section {
+.ledger-section,
+.route-hero,
+.route-proof-section {
   width: var(--container);
   margin-inline: auto;
 }
@@ -391,6 +394,69 @@ h2 {
   letter-spacing: -0.015em;
 }
 
+.route-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(17rem, 0.34fr);
+  gap: clamp(2rem, 7vw, 7rem);
+  align-items: end;
+  min-height: min(680px, calc(100svh - 78px));
+  padding-block: clamp(4rem, 10vw, 8rem) clamp(2.5rem, 6vw, 5rem);
+}
+
+.route-hero-copy {
+  max-width: 58rem;
+}
+
+.route-hero h1 {
+  max-width: 12ch;
+}
+
+.route-panel {
+  display: grid;
+  gap: 0.45rem;
+  border-block: 1px solid var(--color-dark);
+  padding-block: 1rem;
+  font-family: var(--font-display);
+}
+
+.route-panel span,
+.route-proof-item span {
+  color: var(--color-muted);
+  font-size: var(--text-caption);
+  font-weight: 650;
+}
+
+.route-panel strong {
+  margin-block-end: 0.65rem;
+  overflow-wrap: anywhere;
+  font-size: clamp(1rem, 0.5vw + 0.9rem, 1.25rem);
+  line-height: 1.2;
+}
+
+.route-proof-section {
+  padding-block: clamp(2rem, 6vw, 5rem) clamp(4rem, 9vw, 7.5rem);
+}
+
+.route-proof-list {
+  display: grid;
+  border-block-start: 1px solid var(--color-dark);
+}
+
+.route-proof-item {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.28fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  border-block-end: 1px solid var(--color-rule);
+  padding-block: 1.35rem;
+}
+
+.route-proof-item p {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--color-muted);
+  text-wrap: pretty;
+}
+
 .site-footer {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -448,9 +514,15 @@ h2 {
     min-height: 30rem;
   }
 
+  .route-hero,
   .ledger-row,
+  .route-proof-item,
   .site-footer {
     grid-template-columns: 1fr;
+  }
+
+  .route-hero {
+    min-height: auto;
   }
 
   .ledger-row {
@@ -475,7 +547,7 @@ h2 {
 
   .hero-section {
     gap: 1.35rem;
-    padding-block: 2rem 1.25rem;
+    padding-block: 1.5rem 0.75rem;
   }
 
   .hero-lead {
@@ -492,7 +564,7 @@ h2 {
   }
 
   .proof-board {
-    min-height: 9rem;
+    min-height: 8rem;
   }
 
   .artifact-large {

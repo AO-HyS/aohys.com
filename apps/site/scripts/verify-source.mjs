@@ -22,10 +22,12 @@ function check(condition, message) {
 
 const globalCss = read("src/styles/global.css");
 const home = read("src/pages/index.astro");
+const routePage = read("src/pages/[...path].astro");
 const layout = read("src/layouts/BaseLayout.astro");
 const header = read("src/components/SiteHeader.astro");
 const footer = read("src/components/SiteFooter.astro");
-const source = [globalCss, home, layout, header, footer].join("\n");
+const publicContentPage = read("src/components/PublicContentPage.astro");
+const source = [globalCss, home, routePage, layout, header, footer, publicContentPage].join("\n");
 
 check(globalCss.includes("@fontsource-variable/mona-sans"), "Mona Sans must be self-hosted through package assets");
 check(
@@ -37,7 +39,9 @@ check(globalCss.includes("--color-mint: oklch("), "global CSS must define OKLCH 
 check(globalCss.includes("--text-hero:"), "global CSS must define hero type token");
 check(globalCss.includes("prefers-reduced-motion"), "global CSS must include reduced-motion handling");
 check(layout.includes('data-site-shell="public"'), "layout must expose public shell marker");
-check(header.includes("/case-studies"), "header must link selected work");
+check(header.includes("getLocalizedPath"), "header routes must come from the Public Content Graph");
+check(routePage.includes("getPublicRouteMap"), "catch-all routes must come from the Public Content Graph");
+check(layout.includes('rel="alternate"'), "layout must emit language alternate metadata");
 check(footer.includes("client and product code stays private"), "footer must state private-work boundary");
 
 const bannedPatterns = [

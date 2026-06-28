@@ -1,14 +1,18 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
+import { getPublicRouteMap, getSeoMetadata } from "@aohys/content-graph";
 import PublicContentPage from "../components/PublicContentPage.astro";
-import { getSeoMetadata, resolvePublicPath } from "@aohys/content-graph";
+import BaseLayout from "../layouts/BaseLayout.astro";
 
-const route = resolvePublicPath("/");
-
-if (!route) {
-  throw new Error("Missing Public Content Graph route for /");
+export function getStaticPaths() {
+  return getPublicRouteMap()
+    .filter((route) => route.path !== "/")
+    .map((route) => ({
+      params: { path: route.path.replace(/^\/|\/$/g, "") },
+      props: { route },
+    }));
 }
 
+const { route } = Astro.props;
 const seo = getSeoMetadata(route.id, route.locale);
 ---
 
