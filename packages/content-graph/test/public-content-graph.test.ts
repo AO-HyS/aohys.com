@@ -4,6 +4,7 @@ import {
   LOCALES,
   MissingLocaleVariantError,
   getArchitecturePageContent,
+  getCaseStudyPageContent,
   getHomePageContent,
   getLanguageAlternates,
   getLocaleVariant,
@@ -124,6 +125,31 @@ describe("Public Content Graph", () => {
     expect(englishArchitecture.sections.every((section) => section.body.length > 40)).toBe(true);
     expect(spanishArchitecture.heading).toBe("Muestra pública, trabajo privado.");
     expect(spanishArchitecture.sourceLinks[0]?.href).toBe("https://github.com/AO-HyS/aohys.com");
+  });
+
+  it("returns Casa Roca case-study content with public-safe evidence", () => {
+    const englishCaseStudy = getCaseStudyPageContent("case-study:casa-roca", "en");
+    const spanishCaseStudy = getCaseStudyPageContent("case-study:casa-roca", "es");
+
+    expect(englishCaseStudy?.statusLabel).toBe("Production proof");
+    expect(englishCaseStudy?.problem.title).toBe("Problem");
+    expect(englishCaseStudy?.businessOutcome.title).toBe("Business outcome");
+    expect(englishCaseStudy?.role.body).toMatch(/Public site delivery/i);
+    expect(englishCaseStudy?.constraints.body).toMatch(/private booking data/i);
+    expect(englishCaseStudy?.architectureDecisions.body).toMatch(/bilingual content/i);
+    expect(englishCaseStudy?.executionHighlights.body).toMatch(/production deployment/i);
+    expect(englishCaseStudy?.qualitySecurityPerformance.body).toMatch(/sensitive operational data/i);
+    expect(englishCaseStudy?.publicEvidence).toHaveLength(1);
+    expect(englishCaseStudy?.publicEvidence[0]).toMatchObject({
+      href: "https://casa-roca.mx",
+      publicSafe: true,
+      altText: "Public-safe evidence for the Casa Roca production website",
+    });
+    expect(englishCaseStudy?.confidentialityNote.body).toMatch(/operational data remain private/i);
+    expect(spanishCaseStudy?.statusLabel).toBe("Prueba en producción");
+    expect(spanishCaseStudy?.publicEvidence[0]?.altText).toBe(
+      "Evidencia pública segura del sitio en producción de Casa Roca",
+    );
   });
 
   it("fails explicitly when a locale variant is missing", () => {

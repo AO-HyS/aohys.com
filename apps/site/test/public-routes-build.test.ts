@@ -100,6 +100,40 @@ describe("built public routes", () => {
     expect(spanishArchitectureHtml).toContain('href="https://github.com/AO-HyS/aohys.com"');
   });
 
+  it("renders the Casa Roca complete case-study structure in both languages", () => {
+    const casaRocaHtml = readDist("case-studies/casa-roca/index.html");
+    const spanishCasaRocaHtml = readDist("es/casos/casa-roca/index.html");
+
+    expect(casaRocaHtml).toContain('data-case-study-content-id="case-study:casa-roca"');
+    expect(casaRocaHtml).toContain("Casa Roca");
+    expect(casaRocaHtml).toContain("Production proof");
+    expect(casaRocaHtml).toContain("Problem");
+    expect(casaRocaHtml).toContain("Business outcome");
+    expect(casaRocaHtml).toContain("Role");
+    expect(casaRocaHtml).toContain("Constraints");
+    expect(casaRocaHtml).toContain("Architecture decisions");
+    expect(casaRocaHtml).toContain("Execution highlights");
+    expect(casaRocaHtml).toContain("Quality, security, and performance");
+    expect(casaRocaHtml).toContain("Public evidence");
+    expect(casaRocaHtml).toContain("Confidentiality note");
+    expect(casaRocaHtml).toContain('href="https://casa-roca.mx"');
+    expect(casaRocaHtml).toContain('aria-label="Public-safe evidence for the Casa Roca production website"');
+
+    expect(spanishCasaRocaHtml).toContain('data-case-study-content-id="case-study:casa-roca"');
+    expect(spanishCasaRocaHtml).toContain("Prueba en producción");
+    expect(spanishCasaRocaHtml).toContain("Problema");
+    expect(spanishCasaRocaHtml).toContain("Resultado de negocio");
+    expect(spanishCasaRocaHtml).toContain("Rol");
+    expect(spanishCasaRocaHtml).toContain("Restricciones");
+    expect(spanishCasaRocaHtml).toContain("Decisiones de arquitectura");
+    expect(spanishCasaRocaHtml).toContain("Ejecución");
+    expect(spanishCasaRocaHtml).toContain("Calidad, seguridad y rendimiento");
+    expect(spanishCasaRocaHtml).toContain("Evidencia pública");
+    expect(spanishCasaRocaHtml).toContain("Nota de confidencialidad");
+    expect(spanishCasaRocaHtml).toContain('href="https://casa-roca.mx"');
+    expect(spanishCasaRocaHtml).toContain('aria-label="Evidencia pública segura del sitio en producción de Casa Roca"');
+  });
+
   it("emits sitemap and robots behavior from the public graph", () => {
     const sitemap = readDist("sitemap.xml");
     const robots = readDist("robots.txt");

@@ -134,3 +134,5 @@ Astro route smoke tests consume the built site output instead of using ad hoc No
 The current home tracer also uses the graph for the public proof narrative: selected outcomes resolve to localized case-study paths, evidence entries carry public-safe labels and accessible text, and the contact CTA keeps the institutional email plus WhatsApp path in the same locale-aware content seam.
 
 The architecture page also resolves its public source framing through the graph. Its content owns the public/private boundary note, source links, Release Train, Environment Contract, Public Content Graph, and provider responsibility sections for English and Spanish routes.
+
+Casa Roca is the first complete graph-backed case study. `case-study:casa-roca` owns its localized status label, overview, problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance notes, public evidence link, alt text, and confidentiality note. Case-study routes without complete detail content continue to render skeleton route pages until their public-safe content is added.

@@ -1,6 +1,7 @@
 ---
 import {
   getArchitecturePageContent,
+  getCaseStudyPageContent,
   getHomePageContent,
   getLocalizedPath,
   type ContentId,
@@ -16,9 +17,20 @@ const { route } = Astro.props;
 const { id, locale, node, variant } = route;
 const isHome = id === "home";
 const isArchitecture = id === "architecture";
+const isCaseStudy = node.type === "case-study";
 const copy = getUiCopy(locale).publicPage;
 const homeContent = isHome ? getHomePageContent(locale) : undefined;
 const architectureContent = isArchitecture ? getArchitecturePageContent(locale) : undefined;
+const caseStudyContent = isCaseStudy ? getCaseStudyPageContent(id, locale) : undefined;
+const caseStudySections = caseStudyContent ? [
+  caseStudyContent.problem,
+  caseStudyContent.businessOutcome,
+  caseStudyContent.role,
+  caseStudyContent.constraints,
+  caseStudyContent.architectureDecisions,
+  caseStudyContent.executionHighlights,
+  caseStudyContent.qualitySecurityPerformance,
+] : [];
 
 function actionHref(contentId?: ContentId): string | undefined {
   return contentId ? getLocalizedPath(contentId, locale) : undefined;
@@ -184,6 +196,59 @@ const secondaryHref = actionHref(variant.secondaryActionContentId);
 
       <section class="boundary-note" aria-label={architectureContent.heading}>
         <p>{architectureContent.boundaryNote}</p>
+      </section>
+    </>
+  ) : isCaseStudy && caseStudyContent ? (
+    <>
+      <section class="case-study-hero" aria-labelledby="case-study-title" data-case-study-content-id={id}>
+        <div class="case-study-hero-copy">
+          <p class="signal-line">{caseStudyContent.statusLabel}</p>
+          <h1 id="case-study-title">{variant.title}</h1>
+          <p class="hero-lead">{caseStudyContent.overview}</p>
+          <div class="hero-actions" aria-label={copy.actions}>
+            {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          </div>
+        </div>
+
+        <aside class="case-study-status" aria-label={caseStudyContent.statusLabel}>
+          <span>{caseStudyContent.statusLabel}</span>
+          <strong>{variant.summary}</strong>
+        </aside>
+      </section>
+
+      <section class="case-study-detail" aria-labelledby="case-study-detail-title">
+        <div class="section-heading">
+          <h2 id="case-study-detail-title">{variant.title}</h2>
+          <p class="section-intro">{variant.summary}</p>
+        </div>
+        <div class="case-study-rows">
+          {caseStudySections.map((section) => (
+            <article class="case-study-row">
+              <h3>{section.title}</h3>
+              <p>{section.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="case-study-evidence" aria-labelledby="case-study-evidence-title">
+        <div class="section-heading">
+          <h2 id="case-study-evidence-title">{caseStudyContent.publicEvidenceTitle}</h2>
+        </div>
+        <div class="evidence-list">
+          {caseStudyContent.publicEvidence.map((evidence) => (
+            <a class="evidence-link" href={evidence.href} aria-label={evidence.altText}>
+              <span>{evidence.label}</span>
+              <strong>{evidence.description}</strong>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section class="case-study-confidentiality" aria-labelledby="case-study-confidentiality-title">
+        <h2 id="case-study-confidentiality-title">{caseStudyContent.confidentialityNote.title}</h2>
+        <p>{caseStudyContent.confidentialityNote.body}</p>
       </section>
     </>
   ) : (

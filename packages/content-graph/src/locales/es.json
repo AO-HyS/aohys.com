@@ -128,7 +128,54 @@
     "primaryActionLabel": "Crear algo similar",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
-    "secondaryActionContentId": "case-studies"
+    "secondaryActionContentId": "case-studies",
+    "caseStudyContent": {
+      "statusLabel": "Prueba en producción",
+      "overview": "Casa Roca es un sitio de hospitalidad en producción para una estancia boutique en Roca Partida, Veracruz. El caso público se enfoca en confianza, visibilidad, rendimiento y la separación entre páginas públicas y operación privada.",
+      "problem": {
+        "title": "Problema",
+        "body": "El negocio necesitaba una presencia pública capaz de comunicar lugar, experiencia y credibilidad sin exponer los sistemas operativos detrás de reservaciones, media management y administración privada."
+      },
+      "businessOutcome": {
+        "title": "Resultado de negocio",
+        "body": "Un sitio en producción le da a Casa Roca un destino público para huéspedes, tráfico de búsqueda, confianza de marca y caminos de contacto directo sin mezclarlo con el back office operativo."
+      },
+      "role": {
+        "title": "Rol",
+        "body": "Entrega de sitio público, planeación de superficie bilingüe, metadata SEO, verificación de release, cuidado de rendimiento y un límite claro entre páginas públicas y workflows operativos privados."
+      },
+      "constraints": {
+        "title": "Restricciones",
+        "body": "El caso puede mostrar el sitio público en vivo y decisiones de arquitectura, pero debe evitar datos privados de reservaciones, detalles del dashboard, credenciales, código interno y registros operativos."
+      },
+      "architectureDecisions": {
+        "title": "Decisiones de arquitectura",
+        "body": "Mantener páginas públicas rápidas e inspeccionables, tratar contenido bilingüe y metadata SEO como parte central, y separar evidencia pública de workflows privados para presentar el trabajo con seguridad."
+      },
+      "executionHighlights": {
+        "title": "Ejecución",
+        "body": "El trabajo priorizó posicionamiento claro de hospitalidad, rutas públicas localizadas, disciplina de despliegue, seguridad de contenido y una ruta de evidencia revisable sin acceso privilegiado."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Calidad, seguridad y rendimiento",
+        "body": "La superficie pública se verifica como evidencia en producción, evita datos operativos sensibles, usa metadata explícita y está planteada alrededor de páginas rápidas, estables y legibles para búsqueda."
+      },
+      "publicEvidenceTitle": "Evidencia pública",
+      "publicEvidence": [
+        {
+          "label": "Sitio en producción",
+          "description": "Sitio público de Casa Roca usado como evidencia segura de producción.",
+          "href": "https://casa-roca.mx",
+          "altText": "Evidencia pública segura del sitio en producción de Casa Roca",
+          "kind": "public-site",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Nota de confidencialidad",
+        "body": "Aquí sólo se muestra el sitio público y contexto de entrega seguro. Código privado del cliente, registros de reservaciones, workflows administrativos, credenciales, analíticas y datos operativos permanecen privados."
+      }
+    }
   },
   "case-study:the-barber-central": {
     "path": "/es/casos/the-barber-central",

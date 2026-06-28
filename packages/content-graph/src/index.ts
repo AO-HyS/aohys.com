@@ -108,6 +108,31 @@ export interface ArchitecturePageContent {
   boundaryNote: string;
 }
 
+export interface CaseStudySection {
+  title: string;
+  body: string;
+}
+
+export interface CaseStudyEvidenceAsset extends EvidenceAsset {
+  href: string;
+  description: string;
+}
+
+export interface CaseStudyPageContent {
+  statusLabel: string;
+  overview: string;
+  problem: CaseStudySection;
+  businessOutcome: CaseStudySection;
+  role: CaseStudySection;
+  constraints: CaseStudySection;
+  architectureDecisions: CaseStudySection;
+  executionHighlights: CaseStudySection;
+  qualitySecurityPerformance: CaseStudySection;
+  publicEvidenceTitle: string;
+  publicEvidence: CaseStudyEvidenceAsset[];
+  confidentialityNote: CaseStudySection;
+}
+
 export interface SitemapRule {
   include: boolean;
   changefreq?: "weekly" | "monthly";
@@ -161,6 +186,7 @@ interface LocalizedContentEntry {
     selectedOutcomes: Array<Omit<HomeOutcome, "path">>;
   };
   architectureContent?: ArchitecturePageContent;
+  caseStudyContent?: CaseStudyPageContent;
 }
 
 type ContentDictionary = Record<ContentId, LocalizedContentEntry>;
@@ -378,6 +404,18 @@ export function getArchitecturePageContent(locale: Locale): ArchitecturePageCont
   }
 
   return architecture.architectureContent;
+}
+
+export function getCaseStudyPageContent(contentId: ContentId | string, locale: Locale): CaseStudyPageContent | undefined {
+  const node = getContentNode(contentId);
+
+  if (node.type !== "case-study") {
+    throw new Error(`Content node "${contentId}" is not a case study.`);
+  }
+
+  const caseStudy = getDictionaryEntry(contentId, locale);
+
+  return caseStudy.caseStudyContent;
 }
 
 export function getLanguageAlternates(contentId: ContentId | string): Record<Locale | "x-default", string> {
