@@ -12,6 +12,8 @@ Environment Contract: `docs/environment-contract.md`
 
 Public Content Graph: `docs/public-content-graph.md`
 
+Dashboard UI Kit: `docs/dashboard-ui-kit.md`
+
 ## Published Issues
 
 | Issue | Title |
@@ -138,7 +140,7 @@ Configure Wrangler, Cloudflare-compatible builds, the protected Release Train, p
 
 **User stories covered:** 16, 21, 22, 23, 35, 36, 59.
 
-Create the private dashboard shell with Better Auth, Convex integration, admin allowlist, protected route behavior, noindex/robots protection, dashboard layout, operational overview, and Environment Contract validation for auth origins/secrets.
+Create the private dashboard shell with Better Auth, Convex integration, admin allowlist, protected route behavior, noindex/robots protection, Dashboard UI Kit shell/surfaces, operational overview, and Environment Contract validation for auth origins/secrets.
 
 ### 14. Dashboard Lead Review Workflow
 
@@ -146,7 +148,7 @@ Create the private dashboard shell with Better Auth, Convex integration, admin a
 
 **User stories covered:** 16, 56, 57, 59.
 
-Build the first real dashboard workflow: list incoming leads, view details, update review/contact status, preserve privacy, and verify that changes reflect in Convex.
+Build the first real dashboard workflow through the Dashboard UI Kit: list incoming leads, view details, update review/contact status, preserve privacy, represent loading/empty/error/saved states, and verify that changes reflect in Convex.
 
 ### 15. Dashboard Content and Media Workflow
 
@@ -154,7 +156,7 @@ Build the first real dashboard workflow: list incoming leads, view details, upda
 
 **User stories covered:** 17, 18, 19, 20, 43, 44, 45, 46, 59, 60.
 
-Build dashboard workflows for case-study content, media metadata, site settings, and resume content. Include Cloudflare media integration once the product choice is decided, and preserve Public Content Graph invariants when dashboard workflows publish public content.
+Build dashboard workflows through the Dashboard UI Kit for case-study content, media metadata, site settings, and resume content. Include Cloudflare media integration once the product choice is decided, and preserve Public Content Graph invariants when dashboard workflows publish public content.
 
 ### 16. Privacy, Security, and Launch Hardening
 
@@ -162,7 +164,7 @@ Build dashboard workflows for case-study content, media metadata, site settings,
 
 **User stories covered:** 21, 22, 38, 39, 41, 58, 59.
 
-Harden the launch surface: privacy page accuracy, Public Content Graph sitemap/robots behavior, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, Environment Contract separation, Release Train readiness checks, production smoke checks, and browser QA.
+Harden the launch surface: privacy page accuracy, Public Content Graph sitemap/robots behavior, Dashboard UI Kit mobile/state behavior, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, Environment Contract separation, Release Train readiness checks, production smoke checks, and browser QA.
 
 ### 17. Public README and Source Evaluation Package
 
@@ -170,24 +172,26 @@ Harden the launch surface: privacy page accuracy, Public Content Graph sitemap/r
 
 **User stories covered:** 9, 10, 28, 29, 30, 61, 62, 67, 68, 69.
 
-Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, Public Content Graph, Environment Contract, Release Train, license boundaries, and no-contribution framing.
+Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, Dashboard UI Kit, Public Content Graph, Environment Contract, Release Train, license boundaries, and no-contribution framing.
 
 ## Architecture Review Notes
 
-The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module. The second selected candidate is the Environment Contract module. The third selected candidate is the Public Content Graph module.
+The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module. The second selected candidate is the Environment Contract module. The third selected candidate is the Public Content Graph module. The fourth selected candidate is the Dashboard UI Kit module.
 
 Expected order for architecture deepening:
 
 1. Release Train. Completed in documentation and issues.
 2. Environment Contract. Completed in documentation and issues.
-3. Public Content Graph. Current architecture focus.
-4. Dashboard UI Kit.
+3. Public Content Graph. Completed in documentation and issues.
+4. Dashboard UI Kit. Current architecture focus.
 
 The Release Train should create locality for deployment rules and leverage for future agents. Branch protection, GitHub Actions, Wrangler, Cloudflare Preview/Production, environment validation, and smoke checks should not be scattered across unrelated issue work.
 
 The Environment Contract should create locality for secrets, public variables, provider outputs, and environment validation. App code, dashboard code, Convex functions, and release workflows should cross the same validation seam instead of reading ad hoc provider variables directly.
 
 The Public Content Graph should create locality for bilingual routes, SEO metadata, sitemap eligibility, evidence assets, case-study structure, resume content, and future dashboard publishing. Astro route files should consume the graph rather than becoming independent sources of content truth.
+
+The Dashboard UI Kit should create locality for private dashboard shell, workflow surfaces, forms, lists/details, state handling, mobile behavior, and shadcn/ui primitive usage. Authenticated dashboard routes should consume dashboard workflow surfaces rather than composing raw primitives directly.
 
 ## Granularity Notes
 
