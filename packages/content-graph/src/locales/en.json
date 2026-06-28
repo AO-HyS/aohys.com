@@ -178,7 +178,61 @@
     "primaryActionLabel": "Review selected work",
     "primaryActionContentId": "case-studies",
     "secondaryActionLabel": "Contact Alejandro",
-    "secondaryActionContentId": "contact"
+    "secondaryActionContentId": "contact",
+    "architectureContent": {
+      "heading": "Public source sample, private client work.",
+      "deck": "This site is intentionally inspectable: public SEO pages, bilingual content routing, release documentation, and future dashboard boundaries are visible in the source. Client and product code stays private.",
+      "sourceLabel": "Inspect the source",
+      "sourceLinks": [
+        {
+          "label": "Repository",
+          "href": "https://github.com/AO-HyS/aohys.com"
+        },
+        {
+          "label": "README",
+          "href": "https://github.com/AO-HyS/aohys.com/blob/develop/README.md"
+        },
+        {
+          "label": "Release Train",
+          "href": "https://github.com/AO-HyS/aohys.com/blob/develop/docs/release-train.md"
+        },
+        {
+          "label": "Environment Contract",
+          "href": "https://github.com/AO-HyS/aohys.com/blob/develop/docs/environment-contract.md"
+        },
+        {
+          "label": "Public Content Graph",
+          "href": "https://github.com/AO-HyS/aohys.com/blob/develop/docs/public-content-graph.md"
+        }
+      ],
+      "sections": [
+        {
+          "title": "Public surface",
+          "body": "Astro owns the public SEO pages. The route map comes from stable content IDs, localized slugs, canonical metadata, language alternates, sitemap eligibility, and robots behavior instead of scattered page constants."
+        },
+        {
+          "title": "Private boundary",
+          "body": "The dashboard belongs on the same domain, but it is a different surface: authenticated, omitted from the sitemap, and noindex. The public site can demonstrate the boundary without implying private work is public."
+        },
+        {
+          "title": "Release Train",
+          "body": "Feature branches target develop first. Production moves through a separate main promotion path with Cloudflare/Wrangler checks, environment validation, and smoke verification before the canonical domain changes."
+        },
+        {
+          "title": "Environment Contract",
+          "body": "Local, preview, and production settings are treated as an explicit contract. Provider dashboards may help setup, but durable deploy-time values should reconcile back to GitHub Environments."
+        },
+        {
+          "title": "Public Content Graph",
+          "body": "The graph is the seam between content and routes. It owns locale variants, public paths, SEO metadata, sitemap behavior, safe evidence labels, and future dashboard publishing invariants."
+        },
+        {
+          "title": "Provider responsibilities",
+          "body": "Cloudflare handles hosting and media delivery, Convex owns application state and dashboard workflows, PostHog owns analytics and errors, and Resend handles lead notifications. Technology appears as evidence, not as the sales pitch."
+        }
+      ],
+      "boundaryNote": "This public repository is a working sample of AOHYS engineering standards. It does not make private client code, product code, credentials, screenshots, or operational data public."
+    }
   },
   "resume": {
     "path": "/resume",

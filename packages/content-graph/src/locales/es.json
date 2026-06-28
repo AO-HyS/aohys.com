@@ -178,7 +178,61 @@
     "primaryActionLabel": "Revisar trabajo",
     "primaryActionContentId": "case-studies",
     "secondaryActionLabel": "Contactar a Alejandro",
-    "secondaryActionContentId": "contact"
+    "secondaryActionContentId": "contact",
+    "architectureContent": {
+      "heading": "Muestra pública, trabajo privado.",
+      "deck": "Este sitio está hecho para ser inspeccionable: páginas públicas SEO, rutas bilingües, documentación de release y límites futuros del dashboard son visibles en el source. El código de clientes y productos permanece privado.",
+      "sourceLabel": "Revisar el source",
+      "sourceLinks": [
+        {
+          "label": "Repositorio",
+          "href": "https://github.com/AO-HyS/aohys.com"
+        },
+        {
+          "label": "README",
+          "href": "https://github.com/AO-HyS/aohys.com/blob/develop/README.md"
+        },
+        {
+          "label": "Release Train",
+          "href": "https://github.com/AO-HyS/aohys.com/blob/develop/docs/release-train.md"
+        },
+        {
+          "label": "Environment Contract",
+          "href": "https://github.com/AO-HyS/aohys.com/blob/develop/docs/environment-contract.md"
+        },
+        {
+          "label": "Public Content Graph",
+          "href": "https://github.com/AO-HyS/aohys.com/blob/develop/docs/public-content-graph.md"
+        }
+      ],
+      "sections": [
+        {
+          "title": "Superficie pública",
+          "body": "Astro controla las páginas públicas SEO. El mapa de rutas viene de IDs estables, slugs localizados, canonical metadata, alternates de idioma, sitemap y robots en vez de constantes duplicadas por página."
+        },
+        {
+          "title": "Límite privado",
+          "body": "El dashboard vive en el mismo dominio, pero es otra superficie: autenticada, fuera del sitemap y noindex. El sitio público puede demostrar el límite sin sugerir que el trabajo privado es público."
+        },
+        {
+          "title": "Release Train",
+          "body": "Las ramas de feature apuntan primero a develop. Producción pasa por una promoción separada hacia main con checks de Cloudflare/Wrangler, validación de ambiente y smoke verification antes de tocar el dominio canónico."
+        },
+        {
+          "title": "Environment Contract",
+          "body": "Local, preview y production se tratan como un contrato explícito. Los dashboards de proveedores ayudan a configurar, pero los valores durables de deploy deben reconciliarse con GitHub Environments."
+        },
+        {
+          "title": "Public Content Graph",
+          "body": "El grafo es el seam entre contenido y rutas. Controla variantes de idioma, rutas públicas, metadata SEO, sitemap, labels de evidencia segura e invariantes futuros de publicación desde dashboard."
+        },
+        {
+          "title": "Responsabilidades de proveedores",
+          "body": "Cloudflare maneja hosting y media delivery, Convex el estado de aplicación y workflows del dashboard, PostHog analíticas y errores, y Resend notificaciones de leads. La tecnología aparece como evidencia, no como pitch."
+        }
+      ],
+      "boundaryNote": "Este repositorio público es una muestra funcional de los estándares de ingeniería de AOHYS. No vuelve público el código de clientes, código de producto, credenciales, screenshots privados ni datos operativos."
+    }
   },
   "resume": {
     "path": "/es/cv",

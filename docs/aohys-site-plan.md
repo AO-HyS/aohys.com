@@ -166,6 +166,8 @@ Recommended home sequence:
 
 Current implementation status: the first real home pass is graph-backed and includes Alejandro-first copy, selected outcome rows, a dark architecture section, engineering practice rows, institutional email, and WhatsApp CTA. Future case-study issues should replace proof placeholders with sanitized screenshots and richer detail pages.
 
+Architecture page status: `/architecture` and `/es/arquitectura` now render graph-backed public source framing, public/private boundary copy, Release Train, Environment Contract, Public Content Graph, provider responsibilities, and GitHub source/documentation links.
+
 Case study pages should use the same proof-ledger rhythm:
 
 - Problem.

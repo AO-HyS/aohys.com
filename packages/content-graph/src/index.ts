@@ -88,6 +88,26 @@ export interface HomePageContent {
   whatsappHref: string;
 }
 
+export interface ArchitectureSourceLink {
+  label: string;
+  href: string;
+}
+
+export interface ArchitectureSection {
+  title: string;
+  body: string;
+  links?: ArchitectureSourceLink[];
+}
+
+export interface ArchitecturePageContent {
+  heading: string;
+  deck: string;
+  sourceLabel: string;
+  sourceLinks: ArchitectureSourceLink[];
+  sections: ArchitectureSection[];
+  boundaryNote: string;
+}
+
 export interface SitemapRule {
   include: boolean;
   changefreq?: "weekly" | "monthly";
@@ -140,6 +160,7 @@ interface LocalizedContentEntry {
   homeContent?: Omit<HomePageContent, "selectedOutcomes"> & {
     selectedOutcomes: Array<Omit<HomeOutcome, "path">>;
   };
+  architectureContent?: ArchitecturePageContent;
 }
 
 type ContentDictionary = Record<ContentId, LocalizedContentEntry>;
@@ -347,6 +368,16 @@ export function getHomePageContent(locale: Locale): HomePageContent {
       path: getLocalizedPath(outcome.contentId, locale),
     })),
   };
+}
+
+export function getArchitecturePageContent(locale: Locale): ArchitecturePageContent {
+  const architecture = getDictionaryEntry("architecture", locale);
+
+  if (!architecture.architectureContent) {
+    throw new Error(`Architecture content is missing for locale "${locale}".`);
+  }
+
+  return architecture.architectureContent;
 }
 
 export function getLanguageAlternates(contentId: ContentId | string): Record<Locale | "x-default", string> {

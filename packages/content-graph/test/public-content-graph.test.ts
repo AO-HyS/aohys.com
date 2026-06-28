@@ -3,6 +3,7 @@ import {
   DEFAULT_LOCALE,
   LOCALES,
   MissingLocaleVariantError,
+  getArchitecturePageContent,
   getHomePageContent,
   getLanguageAlternates,
   getLocaleVariant,
@@ -103,6 +104,26 @@ describe("Public Content Graph", () => {
     );
     expect(spanishHome.selectedOutcomes[0]?.path).toBe("/es/casos/casa-roca");
     expect(spanishHome.whatsappHref).toMatch(/^https:\/\/wa\.me\/52/);
+  });
+
+  it("returns architecture page content with source and architecture document links", () => {
+    const englishArchitecture = getArchitecturePageContent("en");
+    const spanishArchitecture = getArchitecturePageContent("es");
+
+    expect(englishArchitecture.heading).toBe("Public source sample, private client work.");
+    expect(englishArchitecture.sourceLinks.map((link) => link.href)).toEqual([
+      "https://github.com/AO-HyS/aohys.com",
+      "https://github.com/AO-HyS/aohys.com/blob/develop/README.md",
+      "https://github.com/AO-HyS/aohys.com/blob/develop/docs/release-train.md",
+      "https://github.com/AO-HyS/aohys.com/blob/develop/docs/environment-contract.md",
+      "https://github.com/AO-HyS/aohys.com/blob/develop/docs/public-content-graph.md",
+    ]);
+    expect(englishArchitecture.sections.map((section) => section.title)).toContain("Release Train");
+    expect(englishArchitecture.sections.map((section) => section.title)).toContain("Environment Contract");
+    expect(englishArchitecture.sections.map((section) => section.title)).toContain("Public Content Graph");
+    expect(englishArchitecture.sections.every((section) => section.body.length > 40)).toBe(true);
+    expect(spanishArchitecture.heading).toBe("Muestra pública, trabajo privado.");
+    expect(spanishArchitecture.sourceLinks[0]?.href).toBe("https://github.com/AO-HyS/aohys.com");
   });
 
   it("fails explicitly when a locale variant is missing", () => {
