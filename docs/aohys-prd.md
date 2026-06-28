@@ -145,6 +145,9 @@ The visual implementation will follow the Impeccable process and the approved de
 ## Testing Decisions
 
 - Tests should validate external behavior and user-visible outcomes, not internal implementation details.
+- Implementation follows `/tdd`: one behavior test, minimal implementation, then refactor only while green.
+- Do not write all tests first and all implementation afterward. Each issue should move through tracer-bullet red-green-refactor cycles.
+- Each issue should identify the public interface under test before adding code.
 - The primary high-level test seam for the public site is browser-level route verification: build or run the site, visit representative English and Spanish routes, verify content, navigation, metadata, accessibility basics, responsive layout, and console cleanliness.
 - The primary high-level test seam for contact is end-to-end lead submission in a safe environment: submit the public form, verify the lead is stored, verify notification behavior, verify validation/errors, and verify analytics do not capture sensitive message content.
 - The primary high-level test seam for dashboard access is authenticated browser behavior: unauthorized users cannot access dashboard content, the allowlisted admin can access it, and private routes are noindexed.
@@ -159,6 +162,7 @@ The visual implementation will follow the Impeccable process and the approved de
 - Analytics tests should verify explicit pageview/event behavior, environment separation, disabled autocapture, and error capture wiring.
 - Email tests should verify sender configuration, notification content, SPF/DKIM/DMARC readiness, and safe handling of failed sends.
 - There is no prior code test suite in this workspace yet. The first implementation should create the test seams alongside the app rather than retrofit them later.
+- The project-level TDD plan lives in `docs/aohys-tdd-plan.md`.
 
 ## Out of Scope
 

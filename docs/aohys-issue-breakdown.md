@@ -4,6 +4,8 @@ This document breaks `docs/aohys-prd.md` into independently grabbable tracer-bul
 
 Parent PRD issue: https://github.com/AO-HyS/aohys.com/issues/1
 
+TDD plan: `docs/aohys-tdd-plan.md`
+
 ## Published Issues
 
 | Issue | Title |
@@ -167,3 +169,5 @@ Write the public README and evaluation package: architecture overview, local dev
 ## Granularity Notes
 
 The breakdown intentionally starts with two foundation issues, then switches to demoable vertical slices. It avoids creating separate horizontal tickets for "CSS", "schema", "routes", or "tests" unless they are part of a complete user-visible path.
+
+Every issue should be executed with the project TDD plan: choose the public interface, write one failing behavior test, implement the minimal path, then refactor while green.
