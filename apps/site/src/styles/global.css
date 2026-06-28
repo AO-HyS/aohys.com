@@ -17,6 +17,8 @@
   --color-coral: oklch(0.68 0.15 35);
   --color-dark: oklch(0.09 0.006 260);
   --color-dark-surface: oklch(0.14 0.01 260);
+  --color-focus: oklch(0.48 0.16 255);
+  --color-architecture-bg: oklch(0.12 0.006 260);
   --font-display: "Mona Sans Variable", "Mona Sans", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Atkinson Hyperlegible Next Variable", "Atkinson Hyperlegible Next", ui-sans-serif, system-ui, sans-serif;
   --text-caption: 0.8125rem;
@@ -34,6 +36,8 @@
   --weight-medium: 520;
   --weight-heading: 680;
   --weight-hero: 760;
+  --focus-outline: 3px solid var(--color-focus);
+  --focus-outline-offset: 4px;
   --container: min(100% - 2rem, 1180px);
 }
 
@@ -65,8 +69,8 @@ svg {
 }
 
 :focus-visible {
-  outline: 3px solid #1767d1;
-  outline-offset: 4px;
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
 }
 
 .site-shell {
@@ -93,7 +97,7 @@ svg {
 
 .skip-link:focus-visible {
   transform: translateY(0);
-  outline: 3px solid #1767d1;
+  outline: var(--focus-outline);
 }
 
 .site-header {
@@ -261,8 +265,8 @@ h2 {
 }
 
 .button:focus-visible {
-  outline: 3px solid #1767d1;
-  outline-offset: 4px;
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
 }
 
 .button-primary {
@@ -506,7 +510,7 @@ h2 {
   gap: clamp(2rem, 6vw, 6rem);
   margin-block: clamp(1rem, 4vw, 3rem);
   padding: clamp(3rem, 7vw, 6.5rem) max(1rem, calc((100vw - 1180px) / 2));
-  background: #101014;
+  background: var(--color-architecture-bg);
   color: white;
 }
 

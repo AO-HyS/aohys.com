@@ -37,6 +37,8 @@ describe("public site source quality", () => {
     expect(globalCss).toContain("@fontsource-variable/atkinson-hyperlegible-next");
     expect(globalCss).toContain("--color-primary: oklch(");
     expect(globalCss).toContain("--color-mint: oklch(");
+    expect(globalCss).toContain("--color-focus: oklch(");
+    expect(globalCss).toContain("--focus-outline:");
     expect(globalCss).toContain("--text-hero:");
     expect(globalCss).toContain("prefers-reduced-motion");
     expect(layout).toContain('data-site-shell="public"');
@@ -51,6 +53,7 @@ describe("public site source quality", () => {
     expect(source).not.toMatch(/background-clip:\s*text/i);
     expect(source).not.toMatch(/repeating-linear-gradient/i);
     expect(source).not.toMatch(/border-radius:\s*(3[2-9]|[4-9][0-9])px/i);
+    expect(globalCss).not.toMatch(/#[0-9a-fA-F]{3,8}|rgba?\(/);
     expect(globalCss).not.toMatch(/font-size:\s*clamp\([^;]*vw/i);
     expect(globalCss).not.toMatch(/--text-[^:]+:\s*clamp\([^;]*vw/i);
     expect(source).not.toMatch(/lorem/i);
