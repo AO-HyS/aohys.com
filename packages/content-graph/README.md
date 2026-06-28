@@ -9,6 +9,7 @@ Astro routes, sitemap generation, metadata helpers, resume rendering, case-study
 - stable public content IDs;
 - English and Spanish route paths;
 - canonical URLs and language alternates;
+- localized titles, summaries, SEO titles, and SEO descriptions;
 - sitemap eligibility;
 - private dashboard route exclusions;
 - explicit failures when a locale variant is missing.
@@ -22,3 +23,5 @@ Astro routes, sitemap generation, metadata helpers, resume rendering, case-study
 - `getSitemapEntries()` returns graph-approved sitemap entries.
 
 The first consumer is `apps/site`, but future dashboard publishing should preserve these invariants instead of writing isolated Astro routes.
+
+Current locale content lives in JSON dictionaries under `src/locales`. Tests are written with Vitest and cover route resolution, localized paths, SEO metadata, sitemap entries, private route exclusions, and missing locale failures.

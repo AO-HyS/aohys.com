@@ -37,6 +37,7 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - i18n: English is default at `/`; Spanish lives under `/es/`.
 - Slugs: Public section slugs are localized; internal IDs remain stable.
 - Public Content Graph: stable content IDs own route paths, locale variants, SEO metadata, sitemap eligibility, and evidence relationships.
+- Public route implementation: Astro uses native i18n config, the public shell uses locale JSON for UI copy, and the Public Content Graph owns page identity, localized slugs, metadata, sitemap rules, and private route exclusions.
 - Content source of truth: public pages should resolve through the graph instead of duplicating slugs, metadata, alternates, and sitemap rules in each route file.
 - Content safety: evidence assets must carry public-safe usage intent and alt text; private work details, private data, and dashboard routes are excluded from the public graph.
 - Content documentation: The canonical content planning document is `docs/public-content-graph.md`; the architectural decision is `docs/adr/0003-public-content-graph.md`.
@@ -79,6 +80,7 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Layout bans: No identical icon-card grids, no nested cards, no hero metric template, no terminal aesthetic, no repeated uppercase section eyebrows, no numbered section scaffolding, no beige editorial default, no glassmorphism, no gradient text, no soft ghost-card shadows.
 - Motion: Motion should feel like review, assembly, and reveal: annotations settle, screenshots align, and proof artifacts enter with purpose. Content must never depend on animation to appear.
 - Visual assets: Generated editorial assets plus sanitized screenshots, optimized through Cloudflare. Generated imagery should be limited and purposeful; screenshots carry most case-study proof.
+- Quality gates: Local behavior tests should use Vitest for package and built-site checks; Husky pre-commit plus GitHub Actions verification are tracked in issue #31.
 
 ## Design System Snapshot
 

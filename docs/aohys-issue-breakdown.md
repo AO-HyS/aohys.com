@@ -35,6 +35,7 @@ Dashboard UI Kit: `docs/dashboard-ui-kit.md`
 | https://github.com/AO-HyS/aohys.com/issues/16 | Dashboard Content and Media Workflow |
 | https://github.com/AO-HyS/aohys.com/issues/17 | Privacy, Security, and Launch Hardening |
 | https://github.com/AO-HyS/aohys.com/issues/18 | Public README and Source Evaluation Package |
+| https://github.com/AO-HyS/aohys.com/issues/31 | Quality Gates: Husky pre-commit and GitHub Actions verify workflow |
 
 ## Proposed Vertical Slices
 
@@ -174,9 +175,17 @@ Harden the launch surface: privacy page accuracy, Public Content Graph sitemap/r
 
 Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, Dashboard UI Kit, Public Content Graph, Environment Contract, Release Train, license boundaries, and no-contribution framing.
 
+### 18. Quality Gates: Husky pre-commit and GitHub Actions verify workflow
+
+**Blocked by:** 2, 3, 4.
+
+**User stories covered:** 63, 64, 65, 66, 67, 68.
+
+Add the baseline quality gates for local and pull-request review: Husky pre-commit, a GitHub Actions verify workflow, dependency-install validation, lint/typecheck/test/build coverage, and clear behavior for checks that do not require private provider secrets. This issue exists so testing and quality standards are not scattered across feature slices.
+
 ## Architecture Review Notes
 
-The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module. The second selected candidate is the Environment Contract module. The third selected candidate is the Public Content Graph module. The fourth selected candidate is the Dashboard UI Kit module.
+The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module. The second selected candidate is the Environment Contract module. The third selected candidate is the Public Content Graph module. The fourth selected candidate is the Dashboard UI Kit module. The quality-gates issue (#31) now tracks the local hook and PR-check surface that should support all of those modules.
 
 Expected order for architecture deepening:
 

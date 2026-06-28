@@ -26,6 +26,8 @@ For each issue:
 - Keep mocks at system edges: network services, PostHog transport, Resend transport, Cloudflare media APIs, and auth provider callbacks.
 - Keep one test focused on one observable behavior.
 - Do not use tests to lock in temporary implementation details.
+- Use Vitest for local package/site behavior tests unless a higher-value browser or provider smoke check is required.
+- Avoid one-off Node assertion scripts for ordinary test coverage; if a check belongs in the quality surface, make it a named test or a release smoke command.
 
 ## Core Test Seams
 
@@ -135,6 +137,7 @@ Use for:
 | #16 Dashboard Content and Media Workflow | Dashboard UI Kit content/media workflow surfaces | Admin can create or update one public content/media metadata item with alt text, safe validation, and Public Content Graph invariants preserved. |
 | #17 Privacy, Security, and Launch Hardening | Production-like smoke suite | Public routes, dashboard protection, dashboard mobile/state behavior, privacy copy, analytics privacy, and contact error states pass launch smoke checks. |
 | #18 Public README and Source Evaluation Package | Repository documentation | README gives an evaluator enough information to run, inspect, and understand the repo without private credentials, including dashboard architecture. |
+| #31 Quality Gates: Husky and GitHub Actions | Local hooks and pull request workflow | Pre-commit and PR checks run the same core quality commands, including lint, typecheck, test, and build, without requiring private provider secrets. |
 
 ## Issue Body Guidance
 
@@ -167,6 +170,7 @@ Refactor only after a vertical behavior is green. In this repo, expected refacto
 
 - Writing all tests for an issue before any implementation.
 - Testing Astro components by private internals instead of route behavior.
+- Keeping route/source smoke checks as custom Node scripts when Vitest can own the behavior.
 - Mocking Convex internals instead of testing through public functions/actions.
 - Testing PostHog or Resend by sending real events/emails in default local tests.
 - Creating shallow helper modules only to make unit tests easy.
