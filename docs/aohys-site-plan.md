@@ -37,6 +37,10 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - i18n: English is default at `/`; Spanish lives under `/es/`.
 - Slugs: Public section slugs are localized; internal IDs remain stable.
 - Dashboard language: English only.
+- Release Train: `develop` is the Development Branch, `main` is the Production Branch, and both branches should be protected.
+- Promotion flow: feature branches target `develop`; production promotion moves from `develop` to `main` through a pull request, Cloudflare deployment checks, and smoke verification.
+- Release module: Release scripts, GitHub Actions, Cloudflare Preview/Production behavior, environment validation, and smoke checks should be treated as one Release Train module.
+- Release documentation: The canonical release planning document is `docs/release-train.md`; the architectural decision is `docs/adr/0001-protected-release-train.md`.
 - CTA: Primary CTA is neutral: "Start a conversation" / "Hablemos"; contact form captures lead intent.
 - Privacy: Include serious minimal privacy pages from V1; no newsletter in V1.
 - CV: `/resume` is the primary dynamic resume URL; PDF should be ATS-first, single-column, text-based, and human-readable.
@@ -163,14 +167,15 @@ Resume pages should be typography-first, ATS-friendly, and visibly linked to the
 ## Implementation Sequence
 
 1. Initialize the Git repo and monorepo in this workspace.
-2. Scaffold `apps/site` as the Astro public site with Cloudflare/Wrangler compatibility in mind.
-3. Add shared design tokens, font loading, global layout, metadata helpers, i18n routing, sitemap/robots basics, and the home shell.
-4. Build public V1 route skeletons in English and Spanish.
-5. Implement the first real home page with the approved visual system.
-6. Run browser QA for desktop and mobile, then use Impeccable polish on the visible public home.
-7. Add case study detail content and resume content.
-8. Add contact form integration with Convex and Resend.
-9. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
+2. Establish the Release Train expectations in documentation, branch protection, baseline verification commands, and GitHub issue scope.
+3. Scaffold `apps/site` as the Astro public site with Cloudflare/Wrangler compatibility in mind.
+4. Add shared design tokens, font loading, global layout, metadata helpers, i18n routing, sitemap/robots basics, and the home shell.
+5. Build public V1 route skeletons in English and Spanish.
+6. Implement the first real home page with the approved visual system.
+7. Run browser QA for desktop and mobile, then use Impeccable polish on the visible public home.
+8. Add case study detail content and resume content.
+9. Add contact form integration with Convex and Resend.
+10. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
 
 Next Impeccable command after this document:
 

@@ -6,6 +6,8 @@ Parent PRD issue: https://github.com/AO-HyS/aohys.com/issues/1
 
 TDD plan: `docs/aohys-tdd-plan.md`
 
+Release Train: `docs/release-train.md`
+
 ## Published Issues
 
 | Issue | Title |
@@ -36,7 +38,7 @@ TDD plan: `docs/aohys-tdd-plan.md`
 
 **User stories covered:** 61, 62, 63, 66, 67, 68.
 
-Create the public repository foundation: Git initialization, package manager/workspace setup, monorepo structure, baseline commands, lint/type/build placeholders, environment documentation, and initial README/license boundaries. This is the prefactoring slice that makes later vertical slices easy to build and review.
+Create the public repository foundation: Git initialization, package manager/workspace setup, monorepo structure, baseline commands, lint/type/build placeholders, environment documentation, Release Train documentation hooks, and initial README/license boundaries. This is the prefactoring slice that makes later vertical slices easy to build and review.
 
 ### 2. Public Astro Shell With Design Tokens
 
@@ -124,7 +126,7 @@ Wire explicit PostHog pageviews, selected conversion events, environment separat
 
 **User stories covered:** 24, 25, 28, 29, 30, 43, 66.
 
-Configure Wrangler, Cloudflare-compatible builds, preview/production deploy flow, environment documentation, canonical domain behavior, `aohys.net` to `aohys.com` redirect, and deployment smoke checks.
+Configure Wrangler, Cloudflare-compatible builds, the protected Release Train, preview/production deploy flow, environment documentation, canonical domain behavior, `aohys.net` to `aohys.com` redirect, and deployment smoke checks.
 
 ### 13. Better Auth and Private Dashboard Shell
 
@@ -156,7 +158,7 @@ Build dashboard workflows for case-study content, media metadata, site settings,
 
 **User stories covered:** 21, 22, 38, 39, 41, 58, 59.
 
-Harden the launch surface: privacy page accuracy, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, environment separation, production readiness checks, and browser QA.
+Harden the launch surface: privacy page accuracy, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, environment separation, Release Train readiness checks, production smoke checks, and browser QA.
 
 ### 17. Public README and Source Evaluation Package
 
@@ -164,7 +166,20 @@ Harden the launch surface: privacy page accuracy, dashboard noindex validation, 
 
 **User stories covered:** 9, 10, 28, 29, 30, 61, 62, 67, 68, 69.
 
-Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, deploy flow, license boundaries, and no-contribution framing.
+Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, Release Train, license boundaries, and no-contribution framing.
+
+## Architecture Review Notes
+
+The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module.
+
+Expected order for architecture deepening:
+
+1. Release Train.
+2. Environment Contract.
+3. Public Content Graph.
+4. Dashboard UI Kit.
+
+The Release Train should create locality for deployment rules and leverage for future agents. Branch protection, GitHub Actions, Wrangler, Cloudflare Preview/Production, environment validation, and smoke checks should not be scattered across unrelated issue work.
 
 ## Granularity Notes
 
