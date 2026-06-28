@@ -6,7 +6,7 @@ This repository is being built as a working sample of engineering standards: pub
 
 ## Status
 
-Repository foundation is available. The public Astro shell is now scaffolded; deeper public routes, content graph integration, dashboard, backend, and deployment work continue through the approved vertical-slice issues.
+Repository foundation is available. The public Astro shell and bilingual graph-backed route skeletons are now scaffolded; the home proof narrative, dashboard, backend, quality gates, and deployment work continue through the approved vertical-slice issues.
 
 ## Local Development
 
@@ -17,7 +17,7 @@ pnpm install
 pnpm verify
 ```
 
-The current foundation includes placeholder package commands so the monorepo can be verified before Astro, Convex, and dashboard code are scaffolded.
+The current workspace includes runnable Astro and Public Content Graph checks. `pnpm verify` runs foundation validation, linting, type checks, Vitest route/content tests, and builds across the monorepo.
 
 ## Workspace
 
@@ -26,7 +26,7 @@ The current foundation includes placeholder package commands so the monorepo can
 - `apps/dashboard`: future private dashboard surface under `/dashboard`.
 - `apps/backend`: future Convex backend surface.
 - `packages/environment`: future Environment Contract implementation.
-- `packages/content-graph`: future Public Content Graph implementation.
+- `packages/content-graph`: Public Content Graph implementation for stable IDs, bilingual routes, SEO metadata, sitemap behavior, and private route exclusions.
 - `packages/dashboard-ui`: future Dashboard UI Kit implementation.
 - `packages/release-train`: future Release Train checks and smoke helpers.
 

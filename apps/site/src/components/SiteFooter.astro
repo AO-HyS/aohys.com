@@ -1,19 +1,27 @@
 ---
+import { getLocalizedPath, type Locale } from "@aohys/content-graph";
+import { getUiCopy } from "../i18n";
+
+interface Props {
+  locale?: Locale;
+}
+
 const year = new Date().getFullYear();
+const { locale = "en" } = Astro.props;
+const copy = getUiCopy(locale).footer;
 ---
 
 <footer class="site-footer">
   <div>
-    <p class="footer-kicker">Public source, private work.</p>
+    <p class="footer-kicker">{copy.kicker}</p>
     <p>
-      This public source site is a working sample of AOHYS engineering standards;
-      client and product code stays private.
+      {copy.body}
     </p>
   </div>
-  <div class="footer-links" aria-label="Footer links">
-    <a href="/privacy">Privacy</a>
-    <a href="/architecture">System notes</a>
+  <div class="footer-links" aria-label={copy.linksAria}>
+    <a href={getLocalizedPath("privacy", locale)}>{copy.privacy}</a>
+    <a href={getLocalizedPath("architecture", locale)}>{copy.architecture}</a>
     <a href="mailto:alejandro.ortiz@aohys.com">alejandro.ortiz@aohys.com</a>
   </div>
-  <p class="copyright">© {year} AOH&amp;S. Code MIT, content reserved.</p>
+  <p class="copyright">© {year} AOH&amp;S. {copy.copyright}</p>
 </footer>

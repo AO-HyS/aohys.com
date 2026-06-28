@@ -11,7 +11,7 @@ pnpm install
 pnpm verify
 ```
 
-The root `package.json` pins pnpm through `packageManager`. The root `verify` command runs foundation verification, then the recursive placeholder build/lint/typecheck/test commands. Feature issues should replace placeholders with real framework commands as each surface is scaffolded.
+The root `package.json` pins pnpm through `packageManager`. The root `verify` command runs foundation verification, then recursive build/lint/typecheck/test commands. Feature issues should replace remaining placeholders with real framework commands as each surface is scaffolded.
 
 ## Workspace Layout
 
@@ -21,7 +21,7 @@ The root `package.json` pins pnpm through `packageManager`. The root `verify` co
 | `apps/dashboard` | Future private dashboard surface under `/dashboard`. |
 | `apps/backend` | Future Convex backend surface for leads, content, media, settings, resume, auth, and dashboard workflows. |
 | `packages/environment` | Future Environment Contract implementation. |
-| `packages/content-graph` | Future Public Content Graph implementation. |
+| `packages/content-graph` | Public Content Graph implementation for stable content IDs, bilingual routes, SEO metadata, sitemap behavior, and private route exclusions. |
 | `packages/dashboard-ui` | Future Dashboard UI Kit implementation over the dashboard primitive adapter. |
 | `packages/release-train` | Future Release Train checks, deploy helpers, and smoke-check helpers. |
 | `scripts` | Repository-level verification and placeholder task helpers. |
@@ -30,7 +30,7 @@ The root `package.json` pins pnpm through `packageManager`. The root `verify` co
 
 The foundation is intentionally shallow on implementation and strict on seams:
 
-- Public routes should use `packages/content-graph` once the Astro site exists.
+- Public routes should use `packages/content-graph` for identity, localized paths, metadata, sitemap rules, and private route exclusions.
 - App and backend code should use `packages/environment` once provider wiring begins.
 - Dashboard routes should use `packages/dashboard-ui` once the private dashboard exists.
 - Deployment and smoke checks should collect in `packages/release-train` and root scripts.

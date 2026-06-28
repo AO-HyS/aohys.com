@@ -1,0 +1,124 @@
+---
+import {
+  getLocalizedPath,
+  type ContentId,
+  type PublicRoute,
+} from "@aohys/content-graph";
+import { getUiCopy } from "../i18n";
+
+interface Props {
+  route: PublicRoute;
+}
+
+const { route } = Astro.props;
+const { id, locale, node, variant } = route;
+const isHome = id === "home";
+const copy = getUiCopy(locale).publicPage;
+
+function actionHref(contentId?: ContentId): string | undefined {
+  return contentId ? getLocalizedPath(contentId, locale) : undefined;
+}
+
+const primaryHref = actionHref(variant.primaryActionContentId);
+const secondaryHref = actionHref(variant.secondaryActionContentId);
+---
+
+{
+  isHome ? (
+    <>
+      <section class="hero-section" aria-labelledby="home-title">
+        <div class="hero-copy">
+          <p class="signal-line">{copy.signal}</p>
+          <h1 id="home-title">{variant.summary}</h1>
+          <p class="hero-lead">
+            {copy.homeLead}
+          </p>
+          <div class="hero-actions" aria-label={copy.actions}>
+            {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          </div>
+        </div>
+
+        <figure class="proof-board" aria-label={copy.boardLabel}>
+          <div class="artifact artifact-large">
+            <span class="artifact-label">{copy.publicSample}</span>
+            <strong>aohys.com</strong>
+            <p>{copy.shellProof}</p>
+          </div>
+          <div class="artifact artifact-line">
+            <span>{copy.outcome}</span>
+            <strong>{copy.outcomeText}</strong>
+          </div>
+          <div class="artifact artifact-line mint">
+            <span>{copy.architecture}</span>
+            <strong>{copy.architectureText}</strong>
+          </div>
+          <div class="artifact artifact-line sky">
+            <span>{copy.reviewPath}</span>
+            <strong>{copy.reviewPathText}</strong>
+          </div>
+          <svg class="proof-lines" viewBox="0 0 520 360" role="img" aria-label="Connections between outcomes, architecture, and release proof">
+            <path d="M108 92 C178 56 254 52 340 96" />
+            <path d="M118 174 C210 216 298 220 420 178" />
+            <path d="M196 272 C258 238 322 238 386 276" />
+            <circle cx="108" cy="92" r="6" />
+            <circle cx="340" cy="96" r="6" />
+            <circle cx="420" cy="178" r="6" />
+            <circle cx="196" cy="272" r="6" />
+            <circle cx="386" cy="276" r="6" />
+          </svg>
+        </figure>
+      </section>
+
+      <section class="ledger-section" aria-labelledby="ledger-title">
+        <div class="section-heading">
+          <p class="signal-line">{copy.proofHeadingSignal}</p>
+          <h2 id="ledger-title">{copy.proofHeading}</h2>
+        </div>
+        <div class="proof-ledger">
+          {copy.proofRows.map((row) => (
+            <a class="ledger-row" href={getLocalizedPath(row.contentId as ContentId, locale)}>
+              <span>{row.label}</span>
+              <strong>{row.text}</strong>
+              <em>{row.action}</em>
+            </a>
+          ))}
+        </div>
+      </section>
+    </>
+  ) : (
+    <>
+      <section class="route-hero" aria-labelledby="route-title" data-content-type={node.type}>
+        <div class="route-hero-copy">
+          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <h1 id="route-title">{variant.title}</h1>
+          <p class="hero-lead">{variant.summary}</p>
+          <div class="hero-actions" aria-label={copy.actions}>
+            {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          </div>
+        </div>
+        <aside class="route-panel" aria-label={copy.routeMetadataAria}>
+          <span>{copy.canonical}</span>
+          <strong>{route.path}</strong>
+          <span>{copy.contentType}</span>
+          <strong>{node.type}</strong>
+        </aside>
+      </section>
+
+      <section class="route-proof-section" aria-labelledby="route-proof-title">
+        <div class="section-heading">
+          <h2 id="route-proof-title">{copy.routeProofTitle}</h2>
+        </div>
+        <div class="route-proof-list">
+          {copy.routeProof.map((item) => (
+            <div class="route-proof-item">
+              <span>{item.label}</span>
+              <p>{item.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
+  )
+}

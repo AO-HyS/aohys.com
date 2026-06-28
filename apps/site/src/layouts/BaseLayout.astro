@@ -2,32 +2,56 @@
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import "../styles/global.css";
+import type { ContentId, Locale } from "@aohys/content-graph";
 
 interface Props {
   title: string;
   description: string;
+  locale: Locale;
+  canonicalUrl: string;
+  alternates: Record<Locale | "x-default", string>;
+  robots?: string;
+  contentId?: ContentId | string;
 }
 
-const { title, description } = Astro.props;
+const {
+  title,
+  description,
+  locale,
+  canonicalUrl,
+  alternates,
+  robots = "index,follow",
+  contentId,
+} = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="robots" content="index,follow" />
-    <link rel="canonical" href={Astro.url.pathname === "/" ? "https://aohys.com/" : new URL(Astro.url.pathname, "https://aohys.com").toString()} />
+    <meta name="robots" content={robots} />
+    <meta property="og:site_name" content="AOHYS" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <link rel="canonical" href={canonicalUrl} />
+    {
+      Object.entries(alternates).map(([hreflang, href]) => (
+        <link rel="alternate" hreflang={hreflang} href={href} />
+      ))
+    }
     <title>{title}</title>
   </head>
   <body>
     <div class="site-shell" data-site-shell="public">
-      <SiteHeader />
+      <SiteHeader locale={locale} currentId={contentId} />
       <main id="main-content">
         <slot />
       </main>
-      <SiteFooter />
+      <SiteFooter locale={locale} />
     </div>
   </body>
 </html>

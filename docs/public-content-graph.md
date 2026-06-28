@@ -10,9 +10,9 @@ The graph should prevent page-level duplication. A future route should not have 
 
 ## Module Shape
 
-The Public Content Graph is a deep module. Its future interface should stay small: resolve a route, list public routes, load a content node, load a localized variant, and expose SEO/sitemap data.
+The Public Content Graph is a deep module. Its interface should stay small: resolve a route, list public routes, load a content node, load a localized variant, and expose SEO/sitemap data.
 
-Its implementation can hide Astro content collections, local content files, generated resume artifacts, dashboard-managed Convex metadata, media references, draft states, redirects, and future content migrations.
+Its current implementation hides local locale JSON dictionaries behind a TypeScript API. As the project grows, it can also hide Astro content collections, generated resume artifacts, dashboard-managed Convex metadata, media references, draft states, redirects, and future content migrations.
 
 The seam is content resolution. Astro pages, sitemap generation, metadata helpers, case-study templates, resume rendering, and dashboard publishing workflows should cross that seam instead of reading scattered frontmatter or route constants directly.
 
@@ -118,6 +118,15 @@ Rules:
 
 The private dashboard may eventually edit case-study content, media metadata, site settings, and resume content. It should not bypass the Public Content Graph. Dashboard workflows should mutate content through a publishing seam that preserves stable IDs, locale variants, SEO fields, sitemap rules, and evidence safety.
 
-## TDD Connection
+## Current Test Surface
 
-The Public Content Graph should be tested through route and metadata behavior. The first useful tracer is resolving `/` and `/es/` from stable content IDs and verifying canonical plus language alternate metadata. Later tracers should cover case-study index/detail routes, missing locale handling, sitemap eligibility, dashboard exclusion, and content safety rules.
+The Public Content Graph is tested with Vitest through route and metadata behavior:
+
+- stable content IDs resolve to English and Spanish paths;
+- route paths resolve back to graph nodes;
+- SEO metadata includes canonical and language alternate data;
+- sitemap entries come from graph eligibility;
+- `/dashboard` and private routes are excluded;
+- missing locale variants fail explicitly.
+
+Astro route smoke tests consume the built site output instead of using ad hoc Node assertions. Later tracers should cover richer case-study content shape, resume/PDF relationships, evidence asset safety, and dashboard publishing invariants.

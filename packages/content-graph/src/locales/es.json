@@ -1,0 +1,112 @@
+{
+  "home": {
+    "path": "/es/",
+    "title": "Alejandro Ortiz Corro",
+    "summary": "Objetivos de negocio convertidos en sistemas de producto confiables.",
+    "seoDescription": "Alejandro Ortiz Corro construye resultados de negocio con arquitectura de software, sistemas de producto, calidad, seguridad y prácticas modernas de ingeniería.",
+    "primaryActionLabel": "Hablemos",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Ver trabajo seleccionado",
+    "secondaryActionContentId": "case-studies"
+  },
+  "case-studies": {
+    "path": "/es/casos",
+    "title": "Trabajo seleccionado",
+    "summary": "Rutas de casos para proyectos en producción, productos activos y sistemas enterprise.",
+    "seoDescription": "Revisa trabajo seleccionado de AOHYS en sitios en producción, productos activos, sistemas de negocio y entrega de software enterprise.",
+    "primaryActionLabel": "Platicar un proyecto",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Leer arquitectura",
+    "secondaryActionContentId": "architecture"
+  },
+  "case-study:casa-roca": {
+    "path": "/es/casos/casa-roca",
+    "title": "Casa Roca",
+    "summary": "Prueba en producción de un sitio público de negocio con SEO, rendimiento y disciplina de deploy.",
+    "seoDescription": "Casa Roca es evidencia en producción de entrega para un sitio público de negocio, SEO, rendimiento y disciplina de release.",
+    "primaryActionLabel": "Crear algo similar",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Volver a casos",
+    "secondaryActionContentId": "case-studies"
+  },
+  "case-study:the-barber-central": {
+    "path": "/es/casos/the-barber-central",
+    "title": "The Barber Central",
+    "summary": "Producto activo de reservaciones y operaciones diseñado alrededor de flujos reales de negocio local.",
+    "seoDescription": "The Barber Central muestra arquitectura de producto activo para reservaciones, operaciones, pagos y comunicación con clientes.",
+    "primaryActionLabel": "Hablar de software operativo",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Volver a casos",
+    "secondaryActionContentId": "case-studies"
+  },
+  "case-study:nutri-plan": {
+    "path": "/es/casos/nutri-plan",
+    "title": "Nutri Plan",
+    "summary": "Sistema de producto activo para flujos de clientes, planes y claridad operativa.",
+    "seoDescription": "Nutri Plan muestra trabajo de producto activo alrededor de flujos de clientes, planes estructurados, herramientas operativas y calidad de entrega.",
+    "primaryActionLabel": "Planear un flujo de producto",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Volver a casos",
+    "secondaryActionContentId": "case-studies"
+  },
+  "case-study:enterprise-systems": {
+    "path": "/es/casos/sistemas-enterprise",
+    "title": "Sistemas enterprise",
+    "summary": "Trabajo confidencial explicado por resultados, decisiones de arquitectura, escalations y práctica de entrega.",
+    "seoDescription": "Sistemas enterprise resume trabajo confidencial de software por resultados de negocio, criterio de arquitectura, liderazgo en escalations y práctica de entrega.",
+    "primaryActionLabel": "Hablar de sistemas complejos",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Leer arquitectura",
+    "secondaryActionContentId": "architecture"
+  },
+  "practice": {
+    "path": "/es/practica",
+    "title": "Práctica",
+    "summary": "Cómo la ingeniería moderna con IA, calidad y disciplina de release dan forma al trabajo.",
+    "seoDescription": "La práctica AOHYS explica ingeniería moderna asistida por IA, pruebas, ciclos de revisión, gates de calidad y hábitos de release.",
+    "primaryActionLabel": "Ver la muestra pública",
+    "primaryActionContentId": "architecture",
+    "secondaryActionLabel": "Hablemos",
+    "secondaryActionContentId": "contact"
+  },
+  "architecture": {
+    "path": "/es/arquitectura",
+    "title": "Arquitectura",
+    "summary": "La muestra pública de AOHYS: SEO con Astro, límites privados, deploys en Cloudflare, workflows con Convex y observabilidad con PostHog.",
+    "seoDescription": "Notas de arquitectura para la muestra pública de AOHYS: páginas SEO con Astro, límites privados del dashboard, deploys en Cloudflare, workflows con Convex y observabilidad con PostHog.",
+    "primaryActionLabel": "Revisar trabajo",
+    "primaryActionContentId": "case-studies",
+    "secondaryActionLabel": "Contactar a Alejandro",
+    "secondaryActionContentId": "contact"
+  },
+  "resume": {
+    "path": "/es/cv",
+    "title": "CV",
+    "summary": "Ruta clara para personas y ATS sobre la experiencia de Alejandro Ortiz Corro en ingeniería de software.",
+    "seoDescription": "CV de Alejandro Ortiz Corro para hiring managers, líderes técnicos y ATS que revisan experiencia en ingeniería de software.",
+    "primaryActionLabel": "Contactar a Alejandro",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Leer arquitectura",
+    "secondaryActionContentId": "architecture"
+  },
+  "contact": {
+    "path": "/es/contacto",
+    "title": "Contacto",
+    "summary": "Inicia una conversación concreta por correo o WhatsApp sobre un rol, proyecto, revisión de arquitectura o producto.",
+    "seoDescription": "Contacta a Alejandro Ortiz Corro y AOHYS por correo o WhatsApp para proyectos de software, revisión de arquitectura, sistemas de producto o conversaciones laborales.",
+    "primaryActionLabel": "Enviar correo",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Revisar trabajo",
+    "secondaryActionContentId": "case-studies"
+  },
+  "privacy": {
+    "path": "/es/privacidad",
+    "title": "Privacidad",
+    "summary": "Cómo AOHYS maneja datos de contacto, analíticas, errores e información privada de proyectos.",
+    "seoDescription": "Ruta de privacidad de AOHYS sobre datos de contacto, analíticas, errores, límites de proyectos privados y alcance de la muestra pública.",
+    "primaryActionLabel": "Contactar a Alejandro",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Volver al inicio",
+    "secondaryActionContentId": "home"
+  }
+}

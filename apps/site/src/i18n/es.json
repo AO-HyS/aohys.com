@@ -1,0 +1,78 @@
+{
+  "header": {
+    "skip": "Saltar al contenido",
+    "aria": "Principal",
+    "homeLabel": "Inicio de AOHYS",
+    "small": "Muestra pública",
+    "language": "English",
+    "nav": {
+      "caseStudies": "Casos",
+      "architecture": "Arquitectura",
+      "resume": "CV",
+      "contact": "Contacto"
+    }
+  },
+  "footer": {
+    "kicker": "Muestra pública, trabajo privado.",
+    "body": "Este sitio de código público es una muestra de los estándares de ingeniería de AOHYS; el código de clientes y productos permanece privado.",
+    "privacy": "Privacidad",
+    "architecture": "Notas del sistema",
+    "linksAria": "Enlaces de pie de página",
+    "copyright": "Código MIT, contenido reservado."
+  },
+  "publicPage": {
+    "signal": "Alejandro Ortiz Corro · AOH&S",
+    "actions": "Acciones principales",
+    "boardLabel": "Tablero de prueba pública de AOHYS",
+    "publicSample": "Muestra pública",
+    "shellProof": "Shell público en Astro, ruta privada de dashboard y seams de release tipados.",
+    "outcome": "Resultado",
+    "outcomeText": "Señal de negocio antes de nombres de stack",
+    "architecture": "Arquitectura",
+    "architectureText": "Cloudflare · Convex · PostHog · Resend",
+    "reviewPath": "Ruta de revisión",
+    "reviewPathText": "feature → develop → main",
+    "homeLead": "Diseño y construyo software que conecta intención de producto, confiabilidad de backend, claridad operativa y prácticas modernas de entrega. Este sitio también es la muestra pública detrás de esa promesa.",
+    "proofHeadingSignal": "Primera fila de prueba",
+    "proofHeading": "El shell empieza con evidencia, no con decoración.",
+    "proofRows": [
+      {
+        "label": "Arquitectura",
+        "text": "Los límites público/privado son visibles desde la primera build.",
+        "action": "Leer notas",
+        "contentId": "architecture"
+      },
+      {
+        "label": "Trabajo seleccionado",
+        "text": "Casa Roca, The Barber Central, Nutri Plan y sistemas enterprise.",
+        "action": "Revisar casos",
+        "contentId": "case-studies"
+      },
+      {
+        "label": "Señal profesional",
+        "text": "Ruta de CV legible para ATS con contexto más completo en línea.",
+        "action": "Ver CV",
+        "contentId": "resume"
+      }
+    ],
+    "routeSignal": "Ruta pública",
+    "routeProofTitle": "Esta página está conectada para SEO, i18n y contenido futuro.",
+    "routeMetadataAria": "Metadatos de ruta",
+    "canonical": "Canonical",
+    "contentType": "Tipo de contenido",
+    "routeProof": [
+      {
+        "label": "ID estable",
+        "text": "La ruta se resuelve con el Public Content Graph, no con metadata duplicada en Astro."
+      },
+      {
+        "label": "Ruta localizada",
+        "text": "Inglés queda sin prefijo y español permanece bajo /es."
+      },
+      {
+        "label": "Búsqueda",
+        "text": "Canonical, alternates de idioma, robots y sitemap comparten una fuente de verdad."
+      }
+    ]
+  }
+}

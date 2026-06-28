@@ -1,0 +1,112 @@
+{
+  "home": {
+    "path": "/",
+    "title": "Alejandro Ortiz Corro",
+    "summary": "Business goals turned into reliable product systems.",
+    "seoDescription": "Alejandro Ortiz Corro builds business outcomes through software architecture, product systems, quality, security, and modern engineering practice.",
+    "primaryActionLabel": "Start a conversation",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "View selected work",
+    "secondaryActionContentId": "case-studies"
+  },
+  "case-studies": {
+    "path": "/case-studies",
+    "title": "Selected work",
+    "summary": "Case-study routes for production proof, active product builds, and enterprise systems.",
+    "seoDescription": "Review selected AOHYS work across production websites, active product builds, business systems, and enterprise software delivery.",
+    "primaryActionLabel": "Discuss a project",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Read architecture notes",
+    "secondaryActionContentId": "architecture"
+  },
+  "case-study:casa-roca": {
+    "path": "/case-studies/casa-roca",
+    "title": "Casa Roca",
+    "summary": "Production proof for a public business site with careful SEO, performance, and deployment discipline.",
+    "seoDescription": "Casa Roca is production evidence for public business site delivery, SEO readiness, performance care, and release discipline.",
+    "primaryActionLabel": "Start a similar build",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Back to selected work",
+    "secondaryActionContentId": "case-studies"
+  },
+  "case-study:the-barber-central": {
+    "path": "/case-studies/the-barber-central",
+    "title": "The Barber Central",
+    "summary": "An active booking and operations product shaped around local business workflows.",
+    "seoDescription": "The Barber Central shows active product architecture for booking, operations, payments, and customer communication workflows.",
+    "primaryActionLabel": "Discuss operations software",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Back to selected work",
+    "secondaryActionContentId": "case-studies"
+  },
+  "case-study:nutri-plan": {
+    "path": "/case-studies/nutri-plan",
+    "title": "Nutri Plan",
+    "summary": "An active product system for client workflows, plans, and operational clarity.",
+    "seoDescription": "Nutri Plan shows active product work around client workflows, structured plans, operational tools, and delivery quality.",
+    "primaryActionLabel": "Plan a product workflow",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Back to selected work",
+    "secondaryActionContentId": "case-studies"
+  },
+  "case-study:enterprise-systems": {
+    "path": "/case-studies/enterprise-systems",
+    "title": "Enterprise systems",
+    "summary": "Confidential work framed through outcomes, architecture decisions, escalation ownership, and delivery practice.",
+    "seoDescription": "Enterprise systems summarizes confidential software work through business outcomes, architecture judgment, escalation ownership, and delivery practice.",
+    "primaryActionLabel": "Talk about complex systems",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Read architecture notes",
+    "secondaryActionContentId": "architecture"
+  },
+  "practice": {
+    "path": "/practice",
+    "title": "Practice",
+    "summary": "How modern AI-assisted engineering, quality checks, and release discipline shape the work.",
+    "seoDescription": "AOHYS practice explains modern AI-assisted engineering, test discipline, review loops, quality gates, and release habits.",
+    "primaryActionLabel": "See the public source",
+    "primaryActionContentId": "architecture",
+    "secondaryActionLabel": "Start a conversation",
+    "secondaryActionContentId": "contact"
+  },
+  "architecture": {
+    "path": "/architecture",
+    "title": "Architecture",
+    "summary": "The public source sample behind AOHYS: Astro SEO, private dashboard boundaries, Cloudflare deploys, Convex workflows, and PostHog observability.",
+    "seoDescription": "Architecture notes for the AOHYS public source sample: Astro SEO pages, private dashboard boundaries, Cloudflare deploys, Convex workflows, and PostHog observability.",
+    "primaryActionLabel": "Review selected work",
+    "primaryActionContentId": "case-studies",
+    "secondaryActionLabel": "Contact Alejandro",
+    "secondaryActionContentId": "contact"
+  },
+  "resume": {
+    "path": "/resume",
+    "title": "Resume",
+    "summary": "A human-readable and ATS-friendly path into Alejandro Ortiz Corro's software engineering experience.",
+    "seoDescription": "Alejandro Ortiz Corro resume path for hiring managers, technical leads, and ATS systems reviewing software engineering experience.",
+    "primaryActionLabel": "Contact Alejandro",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Read architecture notes",
+    "secondaryActionContentId": "architecture"
+  },
+  "contact": {
+    "path": "/contact",
+    "title": "Contact",
+    "summary": "Start a focused conversation by email or WhatsApp about a role, project, architecture review, or product build.",
+    "seoDescription": "Contact Alejandro Ortiz Corro and AOHYS by email or WhatsApp for software projects, architecture review, product systems, or hiring conversations.",
+    "primaryActionLabel": "Email Alejandro",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Review selected work",
+    "secondaryActionContentId": "case-studies"
+  },
+  "privacy": {
+    "path": "/privacy",
+    "title": "Privacy",
+    "summary": "How AOHYS treats contact data, analytics, errors, and private project information.",
+    "seoDescription": "AOHYS privacy route explaining contact data, analytics, error reporting, private project boundaries, and public source limits.",
+    "primaryActionLabel": "Contact Alejandro",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Back home",
+    "secondaryActionContentId": "home"
+  }
+}
