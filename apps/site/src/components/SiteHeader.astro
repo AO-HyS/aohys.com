@@ -1,5 +1,6 @@
 ---
 import { getLocalizedPath, type ContentId, type Locale } from "@aohys/content-graph";
+import { getUiCopy } from "../i18n";
 
 interface Props {
   locale?: Locale;
@@ -8,48 +9,33 @@ interface Props {
 
 const { locale = "en", currentId = "home" } = Astro.props;
 const alternateLocale = locale === "en" ? "es" : "en";
-const copy = {
-  en: {
-    skip: "Skip to content",
-    aria: "Primary",
-    homeLabel: "AOHYS home",
-    small: "Public source site",
-    language: "Español",
-  },
-  es: {
-    skip: "Saltar al contenido",
-    aria: "Principal",
-    homeLabel: "Inicio de AOHYS",
-    small: "Muestra pública",
-    language: "English",
-  },
-} as const;
+const copy = getUiCopy(locale).header;
 const navItems = [
-  { id: "case-studies", label: { en: "Selected work", es: "Casos" } },
-  { id: "architecture", label: { en: "Architecture", es: "Arquitectura" } },
-  { id: "resume", label: { en: "Resume", es: "CV" } },
-  { id: "contact", label: { en: "Contact", es: "Contacto" } },
+  { id: "case-studies", label: copy.nav.caseStudies },
+  { id: "architecture", label: copy.nav.architecture },
+  { id: "resume", label: copy.nav.resume },
+  { id: "contact", label: copy.nav.contact },
 ] as const;
 const languageHref = getLocalizedPath(currentId, alternateLocale);
 ---
 
 <header class="site-header">
-  <a class="skip-link" href="#main-content">{copy[locale].skip}</a>
-  <nav class="site-nav" aria-label={copy[locale].aria}>
-    <a class="brand-lockup" href={getLocalizedPath("home", locale)} aria-label={copy[locale].homeLabel}>
+  <a class="skip-link" href="#main-content">{copy.skip}</a>
+  <nav class="site-nav" aria-label={copy.aria}>
+    <a class="brand-lockup" href={getLocalizedPath("home", locale)} aria-label={copy.homeLabel}>
       <span class="brand-mark" aria-hidden="true">AO</span>
       <span class="brand-text">
         <span>AOH&amp;S</span>
-        <small>{copy[locale].small}</small>
+        <small>{copy.small}</small>
       </span>
     </a>
     <div class="nav-links">
       {
         navItems.map((item) => (
-          <a href={getLocalizedPath(item.id, locale)}>{item.label[locale]}</a>
+          <a href={getLocalizedPath(item.id, locale)}>{item.label}</a>
         ))
       }
-      <a class="language-link" href={languageHref} hreflang={alternateLocale}>{copy[locale].language}</a>
+      <a class="language-link" href={languageHref} hreflang={alternateLocale}>{copy.language}</a>
     </div>
   </nav>
 </header>

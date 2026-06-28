@@ -1,3 +1,6 @@
+import enContent from "./locales/en.json" with { type: "json" };
+import esContent from "./locales/es.json" with { type: "json" };
+
 export const SITE_URL = "https://aohys.com";
 export const DEFAULT_LOCALE = "en";
 export const LOCALES = ["en", "es"] as const;
@@ -79,6 +82,21 @@ export interface SitemapEntry {
   priority?: number;
 }
 
+interface LocalizedContentEntry {
+  path: string;
+  title: string;
+  summary: string;
+  seoTitle?: string;
+  seoDescription: string;
+  primaryActionLabel?: string;
+  primaryActionContentId?: ContentId;
+  secondaryActionLabel?: string;
+  secondaryActionContentId?: ContentId;
+}
+
+type ContentDictionary = Record<ContentId, LocalizedContentEntry>;
+type BaseContentNode = Omit<PublicContentNode, "id" | "variants"> & { id: ContentId };
+
 export class MissingLocaleVariantError extends Error {
   constructor(contentId: string, locale: Locale) {
     super(`Content node "${contentId}" is missing the "${locale}" locale variant.`);
@@ -86,419 +104,124 @@ export class MissingLocaleVariantError extends Error {
   }
 }
 
-function variant(
-  locale: Locale,
-  path: string,
-  title: string,
-  summary: string,
-  seoDescription: string,
-  actions: Partial<
-    Pick<
-      LocaleVariant,
-      | "primaryActionLabel"
-      | "primaryActionContentId"
-      | "secondaryActionLabel"
-      | "secondaryActionContentId"
-    >
-  > = {},
-): LocaleVariant {
-  return {
-    locale,
-    path,
-    title,
-    summary,
-    seoTitle: `${title} | AOHYS`,
-    seoDescription,
-    ...actions,
-  };
-}
+const contentByLocale = {
+  en: enContent,
+  es: esContent,
+} as Record<Locale, ContentDictionary>;
 
-const nodes = [
+const baseNodes = [
   {
     id: "home",
     type: "landing",
     status: "published",
     sitemap: { include: true, changefreq: "weekly", priority: 1 },
-    variants: {
-      en: variant(
-        "en",
-        "/",
-        "Alejandro Ortiz Corro",
-        "Business goals turned into reliable product systems.",
-        "Alejandro Ortiz Corro builds business outcomes through software architecture, product systems, quality, security, and modern engineering practice.",
-        {
-          primaryActionLabel: "Start a conversation",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "View selected work",
-          secondaryActionContentId: "case-studies",
-        },
-      ),
-      es: variant(
-        "es",
-        "/es/",
-        "Alejandro Ortiz Corro",
-        "Objetivos de negocio convertidos en sistemas de producto confiables.",
-        "Alejandro Ortiz Corro construye resultados de negocio con arquitectura de software, sistemas de producto, calidad, seguridad y prácticas modernas de ingeniería.",
-        {
-          primaryActionLabel: "Hablemos",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Ver trabajo seleccionado",
-          secondaryActionContentId: "case-studies",
-        },
-      ),
-    },
   },
   {
     id: "case-studies",
     type: "case-study-index",
     status: "published",
     sitemap: { include: true, changefreq: "weekly", priority: 0.9 },
-    variants: {
-      en: variant(
-        "en",
-        "/case-studies",
-        "Selected work",
-        "Case-study routes for production proof, active product builds, and enterprise systems.",
-        "Review selected AOHYS work across production websites, active product builds, business systems, and enterprise software delivery.",
-        {
-          primaryActionLabel: "Discuss a project",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Read architecture notes",
-          secondaryActionContentId: "architecture",
-        },
-      ),
-      es: variant(
-        "es",
-        "/es/casos",
-        "Trabajo seleccionado",
-        "Rutas de casos para proyectos en producción, productos activos y sistemas enterprise.",
-        "Revisa trabajo seleccionado de AOHYS en sitios en producción, productos activos, sistemas de negocio y entrega de software enterprise.",
-        {
-          primaryActionLabel: "Platicar un proyecto",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Leer arquitectura",
-          secondaryActionContentId: "architecture",
-        },
-      ),
-    },
   },
   {
     id: "case-study:casa-roca",
     type: "case-study",
     status: "published",
     sitemap: { include: true, changefreq: "monthly", priority: 0.8 },
-    variants: {
-      en: variant(
-        "en",
-        "/case-studies/casa-roca",
-        "Casa Roca",
-        "Production proof for a public business site with careful SEO, performance, and deployment discipline.",
-        "Casa Roca is production evidence for public business site delivery, SEO readiness, performance care, and release discipline.",
-        {
-          primaryActionLabel: "Start a similar build",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Back to selected work",
-          secondaryActionContentId: "case-studies",
-        },
-      ),
-      es: variant(
-        "es",
-        "/es/casos/casa-roca",
-        "Casa Roca",
-        "Prueba en producción de un sitio público de negocio con SEO, rendimiento y disciplina de deploy.",
-        "Casa Roca es evidencia en producción de entrega para un sitio público de negocio, SEO, rendimiento y disciplina de release.",
-        {
-          primaryActionLabel: "Crear algo similar",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Volver a casos",
-          secondaryActionContentId: "case-studies",
-        },
-      ),
-    },
   },
   {
     id: "case-study:the-barber-central",
     type: "case-study",
     status: "published",
     sitemap: { include: true, changefreq: "monthly", priority: 0.78 },
-    variants: {
-      en: variant(
-        "en",
-        "/case-studies/the-barber-central",
-        "The Barber Central",
-        "An active booking and operations product shaped around local business workflows.",
-        "The Barber Central shows active product architecture for booking, operations, payments, and customer communication workflows.",
-        {
-          primaryActionLabel: "Discuss operations software",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Back to selected work",
-          secondaryActionContentId: "case-studies",
-        },
-      ),
-      es: variant(
-        "es",
-        "/es/casos/the-barber-central",
-        "The Barber Central",
-        "Producto activo de reservaciones y operaciones diseñado alrededor de flujos reales de negocio local.",
-        "The Barber Central muestra arquitectura de producto activo para reservaciones, operaciones, pagos y comunicación con clientes.",
-        {
-          primaryActionLabel: "Hablar de software operativo",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Volver a casos",
-          secondaryActionContentId: "case-studies",
-        },
-      ),
-    },
   },
   {
     id: "case-study:nutri-plan",
     type: "case-study",
     status: "published",
     sitemap: { include: true, changefreq: "monthly", priority: 0.78 },
-    variants: {
-      en: variant(
-        "en",
-        "/case-studies/nutri-plan",
-        "Nutri Plan",
-        "An active product system for client workflows, plans, and operational clarity.",
-        "Nutri Plan shows active product work around client workflows, structured plans, operational tools, and delivery quality.",
-        {
-          primaryActionLabel: "Plan a product workflow",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Back to selected work",
-          secondaryActionContentId: "case-studies",
-        },
-      ),
-      es: variant(
-        "es",
-        "/es/casos/nutri-plan",
-        "Nutri Plan",
-        "Sistema de producto activo para flujos de clientes, planes y claridad operativa.",
-        "Nutri Plan muestra trabajo de producto activo alrededor de flujos de clientes, planes estructurados, herramientas operativas y calidad de entrega.",
-        {
-          primaryActionLabel: "Planear un flujo de producto",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Volver a casos",
-          secondaryActionContentId: "case-studies",
-        },
-      ),
-    },
   },
   {
     id: "case-study:enterprise-systems",
     type: "case-study",
     status: "published",
     sitemap: { include: true, changefreq: "monthly", priority: 0.76 },
-    variants: {
-      en: variant(
-        "en",
-        "/case-studies/enterprise-systems",
-        "Enterprise systems",
-        "Confidential work framed through outcomes, architecture decisions, escalation ownership, and delivery practice.",
-        "Enterprise systems summarizes confidential software work through business outcomes, architecture judgment, escalation ownership, and delivery practice.",
-        {
-          primaryActionLabel: "Talk about complex systems",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Read architecture notes",
-          secondaryActionContentId: "architecture",
-        },
-      ),
-      es: variant(
-        "es",
-        "/es/casos/sistemas-enterprise",
-        "Sistemas enterprise",
-        "Trabajo confidencial explicado por resultados, decisiones de arquitectura, escalations y práctica de entrega.",
-        "Sistemas enterprise resume trabajo confidencial de software por resultados de negocio, criterio de arquitectura, liderazgo en escalations y práctica de entrega.",
-        {
-          primaryActionLabel: "Hablar de sistemas complejos",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Leer arquitectura",
-          secondaryActionContentId: "architecture",
-        },
-      ),
-    },
   },
   {
     id: "practice",
     type: "page",
     status: "published",
     sitemap: { include: true, changefreq: "monthly", priority: 0.72 },
-    variants: {
-      en: variant(
-        "en",
-        "/practice",
-        "Practice",
-        "How modern AI-assisted engineering, quality checks, and release discipline shape the work.",
-        "AOHYS practice explains modern AI-assisted engineering, test discipline, review loops, quality gates, and release habits.",
-        {
-          primaryActionLabel: "See the public source",
-          primaryActionContentId: "architecture",
-          secondaryActionLabel: "Start a conversation",
-          secondaryActionContentId: "contact",
-        },
-      ),
-      es: variant(
-        "es",
-        "/es/practica",
-        "Práctica",
-        "Cómo la ingeniería moderna con IA, calidad y disciplina de release dan forma al trabajo.",
-        "La práctica AOHYS explica ingeniería moderna asistida por IA, pruebas, ciclos de revisión, gates de calidad y hábitos de release.",
-        {
-          primaryActionLabel: "Ver la muestra pública",
-          primaryActionContentId: "architecture",
-          secondaryActionLabel: "Hablemos",
-          secondaryActionContentId: "contact",
-        },
-      ),
-    },
   },
   {
     id: "architecture",
     type: "page",
     status: "published",
     sitemap: { include: true, changefreq: "monthly", priority: 0.86 },
-    variants: {
-      en: variant(
-        "en",
-        "/architecture",
-        "Architecture",
-        "The public source sample behind AOHYS: Astro SEO, private dashboard boundaries, Cloudflare deploys, Convex workflows, and PostHog observability.",
-        "Architecture notes for the AOHYS public source sample: Astro SEO pages, private dashboard boundaries, Cloudflare deploys, Convex workflows, and PostHog observability.",
-        {
-          primaryActionLabel: "Review selected work",
-          primaryActionContentId: "case-studies",
-          secondaryActionLabel: "Contact Alejandro",
-          secondaryActionContentId: "contact",
-        },
-      ),
-      es: variant(
-        "es",
-        "/es/arquitectura",
-        "Arquitectura",
-        "La muestra pública de AOHYS: SEO con Astro, límites privados, deploys en Cloudflare, workflows con Convex y observabilidad con PostHog.",
-        "Notas de arquitectura para la muestra pública de AOHYS: páginas SEO con Astro, límites privados del dashboard, deploys en Cloudflare, workflows con Convex y observabilidad con PostHog.",
-        {
-          primaryActionLabel: "Revisar trabajo",
-          primaryActionContentId: "case-studies",
-          secondaryActionLabel: "Contactar a Alejandro",
-          secondaryActionContentId: "contact",
-        },
-      ),
-    },
   },
   {
     id: "resume",
     type: "resume",
     status: "published",
     sitemap: { include: true, changefreq: "monthly", priority: 0.84 },
-    variants: {
-      en: variant(
-        "en",
-        "/resume",
-        "Resume",
-        "A human-readable and ATS-friendly path into Alejandro Ortiz Corro's software engineering experience.",
-        "Alejandro Ortiz Corro resume path for hiring managers, technical leads, and ATS systems reviewing software engineering experience.",
-        {
-          primaryActionLabel: "Contact Alejandro",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Read architecture notes",
-          secondaryActionContentId: "architecture",
-        },
-      ),
-      es: variant(
-        "es",
-        "/es/cv",
-        "CV",
-        "Ruta clara para personas y ATS sobre la experiencia de Alejandro Ortiz Corro en ingeniería de software.",
-        "CV de Alejandro Ortiz Corro para hiring managers, líderes técnicos y ATS que revisan experiencia en ingeniería de software.",
-        {
-          primaryActionLabel: "Contactar a Alejandro",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Leer arquitectura",
-          secondaryActionContentId: "architecture",
-        },
-      ),
-    },
   },
   {
     id: "contact",
     type: "contact",
     status: "published",
     sitemap: { include: true, changefreq: "monthly", priority: 0.82 },
-    variants: {
-      en: variant(
-        "en",
-        "/contact",
-        "Contact",
-        "Start a focused conversation by email or WhatsApp about a role, project, architecture review, or product build.",
-        "Contact Alejandro Ortiz Corro and AOHYS by email or WhatsApp for software projects, architecture review, product systems, or hiring conversations.",
-        {
-          primaryActionLabel: "Email Alejandro",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Review selected work",
-          secondaryActionContentId: "case-studies",
-        },
-      ),
-      es: variant(
-        "es",
-        "/es/contacto",
-        "Contacto",
-        "Inicia una conversación concreta por correo o WhatsApp sobre un rol, proyecto, revisión de arquitectura o producto.",
-        "Contacta a Alejandro Ortiz Corro y AOHYS por correo o WhatsApp para proyectos de software, revisión de arquitectura, sistemas de producto o conversaciones laborales.",
-        {
-          primaryActionLabel: "Enviar correo",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Revisar trabajo",
-          secondaryActionContentId: "case-studies",
-        },
-      ),
-    },
   },
   {
     id: "privacy",
     type: "privacy",
     status: "published",
     sitemap: { include: true, changefreq: "monthly", priority: 0.5 },
-    variants: {
-      en: variant(
-        "en",
-        "/privacy",
-        "Privacy",
-        "How AOHYS treats contact data, analytics, errors, and private project information.",
-        "AOHYS privacy route explaining contact data, analytics, error reporting, private project boundaries, and public source limits.",
-        {
-          primaryActionLabel: "Contact Alejandro",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Back home",
-          secondaryActionContentId: "home",
-        },
-      ),
-      es: variant(
-        "es",
-        "/es/privacidad",
-        "Privacidad",
-        "Cómo AOHYS maneja datos de contacto, analíticas, errores e información privada de proyectos.",
-        "Ruta de privacidad de AOHYS sobre datos de contacto, analíticas, errores, límites de proyectos privados y alcance de la muestra pública.",
-        {
-          primaryActionLabel: "Contactar a Alejandro",
-          primaryActionContentId: "contact",
-          secondaryActionLabel: "Volver al inicio",
-          secondaryActionContentId: "home",
-        },
-      ),
-    },
   },
-] as const satisfies readonly PublicContentNode[];
-
-export const PUBLIC_CONTENT_NODES: readonly PublicContentNode[] = nodes;
-
-const contentById = new Map(PUBLIC_CONTENT_NODES.map((node) => [node.id, node]));
+] as const satisfies readonly BaseContentNode[];
 
 function assertLocale(locale: string): asserts locale is Locale {
   if (!LOCALES.includes(locale as Locale)) {
     throw new Error(`Unsupported locale "${locale}".`);
   }
 }
+
+function getDictionaryEntry(contentId: ContentId | string, locale: Locale): LocalizedContentEntry {
+  assertLocale(locale);
+  const entry = contentByLocale[locale][contentId as ContentId];
+
+  if (!entry) {
+    throw new MissingLocaleVariantError(contentId, locale);
+  }
+
+  return entry;
+}
+
+function variantFromDictionary(contentId: ContentId, locale: Locale): LocaleVariant {
+  const entry = getDictionaryEntry(contentId, locale);
+
+  return {
+    locale,
+    path: entry.path,
+    title: entry.title,
+    summary: entry.summary,
+    seoTitle: entry.seoTitle ?? `${entry.title} | AOHYS`,
+    seoDescription: entry.seoDescription,
+    primaryActionLabel: entry.primaryActionLabel,
+    primaryActionContentId: entry.primaryActionContentId,
+    secondaryActionLabel: entry.secondaryActionLabel,
+    secondaryActionContentId: entry.secondaryActionContentId,
+  };
+}
+
+const nodes = baseNodes.map((node) => ({
+  ...node,
+  variants: Object.fromEntries(
+    LOCALES.map((locale) => [locale, variantFromDictionary(node.id, locale)]),
+  ) as Record<Locale, LocaleVariant>,
+})) satisfies PublicContentNode[];
+
+export const PUBLIC_CONTENT_NODES: readonly PublicContentNode[] = nodes;
+
+const contentById = new Map(PUBLIC_CONTENT_NODES.map((node) => [node.id, node]));
 
 function normalizePath(pathname: string): string {
   let path = pathname;

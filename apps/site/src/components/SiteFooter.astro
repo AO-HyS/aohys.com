@@ -1,5 +1,6 @@
 ---
 import { getLocalizedPath, type Locale } from "@aohys/content-graph";
+import { getUiCopy } from "../i18n";
 
 interface Props {
   locale?: Locale;
@@ -7,37 +8,20 @@ interface Props {
 
 const year = new Date().getFullYear();
 const { locale = "en" } = Astro.props;
-const copy = {
-  en: {
-    kicker: "Public source, private work.",
-    body:
-      "This public source site is a working sample of AOHYS engineering standards; client and product code stays private.",
-    privacy: "Privacy",
-    architecture: "System notes",
-    copyright: "Code MIT, content reserved.",
-  },
-  es: {
-    kicker: "Muestra pública, trabajo privado.",
-    body:
-      "Este sitio de código público es una muestra de los estándares de ingeniería de AOHYS; el código de clientes y productos permanece privado.",
-    privacy: "Privacidad",
-    architecture: "Notas del sistema",
-    copyright: "Código MIT, contenido reservado.",
-  },
-} as const;
+const copy = getUiCopy(locale).footer;
 ---
 
 <footer class="site-footer">
   <div>
-    <p class="footer-kicker">{copy[locale].kicker}</p>
+    <p class="footer-kicker">{copy.kicker}</p>
     <p>
-      {copy[locale].body}
+      {copy.body}
     </p>
   </div>
-  <div class="footer-links" aria-label="Footer links">
-    <a href={getLocalizedPath("privacy", locale)}>{copy[locale].privacy}</a>
-    <a href={getLocalizedPath("architecture", locale)}>{copy[locale].architecture}</a>
+  <div class="footer-links" aria-label={copy.linksAria}>
+    <a href={getLocalizedPath("privacy", locale)}>{copy.privacy}</a>
+    <a href={getLocalizedPath("architecture", locale)}>{copy.architecture}</a>
     <a href="mailto:alejandro.ortiz@aohys.com">alejandro.ortiz@aohys.com</a>
   </div>
-  <p class="copyright">© {year} AOH&amp;S. {copy[locale].copyright}</p>
+  <p class="copyright">© {year} AOH&amp;S. {copy.copyright}</p>
 </footer>

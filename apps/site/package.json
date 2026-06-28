@@ -7,10 +7,10 @@
   "scripts": {
     "build": "astro build",
     "dev": "astro dev",
-    "lint": "node scripts/verify-source.mjs",
+    "lint": "vitest run test/source-quality.test.ts",
     "preview": "astro preview",
     "typecheck": "astro check",
-    "test": "astro build && node scripts/verify-public-shell.mjs && tsx scripts/verify-public-routes.ts"
+    "test": "astro build && vitest run test/public-shell-build.test.ts test/public-routes-build.test.ts"
   },
   "dependencies": {
     "@aohys/content-graph": "workspace:*",
@@ -21,7 +21,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@types/node": "^26.0.1",
-    "tsx": "^4.22.4",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   }
 }

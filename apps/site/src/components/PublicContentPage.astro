@@ -4,6 +4,7 @@ import {
   type ContentId,
   type PublicRoute,
 } from "@aohys/content-graph";
+import { getUiCopy } from "../i18n";
 
 interface Props {
   route: PublicRoute;
@@ -12,62 +13,7 @@ interface Props {
 const { route } = Astro.props;
 const { id, locale, node, variant } = route;
 const isHome = id === "home";
-const copy = {
-  en: {
-    signal: "Alejandro Ortiz Corro · AOH&S",
-    actions: "Primary actions",
-    boardLabel: "AOHYS public source proof board",
-    publicSample: "Public sample",
-    shellProof: "Astro public shell, private dashboard path, typed release seams.",
-    outcome: "Outcome",
-    outcomeText: "Business signal before stack names",
-    architecture: "Architecture",
-    architectureText: "Cloudflare · Convex · PostHog · Resend",
-    reviewPath: "Review path",
-    reviewPathText: "feature → develop → main",
-    proofHeadingSignal: "First proof row",
-    proofHeading: "The shell starts with evidence, not decoration.",
-    proofRows: [
-      ["Architecture", "Public/private seams are visible from the first build.", "Read system notes", "architecture"],
-      ["Selected work", "Casa Roca, The Barber Central, Nutri Plan, and enterprise systems.", "Review cases", "case-studies"],
-      ["Career signal", "ATS-friendly resume path with richer context online.", "View resume", "resume"],
-    ],
-    routeSignal: "Public route",
-    routeProofTitle: "This page is wired for SEO, i18n, and future content depth.",
-    routeProof: [
-      ["Stable ID", "The route resolves through the Public Content Graph, not duplicated Astro metadata."],
-      ["Localized path", "English stays unprefixed while Spanish remains under /es."],
-      ["Search behavior", "Canonical URLs, language alternates, robots, and sitemap inclusion share one source."],
-    ],
-  },
-  es: {
-    signal: "Alejandro Ortiz Corro · AOH&S",
-    actions: "Acciones principales",
-    boardLabel: "Tablero de prueba pública de AOHYS",
-    publicSample: "Muestra pública",
-    shellProof: "Shell público en Astro, ruta privada de dashboard y seams de release tipados.",
-    outcome: "Resultado",
-    outcomeText: "Señal de negocio antes de nombres de stack",
-    architecture: "Arquitectura",
-    architectureText: "Cloudflare · Convex · PostHog · Resend",
-    reviewPath: "Ruta de revisión",
-    reviewPathText: "feature → develop → main",
-    proofHeadingSignal: "Primera fila de prueba",
-    proofHeading: "El shell empieza con evidencia, no con decoración.",
-    proofRows: [
-      ["Arquitectura", "Los límites público/privado son visibles desde la primera build.", "Leer notas", "architecture"],
-      ["Trabajo seleccionado", "Casa Roca, The Barber Central, Nutri Plan y sistemas enterprise.", "Revisar casos", "case-studies"],
-      ["Señal profesional", "Ruta de CV legible para ATS con contexto más completo en línea.", "Ver CV", "resume"],
-    ],
-    routeSignal: "Ruta pública",
-    routeProofTitle: "Esta página está conectada para SEO, i18n y contenido futuro.",
-    routeProof: [
-      ["ID estable", "La ruta se resuelve con el Public Content Graph, no con metadata duplicada en Astro."],
-      ["Ruta localizada", "Inglés queda sin prefijo y español permanece bajo /es."],
-      ["Búsqueda", "Canonical, alternates de idioma, robots y sitemap comparten una fuente de verdad."],
-    ],
-  },
-} as const;
+const copy = getUiCopy(locale).publicPage;
 
 function actionHref(contentId?: ContentId): string | undefined {
   return contentId ? getLocalizedPath(contentId, locale) : undefined;
@@ -82,36 +28,34 @@ const secondaryHref = actionHref(variant.secondaryActionContentId);
     <>
       <section class="hero-section" aria-labelledby="home-title">
         <div class="hero-copy">
-          <p class="signal-line">{copy[locale].signal}</p>
+          <p class="signal-line">{copy.signal}</p>
           <h1 id="home-title">{variant.summary}</h1>
           <p class="hero-lead">
-            {locale === "en"
-              ? "I design and build software that connects product intent, backend reliability, operational clarity, and modern delivery practice. This site is also the public source sample behind that claim."
-              : "Diseño y construyo software que conecta intención de producto, confiabilidad de backend, claridad operativa y prácticas modernas de entrega. Este sitio también es la muestra pública detrás de esa promesa."}
+            {copy.homeLead}
           </p>
-          <div class="hero-actions" aria-label={copy[locale].actions}>
+          <div class="hero-actions" aria-label={copy.actions}>
             {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
             {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
           </div>
         </div>
 
-        <figure class="proof-board" aria-label={copy[locale].boardLabel}>
+        <figure class="proof-board" aria-label={copy.boardLabel}>
           <div class="artifact artifact-large">
-            <span class="artifact-label">{copy[locale].publicSample}</span>
+            <span class="artifact-label">{copy.publicSample}</span>
             <strong>aohys.com</strong>
-            <p>{copy[locale].shellProof}</p>
+            <p>{copy.shellProof}</p>
           </div>
           <div class="artifact artifact-line">
-            <span>{copy[locale].outcome}</span>
-            <strong>{copy[locale].outcomeText}</strong>
+            <span>{copy.outcome}</span>
+            <strong>{copy.outcomeText}</strong>
           </div>
           <div class="artifact artifact-line mint">
-            <span>{copy[locale].architecture}</span>
-            <strong>{copy[locale].architectureText}</strong>
+            <span>{copy.architecture}</span>
+            <strong>{copy.architectureText}</strong>
           </div>
           <div class="artifact artifact-line sky">
-            <span>{copy[locale].reviewPath}</span>
-            <strong>{copy[locale].reviewPathText}</strong>
+            <span>{copy.reviewPath}</span>
+            <strong>{copy.reviewPathText}</strong>
           </div>
           <svg class="proof-lines" viewBox="0 0 520 360" role="img" aria-label="Connections between outcomes, architecture, and release proof">
             <path d="M108 92 C178 56 254 52 340 96" />
@@ -128,15 +72,15 @@ const secondaryHref = actionHref(variant.secondaryActionContentId);
 
       <section class="ledger-section" aria-labelledby="ledger-title">
         <div class="section-heading">
-          <p class="signal-line">{copy[locale].proofHeadingSignal}</p>
-          <h2 id="ledger-title">{copy[locale].proofHeading}</h2>
+          <p class="signal-line">{copy.proofHeadingSignal}</p>
+          <h2 id="ledger-title">{copy.proofHeading}</h2>
         </div>
         <div class="proof-ledger">
-          {copy[locale].proofRows.map(([label, text, action, contentId]) => (
-            <a class="ledger-row" href={getLocalizedPath(contentId as ContentId, locale)}>
-              <span>{label}</span>
-              <strong>{text}</strong>
-              <em>{action}</em>
+          {copy.proofRows.map((row) => (
+            <a class="ledger-row" href={getLocalizedPath(row.contentId as ContentId, locale)}>
+              <span>{row.label}</span>
+              <strong>{row.text}</strong>
+              <em>{row.action}</em>
             </a>
           ))}
         </div>
@@ -146,31 +90,31 @@ const secondaryHref = actionHref(variant.secondaryActionContentId);
     <>
       <section class="route-hero" aria-labelledby="route-title" data-content-type={node.type}>
         <div class="route-hero-copy">
-          <p class="signal-line">{copy[locale].routeSignal} · {id}</p>
+          <p class="signal-line">{copy.routeSignal} · {id}</p>
           <h1 id="route-title">{variant.title}</h1>
           <p class="hero-lead">{variant.summary}</p>
-          <div class="hero-actions" aria-label={copy[locale].actions}>
+          <div class="hero-actions" aria-label={copy.actions}>
             {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
             {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
           </div>
         </div>
-        <aside class="route-panel" aria-label="Route metadata">
-          <span>{locale === "en" ? "Canonical" : "Canonical"}</span>
+        <aside class="route-panel" aria-label={copy.routeMetadataAria}>
+          <span>{copy.canonical}</span>
           <strong>{route.path}</strong>
-          <span>{locale === "en" ? "Content type" : "Tipo de contenido"}</span>
+          <span>{copy.contentType}</span>
           <strong>{node.type}</strong>
         </aside>
       </section>
 
       <section class="route-proof-section" aria-labelledby="route-proof-title">
         <div class="section-heading">
-          <h2 id="route-proof-title">{copy[locale].routeProofTitle}</h2>
+          <h2 id="route-proof-title">{copy.routeProofTitle}</h2>
         </div>
         <div class="route-proof-list">
-          {copy[locale].routeProof.map(([label, text]) => (
+          {copy.routeProof.map((item) => (
             <div class="route-proof-item">
-              <span>{label}</span>
-              <p>{text}</p>
+              <span>{item.label}</span>
+              <p>{item.text}</p>
             </div>
           ))}
         </div>

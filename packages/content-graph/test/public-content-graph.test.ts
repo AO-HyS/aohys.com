@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+import { describe, expect, it } from "vitest";
 import {
   DEFAULT_LOCALE,
   LOCALES,
@@ -13,83 +13,98 @@ import {
   resolvePublicPath,
 } from "../src/index.js";
 
-assert.equal(DEFAULT_LOCALE, "en");
-assert.deepEqual(LOCALES, ["en", "es"]);
+describe("Public Content Graph", () => {
+  it("uses English as the default locale and Spanish as the secondary locale", () => {
+    expect(DEFAULT_LOCALE).toBe("en");
+    expect(LOCALES).toEqual(["en", "es"]);
+  });
 
-assert.equal(getLocalizedPath("home", "en"), "/");
-assert.equal(getLocalizedPath("home", "es"), "/es/");
-assert.equal(getLocalizedPath("architecture", "en"), "/architecture");
-assert.equal(getLocalizedPath("architecture", "es"), "/es/arquitectura");
-assert.equal(getLocalizedPath("case-study:enterprise-systems", "en"), "/case-studies/enterprise-systems");
-assert.equal(getLocalizedPath("case-study:enterprise-systems", "es"), "/es/casos/sistemas-enterprise");
+  it("resolves stable content IDs to localized public routes", () => {
+    expect(getLocalizedPath("home", "en")).toBe("/");
+    expect(getLocalizedPath("home", "es")).toBe("/es/");
+    expect(getLocalizedPath("architecture", "en")).toBe("/architecture");
+    expect(getLocalizedPath("architecture", "es")).toBe("/es/arquitectura");
+    expect(getLocalizedPath("case-study:enterprise-systems", "en")).toBe(
+      "/case-studies/enterprise-systems",
+    );
+    expect(getLocalizedPath("case-study:enterprise-systems", "es")).toBe(
+      "/es/casos/sistemas-enterprise",
+    );
+  });
 
-const homeRoute = resolvePublicPath("/");
-assert.ok(homeRoute);
-assert.equal(homeRoute.id, "home");
-assert.equal(homeRoute.locale, "en");
-assert.equal(homeRoute.variant.path, "/");
+  it("resolves public paths without resolving private dashboard paths", () => {
+    const homeRoute = resolvePublicPath("/");
+    expect(homeRoute).not.toBeNull();
+    expect(homeRoute?.id).toBe("home");
+    expect(homeRoute?.locale).toBe("en");
+    expect(homeRoute?.variant.path).toBe("/");
 
-const spanishHomeRoute = resolvePublicPath("/es/");
-assert.ok(spanishHomeRoute);
-assert.equal(spanishHomeRoute.id, "home");
-assert.equal(spanishHomeRoute.locale, "es");
-assert.equal(spanishHomeRoute.variant.path, "/es/");
+    const spanishHomeRoute = resolvePublicPath("/es/");
+    expect(spanishHomeRoute).not.toBeNull();
+    expect(spanishHomeRoute?.id).toBe("home");
+    expect(spanishHomeRoute?.locale).toBe("es");
+    expect(spanishHomeRoute?.variant.path).toBe("/es/");
 
-const casaRocaSpanishRoute = resolvePublicPath("/es/casos/casa-roca");
-assert.ok(casaRocaSpanishRoute);
-assert.equal(casaRocaSpanishRoute.id, "case-study:casa-roca");
-assert.equal(casaRocaSpanishRoute.locale, "es");
+    const casaRocaSpanishRoute = resolvePublicPath("/es/casos/casa-roca");
+    expect(casaRocaSpanishRoute).not.toBeNull();
+    expect(casaRocaSpanishRoute?.id).toBe("case-study:casa-roca");
+    expect(casaRocaSpanishRoute?.locale).toBe("es");
 
-assert.equal(resolvePublicPath("/dashboard"), null);
-assert.equal(isPrivateRoute("/dashboard/media"), true);
-assert.equal(isPrivateRoute("/case-studies"), false);
+    expect(resolvePublicPath("/dashboard")).toBeNull();
+    expect(isPrivateRoute("/dashboard/media")).toBe(true);
+    expect(isPrivateRoute("/case-studies")).toBe(false);
+  });
 
-const alternates = getLanguageAlternates("resume");
-assert.deepEqual(alternates, {
-  en: "https://aohys.com/resume",
-  es: "https://aohys.com/es/cv",
-  "x-default": "https://aohys.com/resume",
-});
+  it("returns canonical SEO metadata and language alternates", () => {
+    expect(getLanguageAlternates("resume")).toEqual({
+      en: "https://aohys.com/resume",
+      es: "https://aohys.com/es/cv",
+      "x-default": "https://aohys.com/resume",
+    });
 
-const seo = getSeoMetadata("contact", "es");
-assert.equal(seo.lang, "es");
-assert.equal(seo.canonicalUrl, "https://aohys.com/es/contacto");
-assert.equal(seo.alternates.en, "https://aohys.com/contact");
-assert.equal(seo.alternates.es, "https://aohys.com/es/contacto");
-assert.match(seo.title, /AOHYS|Alejandro/);
-assert.match(seo.description, /WhatsApp|correo|proyecto|conversaci[oó]n/i);
+    const seo = getSeoMetadata("contact", "es");
+    expect(seo.lang).toBe("es");
+    expect(seo.canonicalUrl).toBe("https://aohys.com/es/contacto");
+    expect(seo.alternates.en).toBe("https://aohys.com/contact");
+    expect(seo.alternates.es).toBe("https://aohys.com/es/contacto");
+    expect(seo.title).toMatch(/AOHYS|Alejandro/);
+    expect(seo.description).toMatch(/WhatsApp|correo|proyecto|conversaci[oó]n/i);
+  });
 
-const publicRoutes = getPublicRouteMap();
-assert.equal(publicRoutes.length, 22);
-assert.equal(new Set(publicRoutes.map((route) => `${route.id}:${route.locale}`)).size, 22);
-assert.ok(publicRoutes.every((route) => route.node.sitemap.include === true));
+  it("derives sitemap entries from graph eligibility", () => {
+    const publicRoutes = getPublicRouteMap();
+    expect(publicRoutes).toHaveLength(22);
+    expect(new Set(publicRoutes.map((route) => `${route.id}:${route.locale}`)).size).toBe(22);
+    expect(publicRoutes.every((route) => route.node.sitemap.include === true)).toBe(true);
 
-const sitemapUrls = getSitemapEntries().map((entry) => entry.url);
-assert.ok(sitemapUrls.includes("https://aohys.com/"));
-assert.ok(sitemapUrls.includes("https://aohys.com/es/"));
-assert.ok(sitemapUrls.includes("https://aohys.com/es/casos/sistemas-enterprise"));
-assert.equal(sitemapUrls.some((url) => url.includes("/dashboard")), false);
+    const sitemapUrls = getSitemapEntries().map((entry) => entry.url);
+    expect(sitemapUrls).toContain("https://aohys.com/");
+    expect(sitemapUrls).toContain("https://aohys.com/es/");
+    expect(sitemapUrls).toContain("https://aohys.com/es/casos/sistemas-enterprise");
+    expect(sitemapUrls.some((url) => url.includes("/dashboard"))).toBe(false);
+  });
 
-assert.throws(
-  () =>
-    getLocaleVariant(
-      {
-        id: "broken-node",
-        type: "page",
-        status: "published",
-        sitemap: { include: true },
-        variants: {
-          en: {
-            locale: "en",
-            path: "/broken",
-            title: "Broken",
-            summary: "Broken node",
-            seoTitle: "Broken",
-            seoDescription: "Broken node",
+  it("fails explicitly when a locale variant is missing", () => {
+    expect(() =>
+      getLocaleVariant(
+        {
+          id: "broken-node",
+          type: "page",
+          status: "published",
+          sitemap: { include: true },
+          variants: {
+            en: {
+              locale: "en",
+              path: "/broken",
+              title: "Broken",
+              summary: "Broken node",
+              seoTitle: "Broken",
+              seoDescription: "Broken node",
+            },
           },
         },
-      },
-      "es",
-    ),
-  MissingLocaleVariantError,
-);
+        "es",
+      ),
+    ).toThrow(MissingLocaleVariantError);
+  });
+});
