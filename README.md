@@ -20,9 +20,11 @@ Planning and issue breakdown are in progress. Implementation will start from the
 - [Release Train](docs/release-train.md)
 - [Environment Contract](docs/environment-contract.md)
 - [Public Content Graph](docs/public-content-graph.md)
+- [Dashboard UI Kit](docs/dashboard-ui-kit.md)
 - [ADR 0001: Protected Release Train](docs/adr/0001-protected-release-train.md)
 - [ADR 0002: Environment Contract Source of Truth](docs/adr/0002-environment-contract-source-of-truth.md)
 - [ADR 0003: Public Content Graph](docs/adr/0003-public-content-graph.md)
+- [ADR 0004: Dashboard UI Kit](docs/adr/0004-dashboard-ui-kit.md)
 
 ## Source Boundary
 

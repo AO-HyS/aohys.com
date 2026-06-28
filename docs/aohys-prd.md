@@ -103,6 +103,11 @@ The visual implementation will follow the Impeccable process and the approved de
 - Record the content decision in `docs/adr/0003-public-content-graph.md` and the operational shape in `docs/public-content-graph.md`.
 - Use React with Vite and TanStack Router for the private dashboard.
 - Keep the private dashboard in English only.
+- Use a Dashboard UI Kit module for private dashboard workflow composition.
+- Treat shadcn/ui as the Dashboard Primitive Adapter, not as the dashboard interface.
+- Keep dashboard shell, workflow surfaces, forms, data lists/details, empty/loading/error states, and mobile behavior behind the Dashboard UI Kit seam.
+- Validate dashboard workflows at 390px and treat mobile usability as part of the dashboard acceptance surface.
+- Record the dashboard decision in `docs/adr/0004-dashboard-ui-kit.md` and the operational shape in `docs/dashboard-ui-kit.md`.
 - Host all public and private surfaces under one domain, with the dashboard under `/dashboard`.
 - Make `/dashboard` authenticated, noindexed, omitted from sitemap, and unavailable to anonymous users.
 - Use Convex as the primary backend for leads, content metadata, media metadata, site settings, resume content, auth integration, and dashboard workflows.
@@ -171,6 +176,7 @@ The visual implementation will follow the Impeccable process and the approved de
 - Release Train tests should validate observable release behavior: local verification, Cloudflare-compatible build output, preview smoke checks, production smoke checks, and branch/source assumptions.
 - Environment Contract tests should validate observable configuration behavior: missing required values fail, safe local placeholders pass local validation, and production validation rejects preview/local provider targets.
 - Public Content Graph tests should validate observable route and metadata behavior: stable IDs resolve to English/Spanish paths, canonical URLs and language alternates are correct, sitemap eligibility is explicit, and private dashboard routes remain excluded.
+- Dashboard UI Kit tests should validate authenticated workflow behavior: dashboard shell access, navigation, state surfaces, mobile layout, no duplicate controls, and preservation of Public Content Graph and Environment Contract invariants.
 - The visual QA seam is Impeccable-backed browser review: use the approved design context, check typography, color, spatial rhythm, responsive behavior, motion, UX copy, and slop-pattern avoidance.
 - Public page tests should cover the home page, case study index, one case study detail page, architecture page, resume page, contact page, and privacy page in both language trees where applicable.
 - SEO tests should verify canonical URLs, localized alternates, page titles, meta descriptions, robots behavior, sitemap inclusion/exclusion, and dashboard noindex.
@@ -210,3 +216,4 @@ The visual implementation will follow the Impeccable process and the approved de
 - Release architecture now lives in `docs/release-train.md`.
 - Environment architecture now lives in `docs/environment-contract.md`.
 - Public content architecture now lives in `docs/public-content-graph.md`.
+- Dashboard architecture now lives in `docs/dashboard-ui-kit.md`.
