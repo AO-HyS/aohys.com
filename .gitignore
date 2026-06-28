@@ -1,0 +1,19 @@
+.DS_Store
+node_modules/
+dist/
+build/
+.astro/
+.wrangler/
+.dev.vars
+.env
+.env.*
+!.env.example
+
+# Local agent/tooling state
+.agents/
+.claude/
+.codex/
+.expect/
+.gemini/
+.impeccable/config.local.json
+.opencode/
