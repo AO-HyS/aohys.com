@@ -14,6 +14,7 @@ Astro routes, sitemap generation, metadata helpers, resume rendering, case-study
 - graph-backed architecture/source-framing content and source documentation links;
 - graph-backed selected-work index entries with status labels and localized paths;
 - graph-backed case-study detail content, public evidence, and confidentiality notes;
+- graph-backed resume content, contact links, dynamic context links, and PDF artifact metadata;
 - sitemap eligibility;
 - private dashboard route exclusions;
 - explicit failures when a locale variant is missing.
@@ -27,6 +28,7 @@ Astro routes, sitemap generation, metadata helpers, resume rendering, case-study
 - `getArchitecturePageContent(locale)` returns the localized architecture page framing and source links.
 - `getCaseStudyIndexContent(locale)` returns the localized selected-work index entries.
 - `getCaseStudyPageContent(contentId, locale)` returns localized case-study detail content when a case study has a complete public page.
+- `getResumePageContent(locale)` returns localized semantic resume content and the PDF artifact relationship.
 - `getSeoMetadata(contentId, locale)` returns canonical, alternates, robots, title, and description.
 - `getSitemapEntries()` returns graph-approved sitemap entries.
 

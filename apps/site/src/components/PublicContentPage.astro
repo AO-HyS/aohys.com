@@ -5,6 +5,7 @@ import {
   getCaseStudyPageContent,
   getHomePageContent,
   getLocalizedPath,
+  getResumePageContent,
   type ContentId,
   type PublicRoute,
 } from "@aohys/content-graph";
@@ -20,11 +21,13 @@ const isHome = id === "home";
 const isArchitecture = id === "architecture";
 const isCaseStudyIndex = node.type === "case-study-index";
 const isCaseStudy = node.type === "case-study";
+const isResume = node.type === "resume";
 const copy = getUiCopy(locale).publicPage;
 const homeContent = isHome ? getHomePageContent(locale) : undefined;
 const architectureContent = isArchitecture ? getArchitecturePageContent(locale) : undefined;
 const caseStudyIndexContent = isCaseStudyIndex ? getCaseStudyIndexContent(locale) : undefined;
 const caseStudyContent = isCaseStudy ? getCaseStudyPageContent(id, locale) : undefined;
+const resumeContent = isResume ? getResumePageContent(locale) : undefined;
 const caseStudySections = caseStudyContent ? [
   caseStudyContent.problem,
   caseStudyContent.businessOutcome,
@@ -283,6 +286,140 @@ const secondaryHref = actionHref(variant.secondaryActionContentId);
       <section class="case-study-confidentiality" aria-labelledby="case-study-confidentiality-title">
         <h2 id="case-study-confidentiality-title">{caseStudyContent.confidentialityNote.title}</h2>
         <p>{caseStudyContent.confidentialityNote.body}</p>
+      </section>
+    </>
+  ) : isResume && resumeContent ? (
+    <>
+      <section class="resume-hero" aria-labelledby="resume-title" data-resume-content-id={id}>
+        <div class="resume-identity">
+          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <h1 id="resume-title">{resumeContent.name}</h1>
+          <p class="resume-role">{resumeContent.role}</p>
+          <p class="hero-lead">{resumeContent.intro}</p>
+          <div class="hero-actions" aria-label={copy.actions}>
+            <a class="button button-primary" href={resumeContent.pdf.href} download={resumeContent.pdf.fileName}>
+              {resumeContent.pdf.label}
+            </a>
+            {primaryHref && <a class="button button-secondary" href={primaryHref}>{variant.primaryActionLabel}</a>}
+          </div>
+        </div>
+
+        <aside class="resume-contact" aria-label={resumeContent.name}>
+          <span>{resumeContent.location}</span>
+          {resumeContent.contactLinks.map((link) => (
+            <a href={link.href}>
+              <strong>{link.label}</strong>
+              <span>{link.text}</span>
+            </a>
+          ))}
+        </aside>
+      </section>
+
+      <section class="resume-section resume-summary" aria-labelledby="resume-summary-title">
+        <div class="section-heading">
+          <h2 id="resume-summary-title">{resumeContent.summaryTitle}</h2>
+        </div>
+        <div class="resume-copy">
+          {resumeContent.summary.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+      </section>
+
+      <section class="resume-section" aria-labelledby="resume-highlights-title">
+        <div class="section-heading">
+          <h2 id="resume-highlights-title">{resumeContent.highlightsTitle}</h2>
+        </div>
+        <div class="resume-ledger">
+          {resumeContent.highlights.map((highlight) => (
+            <article class="resume-row">
+              <span>{highlight.label}</span>
+              <p>{highlight.text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="resume-section" aria-labelledby="resume-projects-title">
+        <div class="section-heading">
+          <h2 id="resume-projects-title">{resumeContent.projectsTitle}</h2>
+        </div>
+        <div class="resume-long-list">
+          {resumeContent.projects.map((project) => (
+            <article class="resume-entry">
+              <h3>{project.title}</h3>
+              <p>{project.summary}</p>
+              <ul>
+                {project.bullets.map((bullet) => <li>{bullet}</li>)}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="resume-section" aria-labelledby="resume-experience-title">
+        <div class="section-heading">
+          <h2 id="resume-experience-title">{resumeContent.experienceTitle}</h2>
+        </div>
+        <div class="resume-long-list">
+          {resumeContent.experience.map((job) => (
+            <article class="resume-entry">
+              <div class="resume-entry-heading">
+                <h3>{job.role}</h3>
+                <span>{job.period}</span>
+              </div>
+              <p>{job.company}</p>
+              <ul>
+                {job.bullets.map((bullet) => <li>{bullet}</li>)}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="resume-section" aria-labelledby="resume-skills-title">
+        <div class="section-heading">
+          <h2 id="resume-skills-title">{resumeContent.skillsTitle}</h2>
+        </div>
+        <div class="resume-ledger">
+          {resumeContent.skills.map((skillGroup) => (
+            <article class="resume-row">
+              <span>{skillGroup.label}</span>
+              <p>{skillGroup.items.join(", ")}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="resume-section" aria-labelledby="resume-education-title">
+        <div class="section-heading">
+          <h2 id="resume-education-title">{resumeContent.educationTitle}</h2>
+        </div>
+        <div class="resume-ledger">
+          {resumeContent.education.map((education) => (
+            <article class="resume-row">
+              <span>{education.period}</span>
+              <p><strong>{education.degree}</strong> · {education.institution}</p>
+            </article>
+          ))}
+          <article class="resume-row">
+            <span>{resumeContent.languagesTitle}</span>
+            <p>{resumeContent.languages.join(", ")}</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="resume-context" aria-labelledby="resume-context-title">
+        <div class="section-heading">
+          <h2 id="resume-context-title">{resumeContent.contextTitle}</h2>
+          <p class="section-intro">{resumeContent.pdf.description}</p>
+        </div>
+        <div class="resume-context-links">
+          {resumeContent.contextLinks.map((link) => (
+            <a class="evidence-link" href={link.href}>
+              <span>{link.label}</span>
+              <strong>{link.text}</strong>
+            </a>
+          ))}
+        </div>
       </section>
     </>
   ) : (

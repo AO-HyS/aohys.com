@@ -180,6 +180,37 @@ describe("built public routes", () => {
     expect(engineeringPracticeHtml).toContain("Process evidence");
   });
 
+  it("renders the graph-backed resume page and links to a text-based PDF artifact", () => {
+    const resumeHtml = readDist("resume/index.html");
+    const spanishResumeHtml = readDist("es/cv/index.html");
+    const pdfPath = path.join(distRoot, "downloads", "alejandro-ortiz-corro-resume.pdf");
+
+    expect(resumeHtml).toContain('data-resume-content-id="resume"');
+    expect(resumeHtml).toContain("Alejandro Ortiz Corro");
+    expect(resumeHtml).toContain("Senior Frontend Developer");
+    expect(resumeHtml).toContain("Professional summary");
+    expect(resumeHtml).toContain("Professional experience");
+    expect(resumeHtml).toContain("Technical skills");
+    expect(resumeHtml).toContain("Dynamic resume context");
+    expect(resumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
+    expect(resumeHtml).toContain('href="/case-studies"');
+    expect(resumeHtml).toContain('href="/architecture"');
+
+    expect(spanishResumeHtml).toContain('data-resume-content-id="resume"');
+    expect(spanishResumeHtml).toContain("Alejandro Ortiz Corro");
+    expect(spanishResumeHtml).toContain("Desarrollador Frontend Senior");
+    expect(spanishResumeHtml).toContain("Resumen profesional");
+    expect(spanishResumeHtml).toContain("Experiencia profesional");
+    expect(spanishResumeHtml).toContain("Habilidades técnicas");
+    expect(spanishResumeHtml).toContain("Contexto dinámico del CV");
+    expect(spanishResumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
+    expect(spanishResumeHtml).toContain('href="/es/casos"');
+    expect(spanishResumeHtml).toContain('href="/es/arquitectura"');
+
+    expect(existsSync(pdfPath), "resume PDF must be copied into dist").toBe(true);
+    expect(readFileSync(pdfPath).subarray(0, 5).toString("utf8")).toBe("%PDF-");
+  });
+
   it("emits sitemap and robots behavior from the public graph", () => {
     const sitemap = readDist("sitemap.xml");
     const robots = readDist("robots.txt");

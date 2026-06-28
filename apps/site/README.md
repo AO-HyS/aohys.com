@@ -14,6 +14,12 @@ pnpm --filter @aohys/site test
 pnpm --filter @aohys/site build
 ```
 
-The current shell includes the graph-backed home proof narrative, bilingual route skeletons, global tokens, font loading, graph-backed metadata, navigation, footer, sitemap, robots output, Astro native i18n config, and Vitest route/build smoke checks. It is not yet the full public V1 content experience.
+Regenerate the ATS-friendly resume PDF after editing English resume graph content:
+
+```sh
+python3 apps/site/scripts/build-resume-pdf.py
+```
+
+The current shell includes the graph-backed home proof narrative, selected-work index, case-study detail pages, resume page, ATS PDF artifact, bilingual route skeletons, global tokens, font loading, graph-backed metadata, navigation, footer, sitemap, robots output, Astro native i18n config, and Vitest route/build smoke checks.
 
 UI copy that belongs to the shell lives in locale JSON files under `src/i18n`. Public page identity, localized slugs, SEO metadata, and sitemap eligibility come from `@aohys/content-graph`.
