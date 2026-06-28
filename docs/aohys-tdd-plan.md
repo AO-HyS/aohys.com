@@ -82,11 +82,25 @@ Use for:
 - `aohys.net` to `aohys.com` redirect.
 - Release Train behavior from feature branch to `develop` preview to `main` production.
 
+### Environment Contract
+
+Highest seam: environment validation command/module.
+
+Use for:
+
+- Required variable checks.
+- Public versus secret variable separation.
+- Local/preview/production provider target checks.
+- Better Auth origin checks.
+- PostHog autocapture policy checks.
+- Resend sender/domain readiness checks.
+- Convex deployment target checks.
+
 ## Per-Issue First Tracer Tests
 
 | Issue | Public Interface | First Tracer Test |
 | --- | --- | --- |
-| #2 Repository and Monorepo Foundation | CLI project commands | `verify` command runs from a fresh checkout and reports the current project state without app code. |
+| #2 Repository and Monorepo Foundation | CLI project commands | `verify` command runs from a fresh checkout and reports the current project state without app code, including Environment Contract documentation links. |
 | #3 Public Astro Shell With Design Tokens | Public home route | Home route renders with global layout, approved fonts/tokens loaded, and no console errors. |
 | #4 Bilingual Routing, SEO, and Public Page Skeletons | Public route map | `/` and `/es/` render with correct canonical and language alternate metadata. |
 | #5 Home Page Proof Narrative | Public home route | Visitor sees Alejandro-first positioning, primary CTA, and selected-work proof section. |
@@ -94,11 +108,11 @@ Use for:
 | #7 Case Study Template and Casa Roca Detail | Case-study detail route | Casa Roca page renders the complete case-study structure with public evidence and confidentiality note. |
 | #8 Remaining Selected Work Case Studies | Case-study index and detail routes | Each selected work entry appears in the index and links to a detail page with the correct project status. |
 | #9 Resume Page and ATS-Friendly PDF | Resume route and PDF artifact | Resume page renders semantic sections and the PDF artifact is text-based and downloadable. |
-| #10 Convex Backend Foundation | Convex public API/functions | A valid lead-like payload can be validated through the public function boundary without direct DB coupling. |
-| #11 Contact Lead Capture With Email Notification | Contact form | A valid contact submission stores a lead, sends notification through the email adapter, and records only safe analytics metadata. |
-| #12 PostHog Analytics and Error Capture | Analytics adapter | Pageview and conversion events are explicit, environment-aware, and do not include contact message text. |
+| #10 Convex Backend Foundation | Convex public API/functions and Environment Contract | A valid lead-like payload can be validated through the public function boundary without direct DB coupling, and Convex variables map to the current environment. |
+| #11 Contact Lead Capture With Email Notification | Contact form and Environment Contract | A valid contact submission stores a lead, sends notification through the email adapter, and records only safe analytics metadata when provider settings validate. |
+| #12 PostHog Analytics and Error Capture | Analytics adapter and Environment Contract | Pageview and conversion events are explicit, environment-aware, and do not include contact message text. |
 | #13 Cloudflare and Wrangler Deployment Path | Release Train and Wrangler/build commands | Cloudflare-compatible build command completes and exposes documented output for preview and production smoke testing. |
-| #14 Better Auth and Private Dashboard Shell | Dashboard route | Anonymous visitor cannot access `/dashboard`; allowlisted admin can reach the shell. |
+| #14 Better Auth and Private Dashboard Shell | Dashboard route and Environment Contract | Anonymous visitor cannot access `/dashboard`; allowlisted admin can reach the shell, and auth origins/secrets validate for the current environment. |
 | #15 Dashboard Lead Review Workflow | Authenticated dashboard | Admin can view a newly submitted lead and update its review status. |
 | #16 Dashboard Content and Media Workflow | Authenticated dashboard | Admin can create or update one public content/media metadata item with alt text and safe validation. |
 | #17 Privacy, Security, and Launch Hardening | Production-like smoke suite | Public routes, dashboard protection, privacy copy, analytics privacy, and contact error states pass launch smoke checks. |
@@ -141,3 +155,5 @@ Refactor only after a vertical behavior is green. In this repo, expected refacto
 - Refactoring while the current tracer test is red.
 - Adding speculative dashboard/content features before public shell behavior is proven.
 - Treating protected `develop` and `main` as documentation-only branch names instead of release behavior to verify.
+- Letting provider dashboards become invisible sources of truth for production secrets.
+- Reading environment variables ad hoc across app modules instead of through the Environment Contract seam.

@@ -41,6 +41,10 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Promotion flow: feature branches target `develop`; production promotion moves from `develop` to `main` through a pull request, Cloudflare deployment checks, and smoke verification.
 - Release module: Release scripts, GitHub Actions, Cloudflare Preview/Production behavior, environment validation, and smoke checks should be treated as one Release Train module.
 - Release documentation: The canonical release planning document is `docs/release-train.md`; the architectural decision is `docs/adr/0001-protected-release-train.md`.
+- Environment Contract: `local`, `preview`, and `production` are the stable environment names across app code, release workflows, and provider setup.
+- Environment source of truth: GitHub Environments own deploy-time preview and production secrets; `.env.local` is local-only and uncommitted.
+- Environment validation: Release Train gates should fail before deploy if required values are missing, secrets drift, or provider targets point to the wrong environment.
+- Environment documentation: The canonical environment planning document is `docs/environment-contract.md`; the architectural decision is `docs/adr/0002-environment-contract-source-of-truth.md`.
 - CTA: Primary CTA is neutral: "Start a conversation" / "Hablemos"; contact form captures lead intent.
 - Privacy: Include serious minimal privacy pages from V1; no newsletter in V1.
 - CV: `/resume` is the primary dynamic resume URL; PDF should be ATS-first, single-column, text-based, and human-readable.
@@ -168,14 +172,15 @@ Resume pages should be typography-first, ATS-friendly, and visibly linked to the
 
 1. Initialize the Git repo and monorepo in this workspace.
 2. Establish the Release Train expectations in documentation, branch protection, baseline verification commands, and GitHub issue scope.
-3. Scaffold `apps/site` as the Astro public site with Cloudflare/Wrangler compatibility in mind.
-4. Add shared design tokens, font loading, global layout, metadata helpers, i18n routing, sitemap/robots basics, and the home shell.
-5. Build public V1 route skeletons in English and Spanish.
-6. Implement the first real home page with the approved visual system.
-7. Run browser QA for desktop and mobile, then use Impeccable polish on the visible public home.
-8. Add case study detail content and resume content.
-9. Add contact form integration with Convex and Resend.
-10. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
+3. Establish the Environment Contract expectations in documentation, issue scope, and future validation gates.
+4. Scaffold `apps/site` as the Astro public site with Cloudflare/Wrangler compatibility in mind.
+5. Add shared design tokens, font loading, global layout, metadata helpers, i18n routing, sitemap/robots basics, and the home shell.
+6. Build public V1 route skeletons in English and Spanish.
+7. Implement the first real home page with the approved visual system.
+8. Run browser QA for desktop and mobile, then use Impeccable polish on the visible public home.
+9. Add case study detail content and resume content.
+10. Add contact form integration with Convex and Resend.
+11. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
 
 Next Impeccable command after this document:
 

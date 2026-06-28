@@ -49,7 +49,7 @@ The exact scripts will be implemented during the monorepo foundation and deploym
 
 ## Environment Contract Dependency
 
-The Release Train depends on the Environment Contract. A deployment is not healthy if GitHub Environment secrets, Cloudflare variables, Convex deployment variables, or local variable documentation disagree.
+The Release Train depends on the [Environment Contract](environment-contract.md). A deployment is not healthy if GitHub Environment secrets, Cloudflare variables, Convex deployment variables, or local variable documentation disagree.
 
 Before production release automation exists, do not rely on manual provider changes as the final source of truth. If a production secret is repaired manually, the matching GitHub/Cloudflare/Convex source must be updated before rerunning deployment.
 
