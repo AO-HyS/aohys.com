@@ -1,0 +1,79 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const title = "Alejandro Ortiz Corro | AOHYS software architecture";
+const description =
+  "Alejandro Ortiz Corro builds business outcomes through software architecture, product systems, quality, security, and modern engineering practice.";
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="hero-section" aria-labelledby="home-title">
+    <div class="hero-copy">
+      <p class="signal-line">Alejandro Ortiz Corro · AOH&amp;S</p>
+      <h1 id="home-title">Business goals turned into reliable product systems.</h1>
+      <p class="hero-lead">
+        I design and build software that connects product intent, backend reliability,
+        operational clarity, and modern delivery practice. This site is also the
+        public source sample behind that claim.
+      </p>
+      <div class="hero-actions" aria-label="Primary actions">
+        <a class="button button-primary" href="/contact">Start a conversation</a>
+        <a class="button button-secondary" href="/case-studies">View selected work</a>
+      </div>
+    </div>
+
+    <figure class="proof-board" aria-label="AOHYS public source proof board">
+      <div class="artifact artifact-large">
+        <span class="artifact-label">Public sample</span>
+        <strong>aohys.com</strong>
+        <p>Astro public shell, private dashboard path, typed release seams.</p>
+      </div>
+      <div class="artifact artifact-line">
+        <span>Outcome</span>
+        <strong>Business signal before stack names</strong>
+      </div>
+      <div class="artifact artifact-line mint">
+        <span>Architecture</span>
+        <strong>Cloudflare · Convex · PostHog · Resend</strong>
+      </div>
+      <div class="artifact artifact-line sky">
+        <span>Review path</span>
+        <strong>feature → develop → main</strong>
+      </div>
+      <svg class="proof-lines" viewBox="0 0 520 360" role="img" aria-label="Connections between outcomes, architecture, and release proof">
+        <path d="M108 92 C178 56 254 52 340 96" />
+        <path d="M118 174 C210 216 298 220 420 178" />
+        <path d="M196 272 C258 238 322 238 386 276" />
+        <circle cx="108" cy="92" r="6" />
+        <circle cx="340" cy="96" r="6" />
+        <circle cx="420" cy="178" r="6" />
+        <circle cx="196" cy="272" r="6" />
+        <circle cx="386" cy="276" r="6" />
+      </svg>
+    </figure>
+  </section>
+
+  <section class="ledger-section" aria-labelledby="ledger-title">
+    <div class="section-heading">
+      <p class="signal-line">First proof row</p>
+      <h2 id="ledger-title">The shell starts with evidence, not decoration.</h2>
+    </div>
+    <div class="proof-ledger">
+      <a class="ledger-row" href="/architecture">
+        <span>Architecture</span>
+        <strong>Public/private seams are visible from the first build.</strong>
+        <em>Read system notes</em>
+      </a>
+      <a class="ledger-row" href="/case-studies">
+        <span>Selected work</span>
+        <strong>Casa Roca, The Barber Central, Nutri Plan, and enterprise systems.</strong>
+        <em>Review cases</em>
+      </a>
+      <a class="ledger-row" href="/resume">
+        <span>Career signal</span>
+        <strong>ATS-friendly resume path with richer context online.</strong>
+        <em>View resume</em>
+      </a>
+    </div>
+  </section>
+</BaseLayout>

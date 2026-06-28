@@ -6,7 +6,7 @@ This repository is being built as a working sample of engineering standards: pub
 
 ## Status
 
-Repository foundation is available. App scaffolding starts from the approved PRD and vertical-slice issues.
+Repository foundation is available. The public Astro shell is now scaffolded; deeper public routes, content graph integration, dashboard, backend, and deployment work continue through the approved vertical-slice issues.
 
 ## Local Development
 
@@ -22,7 +22,7 @@ The current foundation includes placeholder package commands so the monorepo can
 ## Workspace
 
 - [Workspace foundation](docs/workspace.md)
-- `apps/site`: future Astro public SEO surface.
+- `apps/site`: Astro public SEO surface.
 - `apps/dashboard`: future private dashboard surface under `/dashboard`.
 - `apps/backend`: future Convex backend surface.
 - `packages/environment`: future Environment Contract implementation.
