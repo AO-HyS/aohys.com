@@ -1,6 +1,30 @@
-# AOHYS Issue Breakdown Draft
+# AOHYS Issue Breakdown
 
-This draft breaks `docs/aohys-prd.md` into independently grabbable tracer-bullet issues. It is not published yet because the `AO-HyS/aohys.com` GitHub repository and issue tracker do not exist locally yet.
+This document breaks `docs/aohys-prd.md` into independently grabbable tracer-bullet issues.
+
+Parent PRD issue: https://github.com/AO-HyS/aohys.com/issues/1
+
+## Published Issues
+
+| Issue | Title |
+| --- | --- |
+| https://github.com/AO-HyS/aohys.com/issues/2 | Repository and Monorepo Foundation |
+| https://github.com/AO-HyS/aohys.com/issues/3 | Public Astro Shell With Design Tokens |
+| https://github.com/AO-HyS/aohys.com/issues/4 | Bilingual Routing, SEO, and Public Page Skeletons |
+| https://github.com/AO-HyS/aohys.com/issues/5 | Home Page Proof Narrative |
+| https://github.com/AO-HyS/aohys.com/issues/6 | Architecture and Public Code Sample Page |
+| https://github.com/AO-HyS/aohys.com/issues/7 | Case Study Template and Casa Roca Detail |
+| https://github.com/AO-HyS/aohys.com/issues/8 | Remaining Selected Work Case Studies |
+| https://github.com/AO-HyS/aohys.com/issues/9 | Resume Page and ATS-Friendly PDF |
+| https://github.com/AO-HyS/aohys.com/issues/10 | Convex Backend Foundation |
+| https://github.com/AO-HyS/aohys.com/issues/11 | Contact Lead Capture With Email Notification |
+| https://github.com/AO-HyS/aohys.com/issues/12 | PostHog Analytics and Error Capture |
+| https://github.com/AO-HyS/aohys.com/issues/13 | Cloudflare and Wrangler Deployment Path |
+| https://github.com/AO-HyS/aohys.com/issues/14 | Better Auth and Private Dashboard Shell |
+| https://github.com/AO-HyS/aohys.com/issues/15 | Dashboard Lead Review Workflow |
+| https://github.com/AO-HyS/aohys.com/issues/16 | Dashboard Content and Media Workflow |
+| https://github.com/AO-HyS/aohys.com/issues/17 | Privacy, Security, and Launch Hardening |
+| https://github.com/AO-HyS/aohys.com/issues/18 | Public README and Source Evaluation Package |
 
 ## Proposed Vertical Slices
 
@@ -140,12 +164,6 @@ Harden the launch surface: privacy page accuracy, dashboard noindex validation, 
 
 Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, deploy flow, license boundaries, and no-contribution framing.
 
-## Granularity Check
+## Granularity Notes
 
 The breakdown intentionally starts with two foundation issues, then switches to demoable vertical slices. It avoids creating separate horizontal tickets for "CSS", "schema", "routes", or "tests" unless they are part of a complete user-visible path.
-
-Questions to approve before publishing:
-
-1. Does this granularity feel right, or should the public site be split into smaller slices?
-2. Are the dependency relationships correct?
-3. Should dashboard/content/media be split further before issue publication?

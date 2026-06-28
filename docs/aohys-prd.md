@@ -179,9 +179,8 @@ The visual implementation will follow the Impeccable process and the approved de
 
 ## Further Notes
 
-- This PRD is ready to become the parent issue once the GitHub repository and issue tracker exist.
-- Publication to the issue tracker is currently blocked because this workspace is not initialized as a Git repository and the `AO-HyS/aohys.com` repo does not yet exist locally.
-- The next skill step is `to-issues`, which should break this PRD into vertical-slice issues after the user approves the granularity.
-- The first issue should likely be repository/monorepo foundation, because every later issue depends on having Git, package management, workspace structure, and local commands.
+- This PRD has been published as the parent issue: https://github.com/AO-HyS/aohys.com/issues/1
+- The approved vertical-slice issues have been published under the parent issue.
+- The first implementation issue is repository/monorepo foundation because every later issue depends on having Git, package management, workspace structure, and local commands.
 - The first implementation command after issue planning should be `$impeccable craft AOHYS public site shell`.
 - The implementation phase must account for Git initialization, GitHub organization repo creation, Convex setup, Wrangler setup, Cloudflare domain/redirect work, PostHog setup, Resend DNS verification, and later dashboard/auth work.
