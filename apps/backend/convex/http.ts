@@ -7,6 +7,7 @@ import {
   captureLeadAnalyticsWithPostHog,
   sendLeadNotificationWithResend,
 } from "../src/contact-providers.js";
+import { buildPublicContactError } from "../src/contact-http.js";
 import {
   submitContactLead,
   type ContactLeadInput,
@@ -269,7 +270,9 @@ http.route({
     try {
       input = await parseContactInput(request);
     } catch {
-      return jsonResponse({ ok: false, error: "Invalid contact payload." }, { status: 400 });
+      const publicError = buildPublicContactError(new Error("Invalid contact payload."));
+
+      return jsonResponse(publicError.body, { status: publicError.status });
     }
 
     try {
@@ -297,10 +300,9 @@ http.route({
 
       return jsonResponse({ ok: true, ...result });
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Contact submission failed.";
-      const status = message.startsWith("Contact providers are not configured") ? 503 : 400;
+      const publicError = buildPublicContactError(error);
 
-      return jsonResponse({ ok: false, error: message }, { status });
+      return jsonResponse(publicError.body, { status: publicError.status });
     }
   }),
 });

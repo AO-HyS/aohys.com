@@ -175,6 +175,8 @@ Current implementation status: `/dashboard/case-studies`, `/dashboard/media`, `/
 
 Harden the launch surface: privacy page accuracy, Public Content Graph sitemap/robots behavior, Dashboard UI Kit mobile/state behavior, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, Environment Contract separation, Release Train readiness checks, production smoke checks, and browser QA.
 
+Current implementation status: privacy pages render graph-backed bilingual copy for contact data, PostHog analytics/errors, and private project boundaries; Cloudflare Pages ships `_headers` with security headers; the contact form has safe validation, endpoint missing, email/provider, backend, and retry states; backend public contact errors return safe codes; launch QA commands and browser checks live in `docs/launch-hardening.md`.
+
 ### 17. Public README and Source Evaluation Package
 
 **Blocked by:** 1, 5, 9, 12.

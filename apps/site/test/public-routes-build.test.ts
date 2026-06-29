@@ -222,8 +222,19 @@ describe("built public routes", () => {
     expect(contactHtml).toContain('name="website"');
     expect(contactHtml).toContain('name="formStartedAt"');
     expect(contactHtml).toContain('name="message"');
+    expect(contactHtml).toContain('data-validation-message=');
+    expect(contactHtml).toContain('data-email-error-message=');
+    expect(contactHtml).toContain('data-backend-error-message=');
+    expect(contactHtml).toContain('data-retry-label=');
+    expect(contactHtml).toContain("Please review the highlighted fields before retrying.");
+    expect(contactHtml).toContain("The notification email could not be sent.");
+    expect(contactHtml).toContain("Try again, or use WhatsApp or email directly.");
     expect(contactHtml).toContain("WhatsApp");
     expect(contactHtml).toContain("I understand AOHYS will use this information to respond to my request.");
+    expect(contactHtml).toMatch(/failure_reason:[`"]validation_failed/);
+    expect(contactHtml).toMatch(/failure_reason:\w/);
+    expect(contactHtml).toContain("email_delivery_failed");
+    expect(contactHtml).toMatch(/failure_reason:[`"]backend_unavailable/);
 
     expect(spanishContactHtml).toContain('data-contact-content-id="contact"');
     expect(spanishContactHtml).toContain('data-contact-form');
@@ -231,6 +242,13 @@ describe("built public routes", () => {
     expect(spanishContactHtml).toContain('name="consentToContact"');
     expect(spanishContactHtml).toContain('name="website"');
     expect(spanishContactHtml).toContain('name="formStartedAt"');
+    expect(spanishContactHtml).toContain('data-validation-message=');
+    expect(spanishContactHtml).toContain('data-email-error-message=');
+    expect(spanishContactHtml).toContain('data-backend-error-message=');
+    expect(spanishContactHtml).toContain('data-retry-label=');
+    expect(spanishContactHtml).toContain("Revisa los campos marcados antes de intentar de nuevo.");
+    expect(spanishContactHtml).toContain("No se pudo enviar el correo de notificación.");
+    expect(spanishContactHtml).toContain("Intenta de nuevo o usa WhatsApp/correo directo.");
     expect(spanishContactHtml).toContain("WhatsApp");
     expect(spanishContactHtml).toContain("Entiendo que AOHYS usará esta información para responder mi solicitud.");
   });
@@ -249,6 +267,25 @@ describe("built public routes", () => {
     expect(contactHtml).not.toContain("autocapture:true");
   });
 
+  it("renders accurate bilingual privacy copy without private-source claims", () => {
+    const privacyHtml = readDist("privacy/index.html");
+    const spanishPrivacyHtml = readDist("es/privacidad/index.html");
+
+    expect(privacyHtml).toContain('data-privacy-content-id="privacy"');
+    expect(privacyHtml).toContain("Contact requests");
+    expect(privacyHtml).toContain("PostHog");
+    expect(privacyHtml).toContain("contact message text is not sent to analytics");
+    expect(privacyHtml).toMatch(/private client code, credentials, operational records, and dashboard data are not public/i);
+    expect(privacyHtml).not.toMatch(/private client code is public|open source lab/i);
+
+    expect(spanishPrivacyHtml).toContain('data-privacy-content-id="privacy"');
+    expect(spanishPrivacyHtml).toContain("Solicitudes de contacto");
+    expect(spanishPrivacyHtml).toContain("PostHog");
+    expect(spanishPrivacyHtml).toContain("el texto del mensaje no se envía a analíticas");
+    expect(spanishPrivacyHtml).toContain("código privado de clientes, credenciales, registros operativos y datos del dashboard no son públicos");
+    expect(spanishPrivacyHtml).not.toMatch(/código privado.*es público|open source lab/i);
+  });
+
   it("emits sitemap and robots behavior from the public graph", () => {
     const sitemap = readDist("sitemap.xml");
     const robots = readDist("robots.txt");
@@ -261,5 +298,17 @@ describe("built public routes", () => {
     expect(sitemap).toContain('hreflang="es" href="https://aohys.com/es/"');
     expect(robots).toContain("Disallow: /dashboard");
     expect(robots).toContain("Sitemap: https://aohys.com/sitemap.xml");
+  });
+
+  it("publishes Cloudflare Pages security headers for public and private surfaces", () => {
+    const headers = readDist("_headers");
+
+    expect(headers).toContain("X-Content-Type-Options: nosniff");
+    expect(headers).toContain("Referrer-Policy: strict-origin-when-cross-origin");
+    expect(headers).toContain("X-Frame-Options: DENY");
+    expect(headers).toContain("Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()");
+    expect(headers).toContain("Content-Security-Policy:");
+    expect(headers).toContain("frame-ancestors 'none'");
+    expect(headers).toContain("connect-src 'self' https://*.convex.site https://us.i.posthog.com https://us.posthog.com");
   });
 });

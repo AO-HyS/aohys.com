@@ -719,6 +719,18 @@ h2 {
   display: flex;
   gap: 0.6rem;
   align-items: center;
+  min-height: 44px;
+}
+
+.contact-choice input,
+.consent-row input {
+  flex: 0 0 auto;
+}
+
+.contact-submit-row p a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .contact-honeypot {
@@ -823,6 +835,19 @@ h2 {
 .boundary-note p {
   max-width: 84ch;
   margin: 0;
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: var(--text-lead);
+  font-weight: 620;
+  line-height: var(--leading-lead);
+  text-wrap: pretty;
+}
+
+.privacy-boundary-note {
+  max-width: 84ch;
+  margin-block: clamp(1rem, 3vw, 2rem) 0;
+  border-block-start: 1px solid var(--color-rule);
+  padding-block-start: 1rem;
   color: var(--color-ink);
   font-family: var(--font-display);
   font-size: var(--text-lead);

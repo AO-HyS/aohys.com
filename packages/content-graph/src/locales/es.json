@@ -738,6 +738,25 @@
     "primaryActionLabel": "Contactar a Alejandro",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver al inicio",
-    "secondaryActionContentId": "home"
+    "secondaryActionContentId": "home",
+    "privacyContent": {
+      "heading": "Privacidad",
+      "intro": "Este sitio tiene source público como muestra de ingeniería, pero el trabajo privado de clientes y los datos operativos permanecen privados.",
+      "sections": [
+        {
+          "title": "Solicitudes de contacto",
+          "body": "Cuando envías el formulario, AOHYS usa tu nombre, correo, teléfono/empresa opcional, forma preferida de contacto, intención y mensaje sólo para responder la solicitud."
+        },
+        {
+          "title": "Analíticas y errores",
+          "body": "PostHog se usa para pageviews explícitos, eventos seleccionados de CTAs/formulario y señales de errores del navegador. Autocapture está desactivado y el texto del mensaje no se envía a analíticas."
+        },
+        {
+          "title": "Límites de proyectos privados",
+          "body": "Este repositorio es una muestra de source inspeccionable. El código privado de clientes, credenciales, registros operativos y datos del dashboard no son públicos."
+        }
+      ],
+      "boundaryNote": "El dashboard privado bajo /dashboard está autenticado, noindex, excluido del sitemap y separado de las páginas públicas SEO."
+    }
   }
 }
