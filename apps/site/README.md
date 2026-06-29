@@ -26,7 +26,8 @@ pnpm exec wrangler pages dev apps/site/dist \
   -b CONVEX_SITE_URL=https://patient-bird-955.convex.site \
   -b BETTER_AUTH_URL=http://localhost:8788 \
   -b BETTER_AUTH_TRUSTED_ORIGINS=http://localhost:8788,http://localhost:4321 \
-  -b ADMIN_EMAIL=a.ortizcrr@gmail.com,alejandro.ortiz@aohys.com
+  -b ADMIN_EMAIL=a.ortizcrr@gmail.com,alejandro.ortiz@aohys.com \
+  -b DASHBOARD_API_TOKEN=local-dashboard-token
 ```
 
 Regenerate the ATS-friendly resume PDF after editing English resume graph content:

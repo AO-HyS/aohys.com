@@ -155,6 +155,8 @@ Current implementation status: Cloudflare Pages functions protect `/dashboard`, 
 
 Build the first real dashboard workflow through the Dashboard UI Kit: list incoming leads, view details, update review/contact status, preserve privacy, represent loading/empty/error/saved states, and verify that changes reflect in Convex.
 
+Current implementation status: Cloudflare Pages renders `/dashboard/leads` through `renderDashboardLeadWorkflow`, verifies the Better Auth session and admin allowlist before fetching private lead data, and updates lead review status through Convex HTTP actions protected by `DASHBOARD_API_TOKEN`. Local tests and browser QA cover noindex sign-in, 390px behavior, unauthorized access, token-protected Convex reads, and persisted status updates.
+
 ### 15. Dashboard Content and Media Workflow
 
 **Blocked by:** 7, 9, 13.

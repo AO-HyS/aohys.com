@@ -1,6 +1,7 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server.js";
 import { internal } from "./_generated/api.js";
+import type { Id } from "./_generated/dataModel.js";
 import { authComponent, createAuth } from "./auth.js";
 import {
   captureLeadAnalyticsWithPostHog,
@@ -11,6 +12,10 @@ import {
   type ContactLeadInput,
   type PreparedContactLead,
 } from "../src/contact-workflow.js";
+import {
+  assertDashboardApiToken,
+  parseDashboardLeadStatusPayload,
+} from "../src/dashboard-leads.js";
 
 const http = httpRouter();
 
@@ -29,6 +34,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
+const privateJsonHeaders = {
+  "Content-Type": "application/json",
+  "Cache-Control": "no-store",
+};
+
 function jsonResponse(
   body: Record<string, unknown>,
   init: ResponseInit = {},
@@ -38,6 +48,19 @@ function jsonResponse(
     headers: {
       ...corsHeaders,
       "Content-Type": "application/json",
+      ...init.headers,
+    },
+  });
+}
+
+function privateJsonResponse(
+  body: Record<string, unknown> | Record<string, unknown>[],
+  init: ResponseInit = {},
+): Response {
+  return new Response(JSON.stringify(body), {
+    ...init,
+    headers: {
+      ...privateJsonHeaders,
       ...init.headers,
     },
   });
@@ -64,6 +87,7 @@ function getContactEnvironmentValues(): Record<string, string | undefined> {
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    DASHBOARD_API_TOKEN: process.env.DASHBOARD_API_TOKEN,
     CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID,
     CLOUDFLARE_PROJECT_NAME: process.env.CLOUDFLARE_PROJECT_NAME,
     CLOUDFLARE_IMAGES_ACCOUNT_HASH: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
@@ -82,6 +106,46 @@ http.route({
   path: "/contact",
   method: "OPTIONS",
   handler: httpAction(async () => new Response(null, { headers: corsHeaders })),
+});
+
+http.route({
+  path: "/dashboard/leads",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
+      const leads = await ctx.runQuery(internal.leads.listForDashboard);
+
+      return privateJsonResponse({ leads });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Dashboard leads are unavailable.";
+      const status = message.includes("token") ? 401 : 503;
+
+      return privateJsonResponse({ ok: false, error: message }, { status });
+    }
+  }),
+});
+
+http.route({
+  path: "/dashboard/leads/status",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
+      const payload = await parseDashboardLeadStatusPayload(request);
+      const result = await ctx.runMutation(internal.leads.updateStatusFromDashboard, {
+        leadId: payload.leadId as Id<"leads">,
+        status: payload.status,
+      });
+
+      return privateJsonResponse({ ok: true, ...result });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Lead status could not be updated.";
+      const status = message.includes("token") ? 401 : 400;
+
+      return privateJsonResponse({ ok: false, error: message }, { status });
+    }
+  }),
 });
 
 http.route({

@@ -24,6 +24,7 @@ const validPreviewReleaseValues = {
   BETTER_AUTH_URL: "https://preview.aohys.com",
   BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
   ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+  DASHBOARD_API_TOKEN: "dashboard-api-token",
   GOOGLE_CLIENT_ID: "google-client-id.apps.googleusercontent.com",
   GOOGLE_CLIENT_SECRET: "google-client-secret",
   CLOUDFLARE_ACCOUNT_ID: "cloudflare-account",
@@ -137,6 +138,7 @@ describe("Cloudflare Pages release plan", () => {
     expect(workflow).toContain("CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}");
     expect(workflow).toContain("CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}");
     expect(workflow).toContain("BETTER_AUTH_TRUSTED_ORIGINS: ${{ vars.BETTER_AUTH_TRUSTED_ORIGINS }}");
+    expect(workflow).toContain("DASHBOARD_API_TOKEN: ${{ secrets.DASHBOARD_API_TOKEN }}");
     expect(workflow).toContain("GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}");
     expect(workflow).toContain("GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}");
   });

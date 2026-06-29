@@ -1,8 +1,14 @@
 import {
+  renderDashboardLeadWorkflow,
   renderDashboardShell,
   renderDashboardSignIn,
   renderDashboardState,
+  DASHBOARD_LEAD_STATUSES,
+  type DashboardLead,
+  type DashboardLeadStatus,
+  type DashboardLeadWorkflowState,
 } from "@aohys/dashboard-ui";
+import { isOneOf } from "@aohys/core";
 import { validateEnvironmentContract, type EnvironmentName } from "@aohys/environment";
 
 export interface DashboardAccessEnvironment extends Record<string, string | undefined> {
@@ -12,6 +18,7 @@ export interface DashboardAccessEnvironment extends Record<string, string | unde
   BETTER_AUTH_URL: string;
   BETTER_AUTH_TRUSTED_ORIGINS: string;
   ADMIN_EMAIL: string;
+  DASHBOARD_API_TOKEN: string;
 }
 
 export type DashboardFetch = typeof fetch;
@@ -68,11 +75,148 @@ export async function handleDashboardRequest(
     return htmlResponse(renderDashboardState("unauthorized"), 403);
   }
 
+  if (path === "/dashboard/leads/status" && request.method === "POST") {
+    return updateDashboardLeadStatus(request, environment, fetchSession);
+  }
+
+  if (path === "/dashboard/leads/status") {
+    return new Response(null, {
+      status: 405,
+      headers: {
+        allow: "POST",
+        "x-robots-tag": "noindex, nofollow",
+        "cache-control": "no-store",
+      },
+    });
+  }
+
+  if (path === "/dashboard/leads") {
+    return renderDashboardLeads(request, environment, session.user.email, fetchSession);
+  }
+
   return htmlResponse(renderDashboardShell({
     adminEmail: session.user.email,
     activePath: path,
     title: titleForPath(path),
   }));
+}
+
+async function renderDashboardLeads(
+  request: Request,
+  environment: DashboardAccessEnvironment,
+  adminEmail: string,
+  dashboardFetch: DashboardFetch,
+  workflowState?: DashboardLeadWorkflowState,
+  validationMessage?: string,
+): Promise<Response> {
+  const url = new URL(request.url);
+  const leadResult = await readDashboardLeads(environment, dashboardFetch);
+
+  if (!leadResult.ok) {
+    return htmlResponse(renderDashboardLeadWorkflow({
+      adminEmail,
+      activePath: "/dashboard/leads",
+      title: "Leads",
+      leads: [],
+      workflowState: "configuration-error",
+      validationMessage: leadResult.error,
+    }), 502);
+  }
+
+  return htmlResponse(renderDashboardLeadWorkflow({
+    adminEmail,
+    activePath: "/dashboard/leads",
+    title: "Leads",
+    leads: leadResult.leads,
+    selectedLeadId: url.searchParams.get("lead") ?? undefined,
+    workflowState: workflowState ?? (url.searchParams.get("saved") === "1" ? "save-success" : undefined),
+    validationMessage,
+  }));
+}
+
+async function updateDashboardLeadStatus(
+  request: Request,
+  environment: DashboardAccessEnvironment,
+  dashboardFetch: DashboardFetch,
+): Promise<Response> {
+  const formData = await request.formData();
+  const leadId = valueFromFormData(formData.get("leadId"));
+  const status = valueFromFormData(formData.get("status"));
+  const cookie = request.headers.get("cookie") ?? "";
+  const session = await readBetterAuthSession(environment, cookie, dashboardFetch);
+
+  if (!session) {
+    return redirectToSignIn("/dashboard/leads");
+  }
+
+  if (!leadId || !isDashboardLeadStatus(status)) {
+    return renderDashboardLeads(
+      request,
+      environment,
+      session.user.email,
+      dashboardFetch,
+      "validation-error",
+      "Choose a valid lead status before saving.",
+    );
+  }
+
+  const response = await dashboardFetch(
+    `${environment.CONVEX_SITE_URL.replace(/\/$/, "")}/dashboard/leads/status`,
+    {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${environment.DASHBOARD_API_TOKEN}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ leadId, status }),
+    },
+  );
+
+  if (!response.ok) {
+    return renderDashboardLeads(
+      request,
+      environment,
+      session.user.email,
+      dashboardFetch,
+      "validation-error",
+      "Lead status could not be saved.",
+    );
+  }
+
+  return new Response(null, {
+    status: 302,
+    headers: {
+      location: `/dashboard/leads?lead=${encodeURIComponent(leadId)}&saved=1`,
+      "x-robots-tag": "noindex, nofollow",
+      "cache-control": "no-store",
+    },
+  });
+}
+
+async function readDashboardLeads(
+  environment: DashboardAccessEnvironment,
+  dashboardFetch: DashboardFetch,
+): Promise<
+  | { ok: true; leads: DashboardLead[] }
+  | { ok: false; error: string }
+> {
+  const response = await dashboardFetch(
+    `${environment.CONVEX_SITE_URL.replace(/\/$/, "")}/dashboard/leads`,
+    {
+      headers: {
+        accept: "application/json",
+        authorization: `Bearer ${environment.DASHBOARD_API_TOKEN}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    return { ok: false, error: "Lead workflow provider is unavailable." };
+  }
+
+  const payload = await response.json() as { leads?: DashboardLead[] };
+
+  return { ok: true, leads: payload.leads ?? [] };
 }
 
 async function beginGoogleSignIn(
@@ -197,6 +341,14 @@ function normalizeCallbackPath(path: string | null): string {
   }
 
   return path;
+}
+
+function valueFromFormData(value: FormDataEntryValue | null): string | undefined {
+  return typeof value === "string" ? value : undefined;
+}
+
+function isDashboardLeadStatus(value: string | undefined): value is DashboardLeadStatus {
+  return isOneOf(value, DASHBOARD_LEAD_STATUSES);
 }
 
 function titleForPath(path: string): string {

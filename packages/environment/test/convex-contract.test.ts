@@ -22,6 +22,7 @@ const validPreviewValues = {
   BETTER_AUTH_URL: "https://preview.aohys.com",
   BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
   ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+  DASHBOARD_API_TOKEN: "dashboard-api-token",
   GOOGLE_CLIENT_ID: "google-client-id.apps.googleusercontent.com",
   GOOGLE_CLIENT_SECRET: "google-client-secret",
   CLOUDFLARE_ACCOUNT_ID: "cloudflare-account",
@@ -197,6 +198,15 @@ describe("Convex Environment Contract", () => {
     });
 
     expect(multipleAdminEmails).toEqual({ ok: true, errors: [] });
+
+    expect(getEnvironmentVariableDefinitions()).toContainEqual(
+      expect.objectContaining({
+        name: "DASHBOARD_API_TOKEN",
+        classification: "server-secret",
+        exposure: "server-only",
+        requiredTargets: ["release", "dashboard-runtime"],
+      }),
+    );
   });
 
   it("validates dashboard runtime without requiring contact or release-only provider secrets", () => {
@@ -209,6 +219,7 @@ describe("Convex Environment Contract", () => {
         BETTER_AUTH_URL: "https://preview.aohys.com",
         BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
         ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+        DASHBOARD_API_TOKEN: "dashboard-api-token",
       },
       { target: "dashboard-runtime" },
     );
@@ -223,6 +234,7 @@ describe("Convex Environment Contract", () => {
         BETTER_AUTH_URL: "https://preview.aohys.com",
         BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
         ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+        DASHBOARD_API_TOKEN: "dashboard-api-token",
       },
       { target: "dashboard-runtime" },
     );
@@ -230,6 +242,24 @@ describe("Convex Environment Contract", () => {
     expect(missingDashboardAuthTarget.ok).toBe(false);
     expect(missingDashboardAuthTarget.errors).toContain(
       "CONVEX_SITE_URL is required for preview dashboard-runtime.",
+    );
+
+    const missingDashboardToken = validateEnvironmentContract(
+      "preview",
+      {
+        AOHYS_ENV: "preview",
+        PUBLIC_SITE_URL: "https://preview.aohys.com",
+        CONVEX_SITE_URL: "https://aohys-preview.convex.site",
+        BETTER_AUTH_URL: "https://preview.aohys.com",
+        BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+        ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+      },
+      { target: "dashboard-runtime" },
+    );
+
+    expect(missingDashboardToken.ok).toBe(false);
+    expect(missingDashboardToken.errors).toContain(
+      "DASHBOARD_API_TOKEN is required for preview dashboard-runtime.",
     );
 
     const missingAuthRuntimeOauth = validateEnvironmentContract(
