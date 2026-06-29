@@ -16,6 +16,8 @@ Its implementation can hide shadcn/ui source components, TanStack Router convent
 
 The seam is dashboard workflow composition. Authenticated routes should cross this seam instead of composing primitive UI directly.
 
+Issue #14 implements the first production-shaped seam in `packages/dashboard-ui`: script-free renderers for the private shell, sign-in page, and guard states. Cloudflare Pages functions consume this package for `/dashboard`; `/dashboard/sign-in/google` bridges the script-free sign-in button to Better Auth's JSON social sign-in endpoint server-side. Deeper lead/content/media workflows remain future slices.
+
 ## Primitive Adapter
 
 Use `shadcn/ui` as the Dashboard Primitive Adapter, not as the dashboard interface.
@@ -44,6 +46,14 @@ Initial dashboard surfaces:
 | `state-surface` | Empty, loading, error, disabled, unauthenticated, unauthorized, and saved states |
 
 These names are architectural concepts, not final file names.
+
+Implemented V1 surfaces:
+
+| Export | Purpose |
+| --- | --- |
+| `renderDashboardShell` | Authenticated frame with navigation, page title, admin identity, and operational overview. |
+| `renderDashboardSignIn` | Private Google sign-in entry point with noindex metadata. |
+| `renderDashboardState` | Loading, unauthorized, provider/configuration error, and unavailable states. |
 
 ## Mobile Behavior
 

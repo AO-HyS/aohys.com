@@ -22,7 +22,10 @@ const validPreviewReleaseValues = {
   LEAD_NOTIFICATION_EMAIL: "alejandro.ortiz@aohys.com",
   BETTER_AUTH_SECRET: "preview-secret",
   BETTER_AUTH_URL: "https://preview.aohys.com",
+  BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
   ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+  GOOGLE_CLIENT_ID: "google-client-id.apps.googleusercontent.com",
+  GOOGLE_CLIENT_SECRET: "google-client-secret",
   CLOUDFLARE_ACCOUNT_ID: "cloudflare-account",
   CLOUDFLARE_API_TOKEN: "cloudflare-api-token",
   CLOUDFLARE_PROJECT_NAME: "aohys-com",
@@ -118,10 +121,10 @@ describe("Cloudflare Pages release plan", () => {
       "tsx scripts/validate-release-env.ts production",
     );
     expect(rootPackage.scripts["deploy:preview"]).toBe(
-      "pnpm run release:env:preview && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop",
+      "pnpm run release:env:preview && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"preview release\" && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop",
     );
     expect(rootPackage.scripts["deploy:production"]).toBe(
-      "pnpm run release:env:production && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main",
+      "pnpm run release:env:production && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"production release\" && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main",
     );
 
     expect(existsSync(workflowPath), "release-train.yml must exist").toBe(true);
@@ -133,6 +136,9 @@ describe("Cloudflare Pages release plan", () => {
     expect(workflow).toContain("pnpm run deploy:production");
     expect(workflow).toContain("CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}");
     expect(workflow).toContain("CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}");
+    expect(workflow).toContain("BETTER_AUTH_TRUSTED_ORIGINS: ${{ vars.BETTER_AUTH_TRUSTED_ORIGINS }}");
+    expect(workflow).toContain("GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}");
+    expect(workflow).toContain("GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}");
   });
 
   it("documents the Cloudflare redirect rule for aohys.net and www canonicalization", () => {

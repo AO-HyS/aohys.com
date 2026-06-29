@@ -84,14 +84,31 @@ Current explicit PostHog events:
 
 ## Runtime vs Release Validation
 
-The implementation in `packages/environment` supports two validation targets:
+The implementation in `packages/environment` supports surface-specific validation targets:
 
 | Target | Used by | Meaning |
 | --- | --- | --- |
-| `runtime` | Convex actions, public site/server runtime, future dashboard runtime | Require values the running app needs. Do not require deploy-only credentials. |
+| `runtime` | Convex actions and broad server runtime checks | Require values the running app needs. Do not require deploy-only credentials. |
+| `dashboard-runtime` | Cloudflare Pages `/dashboard` guard | Require only values needed to protect and render private dashboard shell routes. Do not require contact provider secrets. |
+| `auth-runtime` | Convex Better Auth routes | Require auth provider values, Google OAuth credentials, trusted origins, and Convex auth URLs. |
 | `release` | GitHub Actions, root deploy scripts, production promotion checks | Require runtime values plus deploy-time credentials such as Wrangler and Convex deploy keys. |
 
-`validateEnvironmentContract(environment, values)` defaults to `release` so deployment commands fail closed. Runtime code must pass `{ target: "runtime" }` when deploy-only values should not be required.
+`validateEnvironmentContract(environment, values)` defaults to `release` so deployment commands fail closed. Runtime code must pass the most specific target it owns when deploy-only or unrelated provider values should not be required.
+
+Current Better Auth variables:
+
+| Variable | Class | Exposure | Required target |
+| --- | --- | --- | --- |
+| `BETTER_AUTH_SECRET` | Server secret | Server-only | runtime, auth-runtime, and release in preview/production |
+| `BETTER_AUTH_URL` | Provider output | Server-only | runtime, dashboard-runtime, auth-runtime, and release |
+| `BETTER_AUTH_TRUSTED_ORIGINS` | Policy value | Server-only | runtime, dashboard-runtime, auth-runtime, and release |
+| `ADMIN_EMAIL` | Policy value | Server-only | runtime, dashboard-runtime, auth-runtime, and release |
+| `GOOGLE_CLIENT_ID` | Provider output | Server-only | runtime, auth-runtime, and release in preview/production |
+| `GOOGLE_CLIENT_SECRET` | Server secret | Server-only | runtime, auth-runtime, and release in preview/production |
+
+Cloudflare Pages owns `/dashboard` and `/api/auth/*` at the public domain. `/dashboard` validates with `dashboard-runtime`, then checks the session through the Convex Better Auth route. It does not receive the Better Auth signing secret because signed auth state belongs to Convex. `/dashboard/sign-in/google` starts Google OAuth server-side by POSTing to Convex Better Auth, carries the Better Auth state cookie back to the browser, and redirects to Google. `/api/auth/*` proxies to `CONVEX_SITE_URL` while preserving the public host through forwarded headers so callback URLs and cookies stay on `aohys.com` or `preview.aohys.com`.
+
+Cloudflare Pages runtime variables for the dashboard are `AOHYS_ENV`, `PUBLIC_SITE_URL`, `CONVEX_SITE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_TRUSTED_ORIGINS`, and `ADMIN_EMAIL`. Preview and production variables are configured on the Pages project; local `wrangler pages dev` must pass them as explicit `-b` bindings.
 
 Current Cloudflare variables:
 
@@ -115,6 +132,8 @@ Required checks:
 - production values do not point to preview/local hosts;
 - preview values do not use production-only secrets unless explicitly documented;
 - Better Auth trusted origins match the environment URL;
+- Google OAuth client id and client secret exist for auth runtime and release validation;
+- private dashboard routes can validate auth without requiring contact provider secrets;
 - Resend sender/domain configuration is documented before production notification sends;
 - PostHog autocapture policy is explicit for each environment;
 - Convex deployment target is environment-appropriate;

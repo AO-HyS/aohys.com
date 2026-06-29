@@ -44,8 +44,8 @@ Feature branches should target `develop`. Production promotion should target `ma
 | `pnpm run cloudflare:local` | Build the Astro site and serve `apps/site/dist` with Wrangler Pages dev. |
 | `pnpm run release:env:preview` | Validate GitHub Environment values for preview deploys without printing secrets. |
 | `pnpm run release:env:production` | Validate GitHub Environment values for production deploys without printing secrets. |
-| `pnpm run deploy:preview` | Validate preview env, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
-| `pnpm run deploy:production` | Validate production env, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch main`. |
+| `pnpm run deploy:preview` | Validate preview env, deploy Convex with the preview deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
+| `pnpm run deploy:production` | Validate production env, deploy Convex with the production deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch main`. |
 | `pnpm run smoke:preview` | Fetch the preview URL, verify a 2xx HTML response, public shell marker, and the production canonical URL. |
 | `pnpm run smoke:production` | Fetch `https://aohys.com`, verify a 2xx HTML response, public shell marker, and the production canonical URL. |
 
@@ -53,7 +53,7 @@ Feature branches should target `develop`. Production promotion should target `ma
 
 - install/build/type/lint verification;
 - route-level public site smoke checks;
-- dashboard protection checks once `/dashboard` exists;
+- dashboard protection checks for `/dashboard` noindex/no-store behavior;
 - release-target environment validation before deploy;
 - Cloudflare Preview deploy and smoke checks after `develop` merge;
 - Cloudflare Production deploy and smoke checks after `main` merge;
@@ -63,13 +63,21 @@ Feature branches should target `develop`. Production promotion should target `ma
 
 `.github/workflows/release-train.yml` runs `pnpm verify` on pull requests into `develop` and `main`. Pushes to `develop` deploy preview through GitHub Environment `preview`; pushes to `main` deploy production through GitHub Environment `production`.
 
-The workflow expects GitHub Environment secrets for `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CONVEX_DEPLOY_KEY`, `RESEND_API_KEY`, and `BETTER_AUTH_SECRET`. Public or policy values such as `PUBLIC_SITE_URL`, `PUBLIC_POSTHOG_HOST`, `RESEND_FROM`, and `CLOUDFLARE_PROJECT_NAME` are read from GitHub Environment variables.
+The workflow expects GitHub Environment secrets for `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CONVEX_DEPLOY_KEY`, `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, and `GOOGLE_CLIENT_SECRET`. Public or policy values such as `PUBLIC_SITE_URL`, `PUBLIC_POSTHOG_HOST`, `RESEND_FROM`, `BETTER_AUTH_TRUSTED_ORIGINS`, `GOOGLE_CLIENT_ID`, and `CLOUDFLARE_PROJECT_NAME` are read from GitHub Environment variables.
 
 Branch protection currently requires reviews before merging to protected branches. In a one-owner account setup, the durable fix is to add a second reviewer or use an explicit owner action for merges that cannot satisfy last-pusher approval.
 
 ## Cloudflare
 
-The Cloudflare Pages project name is `aohys-com`. Deploys use Wrangler Pages Direct Upload:
+Convex deploys run before Cloudflare Pages deploys through:
+
+```sh
+env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable
+```
+
+`CONVEX_DEPLOYMENT` is unset for the deploy command so CI selects the target deployment from `CONVEX_DEPLOY_KEY`.
+
+The Cloudflare Pages project name is `aohys-com`. Site deploys use Wrangler Pages Direct Upload:
 
 ```sh
 pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop

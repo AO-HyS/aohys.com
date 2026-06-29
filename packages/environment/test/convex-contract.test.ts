@@ -20,7 +20,10 @@ const validPreviewValues = {
   LEAD_NOTIFICATION_EMAIL: "alejandro.ortiz@aohys.com",
   BETTER_AUTH_SECRET: "preview-secret",
   BETTER_AUTH_URL: "https://preview.aohys.com",
+  BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
   ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+  GOOGLE_CLIENT_ID: "google-client-id.apps.googleusercontent.com",
+  GOOGLE_CLIENT_SECRET: "google-client-secret",
   CLOUDFLARE_ACCOUNT_ID: "cloudflare-account",
   CLOUDFLARE_API_TOKEN: "cloudflare-api-token",
   CLOUDFLARE_PROJECT_NAME: "aohys-com",
@@ -139,5 +142,116 @@ describe("Convex Environment Contract", () => {
 
     expect(missingPostHog.ok).toBe(false);
     expect(missingPostHog.errors).toContain("PUBLIC_POSTHOG_KEY is required for production.");
+  });
+
+  it("validates Better Auth origins and admin allowlist for dashboard access", () => {
+    const definitions = getEnvironmentVariableDefinitions().filter(
+      (definition) => definition.provider === "better-auth",
+    );
+
+    expect(definitions.map((definition) => definition.name)).toEqual([
+      "BETTER_AUTH_SECRET",
+      "BETTER_AUTH_URL",
+      "BETTER_AUTH_TRUSTED_ORIGINS",
+      "ADMIN_EMAIL",
+      "GOOGLE_CLIENT_ID",
+      "GOOGLE_CLIENT_SECRET",
+    ]);
+
+    const missingTrustedOrigins = validateEnvironmentContract("preview", {
+      ...validPreviewValues,
+      BETTER_AUTH_TRUSTED_ORIGINS: undefined,
+    });
+
+    expect(missingTrustedOrigins.ok).toBe(false);
+    expect(missingTrustedOrigins.errors).toContain(
+      "BETTER_AUTH_TRUSTED_ORIGINS is required for preview release.",
+    );
+
+    const driftedTrustedOrigins = validateEnvironmentContract("preview", {
+      ...validPreviewValues,
+      BETTER_AUTH_TRUSTED_ORIGINS: "https://not-aohys.example",
+    });
+
+    expect(driftedTrustedOrigins.ok).toBe(false);
+    expect(driftedTrustedOrigins.errors).toContain(
+      "BETTER_AUTH_TRUSTED_ORIGINS must include BETTER_AUTH_URL.",
+    );
+    expect(driftedTrustedOrigins.errors).toContain(
+      "BETTER_AUTH_TRUSTED_ORIGINS must include PUBLIC_SITE_URL.",
+    );
+
+    const invalidAdminEmail = validateEnvironmentContract("preview", {
+      ...validPreviewValues,
+      ADMIN_EMAIL: "alejandro.ortiz@aohys.com,not-an-email",
+    });
+
+    expect(invalidAdminEmail.ok).toBe(false);
+    expect(invalidAdminEmail.errors).toContain(
+      "ADMIN_EMAIL must contain valid email addresses.",
+    );
+
+    const multipleAdminEmails = validateEnvironmentContract("preview", {
+      ...validPreviewValues,
+      ADMIN_EMAIL: "a.ortizcrr@gmail.com,alejandro.ortiz@aohys.com",
+    });
+
+    expect(multipleAdminEmails).toEqual({ ok: true, errors: [] });
+  });
+
+  it("validates dashboard runtime without requiring contact or release-only provider secrets", () => {
+    const dashboardRuntime = validateEnvironmentContract(
+      "preview",
+      {
+        AOHYS_ENV: "preview",
+        PUBLIC_SITE_URL: "https://preview.aohys.com",
+        CONVEX_SITE_URL: "https://aohys-preview.convex.site",
+        BETTER_AUTH_URL: "https://preview.aohys.com",
+        BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+        ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+      },
+      { target: "dashboard-runtime" },
+    );
+
+    expect(dashboardRuntime).toEqual({ ok: true, errors: [] });
+
+    const missingDashboardAuthTarget = validateEnvironmentContract(
+      "preview",
+      {
+        AOHYS_ENV: "preview",
+        PUBLIC_SITE_URL: "https://preview.aohys.com",
+        BETTER_AUTH_URL: "https://preview.aohys.com",
+        BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+        ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+      },
+      { target: "dashboard-runtime" },
+    );
+
+    expect(missingDashboardAuthTarget.ok).toBe(false);
+    expect(missingDashboardAuthTarget.errors).toContain(
+      "CONVEX_SITE_URL is required for preview dashboard-runtime.",
+    );
+
+    const missingAuthRuntimeOauth = validateEnvironmentContract(
+      "preview",
+      {
+        AOHYS_ENV: "preview",
+        PUBLIC_SITE_URL: "https://preview.aohys.com",
+        CONVEX_SITE_URL: "https://aohys-preview.convex.site",
+        BETTER_AUTH_SECRET: "preview-secret",
+        BETTER_AUTH_URL: "https://preview.aohys.com",
+        BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+        ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+      },
+      { target: "auth-runtime" },
+    );
+
+    expect(missingAuthRuntimeOauth.ok).toBe(false);
+    expect(missingAuthRuntimeOauth.errors).toContain(
+      "GOOGLE_CLIENT_ID is required for preview auth-runtime.",
+    );
+    expect(missingAuthRuntimeOauth.errors).toContain(
+      "GOOGLE_CLIENT_SECRET is required for preview auth-runtime.",
+    );
   });
 });

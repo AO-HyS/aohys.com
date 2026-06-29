@@ -7,7 +7,7 @@ The interface stays small: list variable definitions, validate the current envir
 ## Public API
 
 - `getEnvironmentVariableDefinitions()` returns provider, classification, exposure, required-environment, and optional required-target metadata.
-- `validateEnvironmentContract(environment, values, options)` validates a local, preview, or production value set. The default target is `release`; runtime code should pass `{ target: "runtime" }`.
+- `validateEnvironmentContract(environment, values, options)` validates a local, preview, or production value set. The default target is `release`; runtime code should pass the narrowest target it owns, such as `{ target: "runtime" }`, `{ target: "dashboard-runtime" }`, or `{ target: "auth-runtime" }`.
 
 ## Convex Coverage
 
@@ -23,6 +23,21 @@ The current contract classifies these Convex values:
 No Convex variable is currently exposed through a `PUBLIC_` browser prefix. Dashboard/client exposure should be introduced deliberately in a later dashboard issue if needed.
 
 `CONVEX_DEPLOY_KEY` is release-only. Convex runtime/contact code validates with `{ target: "runtime" }` so deployed functions do not require deploy credentials.
+
+## Better Auth Coverage
+
+The private dashboard uses Cloudflare Pages functions for route protection and Convex Better Auth routes for Google sign-in/session verification.
+
+| Variable | Class | Exposure | Runtime target |
+| --- | --- | --- | --- |
+| `BETTER_AUTH_SECRET` | Server secret | Server-only | auth-runtime |
+| `BETTER_AUTH_URL` | Provider output | Server-only | dashboard-runtime and auth-runtime |
+| `BETTER_AUTH_TRUSTED_ORIGINS` | Policy value | Server-only | dashboard-runtime and auth-runtime |
+| `ADMIN_EMAIL` | Policy value | Server-only | dashboard-runtime and auth-runtime |
+| `GOOGLE_CLIENT_ID` | Provider output | Server-only | auth-runtime |
+| `GOOGLE_CLIENT_SECRET` | Server secret | Server-only | auth-runtime |
+
+`dashboard-runtime` intentionally does not require contact, Resend, PostHog, Google OAuth credentials, or the Better Auth signing secret. It only needs enough configuration to redirect, call the Convex session endpoint, and enforce the admin allowlist. `auth-runtime` requires the Google OAuth credentials and Better Auth secret because Convex serves `/api/auth/*` behind the Cloudflare proxy.
 
 ## Contact Coverage
 

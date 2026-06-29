@@ -145,6 +145,8 @@ Current implementation status: release scripts, Wrangler Pages Direct Upload pla
 
 Create the private dashboard shell with Better Auth, Convex integration, admin allowlist, protected route behavior, noindex/robots protection, Dashboard UI Kit shell/surfaces, operational overview, and Environment Contract validation for auth origins/secrets.
 
+Current implementation status: Cloudflare Pages functions protect `/dashboard`, render the Dashboard UI Kit shell/sign-in/states, mark private responses noindex/no-store, start Google OAuth through `/dashboard/sign-in/google`, proxy `/api/auth/*` to Convex while preserving the public host, and mount Better Auth in Convex with Google OAuth through the official `@convex-dev/better-auth` component.
+
 ### 14. Dashboard Lead Review Workflow
 
 **Blocked by:** 10, 13.
