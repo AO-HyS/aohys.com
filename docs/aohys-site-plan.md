@@ -83,7 +83,7 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Layout bans: No identical icon-card grids, no nested cards, no hero metric template, no terminal aesthetic, no repeated uppercase section eyebrows, no numbered section scaffolding, no beige editorial default, no glassmorphism, no gradient text, no soft ghost-card shadows.
 - Motion: Motion should feel like review, assembly, and reveal: annotations settle, screenshots align, and proof artifacts enter with purpose. Content must never depend on animation to appear.
 - Visual assets: Generated editorial assets plus sanitized screenshots, optimized through Cloudflare. Generated imagery should be limited and purposeful; screenshots carry most case-study proof.
-- Quality gates: Local behavior tests should use Vitest for package and built-site checks; Husky pre-commit plus GitHub Actions verification are tracked in issue #31.
+- Quality gates: Local behavior tests should use Vitest for package and built-site checks; Husky pre-commit plus GitHub Actions verification are implemented in issue #31. The pre-commit hook runs foundation validation, lint, typecheck, and tests; pull-request CI runs install, foundation validation, lint, typecheck, tests, and build as readable steps.
 
 ## Design System Snapshot
 
@@ -208,6 +208,7 @@ Resume pages should remain typography-first, ATS-friendly, and visibly linked to
 15. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction. Current status: first dashboard guard/shell implemented with Cloudflare Pages functions, Dashboard UI Kit renderers, server-side Better Auth Google sign-in bridge through Convex, admin allowlist checks, noindex/no-store responses, auth-specific Environment Contract targets, lead review backed by private Convex dashboard endpoints, and a metadata-only content/media/settings/resume workflow that preserves Public Content Graph IDs and localized paths. Cloudflare media originals/variants remain a future Media Pipeline decision.
 16. Harden privacy, security, and launch readiness. Current status: privacy routes now explain contact data, PostHog analytics/errors, and private project boundaries; Cloudflare Pages `_headers` applies security headers; contact form states distinguish validation, endpoint missing, email/provider, backend, and retry paths; launch QA is documented in `docs/launch-hardening.md`.
 17. Publish the public source evaluation package. Current status: `README.md` explains how to evaluate the repo without private credentials, maps the architecture and provider responsibilities, documents local/preview/production environment boundaries, links the PRD, issue breakdown, TDD plan, Release Train, Environment Contract, Public Content Graph, Dashboard UI Kit, and Launch Hardening docs, and clarifies that code is MIT while content, brand, CV, case-study material, images, screenshots, and generated media are reserved.
+18. Install quality gates. Current status: Husky pre-commit runs `pnpm run verify:precommit`, `pnpm verify` runs the complete CI gate through `verify:ci`, and `.github/workflows/quality-gates.yml` verifies pull requests into `develop` and `main` without requiring private provider secrets.
 
 Next Impeccable command after this document:
 

@@ -40,7 +40,8 @@ Feature branches should target `develop`. Production promotion should target `ma
 
 | Command | Purpose |
 | --- | --- |
-| `pnpm verify` | Local and CI quality gate: foundation, lint, typecheck, tests, build. |
+| `pnpm run verify:precommit` | Husky pre-commit quality gate: foundation, lint, typecheck, tests. |
+| `pnpm verify` | Full local and CI quality gate: foundation, lint, typecheck, tests, build. |
 | `pnpm run cloudflare:local` | Build the Astro site and serve `apps/site/dist` with Wrangler Pages dev. |
 | `pnpm run release:env:preview` | Validate GitHub Environment values for preview deploys without printing secrets. |
 | `pnpm run release:env:production` | Validate GitHub Environment values for production deploys without printing secrets. |
@@ -64,6 +65,10 @@ The launch-readiness checklist is maintained in [Launch Hardening Checklist](lau
 ## GitHub Actions
 
 `.github/workflows/release-train.yml` runs `pnpm verify` on pull requests into `develop` and `main`. Pushes to `develop` deploy preview through GitHub Environment `preview`; pushes to `main` deploy production through GitHub Environment `production`.
+
+`.github/workflows/quality-gates.yml` is the readable pull-request quality workflow. It installs with `pnpm install --frozen-lockfile`, then runs foundation validation, lint, typecheck, tests, and build as separate steps so failures are easy to diagnose without deployment secrets.
+
+Husky owns the local pre-commit hook through `.husky/pre-commit`. The hook runs `pnpm run verify:precommit`, which intentionally skips the build step to keep local iteration practical while still catching foundation, lint, type, and behavior-test failures before a commit. Pre-push stays manual; run `pnpm verify` before opening or merging meaningful PRs.
 
 The workflow expects GitHub Environment secrets for `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CONVEX_DEPLOY_KEY`, `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, `DASHBOARD_API_TOKEN`, and `GOOGLE_CLIENT_SECRET`. Public or policy values such as `PUBLIC_SITE_URL`, `PUBLIC_POSTHOG_HOST`, `RESEND_FROM`, `BETTER_AUTH_TRUSTED_ORIGINS`, `GOOGLE_CLIENT_ID`, and `CLOUDFLARE_PROJECT_NAME` are read from GitHub Environment variables.
 
