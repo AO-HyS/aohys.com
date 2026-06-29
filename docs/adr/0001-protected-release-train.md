@@ -14,4 +14,5 @@ AOHYS uses a protected Release Train where feature branches promote into `develo
 
 - GitHub branch rules must protect both `develop` and `main`.
 - Production deploys must come from `main`; development previews must come from pull requests or `develop`.
-- Future implementation work must treat release scripts, GitHub Actions, Cloudflare configuration, and smoke checks as one Release Train module.
+- Implementation work must treat release scripts, GitHub Actions, Cloudflare configuration, and smoke checks as one Release Train module.
+- The current implementation uses `.github/workflows/release-train.yml`, root `deploy:*` and `smoke:*` scripts, and `packages/release-train` to keep the deployment behavior in one place.

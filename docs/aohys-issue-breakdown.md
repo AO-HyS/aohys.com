@@ -135,6 +135,8 @@ Wire explicit PostHog pageviews, selected conversion events, Environment Contrac
 
 Configure Wrangler, Cloudflare-compatible builds, the protected Release Train, preview/production deploy flow, Environment Contract validation, canonical domain behavior, `aohys.net` to `aohys.com` redirect, and deployment smoke checks.
 
+Current implementation status: release scripts, Wrangler Pages Direct Upload plan, GitHub Actions workflow, release-target environment validation, smoke commands, and Cloudflare Redirect Rules manifest are implemented in the #13 branch.
+
 ### 13. Better Auth and Private Dashboard Shell
 
 **Blocked by:** 1, 9.

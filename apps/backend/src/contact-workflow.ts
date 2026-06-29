@@ -100,7 +100,7 @@ function assertContactProviderSettings(
   environment: EnvironmentName,
   values: Record<string, string | undefined>,
 ): void {
-  const contract = validateEnvironmentContract(environment, values);
+  const contract = validateEnvironmentContract(environment, values, { target: "runtime" });
   const errors = [...contract.errors];
 
   for (const settingName of REQUIRED_CONTACT_SETTINGS) {

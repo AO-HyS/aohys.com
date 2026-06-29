@@ -204,7 +204,8 @@ Resume pages should remain typography-first, ATS-friendly, and visibly linked to
 11. Add case study detail content and resume content.
 12. Add contact form integration with Convex and Resend. Current status: implemented with Convex HTTP action, provider adapters, and PostHog safe conversion metadata.
 13. Add PostHog analytics and error capture. Current status: implemented for explicit pageviews, selected CTA/form conversion events, fixed-shape browser error capture, disabled autocapture, and documented preview/production Environment Contract values.
-14. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
+14. Add Cloudflare/Wrangler release path. Current status: implemented with Wrangler Pages Direct Upload scripts, GitHub Actions release workflow, preview/production Environment Contract validation, Cloudflare Pages project naming, smoke commands, and a versioned Cloudflare Redirect Rules manifest for canonical host redirects.
+15. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
 
 Next Impeccable command after this document:
 
@@ -214,8 +215,7 @@ $impeccable craft AOHYS public site shell
 
 ## Open Questions
 - Exact Cloudflare product choice for media originals versus variants: Cloudflare Images, R2, or both.
-- Final PostHog project keys for preview and production GitHub Environments.
-- Final Resend DNS verification and SPF update in Cloudflare.
+- Cloudflare Images activation/account hash for generated media delivery.
 - Final business WhatsApp number after Meta verification is complete.
 - Exact sanitized screenshots and development URLs to use for The Barber Central and Nutri Plan.
 - Whether GitHub Issues can be disabled on `AO-HyS/aohys.com` after repo creation.

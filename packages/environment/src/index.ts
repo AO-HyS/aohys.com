@@ -22,12 +22,19 @@ export interface EnvironmentVariableDefinition {
   classification: VariableClassification;
   exposure: VariableExposure;
   requiredIn: readonly EnvironmentName[];
+  requiredTargets?: readonly EnvironmentValidationTarget[];
   description: string;
 }
 
 export interface EnvironmentValidationResult {
   ok: boolean;
   errors: string[];
+}
+
+export type EnvironmentValidationTarget = "runtime" | "release";
+
+export interface EnvironmentValidationOptions {
+  target?: EnvironmentValidationTarget;
 }
 
 const ENVIRONMENTS = ["local", "preview", "production"] as const satisfies readonly EnvironmentName[];
@@ -87,6 +94,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "server-secret",
     exposure: "server-only",
     requiredIn: ["preview", "production"],
+    requiredTargets: ["release"],
     description: "GitHub Environment secret used by CI/release flows to deploy Convex.",
   },
   {
@@ -164,10 +172,20 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
   {
     name: "CLOUDFLARE_ACCOUNT_ID",
     provider: "cloudflare",
+    classification: "provider-output",
+    exposure: "server-only",
+    requiredIn: ["preview", "production"],
+    requiredTargets: ["release"],
+    description: "Cloudflare account identifier for release workflows.",
+  },
+  {
+    name: "CLOUDFLARE_API_TOKEN",
+    provider: "cloudflare",
     classification: "server-secret",
     exposure: "server-only",
     requiredIn: ["preview", "production"],
-    description: "Cloudflare account identifier for release workflows.",
+    requiredTargets: ["release"],
+    description: "GitHub Environment secret used by Wrangler to deploy Cloudflare Pages.",
   },
   {
     name: "CLOUDFLARE_PROJECT_NAME",
@@ -175,6 +193,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "provider-output",
     exposure: "server-only",
     requiredIn: ["preview", "production"],
+    requiredTargets: ["release"],
     description: "Cloudflare Pages/Workers project name.",
   },
   {
@@ -182,7 +201,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "cloudflare",
     classification: "provider-output",
     exposure: "server-only",
-    requiredIn: ["preview", "production"],
+    requiredIn: [],
     description: "Cloudflare Images delivery account hash for media URLs.",
   },
   {
@@ -210,16 +229,22 @@ export function getEnvironmentVariableDefinitions(): EnvironmentVariableDefiniti
 export function validateEnvironmentContract(
   environment: EnvironmentName,
   values: Record<string, string | undefined>,
+  options: EnvironmentValidationOptions = {},
 ): EnvironmentValidationResult {
   const errors: string[] = [];
+  const target = options.target ?? "release";
 
   if (!ENVIRONMENTS.includes(environment)) {
     errors.push(`${environment} is not a supported environment.`);
   }
 
   for (const definition of DEFINITIONS) {
-    if (definition.requiredIn.includes(environment) && !values[definition.name]) {
-      errors.push(`${definition.name} is required for ${environment}.`);
+    const requiredTargets = definition.requiredTargets ?? (["runtime", "release"] as const);
+    const isRequired = definition.requiredIn.includes(environment) && requiredTargets.includes(target);
+
+    if (isRequired && !values[definition.name]) {
+      const scope = definition.requiredTargets ? ` ${target}` : "";
+      errors.push(`${definition.name} is required for ${environment}${scope}.`);
     }
 
     if (

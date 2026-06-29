@@ -11,10 +11,23 @@
   },
   "scripts": {
     "build": "pnpm -r --if-present build",
+    "cloudflare:local": "pnpm --filter @aohys/site build && pnpm exec wrangler pages dev apps/site/dist --compatibility-date=2026-06-29",
+    "deploy:preview": "pnpm run release:env:preview && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop",
+    "deploy:production": "pnpm run release:env:production && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main",
     "lint": "pnpm -r --if-present lint",
+    "release:env:preview": "tsx scripts/validate-release-env.ts preview",
+    "release:env:production": "tsx scripts/validate-release-env.ts production",
+    "smoke:preview": "tsx scripts/smoke-release-url.ts preview",
+    "smoke:production": "tsx scripts/smoke-release-url.ts production",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
     "verify": "pnpm run verify:foundation && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build",
     "verify:foundation": "node scripts/verify-foundation.mjs"
+  },
+  "devDependencies": {
+    "@aohys/environment": "workspace:*",
+    "@aohys/release-train": "workspace:*",
+    "tsx": "^4.22.4",
+    "wrangler": "^4.105.0"
   }
 }
