@@ -4,6 +4,8 @@ import {
 } from "@aohys/release-train";
 
 const RELEASE_ENVIRONMENTS = ["preview", "production"] as const;
+const MAX_FETCH_ATTEMPTS = 6;
+const FETCH_RETRY_DELAY_MS = 5_000;
 
 function parseEnvironment(input: string | undefined): ReleaseDeploymentEnvironment {
   if (RELEASE_ENVIRONMENTS.includes(input as ReleaseDeploymentEnvironment)) {
@@ -17,8 +19,42 @@ function normalizeUrl(value: string): string {
   return value.endsWith("/") ? value : `${value}/`;
 }
 
+function formatFetchError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.cause instanceof Error ? `${error.message}: ${error.cause.message}` : error.message;
+  }
+
+  return String(error);
+}
+
+function wait(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
+async function fetchWithRetries(url: string, init: RequestInit): Promise<Response> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt += 1) {
+    try {
+      return await fetch(url, init);
+    } catch (error) {
+      lastError = error;
+
+      if (attempt < MAX_FETCH_ATTEMPTS) {
+        await wait(FETCH_RETRY_DELAY_MS);
+      }
+    }
+  }
+
+  throw new Error(
+    `Unable to fetch ${url} after ${MAX_FETCH_ATTEMPTS} attempts. ${formatFetchError(lastError)}`,
+  );
+}
+
 async function fetchText(url: string): Promise<{ status: number; url: string; body: string }> {
-  const response = await fetch(url, {
+  const response = await fetchWithRetries(url, {
     headers: {
       "user-agent": "aohys-release-smoke/1.0",
     },
@@ -33,7 +69,7 @@ async function fetchText(url: string): Promise<{ status: number; url: string; bo
 }
 
 async function assertCanonicalRedirect(sourceUrl: string): Promise<void> {
-  const response = await fetch(sourceUrl, {
+  const response = await fetchWithRetries(sourceUrl, {
     headers: {
       "user-agent": "aohys-release-smoke/1.0",
     },

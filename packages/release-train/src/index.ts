@@ -62,6 +62,23 @@ export function buildCloudflarePagesDeployPlan(
   };
 }
 
+function escapeRegexLiteral(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export function extractCloudflarePagesDeploymentUrl(
+  output: string,
+  projectName: string = CLOUDFLARE_PROJECT_NAME,
+): string | undefined {
+  const deploymentUrlPattern = new RegExp(
+    `https://[a-z0-9-]+\\.${escapeRegexLiteral(projectName)}\\.pages\\.dev`,
+    "g",
+  );
+  const deploymentUrls = output.match(deploymentUrlPattern);
+
+  return deploymentUrls?.at(-1);
+}
+
 export function validateReleaseEnvironment(
   environment: ReleaseDeploymentEnvironment,
   values: Record<string, string | undefined>,
