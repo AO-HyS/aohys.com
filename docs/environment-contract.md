@@ -8,9 +8,9 @@ The Environment Contract gives the repo one shared language for environments and
 
 ## Module Shape
 
-The Environment Contract is a deep module. Its future interface should stay small: validate the current environment, expose safe public values, and fail fast when required secrets or provider outputs are missing.
+The Environment Contract is a deep module. Its interface stays small: list variable definitions, validate the current environment, and fail fast when required secrets or provider outputs are missing for a runtime or release target.
 
-Its implementation can hide GitHub Environments, Cloudflare variables, Convex deployment variables, PostHog keys, Resend keys, Better Auth secrets, local `.env.local` files, and future provider-specific sync scripts.
+Its implementation hides GitHub Environments, Cloudflare variables, Convex deployment variables, PostHog keys, Resend keys, Better Auth secrets, local `.env.local` files, and future provider-specific sync scripts.
 
 The seam is environment validation. App code, dashboard code, Convex functions, and release workflows should cross that seam instead of reading ad hoc provider variables directly.
 
@@ -46,12 +46,12 @@ The current implementation lives in `packages/environment` and defines the durab
 
 Current Convex variables:
 
-| Variable | Class | Exposure | Required in |
+| Variable | Class | Exposure | Required target |
 | --- | --- | --- | --- |
-| `CONVEX_URL` | Provider output | Server-only | preview, production |
-| `CONVEX_SITE_URL` | Provider output | Server-only | preview, production |
-| `CONVEX_DEPLOYMENT` | Provider output | Server-only | preview, production |
-| `CONVEX_DEPLOY_KEY` | Server secret | Server-only | preview, production |
+| `CONVEX_URL` | Provider output | Server-only | runtime and release in preview/production |
+| `CONVEX_SITE_URL` | Provider output | Server-only | runtime and release in preview/production |
+| `CONVEX_DEPLOYMENT` | Provider output | Server-only | runtime and release in preview/production |
+| `CONVEX_DEPLOY_KEY` | Server secret | Server-only | release only in preview/production |
 
 Local development can receive `CONVEX_URL`, `CONVEX_SITE_URL`, and `CONVEX_DEPLOYMENT` from `convex deployment create --select` or `convex dev`, stored in uncommitted `apps/backend/.env.local`. Preview and production values must be copied into GitHub Environments.
 
@@ -82,9 +82,29 @@ Current explicit PostHog events:
 | Resend | API key, sender identity, verified domain/DNS state, safe notification settings |
 | GitHub | source of truth for preview/production deploy-time secrets and release workflow inputs |
 
+## Runtime vs Release Validation
+
+The implementation in `packages/environment` supports two validation targets:
+
+| Target | Used by | Meaning |
+| --- | --- | --- |
+| `runtime` | Convex actions, public site/server runtime, future dashboard runtime | Require values the running app needs. Do not require deploy-only credentials. |
+| `release` | GitHub Actions, root deploy scripts, production promotion checks | Require runtime values plus deploy-time credentials such as Wrangler and Convex deploy keys. |
+
+`validateEnvironmentContract(environment, values)` defaults to `release` so deployment commands fail closed. Runtime code must pass `{ target: "runtime" }` when deploy-only values should not be required.
+
+Current Cloudflare variables:
+
+| Variable | Class | Exposure | Required target |
+| --- | --- | --- | --- |
+| `CLOUDFLARE_ACCOUNT_ID` | Provider output | Server-only | release only in preview/production |
+| `CLOUDFLARE_API_TOKEN` | Server secret | Server-only | release only in preview/production |
+| `CLOUDFLARE_PROJECT_NAME` | Provider output | Server-only | release only in preview/production |
+| `CLOUDFLARE_IMAGES_ACCOUNT_HASH` | Provider output | Server-only | optional until Cloudflare Images is activated |
+
 ## Validation Gates
 
-The future implementation should provide one environment validation seam that can be used by local commands, CI, Cloudflare deploys, Convex setup, and launch hardening.
+The implementation provides one environment validation seam that can be used by local commands, CI, Cloudflare deploys, Convex setup, and launch hardening.
 
 Required checks:
 
@@ -97,16 +117,17 @@ Required checks:
 - Better Auth trusted origins match the environment URL;
 - Resend sender/domain configuration is documented before production notification sends;
 - PostHog autocapture policy is explicit for each environment;
-- Convex deployment target is environment-appropriate.
-- Convex deploy keys are never exposed through `PUBLIC_` browser variables.
+- Convex deployment target is environment-appropriate;
+- Convex deploy keys are never exposed through `PUBLIC_` browser variables;
+- Cloudflare API tokens are required by release validation and stay server-only;
 - Contact submissions have Convex, Resend, and PostHog settings before accepting a lead.
 
 ## Release Train Dependency
 
 The Release Train depends on this contract. A release is not healthy if it can deploy with stale GitHub secrets, mismatched Convex variables, wrong Better Auth origins, or production PostHog/Resend values in preview.
 
-Issue #13 should implement the release-facing validation. Issues #10, #11, #12, and #14 should implement the provider-specific parts behind the same seam.
+Issue #13 implements release-facing validation through `pnpm run release:env:preview` and `pnpm run release:env:production`. Issues #10, #11, #12, and #14 implement provider-specific runtime parts behind the same seam.
 
 ## TDD Connection
 
-The Environment Contract should be tested through observable validation behavior. The first useful tracer is a command that fails when a required variable is missing and passes when a documented safe local set is present. Later tracers should verify preview and production validation without sending real emails, mutating production data, or leaking secrets.
+The Environment Contract is tested through observable validation behavior. Current tests verify missing required values, production/preview separation, runtime vs release requirements, and secret/public separation without sending real emails, mutating production data, or leaking secrets.

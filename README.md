@@ -6,7 +6,7 @@ This repository is being built as a working sample of engineering standards: pub
 
 ## Status
 
-Repository foundation is available. The public Astro shell and bilingual graph-backed route skeletons are now scaffolded; the home proof narrative, dashboard, backend, quality gates, and deployment work continue through the approved vertical-slice issues.
+Repository foundation is available. The public Astro shell, bilingual graph-backed routes, proof narrative, contact backend, explicit PostHog analytics, and Cloudflare/Wrangler release path are scaffolded through the approved vertical-slice issues. The private dashboard and launch hardening continue in later issues.
 
 ## Local Development
 
@@ -19,16 +19,32 @@ pnpm verify
 
 The current workspace includes runnable Astro and Public Content Graph checks. `pnpm verify` runs foundation validation, linting, type checks, Vitest route/content tests, and builds across the monorepo.
 
+## Release Commands
+
+Cloudflare Pages deploys go through the Release Train module and GitHub Environments.
+
+```sh
+pnpm run release:env:preview
+pnpm run deploy:preview
+pnpm run smoke:preview
+
+pnpm run release:env:production
+pnpm run deploy:production
+pnpm run smoke:production
+```
+
+`pnpm run cloudflare:local` builds the Astro site and serves `apps/site/dist` through Wrangler Pages dev. The canonical host redirect from `aohys.net` to `aohys.com` is represented in `cloudflare/redirect-rules.json` because Cloudflare Pages `_redirects` does not support domain-level redirects.
+
 ## Workspace
 
 - [Workspace foundation](docs/workspace.md)
 - `apps/site`: Astro public SEO surface.
 - `apps/dashboard`: future private dashboard surface under `/dashboard`.
-- `apps/backend`: future Convex backend surface.
-- `packages/environment`: future Environment Contract implementation.
+- `apps/backend`: Convex backend surface for contact workflows and future private operations.
+- `packages/environment`: Environment Contract implementation.
 - `packages/content-graph`: Public Content Graph implementation for stable IDs, bilingual routes, SEO metadata, sitemap behavior, and private route exclusions.
 - `packages/dashboard-ui`: future Dashboard UI Kit implementation.
-- `packages/release-train`: future Release Train checks and smoke helpers.
+- `packages/release-train`: Release Train deployment plans, environment validation, workflow checks, and smoke helpers.
 
 ## Planning Documents
 

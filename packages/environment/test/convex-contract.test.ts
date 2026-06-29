@@ -22,6 +22,7 @@ const validPreviewValues = {
   BETTER_AUTH_URL: "https://preview.aohys.com",
   ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
   CLOUDFLARE_ACCOUNT_ID: "cloudflare-account",
+  CLOUDFLARE_API_TOKEN: "cloudflare-api-token",
   CLOUDFLARE_PROJECT_NAME: "aohys-com",
   CLOUDFLARE_IMAGES_ACCOUNT_HASH: "images-hash",
   PUBLIC_CONTACT_EMAIL: "alejandro.ortiz@aohys.com",
@@ -72,6 +73,35 @@ describe("Convex Environment Contract", () => {
     const validPreview = validateEnvironmentContract("preview", validPreviewValues);
 
     expect(validPreview).toEqual({ ok: true, errors: [] });
+  });
+
+  it("separates runtime settings from deploy-only release secrets", () => {
+    const runtimePreview = validateEnvironmentContract(
+      "preview",
+      {
+        ...validPreviewValues,
+        CONVEX_DEPLOY_KEY: undefined,
+        CLOUDFLARE_API_TOKEN: undefined,
+        CLOUDFLARE_IMAGES_ACCOUNT_HASH: undefined,
+      },
+      { target: "runtime" },
+    );
+
+    expect(runtimePreview).toEqual({ ok: true, errors: [] });
+
+    const releasePreview = validateEnvironmentContract(
+      "preview",
+      {
+        ...validPreviewValues,
+        CONVEX_DEPLOY_KEY: undefined,
+        CLOUDFLARE_API_TOKEN: undefined,
+      },
+      { target: "release" },
+    );
+
+    expect(releasePreview.ok).toBe(false);
+    expect(releasePreview.errors).toContain("CONVEX_DEPLOY_KEY is required for preview release.");
+    expect(releasePreview.errors).toContain("CLOUDFLARE_API_TOKEN is required for preview release.");
   });
 
   it("classifies PostHog browser values as public and keeps autocapture explicit", () => {

@@ -11,7 +11,7 @@ pnpm install
 pnpm verify
 ```
 
-The root `package.json` pins pnpm through `packageManager`. The root `verify` command runs foundation verification, then recursive build/lint/typecheck/test commands. Feature issues should replace remaining placeholders with real framework commands as each surface is scaffolded.
+The root `package.json` pins pnpm through `packageManager`. The root `verify` command runs foundation verification, then recursive build/lint/typecheck/test commands. Release commands live at the root because the Release Train crosses the public site, Environment Contract, Cloudflare Pages, and GitHub Environments.
 
 ## Workspace Layout
 
@@ -21,11 +21,11 @@ The root `package.json` pins pnpm through `packageManager`. The root `verify` co
 | `apps/dashboard` | Future private dashboard surface under `/dashboard`. |
 | `apps/backend` | Convex backend surface for leads, content, media, settings, resume, auth, and dashboard workflows. |
 | `packages/core` | Shared TypeScript primitives used across app and package boundaries. |
-| `packages/environment` | Environment Contract implementation for provider variable definitions and validation. |
+| `packages/environment` | Environment Contract implementation for provider variable definitions and runtime/release validation. |
 | `packages/content-graph` | Public Content Graph implementation for stable content IDs, bilingual routes, SEO metadata, sitemap behavior, and private route exclusions. |
 | `packages/dashboard-ui` | Future Dashboard UI Kit implementation over the dashboard primitive adapter. |
-| `packages/release-train` | Future Release Train checks, deploy helpers, and smoke-check helpers. |
-| `scripts` | Repository-level verification and placeholder task helpers. |
+| `packages/release-train` | Release Train checks, deploy plans, and smoke-check helpers. |
+| `scripts` | Repository-level verification, release environment validation, and smoke commands. |
 
 ## Module Seams
 
@@ -35,12 +35,18 @@ The foundation is intentionally shallow on implementation and strict on seams:
 - Reusable primitives should live in `packages/core` once they cross a single feature boundary or are likely to repeat across apps.
 - App and backend code should use `packages/environment` for provider variable classification and validation.
 - Dashboard routes should use `packages/dashboard-ui` once the private dashboard exists.
-- Deployment and smoke checks should collect in `packages/release-train` and root scripts.
+- Deployment and smoke checks should collect in `packages/release-train`, root scripts, and `.github/workflows/release-train.yml`.
 - Convex code lives under `apps/backend/convex`; generated bindings in `apps/backend/convex/_generated` are committed because backend functions typecheck against them.
 
 ## Environment Files
 
 `.env.example` documents safe local placeholders. Real values belong in `.env.local` locally and GitHub Environments for preview/production deploys. Provider dashboard changes are setup or recovery actions only; durable deploy-time values should be reconciled back to GitHub Environments.
+
+## Cloudflare Release Surface
+
+`pnpm run cloudflare:local` serves the built public site through Wrangler Pages dev. `pnpm run deploy:preview` and `pnpm run deploy:production` validate the target Environment Contract, build `apps/site`, then run `wrangler pages deploy apps/site/dist --project-name aohys-com` with the correct branch.
+
+Domain canonicalization is not stored in `apps/site/public/_redirects`; Cloudflare Pages redirects do not support domain-level redirects. The intended Cloudflare Redirect Rules payload is versioned in `cloudflare/redirect-rules.json` and should be applied in Cloudflare for `aohys.net`, `www.aohys.net`, and `www.aohys.com`.
 
 ## Source Boundary
 
