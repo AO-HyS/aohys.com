@@ -98,7 +98,11 @@
     "sendingLabel": "Sending...",
     "successMessage": "Request received. I will reply directly.",
     "errorMessage": "The form could not send right now. Use WhatsApp or email directly.",
+    "validationMessage": "Please review the highlighted fields before retrying.",
+    "emailErrorMessage": "The notification email could not be sent.",
+    "backendErrorMessage": "The contact backend is temporarily unavailable.",
     "endpointMissing": "Contact endpoint is not configured for this environment.",
+    "retryLabel": "Try again, or use WhatsApp or email directly.",
     "whatsappLabel": "WhatsApp Me",
     "fallbackText": "Prefer direct contact?"
   }

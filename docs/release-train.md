@@ -59,6 +59,8 @@ Feature branches should target `develop`. Production promotion should target `ma
 - Cloudflare Production deploy and smoke checks after `main` merge;
 - canonical `aohys.com` and `aohys.net` redirect checks before launch.
 
+The launch-readiness checklist is maintained in [Launch Hardening Checklist](launch-hardening.md). Use it for preview smoke, production smoke, dashboard privacy checks, contact failure states, Cloudflare Pages security headers, and browser QA evidence.
+
 ## GitHub Actions
 
 `.github/workflows/release-train.yml` runs `pnpm verify` on pull requests into `develop` and `main`. Pushes to `develop` deploy preview through GitHub Environment `preview`; pushes to `main` deploy production through GitHub Environment `production`.

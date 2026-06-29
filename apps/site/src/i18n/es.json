@@ -98,7 +98,11 @@
     "sendingLabel": "Enviando...",
     "successMessage": "Solicitud recibida. Responderé directamente.",
     "errorMessage": "El formulario no pudo enviarse ahora. Usa WhatsApp o correo directo.",
+    "validationMessage": "Revisa los campos marcados antes de intentar de nuevo.",
+    "emailErrorMessage": "No se pudo enviar el correo de notificación.",
+    "backendErrorMessage": "El backend de contacto no está disponible temporalmente.",
     "endpointMissing": "El endpoint de contacto no está configurado para este ambiente.",
+    "retryLabel": "Intenta de nuevo o usa WhatsApp/correo directo.",
     "whatsappLabel": "Escríbeme por WhatsApp",
     "fallbackText": "¿Prefieres contacto directo?"
   }

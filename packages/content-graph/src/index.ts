@@ -216,6 +216,18 @@ export interface ResumePageContent {
   languages: string[];
 }
 
+export interface PrivacySection {
+  title: string;
+  body: string;
+}
+
+export interface PrivacyPageContent {
+  heading: string;
+  intro: string;
+  sections: PrivacySection[];
+  boundaryNote: string;
+}
+
 export interface SitemapRule {
   include: boolean;
   changefreq?: "weekly" | "monthly";
@@ -271,6 +283,7 @@ interface LocalizedContentEntry {
   architectureContent?: ArchitecturePageContent;
   caseStudyContent?: CaseStudyPageContent;
   resumeContent?: ResumePageContent;
+  privacyContent?: PrivacyPageContent;
 }
 
 type ContentDictionary = Record<ContentId, LocalizedContentEntry>;
@@ -550,6 +563,16 @@ export function getResumePageContent(locale: Locale): ResumePageContent {
   }
 
   return resume.resumeContent;
+}
+
+export function getPrivacyPageContent(locale: Locale): PrivacyPageContent {
+  const privacy = getDictionaryEntry("privacy", locale);
+
+  if (!privacy.privacyContent) {
+    throw new Error(`Privacy content is missing for locale "${locale}".`);
+  }
+
+  return privacy.privacyContent;
 }
 
 export function getLanguageAlternates(contentId: ContentId | string): Record<Locale | "x-default", string> {

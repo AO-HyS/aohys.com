@@ -38,6 +38,8 @@ python3 apps/site/scripts/build-resume-pdf.py
 
 The current shell includes the graph-backed home proof narrative, selected-work index, case-study detail pages, resume page, ATS PDF artifact, bilingual route skeletons, global tokens, font loading, graph-backed metadata, navigation, footer, sitemap, robots output, Astro native i18n config, and Vitest route/build smoke checks.
 
+Cloudflare Pages security headers live in `public/_headers` and are copied into `dist/_headers` during `astro build`. The route build tests verify the header artifact alongside sitemap, robots, privacy, analytics, and contact failure-state behavior.
+
 UI copy that belongs to the shell lives in locale JSON files under `src/i18n`. Public page identity, localized slugs, SEO metadata, and sitemap eligibility come from `@aohys/content-graph`.
 
 Private behavior is implemented outside the Astro route graph:

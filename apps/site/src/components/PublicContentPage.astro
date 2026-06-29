@@ -5,6 +5,7 @@ import {
   getCaseStudyPageContent,
   getHomePageContent,
   getLocalizedPath,
+  getPrivacyPageContent,
   getResumePageContent,
   type ContentId,
   type PublicRoute,
@@ -23,6 +24,7 @@ const isCaseStudyIndex = node.type === "case-study-index";
 const isCaseStudy = node.type === "case-study";
 const isResume = node.type === "resume";
 const isContact = node.type === "contact";
+const isPrivacy = node.type === "privacy";
 const copy = getUiCopy(locale).publicPage;
 const contactCopy = getUiCopy(locale).contactForm;
 const homeContent = isHome ? getHomePageContent(locale) : undefined;
@@ -30,6 +32,7 @@ const architectureContent = isArchitecture ? getArchitecturePageContent(locale) 
 const caseStudyIndexContent = isCaseStudyIndex ? getCaseStudyIndexContent(locale) : undefined;
 const caseStudyContent = isCaseStudy ? getCaseStudyPageContent(id, locale) : undefined;
 const resumeContent = isResume ? getResumePageContent(locale) : undefined;
+const privacyContent = isPrivacy ? getPrivacyPageContent(locale) : undefined;
 const caseStudySections = caseStudyContent ? [
   caseStudyContent.problem,
   caseStudyContent.businessOutcome,
@@ -449,7 +452,11 @@ const directEmailHref = `mailto:${publicContactEmail}`;
           data-contact-endpoint={contactEndpoint}
           data-success-message={contactCopy.successMessage}
           data-error-message={contactCopy.errorMessage}
+          data-validation-message={contactCopy.validationMessage}
+          data-email-error-message={contactCopy.emailErrorMessage}
+          data-backend-error-message={contactCopy.backendErrorMessage}
           data-endpoint-missing={contactCopy.endpointMissing}
+          data-retry-label={contactCopy.retryLabel}
           data-analytics-view="contact_form_viewed"
           data-analytics-submit="contact_form_submit_attempted"
           data-analytics-target="contact_form"
@@ -541,6 +548,46 @@ const directEmailHref = `mailto:${publicContactEmail}`;
           }));
         };
 
+        const messageWithRetry = (message: string | undefined, retryLabel: string | undefined) =>
+          [message, retryLabel].filter(Boolean).join(" ");
+
+        const readErrorCode = async (response: Response) => {
+          try {
+            const payload = await response.json();
+            return typeof payload?.code === "string" ? payload.code : "";
+          } catch {
+            return "";
+          }
+        };
+
+        const failureReasonForResponse = (response: Response, code: string) => {
+          if (response.status === 400 || code === "validation_error") {
+            return "validation_failed";
+          }
+
+          if (
+            code === "email_delivery_failed" ||
+            code === "provider_configuration_error" ||
+            code === "analytics_delivery_failed"
+          ) {
+            return "email_delivery_failed";
+          }
+
+          return "backend_unavailable";
+        };
+
+        const failureMessageForReason = (form: HTMLFormElement, reason: string) => {
+          if (reason === "validation_failed") {
+            return form.dataset.validationMessage ?? form.dataset.errorMessage ?? "";
+          }
+
+          if (reason === "email_delivery_failed") {
+            return form.dataset.emailErrorMessage ?? form.dataset.errorMessage ?? "";
+          }
+
+          return form.dataset.backendErrorMessage ?? form.dataset.errorMessage ?? "";
+        };
+
         for (const form of document.querySelectorAll("[data-contact-form]")) {
           const endpoint = form instanceof HTMLFormElement ? form.dataset.contactEndpoint : "";
           const status = form.querySelector("[data-contact-status]");
@@ -563,9 +610,26 @@ const directEmailHref = `mailto:${publicContactEmail}`;
               return;
             }
 
+            if (!form.checkValidity()) {
+              if (status) {
+                status.textContent = messageWithRetry(
+                  form.dataset.validationMessage,
+                  form.dataset.retryLabel,
+                );
+              }
+              dispatchContactAnalytics("contact_form_submit_failed", {
+                failure_reason: "validation_failed",
+              });
+              form.reportValidity();
+              return;
+            }
+
             if (!endpoint) {
               if (status) {
-                status.textContent = form.dataset.endpointMissing ?? "";
+                status.textContent = messageWithRetry(
+                  form.dataset.endpointMissing,
+                  form.dataset.retryLabel,
+                );
               }
               dispatchContactAnalytics("contact_form_submit_failed", {
                 failure_reason: "endpoint_missing",
@@ -594,7 +658,18 @@ const directEmailHref = `mailto:${publicContactEmail}`;
               });
 
               if (!response.ok) {
-                throw new Error("Contact request failed.");
+                const errorCode = await readErrorCode(response);
+                const failureReason = failureReasonForResponse(response, errorCode);
+                dispatchContactAnalytics("contact_form_submit_failed", {
+                  failure_reason: failureReason,
+                });
+                if (status) {
+                  status.textContent = messageWithRetry(
+                    failureMessageForReason(form, failureReason),
+                    form.dataset.retryLabel,
+                  );
+                }
+                return;
               }
 
               form.reset();
@@ -603,10 +678,13 @@ const directEmailHref = `mailto:${publicContactEmail}`;
               }
             } catch {
               dispatchContactAnalytics("contact_form_submit_failed", {
-                failure_reason: "request_failed",
+                failure_reason: "backend_unavailable",
               });
               if (status) {
-                status.textContent = form.dataset.errorMessage ?? "";
+                status.textContent = messageWithRetry(
+                  form.dataset.backendErrorMessage ?? form.dataset.errorMessage,
+                  form.dataset.retryLabel,
+                );
               }
             } finally {
               if (submitButton instanceof HTMLButtonElement) {
@@ -617,6 +695,41 @@ const directEmailHref = `mailto:${publicContactEmail}`;
           });
         }
       </script>
+    </>
+  ) : isPrivacy && privacyContent ? (
+    <>
+      <section class="route-hero" aria-labelledby="privacy-title" data-privacy-content-id={id}>
+        <div class="route-hero-copy">
+          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <h1 id="privacy-title">{privacyContent.heading}</h1>
+          <p class="hero-lead">{privacyContent.intro}</p>
+          <div class="hero-actions" aria-label={copy.actions}>
+            {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          </div>
+        </div>
+        <aside class="route-panel" aria-label={copy.routeMetadataAria}>
+          <span>{copy.canonical}</span>
+          <strong>{route.path}</strong>
+          <span>{copy.contentType}</span>
+          <strong>{node.type}</strong>
+        </aside>
+      </section>
+
+      <section class="route-proof-section" aria-labelledby="privacy-sections-title">
+        <div class="section-heading">
+          <h2 id="privacy-sections-title">{variant.summary}</h2>
+        </div>
+        <div class="route-proof-list">
+          {privacyContent.sections.map((section) => (
+            <div class="route-proof-item">
+              <span>{section.title}</span>
+              <p>{section.body}</p>
+            </div>
+          ))}
+        </div>
+        <p class="privacy-boundary-note">{privacyContent.boundaryNote}</p>
+      </section>
     </>
   ) : (
     <>

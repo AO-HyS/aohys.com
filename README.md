@@ -56,6 +56,7 @@ pnpm run smoke:production
 - [Issue breakdown draft](docs/aohys-issue-breakdown.md)
 - [TDD plan](docs/aohys-tdd-plan.md)
 - [Release Train](docs/release-train.md)
+- [Launch Hardening](docs/launch-hardening.md)
 - [Environment Contract](docs/environment-contract.md)
 - [Public Content Graph](docs/public-content-graph.md)
 - [Dashboard UI Kit](docs/dashboard-ui-kit.md)
