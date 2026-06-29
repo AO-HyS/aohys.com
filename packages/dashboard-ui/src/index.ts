@@ -18,6 +18,30 @@ export type DashboardLeadWorkflowState =
   | "unauthorized"
   | "configuration-error";
 
+export type DashboardContentWorkflowState =
+  | "loading"
+  | "empty"
+  | "ready"
+  | "validation-error"
+  | "save-pending"
+  | "save-success"
+  | "unauthorized"
+  | "environment-unavailable"
+  | "configuration-error";
+
+export type DashboardCaseStudyStatus =
+  | "production-proof"
+  | "active-build"
+  | "private-build"
+  | "enterprise-confidential"
+  | "engineering-practice";
+
+export type DashboardEvidenceStatus = "missing" | "sanitized" | "published";
+export type DashboardMediaStorageProvider = "cloudflare-images" | "cloudflare-r2" | "external";
+export type DashboardMediaUsage = "case-study" | "resume" | "architecture" | "site";
+export type DashboardMediaStatus = "draft" | "published" | "archived";
+export type DashboardSettingClassification = "public-build-value" | "provider-output" | "policy-value";
+
 export interface DashboardShellInput {
   adminEmail: string;
   activePath: string;
@@ -53,12 +77,64 @@ export interface DashboardLeadWorkflowInput extends DashboardShellInput {
   validationMessage?: string;
 }
 
+export interface DashboardCaseStudyMetadata {
+  contentId: string;
+  title: string;
+  englishPath: string;
+  spanishPath: string;
+  sitemapIncluded: boolean;
+  status: DashboardCaseStudyStatus;
+  evidenceStatus: DashboardEvidenceStatus;
+  updatedAt: number;
+}
+
+export interface DashboardMediaMetadata {
+  id: string;
+  storageProvider: DashboardMediaStorageProvider;
+  storageKey: string;
+  publicUrl?: string;
+  altText: string;
+  contentId?: string;
+  usage: DashboardMediaUsage;
+  status: DashboardMediaStatus;
+  locale?: "en" | "es";
+  updatedAt: number;
+}
+
+export interface DashboardSiteSetting {
+  key: string;
+  environment: "local" | "preview" | "production";
+  value: string;
+  classification: DashboardSettingClassification;
+  updatedAt: number;
+}
+
+export interface DashboardResumeVersion {
+  id: string;
+  locale: "en" | "es";
+  version: string;
+  pdfPath: string;
+  isPublished: boolean;
+  createdAt: number;
+  publishedAt?: number;
+}
+
+export interface DashboardContentWorkflowInput extends DashboardShellInput {
+  caseStudies: DashboardCaseStudyMetadata[];
+  media: DashboardMediaMetadata[];
+  settings: DashboardSiteSetting[];
+  resumeVersions: DashboardResumeVersion[];
+  workflowState?: DashboardContentWorkflowState;
+  validationMessage?: string;
+}
+
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Overview" },
   { href: "/dashboard/leads", label: "Leads" },
   { href: "/dashboard/case-studies", label: "Case studies" },
   { href: "/dashboard/media", label: "Media" },
   { href: "/dashboard/settings", label: "Settings" },
+  { href: "/dashboard/resume", label: "Resume" },
 ] as const;
 
 const STATE_COPY: Record<DashboardState, { title: string; body: string; status: string }> = {
@@ -132,6 +208,277 @@ export function renderDashboardLeadWorkflow(input: DashboardLeadWorkflowInput): 
       </section>
     `,
   });
+}
+
+export function renderDashboardContentWorkflow(input: DashboardContentWorkflowInput): string {
+  const itemCount = input.caseStudies.length + input.media.length + input.settings.length + input.resumeVersions.length;
+  const workflowState = input.workflowState ?? (itemCount > 0 ? "ready" : "empty");
+
+  return renderDashboardChrome({
+    ...input,
+    body: `
+      <section class="content-workflow" data-dashboard-surface="content-workflow" data-workflow-state="${workflowState}" aria-labelledby="content-workflow-title">
+        <div class="dashboard-section-heading">
+          <p class="dashboard-kicker">Publishing guardrails</p>
+          <h2 id="content-workflow-title">Content and media workflow</h2>
+          <p>Review public graph metadata, media safety, site settings, and resume versions before anything reaches the public surface.</p>
+        </div>
+        ${renderContentWorkflowNotice(workflowState, input.validationMessage)}
+        <div class="content-panel-grid">
+          ${renderCaseStudyPanel(input.caseStudies)}
+          ${renderMediaPanel(input.media, input.caseStudies)}
+          ${renderSettingsPanel(input.settings)}
+          ${renderResumePanel(input.resumeVersions)}
+        </div>
+      </section>
+    `,
+  });
+}
+
+function renderContentWorkflowNotice(
+  state: DashboardContentWorkflowState,
+  validationMessage?: string,
+): string {
+  switch (state) {
+    case "save-success":
+      return `<p class="dashboard-notice" role="status">Content metadata saved. Public pages still render through the Public Content Graph.</p>`;
+    case "validation-error":
+      return `<p class="dashboard-notice dashboard-notice-warning" role="alert">${escapeHtml(validationMessage ?? "Content metadata could not be saved.")}</p>`;
+    case "loading":
+      return `<p class="dashboard-notice" role="status">Loading content workflow...</p>`;
+    case "save-pending":
+      return `<p class="dashboard-notice" role="status">Saving content metadata...</p>`;
+    case "unauthorized":
+      return `<p class="dashboard-notice dashboard-notice-warning" role="alert">Content workflows are restricted to allowlisted admins.</p>`;
+    case "environment-unavailable":
+      return `<p class="dashboard-notice dashboard-notice-warning" role="alert">Content workflows are unavailable until the Environment Contract is complete.</p>`;
+    case "configuration-error":
+      return `<p class="dashboard-notice dashboard-notice-warning" role="alert">Content workflow provider configuration needs attention.</p>`;
+    case "empty":
+      return `<p class="dashboard-notice" role="status">No content metadata exists yet. Public graph nodes still define the published surface.</p>`;
+    default:
+      return "";
+  }
+}
+
+function renderCaseStudyPanel(caseStudies: DashboardCaseStudyMetadata[]): string {
+  return `
+    <article class="content-panel" aria-labelledby="content-case-studies-title">
+      <div>
+        <p class="dashboard-kicker">Case studies</p>
+        <h3 id="content-case-studies-title">Public graph metadata</h3>
+      </div>
+      <div class="content-list">
+        ${caseStudies.length > 0 ? caseStudies.map(renderCaseStudyRow).join("") : renderContentEmptyState("No case-study metadata yet.")}
+      </div>
+    </article>
+  `;
+}
+
+function renderCaseStudyRow(caseStudy: DashboardCaseStudyMetadata): string {
+  return `
+    <section class="content-row">
+      <div>
+        <strong>${escapeHtml(caseStudy.title)}</strong>
+        <span>${escapeHtml(caseStudy.contentId)}</span>
+        <span>${escapeHtml(caseStudy.englishPath)} · ${escapeHtml(caseStudy.spanishPath)}</span>
+        <span>${caseStudy.sitemapIncluded ? "Sitemap eligible" : "Noindex protected"}</span>
+      </div>
+      <form class="content-form" method="post" action="/dashboard/content/case-study">
+        <input type="hidden" name="contentId" value="${escapeHtml(caseStudy.contentId)}" />
+        <label>
+          <span>Status</span>
+          <select name="status">
+            ${renderCaseStudyStatusOption("production-proof", caseStudy.status)}
+            ${renderCaseStudyStatusOption("active-build", caseStudy.status)}
+            ${renderCaseStudyStatusOption("private-build", caseStudy.status)}
+            ${renderCaseStudyStatusOption("enterprise-confidential", caseStudy.status)}
+            ${renderCaseStudyStatusOption("engineering-practice", caseStudy.status)}
+          </select>
+        </label>
+        <label>
+          <span>Evidence</span>
+          <select name="evidenceStatus">
+            ${renderEvidenceStatusOption("missing", caseStudy.evidenceStatus)}
+            ${renderEvidenceStatusOption("sanitized", caseStudy.evidenceStatus)}
+            ${renderEvidenceStatusOption("published", caseStudy.evidenceStatus)}
+          </select>
+        </label>
+        <button class="dashboard-action" type="submit">Save metadata</button>
+      </form>
+    </section>
+  `;
+}
+
+function renderMediaPanel(
+  mediaItems: DashboardMediaMetadata[],
+  caseStudies: DashboardCaseStudyMetadata[],
+): string {
+  return `
+    <article class="content-panel" aria-labelledby="content-media-title">
+      <div>
+        <p class="dashboard-kicker">Media</p>
+        <h3 id="content-media-title">Metadata and safety</h3>
+      </div>
+      <form class="content-form content-create-form" method="post" action="/dashboard/content/media">
+        <label>
+          <span>Storage key</span>
+          <input name="storageKey" placeholder="screenshots/casa-roca-home" />
+        </label>
+        <label>
+          <span>Alt text</span>
+          <textarea name="altText" rows="3" placeholder="Describe the image for public readers."></textarea>
+        </label>
+        <label>
+          <span>Usage intent</span>
+          <select name="usage">
+            <option value="case-study">Case study</option>
+            <option value="resume">Resume</option>
+            <option value="architecture">Architecture</option>
+            <option value="site">Site</option>
+          </select>
+        </label>
+        <label>
+          <span>Content ID</span>
+          <select name="contentId">
+            <option value="">No public content node yet</option>
+            ${caseStudies.map((caseStudy) => `<option value="${escapeHtml(caseStudy.contentId)}">${escapeHtml(caseStudy.title)}</option>`).join("")}
+          </select>
+        </label>
+        <button class="dashboard-action" type="submit">Add media metadata</button>
+      </form>
+      <div class="content-list">
+        ${mediaItems.length > 0 ? mediaItems.map(renderMediaRow).join("") : renderContentEmptyState("No media metadata yet.")}
+      </div>
+    </article>
+  `;
+}
+
+function renderMediaRow(media: DashboardMediaMetadata): string {
+  return `
+    <section class="content-row">
+      <div>
+        <strong>${escapeHtml(media.storageKey)}</strong>
+        <span>${formatLabel(media.storageProvider)} · ${formatLabel(media.usage)} · ${formatLabel(media.status)}</span>
+        <span>${escapeHtml(media.altText)}</span>
+        ${media.contentId ? `<span>${escapeHtml(media.contentId)}</span>` : ""}
+      </div>
+    </section>
+  `;
+}
+
+function renderSettingsPanel(settings: DashboardSiteSetting[]): string {
+  return `
+    <article class="content-panel" aria-labelledby="content-settings-title">
+      <div>
+        <p class="dashboard-kicker">Settings</p>
+        <h3 id="content-settings-title">Public-safe values</h3>
+      </div>
+      <form class="content-form content-create-form" method="post" action="/dashboard/content/setting">
+        <label>
+          <span>Key</span>
+          <input name="key" placeholder="PUBLIC_WHATSAPP_URL" />
+        </label>
+        <label>
+          <span>Value</span>
+          <input name="value" placeholder="https://wa.me/..." />
+        </label>
+        <label>
+          <span>Classification</span>
+          <select name="classification">
+            <option value="public-build-value">Public build value</option>
+            <option value="provider-output">Provider output</option>
+            <option value="policy-value">Policy value</option>
+          </select>
+        </label>
+        <button class="dashboard-action" type="submit">Save setting</button>
+      </form>
+      <div class="content-list">
+        ${settings.length > 0 ? settings.map(renderSettingRow).join("") : renderContentEmptyState("No dashboard-managed settings yet.")}
+      </div>
+    </article>
+  `;
+}
+
+function renderSettingRow(setting: DashboardSiteSetting): string {
+  return `
+    <section class="content-row">
+      <div>
+        <strong>${escapeHtml(setting.key)}</strong>
+        <span>${escapeHtml(setting.environment)} · ${formatLabel(setting.classification)}</span>
+        <span>${escapeHtml(setting.value)}</span>
+      </div>
+    </section>
+  `;
+}
+
+function renderResumePanel(resumeVersions: DashboardResumeVersion[]): string {
+  return `
+    <article class="content-panel" aria-labelledby="content-resume-title">
+      <div>
+        <p class="dashboard-kicker">Resume</p>
+        <h3 id="content-resume-title">Version alignment</h3>
+      </div>
+      <form class="content-form content-create-form" method="post" action="/dashboard/content/resume">
+        <label>
+          <span>Locale</span>
+          <select name="locale">
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+          </select>
+        </label>
+        <label>
+          <span>Version</span>
+          <input name="version" placeholder="2026.06" />
+        </label>
+        <label>
+          <span>PDF path</span>
+          <input name="pdfPath" placeholder="/downloads/alejandro-ortiz-corro-resume.pdf" />
+        </label>
+        <button class="dashboard-action" type="submit">Add resume version</button>
+      </form>
+      <div class="content-list">
+        ${resumeVersions.length > 0 ? resumeVersions.map(renderResumeVersionRow).join("") : renderContentEmptyState("No resume versions yet.")}
+      </div>
+    </article>
+  `;
+}
+
+function renderResumeVersionRow(resumeVersion: DashboardResumeVersion): string {
+  return `
+    <section class="content-row">
+      <div>
+        <strong>${escapeHtml(resumeVersion.version)}</strong>
+        <span>${escapeHtml(resumeVersion.locale)} · ${resumeVersion.isPublished ? "Published" : "Draft"}</span>
+        <span>${escapeHtml(resumeVersion.pdfPath)}</span>
+      </div>
+    </section>
+  `;
+}
+
+function renderContentEmptyState(message: string): string {
+  return `<p class="content-empty-state">${escapeHtml(message)}</p>`;
+}
+
+function renderCaseStudyStatusOption(
+  status: DashboardCaseStudyStatus,
+  selectedStatus: DashboardCaseStudyStatus,
+): string {
+  return `<option value="${status}"${status === selectedStatus ? " selected" : ""}>${formatLabel(status)}</option>`;
+}
+
+function renderEvidenceStatusOption(
+  status: DashboardEvidenceStatus,
+  selectedStatus: DashboardEvidenceStatus,
+): string {
+  return `<option value="${status}"${status === selectedStatus ? " selected" : ""}>${formatLabel(status)}</option>`;
+}
+
+function formatLabel(value: string): string {
+  return value
+    .split("-")
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(" ");
 }
 
 function renderDashboardChrome(input: DashboardShellInput & { body: string }): string {
@@ -652,6 +999,78 @@ h3 { margin-block-end: 8px; font-size: 1rem; }
   padding: 0 10px;
   font: inherit;
 }
+.content-workflow {
+  display: grid;
+  gap: 16px;
+}
+.content-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.content-panel {
+  min-width: 0;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 8px;
+  background: var(--dashboard-panel);
+  padding: 16px;
+}
+.content-list {
+  display: grid;
+  gap: 10px;
+  margin-block-start: 12px;
+}
+.content-row,
+.content-empty-state {
+  border: 1px solid var(--dashboard-line);
+  border-radius: 8px;
+  background: var(--dashboard-panel-subtle);
+  padding: 12px;
+}
+.content-row {
+  display: grid;
+  gap: 12px;
+}
+.content-row strong,
+.content-row span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.content-row span,
+.content-empty-state {
+  color: var(--dashboard-muted);
+}
+.content-form {
+  display: grid;
+  gap: 10px;
+}
+.content-create-form {
+  border-block-start: 1px solid var(--dashboard-line);
+  margin-block-start: 12px;
+  padding-block-start: 12px;
+}
+.content-form label {
+  display: grid;
+  gap: 5px;
+  color: var(--dashboard-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.content-form input,
+.content-form select,
+.content-form textarea {
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 8px;
+  background: var(--dashboard-panel);
+  color: var(--dashboard-ink);
+  padding: 9px 10px;
+  font: inherit;
+}
+.content-form textarea {
+  resize: vertical;
+}
 @media (max-width: 720px) {
   .dashboard-shell[data-dashboard-shell="authenticated"] {
     display: block;
@@ -683,11 +1102,15 @@ h3 { margin-block-end: 8px; font-size: 1rem; }
   }
   .lead-workflow,
   .lead-metadata,
-  .lead-status-controls {
+  .lead-status-controls,
+  .content-panel-grid {
     display: block;
   }
   .lead-detail-panel {
     margin-block-start: 14px;
+  }
+  .content-panel {
+    margin-block-start: 12px;
   }
   .lead-metadata div,
   .lead-status-controls .dashboard-action {

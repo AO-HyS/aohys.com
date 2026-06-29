@@ -16,6 +16,12 @@ import {
   assertDashboardApiToken,
   parseDashboardLeadStatusPayload,
 } from "../src/dashboard-leads.js";
+import {
+  parseDashboardCaseStudyMetadataPayload,
+  parseDashboardMediaMetadataPayload,
+  parseDashboardResumeVersionPayload,
+  parseDashboardSiteSettingPayload,
+} from "../src/dashboard-content.js";
 
 const http = httpRouter();
 
@@ -141,6 +147,112 @@ http.route({
       return privateJsonResponse({ ok: true, ...result });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Lead status could not be updated.";
+      const status = message.includes("token") ? 401 : 400;
+
+      return privateJsonResponse({ ok: false, error: message }, { status });
+    }
+  }),
+});
+
+http.route({
+  path: "/dashboard/content",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
+      const content = await ctx.runQuery(internal.content.listForDashboard);
+
+      return privateJsonResponse(content);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Dashboard content is unavailable.";
+      const status = message.includes("token") ? 401 : 503;
+
+      return privateJsonResponse({ ok: false, error: message }, { status });
+    }
+  }),
+});
+
+http.route({
+  path: "/dashboard/content/case-study",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
+      const payload = await parseDashboardCaseStudyMetadataPayload(request);
+      const result = await ctx.runMutation(
+        internal.content.upsertCaseStudyMetadataFromDashboard,
+        payload,
+      );
+
+      return privateJsonResponse({ ok: true, ...result });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Case-study metadata could not be saved.";
+      const status = message.includes("token") ? 401 : 400;
+
+      return privateJsonResponse({ ok: false, error: message }, { status });
+    }
+  }),
+});
+
+http.route({
+  path: "/dashboard/content/media",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
+      const payload = await parseDashboardMediaMetadataPayload(request);
+      const result = await ctx.runMutation(
+        internal.content.createMediaMetadataFromDashboard,
+        payload,
+      );
+
+      return privateJsonResponse({ ok: true, ...result });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Media metadata could not be saved.";
+      const status = message.includes("token") ? 401 : 400;
+
+      return privateJsonResponse({ ok: false, error: message }, { status });
+    }
+  }),
+});
+
+http.route({
+  path: "/dashboard/content/setting",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
+      const payload = await parseDashboardSiteSettingPayload(request);
+      const result = await ctx.runMutation(
+        internal.content.upsertSiteSettingFromDashboard,
+        payload,
+      );
+
+      return privateJsonResponse({ ok: true, ...result });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Site setting could not be saved.";
+      const status = message.includes("token") ? 401 : 400;
+
+      return privateJsonResponse({ ok: false, error: message }, { status });
+    }
+  }),
+});
+
+http.route({
+  path: "/dashboard/content/resume",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
+      const payload = await parseDashboardResumeVersionPayload(request);
+      const result = await ctx.runMutation(
+        internal.content.createResumeVersionFromDashboard,
+        payload,
+      );
+
+      return privateJsonResponse({ ok: true, ...result });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Resume version could not be saved.";
       const status = message.includes("token") ? 401 : 400;
 
       return privateJsonResponse({ ok: false, error: message }, { status });

@@ -165,6 +165,8 @@ Current implementation status: Cloudflare Pages renders `/dashboard/leads` throu
 
 Build dashboard workflows through the Dashboard UI Kit for case-study content, media metadata, site settings, and resume content. Include Cloudflare media integration once the product choice is decided, and preserve Public Content Graph invariants when dashboard workflows publish public content.
 
+Current implementation status: `/dashboard/case-studies`, `/dashboard/media`, `/dashboard/settings`, and `/dashboard/resume` render through `renderDashboardContentWorkflow`; Cloudflare Pages merges private Convex metadata with the Public Content Graph for stable content IDs, localized paths, and sitemap eligibility; private Convex endpoints store case-study metadata, media metadata with alt text/usage intent, `PUBLIC_` site settings, and resume PDF/version records. Cloudflare Images/R2 upload behavior remains deferred to the future Media Pipeline module.
+
 ### 16. Privacy, Security, and Launch Hardening
 
 **Blocked by:** 10, 11, 12, 13.

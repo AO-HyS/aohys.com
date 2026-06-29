@@ -58,6 +58,17 @@ The public `leads.submit` mutation validates through `src/lead-intake.ts` before
 
 The public contact endpoint is implemented as a Convex HTTP action at `/contact`. It validates the submission, persists the lead through an internal mutation, sends a Resend notification through an injected provider adapter, and captures a PostHog conversion event with metadata only.
 
+Private dashboard endpoints are implemented as Convex HTTP actions protected by `DASHBOARD_API_TOKEN`:
+
+- `GET /dashboard/leads` and `POST /dashboard/leads/status` for lead review.
+- `GET /dashboard/content` for case-study, media, site setting, and resume metadata.
+- `POST /dashboard/content/case-study` for Public Content Graph case-study metadata.
+- `POST /dashboard/content/media` for metadata-only media records with alt text and usage intent.
+- `POST /dashboard/content/setting` for `PUBLIC_` site settings only.
+- `POST /dashboard/content/resume` for resume PDF/version records.
+
+The content endpoints store metadata and public-safe references only. Cloudflare Images/R2 uploads remain a future Media Pipeline decision; Convex should not store image originals.
+
 ## Better Auth
 
 Better Auth is mounted through the official Convex component:
