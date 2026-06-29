@@ -103,12 +103,13 @@ Current Better Auth variables:
 | `BETTER_AUTH_URL` | Provider output | Server-only | runtime, dashboard-runtime, auth-runtime, and release |
 | `BETTER_AUTH_TRUSTED_ORIGINS` | Policy value | Server-only | runtime, dashboard-runtime, auth-runtime, and release |
 | `ADMIN_EMAIL` | Policy value | Server-only | runtime, dashboard-runtime, auth-runtime, and release |
+| `DASHBOARD_API_TOKEN` | Server secret | Server-only | dashboard-runtime and release |
 | `GOOGLE_CLIENT_ID` | Provider output | Server-only | runtime, auth-runtime, and release in preview/production |
 | `GOOGLE_CLIENT_SECRET` | Server secret | Server-only | runtime, auth-runtime, and release in preview/production |
 
 Cloudflare Pages owns `/dashboard` and `/api/auth/*` at the public domain. `/dashboard` validates with `dashboard-runtime`, then checks the session through the Convex Better Auth route. It does not receive the Better Auth signing secret because signed auth state belongs to Convex. `/dashboard/sign-in/google` starts Google OAuth server-side by POSTing to Convex Better Auth, carries the Better Auth state cookie back to the browser, and redirects to Google. `/api/auth/*` proxies to `CONVEX_SITE_URL` while preserving the public host through forwarded headers so callback URLs and cookies stay on `aohys.com` or `preview.aohys.com`.
 
-Cloudflare Pages runtime variables for the dashboard are `AOHYS_ENV`, `PUBLIC_SITE_URL`, `CONVEX_SITE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_TRUSTED_ORIGINS`, and `ADMIN_EMAIL`. Preview and production variables are configured on the Pages project; local `wrangler pages dev` must pass them as explicit `-b` bindings.
+Cloudflare Pages runtime variables for the dashboard are `AOHYS_ENV`, `PUBLIC_SITE_URL`, `CONVEX_SITE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_TRUSTED_ORIGINS`, `ADMIN_EMAIL`, and `DASHBOARD_API_TOKEN`. Pages uses `DASHBOARD_API_TOKEN` only for server-to-server calls to private Convex dashboard endpoints such as `/dashboard/leads`; public browser code never receives it. Preview and production variables are configured on the Pages project; local `wrangler pages dev` must pass them as explicit `-b` bindings.
 
 Current Cloudflare variables:
 

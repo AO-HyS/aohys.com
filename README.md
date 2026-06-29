@@ -6,7 +6,7 @@ This repository is being built as a working sample of engineering standards: pub
 
 ## Status
 
-Repository foundation is available. The public Astro shell, bilingual graph-backed routes, proof narrative, contact backend, explicit PostHog analytics, Cloudflare/Wrangler release path, and first private dashboard guard/shell are scaffolded through the approved vertical-slice issues. Deeper dashboard workflows and launch hardening continue in later issues.
+Repository foundation is available. The public Astro shell, bilingual graph-backed routes, proof narrative, contact backend, explicit PostHog analytics, Cloudflare/Wrangler release path, private dashboard guard/shell, and first lead review workflow are scaffolded through the approved vertical-slice issues. Deeper content/media dashboard workflows and launch hardening continue in later issues.
 
 ## Local Development
 

@@ -163,6 +163,7 @@ includesAll(".env.example", [
   "RESEND_API_KEY=",
   "BETTER_AUTH_SECRET=",
   "ADMIN_EMAIL=alejandro.ortiz@aohys.com",
+  "DASHBOARD_API_TOKEN=",
 ]);
 
 includesAll(".gitignore", [

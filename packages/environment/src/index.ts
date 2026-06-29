@@ -54,6 +54,10 @@ const AUTH_RUNTIME_TARGETS = [
   "release",
   "auth-runtime",
 ] as const satisfies readonly EnvironmentValidationTarget[];
+const DASHBOARD_PRIVATE_TARGETS = [
+  "release",
+  "dashboard-runtime",
+] as const satisfies readonly EnvironmentValidationTarget[];
 
 const DEFINITIONS: EnvironmentVariableDefinition[] = [
   {
@@ -199,6 +203,15 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredIn: ["local", "preview", "production"],
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Comma-separated admin allowlist email addresses.",
+  },
+  {
+    name: "DASHBOARD_API_TOKEN",
+    provider: "core",
+    classification: "server-secret",
+    exposure: "server-only",
+    requiredIn: ["local", "preview", "production"],
+    requiredTargets: DASHBOARD_PRIVATE_TARGETS,
+    description: "Server-to-server token used by Cloudflare Pages dashboard routes to call private Convex dashboard HTTP endpoints.",
   },
   {
     name: "GOOGLE_CLIENT_ID",

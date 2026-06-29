@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { assertOneOf, escapeHtml, trimToUndefined } from "../src/index.js";
+import { assertOneOf, escapeHtml, isOneOf, trimToUndefined } from "../src/index.js";
 
 describe("shared primitives", () => {
   it("normalizes optional string input without preserving blank values", () => {
@@ -19,6 +19,14 @@ describe("shared primitives", () => {
     expect(() => assertOneOf(value, allowed, "intent")).toThrow(
       "intent is not supported.",
     );
+  });
+
+  it("narrows optional strings against readonly literal lists", () => {
+    const allowed = ["new", "reviewing", "closed"] as const;
+
+    expect(isOneOf("reviewing", allowed)).toBe(true);
+    expect(isOneOf("unsupported", allowed)).toBe(false);
+    expect(isOneOf(undefined, allowed)).toBe(false);
   });
 
   it("escapes text before embedding it in HTML strings", () => {

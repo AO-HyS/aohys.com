@@ -63,7 +63,7 @@ Feature branches should target `develop`. Production promotion should target `ma
 
 `.github/workflows/release-train.yml` runs `pnpm verify` on pull requests into `develop` and `main`. Pushes to `develop` deploy preview through GitHub Environment `preview`; pushes to `main` deploy production through GitHub Environment `production`.
 
-The workflow expects GitHub Environment secrets for `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CONVEX_DEPLOY_KEY`, `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, and `GOOGLE_CLIENT_SECRET`. Public or policy values such as `PUBLIC_SITE_URL`, `PUBLIC_POSTHOG_HOST`, `RESEND_FROM`, `BETTER_AUTH_TRUSTED_ORIGINS`, `GOOGLE_CLIENT_ID`, and `CLOUDFLARE_PROJECT_NAME` are read from GitHub Environment variables.
+The workflow expects GitHub Environment secrets for `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CONVEX_DEPLOY_KEY`, `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, `DASHBOARD_API_TOKEN`, and `GOOGLE_CLIENT_SECRET`. Public or policy values such as `PUBLIC_SITE_URL`, `PUBLIC_POSTHOG_HOST`, `RESEND_FROM`, `BETTER_AUTH_TRUSTED_ORIGINS`, `GOOGLE_CLIENT_ID`, and `CLOUDFLARE_PROJECT_NAME` are read from GitHub Environment variables.
 
 Branch protection currently requires reviews before merging to protected branches. In a one-owner account setup, the durable fix is to add a second reviewer or use an explicit owner action for merges that cannot satisfy last-pusher approval.
 

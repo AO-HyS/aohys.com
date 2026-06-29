@@ -77,5 +77,6 @@ Required auth runtime values:
 | `BETTER_AUTH_URL` | Public auth base URL, usually `https://aohys.com` or `https://preview.aohys.com`. |
 | `BETTER_AUTH_TRUSTED_ORIGINS` | Comma-separated allowed origins, including `BETTER_AUTH_URL` and `PUBLIC_SITE_URL`. |
 | `ADMIN_EMAIL` | Allowlisted dashboard admin email. |
+| `DASHBOARD_API_TOKEN` | Server-to-server token required by private dashboard HTTP endpoints. |
 | `GOOGLE_CLIENT_ID` | Google OAuth client id. |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret. |

@@ -1,2 +1,2 @@
-export { assertOneOf } from "./validation.js";
+export { assertOneOf, isOneOf } from "./validation.js";
 export { escapeHtml, trimToUndefined } from "./strings.js";
