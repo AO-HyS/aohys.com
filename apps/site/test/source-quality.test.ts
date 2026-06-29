@@ -18,6 +18,9 @@ describe("public site source quality", () => {
     const layout = read("src/layouts/BaseLayout.astro");
     const header = read("src/components/SiteHeader.astro");
     const footer = read("src/components/SiteFooter.astro");
+    const posthogAnalytics = read("src/components/PostHogAnalytics.astro");
+    const analytics = read("src/analytics.ts");
+    const posthogClient = read("src/posthog-client.ts");
     const publicContentPage = read("src/components/PublicContentPage.astro");
     const enDictionary = read("src/i18n/en.json");
     const esDictionary = read("src/i18n/es.json");
@@ -28,6 +31,9 @@ describe("public site source quality", () => {
       layout,
       header,
       footer,
+      posthogAnalytics,
+      analytics,
+      posthogClient,
       publicContentPage,
       enDictionary,
       esDictionary,
@@ -46,6 +52,11 @@ describe("public site source quality", () => {
     expect(header).toContain("getUiCopy");
     expect(footer).toContain("getUiCopy");
     expect(publicContentPage).toContain("getUiCopy");
+    expect(posthogAnalytics).toContain("buildAnalyticsBootstrapPayload");
+    expect(posthogClient).toContain("capture_pageview");
+    expect(posthogClient).toContain("captureException");
+    expect(source).toContain("contact_form_submit_failed");
+    expect(source).not.toContain("autocapture: true");
     expect(enDictionary).toContain("client and product code stays private");
     expect(esDictionary).toContain("Los límites público/privado");
     expect(routePage).toContain("getPublicRouteMap");

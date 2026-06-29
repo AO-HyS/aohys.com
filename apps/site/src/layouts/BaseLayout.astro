@@ -1,4 +1,5 @@
 ---
+import PostHogAnalytics from "../components/PostHogAnalytics.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import "../styles/global.css";
@@ -23,6 +24,15 @@ const {
   robots = "index,follow",
   contentId,
 } = Astro.props;
+
+const analyticsEnvironment = import.meta.env.AOHYS_ENV ?? "local";
+const analyticsPath = (() => {
+  try {
+    return new URL(canonicalUrl).pathname || "/";
+  } catch {
+    return "/";
+  }
+})();
 ---
 
 <!doctype html>
@@ -53,5 +63,12 @@ const {
       </main>
       <SiteFooter locale={locale} />
     </div>
+    <PostHogAnalytics
+      contentId={contentId}
+      locale={locale}
+      canonicalUrl={canonicalUrl}
+      path={analyticsPath}
+      environment={analyticsEnvironment}
+    />
   </body>
 </html>

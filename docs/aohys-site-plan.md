@@ -52,6 +52,7 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Environment documentation: The canonical environment planning document is `docs/environment-contract.md`; the architectural decision is `docs/adr/0002-environment-contract-source-of-truth.md`.
 - Convex backend foundation: `apps/backend` owns the Convex schema, generated bindings, and first public lead intake mutation. The initial dev deployment is `dev/aohys-local`; preview and production values remain GitHub Environment responsibilities.
 - Contact workflow: `/contact` and `/es/contacto` render a real bilingual form with preferred contact path, consent, spam honeypot, direct email, and WhatsApp fallback. Submissions target the Convex HTTP action `/contact`, which persists leads, sends Resend notifications, and captures PostHog conversion metadata without message text or contact identity.
+- Public analytics workflow: the Astro layout emits an explicit PostHog `$pageview` payload per public route, with browser autocapture disabled. Contact and CTA events are limited to `contact_form_viewed`, `contact_form_submit_attempted`, `contact_form_submit_failed`, `whatsapp_cta_clicked`, and `email_cta_clicked`; contact field values are stripped before capture. Browser errors are captured with fixed metadata only.
 - CTA: Primary CTA is neutral: "Start a conversation" / "Hablemos"; contact form captures lead intent.
 - Privacy: Include serious minimal privacy pages from V1; no newsletter in V1.
 - CV: `/resume` is the primary dynamic resume URL; `/es/cv` is the Spanish route. The downloadable PDF lives at `/downloads/alejandro-ortiz-corro-resume.pdf`.
@@ -202,7 +203,8 @@ Resume pages should remain typography-first, ATS-friendly, and visibly linked to
 10. Run browser QA for desktop and mobile, then use Impeccable polish on the visible public home.
 11. Add case study detail content and resume content.
 12. Add contact form integration with Convex and Resend. Current status: implemented with Convex HTTP action, provider adapters, and PostHog safe conversion metadata.
-13. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
+13. Add PostHog analytics and error capture. Current status: implemented for explicit pageviews, selected CTA/form conversion events, fixed-shape browser error capture, disabled autocapture, and documented preview/production Environment Contract values.
+14. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
 
 Next Impeccable command after this document:
 
@@ -212,7 +214,7 @@ $impeccable craft AOHYS public site shell
 
 ## Open Questions
 - Exact Cloudflare product choice for media originals versus variants: Cloudflare Images, R2, or both.
-- Final PostHog project keys, environment naming, and error capture setup.
+- Final PostHog project keys for preview and production GitHub Environments.
 - Final Resend DNS verification and SPF update in Cloudflare.
 - Final business WhatsApp number after Meta verification is complete.
 - Exact sanitized screenshots and development URLs to use for The Barber Central and Nutri Plan.

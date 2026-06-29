@@ -235,6 +235,20 @@ describe("built public routes", () => {
     expect(spanishContactHtml).toContain("Entiendo que AOHYS usará esta información para responder mi solicitud.");
   });
 
+  it("renders explicit analytics hooks without relying on autocapture", () => {
+    const contactHtml = readDist("contact/index.html");
+
+    expect(contactHtml).toContain('id="aohys-posthog-config"');
+    expect(contactHtml).toContain('"name":"$pageview"');
+    expect(contactHtml).toContain('"content_id":"contact"');
+    expect(contactHtml).toContain('"environment":"local"');
+    expect(contactHtml).toContain('data-analytics-view="contact_form_viewed"');
+    expect(contactHtml).toContain('data-analytics-submit="contact_form_submit_attempted"');
+    expect(contactHtml).toContain('data-analytics-event="whatsapp_cta_clicked"');
+    expect(contactHtml).toContain('data-analytics-event="email_cta_clicked"');
+    expect(contactHtml).not.toContain("autocapture:true");
+  });
+
   it("emits sitemap and robots behavior from the public graph", () => {
     const sitemap = readDist("sitemap.xml");
     const robots = readDist("robots.txt");
