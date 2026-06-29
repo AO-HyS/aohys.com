@@ -19,10 +19,13 @@ const workspacePackages = [
 const requiredRootScripts = [
   "build",
   "lint",
+  "prepare",
   "typecheck",
   "test",
   "verify",
+  "verify:ci",
   "verify:foundation",
+  "verify:precommit",
 ];
 
 const requiredPackageScripts = ["build", "lint", "typecheck", "test"];
@@ -30,6 +33,8 @@ const requiredPackageScripts = ["build", "lint", "typecheck", "test"];
 const requiredFiles = [
   ".env.example",
   ".gitignore",
+  ".github/workflows/quality-gates.yml",
+  ".husky/pre-commit",
   "LICENSE",
   "README.md",
   "docs/workspace.md",
@@ -107,7 +112,30 @@ if (rootPackage) {
       `package.json must define script ${scriptName}`,
     );
   }
+
+  check(
+    Boolean(rootPackage.devDependencies?.husky),
+    "package.json must include husky as a devDependency",
+  );
 }
+
+includesAll(".github/workflows/quality-gates.yml", [
+  "name: Quality Gates",
+  "pull_request:",
+  "branches:",
+  "develop",
+  "main",
+  "pnpm install --frozen-lockfile",
+  "pnpm run verify:foundation",
+  "pnpm run lint",
+  "pnpm run typecheck",
+  "pnpm run test",
+  "pnpm run build",
+]);
+
+includesAll(".husky/pre-commit", [
+  "pnpm run verify:precommit",
+]);
 
 includesAll("pnpm-workspace.yaml", ["apps/*", "packages/*"]);
 
@@ -135,6 +163,7 @@ for (const [workspaceDir, expectedName] of workspacePackages) {
 
 includesAll("README.md", [
   "## Evaluation Guide",
+  "## Quality Gates",
   "## Architecture Map",
   "## Public Source Boundary",
   "## Environment and Credentials",
@@ -147,6 +176,8 @@ includesAll("README.md", [
   "docs/aohys-tdd-plan.md",
   "pnpm install",
   "pnpm verify",
+  "pnpm run verify:precommit",
+  "Pre-push stays manual",
   "docs/workspace.md",
   "docs/release-train.md",
   "docs/environment-contract.md",

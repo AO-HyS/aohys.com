@@ -195,6 +195,8 @@ Current implementation status: `README.md` now acts as the public evaluation pac
 
 Add the baseline quality gates for local and pull-request review: Husky pre-commit, a GitHub Actions verify workflow, dependency-install validation, lint/typecheck/test/build coverage, and clear behavior for checks that do not require private provider secrets. This issue exists so testing and quality standards are not scattered across feature slices.
 
+Current implementation status: Husky is installed through the root `prepare` script and `.husky/pre-commit` runs `pnpm run verify:precommit` with foundation validation, lint, typecheck, and tests. `pnpm verify` delegates to `verify:ci`, which runs foundation validation, lint, typecheck, tests, and build. `.github/workflows/quality-gates.yml` runs pull-request checks into `develop` and `main` with readable install/foundation/lint/typecheck/test/build steps that do not require private provider secrets. Pre-push remains manual so local iteration stays practical; meaningful PRs should run `pnpm verify` before merge.
+
 ## Architecture Review Notes
 
 The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module. The second selected candidate is the Environment Contract module. The third selected candidate is the Public Content Graph module. The fourth selected candidate is the Dashboard UI Kit module. The quality-gates issue (#31) now tracks the local hook and PR-check surface that should support all of those modules.

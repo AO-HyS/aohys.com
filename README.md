@@ -46,6 +46,19 @@ pnpm run cloudflare:local
 
 The public pages can be inspected without secrets. Provider-backed flows such as live contact submission, authenticated dashboard data, Convex deploys, Resend delivery, PostHog ingestion, Better Auth Google OAuth, and Cloudflare media uploads require environment-specific credentials that are not committed.
 
+## Quality Gates
+
+The repo uses visible local and remote gates because this site is also a public engineering sample.
+
+| Gate | Command | Runs |
+| --- | --- | --- |
+| Pre-commit | `pnpm run verify:precommit` | foundation validation, lint, typecheck, tests |
+| Local full verify | `pnpm verify` | foundation validation, lint, typecheck, tests, build |
+| Pull request CI | `.github/workflows/quality-gates.yml` | install with frozen lockfile, foundation validation, lint, typecheck, tests, build |
+| Release Train | `.github/workflows/release-train.yml` | verify, then Cloudflare preview/production deploys on protected branch pushes |
+
+Husky installs through the root `prepare` script and runs `.husky/pre-commit` before commits. Pre-push stays manual for now: `pnpm verify` is required before opening or merging meaningful PRs, but it is not enforced as a local hook so iteration stays practical.
+
 ## Architecture Map
 
 | Area | Location | Responsibility |
