@@ -37,6 +37,7 @@ const requiredFiles = [
   "docs/environment-contract.md",
   "docs/public-content-graph.md",
   "docs/dashboard-ui-kit.md",
+  "apps/backend/convex/tsconfig.json",
 ];
 
 function filePath(relativePath) {
@@ -164,6 +165,11 @@ includesAll(".env.example", [
   "BETTER_AUTH_SECRET=",
   "ADMIN_EMAIL=alejandro.ortiz@aohys.com",
   "DASHBOARD_API_TOKEN=",
+]);
+
+includesAll("apps/backend/convex/tsconfig.json", [
+  "../tsconfig.json",
+  "../src/**/*.ts",
 ]);
 
 includesAll(".gitignore", [
