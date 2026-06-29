@@ -2,7 +2,7 @@
 
 Release Train verification package.
 
-This package owns the small public interface for deployment planning and release-time environment validation. Root scripts and GitHub Actions use it so feature work does not need to duplicate Cloudflare Pages branch names, project names, or canonical URLs.
+This package owns the small public interface for deployment planning and release-time environment validation. Root scripts and GitHub Actions use it so feature work does not need to duplicate Cloudflare Pages branch names, project names, canonical URLs, or release-target contract checks.
 
 ## Public API
 
@@ -28,5 +28,7 @@ pnpm run release:env:production
 pnpm run deploy:production
 pnpm run smoke:production
 ```
+
+`deploy:preview` and `deploy:production` validate the Environment Contract, deploy Convex with the matching `CONVEX_DEPLOY_KEY`, build `apps/site`, and then deploy Cloudflare Pages with Wrangler.
 
 Domain-level redirects are represented in `cloudflare/redirect-rules.json`, not Cloudflare Pages `_redirects`.

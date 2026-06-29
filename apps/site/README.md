@@ -14,6 +14,21 @@ pnpm --filter @aohys/site test
 pnpm --filter @aohys/site build
 ```
 
+Local Cloudflare Pages Functions QA needs explicit Wrangler bindings; shell-prefixed env vars are not enough for `pages dev`:
+
+```sh
+pnpm exec wrangler pages dev apps/site/dist \
+  --ip 127.0.0.1 \
+  --port 8788 \
+  --compatibility-date=2026-06-28 \
+  -b AOHYS_ENV=local \
+  -b PUBLIC_SITE_URL=http://localhost:8788 \
+  -b CONVEX_SITE_URL=https://patient-bird-955.convex.site \
+  -b BETTER_AUTH_URL=http://localhost:8788 \
+  -b BETTER_AUTH_TRUSTED_ORIGINS=http://localhost:8788,http://localhost:4321 \
+  -b ADMIN_EMAIL=a.ortizcrr@gmail.com,alejandro.ortiz@aohys.com
+```
+
 Regenerate the ATS-friendly resume PDF after editing English resume graph content:
 
 ```sh
@@ -23,3 +38,10 @@ python3 apps/site/scripts/build-resume-pdf.py
 The current shell includes the graph-backed home proof narrative, selected-work index, case-study detail pages, resume page, ATS PDF artifact, bilingual route skeletons, global tokens, font loading, graph-backed metadata, navigation, footer, sitemap, robots output, Astro native i18n config, and Vitest route/build smoke checks.
 
 UI copy that belongs to the shell lives in locale JSON files under `src/i18n`. Public page identity, localized slugs, SEO metadata, and sitemap eligibility come from `@aohys/content-graph`.
+
+Private behavior is implemented outside the Astro route graph:
+
+- `/dashboard/*` is handled by Cloudflare Pages functions and renders `@aohys/dashboard-ui`.
+- `/dashboard/sign-in/google` starts Google OAuth server-side, sets the Better Auth state cookie, and redirects to Google without client-side script.
+- `/api/auth/*` is proxied by Cloudflare Pages functions to Convex Better Auth routes.
+- Private responses are `noindex, nofollow` and `cache-control: no-store`; dashboard routes stay out of sitemap generation.

@@ -12,8 +12,8 @@
   "scripts": {
     "build": "pnpm -r --if-present build",
     "cloudflare:local": "pnpm --filter @aohys/site build && pnpm exec wrangler pages dev apps/site/dist --compatibility-date=2026-06-29",
-    "deploy:preview": "pnpm run release:env:preview && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop",
-    "deploy:production": "pnpm run release:env:production && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main",
+    "deploy:preview": "pnpm run release:env:preview && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"preview release\" && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop",
+    "deploy:production": "pnpm run release:env:production && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"production release\" && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main",
     "lint": "pnpm -r --if-present lint",
     "release:env:preview": "tsx scripts/validate-release-env.ts preview",
     "release:env:production": "tsx scripts/validate-release-env.ts production",

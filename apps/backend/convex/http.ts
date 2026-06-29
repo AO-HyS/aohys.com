@@ -1,6 +1,7 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server.js";
 import { internal } from "./_generated/api.js";
+import { authComponent, createAuth } from "./auth.js";
 import {
   captureLeadAnalyticsWithPostHog,
   sendLeadNotificationWithResend,
@@ -12,6 +13,15 @@ import {
 } from "../src/contact-workflow.js";
 
 const http = httpRouter();
+
+authComponent.registerRoutesLazy(http, createAuth, {
+  basePath: "/api/auth",
+  cors: true,
+  trustedOrigins: () => (process.env.BETTER_AUTH_TRUSTED_ORIGINS ?? "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -50,7 +60,10 @@ function getContactEnvironmentValues(): Record<string, string | undefined> {
     LEAD_NOTIFICATION_EMAIL: process.env.LEAD_NOTIFICATION_EMAIL,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
+    BETTER_AUTH_TRUSTED_ORIGINS: process.env.BETTER_AUTH_TRUSTED_ORIGINS,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID,
     CLOUDFLARE_PROJECT_NAME: process.env.CLOUDFLARE_PROJECT_NAME,
     CLOUDFLARE_IMAGES_ACCOUNT_HASH: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,

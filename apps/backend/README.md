@@ -57,3 +57,25 @@ The first schema includes:
 The public `leads.submit` mutation validates through `src/lead-intake.ts` before inserting into Convex. Reusable normalization and assertion primitives come from `@aohys/core` instead of staying embedded in feature code. Tests exercise this boundary without direct database coupling.
 
 The public contact endpoint is implemented as a Convex HTTP action at `/contact`. It validates the submission, persists the lead through an internal mutation, sends a Resend notification through an injected provider adapter, and captures a PostHog conversion event with metadata only.
+
+## Better Auth
+
+Better Auth is mounted through the official Convex component:
+
+- `convex/convex.config.ts` registers `@convex-dev/better-auth`.
+- `convex/auth.config.ts` exposes Convex auth provider metadata.
+- `convex/auth.ts` creates the Better Auth server with the Convex adapter, Google social provider, trusted origins, and Convex compatibility plugin.
+- `convex/http.ts` registers `/api/auth/*` lazily so Convex codegen and deploy analysis do not need auth secrets at bundle time.
+
+The public site owns the visible domain. Cloudflare Pages proxies `/api/auth/*` to `CONVEX_SITE_URL` and forwards the public host so Better Auth callbacks and cookies stay on `aohys.com` or `preview.aohys.com`. The dashboard sign-in button goes through `/dashboard/sign-in/google`, which performs Better Auth's JSON social sign-in request server-side before redirecting to Google.
+
+Required auth runtime values:
+
+| Variable | Notes |
+| --- | --- |
+| `BETTER_AUTH_SECRET` | Server-only Better Auth secret. |
+| `BETTER_AUTH_URL` | Public auth base URL, usually `https://aohys.com` or `https://preview.aohys.com`. |
+| `BETTER_AUTH_TRUSTED_ORIGINS` | Comma-separated allowed origins, including `BETTER_AUTH_URL` and `PUBLIC_SITE_URL`. |
+| `ADMIN_EMAIL` | Allowlisted dashboard admin email. |
+| `GOOGLE_CLIENT_ID` | Google OAuth client id. |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret. |

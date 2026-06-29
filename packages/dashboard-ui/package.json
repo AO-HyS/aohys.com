@@ -4,10 +4,22 @@
   "private": true,
   "description": "Dashboard UI Kit implementation package.",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
   "scripts": {
-    "build": "node ../../scripts/package-task.mjs build @aohys/dashboard-ui",
-    "lint": "node ../../scripts/package-task.mjs lint @aohys/dashboard-ui",
-    "typecheck": "node ../../scripts/package-task.mjs typecheck @aohys/dashboard-ui",
-    "test": "node ../../scripts/package-task.mjs test @aohys/dashboard-ui"
+    "build": "tsc --noEmit -p tsconfig.json",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   }
 }

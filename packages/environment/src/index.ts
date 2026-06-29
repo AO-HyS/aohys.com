@@ -31,13 +31,29 @@ export interface EnvironmentValidationResult {
   errors: string[];
 }
 
-export type EnvironmentValidationTarget = "runtime" | "release";
+export type EnvironmentValidationTarget =
+  | "runtime"
+  | "release"
+  | "dashboard-runtime"
+  | "auth-runtime";
 
 export interface EnvironmentValidationOptions {
   target?: EnvironmentValidationTarget;
 }
 
 const ENVIRONMENTS = ["local", "preview", "production"] as const satisfies readonly EnvironmentName[];
+const DEFAULT_REQUIRED_TARGETS = ["runtime", "release"] as const satisfies readonly EnvironmentValidationTarget[];
+const DASHBOARD_RUNTIME_TARGETS = [
+  "runtime",
+  "release",
+  "dashboard-runtime",
+  "auth-runtime",
+] as const satisfies readonly EnvironmentValidationTarget[];
+const AUTH_RUNTIME_TARGETS = [
+  "runtime",
+  "release",
+  "auth-runtime",
+] as const satisfies readonly EnvironmentValidationTarget[];
 
 const DEFINITIONS: EnvironmentVariableDefinition[] = [
   {
@@ -46,6 +62,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "policy-value",
     exposure: "server-only",
     requiredIn: ["local", "preview", "production"],
+    requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Environment Contract name for the current runtime.",
   },
   {
@@ -54,6 +71,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "public-build-value",
     exposure: "public-browser",
     requiredIn: ["local", "preview", "production"],
+    requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Canonical URL for the current public site environment.",
   },
   {
@@ -86,6 +104,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "provider-output",
     exposure: "server-only",
     requiredIn: ["preview", "production"],
+    requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Convex HTTP actions URL generated for the target deployment.",
   },
   {
@@ -151,7 +170,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "server-secret",
     exposure: "server-only",
     requiredIn: ["preview", "production"],
-    description: "Better Auth secret for signed auth state.",
+    requiredTargets: AUTH_RUNTIME_TARGETS,
+    description: "Better Auth secret for signed auth state, owned by the auth runtime.",
   },
   {
     name: "BETTER_AUTH_URL",
@@ -159,7 +179,17 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "provider-output",
     exposure: "server-only",
     requiredIn: ["local", "preview", "production"],
+    requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Trusted Better Auth base URL for the current environment.",
+  },
+  {
+    name: "BETTER_AUTH_TRUSTED_ORIGINS",
+    provider: "better-auth",
+    classification: "policy-value",
+    exposure: "server-only",
+    requiredIn: ["local", "preview", "production"],
+    requiredTargets: DASHBOARD_RUNTIME_TARGETS,
+    description: "Comma-separated origins accepted by Better Auth for the current environment.",
   },
   {
     name: "ADMIN_EMAIL",
@@ -167,7 +197,26 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "policy-value",
     exposure: "server-only",
     requiredIn: ["local", "preview", "production"],
-    description: "Initial admin allowlist email.",
+    requiredTargets: DASHBOARD_RUNTIME_TARGETS,
+    description: "Comma-separated admin allowlist email addresses.",
+  },
+  {
+    name: "GOOGLE_CLIENT_ID",
+    provider: "better-auth",
+    classification: "provider-output",
+    exposure: "server-only",
+    requiredIn: ["preview", "production"],
+    requiredTargets: AUTH_RUNTIME_TARGETS,
+    description: "Google OAuth client identifier used by Better Auth social sign-in.",
+  },
+  {
+    name: "GOOGLE_CLIENT_SECRET",
+    provider: "better-auth",
+    classification: "server-secret",
+    exposure: "server-only",
+    requiredIn: ["preview", "production"],
+    requiredTargets: AUTH_RUNTIME_TARGETS,
+    description: "Google OAuth client secret used only by Better Auth server routes.",
   },
   {
     name: "CLOUDFLARE_ACCOUNT_ID",
@@ -239,7 +288,7 @@ export function validateEnvironmentContract(
   }
 
   for (const definition of DEFINITIONS) {
-    const requiredTargets = definition.requiredTargets ?? (["runtime", "release"] as const);
+    const requiredTargets = definition.requiredTargets ?? DEFAULT_REQUIRED_TARGETS;
     const isRequired = definition.requiredIn.includes(environment) && requiredTargets.includes(target);
 
     if (isRequired && !values[definition.name]) {
@@ -260,10 +309,36 @@ export function validateEnvironmentContract(
     errors.push("PUBLIC_SITE_URL must point to https://aohys.com in production.");
   }
 
+  const betterAuthTrustedOrigins = parseCommaSeparatedOrigins(values.BETTER_AUTH_TRUSTED_ORIGINS);
+  const betterAuthUrl = values.BETTER_AUTH_URL;
+  if (betterAuthUrl && betterAuthTrustedOrigins.length > 0 && !betterAuthTrustedOrigins.includes(betterAuthUrl)) {
+    errors.push("BETTER_AUTH_TRUSTED_ORIGINS must include BETTER_AUTH_URL.");
+  }
+
+  if (publicSiteUrl && betterAuthTrustedOrigins.length > 0 && !betterAuthTrustedOrigins.includes(publicSiteUrl)) {
+    errors.push("BETTER_AUTH_TRUSTED_ORIGINS must include PUBLIC_SITE_URL.");
+  }
+
+  const adminEmails = parseCommaSeparatedValues(values.ADMIN_EMAIL);
+  if (adminEmails.some((email) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+    errors.push("ADMIN_EMAIL must contain valid email addresses.");
+  }
+
   const convexDeployment = values.CONVEX_DEPLOYMENT;
   if (environment === "production" && convexDeployment?.includes("preview")) {
     errors.push("CONVEX_DEPLOYMENT must not point to preview in production.");
   }
 
   return { ok: errors.length === 0, errors };
+}
+
+function parseCommaSeparatedOrigins(value: string | undefined): string[] {
+  return parseCommaSeparatedValues(value);
+}
+
+function parseCommaSeparatedValues(value: string | undefined): string[] {
+  return (value ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
 }

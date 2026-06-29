@@ -6,7 +6,7 @@ This repository is being built as a working sample of engineering standards: pub
 
 ## Status
 
-Repository foundation is available. The public Astro shell, bilingual graph-backed routes, proof narrative, contact backend, explicit PostHog analytics, and Cloudflare/Wrangler release path are scaffolded through the approved vertical-slice issues. The private dashboard and launch hardening continue in later issues.
+Repository foundation is available. The public Astro shell, bilingual graph-backed routes, proof narrative, contact backend, explicit PostHog analytics, Cloudflare/Wrangler release path, and first private dashboard guard/shell are scaffolded through the approved vertical-slice issues. Deeper dashboard workflows and launch hardening continue in later issues.
 
 ## Local Development
 
@@ -21,7 +21,7 @@ The current workspace includes runnable Astro and Public Content Graph checks. `
 
 ## Release Commands
 
-Cloudflare Pages deploys go through the Release Train module and GitHub Environments.
+Convex and Cloudflare Pages deploys go through the Release Train module and GitHub Environments.
 
 ```sh
 pnpm run release:env:preview
@@ -33,17 +33,17 @@ pnpm run deploy:production
 pnpm run smoke:production
 ```
 
-`pnpm run cloudflare:local` builds the Astro site and serves `apps/site/dist` through Wrangler Pages dev. The canonical host redirect from `aohys.net` to `aohys.com` is represented in `cloudflare/redirect-rules.json` because Cloudflare Pages `_redirects` does not support domain-level redirects.
+`pnpm run cloudflare:local` builds the Astro site and serves `apps/site/dist` through Wrangler Pages dev. Release deploys push Convex first, then Cloudflare Pages. The canonical host redirect from `aohys.net` to `aohys.com` is represented in `cloudflare/redirect-rules.json` because Cloudflare Pages `_redirects` does not support domain-level redirects.
 
 ## Workspace
 
 - [Workspace foundation](docs/workspace.md)
 - `apps/site`: Astro public SEO surface.
-- `apps/dashboard`: future private dashboard surface under `/dashboard`.
-- `apps/backend`: Convex backend surface for contact workflows and future private operations.
+- `apps/dashboard`: private dashboard surface under `/dashboard`; current route guard is implemented as Cloudflare Pages functions.
+- `apps/backend`: Convex backend surface for contact workflows, Better Auth routes, and future private operations.
 - `packages/environment`: Environment Contract implementation.
 - `packages/content-graph`: Public Content Graph implementation for stable IDs, bilingual routes, SEO metadata, sitemap behavior, and private route exclusions.
-- `packages/dashboard-ui`: future Dashboard UI Kit implementation.
+- `packages/dashboard-ui`: Dashboard UI Kit shell/state renderers for the private surface.
 - `packages/release-train`: Release Train deployment plans, environment validation, workflow checks, and smoke helpers.
 
 ## Planning Documents
