@@ -91,9 +91,17 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Deploy Cloudflare Pages preview
-        run: pnpm run deploy:preview
+        id: deploy-preview
+        run: |
+          set -o pipefail
+          deploy_log="${RUNNER_TEMP}/aohys-preview-deploy.log"
+          pnpm run deploy:preview | tee "${deploy_log}"
+          smoke_base_url="$(pnpm exec tsx scripts/extract-cloudflare-pages-deployment-url.ts < "${deploy_log}")"
+          echo "smoke_base_url=${smoke_base_url}" >> "${GITHUB_OUTPUT}"
 
       - name: Smoke preview
+        env:
+          SMOKE_BASE_URL: ${{ steps.deploy-preview.outputs.smoke_base_url }}
         run: pnpm run smoke:preview
 
   deploy-production:

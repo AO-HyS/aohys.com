@@ -46,7 +46,7 @@ Feature branches should target `develop`. Production promotion should target `ma
 | `pnpm run release:env:production` | Validate GitHub Environment values for production deploys without printing secrets. |
 | `pnpm run deploy:preview` | Validate preview env, deploy Convex with the preview deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
 | `pnpm run deploy:production` | Validate production env, deploy Convex with the production deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch main`. |
-| `pnpm run smoke:preview` | Fetch the preview URL, verify a 2xx HTML response, public shell marker, and the production canonical URL. |
+| `pnpm run smoke:preview` | Fetch the preview smoke URL, verify a 2xx HTML response, public shell marker, and the production canonical URL. |
 | `pnpm run smoke:production` | Fetch `https://aohys.com`, verify a 2xx HTML response, public shell marker, and the production canonical URL. |
 
 ## Required Gates
@@ -86,7 +86,7 @@ pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch
 
 `aohys.net`, `www.aohys.net`, and `www.aohys.com` canonicalization belongs in Cloudflare Redirect Rules, not `apps/site/public/_redirects`, because Cloudflare Pages `_redirects` does not support domain-level redirects. The intended rule payload is versioned in `cloudflare/redirect-rules.json`. Set `SMOKE_CANONICAL_REDIRECT_URL=https://aohys.net/` when the rule is active and should be verified by `pnpm run smoke:production`.
 
-Preview deploys are fetched from `https://preview.aohys.com`, but public pages still render `https://aohys.com` as their canonical URL. Preview is a deployment verification surface, not a separate SEO surface.
+Preview runtime configuration still uses `https://preview.aohys.com` for `PUBLIC_SITE_URL`, `BETTER_AUTH_URL`, and trusted origins. The Release Train smoke step overrides only `SMOKE_BASE_URL` with the unique Cloudflare Pages deployment URL emitted by Wrangler, for example `https://ff7ed5fa.aohys-com.pages.dev`, so preview deploys can be verified immediately even before a custom preview DNS record is active. Public pages still render `https://aohys.com` as their canonical URL. Preview is a deployment verification surface, not a separate SEO surface.
 
 ## Environment Contract Dependency
 

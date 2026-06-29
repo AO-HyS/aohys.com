@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import {
   buildCloudflarePagesDeployPlan,
+  extractCloudflarePagesDeploymentUrl,
   validateReleaseEnvironment,
 } from "../src/index.js";
 
@@ -108,6 +109,20 @@ describe("Cloudflare Pages release plan", () => {
     );
   });
 
+  it("extracts the latest Cloudflare Pages deployment URL from Wrangler output", () => {
+    expect(
+      extractCloudflarePagesDeploymentUrl(`
+        Deployment complete!
+        Preview URL: https://older-release.aohys-com.pages.dev
+        Deployment: https://ff7ed5fa.aohys-com.pages.dev
+      `),
+    ).toBe("https://ff7ed5fa.aohys-com.pages.dev");
+
+    expect(extractCloudflarePagesDeploymentUrl("Deployment failed before Pages returned a URL.")).toBe(
+      undefined,
+    );
+  });
+
   it("exposes repository release scripts and a protected GitHub Actions workflow", () => {
     const repoRoot = path.resolve(process.cwd(), "../..");
     const rootPackage = JSON.parse(readFileSync(path.join(repoRoot, "package.json"), "utf8")) as {
@@ -135,6 +150,8 @@ describe("Cloudflare Pages release plan", () => {
     expect(workflow).toContain("environment: production");
     expect(workflow).toContain("pnpm run deploy:preview");
     expect(workflow).toContain("pnpm run deploy:production");
+    expect(workflow).toContain("scripts/extract-cloudflare-pages-deployment-url.ts");
+    expect(workflow).toContain("SMOKE_BASE_URL: ${{ steps.deploy-preview.outputs.smoke_base_url }}");
     expect(workflow).toContain("CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}");
     expect(workflow).toContain("CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}");
     expect(workflow).toContain("BETTER_AUTH_TRUSTED_ORIGINS: ${{ vars.BETTER_AUTH_TRUSTED_ORIGINS }}");
