@@ -44,5 +44,6 @@ Private behavior is implemented outside the Astro route graph:
 
 - `/dashboard/*` is handled by Cloudflare Pages functions and renders `@aohys/dashboard-ui`.
 - `/dashboard/sign-in/google` starts Google OAuth server-side, sets the Better Auth state cookie, and redirects to Google without client-side script.
+- `/dashboard/case-studies`, `/dashboard/media`, `/dashboard/settings`, and `/dashboard/resume` render the content workflow by combining Public Content Graph nodes with private Convex metadata.
 - `/api/auth/*` is proxied by Cloudflare Pages functions to Convex Better Auth routes.
 - Private responses are `noindex, nofollow` and `cache-control: no-store`; dashboard routes stay out of sitemap generation.

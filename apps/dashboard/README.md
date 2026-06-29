@@ -16,5 +16,8 @@ Current protected routes:
 - `/dashboard/case-studies`
 - `/dashboard/media`
 - `/dashboard/settings`
+- `/dashboard/resume`
+
+The content routes share one Dashboard UI Kit workflow. They read private Convex metadata, combine it with the Public Content Graph for stable public IDs and localized paths, and submit metadata-only changes through private Convex endpoints.
 
 All private dashboard responses must remain `noindex, nofollow` and `cache-control: no-store`.

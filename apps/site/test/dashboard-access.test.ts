@@ -287,6 +287,124 @@ describe("dashboard access guard", () => {
     );
   });
 
+  it("renders dashboard content workflow through the Public Content Graph seam", async () => {
+    const fetchDashboard = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+
+      if (url.endsWith("/api/auth/get-session")) {
+        return new Response(JSON.stringify({
+          user: { email: "alejandro.ortiz@aohys.com" },
+        }));
+      }
+
+      expect(url).toBe("https://effervescent-minnow-483.convex.site/dashboard/content");
+
+      return new Response(JSON.stringify({
+        caseStudies: [
+          {
+            contentId: "case-study:casa-roca",
+            status: "production-proof",
+            evidenceStatus: "sanitized",
+            updatedAt: 1_720_000_000_000,
+          },
+        ],
+        media: [
+          {
+            id: "media_123",
+            storageProvider: "external",
+            storageKey: "screenshots/casa-roca-home",
+            publicUrl: "https://aohys.com/case-studies/casa-roca",
+            altText: "Casa Roca public landing page screenshot.",
+            contentId: "case-study:casa-roca",
+            usage: "case-study",
+            status: "draft",
+            locale: "en",
+            updatedAt: 1_720_000_000_000,
+          },
+        ],
+        settings: [],
+        resumeVersions: [],
+      }));
+    });
+
+    const response = await handleDashboardRequest(
+      new Request("https://preview.aohys.com/dashboard/case-studies", {
+        headers: { cookie: "better-auth.session_token=valid" },
+      }),
+      validEnvironment,
+      fetchDashboard,
+    );
+    const html = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(html).toContain('data-dashboard-surface="content-workflow"');
+    expect(html).toContain("Casa Roca");
+    expect(html).toContain("/case-studies/casa-roca");
+    expect(html).toContain("/es/casos/casa-roca");
+    expect(html).toContain("Casa Roca public landing page screenshot.");
+    expect(html).not.toContain("dashboard:lead-review");
+    expect(fetchDashboard).toHaveBeenCalledWith(
+      "https://effervescent-minnow-483.convex.site/dashboard/content",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          authorization: "Bearer dashboard-api-token",
+        }),
+      }),
+    );
+  });
+
+  it("saves case-study metadata through the private content endpoint", async () => {
+    const fetchDashboard = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+
+      if (url.endsWith("/api/auth/get-session")) {
+        return new Response(JSON.stringify({
+          user: { email: "alejandro.ortiz@aohys.com" },
+        }));
+      }
+
+      expect(url).toBe("https://effervescent-minnow-483.convex.site/dashboard/content/case-study");
+      expect(init).toMatchObject({
+        method: "POST",
+        headers: expect.objectContaining({
+          authorization: "Bearer dashboard-api-token",
+          "content-type": "application/json",
+        }),
+        body: JSON.stringify({
+          contentId: "case-study:casa-roca",
+          status: "production-proof",
+          evidenceStatus: "sanitized",
+        }),
+      });
+
+      return new Response(JSON.stringify({
+        ok: true,
+        contentId: "case-study:casa-roca",
+        updatedAt: 1_720_000_010_000,
+      }));
+    });
+
+    const response = await handleDashboardRequest(
+      new Request("https://preview.aohys.com/dashboard/content/case-study", {
+        method: "POST",
+        headers: {
+          cookie: "better-auth.session_token=valid",
+          "content-type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          contentId: "case-study:casa-roca",
+          status: "production-proof",
+          evidenceStatus: "sanitized",
+        }),
+      }),
+      validEnvironment,
+      fetchDashboard,
+    );
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe("/dashboard/case-studies?saved=1");
+  });
+
   it("updates a lead status through the private Convex endpoint and redirects back to the selected lead", async () => {
     const fetchDashboard = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);

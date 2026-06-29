@@ -20,6 +20,8 @@ Issue #14 implements the first production-shaped seam in `packages/dashboard-ui`
 
 Issue #15 adds the first real workflow surface: lead list, lead detail, review status form, saved/validation/provider states, and 390px compact behavior. Cloudflare Pages keeps the route private and calls Convex dashboard HTTP endpoints through `DASHBOARD_API_TOKEN`; public browser code never receives that token.
 
+Issue #16 adds the first content and media workflow surface. `/dashboard/case-studies`, `/dashboard/media`, `/dashboard/settings`, and `/dashboard/resume` render through `renderDashboardContentWorkflow`, merge Convex metadata with the Public Content Graph for stable IDs/localized paths/sitemap eligibility, and save only metadata through private Convex endpoints. Media originals and Cloudflare Images/R2 upload flows remain behind the future Media Pipeline decision; this slice stores metadata, alt text, usage intent, and safe references only.
+
 ## Primitive Adapter
 
 Use `shadcn/ui` as the Dashboard Primitive Adapter, not as the dashboard interface.
@@ -57,6 +59,7 @@ Implemented V1 surfaces:
 | `renderDashboardSignIn` | Private Google sign-in entry point with noindex metadata. |
 | `renderDashboardState` | Loading, unauthorized, provider/configuration error, and unavailable states. |
 | `renderDashboardLeadWorkflow` | Lead list/detail workflow with review status updates, empty/saved/validation/provider states, and compact mobile controls. |
+| `renderDashboardContentWorkflow` | Case-study, media, site settings, and resume metadata workflow with Public Content Graph guardrails, form states, and compact mobile controls. |
 
 ## Mobile Behavior
 

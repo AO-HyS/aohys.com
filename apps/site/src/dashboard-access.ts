@@ -1,13 +1,20 @@
 import {
+  renderDashboardContentWorkflow,
   renderDashboardLeadWorkflow,
   renderDashboardShell,
   renderDashboardSignIn,
   renderDashboardState,
   DASHBOARD_LEAD_STATUSES,
+  type DashboardCaseStudyMetadata,
+  type DashboardContentWorkflowState,
   type DashboardLead,
   type DashboardLeadStatus,
   type DashboardLeadWorkflowState,
+  type DashboardMediaMetadata,
+  type DashboardResumeVersion,
+  type DashboardSiteSetting,
 } from "@aohys/dashboard-ui";
+import { PUBLIC_CONTENT_NODES, getLocaleVariant } from "@aohys/content-graph";
 import { isOneOf } from "@aohys/core";
 import { validateEnvironmentContract, type EnvironmentName } from "@aohys/environment";
 
@@ -22,6 +29,24 @@ export interface DashboardAccessEnvironment extends Record<string, string | unde
 }
 
 export type DashboardFetch = typeof fetch;
+
+type DashboardContentActionPath =
+  | "/dashboard/content/case-study"
+  | "/dashboard/content/media"
+  | "/dashboard/content/setting"
+  | "/dashboard/content/resume";
+
+interface DashboardContentPayload {
+  caseStudies?: Array<{
+    contentId: string;
+    status: DashboardCaseStudyMetadata["status"];
+    evidenceStatus: DashboardCaseStudyMetadata["evidenceStatus"];
+    updatedAt: number;
+  }>;
+  media?: DashboardMediaMetadata[];
+  settings?: DashboardSiteSetting[];
+  resumeVersions?: DashboardResumeVersion[];
+}
 
 const PRIVATE_HEADERS = {
   "content-type": "text/html; charset=utf-8",
@@ -94,11 +119,165 @@ export async function handleDashboardRequest(
     return renderDashboardLeads(request, environment, session.user.email, fetchSession);
   }
 
+  if (isDashboardContentActionPath(path) && request.method === "POST") {
+    return updateDashboardContentMetadata(request, environment, fetchSession, path);
+  }
+
+  if (isDashboardContentActionPath(path)) {
+    return new Response(null, {
+      status: 405,
+      headers: {
+        allow: "POST",
+        "x-robots-tag": "noindex, nofollow",
+        "cache-control": "no-store",
+      },
+    });
+  }
+
+  if (isDashboardContentPath(path)) {
+    return renderDashboardContent(request, environment, session.user.email, fetchSession);
+  }
+
   return htmlResponse(renderDashboardShell({
     adminEmail: session.user.email,
     activePath: path,
     title: titleForPath(path),
   }));
+}
+
+async function renderDashboardContent(
+  request: Request,
+  environment: DashboardAccessEnvironment,
+  adminEmail: string,
+  dashboardFetch: DashboardFetch,
+  workflowState?: DashboardContentWorkflowState,
+  validationMessage?: string,
+): Promise<Response> {
+  const path = normalizeDashboardPath(new URL(request.url).pathname);
+  const contentResult = await readDashboardContent(environment, dashboardFetch);
+
+  if (!contentResult.ok) {
+    return htmlResponse(renderDashboardContentWorkflow({
+      adminEmail,
+      activePath: path,
+      title: titleForPath(path),
+      caseStudies: buildDashboardCaseStudyRows([]),
+      media: [],
+      settings: [],
+      resumeVersions: [],
+      workflowState: "configuration-error",
+      validationMessage: contentResult.error,
+    }), 502);
+  }
+
+  return htmlResponse(renderDashboardContentWorkflow({
+    adminEmail,
+    activePath: path,
+    title: titleForPath(path),
+    caseStudies: buildDashboardCaseStudyRows(contentResult.content.caseStudies ?? []),
+    media: contentResult.content.media ?? [],
+    settings: contentResult.content.settings ?? [],
+    resumeVersions: contentResult.content.resumeVersions ?? [],
+    workflowState: workflowState ?? (new URL(request.url).searchParams.get("saved") === "1" ? "save-success" : undefined),
+    validationMessage,
+  }));
+}
+
+async function updateDashboardContentMetadata(
+  request: Request,
+  environment: DashboardAccessEnvironment,
+  dashboardFetch: DashboardFetch,
+  actionPath: DashboardContentActionPath,
+): Promise<Response> {
+  const formData = await request.formData();
+  const payload = contentPayloadFromFormData(formData, actionPath, environment.AOHYS_ENV);
+  const response = await dashboardFetch(
+    `${environment.CONVEX_SITE_URL.replace(/\/$/, "")}${actionPath}`,
+    {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${environment.DASHBOARD_API_TOKEN}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    },
+  );
+
+  if (!response.ok) {
+    const cookie = request.headers.get("cookie") ?? "";
+    const session = await readBetterAuthSession(environment, cookie, dashboardFetch);
+
+    if (!session) {
+      return redirectToSignIn("/dashboard/case-studies");
+    }
+
+    return renderDashboardContent(
+      request,
+      environment,
+      session.user.email,
+      dashboardFetch,
+      "validation-error",
+      "Content metadata could not be saved.",
+    );
+  }
+
+  return new Response(null, {
+    status: 302,
+    headers: {
+      location: `${redirectPathForContentAction(actionPath)}?saved=1`,
+      "x-robots-tag": "noindex, nofollow",
+      "cache-control": "no-store",
+    },
+  });
+}
+
+async function readDashboardContent(
+  environment: DashboardAccessEnvironment,
+  dashboardFetch: DashboardFetch,
+): Promise<
+  | { ok: true; content: DashboardContentPayload }
+  | { ok: false; error: string }
+> {
+  const response = await dashboardFetch(
+    `${environment.CONVEX_SITE_URL.replace(/\/$/, "")}/dashboard/content`,
+    {
+      headers: {
+        accept: "application/json",
+        authorization: `Bearer ${environment.DASHBOARD_API_TOKEN}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    return { ok: false, error: "Content workflow provider is unavailable." };
+  }
+
+  return { ok: true, content: await response.json() as DashboardContentPayload };
+}
+
+function buildDashboardCaseStudyRows(
+  metadataRows: NonNullable<DashboardContentPayload["caseStudies"]>,
+): DashboardCaseStudyMetadata[] {
+  const metadataByContentId = new Map(metadataRows.map((row) => [row.contentId, row]));
+
+  return PUBLIC_CONTENT_NODES
+    .filter((node) => node.type === "case-study")
+    .map((node) => {
+      const englishVariant = getLocaleVariant(node, "en");
+      const spanishVariant = getLocaleVariant(node, "es");
+      const metadata = metadataByContentId.get(node.id);
+
+      return {
+        contentId: node.id,
+        title: englishVariant.title,
+        englishPath: englishVariant.path,
+        spanishPath: spanishVariant.path,
+        sitemapIncluded: node.status === "published" && node.sitemap.include,
+        status: metadata?.status ?? "active-build",
+        evidenceStatus: metadata?.evidenceStatus ?? "missing",
+        updatedAt: metadata?.updatedAt ?? 0,
+      };
+    });
 }
 
 async function renderDashboardLeads(
@@ -351,6 +530,73 @@ function isDashboardLeadStatus(value: string | undefined): value is DashboardLea
   return isOneOf(value, DASHBOARD_LEAD_STATUSES);
 }
 
+function isDashboardContentPath(path: string): boolean {
+  return ["/dashboard/case-studies", "/dashboard/media", "/dashboard/settings", "/dashboard/resume"]
+    .includes(path);
+}
+
+function isDashboardContentActionPath(path: string): path is DashboardContentActionPath {
+  return [
+    "/dashboard/content/case-study",
+    "/dashboard/content/media",
+    "/dashboard/content/setting",
+    "/dashboard/content/resume",
+  ].includes(path);
+}
+
+function contentPayloadFromFormData(
+  formData: FormData,
+  actionPath: DashboardContentActionPath,
+  environment: EnvironmentName,
+): Record<string, string | boolean | undefined> {
+  switch (actionPath) {
+    case "/dashboard/content/case-study":
+      return {
+        contentId: valueFromFormData(formData.get("contentId")),
+        status: valueFromFormData(formData.get("status")),
+        evidenceStatus: valueFromFormData(formData.get("evidenceStatus")),
+      };
+    case "/dashboard/content/media":
+      return {
+        storageProvider: "external",
+        storageKey: valueFromFormData(formData.get("storageKey")),
+        publicUrl: valueFromFormData(formData.get("publicUrl")),
+        altText: valueFromFormData(formData.get("altText")),
+        contentId: valueFromFormData(formData.get("contentId")),
+        usage: valueFromFormData(formData.get("usage")),
+        status: "draft",
+        locale: valueFromFormData(formData.get("locale")),
+      };
+    case "/dashboard/content/setting":
+      return {
+        key: valueFromFormData(formData.get("key")),
+        environment,
+        value: valueFromFormData(formData.get("value")),
+        classification: valueFromFormData(formData.get("classification")),
+      };
+    case "/dashboard/content/resume":
+      return {
+        locale: valueFromFormData(formData.get("locale")),
+        version: valueFromFormData(formData.get("version")),
+        pdfPath: valueFromFormData(formData.get("pdfPath")),
+        isPublished: formData.get("isPublished") === "on",
+      };
+  }
+}
+
+function redirectPathForContentAction(actionPath: DashboardContentActionPath): string {
+  switch (actionPath) {
+    case "/dashboard/content/media":
+      return "/dashboard/media";
+    case "/dashboard/content/setting":
+      return "/dashboard/settings";
+    case "/dashboard/content/resume":
+      return "/dashboard/resume";
+    default:
+      return "/dashboard/case-studies";
+  }
+}
+
 function titleForPath(path: string): string {
   switch (path) {
     case "/dashboard/leads":
@@ -361,6 +607,8 @@ function titleForPath(path: string): string {
       return "Media";
     case "/dashboard/settings":
       return "Settings";
+    case "/dashboard/resume":
+      return "Resume";
     default:
       return "Operations overview";
   }

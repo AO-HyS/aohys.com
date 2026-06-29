@@ -125,7 +125,7 @@ Rules:
 
 ## Dashboard Dependency
 
-The private dashboard may eventually edit case-study content, media metadata, site settings, and resume content. It should not bypass the Public Content Graph. Dashboard workflows should mutate content through a publishing seam that preserves stable IDs, locale variants, SEO fields, sitemap rules, and evidence safety.
+The private dashboard can now manage metadata for case-study content, media, site settings, and resume versions. It must not bypass the Public Content Graph. Dashboard workflows should mutate content through a publishing seam that preserves stable IDs, locale variants, SEO fields, sitemap rules, and evidence safety. The current implementation keeps public copy in the graph and stores dashboard-managed metadata in Convex.
 
 ## Current Test Surface
 

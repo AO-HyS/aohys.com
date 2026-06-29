@@ -6,7 +6,7 @@ This repository is being built as a working sample of engineering standards: pub
 
 ## Status
 
-Repository foundation is available. The public Astro shell, bilingual graph-backed routes, proof narrative, contact backend, explicit PostHog analytics, Cloudflare/Wrangler release path, private dashboard guard/shell, and first lead review workflow are scaffolded through the approved vertical-slice issues. Deeper content/media dashboard workflows and launch hardening continue in later issues.
+Repository foundation is available. The public Astro shell, bilingual graph-backed routes, proof narrative, contact backend, explicit PostHog analytics, Cloudflare/Wrangler release path, private dashboard guard/shell, lead review workflow, and metadata-only content/media dashboard workflow are scaffolded through the approved vertical-slice issues. Cloudflare media uploads and launch hardening continue in later issues.
 
 ## Local Development
 
@@ -40,10 +40,10 @@ pnpm run smoke:production
 - [Workspace foundation](docs/workspace.md)
 - `apps/site`: Astro public SEO surface.
 - `apps/dashboard`: private dashboard surface under `/dashboard`; current route guard is implemented as Cloudflare Pages functions.
-- `apps/backend`: Convex backend surface for contact workflows, Better Auth routes, and future private operations.
+- `apps/backend`: Convex backend surface for contact workflows, Better Auth routes, leads, content/media metadata, site settings, resume versions, and private operations.
 - `packages/environment`: Environment Contract implementation.
 - `packages/content-graph`: Public Content Graph implementation for stable IDs, bilingual routes, SEO metadata, sitemap behavior, and private route exclusions.
-- `packages/dashboard-ui`: Dashboard UI Kit shell/state renderers for the private surface.
+- `packages/dashboard-ui`: Dashboard UI Kit shell/state/workflow renderers for the private surface.
 - `packages/release-train`: Release Train deployment plans, environment validation, workflow checks, and smoke helpers.
 
 ## Planning Documents
