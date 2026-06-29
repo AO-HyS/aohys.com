@@ -185,6 +185,8 @@ Current implementation status: privacy pages render graph-backed bilingual copy 
 
 Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, Dashboard UI Kit, Public Content Graph, Environment Contract, Release Train, license boundaries, and no-contribution framing.
 
+Current implementation status: `README.md` now acts as the public evaluation package. It explains how to inspect and run the repo without private credentials, maps the architecture and providers, documents dashboard boundaries, distinguishes local/preview/production credentials, links the PRD, issue breakdown, TDD plan, Release Train, Environment Contract, Public Content Graph, Dashboard UI Kit, and Launch Hardening docs, and states the MIT-code versus reserved-content/license boundary. `verify:foundation` now checks for the required README sections and boundary language.
+
 ### 18. Quality Gates: Husky pre-commit and GitHub Actions verify workflow
 
 **Blocked by:** 2, 3, 4.

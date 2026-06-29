@@ -134,6 +134,17 @@ for (const [workspaceDir, expectedName] of workspacePackages) {
 }
 
 includesAll("README.md", [
+  "## Evaluation Guide",
+  "## Architecture Map",
+  "## Public Source Boundary",
+  "## Environment and Credentials",
+  "## Provider Responsibilities",
+  "## Dashboard Architecture",
+  "## Privacy and Security",
+  "## License and Asset Boundaries",
+  "docs/aohys-prd.md",
+  "docs/aohys-issue-breakdown.md",
+  "docs/aohys-tdd-plan.md",
   "pnpm install",
   "pnpm verify",
   "docs/workspace.md",
@@ -141,7 +152,17 @@ includesAll("README.md", [
   "docs/environment-contract.md",
   "docs/public-content-graph.md",
   "docs/dashboard-ui-kit.md",
+  "docs/launch-hardening.md",
+  "Convex",
+  "Cloudflare",
+  "PostHog",
+  "Resend",
+  "Better Auth",
+  "Cloudflare Images",
+  "code is public as a working example",
   "not a community open-source product",
+  "does not include a contribution workflow",
+  "reserved unless stated otherwise",
 ]);
 
 includesAll("docs/workspace.md", [
