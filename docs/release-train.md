@@ -45,7 +45,7 @@ Feature branches should target `develop`. Production promotion should target `ma
 | `pnpm run cloudflare:local` | Build the Astro site and serve `apps/site/dist` with Wrangler Pages dev. |
 | `pnpm run release:env:preview` | Validate GitHub Environment values for preview deploys without printing secrets. |
 | `pnpm run release:env:production` | Validate GitHub Environment values for production deploys without printing secrets. |
-| `pnpm run audit:posthog-env` | Compare GitHub Environment `preview` and `production` PostHog public values and fail if both environments use the same project key. |
+| `pnpm run audit:posthog-env` | Locally compare GitHub Environment `preview` and `production` PostHog public values; in GitHub Actions, validate the injected target environment before the Cloudflare runtime audit compares deployed bindings. |
 | `pnpm run sync:convex-env:preview` | Sync preview runtime values from GitHub Environment variables into the preview Convex deployment without printing secret values. |
 | `pnpm run sync:convex-env:production` | Sync production runtime values from GitHub Environment variables into the production Convex deployment without printing secret values. |
 | `pnpm run deploy:preview` | Validate preview env, audit PostHog project separation, sync Convex preview runtime variables, deploy Convex with the preview deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
@@ -70,7 +70,7 @@ The launch-readiness checklist is maintained in [Launch Hardening Checklist](lau
 
 ## GitHub Actions
 
-`.github/workflows/release-train.yml` runs `pnpm verify` on pull requests into `develop` and `main`. Pushes to `develop` deploy preview through GitHub Environment `preview`; pushes to `main` deploy production through GitHub Environment `production`. Both deploy jobs run `pnpm run audit:posthog-env` before deploying so preview and production cannot ship while they share the same PostHog project key.
+`.github/workflows/release-train.yml` runs `pnpm verify` on pull requests into `develop` and `main`. Pushes to `develop` deploy preview through GitHub Environment `preview`; pushes to `main` deploy production through GitHub Environment `production`. Both deploy jobs run `pnpm run audit:posthog-env` before deploying. Local runs compare GitHub Environment `preview` and `production` directly with the owner token. GitHub Actions validates the injected target environment because `GITHUB_TOKEN` cannot read Environment variables through `gh variable list`; the following `pnpm run audit:cloudflare-pages-runtime` gate verifies that deployed Cloudflare Pages preview and production bindings do not share the same PostHog key.
 
 `.github/workflows/quality-gates.yml` is the readable pull-request quality workflow. It installs with `pnpm install --frozen-lockfile`, then runs foundation validation, lint, typecheck, tests, and build as separate steps so failures are easy to diagnose without deployment secrets.
 
