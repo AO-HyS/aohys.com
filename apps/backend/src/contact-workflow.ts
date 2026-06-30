@@ -1,8 +1,5 @@
 import { assertOneOf, escapeHtml, trimToUndefined } from "@aohys/core";
-import {
-  validateEnvironmentContract,
-  type EnvironmentName,
-} from "@aohys/environment";
+import type { EnvironmentName } from "@aohys/environment";
 import {
   LEAD_INTENTS,
   LEAD_LOCALES,
@@ -52,17 +49,9 @@ export interface LeadNotification {
 }
 
 export interface LeadAnalyticsEvent {
-  event: "lead_submitted";
+  event: "lead_submitted" | "lead_provider_failed";
   distinctId: string;
-  properties: {
-    leadId: string;
-    intent: LeadIntent;
-    preferredContactPath: PreferredContactPath;
-    locale: LeadLocale;
-    sourcePath: string;
-    hasCompany: boolean;
-    hasPhone: boolean;
-  };
+  properties: Record<string, string | number | boolean>;
 }
 
 export interface ContactWorkflowAdapters {
@@ -83,34 +72,70 @@ export interface ContactWorkflowContext {
 export interface ContactLeadResult {
   leadId: string;
   notificationId?: string;
+  notificationStatus: "sent" | "skipped" | "failed";
+  analyticsStatus: "captured" | "skipped" | "failed";
   status: "new";
 }
 
-const REQUIRED_CONTACT_SETTINGS = [
-  "CONVEX_URL",
-  "CONVEX_SITE_URL",
+const REQUIRED_NOTIFICATION_SETTINGS = [
   "RESEND_API_KEY",
   "RESEND_FROM",
   "LEAD_NOTIFICATION_EMAIL",
-  "PUBLIC_POSTHOG_KEY",
-  "PUBLIC_POSTHOG_HOST",
 ] as const;
 
-function assertContactProviderSettings(
-  environment: EnvironmentName,
-  values: Record<string, string | undefined>,
-): void {
-  const contract = validateEnvironmentContract(environment, values, { target: "runtime" });
-  const errors = [...contract.errors];
+const REQUIRED_ANALYTICS_SETTINGS = [
+  "PUBLIC_POSTHOG_KEY",
+] as const;
 
-  for (const settingName of REQUIRED_CONTACT_SETTINGS) {
-    if (!values[settingName]) {
-      errors.push(`${settingName} is required for contact submissions.`);
-    }
+function hasAllSettings(
+  values: Record<string, string | undefined>,
+  settingNames: readonly string[],
+): boolean {
+  return settingNames.every((settingName) => Boolean(values[settingName]?.trim()));
+}
+
+function hasNotificationSettings(values: Record<string, string | undefined>): boolean {
+  return hasAllSettings(values, REQUIRED_NOTIFICATION_SETTINGS);
+}
+
+function hasAnalyticsSettings(values: Record<string, string | undefined>): boolean {
+  return hasAllSettings(values, REQUIRED_ANALYTICS_SETTINGS);
+}
+
+function buildProviderFailureEvent(
+  leadId: string,
+  environment: EnvironmentName,
+  provider: "posthog" | "resend",
+  operation: "lead_analytics" | "lead_notification",
+  error: unknown,
+): LeadAnalyticsEvent {
+  const errorType = error instanceof Error ? error.name : "UnknownError";
+
+  return {
+    event: "lead_provider_failed",
+    distinctId: `lead:${leadId}`,
+    properties: {
+      leadId,
+      environment,
+      provider,
+      operation,
+      errorType,
+    },
+  };
+}
+
+async function captureProviderFailure(
+  event: LeadAnalyticsEvent,
+  context: ContactWorkflowContext,
+): Promise<void> {
+  if (!hasAnalyticsSettings(context.values)) {
+    return;
   }
 
-  if (errors.length > 0) {
-    throw new Error(`Contact providers are not configured: ${errors.join(" ")}`);
+  try {
+    await context.adapters.captureAnalyticsEvent(event);
+  } catch {
+    // Operational error reporting is best-effort and must not block lead intake.
   }
 }
 
@@ -220,18 +245,58 @@ export async function submitContactLead(
   context: ContactWorkflowContext,
 ): Promise<ContactLeadResult> {
   const now = context.now ?? Date.now();
-  assertContactProviderSettings(context.environment, context.values);
   const lead = prepareContactLead(input, now);
   const { leadId } = await context.adapters.persistLead(lead);
-  const notification = await context.adapters.sendNotification(
-    buildLeadNotification(leadId, lead, context.values),
-  );
+  let notificationId: string | undefined;
+  let notificationStatus: ContactLeadResult["notificationStatus"] = "skipped";
+  let analyticsStatus: ContactLeadResult["analyticsStatus"] = "skipped";
 
-  await context.adapters.captureAnalyticsEvent(buildLeadAnalyticsEvent(leadId, lead));
+  if (hasAnalyticsSettings(context.values)) {
+    try {
+      await context.adapters.captureAnalyticsEvent(buildLeadAnalyticsEvent(leadId, lead));
+      analyticsStatus = "captured";
+    } catch (error) {
+      analyticsStatus = "failed";
+      await captureProviderFailure(
+        buildProviderFailureEvent(
+          leadId,
+          context.environment,
+          "posthog",
+          "lead_analytics",
+          error,
+        ),
+        context,
+      );
+    }
+  }
+
+  if (hasNotificationSettings(context.values)) {
+    try {
+      const notification = await context.adapters.sendNotification(
+        buildLeadNotification(leadId, lead, context.values),
+      );
+      notificationId = notification.notificationId;
+      notificationStatus = "sent";
+    } catch (error) {
+      notificationStatus = "failed";
+      await captureProviderFailure(
+        buildProviderFailureEvent(
+          leadId,
+          context.environment,
+          "resend",
+          "lead_notification",
+          error,
+        ),
+        context,
+      );
+    }
+  }
 
   return {
     leadId,
-    notificationId: notification.notificationId,
+    notificationId,
+    notificationStatus,
+    analyticsStatus,
     status: lead.status,
   };
 }

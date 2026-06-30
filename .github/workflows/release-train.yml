@@ -90,7 +90,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Deploy Cloudflare Pages preview
+      - name: Deploy Cloudflare Pages preview with sync:convex-env
         id: deploy-preview
         run: |
           set -o pipefail
@@ -152,7 +152,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Deploy Cloudflare Pages production
+      - name: Deploy Cloudflare Pages production with sync:convex-env
         run: pnpm run deploy:production
 
       - name: Smoke production

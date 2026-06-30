@@ -140,7 +140,7 @@ pnpm run deploy:production
 pnpm run smoke:production
 ```
 
-Release deploys push Convex first, then Cloudflare Pages. The canonical host redirect from `aohys.net` to `aohys.com` is represented in `cloudflare/redirect-rules.json` because Cloudflare Pages `_redirects` does not support domain-level redirects.
+Release deploys validate GitHub Environment values, sync the Convex runtime environment from those values, push Convex, then deploy Cloudflare Pages. The canonical host redirect from `aohys.net` to `aohys.com` is represented in `cloudflare/redirect-rules.json` because Cloudflare Pages `_redirects` does not support domain-level redirects.
 
 ## Provider Responsibilities
 
@@ -179,8 +179,11 @@ Current protections:
 
 - privacy pages explain contact data, analytics/errors, and private project boundaries;
 - contact form errors return safe public codes instead of provider internals;
+- contact leads are persisted before optional provider delivery so Resend/PostHog drift does not lose a request;
 - contact analytics never send name, email, phone, company, or message body to PostHog;
 - browser PostHog autocapture starts disabled;
+- preview and production PostHog projects stay separated through environment-specific public keys plus an `environment` event property;
+- dashboard runtime exceptions are caught at the Cloudflare Pages boundary and reported as sanitized PostHog events before a private unavailable state is returned;
 - Cloudflare Pages `_headers` applies security headers;
 - `/dashboard` is omitted from sitemap and returns private-cache/robot headers;
 - smoke checks verify public HTML, canonical behavior, and dashboard privacy boundaries.

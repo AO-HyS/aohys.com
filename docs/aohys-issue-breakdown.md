@@ -119,6 +119,8 @@ Set up Convex for application state and define the first production-shaped data 
 
 Implement the public contact flow end-to-end: intent capture, form validation, spam resistance baseline, Convex lead persistence, Resend notification, PostHog explicit event, privacy-safe analytics behavior, email fallback messaging, WhatsApp CTA, and Environment Contract validation for provider settings.
 
+Current implementation status: contact submissions now persist the lead before optional provider delivery. Missing or failing Resend/PostHog settings do not reject the visitor request after persistence; provider delivery status is returned for operations, and sanitized provider failure events are captured in PostHog when analytics is configured.
+
 ### 11. PostHog Analytics and Error Capture
 
 **Blocked by:** 2, 3.
@@ -126,6 +128,8 @@ Implement the public contact flow end-to-end: intent capture, form validation, s
 **User stories covered:** 39, 40, 41, 42, 65.
 
 Wire explicit PostHog pageviews, selected conversion events, Environment Contract separation, disabled autocapture, and frontend error capture. Verify that sensitive contact message content is not captured.
+
+Current implementation status: public pages emit explicit pageview/conversion/error events with an `environment` property. Cloudflare CSP allows the PostHog asset/config host, and server-side operational events cover lead provider failures plus dashboard runtime exceptions without sending cookies, tokens, exception messages, contact identity, or message text.
 
 ### 12. Cloudflare and Wrangler Deployment Path
 
@@ -135,7 +139,7 @@ Wire explicit PostHog pageviews, selected conversion events, Environment Contrac
 
 Configure Wrangler, Cloudflare-compatible builds, the protected Release Train, preview/production deploy flow, Environment Contract validation, canonical domain behavior, `aohys.net` to `aohys.com` redirect, and deployment smoke checks.
 
-Current implementation status: release scripts, Wrangler Pages Direct Upload plan, GitHub Actions workflow, release-target environment validation, smoke commands, and Cloudflare Redirect Rules manifest are implemented in the #13 branch.
+Current implementation status: release scripts, Wrangler Pages Direct Upload plan, GitHub Actions workflow, release-target environment validation, Convex runtime environment sync, smoke commands, and Cloudflare Redirect Rules manifest are implemented in the #13 branch.
 
 ### 13. Better Auth and Private Dashboard Shell
 
@@ -145,7 +149,7 @@ Current implementation status: release scripts, Wrangler Pages Direct Upload pla
 
 Create the private dashboard shell with Better Auth, Convex integration, admin allowlist, protected route behavior, noindex/robots protection, Dashboard UI Kit shell/surfaces, operational overview, and Environment Contract validation for auth origins/secrets.
 
-Current implementation status: Cloudflare Pages functions protect `/dashboard`, render the Dashboard UI Kit shell/sign-in/states, mark private responses noindex/no-store, start Google OAuth through `/dashboard/sign-in/google`, proxy `/api/auth/*` to Convex while preserving the public host, and mount Better Auth in Convex with Google OAuth through the official `@convex-dev/better-auth` component.
+Current implementation status: Cloudflare Pages functions protect `/dashboard`, render the Dashboard UI Kit shell/sign-in/states, mark private responses noindex/no-store, start Google OAuth through `/dashboard/sign-in/google`, proxy `/api/auth/*` to Convex while preserving the public host, catch unexpected dashboard runtime exceptions before Cloudflare can show a raw Worker 1101 page, and mount Better Auth in Convex with Google OAuth through the official `@convex-dev/better-auth` component.
 
 ### 14. Dashboard Lead Review Workflow
 
@@ -175,7 +179,7 @@ Current implementation status: `/dashboard/case-studies`, `/dashboard/media`, `/
 
 Harden the launch surface: privacy page accuracy, Public Content Graph sitemap/robots behavior, Dashboard UI Kit mobile/state behavior, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, Environment Contract separation, Release Train readiness checks, production smoke checks, and browser QA.
 
-Current implementation status: privacy pages render graph-backed bilingual copy for contact data, PostHog analytics/errors, and private project boundaries; Cloudflare Pages ships `_headers` with security headers; the contact form has safe validation, endpoint missing, email/provider, backend, and retry states; backend public contact errors return safe codes; launch QA commands and browser checks live in `docs/launch-hardening.md`.
+Current implementation status: privacy pages render graph-backed bilingual copy for contact data, PostHog analytics/errors, and private project boundaries; Cloudflare Pages ships `_headers` with security headers and PostHog CSP allowances; the contact form has safe validation, endpoint missing, email/provider, backend, and retry states; backend contact intake persists before optional provider delivery; dashboard runtime exceptions return private unavailable states instead of raw Worker 1101 pages; launch QA commands and browser checks live in `docs/launch-hardening.md`.
 
 ### 17. Public README and Source Evaluation Package
 

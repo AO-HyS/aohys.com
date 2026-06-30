@@ -1,5 +1,5 @@
 import {
-  handleDashboardRequest,
+  safeHandleDashboardRequest,
   type DashboardAccessEnvironment,
 } from "../../apps/site/src/dashboard-access.js";
 
@@ -7,5 +7,5 @@ export async function onRequest(context: {
   request: Request;
   env: DashboardAccessEnvironment;
 }): Promise<Response> {
-  return handleDashboardRequest(context.request, context.env);
+  return safeHandleDashboardRequest(context.request, context.env);
 }
