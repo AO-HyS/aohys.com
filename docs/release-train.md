@@ -48,8 +48,8 @@ Feature branches should target `develop`. Production promotion should target `ma
 | `pnpm run audit:posthog-env` | Compare GitHub Environment `preview` and `production` PostHog public values and fail if both environments use the same project key. |
 | `pnpm run sync:convex-env:preview` | Sync preview runtime values from GitHub Environment variables into the preview Convex deployment without printing secret values. |
 | `pnpm run sync:convex-env:production` | Sync production runtime values from GitHub Environment variables into the production Convex deployment without printing secret values. |
-| `pnpm run deploy:preview` | Validate preview env, sync Convex preview runtime variables, deploy Convex with the preview deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
-| `pnpm run deploy:production` | Validate production env, sync Convex production runtime variables, deploy Convex with the production deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch main`. |
+| `pnpm run deploy:preview` | Validate preview env, audit PostHog project separation, sync Convex preview runtime variables, deploy Convex with the preview deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
+| `pnpm run deploy:production` | Validate production env, audit PostHog project separation, sync Convex production runtime variables, deploy Convex with the production deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch main`. |
 | `pnpm run smoke:preview` | Fetch the preview smoke URL, verify a 2xx public shell, production canonical URL, PostHog/Convex CSP allowances, anonymous `/dashboard` redirect, private sign-in shell, and configured contact endpoint. |
 | `pnpm run smoke:production` | Fetch `https://aohys.com` and verify the same public shell, canonical, security, dashboard, and contact boundaries against production. |
 

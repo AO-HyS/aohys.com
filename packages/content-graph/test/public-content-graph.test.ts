@@ -163,7 +163,7 @@ describe("Public Content Graph", () => {
     expect(spanishIndex.entries.every((entry) => entry.evidenceLabel.length > 6)).toBe(true);
   });
 
-  it("returns resume content with a PDF artifact and localized dynamic context links", () => {
+  it("returns resume content with a PDF artifact and localized online context links", () => {
     const englishResume = getResumePageContent("en");
     const spanishResume = getResumePageContent("es");
 
@@ -181,7 +181,7 @@ describe("Public Content Graph", () => {
     ]);
 
     expect(spanishResume.role).toBe("Desarrollador Frontend Senior");
-    expect(spanishResume.contextTitle).toBe("Contexto dinámico del CV");
+    expect(spanishResume.contextTitle).toBe("Más contexto en línea");
     expect(spanishResume.contextLinks.map((link) => link.href)).toEqual([
       "/es/casos",
       "/es/arquitectura",

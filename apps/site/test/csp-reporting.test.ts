@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { handleCspReportRequest } from "../src/csp-reporting.js";
+import { CONTENT_SECURITY_POLICY } from "../src/security-headers.js";
 
 describe("CSP reporting boundary", () => {
   it("captures sanitized CSP violation reports through PostHog", async () => {
@@ -34,6 +35,7 @@ describe("CSP reporting boundary", () => {
     );
 
     expect(response.status).toBe(204);
+    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
     expect(requests[0]?.url).toBe("https://us.i.posthog.com/capture/");
     expect(JSON.parse(String(requests[0]?.init.body))).toEqual({
       api_key: "phc_preview",
@@ -66,6 +68,7 @@ describe("CSP reporting boundary", () => {
     );
 
     expect(response.status).toBe(204);
+    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
     expect(transport).not.toHaveBeenCalled();
   });
 
@@ -84,6 +87,7 @@ describe("CSP reporting boundary", () => {
 
     expect(response.status).toBe(204);
     expect(response.headers.get("allow")).toBe("POST, OPTIONS");
+    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
     expect(transport).not.toHaveBeenCalled();
   });
 });

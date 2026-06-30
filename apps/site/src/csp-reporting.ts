@@ -4,6 +4,7 @@ import {
   type PostHogServerEnvironment,
   type PostHogServerTransport,
 } from "./posthog-server.js";
+import { PRIVATE_NO_STORE_HEADERS } from "./security-headers.js";
 
 export interface CspReportEnvironment extends PostHogServerEnvironment {
   AOHYS_ENV?: string;
@@ -14,9 +15,8 @@ type CspReportPayload = {
 } & Record<string, unknown>;
 
 const CSP_REPORT_HEADERS = {
+  ...PRIVATE_NO_STORE_HEADERS,
   "cache-control": "no-store",
-  "x-content-type-options": "nosniff",
-  "x-robots-tag": "noindex, nofollow",
 } as const;
 
 function normalizeEnvironment(value: string | undefined): EnvironmentName {

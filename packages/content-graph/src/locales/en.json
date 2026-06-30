@@ -9,8 +9,8 @@
     "secondaryActionLabel": "View selected work",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Senior engineering. Business outcomes. Measurable impact.",
-      "deck": "I turn complicated product workflows into reliable software: public pages that earn trust, private tools that remove manual work, and backend paths that stay observable under pressure.",
+      "headline": "Senior engineering. Business outcomes. Software that holds up.",
+      "deck": "I turn complicated product workflows into reliable software: public pages that earn trust, private tools that remove manual work, and backend paths that stay observable when pressure shows up.",
       "proofBoardLabel": "AOHYS public proof board",
       "proofBoardTitle": "Workflow, architecture, release gates, and observability in one public sample.",
       "proofBoardBody": "A compact system view for the public sample behind AOHYS.",
@@ -73,8 +73,8 @@
           }
         }
       ],
-      "architectureHeading": "The sample is part of the pitch.",
-      "architectureBody": "The public pages are fast and searchable. The private dashboard, contact path, analytics, and deployment flow are separated so failures are visible before a client has to report them.",
+      "architectureHeading": "The system is visible on purpose.",
+      "architectureBody": "The public pages are fast and searchable. The private dashboard, contact path, analytics, and deployment flow are separated so quality, failures, and release boundaries are visible before they become someone else's problem.",
       "architectureStages": [
         {
           "label": "Public surface",
@@ -105,8 +105,8 @@
           "text": "Use tests, browser QA, protected branches, preview checks, and production verification to keep quality visible."
         }
       ],
-      "contactHeading": "Bring me the workflow that keeps costing time.",
-      "contactBody": "Send the role, project, architecture problem, or product flow. I will reply with the next useful step.",
+      "contactHeading": "Tell me what needs to work better.",
+      "contactBody": "Send the role, project, architecture problem, or product flow. I will reply with a practical next step.",
       "emailLabel": "Email Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",
       "whatsappLabel": "WhatsApp",
@@ -116,7 +116,7 @@
   "case-studies": {
     "path": "/case-studies",
     "title": "Selected work",
-    "summary": "Case-study routes for production proof, active product builds, and enterprise systems.",
+    "summary": "A public-safe view of shipped work, active products, and confidential enterprise delivery.",
     "seoDescription": "Review selected AOHYS work across production websites, active product builds, business systems, and enterprise software delivery.",
     "primaryActionLabel": "Discuss a project",
     "primaryActionContentId": "contact",
@@ -421,7 +421,7 @@
   "architecture": {
     "path": "/architecture",
     "title": "Architecture",
-    "summary": "The public source sample behind AOHYS: Astro SEO, private dashboard boundaries, Cloudflare deploys, Convex workflows, and PostHog observability.",
+    "summary": "How this public sample separates search pages, private operations, delivery checks, leads, and observability.",
     "seoDescription": "Architecture notes for the AOHYS public source sample: Astro SEO pages, private dashboard boundaries, Cloudflare deploys, Convex workflows, and PostHog observability.",
     "primaryActionLabel": "Review selected work",
     "primaryActionContentId": "case-studies",
@@ -429,7 +429,7 @@
     "secondaryActionContentId": "contact",
     "architectureContent": {
       "heading": "Public source sample, private client work.",
-      "deck": "This site is intentionally inspectable: public SEO pages, bilingual content routing, release documentation, and future dashboard boundaries are visible in the source. Client and product code stays private.",
+      "deck": "This site is intentionally inspectable: public search pages, bilingual routing, release documentation, dashboard boundaries, and provider seams are visible in the source. Client and product code stays private.",
       "sourceLabel": "Inspect the source",
       "sourceLinks": [
         {
@@ -500,7 +500,7 @@
         "label": "Download PDF",
         "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
         "fileName": "alejandro-ortiz-corro-resume.pdf",
-        "description": "Single-column, text-based PDF for hiring reviews."
+        "description": "Readable PDF for hiring reviews, with deeper context available on this site."
       },
       "contactLinks": [
         {
@@ -529,7 +529,7 @@
           "text": "aohys.com"
         }
       ],
-      "contextTitle": "Dynamic resume context",
+      "contextTitle": "More context online",
       "contextLinks": [
         {
           "label": "Selected work",
@@ -726,7 +726,7 @@
   "contact": {
     "path": "/contact",
     "title": "Contact",
-    "summary": "Start a focused conversation by email or WhatsApp about a role, project, architecture review, or product build.",
+    "summary": "Email or WhatsApp me about a role, project, architecture review, product workflow, or site that needs to ship well.",
     "seoDescription": "Contact Alejandro Ortiz Corro and AOHYS by email or WhatsApp for software projects, architecture review, product systems, or hiring conversations.",
     "primaryActionLabel": "Email Alejandro",
     "primaryActionContentId": "contact",

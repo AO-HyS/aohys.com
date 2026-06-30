@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { getPublicRouteMap, getSeoMetadata, getSitemapEntries } from "@aohys/content-graph";
 import { describe, expect, it } from "vitest";
+import { CONTENT_SECURITY_POLICY } from "../src/security-headers.js";
 
 const siteRoot = process.cwd();
 const distRoot = path.join(siteRoot, "dist");
@@ -63,6 +64,7 @@ describe("built public routes", () => {
 
     expect(homeHtml).toContain('data-home-content-id="home"');
     expect(homeHtml).toContain("Senior engineering.");
+    expect(homeHtml).toContain("Software that holds up.");
     expect(homeHtml).toContain("Proof ledger");
     expect(homeHtml).toContain("Workflow first.");
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
@@ -80,7 +82,7 @@ describe("built public routes", () => {
     expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Ingeniería senior.");
+    expect(spanishHomeHtml).toContain("Software que aguanta.");
     expect(spanishHomeHtml).toContain("Ledger de prueba");
     expect(spanishHomeHtml).toContain("Workflow primero.");
     expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
@@ -202,7 +204,7 @@ describe("built public routes", () => {
     expect(resumeHtml).toContain("Professional summary");
     expect(resumeHtml).toContain("Professional experience");
     expect(resumeHtml).toContain("Technical skills");
-    expect(resumeHtml).toContain("Dynamic resume context");
+    expect(resumeHtml).toContain("More context online");
     expect(resumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
     expect(resumeHtml).toContain("Download PDF");
     expect(resumeHtml).not.toContain("Download ATS PDF");
@@ -215,7 +217,7 @@ describe("built public routes", () => {
     expect(spanishResumeHtml).toContain("Resumen profesional");
     expect(spanishResumeHtml).toContain("Experiencia profesional");
     expect(spanishResumeHtml).toContain("Habilidades técnicas");
-    expect(spanishResumeHtml).toContain("Contexto dinámico del CV");
+    expect(spanishResumeHtml).toContain("Más contexto en línea");
     expect(spanishResumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
     expect(spanishResumeHtml).toContain("Descargar PDF");
     expect(spanishResumeHtml).not.toContain("Descargar PDF ATS");
@@ -330,10 +332,11 @@ describe("built public routes", () => {
     expect(headers).toContain("Referrer-Policy: strict-origin-when-cross-origin");
     expect(headers).toContain("X-Frame-Options: DENY");
     expect(headers).toContain("Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()");
-    expect(headers).toContain("Content-Security-Policy:");
+    expect(headers).toContain(`Content-Security-Policy: ${CONTENT_SECURITY_POLICY}`);
     expect(headers).toContain("frame-ancestors 'none'");
     expect(headers).toContain("script-src 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
     expect(headers).toContain("script-src-elem 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
     expect(headers).toContain("connect-src 'self' https://*.convex.site https://us.i.posthog.com https://us.posthog.com https://us-assets.i.posthog.com");
+    expect(headers).toContain("report-uri /observability/csp");
   });
 });

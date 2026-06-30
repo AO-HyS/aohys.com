@@ -44,7 +44,7 @@ The foundation is intentionally shallow on implementation and strict on seams:
 
 ## Cloudflare Release Surface
 
-`pnpm run cloudflare:local` serves the built public site through Wrangler Pages dev. `pnpm run deploy:preview` and `pnpm run deploy:production` validate the target Environment Contract, build `apps/site`, then run `wrangler pages deploy apps/site/dist --project-name aohys-com` with the correct branch.
+`pnpm run cloudflare:local` serves the built public site through Wrangler Pages dev. `pnpm run deploy:preview` and `pnpm run deploy:production` validate the target Environment Contract, audit PostHog project separation, build `apps/site`, then run `wrangler pages deploy apps/site/dist --project-name aohys-com` with the correct branch.
 
 Domain canonicalization is not stored in `apps/site/public/_redirects`; Cloudflare Pages redirects do not support domain-level redirects. The intended Cloudflare Redirect Rules payload is versioned in `cloudflare/redirect-rules.json` and should be applied in Cloudflare for `aohys.net`, `www.aohys.net`, and `www.aohys.com`.
 

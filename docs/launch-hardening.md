@@ -15,7 +15,7 @@ What these cover:
 
 - Public Content Graph routes, canonical URLs, alternates, robots, sitemap entries, and `/dashboard` exclusion.
 - Public privacy copy for contact data, PostHog analytics/errors, and private project boundaries.
-- Cloudflare Pages `_headers` security header artifact.
+- Cloudflare Pages `_headers` security header artifact plus shared Pages Functions headers for `/dashboard` and `/observability/csp`.
 - Contact form visible states for validation failure, email/provider failure, backend failure, endpoint missing, and retry copy.
 - Analytics sanitization so contact message text, email, phone, company, and form data do not enter PostHog browser events.
 - Contact lead intake persists before optional Resend/PostHog provider delivery, and provider failures produce sanitized operational events when PostHog is configured.
@@ -61,7 +61,7 @@ Expected results:
 
 - `/dashboard` and all private dashboard paths redirect anonymous visitors to `/dashboard/sign-in`.
 - Dashboard responses include `x-robots-tag: noindex, nofollow` and `cache-control: no-store`.
-- Public pages include the Cloudflare Pages security headers once served by Cloudflare.
+- Public pages and Pages Functions responses include the Cloudflare Pages security headers once served by Cloudflare.
 - `pnpm run smoke:preview` checks that the served CSP allows PostHog script/config and ingest hosts plus Convex contact endpoints.
 - `pnpm run smoke:preview` also checks the `/observability/csp` report endpoint so future CSP blocks can still reach PostHog even when `posthog-js` is blocked.
 - Contact page renders direct WhatsApp/email fallback and does not expose private dashboard data.

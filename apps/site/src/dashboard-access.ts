@@ -18,6 +18,7 @@ import { PUBLIC_CONTENT_NODES, getLocaleVariant } from "@aohys/content-graph";
 import { isOneOf } from "@aohys/core";
 import { validateEnvironmentContract, type EnvironmentName } from "@aohys/environment";
 import { capturePostHogServerEvent } from "./posthog-server.js";
+import { PRIVATE_HTML_HEADERS, PRIVATE_NO_STORE_HEADERS } from "./security-headers.js";
 
 export interface DashboardAccessEnvironment extends Record<string, string | undefined> {
   AOHYS_ENV: EnvironmentName;
@@ -69,12 +70,6 @@ interface DashboardContentPayload {
   settings?: DashboardSiteSetting[];
   resumeVersions?: DashboardResumeVersion[];
 }
-
-const PRIVATE_HEADERS = {
-  "content-type": "text/html; charset=utf-8",
-  "x-robots-tag": "noindex, nofollow",
-  "cache-control": "no-store",
-} as const;
 
 export async function safeHandleDashboardRequest(
   request: Request,
@@ -163,9 +158,8 @@ export async function handleDashboardRequest(
     return new Response(null, {
       status: 405,
       headers: {
+        ...PRIVATE_NO_STORE_HEADERS,
         allow: "POST",
-        "x-robots-tag": "noindex, nofollow",
-        "cache-control": "no-store",
       },
     });
   }
@@ -182,9 +176,8 @@ export async function handleDashboardRequest(
     return new Response(null, {
       status: 405,
       headers: {
+        ...PRIVATE_NO_STORE_HEADERS,
         allow: "POST",
-        "x-robots-tag": "noindex, nofollow",
-        "cache-control": "no-store",
       },
     });
   }
@@ -338,9 +331,8 @@ async function updateDashboardContentMetadata(
   return new Response(null, {
     status: 302,
     headers: {
+      ...PRIVATE_NO_STORE_HEADERS,
       location: `${redirectPathForContentAction(actionPath)}?saved=1`,
-      "x-robots-tag": "noindex, nofollow",
-      "cache-control": "no-store",
     },
   });
 }
@@ -479,9 +471,8 @@ async function updateDashboardLeadStatus(
   return new Response(null, {
     status: 302,
     headers: {
+      ...PRIVATE_NO_STORE_HEADERS,
       location: `/dashboard/leads?lead=${encodeURIComponent(leadId)}&saved=1`,
-      "x-robots-tag": "noindex, nofollow",
-      "cache-control": "no-store",
     },
   });
 }
@@ -549,11 +540,8 @@ async function beginGoogleSignIn(
     return htmlResponse(renderDashboardState("unavailable"), 502);
   }
 
-  const headers = new Headers({
-    location,
-    "x-robots-tag": "noindex, nofollow",
-    "cache-control": "no-store",
-  });
+  const headers = new Headers(PRIVATE_NO_STORE_HEADERS);
+  headers.set("location", location);
   const stateCookie = response.headers.get("set-cookie");
 
   if (stateCookie) {
@@ -613,9 +601,8 @@ function redirectToSignIn(path: string): Response {
   return new Response(null, {
     status: 302,
     headers: {
+      ...PRIVATE_NO_STORE_HEADERS,
       location: `/dashboard/sign-in?callbackURL=${encodeURIComponent(path)}`,
-      "x-robots-tag": "noindex, nofollow",
-      "cache-control": "no-store",
     },
   });
 }
@@ -623,7 +610,7 @@ function redirectToSignIn(path: string): Response {
 function htmlResponse(html: string, status = 200): Response {
   return new Response(html, {
     status,
-    headers: PRIVATE_HEADERS,
+    headers: PRIVATE_HTML_HEADERS,
   });
 }
 

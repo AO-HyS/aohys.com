@@ -141,7 +141,7 @@ pnpm run deploy:production
 pnpm run smoke:production
 ```
 
-Release deploys validate GitHub Environment values, sync the Convex runtime environment from those values, push Convex, then deploy Cloudflare Pages. The canonical host redirect from `aohys.net` to `aohys.com` is represented in `cloudflare/redirect-rules.json` because Cloudflare Pages `_redirects` does not support domain-level redirects.
+Release deploys validate GitHub Environment values, audit PostHog project separation, sync the Convex runtime environment from those values, push Convex, then deploy Cloudflare Pages. The canonical host redirect from `aohys.net` to `aohys.com` is represented in `cloudflare/redirect-rules.json` because Cloudflare Pages `_redirects` does not support domain-level redirects.
 
 The PostHog audit compares GitHub Environment `preview` and `production` public analytics values and fails if both environments use the same project key. Smoke commands also verify served CSP, anonymous dashboard redirect/sign-in behavior, and the configured contact endpoint.
 
@@ -187,7 +187,7 @@ Current protections:
 - browser PostHog autocapture starts disabled;
 - preview and production PostHog projects stay separated through environment-specific public keys plus an `environment` event property;
 - dashboard runtime exceptions are caught at the Cloudflare Pages boundary and reported as sanitized PostHog events before a private unavailable state is returned;
-- Cloudflare Pages `_headers` applies security headers;
+- Cloudflare Pages `_headers` applies security headers for static public pages, and the shared Pages Functions header module applies the same CSP/reporting policy to private dashboard and observability responses;
 - `/dashboard` is omitted from sitemap and returns private-cache/robot headers;
 - smoke checks verify public HTML, canonical behavior, and dashboard privacy boundaries.
 

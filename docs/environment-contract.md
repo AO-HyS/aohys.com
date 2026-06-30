@@ -77,7 +77,7 @@ Current explicit PostHog events:
 | `dashboard_runtime_exception` | Cloudflare Pages `/dashboard` guard | Environment, path, source, and error type only; no cookies, tokens, or exception message |
 | `csp_violation_reported` | Cloudflare Pages `/observability/csp` | Environment, path, directive, document path, disposition, and blocked host only; no full URL query, token, contact identity, or message text |
 
-Cloudflare Pages sends CSP violation reports to `/observability/csp`. This endpoint is intentionally tiny and best-effort: it returns `204` for valid reports and preflight checks even if PostHog is temporarily unavailable so CSP reporting never breaks a visitor path. It exists because a broken CSP can prevent the browser PostHog bundle from loading, so the report path must not depend on `posthog-js`.
+Cloudflare Pages sends CSP violation reports to `/observability/csp`. This endpoint is intentionally tiny and best-effort: it returns `204` for valid reports and preflight checks even if PostHog is temporarily unavailable so CSP reporting never breaks a visitor path. It exists because a broken CSP can prevent the browser PostHog bundle from loading, so the report path must not depend on `posthog-js`. Static pages get the policy from `apps/site/public/_headers`; Pages Functions use the shared `apps/site/src/security-headers.ts` module so private dashboard, redirects, and observability responses do not drift.
 
 ## Provider Responsibilities
 

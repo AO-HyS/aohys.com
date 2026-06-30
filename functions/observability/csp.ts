@@ -1,4 +1,5 @@
 import type { CspReportEnvironment } from "../../apps/site/src/csp-reporting.js";
+import { PRIVATE_NO_STORE_HEADERS } from "../../apps/site/src/security-headers.js";
 
 export async function onRequest(context: {
   request: Request;
@@ -10,11 +11,7 @@ export async function onRequest(context: {
   } catch {
     return new Response(null, {
       status: 204,
-      headers: {
-        "cache-control": "no-store",
-        "x-content-type-options": "nosniff",
-        "x-robots-tag": "noindex, nofollow",
-      },
+      headers: PRIVATE_NO_STORE_HEADERS,
     });
   }
 }

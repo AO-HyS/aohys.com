@@ -1,10 +1,5 @@
 import type { DashboardAccessEnvironment } from "../../apps/site/src/dashboard-access.js";
-
-const PRIVATE_HEADERS = {
-  "content-type": "text/html; charset=utf-8",
-  "x-robots-tag": "noindex, nofollow",
-  "cache-control": "no-store",
-} as const;
+import { PRIVATE_HTML_HEADERS } from "../../apps/site/src/security-headers.js";
 
 function normalizeDashboardPath(request: Request): string {
   const pathname = new URL(request.url).pathname;
@@ -66,7 +61,7 @@ export async function onRequest(context: {
 
     return new Response(unavailableDashboardHtml(), {
       status: 502,
-      headers: PRIVATE_HEADERS,
+      headers: PRIVATE_HTML_HEADERS,
     });
   }
 }

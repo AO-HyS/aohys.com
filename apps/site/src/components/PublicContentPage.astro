@@ -66,6 +66,66 @@ function splitHeadline(headline: string): string[] {
 }
 
 const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : [];
+
+const routeSignalById: Partial<Record<ContentId | string, string>> = {
+  "case-studies": locale === "es" ? "Evidencia seleccionada" : "Selected proof",
+  architecture: locale === "es" ? "Sistema público" : "Public system",
+  resume: locale === "es" ? "Contexto profesional" : "Professional context",
+  contact: locale === "es" ? "Contacto directo" : "Direct contact",
+  privacy: locale === "es" ? "Límite de privacidad" : "Privacy boundary",
+  practice: locale === "es" ? "Práctica de ingeniería" : "Engineering practice",
+};
+const routeSignal = routeSignalById[id] ?? variant.summary;
+
+const evidenceImageByContentId: Partial<Record<ContentId | string, { src: string; alt: string }>> = {
+  "case-study:casa-roca": {
+    src: "/images/proof/casa-roca-production.png",
+    alt: locale === "es" ? "Captura pública del sitio Casa Roca en producción" : "Public Casa Roca production website screenshot",
+  },
+  "case-study:the-barber-central": {
+    src: "/images/proof/barber-central-ops.png",
+    alt: locale === "es" ? "Captura sanitizada de operaciones de The Barber Central" : "Sanitized The Barber Central operations screenshot",
+  },
+  "case-study:nutri-plan": {
+    src: "/images/proof/nutri-plan-proof.png",
+    alt: locale === "es" ? "Captura sanitizada de Nutri Plan" : "Sanitized Nutri Plan screenshot",
+  },
+  "case-study:engineering-practice": {
+    src: "/images/generated/aohys-delivery-artifact.png",
+    alt: locale === "es" ? "Artefacto visual de arquitectura y delivery de AOHYS" : "AOHYS architecture and delivery visual artifact",
+  },
+};
+
+function evidenceImageForContent(contentId: string) {
+  return evidenceImageByContentId[contentId];
+}
+
+function evidenceImageForPath(path: string) {
+  if (path.includes("casa-roca")) {
+    return evidenceImageForContent("case-study:casa-roca");
+  }
+
+  if (path.includes("the-barber-central")) {
+    return evidenceImageForContent("case-study:the-barber-central");
+  }
+
+  if (path.includes("nutri-plan")) {
+    return evidenceImageForContent("case-study:nutri-plan");
+  }
+
+  if (
+    path.includes("engineering-practice") ||
+    path.includes("practica-de-ingenieria") ||
+    path === "/practice" ||
+    path === "/es/practica"
+  ) {
+    return evidenceImageForContent("case-study:engineering-practice");
+  }
+
+  return undefined;
+}
+
+const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undefined;
 ---
 
 {
@@ -143,13 +203,23 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
           <h2 id="home-architecture-title">{homeContent.architectureHeading}</h2>
           <p>{homeContent.architectureBody}</p>
         </div>
-        <div class="architecture-track" aria-label={homeContent.architectureHeading}>
-          {homeContent.architectureStages.map((stage) => (
-            <div class="architecture-step">
-              <span>{stage.label}</span>
-              <p>{stage.text}</p>
-            </div>
-          ))}
+        <div class="architecture-proof-stack">
+          <figure class="architecture-proof-visual">
+            <img
+              src="/images/proof/aohys-system-map.svg"
+              alt={locale === "es" ? "Mapa del sistema público y privado de AOHYS" : "AOHYS public and private system map"}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+          <div class="architecture-track" aria-label={homeContent.architectureHeading}>
+            {homeContent.architectureStages.map((stage) => (
+              <div class="architecture-step">
+                <span>{stage.label}</span>
+                <p>{stage.text}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -183,7 +253,7 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
     <>
       <section class="architecture-page-hero" aria-labelledby="architecture-title" data-architecture-content-id={id}>
         <div class="architecture-page-copy">
-          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <p class="signal-line">{routeSignal}</p>
           <h1 id="architecture-title">{architectureContent.heading}</h1>
           <p class="hero-lead">{architectureContent.deck}</p>
           <div class="hero-actions" aria-label={copy.actions}>
@@ -192,14 +262,24 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
           </div>
         </div>
 
-        <aside class="source-index" aria-label={architectureContent.sourceLabel}>
-          <strong>{architectureContent.sourceLabel}</strong>
-          <div class="source-links">
-            {architectureContent.sourceLinks.map((link) => (
-              <a href={link.href}>{link.label}</a>
-            ))}
-          </div>
-        </aside>
+        <div class="architecture-hero-aside">
+          <figure class="architecture-hero-map">
+            <img
+              src="/images/proof/aohys-system-map.svg"
+              alt={locale === "es" ? "Mapa de arquitectura de la muestra pública AOHYS" : "Architecture map for the AOHYS public sample"}
+              loading="eager"
+              decoding="async"
+            />
+          </figure>
+          <aside class="source-index" aria-label={architectureContent.sourceLabel}>
+            <strong>{architectureContent.sourceLabel}</strong>
+            <div class="source-links">
+              {architectureContent.sourceLinks.map((link) => (
+                <a href={link.href}>{link.label}</a>
+              ))}
+            </div>
+          </aside>
+        </div>
       </section>
 
       <section class="architecture-map" aria-labelledby="architecture-map-title">
@@ -232,7 +312,7 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
     <>
       <section class="case-study-index-hero" aria-labelledby="case-study-index-title" data-case-study-index-content-id={id}>
         <div class="case-study-hero-copy">
-          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <p class="signal-line">{routeSignal}</p>
           <h1 id="case-study-index-title">{caseStudyIndexContent.heading}</h1>
           <p class="hero-lead">{caseStudyIndexContent.intro}</p>
           <div class="hero-actions" aria-label={copy.actions}>
@@ -240,6 +320,11 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
             {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
           </div>
         </div>
+        <figure class="case-index-proof-wall" aria-label={locale === "es" ? "Capturas públicas de proyectos seleccionados" : "Public screenshots from selected work"}>
+          <img src="/images/proof/casa-roca-production.png" alt={locale === "es" ? "Captura pública de Casa Roca" : "Public Casa Roca screenshot"} loading="eager" decoding="async" />
+          <img src="/images/proof/barber-central-ops.png" alt={locale === "es" ? "Captura sanitizada de The Barber Central" : "Sanitized The Barber Central screenshot"} loading="eager" decoding="async" />
+          <img src="/images/proof/nutri-plan-proof.png" alt={locale === "es" ? "Captura sanitizada de Nutri Plan" : "Sanitized Nutri Plan screenshot"} loading="eager" decoding="async" />
+        </figure>
       </section>
 
       <section class="selected-work-index" aria-labelledby="selected-work-title">
@@ -251,6 +336,21 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
           {caseStudyIndexContent.entries.map((entry) => (
             <a class="selected-work-row" href={entry.path}>
               <span>{entry.statusLabel}</span>
+              <figure class="selected-work-shot">
+                {(() => {
+                  const evidenceImage = evidenceImageForPath(entry.path);
+                  return evidenceImage ? (
+                    <img
+                      src={evidenceImage.src}
+                      alt={evidenceImage.alt}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <span>{entry.evidenceLabel}</span>
+                  );
+                })()}
+              </figure>
               <strong>{entry.title}</strong>
               <p>{entry.summary}</p>
               <em>{entry.evidenceLabel}</em>
@@ -273,6 +373,14 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
         </div>
 
         <aside class="case-study-status" aria-label={caseStudyContent.statusLabel}>
+          {caseStudyEvidenceImage && (
+            <img
+              src={caseStudyEvidenceImage.src}
+              alt={caseStudyEvidenceImage.alt}
+              loading="eager"
+              decoding="async"
+            />
+          )}
           <span>{caseStudyContent.statusLabel}</span>
           <strong>{variant.summary}</strong>
         </aside>
@@ -316,7 +424,7 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
     <>
       <section class="resume-hero" aria-labelledby="resume-title" data-resume-content-id={id}>
         <div class="resume-identity">
-          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <p class="signal-line">{routeSignal}</p>
           <h1 id="resume-title">{resumeContent.name}</h1>
           <p class="resume-role">{resumeContent.role}</p>
           <p class="hero-lead">{resumeContent.intro}</p>
@@ -450,13 +558,21 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
     <>
       <section class="contact-form-section" aria-labelledby="contact-title" data-contact-content-id={id}>
         <div class="contact-form-copy">
-          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <p class="signal-line">{routeSignal}</p>
           <h1 id="contact-title">{variant.title}</h1>
           <p class="hero-lead">{variant.summary}</p>
           <div class="contact-direct-actions" aria-label={copy.actions}>
             <a class="button button-whatsapp" href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_hero">{contactCopy.whatsappLabel}</a>
             <a class="button button-secondary" href={directEmailHref} data-analytics-event="email_cta_clicked" data-analytics-target="contact_hero">{contactCopy.emailLabel}</a>
           </div>
+          <figure class="contact-architecture-card">
+            <img
+              src="/images/generated/aohys-delivery-artifact.png"
+              alt={locale === "es" ? "Ruta visual de contacto, entrega y observabilidad de AOHYS" : "Visual route for AOHYS contact, delivery, and observability"}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
         </div>
 
         <form
@@ -749,7 +865,7 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
     <>
       <section class="route-hero" aria-labelledby="privacy-title" data-privacy-content-id={id}>
         <div class="route-hero-copy">
-          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <p class="signal-line">{routeSignal}</p>
           <h1 id="privacy-title">{privacyContent.heading}</h1>
           <p class="hero-lead">{privacyContent.intro}</p>
           <div class="hero-actions" aria-label={copy.actions}>
@@ -784,7 +900,7 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
     <>
       <section class="route-hero" aria-labelledby="route-title" data-content-type={node.type}>
         <div class="route-hero-copy">
-          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <p class="signal-line">{routeSignal}</p>
           <h1 id="route-title">{variant.title}</h1>
           <p class="hero-lead">{variant.summary}</p>
           <div class="hero-actions" aria-label={copy.actions}>

@@ -21,6 +21,8 @@
   --color-dark-ink: oklch(0.96 0.01 160);
   --color-dark-muted: oklch(0.76 0.035 180);
   --color-dark-rule: color-mix(in oklch, var(--color-dark-ink), transparent 78%);
+  --color-dark-honey: oklch(0.78 0.13 78);
+  --color-dark-mint-panel: color-mix(in oklch, var(--color-mint), var(--color-dark) 86%);
   --color-honey-soft: oklch(0.92 0.08 82);
   --color-focus: oklch(0.48 0.16 255);
   --color-architecture-bg: oklch(0.12 0.006 260);
@@ -272,8 +274,9 @@ h1 {
 }
 
 .home-proof-hero h1 {
-  max-width: 16ch;
-  font-size: 2.95rem;
+  max-width: 19ch;
+  font-size: var(--text-hero);
+  letter-spacing: 0;
 }
 
 .home-headline span {
@@ -493,10 +496,10 @@ h2 {
 
 .outcome-row {
   display: grid;
-  grid-template-columns: 3rem minmax(10rem, 0.26fr) minmax(12rem, 0.28fr) minmax(13rem, 0.28fr) 2.5rem;
+  grid-template-columns: 3rem minmax(14rem, 0.34fr) minmax(14rem, 0.3fr) minmax(12rem, 0.22fr) 2.5rem;
   gap: clamp(1rem, 2.4vw, 2.25rem);
   align-items: center;
-  min-height: 8.8rem;
+  min-height: 10.2rem;
   border-block-end: 1px solid var(--color-rule);
   color: inherit;
   text-decoration: none;
@@ -550,7 +553,7 @@ h2 {
 .outcome-shot img,
 .evidence-fallback {
   width: 100%;
-  aspect-ratio: 1.82;
+  aspect-ratio: 1.9;
   margin: 0;
 }
 
@@ -563,7 +566,7 @@ h2 {
   display: block;
   background: var(--color-surface);
   object-fit: cover;
-  object-position: center top;
+  object-position: center 34%;
 }
 
 .evidence-fallback {
@@ -587,17 +590,21 @@ h2 {
 
 .architecture-stage {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(18rem, 1.1fr);
+  grid-template-columns: minmax(0, 0.78fr) minmax(24rem, 1.22fr);
   gap: clamp(2rem, 6vw, 6rem);
+  width: 100%;
   margin-block: clamp(1rem, 4vw, 3rem);
-  padding: clamp(3rem, 7vw, 6.5rem) max(1rem, calc((100vw - 1180px) / 2));
-  border-block: 1px solid var(--color-dark);
-  background: var(--color-bg);
-  color: var(--color-ink);
+  padding: clamp(3.5rem, 8vw, 7rem) max(1rem, calc((100vw - 1180px) / 2));
+  border-block: 1px solid var(--color-dark-rule);
+  background:
+    radial-gradient(circle at 82% 18%, color-mix(in oklch, var(--color-sky), transparent 84%), transparent 21rem),
+    linear-gradient(140deg, color-mix(in oklch, var(--color-mint), transparent 92%), transparent 32rem),
+    var(--color-dark);
+  color: var(--color-dark-ink);
 }
 
 .architecture-stage h2 {
-  color: var(--color-ink);
+  color: var(--color-dark-ink);
 }
 
 .architecture-copy p,
@@ -610,27 +617,50 @@ h2 {
   text-wrap: pretty;
 }
 
+.architecture-stage .architecture-copy p {
+  color: var(--color-dark-muted);
+}
+
+.architecture-proof-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.architecture-proof-visual {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-dark-rule);
+  background: var(--color-dark-panel);
+}
+
+.architecture-proof-visual img {
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+  object-position: center;
+}
+
 .architecture-track {
   display: grid;
   align-content: center;
-  border-block-start: 1px solid var(--color-dark);
+  border-block-start: 1px solid var(--color-dark-rule);
 }
 
 .architecture-step {
   display: grid;
   grid-template-columns: minmax(8rem, 0.34fr) minmax(0, 1fr);
   gap: 1rem;
-  border-block-end: 1px solid var(--color-rule);
+  border-block-end: 1px solid var(--color-dark-rule);
   padding-block: 1.25rem;
 }
 
 .architecture-step span {
-  color: var(--color-mint-ink);
+  color: var(--color-mint);
 }
 
 .architecture-step p {
   margin: 0;
-  color: var(--color-muted);
+  color: var(--color-dark-muted);
   line-height: var(--leading-body);
 }
 
@@ -666,12 +696,22 @@ h2 {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 2rem;
   align-items: end;
-  border-block: 1px solid var(--color-dark);
-  padding-block: clamp(2rem, 5vw, 4rem);
+  width: 100%;
+  margin-inline: 0;
+  border-block: 1px solid var(--color-dark-rule);
+  padding: clamp(2.4rem, 6vw, 5rem) max(1rem, calc((100vw - 1180px) / 2));
+  background:
+    radial-gradient(circle at 86% 30%, color-mix(in oklch, var(--color-coral), transparent 88%), transparent 20rem),
+    var(--color-dark);
+  color: var(--color-dark-ink);
 }
 
 .contact-band p {
-  color: var(--color-muted);
+  color: var(--color-dark-muted);
+}
+
+.contact-band h2 {
+  color: var(--color-dark-ink);
 }
 
 .contact-actions {
@@ -691,9 +731,12 @@ h2 {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(20rem, 1fr);
   gap: clamp(2rem, 6vw, 5rem);
-  width: var(--container);
-  margin-inline: auto;
-  padding-block: clamp(3rem, 7vw, 6.5rem);
+  width: 100%;
+  margin-inline: 0;
+  padding: clamp(3rem, 7vw, 6.5rem) max(1rem, calc((100vw - 1180px) / 2));
+  background:
+    linear-gradient(90deg, color-mix(in oklch, var(--color-mint), transparent 91%), transparent 44rem),
+    var(--color-bg);
 }
 
 .contact-form-copy {
@@ -711,11 +754,26 @@ h2 {
   margin-block-start: 2rem;
 }
 
+.contact-architecture-card {
+  margin: clamp(2rem, 5vw, 3rem) 0 0;
+  overflow: hidden;
+  border: 1px solid var(--color-rule);
+  background: var(--color-dark);
+}
+
+.contact-architecture-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+}
+
 .contact-form {
   display: grid;
   gap: 1rem;
-  border-block-start: 1px solid var(--color-dark);
-  padding-block-start: 1.4rem;
+  border: 1px solid var(--color-dark);
+  background: var(--color-bg);
+  padding: clamp(1rem, 2.5vw, 1.6rem);
 }
 
 .contact-form-heading {
@@ -818,11 +876,18 @@ h2 {
 
 .architecture-page-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.42fr);
+  grid-template-columns: minmax(0, 0.88fr) minmax(26rem, 1.12fr);
   gap: clamp(2rem, 6vw, 6rem);
   align-items: end;
+  width: 100%;
+  margin-inline: 0;
   min-height: min(700px, calc(100svh - 78px));
-  padding-block: clamp(4rem, 9vw, 7rem) clamp(2.5rem, 6vw, 5rem);
+  padding: clamp(4rem, 9vw, 7rem) max(1rem, calc((100vw - 1180px) / 2)) clamp(3rem, 6vw, 5.5rem);
+  border-block-end: 1px solid var(--color-dark-rule);
+  background:
+    radial-gradient(circle at 78% 14%, color-mix(in oklch, var(--color-mint), transparent 84%), transparent 24rem),
+    var(--color-dark);
+  color: var(--color-dark-ink);
 }
 
 .architecture-page-copy {
@@ -833,11 +898,46 @@ h2 {
   max-width: 11ch;
 }
 
+.architecture-page-hero .hero-lead,
+.architecture-page-hero .signal-line {
+  color: var(--color-dark-muted);
+}
+
+.architecture-page-hero .button-secondary,
+.case-study-index-hero .button-secondary {
+  border-color: var(--color-dark-rule);
+  background: transparent;
+  color: var(--color-dark-ink);
+}
+
+.architecture-hero-aside {
+  display: grid;
+  gap: 1rem;
+}
+
+.architecture-hero-map {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-dark-rule);
+  background: var(--color-dark-panel);
+}
+
+.architecture-hero-map img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+}
+
 .source-index {
   display: grid;
   gap: 1rem;
   border-block: 1px solid var(--color-dark);
   padding-block: 1.1rem;
+}
+
+.architecture-page-hero .source-index {
+  border-block-color: var(--color-dark-rule);
 }
 
 .source-index > strong {
@@ -865,6 +965,12 @@ h2 {
   font-size: var(--text-small);
   font-weight: 680;
   text-decoration: none;
+}
+
+.architecture-page-hero .source-links a {
+  border-color: var(--color-dark-rule);
+  background: var(--color-dark-mint-panel);
+  color: var(--color-dark-ink);
 }
 
 .source-links.inline {
@@ -941,13 +1047,51 @@ h2 {
 
 .case-study-index-hero {
   display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(24rem, 1.2fr);
+  gap: clamp(2rem, 6vw, 6rem);
   align-items: end;
+  width: 100%;
+  margin-inline: 0;
   min-height: min(640px, calc(100svh - 78px));
-  padding-block: clamp(4rem, 9vw, 7rem) clamp(2.5rem, 6vw, 5rem);
+  padding: clamp(4rem, 9vw, 7rem) max(1rem, calc((100vw - 1180px) / 2)) clamp(3rem, 6vw, 5.5rem);
+  border-block-end: 1px solid var(--color-dark-rule);
+  background:
+    radial-gradient(circle at 78% 22%, color-mix(in oklch, var(--color-primary), transparent 82%), transparent 23rem),
+    linear-gradient(135deg, color-mix(in oklch, var(--color-mint), transparent 91%), transparent 34rem),
+    var(--color-dark);
+  color: var(--color-dark-ink);
 }
 
 .case-study-hero-copy {
   max-width: 66rem;
+}
+
+.case-study-index-hero .hero-lead,
+.case-study-index-hero .signal-line {
+  color: var(--color-dark-muted);
+}
+
+.case-index-proof-wall {
+  display: grid;
+  grid-template-columns: 1.1fr 0.74fr;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  block-size: clamp(24rem, 42vw, 34rem);
+  margin: 0;
+}
+
+.case-index-proof-wall img {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 1px solid var(--color-dark-rule);
+  background: var(--color-dark-panel);
+  object-fit: cover;
+  object-position: center 34%;
+}
+
+.case-index-proof-wall img:first-child {
+  grid-row: 1 / span 2;
 }
 
 .case-study-hero h1 {
@@ -959,6 +1103,15 @@ h2 {
   gap: 0.75rem;
   border-block: 1px solid var(--color-dark);
   padding-block: 1.1rem;
+}
+
+.case-study-status img {
+  width: 100%;
+  aspect-ratio: 1.75;
+  border: 1px solid var(--color-rule);
+  background: var(--color-surface);
+  object-fit: cover;
+  object-position: center 34%;
 }
 
 .case-study-status span,
@@ -997,10 +1150,10 @@ h2 {
 
 .selected-work-row {
   display: grid;
-  grid-template-columns: minmax(8rem, 0.2fr) minmax(10rem, 0.22fr) minmax(0, 1fr) minmax(9rem, 0.2fr);
+  grid-template-columns: minmax(8rem, 0.16fr) minmax(12rem, 0.24fr) minmax(10rem, 0.2fr) minmax(0, 1fr) minmax(9rem, 0.16fr);
   gap: clamp(1rem, 2vw, 2rem);
   align-items: center;
-  min-height: 8rem;
+  min-height: 9.5rem;
   border-block-end: 1px solid var(--color-rule);
   color: inherit;
   text-decoration: none;
@@ -1011,6 +1164,33 @@ h2 {
   font-size: 1.6rem;
   font-weight: var(--weight-heading);
   line-height: 1.12;
+}
+
+.selected-work-shot {
+  margin: 0;
+}
+
+.selected-work-shot img,
+.selected-work-shot > span {
+  width: 100%;
+  aspect-ratio: 1.85;
+  border: 1px solid var(--color-rule);
+  background: var(--color-surface);
+}
+
+.selected-work-shot img {
+  object-fit: cover;
+  object-position: center 34%;
+}
+
+.selected-work-shot > span {
+  display: grid;
+  place-items: center;
+  color: var(--color-muted);
+  font-family: var(--font-display);
+  font-size: var(--text-caption);
+  font-weight: 680;
+  text-align: center;
 }
 
 .selected-work-row p {
@@ -1101,7 +1281,10 @@ h2 {
   display: grid;
   gap: 0.85rem;
   border-block: 1px solid var(--color-dark);
-  padding-block: 1rem;
+  background:
+    linear-gradient(135deg, color-mix(in oklch, var(--color-mint), transparent 88%), transparent 60%),
+    var(--color-bg);
+  padding: 1rem;
 }
 
 .resume-contact > span,
@@ -1409,6 +1592,7 @@ h2 {
   .architecture-page-hero,
   .architecture-row,
   .case-study-hero,
+  .case-study-index-hero,
   .resume-hero,
   .selected-work-row,
   .case-study-row,
@@ -1466,6 +1650,18 @@ h2 {
 
   .architecture-stage {
     padding-inline: max(1rem, calc((100vw - 1180px) / 2));
+  }
+
+  .architecture-proof-visual img {
+    aspect-ratio: 16 / 10;
+  }
+
+  .case-index-proof-wall {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .case-index-proof-wall img:first-child {
+    grid-row: auto;
   }
 
   .footer-links {
@@ -1587,6 +1783,21 @@ h2 {
   .home-proof-board {
     max-width: 100%;
     min-height: 0;
+  }
+
+  .case-index-proof-wall {
+    grid-template-columns: 1fr;
+    block-size: auto;
+  }
+
+  .case-index-proof-wall img {
+    height: auto;
+    aspect-ratio: 1.85;
+  }
+
+  .selected-work-shot img,
+  .selected-work-shot > span {
+    max-width: 32rem;
   }
 
 }
