@@ -100,28 +100,12 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
             <strong>{homeContent.proofBoardTitle}</strong>
           </figcaption>
           <img
-            class="system-map-asset"
-            src="/images/proof/aohys-system-map.svg"
-            alt={homeContent.proofBoardLabel}
+            class="hero-artifact-asset"
+            src="/images/generated/aohys-delivery-artifact.png"
+            alt={copy.deliveryArtifactAlt}
             loading="eager"
             decoding="async"
           />
-          <div class="proof-shot proof-shot-casa" aria-label={copy.productionSnapshot}>
-            <img
-              src="/images/proof/casa-roca-production.png"
-              alt={copy.productionSnapshotAlt}
-              loading="eager"
-              decoding="async"
-            />
-          </div>
-          <div class="proof-shot proof-shot-ops" aria-label={copy.operationsSnapshot}>
-            <img
-              src="/images/proof/barber-central-ops.png"
-              alt={copy.operationsSnapshotAlt}
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
         </figure>
       </section>
 
@@ -174,14 +158,6 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
           <h2 id="practice-title">{homeContent.practiceHeading}</h2>
           <p class="section-intro">{homeContent.practiceBody}</p>
         </div>
-        <figure class="generated-artifact practice-artifact" aria-label={copy.deliveryArtifact}>
-          <img
-            src="/images/generated/aohys-delivery-artifact.png"
-            alt={copy.deliveryArtifactAlt}
-            loading="lazy"
-            decoding="async"
-          />
-        </figure>
         <div class="practice-list">
           {homeContent.practicePoints.map((point) => (
             <div class="practice-item">

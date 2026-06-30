@@ -14,7 +14,7 @@ Implementation notes:
 
 - The mock is a direction contract for composition, density, and palette.
 - Do not rasterize live copy from the mock.
-- The implemented page uses semantic HTML, real copy, the real AOHYS logo, a custom SVG system map, and public-safe screenshots.
+- The implemented page uses semantic HTML, real copy, the real AOHYS logo, the generated delivery-process artifact as the hero proof object, and public-safe screenshots in the proof ledger.
 
 ## Hero System Image
 
@@ -32,7 +32,7 @@ Prompt used:
 
 > Create a high-end generated bitmap asset for the AOHYS public site, 16:10 landscape. Visual subject: a senior software delivery review table where business workflow notes become a reliable product system. Dark ink drafting surface with precise pastel honey, mint, sky, and coral signal lines. Include abstract proof artifacts: review gates, browser QA check, deployment path, feedback loop, observability pulse, and a small public/private boundary diagram. Use elegant geometric composition, generous negative space, crisp rules, no readable real text, no fake metrics, no code terminal, no chat bubbles, no robots, no glassmorphism, no purple gradients, no people, no mascots. It should feel like optimistic professional engineering craft, coordinated with a teal/honey AOHYS logo palette. This is a support image, not client proof.
 
-Implementation note: this asset is used as a generated process artifact in the practice section. It is not presented as client work or operational evidence; screenshots remain the proof layer.
+Implementation note: this asset is used as the generated process artifact in the home hero. It is not presented as client work or operational evidence; screenshots remain the case-study proof layer.
 
 Create a visual showing modern software delivery with AI agents as process support rather than robots: task cards moving through review, tests, browser QA, and deploy gates. Use a polished product design language, clean lines, pastel accent markers, and strong spacing. It should communicate human judgment plus automated leverage. Do not show humanoid robots, chat bubbles, neon cyberpunk, or generic AI icons.
 

@@ -57,12 +57,14 @@ html {
 
 body {
   margin: 0;
+  overflow-x: hidden;
   background: var(--color-bg);
   color: var(--color-ink);
   font-family: var(--font-body);
   font-size: var(--text-body);
   line-height: var(--leading-body);
   text-rendering: optimizeLegibility;
+  overflow-wrap: break-word;
 }
 
 a {
@@ -71,6 +73,7 @@ a {
 
 img,
 svg {
+  display: block;
   max-width: 100%;
 }
 
@@ -81,7 +84,7 @@ svg {
 
 .site-shell {
   min-height: 100vh;
-  overflow-x: clip;
+  overflow-x: hidden;
 }
 
 main,
@@ -279,7 +282,7 @@ h1 {
 
 .home-proof-hero {
   width: 100%;
-  grid-template-columns: minmax(30rem, 0.82fr) minmax(31rem, 0.96fr);
+  grid-template-columns: minmax(28rem, 0.78fr) minmax(0, 1.08fr);
   gap: clamp(2rem, 4vw, 4.25rem);
   margin-inline: 0;
   min-height: min(760px, calc(100svh - 77px));
@@ -305,6 +308,7 @@ h1 {
 .home-proof-hero .hero-lead {
   max-width: 54ch;
   color: var(--color-dark-muted);
+  overflow-wrap: break-word;
 }
 
 .home-proof-hero .button-secondary {
@@ -339,6 +343,7 @@ h1 {
   margin: 0;
   color: var(--color-dark-muted);
   line-height: 1.5;
+  overflow-wrap: break-word;
 }
 
 .hero-principles strong {
@@ -406,38 +411,34 @@ h2 {
 .home-proof-board {
   isolation: isolate;
   align-self: stretch;
+  min-height: 0;
+  aspect-ratio: 16 / 10;
   border: 1px solid var(--color-dark-rule);
-  background:
-    linear-gradient(90deg, color-mix(in oklch, var(--color-sky), transparent 92%) 1px, transparent 1px),
-    linear-gradient(0deg, color-mix(in oklch, var(--color-mint), transparent 92%) 1px, transparent 1px),
-    radial-gradient(circle at 72% 20%, color-mix(in oklch, var(--color-mint), transparent 82%), transparent 26rem),
-    var(--color-dark-panel);
-  background-size: 92px 92px, 92px 92px, auto, auto;
+  background: var(--color-dark-panel);
 }
 
-.system-map-asset {
+.hero-artifact-asset {
   position: absolute;
-  inset-block-start: clamp(4.4rem, 6vw, 5.8rem);
-  inset-inline: 3.5%;
+  inset: 0;
   z-index: 1;
-  width: 93%;
-  filter: saturate(1.08);
-}
-
-.proof-board-caption,
-.proof-shot {
-  position: absolute;
-  z-index: 2;
-  border: 1px solid color-mix(in oklch, var(--color-dark-ink), transparent 78%);
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  filter: saturate(1.04);
 }
 
 .proof-board-caption {
-  inset-block-start: 1.6rem;
-  inset-inline-start: 1.6rem;
-  max-width: min(31rem, calc(100% - 4rem));
-  border-color: transparent;
-  padding: 0;
-  color: var(--color-dark-ink);
+  position: absolute;
+  z-index: 2;
+}
+
+.proof-board-caption {
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .proof-board-caption span,
@@ -459,32 +460,6 @@ h2 {
   font-size: 1rem;
   line-height: 1.14;
   text-wrap: balance;
-}
-
-.proof-shot {
-  overflow: hidden;
-  background: var(--color-dark-surface);
-}
-
-.proof-shot img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.proof-shot-casa {
-  inset-block-end: 1.5rem;
-  inset-inline-start: 1.5rem;
-  width: min(30%, 14rem);
-  aspect-ratio: 1.42;
-}
-
-.proof-shot-ops {
-  inset-block-end: 1.5rem;
-  inset-inline-end: 1.5rem;
-  width: min(24%, 10.5rem);
-  aspect-ratio: 0.72;
 }
 
 .ledger-section {
@@ -665,21 +640,6 @@ h2 {
 
 .practice-section .section-heading {
   margin-block-end: clamp(1.25rem, 3vw, 2rem);
-}
-
-.generated-artifact {
-  margin: 0;
-}
-
-.generated-artifact img {
-  display: block;
-  width: 100%;
-  border: 1px solid var(--color-dark);
-  background: var(--color-dark);
-}
-
-.practice-artifact {
-  margin-block-end: clamp(1.5rem, 4vw, 3rem);
 }
 
 .practice-list {
@@ -1437,6 +1397,10 @@ h2 {
     min-height: clamp(27rem, 78vw, 34rem);
   }
 
+  .home-proof-board {
+    min-height: 0;
+  }
+
   .route-hero,
   .ledger-row,
   .outcome-row,
@@ -1543,22 +1507,42 @@ h2 {
   .home-proof-hero {
     max-width: 100vw;
     overflow: hidden;
+    padding-inline: 1rem;
   }
 
   .home-proof-hero .hero-copy,
   .home-proof-hero .hero-lead,
   .hero-principles {
+    inline-size: 100%;
     max-width: calc(100vw - 2rem);
   }
 
   .hero-principles {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.65rem;
+    grid-template-columns: 1fr;
+    gap: 0;
+    border-block: 1px solid var(--color-dark-rule);
   }
 
   .hero-principles li {
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: baseline;
     max-width: none;
+    border-block-start: 1px solid var(--color-dark-rule);
+    padding-block: 0.7rem;
+  }
+
+  .hero-principles li:first-child {
+    border-block-start: 0;
+  }
+
+  .hero-principles li span {
+    grid-row: 1 / span 2;
+  }
+
+  .hero-principles p {
+    line-height: 1.45;
   }
 
   .hero-lead {
@@ -1600,34 +1584,11 @@ h2 {
     min-height: 18rem;
   }
 
-  .system-map-asset {
-    inset-block-start: 4.9rem;
-    inset-inline: 0.7rem;
-    width: calc(100% - 1.4rem);
+  .home-proof-board {
+    max-width: 100%;
+    min-height: 0;
   }
 
-  .proof-board-caption {
-    inset-block-start: 0.75rem;
-    inset-inline: 0.75rem;
-    max-width: calc(100% - 1.5rem);
-    padding: 0;
-  }
-
-  .proof-board-caption strong {
-    font-size: var(--text-small);
-  }
-
-  .proof-shot-casa {
-    inset-block-end: 1rem;
-    inset-inline-start: 0.75rem;
-    width: 44%;
-  }
-
-  .proof-shot-ops {
-    inset-block-end: 1rem;
-    inset-inline-end: 0.75rem;
-    width: 28%;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

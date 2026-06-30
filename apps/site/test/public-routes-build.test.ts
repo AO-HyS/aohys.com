@@ -64,13 +64,12 @@ describe("built public routes", () => {
     expect(homeHtml).toContain('data-home-content-id="home"');
     expect(homeHtml).toContain("Senior engineering.");
     expect(homeHtml).toContain("Proof ledger");
-    expect(homeHtml).toContain("Model the work.");
+    expect(homeHtml).toContain("Workflow first.");
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
     expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
     expect(homeHtml).toContain('href="/case-studies/enterprise-systems"');
     expect(homeHtml).toContain('aria-label="Public-safe evidence for Casa Roca"');
-    expect(homeHtml).toContain("/images/proof/aohys-system-map.svg");
     expect(homeHtml).toContain("/images/proof/casa-roca-production.png");
     expect(homeHtml).toContain("/images/proof/barber-central-ops.png");
     expect(homeHtml).toContain("/images/proof/nutri-plan-proof.png");
@@ -83,7 +82,7 @@ describe("built public routes", () => {
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
     expect(spanishHomeHtml).toContain("Ingeniería senior.");
     expect(spanishHomeHtml).toContain("Ledger de prueba");
-    expect(spanishHomeHtml).toContain("Modelar el trabajo.");
+    expect(spanishHomeHtml).toContain("Workflow primero.");
     expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
     expect(spanishHomeHtml).toContain('aria-label="Evidencia pública segura de Casa Roca"');
     expect(spanishHomeHtml).toContain("WhatsApp");

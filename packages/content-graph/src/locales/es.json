@@ -10,9 +10,9 @@
     "secondaryActionContentId": "case-studies",
     "homeContent": {
       "headline": "Ingeniería senior. Resultados de negocio. Impacto visible.",
-      "deck": "Convierto workflows ambiciosos en sistemas de producto confiables: superficies públicas que generan confianza, herramientas privadas que quitan fricción y caminos de backend que siguen operando cuando el trabajo se complica.",
+      "deck": "Convierto flujos de producto complejos en software confiable: páginas públicas que generan confianza, herramientas privadas que quitan trabajo manual y caminos de backend observables bajo presión.",
       "proofBoardLabel": "Tablero de prueba pública de AOHYS",
-      "proofBoardTitle": "Páginas públicas, operación privada y entrega observable.",
+      "proofBoardTitle": "Workflow, arquitectura, gates de release y observabilidad en una muestra pública.",
       "proofBoardBody": "Una vista compacta del sistema detrás de la muestra pública de AOHYS.",
       "selectedOutcomesHeading": "Ledger de prueba",
       "selectedOutcomesIntro": "Un recorrido corto por trabajo público seguro: qué se construyó, por qué importó y qué puede revisarse sin exponer código privado.",
@@ -90,7 +90,7 @@
         }
       ],
       "practiceHeading": "Cómo trabajo",
-      "practiceBody": "No vendo un stack. Entiendo el flujo, construyo el sistema alrededor de él y mantengo la entrega revisable.",
+      "practiceBody": "No vendo un stack. Entiendo el flujo, construyo el sistema alrededor de él y mantengo la entrega suficientemente visible para revisarla.",
       "practicePoints": [
         {
           "label": "Modelar el trabajo",

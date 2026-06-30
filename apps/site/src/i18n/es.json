@@ -30,18 +30,18 @@
     "heroPrinciples": [
       {
         "mark": "01",
-        "label": "Modelar el trabajo.",
-        "text": "Workflow antes que herramienta."
+        "label": "Workflow primero.",
+        "text": "El flujo de negocio decide la build."
       },
       {
         "mark": "02",
-        "label": "Dar forma al sistema.",
-        "text": "Un camino de producto."
+        "label": "Sistema conectado.",
+        "text": "UI, datos, auth, correo y operación avanzan juntos."
       },
       {
         "mark": "03",
-        "label": "Probar la entrega.",
-        "text": "Preview, observar, verificar."
+        "label": "Release probado.",
+        "text": "Previsualizar, observar, corregir, promover."
       }
     ],
     "productionSnapshot": "Captura de sitio en producción",

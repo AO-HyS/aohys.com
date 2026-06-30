@@ -10,9 +10,9 @@
     "secondaryActionContentId": "case-studies",
     "homeContent": {
       "headline": "Senior engineering. Business outcomes. Measurable impact.",
-      "deck": "I turn ambitious workflows into reliable product systems: public surfaces that earn trust, private tools that remove friction, and backend paths that keep operating when the work gets complicated.",
+      "deck": "I turn complicated product workflows into reliable software: public pages that earn trust, private tools that remove manual work, and backend paths that stay observable under pressure.",
       "proofBoardLabel": "AOHYS public proof board",
-      "proofBoardTitle": "Public pages, private operations, observable delivery.",
+      "proofBoardTitle": "Workflow, architecture, release gates, and observability in one public sample.",
       "proofBoardBody": "A compact system view for the public sample behind AOHYS.",
       "selectedOutcomesHeading": "Proof ledger",
       "selectedOutcomesIntro": "A short path through public-safe work: what shipped, why it mattered, and what can be inspected without exposing private code.",
@@ -90,7 +90,7 @@
         }
       ],
       "practiceHeading": "How I work",
-      "practiceBody": "I do not sell a stack. I shape the workflow, build the system around it, and keep the delivery path reviewable.",
+      "practiceBody": "I do not sell a stack. I shape the workflow, build the system around it, and keep the delivery path visible enough to review.",
       "practicePoints": [
         {
           "label": "Model the work",

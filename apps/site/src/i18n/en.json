@@ -30,18 +30,18 @@
     "heroPrinciples": [
       {
         "mark": "01",
-        "label": "Model the work.",
-        "text": "Workflow before tooling."
+        "label": "Workflow first.",
+        "text": "The business path decides the build."
       },
       {
         "mark": "02",
-        "label": "Shape the system.",
-        "text": "One connected product path."
+        "label": "Connected system.",
+        "text": "UI, data, auth, email, and ops move together."
       },
       {
         "mark": "03",
-        "label": "Prove the release.",
-        "text": "Preview, observe, verify."
+        "label": "Verified release.",
+        "text": "Preview, observe, fix, promote."
       }
     ],
     "productionSnapshot": "Production site snapshot",
