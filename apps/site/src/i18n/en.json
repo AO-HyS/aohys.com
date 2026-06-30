@@ -24,8 +24,9 @@
   "publicPage": {
     "signal": "Alejandro Ortiz Corro · AOH&S",
     "actions": "Primary actions",
-    "boardLabel": "AOHYS public source proof board",
-    "publicSample": "System map",
+    "boardLabel": "AOHYS evidence board",
+    "publicSample": "Evidence map",
+    "heroEvidenceAria": "Public-safe project evidence inside the AOHYS hero system map",
     "heroPrinciplesAria": "How Alejandro works",
     "heroPrinciples": [
       {
@@ -36,21 +37,21 @@
       {
         "mark": "02",
         "label": "Connected system.",
-        "text": "UI, data, auth, email, and ops move together."
+        "text": "Product, data, communication, and operations move together."
       },
       {
         "mark": "03",
         "label": "Verified release.",
-        "text": "Preview, observe, fix, promote."
+        "text": "Preview, observe, fix, then promote."
       }
     ],
     "productionSnapshot": "Production site snapshot",
     "productionSnapshotAlt": "Casa Roca production website hero screenshot",
     "operationsSnapshot": "Operations software snapshot",
     "operationsSnapshotAlt": "The Barber Central operations dashboard screenshot",
-    "deliveryArtifact": "Generated delivery artifact",
+    "deliveryArtifact": "Architecture artifact",
     "deliveryArtifactAlt": "Generated architecture artifact showing workflow, review gates, deployment, observability, and public-private boundaries",
-    "shellProof": "Astro public shell, private dashboard path, typed release seams.",
+    "shellProof": "Public pages, private dashboard path, and typed release boundaries.",
     "outcome": "Outcome",
     "outcomeText": "Business signal before stack names",
     "architecture": "Architecture",
@@ -80,7 +81,7 @@
         "contentId": "resume"
       }
     ],
-    "routeSignal": "Public route",
+    "routeSignal": "Page context",
     "routeProofTitle": "This page is wired for SEO, i18n, and future content depth.",
     "routeMetadataAria": "Route metadata",
     "canonical": "Canonical",

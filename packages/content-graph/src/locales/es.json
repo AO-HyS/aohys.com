@@ -9,13 +9,13 @@
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Ingeniería senior. Resultados de negocio. Software que aguanta.",
-      "deck": "Convierto flujos de producto complejos en software confiable: páginas públicas que generan confianza, herramientas privadas que quitan trabajo manual y caminos de backend observables cuando aparece la presión.",
-      "proofBoardLabel": "Tablero de prueba pública de AOHYS",
-      "proofBoardTitle": "Workflow, arquitectura, gates de release y observabilidad en una muestra pública.",
-      "proofBoardBody": "Una vista compacta del sistema detrás de la muestra pública de AOHYS.",
-      "selectedOutcomesHeading": "Ledger de prueba",
-      "selectedOutcomesIntro": "Un recorrido corto por trabajo público seguro: qué se construyó, por qué importó y qué puede revisarse sin exponer código privado.",
+      "headline": "Ingeniería senior. Resultados de negocio. Impacto medible.",
+      "deck": "Ayudo a convertir flujos operativos difíciles en productos pulidos: páginas públicas que generan confianza, herramientas privadas que quitan trabajo manual y caminos de backend observables después del lanzamiento.",
+      "proofBoardLabel": "Mapa de evidencia AOHYS",
+      "proofBoardTitle": "Arquitectura, gates de release y evidencia pública segura en una sola vista.",
+      "proofBoardBody": "Una vista del trabajo, la revisión y los hábitos de release detrás de AOHYS.",
+      "selectedOutcomesHeading": "Trabajo seleccionado, respaldado por evidencia.",
+      "selectedOutcomesIntro": "Un recorrido rápido por trabajo público seguro: qué se construyó, por qué importó y qué puede revisarse sin exponer sistemas privados de clientes.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",
@@ -73,8 +73,8 @@
           }
         }
       ],
-      "architectureHeading": "El sistema es visible a propósito.",
-      "architectureBody": "Las páginas públicas son rápidas y legibles para búsqueda. El dashboard privado, el contacto, las analíticas y el flujo de deploy están separados para que calidad, fallos y límites de release sean visibles antes de convertirse en problema de alguien más.",
+      "architectureHeading": "La calidad debe ser visible antes de que un cliente la note.",
+      "architectureBody": "Las páginas públicas, el dashboard privado, el contacto, las analíticas y el flujo de release están separados para que búsqueda, privacidad, entrega y fallos puedan revisarse antes de convertirse en problema de alguien más.",
       "architectureStages": [
         {
           "label": "Superficie pública",
@@ -90,18 +90,18 @@
         }
       ],
       "practiceHeading": "Cómo trabajo",
-      "practiceBody": "No vendo un stack. Entiendo el flujo, construyo el sistema alrededor de él y mantengo la entrega suficientemente visible para revisarla.",
+      "practiceBody": "No empiezo vendiendo un stack. Mapeo el workflow, tomo las decisiones difíciles de límites y mantengo la entrega suficientemente visible para revisarla.",
       "practicePoints": [
         {
-          "label": "Modelar el trabajo",
-          "text": "Aclarar el flujo de negocio, restricciones y operación real antes de elegir la forma de implementación."
+          "label": "Aclarar el flujo",
+          "text": "Nombrar el objetivo de negocio, restricciones y operación real antes de elegir la forma de implementación."
         },
         {
-          "label": "Construir el sistema",
-          "text": "Hacer que UI, datos, auth, correo, observabilidad y deploy funcionen juntos, no como pendientes separados."
+          "label": "Diseñar el sistema operativo",
+          "text": "Hacer que UI, datos, auth, comunicación, observabilidad y deploy funcionen juntos, no como pendientes separados."
         },
         {
-          "label": "Probar el release",
+          "label": "Verificar antes de lanzar",
           "text": "Usar tests, browser QA, ramas protegidas, previews y verificación en producción para mantener la calidad visible."
         }
       ],

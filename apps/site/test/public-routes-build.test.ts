@@ -64,8 +64,9 @@ describe("built public routes", () => {
 
     expect(homeHtml).toContain('data-home-content-id="home"');
     expect(homeHtml).toContain("Senior engineering.");
-    expect(homeHtml).toContain("Software that holds up.");
-    expect(homeHtml).toContain("Proof ledger");
+    expect(homeHtml).toContain("Measurable impact.");
+    expect(homeHtml).toContain("Selected work, backed by evidence.");
+    expect(homeHtml).toContain("Architecture, release gates, and public-safe evidence in one view.");
     expect(homeHtml).toContain("Workflow first.");
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
@@ -82,8 +83,8 @@ describe("built public routes", () => {
     expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Software que aguanta.");
-    expect(spanishHomeHtml).toContain("Ledger de prueba");
+    expect(spanishHomeHtml).toContain("Impacto medible.");
+    expect(spanishHomeHtml).toContain("Trabajo seleccionado, respaldado por evidencia.");
     expect(spanishHomeHtml).toContain("Workflow primero.");
     expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
     expect(spanishHomeHtml).toContain('aria-label="Evidencia pública segura de Casa Roca"');

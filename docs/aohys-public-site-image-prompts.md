@@ -30,9 +30,15 @@ Current asset: `apps/site/public/images/generated/aohys-delivery-artifact.png`
 
 Prompt used:
 
+> High-fidelity website hero visual for AOHYS, a senior software engineering public site. Dark ink technical drafting surface, optimistic pastel accents from a teal and honey logo: mint, honey amber, sky blue, soft coral. Composition should feel like Option C: large architectural system map behind the content, with real screenshot placeholders framed as proof artifacts, thin connector lines, release gates, observability pulse, and public/private boundary. No readable text except abstract short line blocks, no terminal UI, no fake metrics, no glassmorphism, no purple gradients, no people, no robots, no mascots. The result should feel precise, joyful, professional, evidence-led, and spacious, not a generic SaaS landing page. 16:10 landscape, browser-free full-bleed composition suitable as a hero support image.
+
+Generated source: `/Users/corrortiz/.codex/generated_images/019f0681-5ad1-7573-b740-b134dea0edd5/ig_06b1c30cbe31ca15016a43422f923c819880fd7a5ea142442f.png`
+
+Earlier prompt retained for historical context:
+
 > Create a high-end generated bitmap asset for the AOHYS public site, 16:10 landscape. Visual subject: a senior software delivery review table where business workflow notes become a reliable product system. Dark ink drafting surface with precise pastel honey, mint, sky, and coral signal lines. Include abstract proof artifacts: review gates, browser QA check, deployment path, feedback loop, observability pulse, and a small public/private boundary diagram. Use elegant geometric composition, generous negative space, crisp rules, no readable real text, no fake metrics, no code terminal, no chat bubbles, no robots, no glassmorphism, no purple gradients, no people, no mascots. It should feel like optimistic professional engineering craft, coordinated with a teal/honey AOHYS logo palette. This is a support image, not client proof.
 
-Implementation note: this asset is used as the generated process artifact in the home hero. It is not presented as client work or operational evidence; screenshots remain the case-study proof layer.
+Implementation note: this asset is used as the generated process artifact in the home hero. It is not presented as client work or operational evidence; real screenshots remain the proof layer and are composited separately in the page.
 
 Create a visual showing modern software delivery with AI agents as process support rather than robots: task cards moving through review, tests, browser QA, and deploy gates. Use a polished product design language, clean lines, pastel accent markers, and strong spacing. It should communicate human judgment plus automated leverage. Do not show humanoid robots, chat bubbles, neon cyberpunk, or generic AI icons.
 

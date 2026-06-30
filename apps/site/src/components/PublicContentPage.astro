@@ -66,6 +66,9 @@ function splitHeadline(headline: string): string[] {
 }
 
 const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : [];
+const heroEvidenceOutcomes = homeContent?.selectedOutcomes
+  .flatMap((outcome) => outcome.evidence.src ? [{ ...outcome, evidenceSrc: outcome.evidence.src }] : [])
+  .slice(0, 3) ?? [];
 
 const routeSignalById: Partial<Record<ContentId | string, string>> = {
   "case-studies": locale === "es" ? "Evidencia seleccionada" : "Selected proof",
@@ -166,6 +169,15 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
             loading="eager"
             decoding="async"
           />
+          <div class="hero-proof-insets" aria-label={copy.heroEvidenceAria}>
+            {heroEvidenceOutcomes.map((outcome, index) => (
+              <a class={`hero-proof-inset hero-proof-inset-${index + 1}`} href={outcome.path}>
+                <img src={outcome.evidenceSrc} alt={outcome.evidence.altText} loading="eager" decoding="async" />
+                <span>{outcome.label}</span>
+                <strong>{outcome.title}</strong>
+              </a>
+            ))}
+          </div>
         </figure>
       </section>
 

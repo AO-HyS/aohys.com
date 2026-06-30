@@ -24,8 +24,9 @@
   "publicPage": {
     "signal": "Alejandro Ortiz Corro · AOH&S",
     "actions": "Acciones principales",
-    "boardLabel": "Tablero de prueba pública de AOHYS",
-    "publicSample": "Mapa del sistema",
+    "boardLabel": "Tablero de evidencia AOHYS",
+    "publicSample": "Mapa de evidencia",
+    "heroEvidenceAria": "Evidencia pública segura de proyectos dentro del mapa del sistema AOHYS",
     "heroPrinciplesAria": "Cómo trabaja Alejandro",
     "heroPrinciples": [
       {
@@ -36,21 +37,21 @@
       {
         "mark": "02",
         "label": "Sistema conectado.",
-        "text": "UI, datos, auth, correo y operación avanzan juntos."
+        "text": "Producto, datos, comunicación y operación avanzan juntos."
       },
       {
         "mark": "03",
-        "label": "Release probado.",
-        "text": "Previsualizar, observar, corregir, promover."
+        "label": "Release verificado.",
+        "text": "Previsualizar, observar, corregir y promover."
       }
     ],
     "productionSnapshot": "Captura de sitio en producción",
     "productionSnapshotAlt": "Captura del hero del sitio en producción de Casa Roca",
     "operationsSnapshot": "Captura de software operativo",
     "operationsSnapshotAlt": "Captura del dashboard operativo de The Barber Central",
-    "deliveryArtifact": "Artefacto generado de entrega",
+    "deliveryArtifact": "Artefacto de arquitectura",
     "deliveryArtifactAlt": "Artefacto de arquitectura generado que muestra workflow, revisión, deploy, observabilidad y límites público-privados",
-    "shellProof": "Shell público en Astro, ruta privada de dashboard y seams de release tipados.",
+    "shellProof": "Páginas públicas, ruta privada de dashboard y límites de release tipados.",
     "outcome": "Resultado",
     "outcomeText": "Señal de negocio antes de nombres de stack",
     "architecture": "Arquitectura",
@@ -80,7 +81,7 @@
         "contentId": "resume"
       }
     ],
-    "routeSignal": "Ruta pública",
+    "routeSignal": "Contexto de página",
     "routeProofTitle": "Esta página está conectada para SEO, i18n y contenido futuro.",
     "routeMetadataAria": "Metadatos de ruta",
     "canonical": "Canonical",

@@ -9,13 +9,13 @@
     "secondaryActionLabel": "View selected work",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Senior engineering. Business outcomes. Software that holds up.",
-      "deck": "I turn complicated product workflows into reliable software: public pages that earn trust, private tools that remove manual work, and backend paths that stay observable when pressure shows up.",
-      "proofBoardLabel": "AOHYS public proof board",
-      "proofBoardTitle": "Workflow, architecture, release gates, and observability in one public sample.",
-      "proofBoardBody": "A compact system view for the public sample behind AOHYS.",
-      "selectedOutcomesHeading": "Proof ledger",
-      "selectedOutcomesIntro": "A short path through public-safe work: what shipped, why it mattered, and what can be inspected without exposing private code.",
+      "headline": "Senior engineering. Business outcomes. Measurable impact.",
+      "deck": "I help teams turn messy operational flows into polished products: public pages that earn trust, private tools that remove manual work, and backend paths that stay observable after launch.",
+      "proofBoardLabel": "AOHYS evidence map",
+      "proofBoardTitle": "Architecture, release gates, and public-safe evidence in one view.",
+      "proofBoardBody": "A system view for the work, review, and release habits behind AOHYS.",
+      "selectedOutcomesHeading": "Selected work, backed by evidence.",
+      "selectedOutcomesIntro": "A quick read through public-safe work: what shipped, why it mattered, and what can be reviewed without exposing private client systems.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",
@@ -73,8 +73,8 @@
           }
         }
       ],
-      "architectureHeading": "The system is visible on purpose.",
-      "architectureBody": "The public pages are fast and searchable. The private dashboard, contact path, analytics, and deployment flow are separated so quality, failures, and release boundaries are visible before they become someone else's problem.",
+      "architectureHeading": "Quality should be visible before a client notices.",
+      "architectureBody": "The public pages, private dashboard, contact path, analytics, and release flow are separated so search, privacy, delivery, and failures can be reviewed before they become someone else's problem.",
       "architectureStages": [
         {
           "label": "Public surface",
@@ -90,18 +90,18 @@
         }
       ],
       "practiceHeading": "How I work",
-      "practiceBody": "I do not sell a stack. I shape the workflow, build the system around it, and keep the delivery path visible enough to review.",
+      "practiceBody": "I do not start by selling a stack. I map the workflow, make the hard boundary decisions, and keep the delivery path visible enough to review.",
       "practicePoints": [
         {
-          "label": "Model the work",
-          "text": "Clarify the business flow, constraints, and operating reality before choosing the implementation shape."
+          "label": "Clarify the flow",
+          "text": "Name the business goal, constraints, and operating reality before choosing the implementation shape."
         },
         {
-          "label": "Build the system",
-          "text": "Make UI, data, auth, email, observability, and deployment fit together instead of treating them as separate chores."
+          "label": "Design the operating system",
+          "text": "Make UI, data, auth, communication, observability, and deployment fit together instead of treating them as separate chores."
         },
         {
-          "label": "Prove the release",
+          "label": "Verify before launch",
           "text": "Use tests, browser QA, protected branches, preview checks, and production verification to keep quality visible."
         }
       ],
