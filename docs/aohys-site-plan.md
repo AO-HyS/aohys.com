@@ -168,7 +168,7 @@ Recommended home sequence:
 5. Engineering practice: agent-assisted workflow, QA discipline, observability, deployment, and documentation as current practice.
 6. Contact: form, email, and large but discreet WhatsApp CTA.
 
-Current implementation status: the home is graph-backed and follows the dark-ink plus pastel-signal direction: clean white navigation, dark first viewport, Alejandro-first senior-engineering hero copy, visible conversion CTAs, generated no-text hero system map, real public-safe proof screenshots, horizontal proof-ledger rows, dark architecture stage, operating-principles section, institutional email, and WhatsApp CTA. The dedicated contact route owns the full lead capture UI and provider-backed submission path. Browser QA artifacts for the current home pass live in `output/playwright/aohys-home-redesign-desktop-final.png`, `output/playwright/aohys-home-redesign-mobile-final.png`, and `output/playwright/aohys-home-ledger-redesign.png`. Future case-study issues should expand these screenshots into richer detail pages instead of reverting to placeholders.
+Current implementation status: the home is graph-backed and follows the dark-ink plus pastel-signal direction: clean white navigation, dark first viewport, Alejandro-first senior-engineering hero copy, visible conversion CTAs, generated no-text hero system map, real public-safe proof screenshots, horizontal proof-ledger rows, dark architecture stage, operating-principles section, institutional email, and WhatsApp CTA. The dedicated contact route now uses the same dark proof-surface language with direct WhatsApp/email paths, a generated delivery artifact, and the full lead capture UI backed by the provider submission path. Browser QA artifacts for the current home pass live in `output/playwright/aohys-home-redesign-desktop-final.png`, `output/playwright/aohys-home-redesign-mobile-final.png`, and `output/playwright/aohys-home-ledger-redesign.png`. Future case-study issues should expand these screenshots into richer detail pages instead of reverting to placeholders.
 
 Architecture page status: `/architecture` and `/es/arquitectura` now render graph-backed public source framing, public/private boundary copy, Release Train, Environment Contract, Public Content Graph, provider responsibilities, and GitHub source/documentation links.
 
@@ -186,9 +186,9 @@ Case study pages should use the same proof-ledger rhythm:
 - Public evidence.
 - Confidentiality note.
 
-Resume page status: `/resume` and `/es/cv` now render graph-backed semantic CV content, localized metadata, contact links, dynamic context links, and a downloadable hiring-friendly PDF artifact. The PDF is generated from the English graph content with `apps/site/scripts/build-resume-pdf.py` and is intentionally single-column and text-based.
+Resume page status: `/resume` and `/es/cv` now render graph-backed semantic CV content, localized metadata, a dark proof hero, generated architecture artifact support, contact links, dynamic context links, and a downloadable hiring-friendly PDF artifact. The PDF is generated from the English graph content with `apps/site/scripts/build-resume-pdf.py` and is intentionally single-column and text-based.
 
-Resume pages should remain typography-first, easy to parse, and visibly linked to the dynamic site. Do not over-design the resume surface in a way that hurts parsing or readability.
+Resume pages should balance two jobs: the dynamic route can carry the authored proof surface and richer context, while the downloadable PDF must stay compact, readable, and easy to parse. Do not move decorative structure into the PDF or add UI copy that exposes internal hiring/ATS strategy to visitors.
 
 ## Implementation Sequence
 

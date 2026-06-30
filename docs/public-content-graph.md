@@ -85,7 +85,8 @@ Case-study nodes should additionally carry:
 Resume nodes should additionally carry:
 
 - name, role, location, and contact links;
-- ATS-friendly professional summary;
+- hiring-friendly professional summary;
+- proof metadata for the dynamic resume page: label, title, and body copy;
 - selected impact, key projects, professional experience, skills, education, and languages;
 - PDF artifact metadata including href, filename, label, and description;
 - dynamic context links back to richer site routes.
@@ -149,4 +150,4 @@ Casa Roca is the first complete graph-backed case study. `case-study:casa-roca` 
 
 The selected-work index is also graph-backed. It resolves Casa Roca, The Barber Central, Nutri Plan, Enterprise Systems, and Engineering Practice from stable case-study IDs, localized paths, explicit project statuses, public-safe evidence labels, and the same confidentiality-aware detail shape.
 
-The resume route is graph-backed as well. `resume` resolves `/resume` and `/es/cv`, owns localized semantic CV content, exposes the `/downloads/alejandro-ortiz-corro-resume.pdf` artifact, and links back to selected work, architecture, and contact routes so ATS readers can move into richer dynamic context.
+The resume route is graph-backed as well. `resume` resolves `/resume` and `/es/cv`, owns localized semantic CV content, exposes the `/downloads/alejandro-ortiz-corro-resume.pdf` artifact, carries proof copy for the dynamic page, and links back to selected work, architecture, and contact routes so hiring readers can move into richer context.

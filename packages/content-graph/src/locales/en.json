@@ -485,22 +485,27 @@
   "resume": {
     "path": "/resume",
     "title": "Resume",
-    "summary": "A clear path into Alejandro Ortiz Corro's software engineering experience.",
-    "seoDescription": "Alejandro Ortiz Corro resume path for hiring managers and technical leads reviewing software engineering experience.",
+    "summary": "A practical path into Alejandro Ortiz Corro's product engineering, architecture, and delivery record.",
+    "seoDescription": "Alejandro Ortiz Corro resume for hiring managers and technical leads reviewing product engineering, frontend architecture, backend workflow, and AI-assisted delivery experience.",
     "primaryActionLabel": "Contact Alejandro",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Read architecture notes",
     "secondaryActionContentId": "architecture",
     "resumeContent": {
       "name": "Alejandro Ortiz Corro",
-      "role": "Senior Frontend Developer",
+      "role": "Senior Product Engineer / Frontend Systems",
       "location": "Mexico",
-      "intro": "Senior Frontend Developer with 9+ years of experience building high-performance web applications, enterprise workflows, product systems, and modern AI-assisted engineering practices.",
+      "intro": "I build software where product judgment, interface quality, backend workflows, release discipline, and AI-assisted delivery have to hold together in production.",
       "pdf": {
-        "label": "Download PDF",
+        "label": "Download resume PDF",
         "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
         "fileName": "alejandro-ortiz-corro-resume.pdf",
-        "description": "Readable PDF for hiring reviews, with deeper context available on this site."
+        "description": "A compact PDF for hiring review. This site adds the proof surface: public work, architecture notes, source structure, and delivery practice."
+      },
+      "proof": {
+        "label": "Dynamic source sample",
+        "title": "The page is part of the evidence.",
+        "body": "The resume is backed by the same public site that shows case studies, architecture boundaries, i18n, QA gates, observability, and release practice."
       },
       "contactLinks": [
         {
@@ -549,10 +554,10 @@
       ],
       "summaryTitle": "Professional summary",
       "summary": [
-        "Senior Frontend Developer with 9+ years of experience specializing in React, TypeScript, Next.js, product architecture, performance, SEO, and maintainable UI systems.",
-        "Proven delivery across enterprise systems, startup products, healthcare workflows, e-commerce platforms, and public business sites, including systems serving 30.5M+ monthly users.",
-        "Experienced with Next.js as a backend surface, backend workflow delivery, escalation ownership, payment plans, cashback, customs workflows, and cross-functional product execution.",
-        "Modern AI-assisted engineering practitioner using agents, TDD, browser QA, release discipline, observability, and documentation to turn ambiguous goals into reliable software."
+        "Senior product engineer with 9+ years of experience across React, TypeScript, Next.js, product architecture, performance, SEO, and maintainable UI systems.",
+        "I have shipped across enterprise systems, startup products, healthcare workflows, e-commerce platforms, public business sites, and systems serving 30.5M+ monthly users.",
+        "My recent work goes beyond screens: Next.js as a backend surface, backend workflow delivery, escalation ownership, payment plans, cashback, customs workflows, and cross-functional product execution.",
+        "I work with agents, TDD, browser QA, release discipline, observability, and documentation so ambiguous goals become software that teams can inspect, operate, and improve."
       ],
       "highlightsTitle": "Selected impact",
       "highlights": [
@@ -725,8 +730,8 @@
   },
   "contact": {
     "path": "/contact",
-    "title": "Contact",
-    "summary": "Email or WhatsApp me about a role, project, architecture review, product workflow, or site that needs to ship well.",
+    "title": "Start a focused conversation",
+    "summary": "Send the goal, constraints, and best path to reply. WhatsApp is fastest in Mexico; email works better for longer context.",
     "seoDescription": "Contact Alejandro Ortiz Corro and AOHYS by email or WhatsApp for software projects, architecture review, product systems, or hiring conversations.",
     "primaryActionLabel": "Email Alejandro",
     "primaryActionContentId": "contact",

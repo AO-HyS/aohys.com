@@ -429,14 +429,29 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           </div>
         </div>
 
-        <aside class="resume-contact" aria-label={resumeContent.name}>
-          <span>{resumeContent.location}</span>
-          {resumeContent.contactLinks.map((link) => (
-            <a href={link.href}>
-              <strong>{link.label}</strong>
-              <span>{link.text}</span>
-            </a>
-          ))}
+        <aside class="resume-proof-panel" aria-label={resumeContent.proof.label}>
+          <figure class="resume-proof-visual">
+            <img
+              src="/images/generated/aohys-architecture-proof-surface.png"
+              alt={locale === "es" ? "Artefacto visual del sistema público, privado y observable de AOHYS" : "Visual artifact of the AOHYS public, private, and observable system"}
+              loading="eager"
+              decoding="async"
+            />
+          </figure>
+          <div class="resume-proof-copy">
+            <span>{resumeContent.proof.label}</span>
+            <strong>{resumeContent.proof.title}</strong>
+            <p>{resumeContent.proof.body}</p>
+          </div>
+          <div class="resume-contact" aria-label={resumeContent.name}>
+            <span>{resumeContent.location}</span>
+            {resumeContent.contactLinks.map((link) => (
+              <a href={link.href}>
+                <strong>{link.label}</strong>
+                <span>{link.text}</span>
+              </a>
+            ))}
+          </div>
         </aside>
       </section>
 

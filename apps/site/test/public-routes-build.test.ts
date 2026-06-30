@@ -203,26 +203,26 @@ describe("built public routes", () => {
 
     expect(resumeHtml).toContain('data-resume-content-id="resume"');
     expect(resumeHtml).toContain("Alejandro Ortiz Corro");
-    expect(resumeHtml).toContain("Senior Frontend Developer");
+    expect(resumeHtml).toContain("Senior Product Engineer / Frontend Systems");
     expect(resumeHtml).toContain("Professional summary");
     expect(resumeHtml).toContain("Professional experience");
     expect(resumeHtml).toContain("Technical skills");
     expect(resumeHtml).toContain("More context online");
     expect(resumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
-    expect(resumeHtml).toContain("Download PDF");
+    expect(resumeHtml).toContain("Download resume PDF");
     expect(resumeHtml).not.toContain("Download ATS PDF");
     expect(resumeHtml).toContain('href="/case-studies"');
     expect(resumeHtml).toContain('href="/architecture"');
 
     expect(spanishResumeHtml).toContain('data-resume-content-id="resume"');
     expect(spanishResumeHtml).toContain("Alejandro Ortiz Corro");
-    expect(spanishResumeHtml).toContain("Desarrollador Frontend Senior");
+    expect(spanishResumeHtml).toContain("Senior Product Engineer / Sistemas Frontend");
     expect(spanishResumeHtml).toContain("Resumen profesional");
     expect(spanishResumeHtml).toContain("Experiencia profesional");
     expect(spanishResumeHtml).toContain("Habilidades técnicas");
     expect(spanishResumeHtml).toContain("Más contexto en línea");
     expect(spanishResumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
-    expect(spanishResumeHtml).toContain("Descargar PDF");
+    expect(spanishResumeHtml).toContain("Descargar CV en PDF");
     expect(spanishResumeHtml).not.toContain("Descargar PDF ATS");
     expect(spanishResumeHtml).toContain('href="/es/casos"');
     expect(spanishResumeHtml).toContain('href="/es/arquitectura"');

@@ -169,19 +169,20 @@ describe("Public Content Graph", () => {
     const spanishResume = getResumePageContent("es");
 
     expect(englishResume.name).toBe("Alejandro Ortiz Corro");
-    expect(englishResume.role).toBe("Senior Frontend Developer");
+    expect(englishResume.role).toBe("Senior Product Engineer / Frontend Systems");
     expect(englishResume.pdf).toMatchObject({
       href: "/downloads/alejandro-ortiz-corro-resume.pdf",
       fileName: "alejandro-ortiz-corro-resume.pdf",
     });
-    expect(englishResume.summary.join(" ")).toMatch(/React|TypeScript|Next\.js|AI-assisted/i);
+    expect(englishResume.proof.title).toMatch(/evidence/i);
+    expect(englishResume.summary.join(" ")).toMatch(/React|TypeScript|Next\.js|agents|observability/i);
     expect(englishResume.contextLinks.map((link) => link.href)).toEqual([
       "/case-studies",
       "/architecture",
       "/contact",
     ]);
 
-    expect(spanishResume.role).toBe("Desarrollador Frontend Senior");
+    expect(spanishResume.role).toBe("Senior Product Engineer / Sistemas Frontend");
     expect(spanishResume.contextTitle).toBe("Más contexto en línea");
     expect(spanishResume.contextLinks.map((link) => link.href)).toEqual([
       "/es/casos",

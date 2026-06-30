@@ -30,13 +30,13 @@ pnpm exec wrangler pages dev apps/site/dist \
   -b DASHBOARD_API_TOKEN=local-dashboard-token
 ```
 
-Regenerate the ATS-friendly resume PDF after editing English resume graph content:
+Regenerate the text-based resume PDF after editing English resume graph content:
 
 ```sh
 python3 apps/site/scripts/build-resume-pdf.py
 ```
 
-The current shell includes the graph-backed home proof narrative, selected-work index, case-study detail pages, resume page, ATS PDF artifact, bilingual route skeletons, global tokens, font loading, graph-backed metadata, navigation, footer, sitemap, robots output, Astro native i18n config, and Vitest route/build smoke checks.
+The current shell includes the graph-backed home proof narrative, selected-work index, case-study detail pages, resume page, text-based PDF artifact, bilingual route skeletons, global tokens, font loading, graph-backed metadata, navigation, footer, sitemap, robots output, Astro native i18n config, and Vitest route/build smoke checks.
 
 Cloudflare Pages security headers live in `public/_headers` for static assets and `src/security-headers.ts` for Pages Functions responses such as `/dashboard` and `/observability/csp`. The route build tests verify the header artifact alongside sitemap, robots, privacy, analytics, and contact failure-state behavior.
 

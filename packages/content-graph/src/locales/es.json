@@ -485,22 +485,27 @@
   "resume": {
     "path": "/es/cv",
     "title": "CV",
-    "summary": "Ruta clara hacia la experiencia de Alejandro Ortiz Corro en ingeniería de software.",
-    "seoDescription": "CV de Alejandro Ortiz Corro para hiring managers y líderes técnicos que revisan experiencia en ingeniería de software.",
+    "summary": "Ruta práctica hacia la experiencia de Alejandro Ortiz Corro en ingeniería de producto, arquitectura y delivery.",
+    "seoDescription": "CV de Alejandro Ortiz Corro para hiring managers y líderes técnicos que revisan experiencia en ingeniería de producto, arquitectura frontend, workflows backend y delivery asistido por IA.",
     "primaryActionLabel": "Contactar a Alejandro",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
     "secondaryActionContentId": "architecture",
     "resumeContent": {
       "name": "Alejandro Ortiz Corro",
-      "role": "Desarrollador Frontend Senior",
+      "role": "Senior Product Engineer / Sistemas Frontend",
       "location": "México",
-      "intro": "Desarrollador Frontend Senior con más de 9 años de experiencia construyendo aplicaciones web de alto rendimiento, workflows enterprise, sistemas de producto y prácticas modernas de ingeniería asistida por IA.",
+      "intro": "Construyo software donde criterio de producto, calidad de interfaz, workflows backend, disciplina de release y delivery asistido por IA tienen que sostenerse juntos en producción.",
       "pdf": {
-        "label": "Descargar PDF",
+        "label": "Descargar CV en PDF",
         "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
         "fileName": "alejandro-ortiz-corro-resume.pdf",
-        "description": "PDF legible para revisiones de hiring, con más contexto disponible en este sitio."
+        "description": "Un PDF compacto para revisión de hiring. Este sitio suma la superficie de evidencia: trabajo público, notas de arquitectura, estructura de source y práctica de delivery."
+      },
+      "proof": {
+        "label": "Muestra dinámica de source",
+        "title": "La página también es parte de la evidencia.",
+        "body": "El CV está respaldado por el mismo sitio público que muestra casos, límites de arquitectura, i18n, quality gates, observabilidad y práctica de release."
       },
       "contactLinks": [
         {
@@ -549,10 +554,10 @@
       ],
       "summaryTitle": "Resumen profesional",
       "summary": [
-        "Desarrollador Frontend Senior con más de 9 años de experiencia en React, TypeScript, Next.js, arquitectura de producto, performance, SEO y sistemas UI mantenibles.",
-        "Experiencia en sistemas enterprise, productos startup, workflows de salud, plataformas e-commerce y sitios públicos, incluyendo sistemas con más de 30.5M usuarios mensuales.",
-        "Experiencia usando Next.js como superficie backend, delivery de workflows backend, manejo de escalations, payment plans, cashback, customs workflows y ejecución cross-functional.",
-        "Practico ingeniería moderna asistida por IA con agentes, TDD, browser QA, release discipline, observabilidad y documentación para convertir objetivos ambiguos en software confiable."
+        "Senior product engineer con más de 9 años de experiencia en React, TypeScript, Next.js, arquitectura de producto, performance, SEO y sistemas UI mantenibles.",
+        "He entregado en sistemas enterprise, productos startup, workflows de salud, plataformas e-commerce, sitios públicos y sistemas con más de 30.5M usuarios mensuales.",
+        "Mi trabajo reciente va más allá de pantallas: Next.js como superficie backend, delivery de workflows backend, manejo de escalations, payment plans, cashback, customs workflows y ejecución cross-functional.",
+        "Trabajo con agentes, TDD, browser QA, release discipline, observabilidad y documentación para convertir objetivos ambiguos en software que los equipos pueden revisar, operar y mejorar."
       ],
       "highlightsTitle": "Impacto seleccionado",
       "highlights": [
@@ -725,8 +730,8 @@
   },
   "contact": {
     "path": "/es/contacto",
-    "title": "Contacto",
-    "summary": "Escríbeme por correo o WhatsApp sobre un rol, proyecto, revisión de arquitectura, flujo de producto o sitio que necesita salir bien.",
+    "title": "Empecemos una conversación concreta",
+    "summary": "Mándame el objetivo, restricciones y mejor forma de responder. En México WhatsApp suele ser lo más rápido; el correo funciona mejor para contexto largo.",
     "seoDescription": "Contacta a Alejandro Ortiz Corro y AOHYS por correo o WhatsApp para proyectos de software, revisión de arquitectura, sistemas de producto o conversaciones laborales.",
     "primaryActionLabel": "Enviar correo",
     "primaryActionContentId": "contact",
