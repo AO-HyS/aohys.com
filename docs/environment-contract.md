@@ -71,7 +71,7 @@ Current explicit PostHog events:
 | `contact_form_submit_failed` | Contact form failure dispatch | Failure reason only; no message, email, name, phone, or company |
 | `whatsapp_cta_clicked` | Public WhatsApp CTAs | CTA target only |
 | `email_cta_clicked` | Public email CTAs | CTA target only |
-| `lead_submitted` | Convex contact workflow | Backend-safe conversion metadata only; no message text or contact identity |
+| `lead_submitted` | Convex contact workflow | Environment plus backend-safe conversion metadata only; no message text or contact identity |
 | `lead_provider_failed` | Convex contact workflow | Provider, operation, environment, lead id, and error type only; no message text or contact identity |
 | `lead_intake_failed` | Convex contact HTTP boundary | Environment, public error code/status, source path, locale, intent, and boolean presence flags only; no message text or contact identity |
 | `dashboard_runtime_exception` | Cloudflare Pages `/dashboard` guard | Environment, path, source, and error type only; no cookies, tokens, or exception message |

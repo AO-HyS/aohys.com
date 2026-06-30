@@ -63,11 +63,11 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain('data-home-content-id="home"');
-    expect(homeHtml).toContain("Senior engineering.");
-    expect(homeHtml).toContain("Measurable impact.");
-    expect(homeHtml).toContain("Selected work, backed by evidence.");
-    expect(homeHtml).toContain("Architecture, release gates, and public-safe evidence in one view.");
-    expect(homeHtml).toContain("Workflow first.");
+    expect(homeHtml).toContain("Product systems that earn trust and keep moving.");
+    expect(homeHtml).toContain("Proof ledger");
+    expect(homeHtml).toContain("One public sample, with the private seams kept honest.");
+    expect(homeHtml).toContain("Generated architecture proof surface");
+    expect(homeHtml).toContain("Systems thinking.");
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
     expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
@@ -76,16 +76,16 @@ describe("built public routes", () => {
     expect(homeHtml).toContain("/images/proof/casa-roca-production.png");
     expect(homeHtml).toContain("/images/proof/barber-central-ops.png");
     expect(homeHtml).toContain("/images/proof/nutri-plan-proof.png");
-    expect(homeHtml).toContain("/images/generated/aohys-delivery-artifact.png");
+    expect(homeHtml).toContain("/images/generated/aohys-architecture-proof-surface.png");
     expect(homeHtml).toContain("/images/brand/aohys-logo.png");
     expect(homeHtml).toContain("WhatsApp");
     expect(homeHtml).not.toContain("Cloudflare · Convex · PostHog · Resend");
     expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Impacto medible.");
-    expect(spanishHomeHtml).toContain("Trabajo seleccionado, respaldado por evidencia.");
-    expect(spanishHomeHtml).toContain("Workflow primero.");
+    expect(spanishHomeHtml).toContain("Sistemas de producto que generan confianza y siguen avanzando.");
+    expect(spanishHomeHtml).toContain("Registro de evidencia");
+    expect(spanishHomeHtml).toContain("Pensamiento de sistemas.");
     expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
     expect(spanishHomeHtml).toContain('aria-label="Evidencia pública segura de Casa Roca"');
     expect(spanishHomeHtml).toContain("WhatsApp");

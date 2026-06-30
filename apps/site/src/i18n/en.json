@@ -25,23 +25,23 @@
     "signal": "Alejandro Ortiz Corro · AOH&S",
     "actions": "Primary actions",
     "boardLabel": "AOHYS evidence board",
-    "publicSample": "Evidence map",
-    "heroEvidenceAria": "Public-safe project evidence inside the AOHYS hero system map",
-    "heroPrinciplesAria": "How Alejandro works",
+    "publicSample": "Public sample",
+    "heroEvidenceAria": "Public-safe project evidence connected to the AOHYS system surface",
+    "heroPrinciplesAria": "Engineering principles behind the AOHYS public sample",
     "heroPrinciples": [
       {
-        "mark": "01",
-        "label": "Workflow first.",
-        "text": "The business path decides the build."
+        "mark": "",
+        "label": "Systems thinking.",
+        "text": "Clear boundaries and simple flows."
       },
       {
-        "mark": "02",
-        "label": "Connected system.",
-        "text": "Product, data, communication, and operations move together."
+        "mark": "",
+        "label": "Public by default.",
+        "text": "Evidence in the open, client code private."
       },
       {
-        "mark": "03",
-        "label": "Verified release.",
+        "mark": "",
+        "label": "Ship, learn, improve.",
         "text": "Preview, observe, fix, then promote."
       }
     ],
@@ -50,7 +50,7 @@
     "operationsSnapshot": "Operations software snapshot",
     "operationsSnapshotAlt": "The Barber Central operations dashboard screenshot",
     "deliveryArtifact": "Architecture artifact",
-    "deliveryArtifactAlt": "Generated architecture artifact showing workflow, review gates, deployment, observability, and public-private boundaries",
+    "deliveryArtifactAlt": "Generated architecture proof surface showing public pages, private dashboard, backend workflow, lead routing, observability, deployment gates, and public-private boundaries",
     "shellProof": "Public pages, private dashboard path, and typed release boundaries.",
     "outcome": "Outcome",
     "outcomeText": "Business signal before stack names",

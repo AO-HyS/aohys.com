@@ -25,23 +25,23 @@
     "signal": "Alejandro Ortiz Corro · AOH&S",
     "actions": "Acciones principales",
     "boardLabel": "Tablero de evidencia AOHYS",
-    "publicSample": "Mapa de evidencia",
-    "heroEvidenceAria": "Evidencia pública segura de proyectos dentro del mapa del sistema AOHYS",
-    "heroPrinciplesAria": "Cómo trabaja Alejandro",
+    "publicSample": "Muestra pública",
+    "heroEvidenceAria": "Evidencia pública segura conectada a la superficie de sistema AOHYS",
+    "heroPrinciplesAria": "Principios de ingeniería detrás de la muestra pública AOHYS",
     "heroPrinciples": [
       {
-        "mark": "01",
-        "label": "Workflow primero.",
-        "text": "El flujo de negocio decide la build."
+        "mark": "",
+        "label": "Pensamiento de sistemas.",
+        "text": "Límites claros y flujos simples."
       },
       {
-        "mark": "02",
-        "label": "Sistema conectado.",
-        "text": "Producto, datos, comunicación y operación avanzan juntos."
+        "mark": "",
+        "label": "Público por defecto.",
+        "text": "Evidencia abierta, código de clientes privado."
       },
       {
-        "mark": "03",
-        "label": "Release verificado.",
+        "mark": "",
+        "label": "Construir, aprender, mejorar.",
         "text": "Previsualizar, observar, corregir y promover."
       }
     ],
@@ -50,7 +50,7 @@
     "operationsSnapshot": "Captura de software operativo",
     "operationsSnapshotAlt": "Captura del dashboard operativo de The Barber Central",
     "deliveryArtifact": "Artefacto de arquitectura",
-    "deliveryArtifactAlt": "Artefacto de arquitectura generado que muestra workflow, revisión, deploy, observabilidad y límites público-privados",
+    "deliveryArtifactAlt": "Superficie de prueba arquitectónica generada que muestra páginas públicas, dashboard privado, backend, routing de leads, observabilidad, deploy gates y límites público-privados",
     "shellProof": "Páginas públicas, ruta privada de dashboard y límites de release tipados.",
     "outcome": "Resultado",
     "outcomeText": "Señal de negocio antes de nombres de stack",

@@ -224,12 +224,14 @@ function buildLeadNotification(
 function buildLeadAnalyticsEvent(
   leadId: string,
   lead: PreparedContactLead,
+  environment: EnvironmentName,
 ): LeadAnalyticsEvent {
   return {
     event: "lead_submitted",
     distinctId: `lead:${leadId}`,
     properties: {
       leadId,
+      environment,
       intent: lead.intent,
       preferredContactPath: lead.preferredContactPath,
       locale: lead.locale,
@@ -253,7 +255,7 @@ export async function submitContactLead(
 
   if (hasAnalyticsSettings(context.values)) {
     try {
-      await context.adapters.captureAnalyticsEvent(buildLeadAnalyticsEvent(leadId, lead));
+      await context.adapters.captureAnalyticsEvent(buildLeadAnalyticsEvent(leadId, lead, context.environment));
       analyticsStatus = "captured";
     } catch (error) {
       analyticsStatus = "failed";

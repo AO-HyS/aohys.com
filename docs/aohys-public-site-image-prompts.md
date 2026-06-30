@@ -14,7 +14,7 @@ Implementation notes:
 
 - The mock is a direction contract for composition, density, and palette.
 - Do not rasterize live copy from the mock.
-- The implemented page uses semantic HTML, real copy, the real AOHYS logo, the generated delivery-process artifact as the hero proof object, and public-safe screenshots in the proof ledger.
+- The implemented page uses semantic HTML, real copy, the real AOHYS logo, a generated architecture proof surface as the hero support object, and public-safe screenshots in the proof ledger.
 
 ## Hero System Image
 
@@ -41,6 +41,18 @@ Earlier prompt retained for historical context:
 Implementation note: this asset is used as the generated process artifact in the home hero. It is not presented as client work or operational evidence; real screenshots remain the proof layer and are composited separately in the page.
 
 Create a visual showing modern software delivery with AI agents as process support rather than robots: task cards moving through review, tests, browser QA, and deploy gates. Use a polished product design language, clean lines, pastel accent markers, and strong spacing. It should communicate human judgment plus automated leverage. Do not show humanoid robots, chat bubbles, neon cyberpunk, or generic AI icons.
+
+## Architecture Proof Surface
+
+Current asset: `apps/site/public/images/generated/aohys-architecture-proof-surface.png`
+
+Prompt used:
+
+> High-end website hero support image for AOHYS, a senior software engineering public site. Dark ink technical drafting surface coordinated with a deep teal, mint, honey amber, soft coral, and sky blue logo palette. Create a precise architecture proof surface: clients, public SEO pages, protected dashboard, Convex backend, contact lead flow, observability, deploy gates, and public/private boundary shown as elegant geometric system paths. Include space for real screenshot insets but no readable fake text, no fake metrics, no terminal UI, no people, no robots, no glassmorphism, no purple gradients, no beige. The mood should be optimistic, professional, joyful, exact, and architectural, like a product architecture review table. Crisp thin connector lines, small proof marks, subtle star motif, generous negative space. 16:10 landscape raster, browser-free, production-ready visual asset.
+
+Generated source: `/Users/corrortiz/.codex/generated_images/019f0681-5ad1-7573-b740-b134dea0edd5/ig_01045560f14a6a17016a434fe84a28819a8cd64b7d44eeca2c.png`
+
+Implementation note: this is the current home hero support image. It should be treated as an abstract architecture surface, not client proof. Public-safe project evidence remains rendered as live HTML links and real screenshot assets outside the generated bitmap.
 
 ## Private Dashboard Boundary
 

@@ -2,27 +2,27 @@
   "home": {
     "path": "/es/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Ingeniería senior para software crítico de negocio.",
-    "seoDescription": "Alejandro Ortiz Corro diseña y construye sistemas de producto confiables, sitios públicos, dashboards privados, workflows de backend y arquitectura de software para equipos que necesitan entrega segura.",
+    "summary": "Ingeniería de producto para equipos que necesitan confianza, claridad y entrega confiable.",
+    "seoDescription": "Alejandro Ortiz Corro diseña y construye sistemas de producto confiables, sitios públicos, dashboards privados, workflows de backend y arquitectura de software para equipos que necesitan lanzar software crítico de negocio con calidad.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Ingeniería senior. Resultados de negocio. Impacto medible.",
-      "deck": "Ayudo a convertir flujos operativos difíciles en productos pulidos: páginas públicas que generan confianza, herramientas privadas que quitan trabajo manual y caminos de backend observables después del lanzamiento.",
+      "headline": "Sistemas de producto que generan confianza y siguen avanzando.",
+      "deck": "Construyo la capa entre un objetivo de negocio y el software que tiene que sostenerlo: páginas públicas rápidas, herramientas privadas de operación y workflows de backend observables después del lanzamiento.",
       "proofBoardLabel": "Mapa de evidencia AOHYS",
-      "proofBoardTitle": "Arquitectura, gates de release y evidencia pública segura en una sola vista.",
-      "proofBoardBody": "Una vista del trabajo, la revisión y los hábitos de release detrás de AOHYS.",
-      "selectedOutcomesHeading": "Trabajo seleccionado, respaldado por evidencia.",
-      "selectedOutcomesIntro": "Un recorrido rápido por trabajo público seguro: qué se construyó, por qué importó y qué puede revisarse sin exponer sistemas privados de clientes.",
+      "proofBoardTitle": "Una muestra pública, con límites privados bien cuidados.",
+      "proofBoardBody": "Una vista de cómo AOHYS separa confianza pública, trabajo privado, releases, leads y observabilidad.",
+      "selectedOutcomesHeading": "Registro de evidencia",
+      "selectedOutcomesIntro": "Un recorrido rápido por evidencia pública segura: trabajo en producción, builds activos, entrega enterprise confidencial y lo que cada pieza dice sobre cómo construyo.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",
           "label": "Sitio público",
           "title": "Casa Roca",
-          "outcome": "Sitio de hospitalidad en producción con señales de confianza más claras, páginas legibles para búsqueda y contacto directo.",
-          "role": "Estrategia, SEO, entrega",
+          "outcome": "Sitio de hospitalidad en producción con señales de confianza más fuertes, páginas legibles para búsqueda y contacto directo.",
+          "role": "Confianza pública, SEO, entrega",
           "evidence": {
             "label": "Sitio público",
             "altText": "Evidencia pública segura de Casa Roca",
@@ -35,8 +35,8 @@
           "contentId": "case-study:the-barber-central",
           "label": "Producto operativo",
           "title": "The Barber Central",
-          "outcome": "Reservas, disponibilidad, pagos y comunicación con clientes diseñados alrededor de cómo opera un negocio local.",
-          "role": "Arquitectura de producto, full-stack",
+          "outcome": "Reservas, disponibilidad, pagos y comunicación con clientes diseñados alrededor de cómo opera realmente un negocio local.",
+          "role": "Operación, workflow, arquitectura de producto",
           "evidence": {
             "label": "Preview de desarrollo",
             "altText": "Evidencia pública segura de The Barber Central",
@@ -49,8 +49,8 @@
           "contentId": "case-study:nutri-plan",
           "label": "Sistema privado",
           "title": "Nutri Plan",
-          "outcome": "Flujos de clientes, planes estructurados, dashboards y acceso móvil organizados alrededor de un mismo modelo.",
-          "role": "Diseño de workflow, operación privada",
+          "outcome": "Planes, dashboards y flujos de clientes organizados alrededor de un mismo modelo operativo.",
+          "role": "Herramientas privadas, workflows estructurados",
           "evidence": {
             "label": "Preview sanitizado",
             "altText": "Evidencia pública segura de Nutri Plan",
@@ -64,7 +64,7 @@
           "label": "Entrega enterprise",
           "title": "Sistemas enterprise",
           "outcome": "Escalations, payment plans, cashback, customs workflows y backend delivery dentro de sistemas complejos de negocio.",
-          "role": "Backend, confiabilidad, confidencialidad",
+          "role": "Confiabilidad, backend, confidencialidad",
           "evidence": {
             "label": "Resumen confidencial",
             "altText": "Evidencia pública segura de sistemas enterprise",
@@ -73,8 +73,8 @@
           }
         }
       ],
-      "architectureHeading": "La calidad debe ser visible antes de que un cliente la note.",
-      "architectureBody": "Las páginas públicas, el dashboard privado, el contacto, las analíticas y el flujo de release están separados para que búsqueda, privacidad, entrega y fallos puedan revisarse antes de convertirse en problema de alguien más.",
+      "architectureHeading": "La calidad debe ser visible antes de que alguien tenga que preguntar.",
+      "architectureBody": "Las páginas públicas, el dashboard privado, el contacto, las analíticas y el flujo de release están separados para que búsqueda, privacidad, entrega y fallos puedan revisarse antes de que un cliente o equipo de contratación los descubra por mí.",
       "architectureStages": [
         {
           "label": "Superficie pública",
@@ -90,19 +90,19 @@
         }
       ],
       "practiceHeading": "Cómo trabajo",
-      "practiceBody": "No empiezo vendiendo un stack. Mapeo el workflow, tomo las decisiones difíciles de límites y mantengo la entrega suficientemente visible para revisarla.",
+      "practiceBody": "No empiezo vendiendo un stack. Mapeo el workflow, decido los límites y mantengo el camino de release suficientemente visible para que la calidad se pueda inspeccionar.",
       "practicePoints": [
         {
           "label": "Aclarar el flujo",
-          "text": "Nombrar el objetivo de negocio, restricciones y operación real antes de elegir la forma de implementación."
+          "text": "Nombrar el objetivo de negocio, restricciones y operación real antes de elegir una forma de implementación."
         },
         {
           "label": "Diseñar el sistema operativo",
-          "text": "Hacer que UI, datos, auth, comunicación, observabilidad y deploy funcionen juntos, no como pendientes separados."
+          "text": "Hacer que UI, datos, auth, comunicación, observabilidad y deploy funcionen juntos, no como pendientes desconectados."
         },
         {
           "label": "Verificar antes de lanzar",
-          "text": "Usar tests, browser QA, ramas protegidas, previews y verificación en producción para mantener la calidad visible."
+          "text": "Usar tests, browser QA, ramas protegidas, previews y verificación en producción para que las fallas sean visibles temprano."
         }
       ],
       "contactHeading": "Cuéntame qué necesita funcionar mejor.",

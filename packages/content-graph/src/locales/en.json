@@ -2,27 +2,27 @@
   "home": {
     "path": "/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Senior engineering for business-critical software.",
-    "seoDescription": "Alejandro Ortiz Corro designs and builds reliable product systems, public websites, private dashboards, backend workflows, and software architecture for teams that need delivery they can trust.",
+    "summary": "Product engineering for teams that need trust, clarity, and reliable delivery.",
+    "seoDescription": "Alejandro Ortiz Corro designs and builds reliable product systems, public websites, private dashboards, backend workflows, and software architecture for teams that need business-critical software to launch well.",
     "primaryActionLabel": "Start a conversation",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "View selected work",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Senior engineering. Business outcomes. Measurable impact.",
-      "deck": "I help teams turn messy operational flows into polished products: public pages that earn trust, private tools that remove manual work, and backend paths that stay observable after launch.",
+      "headline": "Product systems that earn trust and keep moving.",
+      "deck": "I build the layer between a business goal and the software that has to carry it: fast public pages, private operating tools, and backend workflows that stay observable after launch.",
       "proofBoardLabel": "AOHYS evidence map",
-      "proofBoardTitle": "Architecture, release gates, and public-safe evidence in one view.",
-      "proofBoardBody": "A system view for the work, review, and release habits behind AOHYS.",
-      "selectedOutcomesHeading": "Selected work, backed by evidence.",
-      "selectedOutcomesIntro": "A quick read through public-safe work: what shipped, why it mattered, and what can be reviewed without exposing private client systems.",
+      "proofBoardTitle": "One public sample, with the private seams kept honest.",
+      "proofBoardBody": "A system view for how AOHYS separates public trust, private work, releases, leads, and observability.",
+      "selectedOutcomesHeading": "Proof ledger",
+      "selectedOutcomesIntro": "A fast pass through public-safe evidence: live work, active builds, confidential enterprise delivery, and what each one says about the way I build.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",
           "label": "Public site",
           "title": "Casa Roca",
-          "outcome": "A live hospitality site with clearer trust signals, search-readable pages, and direct inquiry paths.",
-          "role": "Strategy, SEO, delivery",
+          "outcome": "A live hospitality site with stronger trust signals, search-readable pages, and direct inquiry paths.",
+          "role": "Public trust, SEO, delivery",
           "evidence": {
             "label": "Public site",
             "altText": "Public-safe evidence for Casa Roca",
@@ -35,8 +35,8 @@
           "contentId": "case-study:the-barber-central",
           "label": "Operations product",
           "title": "The Barber Central",
-          "outcome": "Booking, availability, payments, and customer communication shaped around the way a local service business runs.",
-          "role": "Product architecture, full-stack",
+          "outcome": "Booking, availability, payments, and customer communication shaped around how a local service business actually runs.",
+          "role": "Operations, workflow, product architecture",
           "evidence": {
             "label": "Development preview",
             "altText": "Public-safe evidence for The Barber Central",
@@ -49,8 +49,8 @@
           "contentId": "case-study:nutri-plan",
           "label": "Private system",
           "title": "Nutri Plan",
-          "outcome": "Client workflows, structured plans, dashboards, and mobile access organized around one shared product model.",
-          "role": "Workflow design, private ops",
+          "outcome": "Plans, dashboards, and client workflows organized around one shared operating model.",
+          "role": "Private tools, structured workflows",
           "evidence": {
             "label": "Sanitized preview",
             "altText": "Public-safe evidence for Nutri Plan",
@@ -64,7 +64,7 @@
           "label": "Enterprise delivery",
           "title": "Enterprise systems",
           "outcome": "Escalations, payment plans, cashback, customs workflows, and backend delivery inside complex business systems.",
-          "role": "Backend, reliability, confidentiality",
+          "role": "Reliability, backend delivery, confidentiality",
           "evidence": {
             "label": "Confidential summary",
             "altText": "Public-safe evidence for enterprise systems",
@@ -73,8 +73,8 @@
           }
         }
       ],
-      "architectureHeading": "Quality should be visible before a client notices.",
-      "architectureBody": "The public pages, private dashboard, contact path, analytics, and release flow are separated so search, privacy, delivery, and failures can be reviewed before they become someone else's problem.",
+      "architectureHeading": "Quality should be visible before anyone has to ask.",
+      "architectureBody": "The public pages, private dashboard, contact path, analytics, and release flow are separated so search, privacy, delivery, and failures can be reviewed before a client or hiring team has to discover the issue for me.",
       "architectureStages": [
         {
           "label": "Public surface",
@@ -90,19 +90,19 @@
         }
       ],
       "practiceHeading": "How I work",
-      "practiceBody": "I do not start by selling a stack. I map the workflow, make the hard boundary decisions, and keep the delivery path visible enough to review.",
+      "practiceBody": "I do not start by selling a stack. I map the workflow, decide the boundaries, and keep the release path visible enough that quality can be inspected.",
       "practicePoints": [
         {
           "label": "Clarify the flow",
-          "text": "Name the business goal, constraints, and operating reality before choosing the implementation shape."
+          "text": "Name the business goal, constraints, and operating reality before choosing an implementation shape."
         },
         {
           "label": "Design the operating system",
-          "text": "Make UI, data, auth, communication, observability, and deployment fit together instead of treating them as separate chores."
+          "text": "Make UI, data, auth, communication, observability, and deployment fit together instead of treating them as disconnected chores."
         },
         {
           "label": "Verify before launch",
-          "text": "Use tests, browser QA, protected branches, preview checks, and production verification to keep quality visible."
+          "text": "Use tests, browser QA, protected branches, preview checks, and production verification so failures are visible early."
         }
       ],
       "contactHeading": "Tell me what needs to work better.",

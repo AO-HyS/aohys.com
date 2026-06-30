@@ -97,6 +97,7 @@ describe("contact lead workflow", () => {
       event: "lead_submitted",
       distinctId: "lead:lead_123",
       properties: {
+        environment: "preview",
         intent: "project",
         preferredContactPath: "whatsapp",
         locale: "en",
@@ -196,6 +197,7 @@ describe("contact lead workflow", () => {
       distinctId: "lead:lead_123",
       properties: {
         leadId: "lead_123",
+        environment: "preview",
         provider: "resend",
         operation: "lead_notification",
         errorType: "Error",
