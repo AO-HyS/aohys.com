@@ -63,11 +63,12 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain('data-home-content-id="home"');
-    expect(homeHtml).toContain("Product systems that earn trust and keep moving.");
-    expect(homeHtml).toContain("Proof ledger");
-    expect(homeHtml).toContain("One public sample, with the private seams kept honest.");
-    expect(homeHtml).toContain("Generated architecture proof surface");
-    expect(homeHtml).toContain("Systems thinking.");
+    expect(homeHtml).toContain("Senior engineering.");
+    expect(homeHtml).toContain("Business outcomes.");
+    expect(homeHtml).toContain("Selected proof");
+    expect(homeHtml).toContain("Public pages. Private work. Observable releases.");
+    expect(homeHtml).toContain("Generated dark system map");
+    expect(homeHtml).toContain("/images/generated/aohys-hero-system-map.png");
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
     expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
@@ -83,9 +84,10 @@ describe("built public routes", () => {
     expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Sistemas de producto que generan confianza y siguen avanzando.");
-    expect(spanishHomeHtml).toContain("Registro de evidencia");
-    expect(spanishHomeHtml).toContain("Pensamiento de sistemas.");
+    expect(spanishHomeHtml).toContain("Ingeniería senior.");
+    expect(spanishHomeHtml).toContain("Resultados de negocio.");
+    expect(spanishHomeHtml).toContain("Evidencia seleccionada");
+    expect(spanishHomeHtml).toContain("Páginas públicas. Trabajo privado. Releases observables.");
     expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
     expect(spanishHomeHtml).toContain('aria-label="Evidencia pública segura de Casa Roca"');
     expect(spanishHomeHtml).toContain("WhatsApp");

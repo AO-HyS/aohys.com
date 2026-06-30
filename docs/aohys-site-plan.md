@@ -83,7 +83,7 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Layout bans: No identical icon-card grids, no nested cards, no hero metric template, no terminal aesthetic, no repeated uppercase section eyebrows, no numbered section scaffolding, no beige editorial default, no glassmorphism, no gradient text, no soft ghost-card shadows.
 - Motion: Motion should feel like review, assembly, and reveal: annotations settle, screenshots align, and proof artifacts enter with purpose. Content must never depend on animation to appear.
 - Visual assets: Generated editorial assets plus sanitized screenshots, optimized through Cloudflare. Generated imagery should be limited and purposeful; screenshots carry most case-study proof.
-- Current proof and support assets: the Impeccable home direction now has a generated north-star mock at `docs/design/aohys-public-site-north-star.png`, the generated delivery-process artifact at `apps/site/public/images/generated/aohys-delivery-artifact.png` as the hero proof object, the real AOHYS logo at `apps/site/public/images/brand/aohys-logo.png`, a production screenshot from Casa Roca, a sanitized Barber Central operations screenshot, a cropped Nutri Plan landing screenshot, and a custom AOHYS system map SVG under `apps/site/public/images/proof/`.
+- Current proof and support assets: the Impeccable home direction now has an updated generated north-star mock at `docs/design/aohys-public-site-north-star-v2.png`, a generated no-text hero system map at `apps/site/public/images/generated/aohys-hero-system-map.png`, the earlier generated delivery-process artifact at `apps/site/public/images/generated/aohys-delivery-artifact.png` for supporting proof contexts, the real AOHYS logo at `apps/site/public/images/brand/aohys-logo.png`, a production screenshot from Casa Roca, a sanitized Barber Central operations screenshot, a cropped Nutri Plan landing screenshot, and a custom AOHYS system map SVG under `apps/site/public/images/proof/`.
 - Quality gates: Local behavior tests should use Vitest for package and built-site checks; Husky pre-commit plus GitHub Actions verification are implemented in issue #31. The pre-commit hook runs foundation validation, lint, typecheck, and tests; pull-request CI runs install, foundation validation, lint, typecheck, tests, and build as readable steps.
 
 ## Design System Snapshot
@@ -129,10 +129,10 @@ Starter tokens:
   --text-caption: 0.8125rem;
   --text-small: 0.875rem;
   --text-body: 1rem;
-  --text-lead: clamp(1.125rem, 0.35vw + 1.05rem, 1.375rem);
-  --text-h3: clamp(1.5rem, 1vw + 1.25rem, 2rem);
-  --text-h2: clamp(2.15rem, 2.4vw + 1.5rem, 4rem);
-  --text-hero: clamp(3rem, 6vw + 0.25rem, 5.75rem);
+  --text-lead: 1.25rem;
+  --text-h3: 1.75rem;
+  --text-h2: 3.25rem;
+  --text-hero: 4.75rem;
 
   --leading-caption: 1.35;
   --leading-body: 1.62;
@@ -168,7 +168,7 @@ Recommended home sequence:
 5. Engineering practice: agent-assisted workflow, QA discipline, observability, deployment, and documentation as current practice.
 6. Contact: form, email, and large but discreet WhatsApp CTA.
 
-Current implementation status: the home is graph-backed and follows the dark-ink plus pastel-signal direction: dark first viewport, Alejandro-first hero copy, technical architecture panel, generated delivery-process support imagery, real public-safe proof screenshots, horizontal proof-ledger rows, lighter system notes, institutional email, and WhatsApp CTA. The dedicated contact route owns the full lead capture UI and provider-backed submission path. Future case-study issues should expand these screenshots into richer detail pages instead of reverting to placeholders.
+Current implementation status: the home is graph-backed and follows the dark-ink plus pastel-signal direction: clean white navigation, dark first viewport, Alejandro-first senior-engineering hero copy, visible conversion CTAs, generated no-text hero system map, real public-safe proof screenshots, horizontal proof-ledger rows, dark architecture stage, operating-principles section, institutional email, and WhatsApp CTA. The dedicated contact route owns the full lead capture UI and provider-backed submission path. Browser QA artifacts for the current home pass live in `output/playwright/aohys-home-redesign-desktop-final.png`, `output/playwright/aohys-home-redesign-mobile-final.png`, and `output/playwright/aohys-home-ledger-redesign.png`. Future case-study issues should expand these screenshots into richer detail pages instead of reverting to placeholders.
 
 Architecture page status: `/architecture` and `/es/arquitectura` now render graph-backed public source framing, public/private boundary copy, Release Train, Environment Contract, Public Content Graph, provider responsibilities, and GitHub source/documentation links.
 
@@ -211,10 +211,10 @@ Resume pages should remain typography-first, easy to parse, and visibly linked t
 17. Publish the public source evaluation package. Current status: `README.md` explains how to evaluate the repo without private credentials, maps the architecture and provider responsibilities, documents local/preview/production environment boundaries, links the PRD, issue breakdown, TDD plan, Release Train, Environment Contract, Public Content Graph, Dashboard UI Kit, and Launch Hardening docs, and clarifies that code is MIT while content, brand, CV, case-study material, images, screenshots, and generated media are reserved.
 18. Install quality gates. Current status: Husky pre-commit runs `pnpm run verify:precommit`, `pnpm verify` runs the complete CI gate through `verify:ci`, and `.github/workflows/quality-gates.yml` verifies pull requests into `develop` and `main` without requiring private provider secrets.
 
-Next Impeccable command after this document:
+Next Impeccable command after the current home redesign:
 
 ```bash
-$impeccable craft AOHYS public site shell
+$impeccable critique AOHYS public site home
 ```
 
 ## Open Questions

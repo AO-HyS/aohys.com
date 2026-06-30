@@ -26,31 +26,12 @@
     "actions": "Acciones principales",
     "boardLabel": "Tablero de evidencia AOHYS",
     "publicSample": "Muestra pública",
-    "heroEvidenceAria": "Evidencia pública segura conectada a la superficie de sistema AOHYS",
-    "heroPrinciplesAria": "Principios de ingeniería detrás de la muestra pública AOHYS",
-    "heroPrinciples": [
-      {
-        "mark": "",
-        "label": "Pensamiento de sistemas.",
-        "text": "Límites claros y flujos simples."
-      },
-      {
-        "mark": "",
-        "label": "Público por defecto.",
-        "text": "Evidencia abierta, código de clientes privado."
-      },
-      {
-        "mark": "",
-        "label": "Construir, aprender, mejorar.",
-        "text": "Previsualizar, observar, corregir y promover."
-      }
-    ],
     "productionSnapshot": "Captura de sitio en producción",
     "productionSnapshotAlt": "Captura del hero del sitio en producción de Casa Roca",
     "operationsSnapshot": "Captura de software operativo",
     "operationsSnapshotAlt": "Captura del dashboard operativo de The Barber Central",
     "deliveryArtifact": "Artefacto de arquitectura",
-    "deliveryArtifactAlt": "Superficie de prueba arquitectónica generada que muestra páginas públicas, dashboard privado, backend, routing de leads, observabilidad, deploy gates y límites público-privados",
+    "deliveryArtifactAlt": "Mapa de sistema oscuro generado que muestra límites de software, rutas de datos, integraciones, seguridad y observabilidad sin texto falso de interfaz",
     "shellProof": "Páginas públicas, ruta privada de dashboard y límites de release tipados.",
     "outcome": "Resultado",
     "outcomeText": "Señal de negocio antes de nombres de stack",

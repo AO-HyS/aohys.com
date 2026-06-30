@@ -4,9 +4,17 @@ These prompts are for the final generated bitmap layer of the AOHYS public site.
 
 ## Generated North-Star Mock
 
-Current asset: `docs/design/aohys-public-site-north-star.png`
+Current asset: `docs/design/aohys-public-site-north-star-v2.png`
 
-Prompt used:
+Prompt used for the current direction:
+
+> High-fidelity north-star website mock for AOHYS public site, based on a dark ink + pastel signal architecture direction. Brand: AO HyS / AOH&S, optimistic senior software engineering portfolio and public code sample. First viewport: clean top navigation on white, then a dark ink hero occupying most of the viewport. Left side has a concise, confident headline represented as typographic blocks, not exact readable copy. Right side has a large precise architecture diagram with clients, edge, application layer, data layer, integrations, observability, and security boundary, drawn with thin mint, honey, coral, sky blue and lilac connector lines. No fake metrics, no terminal UI, no code snippets, no robots, no people, no glassmorphism, no purple gradients, no beige. Second fold visible: white proof ledger with horizontal rows, each row combines a real-project screenshot placeholder, project title block, scope/outcome columns and a slim arrow. Footer hint with contact CTA. Use generous spacing like Luma, precise rules, restrained pastel energy, professional but joyful. 16:10 full-page website mock, browser-free, polished, production design reference.
+
+Generated source: `/Users/corrortiz/.codex/generated_images/019f0681-5ad1-7573-b740-b134dea0edd5/ig_0dcd377ca9074118016a4357f0d4e8819ab1595a8ef22c1d4b.png`
+
+Previous asset: `docs/design/aohys-public-site-north-star.png`
+
+Previous prompt:
 
 > High-fidelity desktop website north-star mock for AOHYS, a senior software engineering portfolio and public code sample. Use the approved visual lane: dark ink + pastel signal, matching a logo with deep teal, mint, honey amber, and a small star accent. Composition: dark sticky nav and a dark first viewport where the Alejandro-first hero copy, process rail, technical architecture map, and screenshot insets all live in one coherent engineering proof surface. No generic SaaS cards, no gradients, no glassmorphism, no terminal UI, no fake metrics. The hero headline should be represented as readable typographic blocks but do not render exact real text. The architecture map shows clients -> edge -> application layer -> data layer -> integrations, with thin mint/honey/coral connector lines and small screenshot insets. Second fold visible: a clean white proof ledger with horizontal rows, each row has a project screenshot crop, scope label, outcome label, and a slim arrow. Style: precise architectural drafting table meets optimistic professional engineering studio, generous space, crisp rules, small pastel accents, no beige, no purple gradients, no nested cards. 16:10 desktop website mock, realistic browser-free full page composition.
 
@@ -17,6 +25,16 @@ Implementation notes:
 - The implemented page uses semantic HTML, real copy, the real AOHYS logo, a generated architecture proof surface as the hero support object, and public-safe screenshots in the proof ledger.
 
 ## Hero System Image
+
+Current asset: `apps/site/public/images/generated/aohys-hero-system-map.png`
+
+Prompt used:
+
+> Production hero support bitmap for the AOHYS public website. Dark ink background with a precise software architecture system map, no readable words, no letters, no numbers, no fake UI text. Represent clients, edge, product application, data layer, integrations, observability and security boundaries only through abstract blocks, thin connector lines, small geometric icons, status dots, and line placeholders. Use restrained pastel signals: mint, honey, coral, sky blue and lilac on deep near-black. Professional senior engineering feel, generous negative space, precise grid, clean white-space rhythm like a high-end product site. No terminal UI, no code snippets, no robots, no people, no glassmorphism, no purple gradients, no beige, no sketch illustration. 16:10 PNG composition, polished production asset.
+
+Generated source: `/Users/corrortiz/.codex/generated_images/019f0681-5ad1-7573-b740-b134dea0edd5/ig_062b507bd9f0ea91016a4358fa5f24819a80fe2929d4734f24.png`
+
+Implementation note: this is the home hero support image. It is an abstract architecture map, not client proof. Project proof remains real screenshots and public-safe case study copy.
 
 Create a precise, premium product architecture scene for a software engineer's public site. Dark ink background with optimistic pastel honey, mint, coral, and sky accents. Show business goals becoming software systems through a clean decision map, deployment path, feedback loop, and observability signals. The image should feel like a senior product architecture review on a digital drafting table. No fake UI text, no code terminal, no purple gradients, no glassmorphism, no mascot, no stock people. Leave generous negative space for overlaying real screenshots.
 

@@ -2,27 +2,27 @@
   "home": {
     "path": "/es/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Ingeniería de producto para equipos que necesitan confianza, claridad y entrega confiable.",
-    "seoDescription": "Alejandro Ortiz Corro diseña y construye sistemas de producto confiables, sitios públicos, dashboards privados, workflows de backend y arquitectura de software para equipos que necesitan lanzar software crítico de negocio con calidad.",
+    "summary": "Ingeniería de software senior para equipos que necesitan resultados de negocio, arquitectura confiable y entrega inspeccionable.",
+    "seoDescription": "Alejandro Ortiz Corro construye sistemas de producto, software de negocio, sitios públicos, dashboards privados, workflows de backend y arquitectura de software para equipos que necesitan calidad, seguridad, escalabilidad y resultados medibles.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Sistemas de producto que generan confianza y siguen avanzando.",
-      "deck": "Construyo la capa entre un objetivo de negocio y el software que tiene que sostenerlo: páginas públicas rápidas, herramientas privadas de operación y workflows de backend observables después del lanzamiento.",
+      "headline": "Ingeniería senior. Resultados de negocio. Impacto medible.",
+      "deck": "Diseño y construyo sistemas de producto para equipos que necesitan operaciones más claras, releases confiables y software que aguante presión real de negocio.",
       "proofBoardLabel": "Mapa de evidencia AOHYS",
-      "proofBoardTitle": "Una muestra pública, con límites privados bien cuidados.",
-      "proofBoardBody": "Una vista de cómo AOHYS separa confianza pública, trabajo privado, releases, leads y observabilidad.",
-      "selectedOutcomesHeading": "Registro de evidencia",
-      "selectedOutcomesIntro": "Un recorrido rápido por evidencia pública segura: trabajo en producción, builds activos, entrega enterprise confidencial y lo que cada pieza dice sobre cómo construyo.",
+      "proofBoardTitle": "Páginas públicas. Trabajo privado. Releases observables.",
+      "proofBoardBody": "El sitio muestra cómo separo búsqueda, herramientas protegidas, leads, deploys y errores.",
+      "selectedOutcomesHeading": "Evidencia seleccionada",
+      "selectedOutcomesIntro": "Pruebas públicas seguras de trabajo en producción, builds activos, sistemas privados de operación y entrega enterprise confidencial.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",
           "label": "Sitio público",
           "title": "Casa Roca",
-          "outcome": "Sitio de hospitalidad en producción con señales de confianza más fuertes, páginas legibles para búsqueda y contacto directo.",
-          "role": "Confianza pública, SEO, entrega",
+          "outcome": "Sitio de hospitalidad en producción diseñado alrededor de confianza, contenido legible para búsqueda y contacto directo.",
+          "role": "Confianza pública, SEO, conversión",
           "evidence": {
             "label": "Sitio público",
             "altText": "Evidencia pública segura de Casa Roca",
@@ -35,8 +35,8 @@
           "contentId": "case-study:the-barber-central",
           "label": "Producto operativo",
           "title": "The Barber Central",
-          "outcome": "Reservas, disponibilidad, pagos y comunicación con clientes diseñados alrededor de cómo opera realmente un negocio local.",
-          "role": "Operación, workflow, arquitectura de producto",
+          "outcome": "Reservas, disponibilidad, pagos y comunicación con clientes diseñados alrededor de la presión diaria de un negocio local.",
+          "role": "Operación, pagos, flujo de clientes",
           "evidence": {
             "label": "Preview de desarrollo",
             "altText": "Evidencia pública segura de The Barber Central",
@@ -49,8 +49,8 @@
           "contentId": "case-study:nutri-plan",
           "label": "Sistema privado",
           "title": "Nutri Plan",
-          "outcome": "Planes, dashboards y flujos de clientes organizados alrededor de un mismo modelo operativo.",
-          "role": "Herramientas privadas, workflows estructurados",
+          "outcome": "Planes, dashboards y flujos de clientes organizados en un mismo modelo operativo, no en pantallas desconectadas.",
+          "role": "Herramientas privadas, workflows, entrega a clientes",
           "evidence": {
             "label": "Preview sanitizado",
             "altText": "Evidencia pública segura de Nutri Plan",
@@ -73,39 +73,39 @@
           }
         }
       ],
-      "architectureHeading": "La calidad debe ser visible antes de que alguien tenga que preguntar.",
-      "architectureBody": "Las páginas públicas, el dashboard privado, el contacto, las analíticas y el flujo de release están separados para que búsqueda, privacidad, entrega y fallos puedan revisarse antes de que un cliente o equipo de contratación los descubra por mí.",
+      "architectureHeading": "El sistema debe mostrar cómo está construido.",
+      "architectureBody": "Este sitio es más que un portafolio: SEO público, rutas privadas de dashboard, contacto, observabilidad y promoción de releases están diseñados como un solo sistema inspeccionable.",
       "architectureStages": [
         {
           "label": "Superficie pública",
-          "text": "Las páginas Astro se resuelven desde IDs estables, slugs localizados, canonical URLs y reglas de sitemap."
+          "text": "Las páginas SEO se resuelven desde IDs estables, slugs localizados, canonical URLs y reglas de sitemap."
         },
         {
           "label": "Superficie privada",
-          "text": "Las rutas de dashboard quedan fuera de búsqueda pública y usarán workflows autenticados en vez de atajos de contenido público."
+          "text": "Las rutas de dashboard quedan fuera de búsqueda pública y usan workflows autenticados en vez de atajos de contenido público."
         },
         {
           "label": "Ruta de release",
           "text": "Las ramas de feature pasan primero a develop; la promoción a producción es otra revisión hacia main."
         }
       ],
-      "practiceHeading": "Cómo trabajo",
+      "practiceHeading": "Principios de operación",
       "practiceBody": "No empiezo vendiendo un stack. Mapeo el workflow, decido los límites y mantengo el camino de release suficientemente visible para que la calidad se pueda inspeccionar.",
       "practicePoints": [
         {
-          "label": "Aclarar el flujo",
-          "text": "Nombrar el objetivo de negocio, restricciones y operación real antes de elegir una forma de implementación."
+          "label": "Aclarar el trabajo",
+          "text": "Convertir objetivos abiertos en flujos, restricciones, límites y ruta de release."
         },
         {
-          "label": "Diseñar el sistema operativo",
-          "text": "Hacer que UI, datos, auth, comunicación, observabilidad y deploy funcionen juntos, no como pendientes desconectados."
+          "label": "Construir el sistema",
+          "text": "Hacer que UI, datos, auth, comunicación, observabilidad y deploy funcionen juntos."
         },
         {
-          "label": "Verificar antes de lanzar",
-          "text": "Usar tests, browser QA, ramas protegidas, previews y verificación en producción para que las fallas sean visibles temprano."
+          "label": "Probarlo temprano",
+          "text": "Usar tests, browser QA, ramas protegidas, previews y verificación en producción para que las fallas sean visibles antes que para los clientes."
         }
       ],
-      "contactHeading": "Cuéntame qué necesita funcionar mejor.",
+      "contactHeading": "Cuéntame qué necesita funcionar.",
       "contactBody": "Manda el rol, proyecto, problema de arquitectura o flujo de producto. Te respondo con un siguiente paso práctico.",
       "emailLabel": "Escribir a Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",

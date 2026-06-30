@@ -66,7 +66,6 @@ function splitHeadline(headline: string): string[] {
 }
 
 const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : [];
-const heroProofRows = homeContent?.selectedOutcomes.slice(0, 3) ?? [];
 
 const routeSignalById: Partial<Record<ContentId | string, string>> = {
   "case-studies": locale === "es" ? "Evidencia seleccionada" : "Selected proof",
@@ -141,14 +140,6 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           <p class="hero-lead">
             {homeContent.deck}
           </p>
-          <ul class="hero-principles" aria-label={copy.heroPrinciplesAria}>
-            {copy.heroPrinciples.map((principle) => (
-              <li>
-                <span aria-hidden="true"></span>
-                <p><strong>{principle.label}</strong> {principle.text}</p>
-              </li>
-            ))}
-          </ul>
           <div class="hero-actions" aria-label={copy.actions}>
             {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
             {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
@@ -159,22 +150,15 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           <figcaption class="proof-board-caption">
             <span>{copy.publicSample}</span>
             <strong>{homeContent.proofBoardTitle}</strong>
+            <p>{homeContent.proofBoardBody}</p>
           </figcaption>
           <img
             class="hero-artifact-asset"
-            src="/images/generated/aohys-architecture-proof-surface.png"
+            src="/images/generated/aohys-hero-system-map.png"
             alt={copy.deliveryArtifactAlt}
             loading="eager"
             decoding="async"
           />
-          <div class="hero-proof-ribbon" aria-label={copy.heroEvidenceAria}>
-            {heroProofRows.map((outcome) => (
-              <a class="hero-proof-ribbon-item" href={outcome.path}>
-                <span>{outcome.label}</span>
-                <strong>{outcome.title}</strong>
-              </a>
-            ))}
-          </div>
         </figure>
       </section>
 
