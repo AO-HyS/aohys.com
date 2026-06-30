@@ -28,7 +28,7 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Hosting/deploy: Cloudflare with Wrangler, GitHub Actions, and `develop -> main -> production`.
 - Media: Cloudflare handles image storage/optimization; Convex stores metadata and references only.
 - Media upload: Dashboard supports uploading images from V1.
-- Media scope: A small set of generated images plus sanitized screenshots; prompts are not required metadata.
+- Media scope: A small set of generated images plus sanitized screenshots. Final bitmap prompts live in `docs/aohys-public-site-image-prompts.md`; prompts are planning artifacts, not runtime metadata.
 - Analytics and errors: PostHog handles pageviews, explicit events, dashboards, and errors; autocapture starts disabled.
 - Contact: Primary form stores leads in Convex and sends notifications through Resend.
 - Contact email: Public email is `alejandro.ortiz@aohys.com`; system sender is `Alejandro Ortiz <contact@aohys.com>`.
@@ -83,6 +83,7 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Layout bans: No identical icon-card grids, no nested cards, no hero metric template, no terminal aesthetic, no repeated uppercase section eyebrows, no numbered section scaffolding, no beige editorial default, no glassmorphism, no gradient text, no soft ghost-card shadows.
 - Motion: Motion should feel like review, assembly, and reveal: annotations settle, screenshots align, and proof artifacts enter with purpose. Content must never depend on animation to appear.
 - Visual assets: Generated editorial assets plus sanitized screenshots, optimized through Cloudflare. Generated imagery should be limited and purposeful; screenshots carry most case-study proof.
+- Current proof assets: the first Impeccable home pass uses a production screenshot from Casa Roca, a sanitized Barber Central operations screenshot, a cropped Nutri Plan landing screenshot, and a custom AOHYS system map SVG under `apps/site/public/images/proof/`.
 - Quality gates: Local behavior tests should use Vitest for package and built-site checks; Husky pre-commit plus GitHub Actions verification are implemented in issue #31. The pre-commit hook runs foundation validation, lint, typecheck, and tests; pull-request CI runs install, foundation validation, lint, typecheck, tests, and build as readable steps.
 
 ## Design System Snapshot
@@ -167,7 +168,7 @@ Recommended home sequence:
 5. Engineering practice: agent-assisted workflow, QA discipline, observability, deployment, and documentation as current practice.
 6. Contact: form, email, and large but discreet WhatsApp CTA.
 
-Current implementation status: the first real home pass is graph-backed and includes Alejandro-first copy, selected outcome rows, a dark architecture section, engineering practice rows, institutional email, and WhatsApp CTA. The dedicated contact route now owns the full lead capture UI and provider-backed submission path. Future case-study issues should replace proof placeholders with sanitized screenshots and richer detail pages.
+Current implementation status: the first real home pass is graph-backed and includes Alejandro-first copy, selected outcome rows, real public-safe proof imagery, a dark architecture section, engineering practice rows, institutional email, and WhatsApp CTA. The dedicated contact route now owns the full lead capture UI and provider-backed submission path. Future case-study issues should expand these screenshots into richer detail pages instead of reverting to placeholders.
 
 Architecture page status: `/architecture` and `/es/arquitectura` now render graph-backed public source framing, public/private boundary copy, Release Train, Environment Contract, Public Content Graph, provider responsibilities, and GitHub source/documentation links.
 
@@ -220,5 +221,5 @@ $impeccable craft AOHYS public site shell
 - Exact Cloudflare product choice for media originals versus variants: Cloudflare Images, R2, or both.
 - Cloudflare Images activation/account hash for generated media delivery.
 - Final business WhatsApp number after Meta verification is complete.
-- Exact sanitized screenshots and development URLs to use for The Barber Central and Nutri Plan.
+- Final screenshot set and generated bitmap set for the deeper case-study pages.
 - Whether GitHub Issues can be disabled on `AO-HyS/aohys.com` after repo creation.

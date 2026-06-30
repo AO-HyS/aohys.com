@@ -2,20 +2,20 @@
   "home": {
     "path": "/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Business goals turned into reliable product systems.",
-    "seoDescription": "Alejandro Ortiz Corro builds business outcomes through software architecture, product systems, quality, security, and modern engineering practice.",
+    "summary": "Reliable software systems for business work that cannot stay messy.",
+    "seoDescription": "Alejandro Ortiz Corro builds reliable product systems, business software, public websites, private dashboards, AI-assisted workflows, and software architecture for teams that need quality and trust.",
     "primaryActionLabel": "Start a conversation",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "View selected work",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Alejandro Ortiz Corro turns business goals into product systems people can trust.",
-      "deck": "I help teams turn ambiguous product goals into secure, maintainable software: public sites that can be found, operations tools that reduce friction, and backend systems that hold up when work gets complex.",
+      "headline": "Alejandro Ortiz Corro turns messy business work into software people can rely on.",
+      "deck": "I build the product layer between a business goal and the system that has to carry it: public sites that earn trust, private tools that reduce friction, and backend workflows that keep operating when the work gets complicated.",
       "proofBoardLabel": "AOHYS public proof board",
-      "proofBoardTitle": "Public source sample, private client work.",
-      "proofBoardBody": "This site is being built in public so technical evaluators can inspect the architecture, i18n, SEO, quality gates, release path, and operating judgment behind the work.",
-      "selectedOutcomesHeading": "Selected outcomes",
-      "selectedOutcomesIntro": "A short ledger of public-safe proof: production work, active builds, private product systems, and enterprise delivery experience.",
+      "proofBoardTitle": "A public working sample, built like production.",
+      "proofBoardBody": "The site shows the discipline behind the work: bilingual SEO pages, a private dashboard boundary, observable contact paths, and a release train that keeps preview and production separate.",
+      "selectedOutcomesHeading": "Proof you can inspect",
+      "selectedOutcomesIntro": "Public-safe evidence from production work, active builds, private product systems, and enterprise delivery. The client code stays private; the judgment is visible.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",
@@ -27,7 +27,8 @@
             "label": "Public site",
             "altText": "Public-safe evidence for Casa Roca",
             "kind": "public-site",
-            "publicSafe": true
+            "publicSafe": true,
+            "src": "/images/proof/casa-roca-production.png"
           }
         },
         {
@@ -40,7 +41,8 @@
             "label": "Development preview",
             "altText": "Public-safe evidence for The Barber Central",
             "kind": "development-preview",
-            "publicSafe": true
+            "publicSafe": true,
+            "src": "/images/proof/barber-central-ops.png"
           }
         },
         {
@@ -53,7 +55,8 @@
             "label": "Sanitized preview",
             "altText": "Public-safe evidence for Nutri Plan",
             "kind": "development-preview",
-            "publicSafe": true
+            "publicSafe": true,
+            "src": "/images/proof/nutri-plan-proof.png"
           }
         },
         {
@@ -70,8 +73,8 @@
           }
         }
       ],
-      "architectureHeading": "The site itself is the sample.",
-      "architectureBody": "Public SEO pages and private operations share one domain, but the boundaries are deliberate. Visitors see the proof; private dashboard work stays authenticated, noindex, and operational.",
+      "architectureHeading": "The site itself carries the proof.",
+      "architectureBody": "Public SEO pages and private operations share one domain, but the boundaries are deliberate. Visitors see evidence; private dashboard work stays authenticated, noindex, and operational.",
       "architectureStages": [
         {
           "label": "Public surface",
@@ -86,8 +89,8 @@
           "text": "Feature branches move into develop first; production promotion is a separate review path into main."
         }
       ],
-      "practiceHeading": "Modern engineering practice is part of the deliverable.",
-      "practiceBody": "The way the work is planned, tested, reviewed, localized, deployed, and observed matters as much as the first screen.",
+      "practiceHeading": "The process is part of the product.",
+      "practiceBody": "The way the work is shaped, tested, reviewed, localized, deployed, and observed matters as much as the first screen because that is what keeps software useful after launch.",
       "practicePoints": [
         {
           "label": "AI-assisted delivery",

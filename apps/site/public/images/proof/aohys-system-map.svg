@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 760" role="img" aria-labelledby="title desc">
+  <title id="title">AOHYS product system map</title>
+  <desc id="desc">A structured map showing business intent moving through product shape, software architecture, delivery, and operational feedback.</desc>
+  <defs>
+    <style>
+      :root {
+        --map-bg-start: oklch(0.25 0.035 185);
+        --map-bg-end: oklch(0.13 0.014 235);
+        --map-grid: oklch(0.36 0.052 190);
+        --map-paper: oklch(0.98 0.016 126);
+        --map-paper-ink: oklch(0.24 0.045 145);
+        --map-paper-muted: oklch(0.43 0.05 168);
+        --map-honey: oklch(0.86 0.13 88);
+        --map-honey-deep: oklch(0.76 0.16 52);
+        --map-honey-ink: oklch(0.22 0.04 75);
+        --map-mint: oklch(0.84 0.105 160);
+        --map-sky: oklch(0.79 0.09 235);
+        --map-sky-ink: oklch(0.23 0.055 235);
+        --map-coral: oklch(0.76 0.15 45);
+        --map-coral-ink: oklch(0.22 0.055 45);
+        --map-white: oklch(1 0 0);
+      }
+    </style>
+    <linearGradient id="surface" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="var(--map-bg-start)"/>
+      <stop offset="1" stop-color="var(--map-bg-end)"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="var(--map-honey)"/>
+      <stop offset="1" stop-color="var(--map-honey-deep)"/>
+    </linearGradient>
+    <linearGradient id="mint" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="var(--map-mint)"/>
+      <stop offset="1" stop-color="var(--map-sky)"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="1120" height="760" rx="0" fill="url(#surface)"/>
+  <path d="M70 650H1048M70 518H1048M70 386H1048M70 254H1048M70 122H1048M172 80V680M356 80V680M540 80V680M724 80V680M908 80V680" fill="none" stroke="var(--map-grid)" stroke-width="1"/>
+  <path d="M126 528C234 358 366 276 512 284C665 292 720 426 858 398C934 382 983 323 1010 278" fill="none" stroke="url(#mint)" stroke-width="5" stroke-linecap="round" filter="url(#glow)"/>
+  <path d="M126 528C248 528 331 574 448 566C579 557 642 475 760 486C855 495 905 558 1010 548" fill="none" stroke="url(#gold)" stroke-width="3" stroke-linecap="round"/>
+  <g font-family="Mona Sans, Arial, sans-serif">
+    <g transform="translate(90 92)">
+      <rect width="250" height="118" fill="var(--map-paper)" opacity=".98"/>
+      <text x="24" y="36" fill="var(--map-paper-ink)" font-size="18" font-weight="700">Business outcome</text>
+      <text x="24" y="68" fill="var(--map-paper-muted)" font-size="15">Revenue path</text>
+      <text x="24" y="94" fill="var(--map-paper-muted)" font-size="15">Operational clarity</text>
+    </g>
+    <g transform="translate(410 236)">
+      <rect width="256" height="132" fill="var(--map-honey)" opacity=".96"/>
+      <text x="24" y="38" fill="var(--map-honey-ink)" font-size="18" font-weight="750">Product shape</text>
+      <text x="24" y="72" fill="var(--map-honey-ink)" font-size="15">Workflow model</text>
+      <text x="24" y="98" fill="var(--map-honey-ink)" font-size="15">Content graph</text>
+    </g>
+    <g transform="translate(730 150)">
+      <rect width="276" height="132" fill="var(--map-mint)" opacity=".95"/>
+      <text x="24" y="38" fill="var(--map-paper-ink)" font-size="18" font-weight="750">Architecture</text>
+      <text x="24" y="72" fill="var(--map-paper-muted)" font-size="15">Boundaries and auth</text>
+      <text x="24" y="98" fill="var(--map-paper-muted)" font-size="15">Deployable seams</text>
+    </g>
+    <g transform="translate(210 518)">
+      <rect width="284" height="122" fill="var(--map-sky)" opacity=".96"/>
+      <text x="24" y="38" fill="var(--map-sky-ink)" font-size="18" font-weight="750">Delivery proof</text>
+      <text x="24" y="72" fill="var(--map-sky-ink)" font-size="15">Tests, review, release train</text>
+      <text x="24" y="98" fill="var(--map-sky-ink)" font-size="15">Browser QA and observability</text>
+    </g>
+    <g transform="translate(662 514)">
+      <rect width="286" height="122" fill="var(--map-coral)" opacity=".96"/>
+      <text x="24" y="38" fill="var(--map-coral-ink)" font-size="18" font-weight="750">Feedback loop</text>
+      <text x="24" y="72" fill="var(--map-coral-ink)" font-size="15">Leads, errors, analytics</text>
+      <text x="24" y="98" fill="var(--map-coral-ink)" font-size="15">Next useful decision</text>
+    </g>
+  </g>
+  <g fill="var(--map-white)" opacity=".82">
+    <circle cx="126" cy="528" r="8"/>
+    <circle cx="512" cy="284" r="8"/>
+    <circle cx="858" cy="398" r="8"/>
+    <circle cx="1010" cy="278" r="8"/>
+    <circle cx="448" cy="566" r="6"/>
+    <circle cx="760" cy="486" r="6"/>
+  </g>
+</svg>

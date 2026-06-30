@@ -49,6 +49,7 @@ export interface EvidenceAsset {
   altText: string;
   kind: "public-site" | "development-preview" | "private-system" | "architecture-note";
   publicSafe: boolean;
+  src?: string;
 }
 
 export interface HomeOutcome {

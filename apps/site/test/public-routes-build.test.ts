@@ -62,19 +62,23 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain('data-home-content-id="home"');
-    expect(homeHtml).toContain("Alejandro Ortiz Corro turns business goals into product systems people can trust.");
-    expect(homeHtml).toContain("Selected outcomes");
+    expect(homeHtml).toContain("Alejandro Ortiz Corro turns messy business work into software people can rely on.");
+    expect(homeHtml).toContain("Proof you can inspect");
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
     expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
     expect(homeHtml).toContain('href="/case-studies/enterprise-systems"');
     expect(homeHtml).toContain('aria-label="Public-safe evidence for Casa Roca"');
+    expect(homeHtml).toContain("/images/proof/aohys-system-map.svg");
+    expect(homeHtml).toContain("/images/proof/casa-roca-production.png");
+    expect(homeHtml).toContain("/images/proof/barber-central-ops.png");
+    expect(homeHtml).toContain("/images/proof/nutri-plan-proof.png");
     expect(homeHtml).toContain("WhatsApp");
     expect(homeHtml).not.toContain("Cloudflare · Convex · PostHog · Resend");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Alejandro Ortiz Corro convierte objetivos de negocio en sistemas confiables.");
-    expect(spanishHomeHtml).toContain("Resultados seleccionados");
+    expect(spanishHomeHtml).toContain("Alejandro Ortiz Corro convierte trabajo de negocio desordenado en software confiable.");
+    expect(spanishHomeHtml).toContain("Prueba que puedes revisar");
     expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
     expect(spanishHomeHtml).toContain('aria-label="Evidencia pública segura de Casa Roca"');
     expect(spanishHomeHtml).toContain("WhatsApp");
@@ -96,7 +100,7 @@ describe("built public routes", () => {
 
     expect(spanishArchitectureHtml).toContain('data-architecture-content-id="architecture"');
     expect(spanishArchitectureHtml).toContain("Muestra pública, trabajo privado.");
-    expect(spanishArchitectureHtml).toContain("el código de clientes y productos permanece privado");
+    expect(spanishArchitectureHtml.toLowerCase()).toContain("el código de clientes y productos permanece privado");
     expect(spanishArchitectureHtml).toContain("Release Train");
     expect(spanishArchitectureHtml).toContain("Environment Contract");
     expect(spanishArchitectureHtml).toContain("Public Content Graph");

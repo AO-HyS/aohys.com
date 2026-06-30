@@ -3,7 +3,7 @@
     "skip": "Saltar al contenido",
     "aria": "Principal",
     "homeLabel": "AO AOH&S inicio",
-    "small": "Muestra pública",
+    "small": "Sistemas de software",
     "language": "English",
     "nav": {
       "caseStudies": "Casos",
@@ -14,7 +14,7 @@
   },
   "footer": {
     "kicker": "Muestra pública, trabajo privado.",
-    "body": "Este sitio de código público es una muestra de los estándares de ingeniería de AOHYS; el código de clientes y productos permanece privado.",
+    "body": "Este sitio de código público es una muestra de los estándares de ingeniería de AOHYS. El código de clientes y productos permanece privado.",
     "privacy": "Privacidad",
     "architecture": "Notas del sistema",
     "dashboard": "Dashboard",
@@ -26,6 +26,10 @@
     "actions": "Acciones principales",
     "boardLabel": "Tablero de prueba pública de AOHYS",
     "publicSample": "Muestra pública",
+    "productionSnapshot": "Captura de sitio en producción",
+    "productionSnapshotAlt": "Captura del hero del sitio en producción de Casa Roca",
+    "operationsSnapshot": "Captura de software operativo",
+    "operationsSnapshotAlt": "Captura del dashboard operativo de The Barber Central",
     "shellProof": "Shell público en Astro, ruta privada de dashboard y seams de release tipados.",
     "outcome": "Resultado",
     "outcomeText": "Señal de negocio antes de nombres de stack",

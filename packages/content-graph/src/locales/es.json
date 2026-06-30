@@ -2,20 +2,20 @@
   "home": {
     "path": "/es/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Objetivos de negocio convertidos en sistemas de producto confiables.",
-    "seoDescription": "Alejandro Ortiz Corro construye resultados de negocio con arquitectura de software, sistemas de producto, calidad, seguridad y prácticas modernas de ingeniería.",
+    "summary": "Sistemas de software confiables para trabajo de negocio que no puede seguir desordenado.",
+    "seoDescription": "Alejandro Ortiz Corro construye sistemas de producto confiables, software de negocio, sitios públicos, dashboards privados, flujos asistidos por IA y arquitectura de software para equipos que necesitan calidad y confianza.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Alejandro Ortiz Corro convierte objetivos de negocio en sistemas confiables.",
-      "deck": "Ayudo a equipos a convertir objetivos ambiguos en software seguro y mantenible: sitios públicos que se pueden encontrar, herramientas operativas que reducen fricción y backends que aguantan cuando el trabajo se vuelve complejo.",
+      "headline": "Alejandro Ortiz Corro convierte trabajo de negocio desordenado en software confiable.",
+      "deck": "Construyo la capa de producto entre un objetivo de negocio y el sistema que tiene que sostenerlo: sitios públicos que generan confianza, herramientas privadas que reducen fricción y workflows de backend que siguen funcionando cuando el trabajo se complica.",
       "proofBoardLabel": "Tablero de prueba pública de AOHYS",
-      "proofBoardTitle": "Muestra pública, trabajo privado.",
-      "proofBoardBody": "Este sitio se construye en público para que evaluadores técnicos puedan revisar arquitectura, i18n, SEO, quality gates, release path y criterio operativo detrás del trabajo.",
-      "selectedOutcomesHeading": "Resultados seleccionados",
-      "selectedOutcomesIntro": "Un ledger breve de evidencia pública segura: trabajo en producción, builds activos, sistemas privados de producto y experiencia enterprise.",
+      "proofBoardTitle": "Una muestra pública construida como producción.",
+      "proofBoardBody": "El sitio muestra la disciplina detrás del trabajo: páginas SEO bilingües, límite privado de dashboard, contacto observable y una ruta de release que separa preview de producción.",
+      "selectedOutcomesHeading": "Prueba que puedes revisar",
+      "selectedOutcomesIntro": "Evidencia pública segura de trabajo en producción, builds activos, sistemas privados de producto y entrega enterprise. El código de clientes sigue privado; el criterio sí es visible.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",
@@ -27,7 +27,8 @@
             "label": "Sitio público",
             "altText": "Evidencia pública segura de Casa Roca",
             "kind": "public-site",
-            "publicSafe": true
+            "publicSafe": true,
+            "src": "/images/proof/casa-roca-production.png"
           }
         },
         {
@@ -40,7 +41,8 @@
             "label": "Preview de desarrollo",
             "altText": "Evidencia pública segura de The Barber Central",
             "kind": "development-preview",
-            "publicSafe": true
+            "publicSafe": true,
+            "src": "/images/proof/barber-central-ops.png"
           }
         },
         {
@@ -53,7 +55,8 @@
             "label": "Preview sanitizado",
             "altText": "Evidencia pública segura de Nutri Plan",
             "kind": "development-preview",
-            "publicSafe": true
+            "publicSafe": true,
+            "src": "/images/proof/nutri-plan-proof.png"
           }
         },
         {
@@ -70,8 +73,8 @@
           }
         }
       ],
-      "architectureHeading": "El sitio en sí es la muestra.",
-      "architectureBody": "Las páginas públicas SEO y las operaciones privadas viven en un solo dominio, pero los límites son intencionales. El visitante ve la prueba; el dashboard privado queda autenticado, noindex y operativo.",
+      "architectureHeading": "El sitio también carga la prueba.",
+      "architectureBody": "Las páginas públicas SEO y las operaciones privadas viven en un solo dominio, pero los límites son intencionales. El visitante ve evidencia; el dashboard privado queda autenticado, noindex y operativo.",
       "architectureStages": [
         {
           "label": "Superficie pública",
@@ -86,8 +89,8 @@
           "text": "Las ramas de feature pasan primero a develop; la promoción a producción es otra revisión hacia main."
         }
       ],
-      "practiceHeading": "La práctica moderna de ingeniería es parte del entregable.",
-      "practiceBody": "La forma en que se planea, prueba, revisa, localiza, despliega y observa el trabajo importa tanto como la primera pantalla.",
+      "practiceHeading": "El proceso es parte del producto.",
+      "practiceBody": "La forma en que se diseña, prueba, revisa, localiza, despliega y observa el trabajo importa tanto como la primera pantalla, porque eso mantiene útil el software después del lanzamiento.",
       "practicePoints": [
         {
           "label": "Entrega asistida por IA",

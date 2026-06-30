@@ -35,7 +35,7 @@ describe("built public shell", () => {
     expect(html).toContain('<html lang="en"');
     expect(html).toMatch(/<title>(Alejandro Ortiz Corro|AOHYS)/);
     expect(html).toContain('name="description"');
-    expect(html).toContain("business outcomes");
+    expect(html).toContain("reliable product systems");
     expect(html).toContain("software architecture");
     expect(html).toContain('data-site-shell="public"');
     expect(html).toContain('href="/case-studies"');

@@ -121,6 +121,7 @@ Rules:
 - Evidence assets should not expose private data, secrets, private code, or internal client material.
 - Screenshots carry most proof; generated images should be purposeful and limited.
 - Media storage and optimization stay behind the future Media Pipeline module, while the graph stores usage intent and safe references.
+- The graph may include stable public `src` references for first-party proof assets that ship with the Astro site. Those paths must point to sanitized assets only.
 - Alt text is part of the content node or evidence asset metadata, not an afterthought in page markup.
 
 ## Dashboard Dependency
@@ -140,7 +141,7 @@ The Public Content Graph is tested with Vitest through route and metadata behavi
 
 Astro route smoke tests consume the built site output instead of using ad hoc Node assertions. Later tracers should cover richer case-study content shape, resume/PDF relationships, evidence asset safety, and dashboard publishing invariants.
 
-The current home tracer also uses the graph for the public proof narrative: selected outcomes resolve to localized case-study paths, evidence entries carry public-safe labels and accessible text, and the contact CTA keeps the institutional email plus WhatsApp path in the same locale-aware content seam.
+The current home tracer also uses the graph for the public proof narrative: selected outcomes resolve to localized case-study paths, evidence entries carry public-safe labels, optional sanitized image sources, and accessible text, and the contact CTA keeps the institutional email plus WhatsApp path in the same locale-aware content seam.
 
 The architecture page also resolves its public source framing through the graph. Its content owns the public/private boundary note, source links, Release Train, Environment Contract, Public Content Graph, and provider responsibility sections for English and Spanish routes.
 

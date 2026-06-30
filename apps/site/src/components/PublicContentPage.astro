@@ -72,33 +72,34 @@ const directEmailHref = `mailto:${publicContactEmail}`;
         </div>
 
         <figure class="proof-board home-proof-board" aria-label={homeContent.proofBoardLabel}>
-          <div class="artifact artifact-large board-sheet">
-            <span class="artifact-label">{copy.publicSample}</span>
+          <img
+            class="system-map-asset"
+            src="/images/proof/aohys-system-map.svg"
+            alt={homeContent.proofBoardLabel}
+            loading="eager"
+            decoding="async"
+          />
+          <figcaption class="proof-board-caption">
+            <span>{copy.publicSample}</span>
             <strong>{homeContent.proofBoardTitle}</strong>
             <p>{homeContent.proofBoardBody}</p>
+          </figcaption>
+          <div class="proof-shot proof-shot-casa" aria-label={copy.productionSnapshot}>
+            <img
+              src="/images/proof/casa-roca-production.png"
+              alt={copy.productionSnapshotAlt}
+              loading="eager"
+              decoding="async"
+            />
           </div>
-          <div class="board-route outcome-route">
-            <span>{copy.outcome}</span>
-            <strong>{homeContent.selectedOutcomesHeading}</strong>
+          <div class="proof-shot proof-shot-ops" aria-label={copy.operationsSnapshot}>
+            <img
+              src="/images/proof/barber-central-ops.png"
+              alt={copy.operationsSnapshotAlt}
+              loading="lazy"
+              decoding="async"
+            />
           </div>
-          <div class="board-route architecture-route">
-            <span>{copy.architecture}</span>
-            <strong>{homeContent.architectureHeading}</strong>
-          </div>
-          <div class="board-route review-route">
-            <span>{copy.reviewPath}</span>
-            <strong>{copy.reviewPathText}</strong>
-          </div>
-          <svg class="proof-lines" viewBox="0 0 520 360" role="img" aria-label="Connections between outcomes, architecture, and review path">
-            <path d="M112 92 C184 58 264 58 344 100" />
-            <path d="M126 185 C218 226 318 226 426 178" />
-            <path d="M196 282 C260 242 334 242 398 286" />
-            <circle cx="112" cy="92" r="6" />
-            <circle cx="344" cy="100" r="6" />
-            <circle cx="426" cy="178" r="6" />
-            <circle cx="196" cy="282" r="6" />
-            <circle cx="398" cy="286" r="6" />
-          </svg>
         </figure>
       </section>
 
@@ -115,8 +116,15 @@ const directEmailHref = `mailto:${publicContactEmail}`;
               <strong>{outcome.title}</strong>
               <p>{outcome.outcome}</p>
               <figure class="outcome-evidence" aria-label={outcome.evidence.altText}>
-                <span>{outcome.evidence.label}</span>
-                <em>{outcome.role}</em>
+                {outcome.evidence.src ? (
+                  <img src={outcome.evidence.src} alt={outcome.evidence.altText} loading="eager" decoding="async" />
+                ) : (
+                  <span class="evidence-fallback">{outcome.evidence.label}</span>
+                )}
+                <figcaption>
+                  <span>{outcome.evidence.label}</span>
+                  <em>{outcome.role}</em>
+                </figcaption>
               </figure>
             </a>
           ))}
