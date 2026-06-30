@@ -45,8 +45,10 @@ Feature branches should target `develop`. Production promotion should target `ma
 | `pnpm run cloudflare:local` | Build the Astro site and serve `apps/site/dist` with Wrangler Pages dev. |
 | `pnpm run release:env:preview` | Validate GitHub Environment values for preview deploys without printing secrets. |
 | `pnpm run release:env:production` | Validate GitHub Environment values for production deploys without printing secrets. |
-| `pnpm run deploy:preview` | Validate preview env, deploy Convex with the preview deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
-| `pnpm run deploy:production` | Validate production env, deploy Convex with the production deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch main`. |
+| `pnpm run sync:convex-env:preview` | Sync preview runtime values from GitHub Environment variables into the preview Convex deployment without printing secret values. |
+| `pnpm run sync:convex-env:production` | Sync production runtime values from GitHub Environment variables into the production Convex deployment without printing secret values. |
+| `pnpm run deploy:preview` | Validate preview env, sync Convex preview runtime variables, deploy Convex with the preview deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
+| `pnpm run deploy:production` | Validate production env, sync Convex production runtime variables, deploy Convex with the production deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch main`. |
 | `pnpm run smoke:preview` | Fetch the preview smoke URL, verify a 2xx HTML response, public shell marker, and the production canonical URL. |
 | `pnpm run smoke:production` | Fetch `https://aohys.com`, verify a 2xx HTML response, public shell marker, and the production canonical URL. |
 
@@ -76,7 +78,16 @@ Branch protection currently requires reviews before merging to protected branche
 
 ## Cloudflare
 
-Convex deploys run before Cloudflare Pages deploys through:
+Convex runtime variables are synced before each Convex deploy through:
+
+```sh
+pnpm run sync:convex-env:preview
+pnpm run sync:convex-env:production
+```
+
+The sync script reads the already-validated GitHub Environment values, writes a temporary `.env` file with `0600` permissions, runs `convex env set --from-file --force --deployment "$CONVEX_DEPLOYMENT"`, and deletes the temporary file. It excludes deploy-only provider credentials such as Cloudflare API tokens and Convex deploy keys.
+
+Convex deploys then run before Cloudflare Pages deploys through:
 
 ```sh
 env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable

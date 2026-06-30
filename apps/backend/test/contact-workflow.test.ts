@@ -73,6 +73,8 @@ describe("contact lead workflow", () => {
     expect(result).toEqual({
       leadId: "lead_123",
       notificationId: "email_123",
+      notificationStatus: "sent",
+      analyticsStatus: "captured",
       status: "new",
     });
     expect(persistedLeads).toHaveLength(1);
@@ -111,36 +113,94 @@ describe("contact lead workflow", () => {
     );
   });
 
-  it("fails clearly before persistence when contact provider settings are missing", async () => {
+  it("stores a lead even when optional contact provider settings are missing", async () => {
     const persistLead = vi.fn(async () => ({ leadId: "lead_123" }));
+    const sendNotification = vi.fn(async () => ({ notificationId: "email_123" }));
+    const captureAnalyticsEvent = vi.fn(async () => undefined);
 
-    await expect(
-      submitContactLead(
-        {
-          name: "Alejandro Ortiz",
-          email: "alejandro.ortiz@aohys.com",
-          preferredContactPath: "email",
-          intent: "project",
-          message: "I need help shipping a product workflow.",
-          sourcePath: "/contact",
-          locale: "en",
-          consentToContact: true,
+    const result = await submitContactLead(
+      {
+        name: "Alejandro Ortiz",
+        email: "alejandro.ortiz@aohys.com",
+        preferredContactPath: "email",
+        intent: "project",
+        message: "I need help shipping a product workflow.",
+        sourcePath: "/contact",
+        locale: "en",
+        consentToContact: true,
+      },
+      {
+        environment: "preview",
+        values: {
+          ...validProviderValues,
+          RESEND_API_KEY: undefined,
+          PUBLIC_POSTHOG_KEY: undefined,
         },
-        {
-          environment: "preview",
-          values: {
-            ...validProviderValues,
-            RESEND_API_KEY: undefined,
-            PUBLIC_POSTHOG_KEY: undefined,
+        adapters: {
+          persistLead,
+          sendNotification,
+          captureAnalyticsEvent,
+        },
+      },
+    );
+
+    expect(result).toEqual({
+      leadId: "lead_123",
+      notificationStatus: "skipped",
+      analyticsStatus: "skipped",
+      status: "new",
+    });
+    expect(persistLead).toHaveBeenCalledTimes(1);
+    expect(sendNotification).not.toHaveBeenCalled();
+    expect(captureAnalyticsEvent).not.toHaveBeenCalled();
+  });
+
+  it("captures a sanitized operational event when Resend notification fails after persistence", async () => {
+    const analyticsEvents: unknown[] = [];
+
+    const result = await submitContactLead(
+      {
+        name: "Alejandro Ortiz",
+        email: "alejandro.ortiz@aohys.com",
+        preferredContactPath: "email",
+        intent: "project",
+        message: "I need help shipping a product workflow.",
+        sourcePath: "/contact",
+        locale: "en",
+        consentToContact: true,
+      },
+      {
+        environment: "preview",
+        values: validProviderValues,
+        adapters: {
+          persistLead: async () => ({ leadId: "lead_123" }),
+          sendNotification: async () => {
+            throw new Error("Resend notification failed with status 500.");
           },
-          adapters: {
-            persistLead,
-            sendNotification: async () => ({ notificationId: "email_123" }),
-            captureAnalyticsEvent: async () => undefined,
+          captureAnalyticsEvent: async (event) => {
+            analyticsEvents.push(event);
           },
         },
-      ),
-    ).rejects.toThrow(/Contact providers are not configured:.*RESEND_API_KEY.*PUBLIC_POSTHOG_KEY/s);
-    expect(persistLead).not.toHaveBeenCalled();
+      },
+    );
+
+    expect(result).toMatchObject({
+      leadId: "lead_123",
+      notificationStatus: "failed",
+      analyticsStatus: "captured",
+      status: "new",
+    });
+    expect(analyticsEvents).toHaveLength(2);
+    expect(analyticsEvents[1]).toMatchObject({
+      event: "lead_provider_failed",
+      distinctId: "lead:lead_123",
+      properties: {
+        leadId: "lead_123",
+        provider: "resend",
+        operation: "lead_notification",
+        errorType: "Error",
+      },
+    });
+    expect(JSON.stringify(analyticsEvents[1])).not.toContain("alejandro.ortiz@aohys.com");
   });
 });

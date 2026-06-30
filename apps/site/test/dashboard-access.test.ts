@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   handleDashboardRequest,
+  safeHandleDashboardRequest,
   type DashboardAccessEnvironment,
 } from "../src/dashboard-access.js";
 
@@ -154,6 +155,39 @@ describe("dashboard access guard", () => {
     expect(response.status).toBe(503);
     expect(html).toContain("Dashboard configuration needs attention");
     expect(html).not.toContain("https://effervescent-minnow-483.convex.site");
+  });
+
+  it("returns a private unavailable state and reports unexpected dashboard runtime failures", async () => {
+    const capture = vi.fn(async () => undefined);
+    const response = await safeHandleDashboardRequest(
+      new Request("https://preview.aohys.com/dashboard/leads", {
+        headers: {
+          cookie: "better-auth.session_token=stale",
+        },
+      }),
+      validEnvironment,
+      vi.fn(async () => {
+        throw new Error("Convex session fetch failed with private details.");
+      }),
+      { capture },
+    );
+    const html = await response.text();
+
+    expect(response.status).toBe(502);
+    expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(html).toContain("Dashboard is temporarily unavailable");
+    expect(capture).toHaveBeenCalledWith({
+      event: "dashboard_runtime_exception",
+      distinctId: "dashboard:preview",
+      properties: {
+        environment: "preview",
+        source: "cloudflare_pages_dashboard",
+        path: "/dashboard/leads",
+        errorType: "Error",
+      },
+    });
+    expect(JSON.stringify(capture.mock.calls)).not.toContain("private details");
   });
 
   it("renders the sign-in page with noindex metadata", async () => {

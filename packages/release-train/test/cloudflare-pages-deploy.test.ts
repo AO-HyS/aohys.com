@@ -136,11 +136,17 @@ describe("Cloudflare Pages release plan", () => {
     expect(rootPackage.scripts["release:env:production"]).toBe(
       "tsx scripts/validate-release-env.ts production",
     );
+    expect(rootPackage.scripts["sync:convex-env:preview"]).toBe(
+      "tsx scripts/sync-convex-env.ts preview",
+    );
+    expect(rootPackage.scripts["sync:convex-env:production"]).toBe(
+      "tsx scripts/sync-convex-env.ts production",
+    );
     expect(rootPackage.scripts["deploy:preview"]).toBe(
-      "pnpm run release:env:preview && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"preview release\" && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop",
+      "pnpm run release:env:preview && pnpm run sync:convex-env:preview && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"preview release\" && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop",
     );
     expect(rootPackage.scripts["deploy:production"]).toBe(
-      "pnpm run release:env:production && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"production release\" && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main",
+      "pnpm run release:env:production && pnpm run sync:convex-env:production && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"production release\" && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main",
     );
 
     expect(existsSync(workflowPath), "release-train.yml must exist").toBe(true);
@@ -150,6 +156,7 @@ describe("Cloudflare Pages release plan", () => {
     expect(workflow).toContain("environment: production");
     expect(workflow).toContain("pnpm run deploy:preview");
     expect(workflow).toContain("pnpm run deploy:production");
+    expect(workflow).toContain("sync:convex-env");
     expect(workflow).toContain("scripts/extract-cloudflare-pages-deployment-url.ts");
     expect(workflow).toContain("SMOKE_BASE_URL: ${{ steps.deploy-preview.outputs.smoke_base_url }}");
     expect(workflow).toContain("CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}");

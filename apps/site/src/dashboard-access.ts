@@ -26,9 +26,26 @@ export interface DashboardAccessEnvironment extends Record<string, string | unde
   BETTER_AUTH_TRUSTED_ORIGINS: string;
   ADMIN_EMAIL: string;
   DASHBOARD_API_TOKEN: string;
+  PUBLIC_POSTHOG_KEY?: string;
+  PUBLIC_POSTHOG_HOST?: string;
 }
 
 export type DashboardFetch = typeof fetch;
+
+export interface DashboardRuntimeExceptionEvent {
+  event: "dashboard_runtime_exception";
+  distinctId: string;
+  properties: {
+    environment: EnvironmentName;
+    source: "cloudflare_pages_dashboard";
+    path: string;
+    errorType: string;
+  };
+}
+
+export interface DashboardRuntimeErrorReporter {
+  capture: (event: DashboardRuntimeExceptionEvent) => Promise<void> | void;
+}
 
 type DashboardContentActionPath =
   | "/dashboard/content/case-study"
@@ -53,6 +70,35 @@ const PRIVATE_HEADERS = {
   "x-robots-tag": "noindex, nofollow",
   "cache-control": "no-store",
 } as const;
+
+export async function safeHandleDashboardRequest(
+  request: Request,
+  environment: DashboardAccessEnvironment,
+  fetchSession: DashboardFetch = fetch,
+  reporter: DashboardRuntimeErrorReporter = createPostHogDashboardErrorReporter(environment),
+): Promise<Response> {
+  try {
+    return await handleDashboardRequest(request, environment, fetchSession);
+  } catch (error) {
+    const url = new URL(request.url);
+
+    await reportDashboardRuntimeError(
+      reporter,
+      {
+        event: "dashboard_runtime_exception",
+        distinctId: `dashboard:${environment.AOHYS_ENV}`,
+        properties: {
+          environment: environment.AOHYS_ENV,
+          source: "cloudflare_pages_dashboard",
+          path: normalizeDashboardPath(url.pathname),
+          errorType: error instanceof Error ? error.name : "UnknownError",
+        },
+      },
+    );
+
+    return htmlResponse(renderDashboardState("unavailable"), 502);
+  }
+}
 
 export async function handleDashboardRequest(
   request: Request,
@@ -143,6 +189,48 @@ export async function handleDashboardRequest(
     activePath: path,
     title: titleForPath(path),
   }));
+}
+
+function createPostHogDashboardErrorReporter(
+  environment: DashboardAccessEnvironment,
+  reporterFetch: DashboardFetch = fetch,
+): DashboardRuntimeErrorReporter {
+  return {
+    capture: async (event) => {
+      const apiKey = environment.PUBLIC_POSTHOG_KEY?.trim();
+
+      if (!apiKey) {
+        return;
+      }
+
+      const host = (environment.PUBLIC_POSTHOG_HOST?.trim() || "https://us.i.posthog.com")
+        .replace(/\/+$/, "");
+
+      await reporterFetch(`${host}/capture/`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          api_key: apiKey,
+          event: event.event,
+          distinct_id: event.distinctId,
+          properties: event.properties,
+        }),
+      });
+    },
+  };
+}
+
+async function reportDashboardRuntimeError(
+  reporter: DashboardRuntimeErrorReporter,
+  event: DashboardRuntimeExceptionEvent,
+): Promise<void> {
+  try {
+    await reporter.capture(event);
+  } catch {
+    // Error reporting is best-effort. The dashboard must still return a private response.
+  }
 }
 
 async function renderDashboardContent(

@@ -21,6 +21,7 @@ const copy = getUiCopy(locale).footer;
   <div class="footer-links" aria-label={copy.linksAria}>
     <a href={getLocalizedPath("privacy", locale)}>{copy.privacy}</a>
     <a href={getLocalizedPath("architecture", locale)}>{copy.architecture}</a>
+    <a class="footer-dashboard-link" href="/dashboard">{copy.dashboard}</a>
     <a href="mailto:alejandro.ortiz@aohys.com">alejandro.ortiz@aohys.com</a>
   </div>
   <p class="copyright">© {year} AOH&amp;S. {copy.copyright}</p>

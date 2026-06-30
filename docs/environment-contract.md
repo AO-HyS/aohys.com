@@ -57,7 +57,7 @@ Local development can receive `CONVEX_URL`, `CONVEX_SITE_URL`, and `CONVEX_DEPLO
 
 The public contact form uses `PUBLIC_CONTACT_ENDPOINT`, a browser-safe build value that should point at the Convex HTTP action `/contact` for the current environment. That endpoint is public by design; provider secrets stay in Convex/GitHub Environment variables.
 
-PostHog browser configuration is intentionally public because the key and host are used by the browser SDK. Preview and production must still use separate GitHub Environment values so analytics streams do not drift together. Autocapture is a public policy value and starts as `false`; pageviews, conversion events, and error events are emitted explicitly by the public site.
+PostHog browser configuration is intentionally public because the key and host are used by the browser SDK. Preview and production must still use separate GitHub Environment values so analytics streams do not drift together. Every emitted event also includes an `environment` property where the caller has environment context. Autocapture is a public policy value and starts as `false`; pageviews, conversion events, operational events, and error events are emitted explicitly by the public site or server boundary.
 
 Current explicit PostHog events:
 
@@ -70,6 +70,8 @@ Current explicit PostHog events:
 | `whatsapp_cta_clicked` | Public WhatsApp CTAs | CTA target only |
 | `email_cta_clicked` | Public email CTAs | CTA target only |
 | `lead_submitted` | Convex contact workflow | Backend-safe conversion metadata only; no message text or contact identity |
+| `lead_provider_failed` | Convex contact workflow | Provider, operation, environment, lead id, and error type only; no message text or contact identity |
+| `dashboard_runtime_exception` | Cloudflare Pages `/dashboard` guard | Environment, path, source, and error type only; no cookies, tokens, or exception message |
 
 ## Provider Responsibilities
 
@@ -140,11 +142,11 @@ Required checks:
 - Convex deployment target is environment-appropriate;
 - Convex deploy keys are never exposed through `PUBLIC_` browser variables;
 - Cloudflare API tokens are required by release validation and stay server-only;
-- Contact submissions have Convex, Resend, and PostHog settings before accepting a lead.
+- Contact submissions persist the lead first; Resend and PostHog delivery are best-effort and report sanitized operational events when configured.
 
 ## Release Train Dependency
 
-The Release Train depends on this contract. A release is not healthy if it can deploy with stale GitHub secrets, mismatched Convex variables, wrong Better Auth origins, or production PostHog/Resend values in preview.
+The Release Train depends on this contract. A release is not healthy if it can deploy with stale GitHub secrets, mismatched Convex variables, wrong Better Auth origins, or production PostHog/Resend values in preview. Deploy scripts run `scripts/sync-convex-env.ts` before `convex deploy` so the Convex runtime receives the same environment-specific values validated from GitHub Environments.
 
 Issue #13 implements release-facing validation through `pnpm run release:env:preview` and `pnpm run release:env:production`. Issues #10, #11, #12, and #14 implement provider-specific runtime parts behind the same seam.
 

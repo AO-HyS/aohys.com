@@ -49,9 +49,12 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain("Start a conversation");
+    expect(homeHtml).toContain('href="/dashboard"');
+    expect(homeHtml).toContain("Dashboard");
     expect(spanishHomeHtml).toContain("Hablemos");
     expect(spanishHomeHtml).not.toContain('href="/case-studies"');
     expect(spanishHomeHtml).toContain('href="/es/casos"');
+    expect(spanishHomeHtml).toContain('href="/dashboard"');
   });
 
   it("renders the graph-backed home proof narrative in both languages", () => {
@@ -309,6 +312,7 @@ describe("built public routes", () => {
     expect(headers).toContain("Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()");
     expect(headers).toContain("Content-Security-Policy:");
     expect(headers).toContain("frame-ancestors 'none'");
-    expect(headers).toContain("connect-src 'self' https://*.convex.site https://us.i.posthog.com https://us.posthog.com");
+    expect(headers).toContain("script-src 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
+    expect(headers).toContain("connect-src 'self' https://*.convex.site https://us.i.posthog.com https://us.posthog.com https://us-assets.i.posthog.com");
   });
 });
