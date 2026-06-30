@@ -48,6 +48,7 @@ describe("public site analytics contract", () => {
     expect(SELECTED_CONVERSION_EVENTS).toEqual([
       "contact_form_viewed",
       "contact_form_submit_attempted",
+      "contact_form_submit_succeeded",
       "contact_form_submit_failed",
       "whatsapp_cta_clicked",
       "email_cta_clicked",

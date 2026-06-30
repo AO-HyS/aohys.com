@@ -53,6 +53,79 @@ const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
 const publicContactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL ?? "alejandro.ortiz@aohys.com";
 const publicWhatsAppUrl = import.meta.env.PUBLIC_WHATSAPP_URL ?? "https://wa.me/522299020825";
 const directEmailHref = `mailto:${publicContactEmail}`;
+
+function splitHeadline(headline: string): string[] {
+  const parts = headline.split(". ");
+  return parts.map((part, index) => {
+    if (index < parts.length - 1 && !part.endsWith(".")) {
+      return `${part}.`;
+    }
+
+    return part;
+  });
+}
+
+const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : [];
+
+const routeSignalById: Partial<Record<ContentId | string, string>> = {
+  "case-studies": locale === "es" ? "Evidencia seleccionada" : "Selected proof",
+  architecture: locale === "es" ? "Sistema público" : "Public system",
+  resume: locale === "es" ? "Contexto profesional" : "Professional context",
+  contact: locale === "es" ? "Contacto directo" : "Direct contact",
+  privacy: locale === "es" ? "Límite de privacidad" : "Privacy boundary",
+  practice: locale === "es" ? "Práctica de ingeniería" : "Engineering practice",
+};
+const routeSignal = routeSignalById[id] ?? variant.summary;
+
+const evidenceImageByContentId: Partial<Record<ContentId | string, { src: string; alt: string }>> = {
+  "case-study:casa-roca": {
+    src: "/images/proof/casa-roca-production.png",
+    alt: locale === "es" ? "Captura pública del sitio Casa Roca en producción" : "Public Casa Roca production website screenshot",
+  },
+  "case-study:the-barber-central": {
+    src: "/images/proof/barber-central-ops.png",
+    alt: locale === "es" ? "Captura sanitizada de operaciones de The Barber Central" : "Sanitized The Barber Central operations screenshot",
+  },
+  "case-study:nutri-plan": {
+    src: "/images/proof/nutri-plan-proof.png",
+    alt: locale === "es" ? "Captura sanitizada de Nutri Plan" : "Sanitized Nutri Plan screenshot",
+  },
+  "case-study:engineering-practice": {
+    src: "/images/generated/aohys-delivery-artifact.png",
+    alt: locale === "es" ? "Artefacto visual de arquitectura y delivery de AOHYS" : "AOHYS architecture and delivery visual artifact",
+  },
+};
+
+function evidenceImageForContent(contentId: string) {
+  return evidenceImageByContentId[contentId];
+}
+
+function evidenceImageForPath(path: string) {
+  if (path.includes("casa-roca")) {
+    return evidenceImageForContent("case-study:casa-roca");
+  }
+
+  if (path.includes("the-barber-central")) {
+    return evidenceImageForContent("case-study:the-barber-central");
+  }
+
+  if (path.includes("nutri-plan")) {
+    return evidenceImageForContent("case-study:nutri-plan");
+  }
+
+  if (
+    path.includes("engineering-practice") ||
+    path.includes("practica-de-ingenieria") ||
+    path === "/practice" ||
+    path === "/es/practica"
+  ) {
+    return evidenceImageForContent("case-study:engineering-practice");
+  }
+
+  return undefined;
+}
+
+const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undefined;
 ---
 
 {
@@ -61,7 +134,9 @@ const directEmailHref = `mailto:${publicContactEmail}`;
       <section class="hero-section home-proof-hero" aria-labelledby="home-title" data-home-content-id={id}>
         <div class="hero-copy">
           <p class="signal-line">{copy.signal}</p>
-          <h1 id="home-title">{homeContent.headline}</h1>
+          <h1 id="home-title" class="home-headline" aria-label={homeContent.headline}>
+            {homeHeadlineParts.map((part) => <span aria-hidden="true">{part}</span>)}
+          </h1>
           <p class="hero-lead">
             {homeContent.deck}
           </p>
@@ -72,33 +147,18 @@ const directEmailHref = `mailto:${publicContactEmail}`;
         </div>
 
         <figure class="proof-board home-proof-board" aria-label={homeContent.proofBoardLabel}>
-          <div class="artifact artifact-large board-sheet">
-            <span class="artifact-label">{copy.publicSample}</span>
+          <figcaption class="proof-board-caption">
+            <span>{copy.publicSample}</span>
             <strong>{homeContent.proofBoardTitle}</strong>
             <p>{homeContent.proofBoardBody}</p>
-          </div>
-          <div class="board-route outcome-route">
-            <span>{copy.outcome}</span>
-            <strong>{homeContent.selectedOutcomesHeading}</strong>
-          </div>
-          <div class="board-route architecture-route">
-            <span>{copy.architecture}</span>
-            <strong>{homeContent.architectureHeading}</strong>
-          </div>
-          <div class="board-route review-route">
-            <span>{copy.reviewPath}</span>
-            <strong>{copy.reviewPathText}</strong>
-          </div>
-          <svg class="proof-lines" viewBox="0 0 520 360" role="img" aria-label="Connections between outcomes, architecture, and review path">
-            <path d="M112 92 C184 58 264 58 344 100" />
-            <path d="M126 185 C218 226 318 226 426 178" />
-            <path d="M196 282 C260 242 334 242 398 286" />
-            <circle cx="112" cy="92" r="6" />
-            <circle cx="344" cy="100" r="6" />
-            <circle cx="426" cy="178" r="6" />
-            <circle cx="196" cy="282" r="6" />
-            <circle cx="398" cy="286" r="6" />
-          </svg>
+          </figcaption>
+          <img
+            class="hero-artifact-asset"
+            src="/images/generated/aohys-hero-system-map.png"
+            alt={copy.deliveryArtifactAlt}
+            loading="eager"
+            decoding="async"
+          />
         </figure>
       </section>
 
@@ -109,15 +169,23 @@ const directEmailHref = `mailto:${publicContactEmail}`;
           <p class="section-intro">{homeContent.selectedOutcomesIntro}</p>
         </div>
         <div class="outcome-ledger">
-          {homeContent.selectedOutcomes.map((outcome) => (
+          {homeContent.selectedOutcomes.map((outcome, index) => (
             <a class="outcome-row" href={outcome.path}>
-              <span class="outcome-label">{outcome.label}</span>
-              <strong>{outcome.title}</strong>
-              <p>{outcome.outcome}</p>
-              <figure class="outcome-evidence" aria-label={outcome.evidence.altText}>
-                <span>{outcome.evidence.label}</span>
-                <em>{outcome.role}</em>
+              <span class="outcome-index">{String(index + 1).padStart(2, "0")}</span>
+              <figure class="outcome-shot" aria-label={outcome.evidence.altText}>
+                {outcome.evidence.src ? (
+                  <img src={outcome.evidence.src} alt={outcome.evidence.altText} loading="eager" decoding="async" />
+                ) : (
+                  <span class="evidence-fallback">{outcome.evidence.label}</span>
+                )}
               </figure>
+              <div class="outcome-summary">
+                <span class="outcome-label">{outcome.label}</span>
+                <strong>{outcome.title}</strong>
+                <p>{outcome.outcome}</p>
+              </div>
+              <p class="outcome-scope">{outcome.role}</p>
+              <span class="outcome-arrow" aria-hidden="true">→</span>
             </a>
           ))}
         </div>
@@ -128,13 +196,23 @@ const directEmailHref = `mailto:${publicContactEmail}`;
           <h2 id="home-architecture-title">{homeContent.architectureHeading}</h2>
           <p>{homeContent.architectureBody}</p>
         </div>
-        <div class="architecture-track" aria-label={homeContent.architectureHeading}>
-          {homeContent.architectureStages.map((stage) => (
-            <div class="architecture-step">
-              <span>{stage.label}</span>
-              <p>{stage.text}</p>
-            </div>
-          ))}
+        <div class="architecture-proof-stack">
+          <figure class="architecture-proof-visual">
+            <img
+              src="/images/generated/aohys-architecture-proof-surface.png"
+              alt={locale === "es" ? "Mapa del sistema público y privado de AOHYS" : "AOHYS public and private system map"}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+          <div class="architecture-track" aria-label={homeContent.architectureHeading}>
+            {homeContent.architectureStages.map((stage) => (
+              <div class="architecture-step">
+                <span>{stage.label}</span>
+                <p>{stage.text}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -168,7 +246,7 @@ const directEmailHref = `mailto:${publicContactEmail}`;
     <>
       <section class="architecture-page-hero" aria-labelledby="architecture-title" data-architecture-content-id={id}>
         <div class="architecture-page-copy">
-          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <p class="signal-line">{routeSignal}</p>
           <h1 id="architecture-title">{architectureContent.heading}</h1>
           <p class="hero-lead">{architectureContent.deck}</p>
           <div class="hero-actions" aria-label={copy.actions}>
@@ -177,14 +255,24 @@ const directEmailHref = `mailto:${publicContactEmail}`;
           </div>
         </div>
 
-        <aside class="source-index" aria-label={architectureContent.sourceLabel}>
-          <strong>{architectureContent.sourceLabel}</strong>
-          <div class="source-links">
-            {architectureContent.sourceLinks.map((link) => (
-              <a href={link.href}>{link.label}</a>
-            ))}
-          </div>
-        </aside>
+        <div class="architecture-hero-aside">
+          <figure class="architecture-hero-map">
+            <img
+              src="/images/proof/aohys-system-map.svg"
+              alt={locale === "es" ? "Mapa de arquitectura de la muestra pública AOHYS" : "Architecture map for the AOHYS public sample"}
+              loading="eager"
+              decoding="async"
+            />
+          </figure>
+          <aside class="source-index" aria-label={architectureContent.sourceLabel}>
+            <strong>{architectureContent.sourceLabel}</strong>
+            <div class="source-links">
+              {architectureContent.sourceLinks.map((link) => (
+                <a href={link.href}>{link.label}</a>
+              ))}
+            </div>
+          </aside>
+        </div>
       </section>
 
       <section class="architecture-map" aria-labelledby="architecture-map-title">
@@ -217,7 +305,7 @@ const directEmailHref = `mailto:${publicContactEmail}`;
     <>
       <section class="case-study-index-hero" aria-labelledby="case-study-index-title" data-case-study-index-content-id={id}>
         <div class="case-study-hero-copy">
-          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <p class="signal-line">{routeSignal}</p>
           <h1 id="case-study-index-title">{caseStudyIndexContent.heading}</h1>
           <p class="hero-lead">{caseStudyIndexContent.intro}</p>
           <div class="hero-actions" aria-label={copy.actions}>
@@ -225,6 +313,11 @@ const directEmailHref = `mailto:${publicContactEmail}`;
             {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
           </div>
         </div>
+        <figure class="case-index-proof-wall" aria-label={locale === "es" ? "Capturas públicas de proyectos seleccionados" : "Public screenshots from selected work"}>
+          <img src="/images/proof/casa-roca-production.png" alt={locale === "es" ? "Captura pública de Casa Roca" : "Public Casa Roca screenshot"} loading="eager" decoding="async" />
+          <img src="/images/proof/barber-central-ops.png" alt={locale === "es" ? "Captura sanitizada de The Barber Central" : "Sanitized The Barber Central screenshot"} loading="eager" decoding="async" />
+          <img src="/images/proof/nutri-plan-proof.png" alt={locale === "es" ? "Captura sanitizada de Nutri Plan" : "Sanitized Nutri Plan screenshot"} loading="eager" decoding="async" />
+        </figure>
       </section>
 
       <section class="selected-work-index" aria-labelledby="selected-work-title">
@@ -236,6 +329,21 @@ const directEmailHref = `mailto:${publicContactEmail}`;
           {caseStudyIndexContent.entries.map((entry) => (
             <a class="selected-work-row" href={entry.path}>
               <span>{entry.statusLabel}</span>
+              <figure class="selected-work-shot">
+                {(() => {
+                  const evidenceImage = evidenceImageForPath(entry.path);
+                  return evidenceImage ? (
+                    <img
+                      src={evidenceImage.src}
+                      alt={evidenceImage.alt}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <span>{entry.evidenceLabel}</span>
+                  );
+                })()}
+              </figure>
               <strong>{entry.title}</strong>
               <p>{entry.summary}</p>
               <em>{entry.evidenceLabel}</em>
@@ -258,6 +366,14 @@ const directEmailHref = `mailto:${publicContactEmail}`;
         </div>
 
         <aside class="case-study-status" aria-label={caseStudyContent.statusLabel}>
+          {caseStudyEvidenceImage && (
+            <img
+              src={caseStudyEvidenceImage.src}
+              alt={caseStudyEvidenceImage.alt}
+              loading="eager"
+              decoding="async"
+            />
+          )}
           <span>{caseStudyContent.statusLabel}</span>
           <strong>{variant.summary}</strong>
         </aside>
@@ -301,7 +417,7 @@ const directEmailHref = `mailto:${publicContactEmail}`;
     <>
       <section class="resume-hero" aria-labelledby="resume-title" data-resume-content-id={id}>
         <div class="resume-identity">
-          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <p class="signal-line">{routeSignal}</p>
           <h1 id="resume-title">{resumeContent.name}</h1>
           <p class="resume-role">{resumeContent.role}</p>
           <p class="hero-lead">{resumeContent.intro}</p>
@@ -313,14 +429,29 @@ const directEmailHref = `mailto:${publicContactEmail}`;
           </div>
         </div>
 
-        <aside class="resume-contact" aria-label={resumeContent.name}>
-          <span>{resumeContent.location}</span>
-          {resumeContent.contactLinks.map((link) => (
-            <a href={link.href}>
-              <strong>{link.label}</strong>
-              <span>{link.text}</span>
-            </a>
-          ))}
+        <aside class="resume-proof-panel" aria-label={resumeContent.proof.label}>
+          <figure class="resume-proof-visual">
+            <img
+              src="/images/generated/aohys-architecture-proof-surface.png"
+              alt={locale === "es" ? "Artefacto visual del sistema público, privado y observable de AOHYS" : "Visual artifact of the AOHYS public, private, and observable system"}
+              loading="eager"
+              decoding="async"
+            />
+          </figure>
+          <div class="resume-proof-copy">
+            <span>{resumeContent.proof.label}</span>
+            <strong>{resumeContent.proof.title}</strong>
+            <p>{resumeContent.proof.body}</p>
+          </div>
+          <div class="resume-contact" aria-label={resumeContent.name}>
+            <span>{resumeContent.location}</span>
+            {resumeContent.contactLinks.map((link) => (
+              <a href={link.href}>
+                <strong>{link.label}</strong>
+                <span>{link.text}</span>
+              </a>
+            ))}
+          </div>
         </aside>
       </section>
 
@@ -435,13 +566,21 @@ const directEmailHref = `mailto:${publicContactEmail}`;
     <>
       <section class="contact-form-section" aria-labelledby="contact-title" data-contact-content-id={id}>
         <div class="contact-form-copy">
-          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <p class="signal-line">{routeSignal}</p>
           <h1 id="contact-title">{variant.title}</h1>
           <p class="hero-lead">{variant.summary}</p>
           <div class="contact-direct-actions" aria-label={copy.actions}>
             <a class="button button-whatsapp" href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_hero">{contactCopy.whatsappLabel}</a>
             <a class="button button-secondary" href={directEmailHref} data-analytics-event="email_cta_clicked" data-analytics-target="contact_hero">{contactCopy.emailLabel}</a>
           </div>
+          <figure class="contact-architecture-card">
+            <img
+              src="/images/generated/aohys-delivery-artifact.png"
+              alt={locale === "es" ? "Ruta visual de contacto, entrega y observabilidad de AOHYS" : "Visual route for AOHYS contact, delivery, and observability"}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
         </div>
 
         <form
@@ -451,6 +590,7 @@ const directEmailHref = `mailto:${publicContactEmail}`;
           data-contact-form
           data-contact-endpoint={contactEndpoint}
           data-success-message={contactCopy.successMessage}
+          data-degraded-success-message={contactCopy.degradedSuccessMessage}
           data-error-message={contactCopy.errorMessage}
           data-validation-message={contactCopy.validationMessage}
           data-email-error-message={contactCopy.emailErrorMessage}
@@ -542,7 +682,7 @@ const directEmailHref = `mailto:${publicContactEmail}`;
       </section>
 
       <script>
-        const dispatchContactAnalytics = (event: string, properties: Record<string, string> = {}) => {
+        const dispatchContactAnalytics = (event: string, properties: Record<string, string | boolean> = {}) => {
           window.dispatchEvent(new CustomEvent("aohys:analytics", {
             detail: { event, properties },
           }));
@@ -559,6 +699,26 @@ const directEmailHref = `mailto:${publicContactEmail}`;
             return "";
           }
         };
+
+        const readSubmissionResult = async (response: Response) => {
+          try {
+            return await response.json();
+          } catch {
+            return {};
+          }
+        };
+
+        const stringStatus = (payload: unknown, key: string, fallback: string) => {
+          if (!payload || typeof payload !== "object") {
+            return fallback;
+          }
+
+          const value = (payload as Record<string, unknown>)[key];
+          return typeof value === "string" && value ? value : fallback;
+        };
+
+        const shouldShowDegradedSuccess = (notificationStatus: string) =>
+          notificationStatus === "failed" || notificationStatus === "skipped";
 
         const failureReasonForResponse = (response: Response, code: string) => {
           if (response.status === 400 || code === "validation_error") {
@@ -672,9 +832,22 @@ const directEmailHref = `mailto:${publicContactEmail}`;
                 return;
               }
 
+              const result = await readSubmissionResult(response);
+              const notificationStatus = stringStatus(result, "notificationStatus", "unknown");
+              const analyticsStatus = stringStatus(result, "analyticsStatus", "unknown");
+              const deliveryDegraded = shouldShowDegradedSuccess(notificationStatus);
+
+              dispatchContactAnalytics("contact_form_submit_succeeded", {
+                notification_status: notificationStatus,
+                analytics_status: analyticsStatus,
+                delivery_degraded: deliveryDegraded,
+              });
+
               form.reset();
               if (status) {
-                status.textContent = form.dataset.successMessage ?? "";
+                status.textContent = deliveryDegraded
+                  ? form.dataset.degradedSuccessMessage ?? form.dataset.successMessage ?? ""
+                  : form.dataset.successMessage ?? "";
               }
             } catch {
               dispatchContactAnalytics("contact_form_submit_failed", {
@@ -700,7 +873,7 @@ const directEmailHref = `mailto:${publicContactEmail}`;
     <>
       <section class="route-hero" aria-labelledby="privacy-title" data-privacy-content-id={id}>
         <div class="route-hero-copy">
-          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <p class="signal-line">{routeSignal}</p>
           <h1 id="privacy-title">{privacyContent.heading}</h1>
           <p class="hero-lead">{privacyContent.intro}</p>
           <div class="hero-actions" aria-label={copy.actions}>
@@ -735,7 +908,7 @@ const directEmailHref = `mailto:${publicContactEmail}`;
     <>
       <section class="route-hero" aria-labelledby="route-title" data-content-type={node.type}>
         <div class="route-hero-copy">
-          <p class="signal-line">{copy.routeSignal} · {id}</p>
+          <p class="signal-line">{routeSignal}</p>
           <h1 id="route-title">{variant.title}</h1>
           <p class="hero-lead">{variant.summary}</p>
           <div class="hero-actions" aria-label={copy.actions}>

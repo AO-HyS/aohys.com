@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { buildPublicContactError } from "../src/contact-http.js";
+import {
+  buildContactIntakeFailureEvent,
+  buildPublicContactError,
+} from "../src/contact-http.js";
 
 describe("contact HTTP error boundary", () => {
   it("maps validation, email provider, and backend failures to safe public codes", () => {
@@ -29,5 +32,45 @@ describe("contact HTTP error boundary", () => {
         error: "Contact backend is temporarily unavailable.",
       },
     });
+  });
+
+  it("builds sanitized PostHog intake failure events without contact identity", () => {
+    const publicError = buildPublicContactError(new Error("database timeout with client@example.com"));
+    const event = buildContactIntakeFailureEvent({
+      environment: "preview",
+      input: {
+        name: "Private Person",
+        email: "client@example.com",
+        company: "Private Company",
+        phone: "+52 229 000 0000",
+        preferredContactPath: "whatsapp",
+        intent: "project",
+        message: "Private project details.",
+        sourcePath: "/contact",
+        locale: "en",
+      },
+      publicError,
+      error: new Error("database timeout with client@example.com"),
+    });
+
+    expect(event).toEqual({
+      event: "lead_intake_failed",
+      distinctId: "lead-intake:preview",
+      properties: {
+        environment: "preview",
+        code: "backend_unavailable",
+        status: 502,
+        errorType: "Error",
+        sourcePath: "/contact",
+        locale: "en",
+        intent: "project",
+        preferredContactPath: "whatsapp",
+        hasCompany: true,
+        hasPhone: true,
+      },
+    });
+    expect(JSON.stringify(event)).not.toContain("client@example.com");
+    expect(JSON.stringify(event)).not.toContain("Private project details");
+    expect(JSON.stringify(event)).not.toContain("Private Person");
   });
 });

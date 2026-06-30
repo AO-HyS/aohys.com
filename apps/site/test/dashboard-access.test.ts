@@ -4,6 +4,7 @@ import {
   safeHandleDashboardRequest,
   type DashboardAccessEnvironment,
 } from "../src/dashboard-access.js";
+import { CONTENT_SECURITY_POLICY } from "../src/security-headers.js";
 
 const validEnvironment: DashboardAccessEnvironment = {
   AOHYS_ENV: "preview",
@@ -26,6 +27,7 @@ describe("dashboard access guard", () => {
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toBe("/dashboard/sign-in?callbackURL=%2Fdashboard");
     expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
   });
 
   it("renders the allowlisted admin dashboard shell after Better Auth session verification", async () => {
@@ -157,6 +159,21 @@ describe("dashboard access guard", () => {
     expect(html).not.toContain("https://effervescent-minnow-483.convex.site");
   });
 
+  it("returns a private configuration state instead of throwing when Pages env bindings are absent", async () => {
+    const response = await safeHandleDashboardRequest(
+      new Request("https://develop.aohys-com.pages.dev/dashboard"),
+      undefined,
+      vi.fn(),
+    );
+    const html = await response.text();
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
+    expect(html).toContain("Dashboard configuration needs attention");
+  });
+
   it("redirects stale or unreadable session cookies back to sign-in", async () => {
     const response = await safeHandleDashboardRequest(
       new Request("https://preview.aohys.com/dashboard/leads", {
@@ -173,6 +190,7 @@ describe("dashboard access guard", () => {
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toBe("/dashboard/sign-in?callbackURL=%2Fdashboard%2Fleads");
     expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
   });
 
   it("returns a private unavailable state and reports unexpected dashboard runtime failures", async () => {
@@ -203,6 +221,7 @@ describe("dashboard access guard", () => {
     expect(response.status).toBe(502);
     expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
     expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
     expect(html).toContain("Dashboard is temporarily unavailable");
     expect(capture).toHaveBeenCalledWith({
       event: "dashboard_runtime_exception",
@@ -226,6 +245,7 @@ describe("dashboard access guard", () => {
     const html = await response.text();
 
     expect(response.status).toBe(200);
+    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
     expect(html).toContain('data-dashboard-shell="sign-in"');
     expect(html).toContain('<meta name="robots" content="noindex,nofollow"');
     expect(html).toContain("/dashboard/sign-in/google?callbackURL=%2Fdashboard");
@@ -249,6 +269,7 @@ describe("dashboard access guard", () => {
 
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toBe("https://accounts.google.com/o/oauth2/v2/auth?state=state_123");
+    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
     expect(response.headers.get("set-cookie")).toContain("better-auth.state=state_123");
     expect(fetchAuth).toHaveBeenCalledWith(
       "https://effervescent-minnow-483.convex.site/api/auth/sign-in/social",

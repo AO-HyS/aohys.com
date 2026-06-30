@@ -17,6 +17,8 @@ import {
 import { PUBLIC_CONTENT_NODES, getLocaleVariant } from "@aohys/content-graph";
 import { isOneOf } from "@aohys/core";
 import { validateEnvironmentContract, type EnvironmentName } from "@aohys/environment";
+import { capturePostHogServerEvent } from "./posthog-server.js";
+import { PRIVATE_HTML_HEADERS, PRIVATE_NO_STORE_HEADERS } from "./security-headers.js";
 
 export interface DashboardAccessEnvironment extends Record<string, string | undefined> {
   AOHYS_ENV: EnvironmentName;
@@ -29,6 +31,10 @@ export interface DashboardAccessEnvironment extends Record<string, string | unde
   PUBLIC_POSTHOG_KEY?: string;
   PUBLIC_POSTHOG_HOST?: string;
 }
+
+type DashboardAccessEnvironmentInput =
+  Partial<DashboardAccessEnvironment> &
+  Record<string, string | undefined>;
 
 export type DashboardFetch = typeof fetch;
 
@@ -65,25 +71,22 @@ interface DashboardContentPayload {
   resumeVersions?: DashboardResumeVersion[];
 }
 
-const PRIVATE_HEADERS = {
-  "content-type": "text/html; charset=utf-8",
-  "x-robots-tag": "noindex, nofollow",
-  "cache-control": "no-store",
-} as const;
-
 export async function safeHandleDashboardRequest(
   request: Request,
-  environment: DashboardAccessEnvironment,
+  environmentInput: DashboardAccessEnvironmentInput = {},
   fetchSession: DashboardFetch = fetch,
-  reporter: DashboardRuntimeErrorReporter = createPostHogDashboardErrorReporter(environment),
+  reporter?: DashboardRuntimeErrorReporter,
 ): Promise<Response> {
+  const environment = normalizeDashboardEnvironment(request, environmentInput);
+  const runtimeReporter = reporter ?? createPostHogDashboardErrorReporter(environment);
+
   try {
     return await handleDashboardRequest(request, environment, fetchSession);
   } catch (error) {
     const url = new URL(request.url);
 
     await reportDashboardRuntimeError(
-      reporter,
+      runtimeReporter,
       {
         event: "dashboard_runtime_exception",
         distinctId: `dashboard:${environment.AOHYS_ENV}`,
@@ -102,11 +105,12 @@ export async function safeHandleDashboardRequest(
 
 export async function handleDashboardRequest(
   request: Request,
-  environment: DashboardAccessEnvironment,
+  environmentInput: DashboardAccessEnvironmentInput,
   fetchSession: DashboardFetch = fetch,
 ): Promise<Response> {
   const url = new URL(request.url);
   const path = normalizeDashboardPath(url.pathname);
+  const environment = normalizeDashboardEnvironment(request, environmentInput);
   const contract = validateEnvironmentContract(environment.AOHYS_ENV, environment, {
     target: "dashboard-runtime",
   });
@@ -154,9 +158,8 @@ export async function handleDashboardRequest(
     return new Response(null, {
       status: 405,
       headers: {
+        ...PRIVATE_NO_STORE_HEADERS,
         allow: "POST",
-        "x-robots-tag": "noindex, nofollow",
-        "cache-control": "no-store",
       },
     });
   }
@@ -173,9 +176,8 @@ export async function handleDashboardRequest(
     return new Response(null, {
       status: 405,
       headers: {
+        ...PRIVATE_NO_STORE_HEADERS,
         allow: "POST",
-        "x-robots-tag": "noindex, nofollow",
-        "cache-control": "no-store",
       },
     });
   }
@@ -191,33 +193,50 @@ export async function handleDashboardRequest(
   }));
 }
 
+function normalizeDashboardEnvironment(
+  request: Request,
+  environment: DashboardAccessEnvironmentInput | undefined,
+): DashboardAccessEnvironment {
+  const values = environment ?? {};
+
+  return {
+    ...values,
+    AOHYS_ENV: normalizeEnvironmentName(values.AOHYS_ENV, request),
+  } as DashboardAccessEnvironment;
+}
+
+function normalizeEnvironmentName(
+  value: string | undefined,
+  request: Request,
+): EnvironmentName {
+  if (value === "local" || value === "preview" || value === "production") {
+    return value;
+  }
+
+  const hostname = new URL(request.url).hostname;
+
+  if (hostname === "localhost" || hostname === "127.0.0.1") {
+    return "local";
+  }
+
+  if (hostname === "aohys.com" || hostname === "www.aohys.com") {
+    return "production";
+  }
+
+  return "preview";
+}
+
 function createPostHogDashboardErrorReporter(
   environment: DashboardAccessEnvironment,
   reporterFetch: DashboardFetch = fetch,
 ): DashboardRuntimeErrorReporter {
   return {
     capture: async (event) => {
-      const apiKey = environment.PUBLIC_POSTHOG_KEY?.trim();
-
-      if (!apiKey) {
-        return;
-      }
-
-      const host = (environment.PUBLIC_POSTHOG_HOST?.trim() || "https://us.i.posthog.com")
-        .replace(/\/+$/, "");
-
-      await reporterFetch(`${host}/capture/`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          api_key: apiKey,
-          event: event.event,
-          distinct_id: event.distinctId,
-          properties: event.properties,
-        }),
-      });
+      await capturePostHogServerEvent(environment, {
+        event: event.event,
+        distinctId: event.distinctId,
+        properties: event.properties,
+      }, reporterFetch);
     },
   };
 }
@@ -312,9 +331,8 @@ async function updateDashboardContentMetadata(
   return new Response(null, {
     status: 302,
     headers: {
+      ...PRIVATE_NO_STORE_HEADERS,
       location: `${redirectPathForContentAction(actionPath)}?saved=1`,
-      "x-robots-tag": "noindex, nofollow",
-      "cache-control": "no-store",
     },
   });
 }
@@ -453,9 +471,8 @@ async function updateDashboardLeadStatus(
   return new Response(null, {
     status: 302,
     headers: {
+      ...PRIVATE_NO_STORE_HEADERS,
       location: `/dashboard/leads?lead=${encodeURIComponent(leadId)}&saved=1`,
-      "x-robots-tag": "noindex, nofollow",
-      "cache-control": "no-store",
     },
   });
 }
@@ -523,11 +540,8 @@ async function beginGoogleSignIn(
     return htmlResponse(renderDashboardState("unavailable"), 502);
   }
 
-  const headers = new Headers({
-    location,
-    "x-robots-tag": "noindex, nofollow",
-    "cache-control": "no-store",
-  });
+  const headers = new Headers(PRIVATE_NO_STORE_HEADERS);
+  headers.set("location", location);
   const stateCookie = response.headers.get("set-cookie");
 
   if (stateCookie) {
@@ -587,9 +601,8 @@ function redirectToSignIn(path: string): Response {
   return new Response(null, {
     status: 302,
     headers: {
+      ...PRIVATE_NO_STORE_HEADERS,
       location: `/dashboard/sign-in?callbackURL=${encodeURIComponent(path)}`,
-      "x-robots-tag": "noindex, nofollow",
-      "cache-control": "no-store",
     },
   });
 }
@@ -597,7 +610,7 @@ function redirectToSignIn(path: string): Response {
 function htmlResponse(html: string, status = 200): Response {
   return new Response(html, {
     status,
-    headers: PRIVATE_HEADERS,
+    headers: PRIVATE_HTML_HEADERS,
   });
 }
 

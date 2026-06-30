@@ -49,6 +49,7 @@ export interface EvidenceAsset {
   altText: string;
   kind: "public-site" | "development-preview" | "private-system" | "architecture-note";
   publicSafe: boolean;
+  src?: string;
 }
 
 export interface HomeOutcome {
@@ -162,6 +163,12 @@ export interface ResumePdfArtifact {
   description: string;
 }
 
+export interface ResumeProof {
+  label: string;
+  title: string;
+  body: string;
+}
+
 export interface ResumeHighlight {
   label: string;
   text: string;
@@ -197,6 +204,7 @@ export interface ResumePageContent {
   location: string;
   intro: string;
   pdf: ResumePdfArtifact;
+  proof: ResumeProof;
   contactLinks: ResumeLink[];
   contextTitle: string;
   contextLinks: ResumeLink[];

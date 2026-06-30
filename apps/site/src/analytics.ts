@@ -4,6 +4,7 @@ import type { ContentId, Locale } from "@aohys/content-graph";
 export const SELECTED_CONVERSION_EVENTS = [
   "contact_form_viewed",
   "contact_form_submit_attempted",
+  "contact_form_submit_succeeded",
   "contact_form_submit_failed",
   "whatsapp_cta_clicked",
   "email_cta_clicked",

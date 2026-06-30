@@ -12,6 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
   deployments: write
 
@@ -74,6 +75,7 @@ jobs:
       CLOUDFLARE_PROJECT_NAME: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
       PUBLIC_CONTACT_EMAIL: ${{ vars.PUBLIC_CONTACT_EMAIL }}
       PUBLIC_WHATSAPP_URL: ${{ vars.PUBLIC_WHATSAPP_URL }}
+      SMOKE_CONTACT_SUBMIT: ${{ vars.SMOKE_CONTACT_SUBMIT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -89,6 +91,14 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Audit PostHog environment separation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: pnpm run audit:posthog-env
+
+      - name: Audit Cloudflare Pages runtime bindings
+        run: pnpm run audit:cloudflare-pages-runtime
 
       - name: Deploy Cloudflare Pages preview with sync:convex-env
         id: deploy-preview
@@ -151,6 +161,14 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Audit PostHog environment separation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: pnpm run audit:posthog-env
+
+      - name: Audit Cloudflare Pages runtime bindings
+        run: pnpm run audit:cloudflare-pages-runtime
 
       - name: Deploy Cloudflare Pages production with sync:convex-env
         run: pnpm run deploy:production

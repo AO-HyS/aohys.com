@@ -56,7 +56,7 @@ The first schema includes:
 
 The public `leads.submit` mutation validates through `src/lead-intake.ts` before inserting into Convex. Reusable normalization and assertion primitives come from `@aohys/core` instead of staying embedded in feature code. Tests exercise this boundary without direct database coupling.
 
-The public contact endpoint is implemented as a Convex HTTP action at `/contact`. It validates the submission, persists the lead through an internal mutation, sends a Resend notification through an injected provider adapter, and captures a PostHog conversion event with metadata only. Public failures return safe codes such as `validation_error`, `email_delivery_failed`, and `backend_unavailable`; private provider messages and contact fields are not reflected back to the browser.
+The public contact endpoint is implemented as a Convex HTTP action at `/contact`. It validates the submission, persists the lead through an internal mutation, sends a Resend notification through an injected provider adapter, and captures a PostHog conversion event with metadata only. Once a lead is persisted, Resend and PostHog provider drift is reported through sanitized operational events instead of rejecting the visitor request. Public failures return safe codes such as `validation_error` and `backend_unavailable`; private provider messages and contact fields are not reflected back to the browser.
 
 Private dashboard endpoints are implemented as Convex HTTP actions protected by `DASHBOARD_API_TOKEN`:
 

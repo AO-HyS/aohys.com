@@ -7,7 +7,10 @@ import {
   captureLeadAnalyticsWithPostHog,
   sendLeadNotificationWithResend,
 } from "../src/contact-providers.js";
-import { buildPublicContactError } from "../src/contact-http.js";
+import {
+  buildContactIntakeFailureEvent,
+  buildPublicContactError,
+} from "../src/contact-http.js";
 import {
   submitContactLead,
   type ContactLeadInput,
@@ -101,6 +104,49 @@ function getContactEnvironmentValues(): Record<string, string | undefined> {
     PUBLIC_CONTACT_EMAIL: process.env.PUBLIC_CONTACT_EMAIL,
     PUBLIC_WHATSAPP_URL: process.env.PUBLIC_WHATSAPP_URL,
   };
+}
+
+function getContactEnvironment(): "local" | "preview" | "production" {
+  const environment = process.env.AOHYS_ENV;
+
+  if (
+    environment === "local" ||
+    environment === "preview" ||
+    environment === "production"
+  ) {
+    return environment;
+  }
+
+  return "production";
+}
+
+async function captureContactIntakeFailure(
+  input: Partial<ContactLeadInput> | undefined,
+  publicError: ReturnType<typeof buildPublicContactError>,
+  error: unknown,
+): Promise<void> {
+  const apiKey = process.env.PUBLIC_POSTHOG_KEY?.trim();
+
+  if (!apiKey) {
+    return;
+  }
+
+  try {
+    await captureLeadAnalyticsWithPostHog(
+      buildContactIntakeFailureEvent({
+        environment: getContactEnvironment(),
+        input,
+        publicError,
+        error,
+      }),
+      {
+        apiKey,
+        host: process.env.PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
+      },
+    );
+  } catch {
+    // Intake failure telemetry is best-effort and must not change the public response.
+  }
 }
 
 async function parseContactInput(request: Request): Promise<ContactLeadInput> {
@@ -269,15 +315,16 @@ http.route({
 
     try {
       input = await parseContactInput(request);
-    } catch {
+    } catch (error) {
       const publicError = buildPublicContactError(new Error("Invalid contact payload."));
+      await captureContactIntakeFailure(undefined, publicError, error);
 
       return jsonResponse(publicError.body, { status: publicError.status });
     }
 
     try {
       const result = await submitContactLead(input, {
-        environment: (process.env.AOHYS_ENV ?? "production") as "local" | "preview" | "production",
+        environment: getContactEnvironment(),
         values: getContactEnvironmentValues(),
         adapters: {
           persistLead: async (lead: PreparedContactLead) => ctx.runMutation(
@@ -301,6 +348,7 @@ http.route({
       return jsonResponse({ ok: true, ...result });
     } catch (error) {
       const publicError = buildPublicContactError(error);
+      await captureContactIntakeFailure(input, publicError, error);
 
       return jsonResponse(publicError.body, { status: publicError.status });
     }

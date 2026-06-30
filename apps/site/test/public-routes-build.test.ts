@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { getPublicRouteMap, getSeoMetadata, getSitemapEntries } from "@aohys/content-graph";
 import { describe, expect, it } from "vitest";
+import { CONTENT_SECURITY_POLICY } from "../src/security-headers.js";
 
 const siteRoot = process.cwd();
 const distRoot = path.join(siteRoot, "dist");
@@ -62,19 +63,31 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain('data-home-content-id="home"');
-    expect(homeHtml).toContain("Alejandro Ortiz Corro turns business goals into product systems people can trust.");
-    expect(homeHtml).toContain("Selected outcomes");
+    expect(homeHtml).toContain("Senior engineering.");
+    expect(homeHtml).toContain("Business outcomes.");
+    expect(homeHtml).toContain("Selected proof");
+    expect(homeHtml).toContain("Public pages. Private work. Observable releases.");
+    expect(homeHtml).toContain("Generated dark system map");
+    expect(homeHtml).toContain("/images/generated/aohys-hero-system-map.png");
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
     expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
     expect(homeHtml).toContain('href="/case-studies/enterprise-systems"');
     expect(homeHtml).toContain('aria-label="Public-safe evidence for Casa Roca"');
+    expect(homeHtml).toContain("/images/proof/casa-roca-production.png");
+    expect(homeHtml).toContain("/images/proof/barber-central-ops.png");
+    expect(homeHtml).toContain("/images/proof/nutri-plan-proof.png");
+    expect(homeHtml).toContain("/images/generated/aohys-architecture-proof-surface.png");
+    expect(homeHtml).toContain("/images/brand/aohys-logo.png");
     expect(homeHtml).toContain("WhatsApp");
     expect(homeHtml).not.toContain("Cloudflare · Convex · PostHog · Resend");
+    expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Alejandro Ortiz Corro convierte objetivos de negocio en sistemas confiables.");
-    expect(spanishHomeHtml).toContain("Resultados seleccionados");
+    expect(spanishHomeHtml).toContain("Ingeniería senior.");
+    expect(spanishHomeHtml).toContain("Resultados de negocio.");
+    expect(spanishHomeHtml).toContain("Evidencia seleccionada");
+    expect(spanishHomeHtml).toContain("Páginas públicas. Trabajo privado. Releases observables.");
     expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
     expect(spanishHomeHtml).toContain('aria-label="Evidencia pública segura de Casa Roca"');
     expect(spanishHomeHtml).toContain("WhatsApp");
@@ -96,7 +109,7 @@ describe("built public routes", () => {
 
     expect(spanishArchitectureHtml).toContain('data-architecture-content-id="architecture"');
     expect(spanishArchitectureHtml).toContain("Muestra pública, trabajo privado.");
-    expect(spanishArchitectureHtml).toContain("el código de clientes y productos permanece privado");
+    expect(spanishArchitectureHtml.toLowerCase()).toContain("el código de clientes y productos permanece privado");
     expect(spanishArchitectureHtml).toContain("Release Train");
     expect(spanishArchitectureHtml).toContain("Environment Contract");
     expect(spanishArchitectureHtml).toContain("Public Content Graph");
@@ -190,23 +203,27 @@ describe("built public routes", () => {
 
     expect(resumeHtml).toContain('data-resume-content-id="resume"');
     expect(resumeHtml).toContain("Alejandro Ortiz Corro");
-    expect(resumeHtml).toContain("Senior Frontend Developer");
+    expect(resumeHtml).toContain("Senior Product Engineer / Frontend Systems");
     expect(resumeHtml).toContain("Professional summary");
     expect(resumeHtml).toContain("Professional experience");
     expect(resumeHtml).toContain("Technical skills");
-    expect(resumeHtml).toContain("Dynamic resume context");
+    expect(resumeHtml).toContain("More context online");
     expect(resumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
+    expect(resumeHtml).toContain("Download resume PDF");
+    expect(resumeHtml).not.toContain("Download ATS PDF");
     expect(resumeHtml).toContain('href="/case-studies"');
     expect(resumeHtml).toContain('href="/architecture"');
 
     expect(spanishResumeHtml).toContain('data-resume-content-id="resume"');
     expect(spanishResumeHtml).toContain("Alejandro Ortiz Corro");
-    expect(spanishResumeHtml).toContain("Desarrollador Frontend Senior");
+    expect(spanishResumeHtml).toContain("Senior Product Engineer / Sistemas Frontend");
     expect(spanishResumeHtml).toContain("Resumen profesional");
     expect(spanishResumeHtml).toContain("Experiencia profesional");
     expect(spanishResumeHtml).toContain("Habilidades técnicas");
-    expect(spanishResumeHtml).toContain("Contexto dinámico del CV");
+    expect(spanishResumeHtml).toContain("Más contexto en línea");
     expect(spanishResumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
+    expect(spanishResumeHtml).toContain("Descargar CV en PDF");
+    expect(spanishResumeHtml).not.toContain("Descargar PDF ATS");
     expect(spanishResumeHtml).toContain('href="/es/casos"');
     expect(spanishResumeHtml).toContain('href="/es/arquitectura"');
 
@@ -228,14 +245,19 @@ describe("built public routes", () => {
     expect(contactHtml).toContain('data-validation-message=');
     expect(contactHtml).toContain('data-email-error-message=');
     expect(contactHtml).toContain('data-backend-error-message=');
+    expect(contactHtml).toContain('data-degraded-success-message=');
     expect(contactHtml).toContain('data-retry-label=');
     expect(contactHtml).toContain("Please review the highlighted fields before retrying.");
     expect(contactHtml).toContain("The notification email could not be sent.");
+    expect(contactHtml).toContain("Request received. If the email notification is delayed, I can still see it in the dashboard.");
     expect(contactHtml).toContain("Try again, or use WhatsApp or email directly.");
     expect(contactHtml).toContain("WhatsApp");
     expect(contactHtml).toContain("I understand AOHYS will use this information to respond to my request.");
     expect(contactHtml).toMatch(/failure_reason:[`"]validation_failed/);
     expect(contactHtml).toMatch(/failure_reason:\w/);
+    expect(contactHtml).toContain("contact_form_submit_succeeded");
+    expect(contactHtml).toContain("notification_status");
+    expect(contactHtml).toContain("analytics_status");
     expect(contactHtml).toContain("email_delivery_failed");
     expect(contactHtml).toMatch(/failure_reason:[`"]backend_unavailable/);
 
@@ -248,9 +270,11 @@ describe("built public routes", () => {
     expect(spanishContactHtml).toContain('data-validation-message=');
     expect(spanishContactHtml).toContain('data-email-error-message=');
     expect(spanishContactHtml).toContain('data-backend-error-message=');
+    expect(spanishContactHtml).toContain('data-degraded-success-message=');
     expect(spanishContactHtml).toContain('data-retry-label=');
     expect(spanishContactHtml).toContain("Revisa los campos marcados antes de intentar de nuevo.");
     expect(spanishContactHtml).toContain("No se pudo enviar el correo de notificación.");
+    expect(spanishContactHtml).toContain("Solicitud recibida. Si la notificación por correo se retrasa, todavía puedo verla en el dashboard.");
     expect(spanishContactHtml).toContain("Intenta de nuevo o usa WhatsApp/correo directo.");
     expect(spanishContactHtml).toContain("WhatsApp");
     expect(spanishContactHtml).toContain("Entiendo que AOHYS usará esta información para responder mi solicitud.");
@@ -265,6 +289,7 @@ describe("built public routes", () => {
     expect(contactHtml).toContain('"environment":"local"');
     expect(contactHtml).toContain('data-analytics-view="contact_form_viewed"');
     expect(contactHtml).toContain('data-analytics-submit="contact_form_submit_attempted"');
+    expect(contactHtml).toContain("contact_form_submit_succeeded");
     expect(contactHtml).toContain('data-analytics-event="whatsapp_cta_clicked"');
     expect(contactHtml).toContain('data-analytics-event="email_cta_clicked"');
     expect(contactHtml).not.toContain("autocapture:true");
@@ -310,9 +335,11 @@ describe("built public routes", () => {
     expect(headers).toContain("Referrer-Policy: strict-origin-when-cross-origin");
     expect(headers).toContain("X-Frame-Options: DENY");
     expect(headers).toContain("Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()");
-    expect(headers).toContain("Content-Security-Policy:");
+    expect(headers).toContain(`Content-Security-Policy: ${CONTENT_SECURITY_POLICY}`);
     expect(headers).toContain("frame-ancestors 'none'");
     expect(headers).toContain("script-src 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
+    expect(headers).toContain("script-src-elem 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
     expect(headers).toContain("connect-src 'self' https://*.convex.site https://us.i.posthog.com https://us.posthog.com https://us-assets.i.posthog.com");
+    expect(headers).toContain("report-uri /observability/csp");
   });
 });

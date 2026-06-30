@@ -18,12 +18,18 @@ describe("public site source quality", () => {
     const layout = read("src/layouts/BaseLayout.astro");
     const header = read("src/components/SiteHeader.astro");
     const footer = read("src/components/SiteFooter.astro");
+    const securityHeaders = read("src/security-headers.ts");
+    const staticHeaders = read("public/_headers");
     const posthogAnalytics = read("src/components/PostHogAnalytics.astro");
     const analytics = read("src/analytics.ts");
     const posthogClient = read("src/posthog-client.ts");
     const publicContentPage = read("src/components/PublicContentPage.astro");
+    const dashboardFunction = read("../../functions/dashboard/[[path]].ts");
+    const authFunction = read("../../functions/api/auth/[[path]].ts");
+    const cspFunction = read("../../functions/observability/csp.ts");
     const enDictionary = read("src/i18n/en.json");
     const esDictionary = read("src/i18n/es.json");
+    const imagePrompts = read("../../docs/aohys-public-site-image-prompts.md");
     const source = [
       globalCss,
       home,
@@ -52,6 +58,8 @@ describe("public site source quality", () => {
     expect(header).toContain("getUiCopy");
     expect(footer).toContain("getUiCopy");
     expect(publicContentPage).toContain("getUiCopy");
+    expect(publicContentPage).toContain("/images/generated/aohys-delivery-artifact.png");
+    expect(imagePrompts).toContain("aohys-delivery-artifact.png");
     expect(posthogAnalytics).toContain("buildAnalyticsBootstrapPayload");
     expect(posthogClient).toContain("capture_pageview");
     expect(posthogClient).toContain("captureException");
@@ -69,5 +77,19 @@ describe("public site source quality", () => {
     expect(globalCss).not.toMatch(/font-size:\s*clamp\([^;]*vw/i);
     expect(globalCss).not.toMatch(/--text-[^:]+:\s*clamp\([^;]*vw/i);
     expect(source).not.toMatch(/lorem/i);
+    expect(securityHeaders).toContain("script-src-elem");
+    expect(securityHeaders).toContain("https://*.i.posthog.com");
+    expect(securityHeaders).toContain("https://*.posthog.com");
+    expect(securityHeaders).toContain("report-uri /observability/csp");
+    expect(staticHeaders).toContain("script-src-elem");
+    expect(staticHeaders).toContain("https://*.i.posthog.com");
+    expect(staticHeaders).toContain("https://*.posthog.com");
+    expect(staticHeaders).toContain("report-uri /observability/csp");
+    expect(dashboardFunction).not.toMatch(/^import\s+\{[^}]+\}\s+from/m);
+    expect(authFunction).not.toMatch(/^import\s+\{[^}]+\}\s+from/m);
+    expect(cspFunction).not.toMatch(/^import\s+\{[^}]+\}\s+from/m);
+    expect(dashboardFunction).toContain('await import("../../apps/site/src/dashboard-access.js")');
+    expect(authFunction).toContain('await import("../../../apps/site/src/auth-proxy.js")');
+    expect(cspFunction).toContain('await import("../../apps/site/src/csp-reporting.js")');
   });
 });

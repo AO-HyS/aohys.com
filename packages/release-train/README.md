@@ -30,6 +30,6 @@ pnpm run deploy:production
 pnpm run smoke:production
 ```
 
-`deploy:preview` and `deploy:production` validate the Environment Contract, deploy Convex with the matching `CONVEX_DEPLOY_KEY`, build `apps/site`, and then deploy Cloudflare Pages with Wrangler.
+`deploy:preview` and `deploy:production` validate the Environment Contract, audit PostHog project separation, deploy Convex with the matching `CONVEX_DEPLOY_KEY`, build `apps/site`, and then deploy Cloudflare Pages with Wrangler.
 
 Domain-level redirects are represented in `cloudflare/redirect-rules.json`, not Cloudflare Pages `_redirects`.

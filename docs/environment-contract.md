@@ -57,7 +57,9 @@ Local development can receive `CONVEX_URL`, `CONVEX_SITE_URL`, and `CONVEX_DEPLO
 
 The public contact form uses `PUBLIC_CONTACT_ENDPOINT`, a browser-safe build value that should point at the Convex HTTP action `/contact` for the current environment. That endpoint is public by design; provider secrets stay in Convex/GitHub Environment variables.
 
-PostHog browser configuration is intentionally public because the key and host are used by the browser SDK. Preview and production must still use separate GitHub Environment values so analytics streams do not drift together. Every emitted event also includes an `environment` property where the caller has environment context. Autocapture is a public policy value and starts as `false`; pageviews, conversion events, operational events, and error events are emitted explicitly by the public site or server boundary.
+PostHog browser configuration is intentionally public because the key and host are used by the browser SDK. Preview and production must still use separate GitHub Environment values so analytics streams do not drift together. The preferred setup is two PostHog projects: `AOHYS Public Site - Preview` for branch/develop/previews and `AOHYS Public Site - Production` for `aohys.com`. Every emitted event also includes an `environment` property where the caller has environment context, but that property is a secondary guard, not the primary isolation boundary. Autocapture is a public policy value and starts as `false`; pageviews, conversion events, operational events, and error events are emitted explicitly by the public site or server boundary.
+
+During setup or incident recovery, verify that GitHub Environment `preview` and GitHub Environment `production` do not share the same `PUBLIC_POSTHOG_KEY`. If they do, preview errors and production traffic land in the same PostHog project and should be treated as a configuration bug before release promotion. The Release Train deploy jobs run this audit before deploying `develop` or `main`.
 
 Current explicit PostHog events:
 
@@ -69,9 +71,15 @@ Current explicit PostHog events:
 | `contact_form_submit_failed` | Contact form failure dispatch | Failure reason only; no message, email, name, phone, or company |
 | `whatsapp_cta_clicked` | Public WhatsApp CTAs | CTA target only |
 | `email_cta_clicked` | Public email CTAs | CTA target only |
-| `lead_submitted` | Convex contact workflow | Backend-safe conversion metadata only; no message text or contact identity |
+| `lead_submitted` | Convex contact workflow | Environment plus backend-safe conversion metadata only; no message text or contact identity |
 | `lead_provider_failed` | Convex contact workflow | Provider, operation, environment, lead id, and error type only; no message text or contact identity |
+| `lead_intake_failed` | Convex contact HTTP boundary | Environment, public error code/status, source path, locale, intent, and boolean presence flags only; no message text or contact identity |
 | `dashboard_runtime_exception` | Cloudflare Pages `/dashboard` guard | Environment, path, source, and error type only; no cookies, tokens, or exception message |
+| `csp_violation_reported` | Cloudflare Pages `/observability/csp` | Environment, path, directive, document path, disposition, and blocked host only; no full URL query, token, contact identity, or message text |
+
+Cloudflare Pages sends CSP violation reports to `/observability/csp`. This endpoint is intentionally tiny and best-effort: it returns `204` for valid reports and preflight checks even if PostHog is temporarily unavailable so CSP reporting never breaks a visitor path. It exists because a broken CSP can prevent the browser PostHog bundle from loading, so the report path must not depend on `posthog-js`. Static pages get the policy from `apps/site/public/_headers`; Pages Functions use the shared `apps/site/src/security-headers.ts` module so private dashboard, redirects, and observability responses do not drift.
+
+Cloudflare Pages runtime bindings are audited separately from GitHub Environment variables. GitHub is the release source of truth, but Pages Functions execute with Cloudflare deployment config values. The release train runs `pnpm run audit:cloudflare-pages-runtime` before deploy so `/dashboard`, `/api/auth/*`, and `/observability/csp` cannot silently lose `CONVEX_SITE_URL`, dashboard auth values, or PostHog server-capture keys.
 
 ## Provider Responsibilities
 

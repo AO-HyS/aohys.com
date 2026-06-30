@@ -2,66 +2,69 @@
   "home": {
     "path": "/es/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Objetivos de negocio convertidos en sistemas de producto confiables.",
-    "seoDescription": "Alejandro Ortiz Corro construye resultados de negocio con arquitectura de software, sistemas de producto, calidad, seguridad y prácticas modernas de ingeniería.",
+    "summary": "Ingeniería de software senior para equipos que necesitan resultados de negocio, arquitectura confiable y entrega inspeccionable.",
+    "seoDescription": "Alejandro Ortiz Corro construye sistemas de producto, software de negocio, sitios públicos, dashboards privados, workflows de backend y arquitectura de software para equipos que necesitan calidad, seguridad, escalabilidad y resultados medibles.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Alejandro Ortiz Corro convierte objetivos de negocio en sistemas confiables.",
-      "deck": "Ayudo a equipos a convertir objetivos ambiguos en software seguro y mantenible: sitios públicos que se pueden encontrar, herramientas operativas que reducen fricción y backends que aguantan cuando el trabajo se vuelve complejo.",
-      "proofBoardLabel": "Tablero de prueba pública de AOHYS",
-      "proofBoardTitle": "Muestra pública, trabajo privado.",
-      "proofBoardBody": "Este sitio se construye en público para que evaluadores técnicos puedan revisar arquitectura, i18n, SEO, quality gates, release path y criterio operativo detrás del trabajo.",
-      "selectedOutcomesHeading": "Resultados seleccionados",
-      "selectedOutcomesIntro": "Un ledger breve de evidencia pública segura: trabajo en producción, builds activos, sistemas privados de producto y experiencia enterprise.",
+      "headline": "Ingeniería senior. Resultados de negocio. Impacto medible.",
+      "deck": "Diseño y construyo sistemas de producto para equipos que necesitan operaciones más claras, releases confiables y software que aguante presión real de negocio.",
+      "proofBoardLabel": "Mapa de evidencia AOHYS",
+      "proofBoardTitle": "Páginas públicas. Trabajo privado. Releases observables.",
+      "proofBoardBody": "El sitio muestra cómo separo búsqueda, herramientas protegidas, leads, deploys y errores.",
+      "selectedOutcomesHeading": "Evidencia seleccionada",
+      "selectedOutcomesIntro": "Pruebas públicas seguras de trabajo en producción, builds activos, sistemas privados de operación y entrega enterprise confidencial.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",
-          "label": "Prueba en producción",
+          "label": "Sitio público",
           "title": "Casa Roca",
-          "outcome": "Sitio público de negocio diseñado para confianza, visibilidad en búsqueda, cuidado de rendimiento y disciplina de release.",
-          "role": "Entrega de sitio público, superficie SEO, disciplina de deploy.",
+          "outcome": "Sitio de hospitalidad en producción diseñado alrededor de confianza, contenido legible para búsqueda y contacto directo.",
+          "role": "Confianza pública, SEO, conversión",
           "evidence": {
             "label": "Sitio público",
             "altText": "Evidencia pública segura de Casa Roca",
             "kind": "public-site",
-            "publicSafe": true
+            "publicSafe": true,
+            "src": "/images/proof/casa-roca-production.png"
           }
         },
         {
           "contentId": "case-study:the-barber-central",
-          "label": "Producto activo",
+          "label": "Producto operativo",
           "title": "The Barber Central",
-          "outcome": "Reservaciones y operaciones organizadas alrededor de cómo funciona realmente un negocio local de servicios.",
-          "role": "Arquitectura de producto, booking, pagos, comunicación con clientes.",
+          "outcome": "Reservas, disponibilidad, pagos y comunicación con clientes diseñados alrededor de la presión diaria de un negocio local.",
+          "role": "Operación, pagos, flujo de clientes",
           "evidence": {
             "label": "Preview de desarrollo",
             "altText": "Evidencia pública segura de The Barber Central",
             "kind": "development-preview",
-            "publicSafe": true
+            "publicSafe": true,
+            "src": "/images/proof/barber-central-ops.png"
           }
         },
         {
           "contentId": "case-study:nutri-plan",
           "label": "Sistema privado",
           "title": "Nutri Plan",
-          "outcome": "Flujos de clientes, planes estructurados y claridad operativa para un producto todavía privado.",
-          "role": "Diseño de workflow, operaciones privadas, práctica de calidad.",
+          "outcome": "Planes, dashboards y flujos de clientes organizados en un mismo modelo operativo, no en pantallas desconectadas.",
+          "role": "Herramientas privadas, workflows, entrega a clientes",
           "evidence": {
             "label": "Preview sanitizado",
             "altText": "Evidencia pública segura de Nutri Plan",
             "kind": "development-preview",
-            "publicSafe": true
+            "publicSafe": true,
+            "src": "/images/proof/nutri-plan-proof.png"
           }
         },
         {
           "contentId": "case-study:enterprise-systems",
-          "label": "Sistemas enterprise",
+          "label": "Entrega enterprise",
           "title": "Sistemas enterprise",
-          "outcome": "Escalations, payment plans, cashback, customs workflows y backend delivery en ambientes complejos.",
-          "role": "Backend, escalations, confiabilidad, confidencialidad.",
+          "outcome": "Escalations, payment plans, cashback, customs workflows y backend delivery dentro de sistemas complejos de negocio.",
+          "role": "Confiabilidad, backend, confidencialidad",
           "evidence": {
             "label": "Resumen confidencial",
             "altText": "Evidencia pública segura de sistemas enterprise",
@@ -70,40 +73,40 @@
           }
         }
       ],
-      "architectureHeading": "El sitio en sí es la muestra.",
-      "architectureBody": "Las páginas públicas SEO y las operaciones privadas viven en un solo dominio, pero los límites son intencionales. El visitante ve la prueba; el dashboard privado queda autenticado, noindex y operativo.",
+      "architectureHeading": "El sistema debe mostrar cómo está construido.",
+      "architectureBody": "Este sitio es más que un portafolio: SEO público, rutas privadas de dashboard, contacto, observabilidad y promoción de releases están diseñados como un solo sistema inspeccionable.",
       "architectureStages": [
         {
           "label": "Superficie pública",
-          "text": "Las páginas Astro se resuelven desde IDs estables, slugs localizados, canonical URLs y reglas de sitemap."
+          "text": "Las páginas SEO se resuelven desde IDs estables, slugs localizados, canonical URLs y reglas de sitemap."
         },
         {
           "label": "Superficie privada",
-          "text": "Las rutas de dashboard quedan fuera de búsqueda pública y usarán workflows autenticados en vez de atajos de contenido público."
+          "text": "Las rutas de dashboard quedan fuera de búsqueda pública y usan workflows autenticados en vez de atajos de contenido público."
         },
         {
           "label": "Ruta de release",
           "text": "Las ramas de feature pasan primero a develop; la promoción a producción es otra revisión hacia main."
         }
       ],
-      "practiceHeading": "La práctica moderna de ingeniería es parte del entregable.",
-      "practiceBody": "La forma en que se planea, prueba, revisa, localiza, despliega y observa el trabajo importa tanto como la primera pantalla.",
+      "practiceHeading": "Principios de operación",
+      "practiceBody": "No empiezo vendiendo un stack. Mapeo el workflow, decido los límites y mantengo el camino de release suficientemente visible para que la calidad se pueda inspeccionar.",
       "practicePoints": [
         {
-          "label": "Entrega asistida por IA",
-          "text": "Los agentes aceleran implementación, pero el estándar sigue siendo arquitectura, revisión, pruebas y software funcionando."
+          "label": "Aclarar el trabajo",
+          "text": "Convertir objetivos abiertos en flujos, restricciones, límites y ruta de release."
         },
         {
-          "label": "Quality gates",
-          "text": "Pruebas de comportamiento, source checks, browser QA y flujo de ramas protegidas mantienen honesta la muestra."
+          "label": "Construir el sistema",
+          "text": "Hacer que UI, datos, auth, comunicación, observabilidad y deploy funcionen juntos."
         },
         {
-          "label": "Ajuste a negocio",
-          "text": "Las decisiones técnicas son evidencia. El trabajo empieza por el resultado que el sistema necesita crear."
+          "label": "Probarlo temprano",
+          "text": "Usar tests, browser QA, ramas protegidas, previews y verificación en producción para que las fallas sean visibles antes que para los clientes."
         }
       ],
-      "contactHeading": "Empieza por el resultado que necesitas.",
-      "contactBody": "Manda el rol, proyecto, problema de arquitectura o workflow que quieres mejorar. Te respondo con el siguiente paso útil.",
+      "contactHeading": "Cuéntame qué necesita funcionar.",
+      "contactBody": "Manda el rol, proyecto, problema de arquitectura o flujo de producto. Te respondo con un siguiente paso práctico.",
       "emailLabel": "Escribir a Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",
       "whatsappLabel": "WhatsApp",
@@ -113,7 +116,7 @@
   "case-studies": {
     "path": "/es/casos",
     "title": "Trabajo seleccionado",
-    "summary": "Rutas de casos para proyectos en producción, productos activos y sistemas enterprise.",
+    "summary": "Una vista pública segura de trabajo en producción, productos activos y entrega enterprise confidencial.",
     "seoDescription": "Revisa trabajo seleccionado de AOHYS en sitios en producción, productos activos, sistemas de negocio y entrega de software enterprise.",
     "primaryActionLabel": "Platicar un proyecto",
     "primaryActionContentId": "contact",
@@ -418,7 +421,7 @@
   "architecture": {
     "path": "/es/arquitectura",
     "title": "Arquitectura",
-    "summary": "La muestra pública de AOHYS: SEO con Astro, límites privados, deploys en Cloudflare, workflows con Convex y observabilidad con PostHog.",
+    "summary": "Cómo esta muestra pública separa páginas de búsqueda, operación privada, checks de entrega, leads y observabilidad.",
     "seoDescription": "Notas de arquitectura para la muestra pública de AOHYS: páginas SEO con Astro, límites privados del dashboard, deploys en Cloudflare, workflows con Convex y observabilidad con PostHog.",
     "primaryActionLabel": "Revisar trabajo",
     "primaryActionContentId": "case-studies",
@@ -426,7 +429,7 @@
     "secondaryActionContentId": "contact",
     "architectureContent": {
       "heading": "Muestra pública, trabajo privado.",
-      "deck": "Este sitio está hecho para ser inspeccionable: páginas públicas SEO, rutas bilingües, documentación de release y límites futuros del dashboard son visibles en el source. El código de clientes y productos permanece privado.",
+      "deck": "Este sitio está hecho para revisarse: páginas públicas para búsqueda, rutas bilingües, documentación de release, límites del dashboard y seams de proveedores son visibles en el código. El código de clientes y productos permanece privado.",
       "sourceLabel": "Revisar el source",
       "sourceLinks": [
         {
@@ -482,22 +485,27 @@
   "resume": {
     "path": "/es/cv",
     "title": "CV",
-    "summary": "Ruta clara para personas y ATS sobre la experiencia de Alejandro Ortiz Corro en ingeniería de software.",
-    "seoDescription": "CV de Alejandro Ortiz Corro para hiring managers, líderes técnicos y ATS que revisan experiencia en ingeniería de software.",
+    "summary": "Ruta práctica hacia la experiencia de Alejandro Ortiz Corro en ingeniería de producto, arquitectura y delivery.",
+    "seoDescription": "CV de Alejandro Ortiz Corro para hiring managers y líderes técnicos que revisan experiencia en ingeniería de producto, arquitectura frontend, workflows backend y delivery asistido por IA.",
     "primaryActionLabel": "Contactar a Alejandro",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
     "secondaryActionContentId": "architecture",
     "resumeContent": {
       "name": "Alejandro Ortiz Corro",
-      "role": "Desarrollador Frontend Senior",
+      "role": "Senior Product Engineer / Sistemas Frontend",
       "location": "México",
-      "intro": "Desarrollador Frontend Senior con más de 9 años de experiencia construyendo aplicaciones web de alto rendimiento, workflows enterprise, sistemas de producto y prácticas modernas de ingeniería asistida por IA.",
+      "intro": "Construyo software donde criterio de producto, calidad de interfaz, workflows backend, disciplina de release y delivery asistido por IA tienen que sostenerse juntos en producción.",
       "pdf": {
-        "label": "Descargar PDF ATS",
+        "label": "Descargar CV en PDF",
         "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
         "fileName": "alejandro-ortiz-corro-resume.pdf",
-        "description": "PDF de una columna, basado en texto, para ATS y revisiones de hiring."
+        "description": "Un PDF compacto para revisión de hiring. Este sitio suma la superficie de evidencia: trabajo público, notas de arquitectura, estructura de source y práctica de delivery."
+      },
+      "proof": {
+        "label": "Muestra dinámica de source",
+        "title": "La página también es parte de la evidencia.",
+        "body": "El CV está respaldado por el mismo sitio público que muestra casos, límites de arquitectura, i18n, quality gates, observabilidad y práctica de release."
       },
       "contactLinks": [
         {
@@ -526,7 +534,7 @@
           "text": "aohys.com"
         }
       ],
-      "contextTitle": "Contexto dinámico del CV",
+      "contextTitle": "Más contexto en línea",
       "contextLinks": [
         {
           "label": "Trabajo seleccionado",
@@ -546,10 +554,10 @@
       ],
       "summaryTitle": "Resumen profesional",
       "summary": [
-        "Desarrollador Frontend Senior con más de 9 años de experiencia en React, TypeScript, Next.js, arquitectura de producto, performance, SEO y sistemas UI mantenibles.",
-        "Experiencia en sistemas enterprise, productos startup, workflows de salud, plataformas e-commerce y sitios públicos, incluyendo sistemas con más de 30.5M usuarios mensuales.",
-        "Experiencia usando Next.js como superficie backend, delivery de workflows backend, manejo de escalations, payment plans, cashback, customs workflows y ejecución cross-functional.",
-        "Practico ingeniería moderna asistida por IA con agentes, TDD, browser QA, release discipline, observabilidad y documentación para convertir objetivos ambiguos en software confiable."
+        "Senior product engineer con más de 9 años de experiencia en React, TypeScript, Next.js, arquitectura de producto, performance, SEO y sistemas UI mantenibles.",
+        "He entregado en sistemas enterprise, productos startup, workflows de salud, plataformas e-commerce, sitios públicos y sistemas con más de 30.5M usuarios mensuales.",
+        "Mi trabajo reciente va más allá de pantallas: Next.js como superficie backend, delivery de workflows backend, manejo de escalations, payment plans, cashback, customs workflows y ejecución cross-functional.",
+        "Trabajo con agentes, TDD, browser QA, release discipline, observabilidad y documentación para convertir objetivos ambiguos en software que los equipos pueden revisar, operar y mejorar."
       ],
       "highlightsTitle": "Impacto seleccionado",
       "highlights": [
@@ -722,8 +730,8 @@
   },
   "contact": {
     "path": "/es/contacto",
-    "title": "Contacto",
-    "summary": "Inicia una conversación concreta por correo o WhatsApp sobre un rol, proyecto, revisión de arquitectura o producto.",
+    "title": "Empecemos una conversación concreta",
+    "summary": "Mándame el objetivo, restricciones y mejor forma de responder. En México WhatsApp suele ser lo más rápido; el correo funciona mejor para contexto largo.",
     "seoDescription": "Contacta a Alejandro Ortiz Corro y AOHYS por correo o WhatsApp para proyectos de software, revisión de arquitectura, sistemas de producto o conversaciones laborales.",
     "primaryActionLabel": "Enviar correo",
     "primaryActionContentId": "contact",

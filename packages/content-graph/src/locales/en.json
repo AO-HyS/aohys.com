@@ -2,66 +2,69 @@
   "home": {
     "path": "/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Business goals turned into reliable product systems.",
-    "seoDescription": "Alejandro Ortiz Corro builds business outcomes through software architecture, product systems, quality, security, and modern engineering practice.",
+    "summary": "Senior software engineering for teams that need business outcomes, reliable architecture, and delivery that can be inspected.",
+    "seoDescription": "Alejandro Ortiz Corro builds reliable product systems, business software, public websites, private dashboards, backend workflows, and software architecture for teams that need quality, security, scalability, and measurable outcomes.",
     "primaryActionLabel": "Start a conversation",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "View selected work",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Alejandro Ortiz Corro turns business goals into product systems people can trust.",
-      "deck": "I help teams turn ambiguous product goals into secure, maintainable software: public sites that can be found, operations tools that reduce friction, and backend systems that hold up when work gets complex.",
-      "proofBoardLabel": "AOHYS public proof board",
-      "proofBoardTitle": "Public source sample, private client work.",
-      "proofBoardBody": "This site is being built in public so technical evaluators can inspect the architecture, i18n, SEO, quality gates, release path, and operating judgment behind the work.",
-      "selectedOutcomesHeading": "Selected outcomes",
-      "selectedOutcomesIntro": "A short ledger of public-safe proof: production work, active builds, private product systems, and enterprise delivery experience.",
+      "headline": "Senior engineering. Business outcomes. Measurable impact.",
+      "deck": "I design and ship product systems for teams that need clearer operations, reliable releases, and software that can survive real business pressure.",
+      "proofBoardLabel": "AOHYS evidence map",
+      "proofBoardTitle": "Public pages. Private work. Observable releases.",
+      "proofBoardBody": "The site itself shows how I separate search surfaces, protected tools, leads, deployments, and errors.",
+      "selectedOutcomesHeading": "Selected proof",
+      "selectedOutcomesIntro": "Public-safe evidence from live work, active builds, private operating systems, and confidential enterprise delivery.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",
-          "label": "Production proof",
+          "label": "Public site",
           "title": "Casa Roca",
-          "outcome": "A public business site shaped for trust, search visibility, performance care, and release discipline.",
-          "role": "Public site delivery, SEO surface, deployment discipline.",
+          "outcome": "A production hospitality site shaped around trust, search-readable content, and direct inquiry paths.",
+          "role": "Public trust, SEO, conversion path",
           "evidence": {
             "label": "Public site",
             "altText": "Public-safe evidence for Casa Roca",
             "kind": "public-site",
-            "publicSafe": true
+            "publicSafe": true,
+            "src": "/images/proof/casa-roca-production.png"
           }
         },
         {
           "contentId": "case-study:the-barber-central",
-          "label": "Active product build",
+          "label": "Operations product",
           "title": "The Barber Central",
-          "outcome": "Booking and operations workflows organized around the way a local service business actually runs.",
-          "role": "Product architecture, booking flow, payments, customer communication.",
+          "outcome": "Booking, availability, payments, and customer communication designed around the daily pressure of a local service business.",
+          "role": "Operations workflow, payments, customer flow",
           "evidence": {
             "label": "Development preview",
             "altText": "Public-safe evidence for The Barber Central",
             "kind": "development-preview",
-            "publicSafe": true
+            "publicSafe": true,
+            "src": "/images/proof/barber-central-ops.png"
           }
         },
         {
           "contentId": "case-study:nutri-plan",
-          "label": "Private product system",
+          "label": "Private system",
           "title": "Nutri Plan",
-          "outcome": "Structured client workflows, plans, and operational clarity for a product still under private development.",
-          "role": "Workflow design, private operations, quality practice.",
+          "outcome": "Plans, dashboards, and client workflows organized into one operating model instead of disconnected screens.",
+          "role": "Private tools, structured workflows, client delivery",
           "evidence": {
             "label": "Sanitized preview",
             "altText": "Public-safe evidence for Nutri Plan",
             "kind": "development-preview",
-            "publicSafe": true
+            "publicSafe": true,
+            "src": "/images/proof/nutri-plan-proof.png"
           }
         },
         {
           "contentId": "case-study:enterprise-systems",
-          "label": "Enterprise systems",
+          "label": "Enterprise delivery",
           "title": "Enterprise systems",
-          "outcome": "Escalation ownership, payment plans, cashback, customs workflows, and backend delivery in complex environments.",
-          "role": "Backend delivery, escalations, reliability, confidentiality.",
+          "outcome": "Escalations, payment plans, cashback, customs workflows, and backend delivery inside complex business systems.",
+          "role": "Reliability, backend delivery, confidentiality",
           "evidence": {
             "label": "Confidential summary",
             "altText": "Public-safe evidence for enterprise systems",
@@ -70,40 +73,40 @@
           }
         }
       ],
-      "architectureHeading": "The site itself is the sample.",
-      "architectureBody": "Public SEO pages and private operations share one domain, but the boundaries are deliberate. Visitors see the proof; private dashboard work stays authenticated, noindex, and operational.",
+      "architectureHeading": "The system should reveal how it is built.",
+      "architectureBody": "This site is more than a portfolio page: public SEO, private dashboard routes, contact handling, observability, and release promotion are designed as one inspectable system.",
       "architectureStages": [
         {
           "label": "Public surface",
-          "text": "Astro pages resolve from stable content IDs, localized slugs, canonical URLs, and sitemap rules."
+          "text": "SEO pages resolve from stable content IDs, localized slugs, canonical URLs, and sitemap rules."
         },
         {
           "label": "Private surface",
-          "text": "Dashboard routes stay out of public search and will use authenticated workflows instead of public content shortcuts."
+          "text": "Dashboard routes stay out of public search and use authenticated workflows instead of public content shortcuts."
         },
         {
           "label": "Release path",
           "text": "Feature branches move into develop first; production promotion is a separate review path into main."
         }
       ],
-      "practiceHeading": "Modern engineering practice is part of the deliverable.",
-      "practiceBody": "The way the work is planned, tested, reviewed, localized, deployed, and observed matters as much as the first screen.",
+      "practiceHeading": "Operating principles",
+      "practiceBody": "I do not start by selling a stack. I map the workflow, decide the boundaries, and keep the release path visible enough that quality can be inspected.",
       "practicePoints": [
         {
-          "label": "AI-assisted delivery",
-          "text": "Agents help accelerate implementation, but the bar remains architecture, review, testing, and working software."
+          "label": "Clarify the work",
+          "text": "Turn loose goals into flows, constraints, boundaries, and a release path."
         },
         {
-          "label": "Quality gates",
-          "text": "Behavior tests, source checks, browser QA, and protected branch flow keep the sample honest."
+          "label": "Build the system",
+          "text": "Make UI, data, auth, communication, observability, and deployment fit together."
         },
         {
-          "label": "Business fit",
-          "text": "Technology choices are evidence. The work starts with the outcome the system needs to create."
+          "label": "Prove it early",
+          "text": "Use tests, browser QA, protected branches, preview checks, and production verification so failures are visible before customers find them."
         }
       ],
-      "contactHeading": "Start with the outcome you need.",
-      "contactBody": "Send the role, project, architecture problem, or workflow you want to improve. I will reply with the next useful step.",
+      "contactHeading": "Tell me what needs to work.",
+      "contactBody": "Send the role, project, architecture problem, or product flow. I will reply with a practical next step.",
       "emailLabel": "Email Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",
       "whatsappLabel": "WhatsApp",
@@ -113,7 +116,7 @@
   "case-studies": {
     "path": "/case-studies",
     "title": "Selected work",
-    "summary": "Case-study routes for production proof, active product builds, and enterprise systems.",
+    "summary": "A public-safe view of shipped work, active products, and confidential enterprise delivery.",
     "seoDescription": "Review selected AOHYS work across production websites, active product builds, business systems, and enterprise software delivery.",
     "primaryActionLabel": "Discuss a project",
     "primaryActionContentId": "contact",
@@ -418,7 +421,7 @@
   "architecture": {
     "path": "/architecture",
     "title": "Architecture",
-    "summary": "The public source sample behind AOHYS: Astro SEO, private dashboard boundaries, Cloudflare deploys, Convex workflows, and PostHog observability.",
+    "summary": "How this public sample separates search pages, private operations, delivery checks, leads, and observability.",
     "seoDescription": "Architecture notes for the AOHYS public source sample: Astro SEO pages, private dashboard boundaries, Cloudflare deploys, Convex workflows, and PostHog observability.",
     "primaryActionLabel": "Review selected work",
     "primaryActionContentId": "case-studies",
@@ -426,7 +429,7 @@
     "secondaryActionContentId": "contact",
     "architectureContent": {
       "heading": "Public source sample, private client work.",
-      "deck": "This site is intentionally inspectable: public SEO pages, bilingual content routing, release documentation, and future dashboard boundaries are visible in the source. Client and product code stays private.",
+      "deck": "This site is intentionally inspectable: public search pages, bilingual routing, release documentation, dashboard boundaries, and provider seams are visible in the source. Client and product code stays private.",
       "sourceLabel": "Inspect the source",
       "sourceLinks": [
         {
@@ -482,22 +485,27 @@
   "resume": {
     "path": "/resume",
     "title": "Resume",
-    "summary": "A human-readable and ATS-friendly path into Alejandro Ortiz Corro's software engineering experience.",
-    "seoDescription": "Alejandro Ortiz Corro resume path for hiring managers, technical leads, and ATS systems reviewing software engineering experience.",
+    "summary": "A practical path into Alejandro Ortiz Corro's product engineering, architecture, and delivery record.",
+    "seoDescription": "Alejandro Ortiz Corro resume for hiring managers and technical leads reviewing product engineering, frontend architecture, backend workflow, and AI-assisted delivery experience.",
     "primaryActionLabel": "Contact Alejandro",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Read architecture notes",
     "secondaryActionContentId": "architecture",
     "resumeContent": {
       "name": "Alejandro Ortiz Corro",
-      "role": "Senior Frontend Developer",
+      "role": "Senior Product Engineer / Frontend Systems",
       "location": "Mexico",
-      "intro": "Senior Frontend Developer with 9+ years of experience building high-performance web applications, enterprise workflows, product systems, and modern AI-assisted engineering practices.",
+      "intro": "I build software where product judgment, interface quality, backend workflows, release discipline, and AI-assisted delivery have to hold together in production.",
       "pdf": {
-        "label": "Download ATS PDF",
+        "label": "Download resume PDF",
         "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
         "fileName": "alejandro-ortiz-corro-resume.pdf",
-        "description": "Single-column, text-based PDF for applicant tracking systems and hiring reviews."
+        "description": "A compact PDF for hiring review. This site adds the proof surface: public work, architecture notes, source structure, and delivery practice."
+      },
+      "proof": {
+        "label": "Dynamic source sample",
+        "title": "The page is part of the evidence.",
+        "body": "The resume is backed by the same public site that shows case studies, architecture boundaries, i18n, QA gates, observability, and release practice."
       },
       "contactLinks": [
         {
@@ -526,7 +534,7 @@
           "text": "aohys.com"
         }
       ],
-      "contextTitle": "Dynamic resume context",
+      "contextTitle": "More context online",
       "contextLinks": [
         {
           "label": "Selected work",
@@ -546,10 +554,10 @@
       ],
       "summaryTitle": "Professional summary",
       "summary": [
-        "Senior Frontend Developer with 9+ years of experience specializing in React, TypeScript, Next.js, product architecture, performance, SEO, and maintainable UI systems.",
-        "Proven delivery across enterprise systems, startup products, healthcare workflows, e-commerce platforms, and public business sites, including systems serving 30.5M+ monthly users.",
-        "Experienced with Next.js as a backend surface, backend workflow delivery, escalation ownership, payment plans, cashback, customs workflows, and cross-functional product execution.",
-        "Modern AI-assisted engineering practitioner using agents, TDD, browser QA, release discipline, observability, and documentation to turn ambiguous goals into reliable software."
+        "Senior product engineer with 9+ years of experience across React, TypeScript, Next.js, product architecture, performance, SEO, and maintainable UI systems.",
+        "I have shipped across enterprise systems, startup products, healthcare workflows, e-commerce platforms, public business sites, and systems serving 30.5M+ monthly users.",
+        "My recent work goes beyond screens: Next.js as a backend surface, backend workflow delivery, escalation ownership, payment plans, cashback, customs workflows, and cross-functional product execution.",
+        "I work with agents, TDD, browser QA, release discipline, observability, and documentation so ambiguous goals become software that teams can inspect, operate, and improve."
       ],
       "highlightsTitle": "Selected impact",
       "highlights": [
@@ -722,8 +730,8 @@
   },
   "contact": {
     "path": "/contact",
-    "title": "Contact",
-    "summary": "Start a focused conversation by email or WhatsApp about a role, project, architecture review, or product build.",
+    "title": "Start a focused conversation",
+    "summary": "Send the goal, constraints, and best path to reply. WhatsApp is fastest in Mexico; email works better for longer context.",
     "seoDescription": "Contact Alejandro Ortiz Corro and AOHYS by email or WhatsApp for software projects, architecture review, product systems, or hiring conversations.",
     "primaryActionLabel": "Email Alejandro",
     "primaryActionContentId": "contact",

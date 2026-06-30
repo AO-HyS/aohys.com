@@ -58,6 +58,7 @@ describe("contact provider adapters", () => {
         distinctId: "lead:lead_123",
         properties: {
           leadId: "lead_123",
+          environment: "preview",
           intent: "project",
           preferredContactPath: "email",
           locale: "en",
@@ -82,6 +83,7 @@ describe("contact provider adapters", () => {
       distinct_id: "lead:lead_123",
       properties: {
         leadId: "lead_123",
+        environment: "preview",
         intent: "project",
         preferredContactPath: "email",
         locale: "en",
