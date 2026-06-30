@@ -511,6 +511,7 @@ async function beginGoogleSignIn(
 ): Promise<Response> {
   const incomingUrl = new URL(request.url);
   const forwardedProto = incomingUrl.protocol.replace(":", "");
+  const callbackUrl = new URL(normalizeCallbackPath(callbackPath), incomingUrl.origin);
   const response = await authFetch(
     `${environment.CONVEX_SITE_URL.replace(/\/$/, "")}/api/auth/sign-in/social`,
     {
@@ -525,7 +526,7 @@ async function beginGoogleSignIn(
       },
       body: JSON.stringify({
         provider: "google",
-        callbackURL: normalizeCallbackPath(callbackPath),
+        callbackURL: callbackUrl.toString(),
       }),
     },
   );

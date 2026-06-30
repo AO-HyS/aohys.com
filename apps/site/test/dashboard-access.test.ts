@@ -282,7 +282,42 @@ describe("dashboard access guard", () => {
         }),
         body: JSON.stringify({
           provider: "google",
-          callbackURL: "/dashboard",
+          callbackURL: "https://preview.aohys.com/dashboard",
+        }),
+      }),
+    );
+  });
+
+  it("keeps Google sign-in callbacks on the Cloudflare preview host that started the flow", async () => {
+    const fetchAuth = vi.fn(async () => new Response(JSON.stringify({
+      url: "https://accounts.google.com/o/oauth2/v2/auth?state=state_123&redirect_uri=https%3A%2F%2Fdevelop.aohys-com.pages.dev%2Fapi%2Fauth%2Fcallback%2Fgoogle",
+    }), {
+      headers: {
+        location: "https://accounts.google.com/o/oauth2/v2/auth?state=state_123&redirect_uri=https%3A%2F%2Fdevelop.aohys-com.pages.dev%2Fapi%2Fauth%2Fcallback%2Fgoogle",
+        "set-cookie": "__Secure-better-auth.state=state_123; Path=/; HttpOnly; Secure; SameSite=Lax",
+      },
+    }));
+
+    const response = await handleDashboardRequest(
+      new Request("https://develop.aohys-com.pages.dev/dashboard/sign-in/google?callbackURL=%2Fdashboard"),
+      validEnvironment,
+      fetchAuth,
+    );
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toContain(
+      "redirect_uri=https%3A%2F%2Fdevelop.aohys-com.pages.dev%2Fapi%2Fauth%2Fcallback%2Fgoogle",
+    );
+    expect(fetchAuth).toHaveBeenCalledWith(
+      "https://effervescent-minnow-483.convex.site/api/auth/sign-in/social",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          "x-forwarded-host": "develop.aohys-com.pages.dev",
+          "x-forwarded-proto": "https",
+        }),
+        body: JSON.stringify({
+          provider: "google",
+          callbackURL: "https://develop.aohys-com.pages.dev/dashboard",
         }),
       }),
     );
@@ -308,7 +343,7 @@ describe("dashboard access guard", () => {
       expect.objectContaining({
         body: JSON.stringify({
           provider: "google",
-          callbackURL: "/dashboard",
+          callbackURL: "https://preview.aohys.com/dashboard",
         }),
       }),
     );

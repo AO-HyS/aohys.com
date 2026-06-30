@@ -63,12 +63,10 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain('data-home-content-id="home"');
-    expect(homeHtml).toContain("Senior engineering.");
-    expect(homeHtml).toContain("Business outcomes.");
-    expect(homeHtml).toContain("Selected proof");
-    expect(homeHtml).toContain("Public pages. Private work. Observable releases.");
-    expect(homeHtml).toContain("Generated dark system map");
-    expect(homeHtml).toContain("/images/generated/aohys-hero-system-map.png");
+    expect(homeHtml).toContain("I build software that makes the business easier to run.");
+    expect(homeHtml).toContain("Work I can show");
+    expect(homeHtml).toContain("Real pages, real workflows, public-safe evidence.");
+    expect(homeHtml).toContain("/images/proof/aohys-system-map.svg");
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
     expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
@@ -77,17 +75,16 @@ describe("built public routes", () => {
     expect(homeHtml).toContain("/images/proof/casa-roca-production.png");
     expect(homeHtml).toContain("/images/proof/barber-central-ops.png");
     expect(homeHtml).toContain("/images/proof/nutri-plan-proof.png");
-    expect(homeHtml).toContain("/images/generated/aohys-architecture-proof-surface.png");
+    expect(homeHtml).not.toContain("/images/generated/");
     expect(homeHtml).toContain("/images/brand/aohys-logo.png");
     expect(homeHtml).toContain("WhatsApp");
     expect(homeHtml).not.toContain("Cloudflare · Convex · PostHog · Resend");
     expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Ingeniería senior.");
-    expect(spanishHomeHtml).toContain("Resultados de negocio.");
-    expect(spanishHomeHtml).toContain("Evidencia seleccionada");
-    expect(spanishHomeHtml).toContain("Páginas públicas. Trabajo privado. Releases observables.");
+    expect(spanishHomeHtml).toContain("Construyo software que hace más fácil operar el negocio.");
+    expect(spanishHomeHtml).toContain("Trabajo que puedo mostrar");
+    expect(spanishHomeHtml).toContain("Páginas reales, workflows reales, evidencia pública.");
     expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
     expect(spanishHomeHtml).toContain('aria-label="Evidencia pública segura de Casa Roca"');
     expect(spanishHomeHtml).toContain("WhatsApp");
@@ -98,8 +95,8 @@ describe("built public routes", () => {
     const spanishArchitectureHtml = readDist("es/arquitectura/index.html");
 
     expect(architectureHtml).toContain('data-architecture-content-id="architecture"');
-    expect(architectureHtml).toContain("Public source sample, private client work.");
-    expect(architectureHtml).toContain("client and product code stays private");
+    expect(architectureHtml).toContain("The public code shows the work around the work.");
+    expect(architectureHtml).toContain("Client code stays private");
     expect(architectureHtml).toContain("Release Train");
     expect(architectureHtml).toContain("Environment Contract");
     expect(architectureHtml).toContain("Public Content Graph");
@@ -108,8 +105,8 @@ describe("built public routes", () => {
     expect(architectureHtml).not.toMatch(/client (or|and) product code is public/i);
 
     expect(spanishArchitectureHtml).toContain('data-architecture-content-id="architecture"');
-    expect(spanishArchitectureHtml).toContain("Muestra pública, trabajo privado.");
-    expect(spanishArchitectureHtml.toLowerCase()).toContain("el código de clientes y productos permanece privado");
+    expect(spanishArchitectureHtml).toContain("El código público muestra el trabajo alrededor del trabajo.");
+    expect(spanishArchitectureHtml.toLowerCase()).toContain("el código de clientes se queda privado");
     expect(spanishArchitectureHtml).toContain("Release Train");
     expect(spanishArchitectureHtml).toContain("Environment Contract");
     expect(spanishArchitectureHtml).toContain("Public Content Graph");

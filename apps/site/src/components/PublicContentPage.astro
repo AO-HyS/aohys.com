@@ -68,7 +68,7 @@ function splitHeadline(headline: string): string[] {
 const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : [];
 
 const routeSignalById: Partial<Record<ContentId | string, string>> = {
-  "case-studies": locale === "es" ? "Evidencia seleccionada" : "Selected proof",
+  "case-studies": locale === "es" ? "Trabajo que puedo mostrar" : "Work I can show",
   architecture: locale === "es" ? "Sistema público" : "Public system",
   resume: locale === "es" ? "Contexto profesional" : "Professional context",
   contact: locale === "es" ? "Contacto directo" : "Direct contact",
@@ -91,8 +91,8 @@ const evidenceImageByContentId: Partial<Record<ContentId | string, { src: string
     alt: locale === "es" ? "Captura sanitizada de Nutri Plan" : "Sanitized Nutri Plan screenshot",
   },
   "case-study:engineering-practice": {
-    src: "/images/generated/aohys-delivery-artifact.png",
-    alt: locale === "es" ? "Artefacto visual de arquitectura y delivery de AOHYS" : "AOHYS architecture and delivery visual artifact",
+    src: "/images/proof/aohys-system-map.svg",
+    alt: locale === "es" ? "Mapa de arquitectura pública de AOHYS" : "AOHYS public architecture map",
   },
 };
 
@@ -146,19 +146,39 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           </div>
         </div>
 
-        <figure class="proof-board home-proof-board" aria-label={homeContent.proofBoardLabel}>
-          <figcaption class="proof-board-caption">
+        <figure class="evidence-table" aria-label={homeContent.proofBoardLabel}>
+          <figcaption class="evidence-table-caption">
             <span>{copy.publicSample}</span>
             <strong>{homeContent.proofBoardTitle}</strong>
             <p>{homeContent.proofBoardBody}</p>
           </figcaption>
-          <img
-            class="hero-artifact-asset"
-            src="/images/generated/aohys-hero-system-map.png"
-            alt={copy.deliveryArtifactAlt}
-            loading="eager"
-            decoding="async"
-          />
+          <div class="evidence-shot evidence-shot-primary">
+            <img
+              src="/images/proof/casa-roca-production.png"
+              alt={locale === "es" ? "Captura pública de Casa Roca en producción" : "Public Casa Roca production screenshot"}
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+          <div class="evidence-shot evidence-shot-secondary">
+            <img
+              src="/images/proof/barber-central-ops.png"
+              alt={locale === "es" ? "Captura sanitizada de The Barber Central" : "Sanitized The Barber Central screenshot"}
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+          <div class="evidence-shot evidence-shot-tertiary">
+            <img
+              src="/images/proof/nutri-plan-proof.png"
+              alt={locale === "es" ? "Captura sanitizada de Nutri Plan" : "Sanitized Nutri Plan screenshot"}
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+          <div class="evidence-system-map" aria-hidden="true">
+            <img src="/images/proof/aohys-system-map.svg" alt="" loading="eager" decoding="async" />
+          </div>
         </figure>
       </section>
 
@@ -199,7 +219,7 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         <div class="architecture-proof-stack">
           <figure class="architecture-proof-visual">
             <img
-              src="/images/generated/aohys-architecture-proof-surface.png"
+              src="/images/proof/aohys-system-map.svg"
               alt={locale === "es" ? "Mapa del sistema público y privado de AOHYS" : "AOHYS public and private system map"}
               loading="lazy"
               decoding="async"
@@ -432,7 +452,7 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         <aside class="resume-proof-panel" aria-label={resumeContent.proof.label}>
           <figure class="resume-proof-visual">
             <img
-              src="/images/generated/aohys-architecture-proof-surface.png"
+              src="/images/proof/aohys-system-map.svg"
               alt={locale === "es" ? "Artefacto visual del sistema público, privado y observable de AOHYS" : "Visual artifact of the AOHYS public, private, and observable system"}
               loading="eager"
               decoding="async"
@@ -575,7 +595,7 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           </div>
           <figure class="contact-architecture-card">
             <img
-              src="/images/generated/aohys-delivery-artifact.png"
+              src="/images/proof/aohys-system-map.svg"
               alt={locale === "es" ? "Ruta visual de contacto, entrega y observabilidad de AOHYS" : "Visual route for AOHYS contact, delivery, and observability"}
               loading="lazy"
               decoding="async"

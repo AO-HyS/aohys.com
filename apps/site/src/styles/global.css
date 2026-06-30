@@ -35,6 +35,7 @@
   --text-h3: 1.75rem;
   --text-h2: 3.25rem;
   --text-hero: 4.75rem;
+  --text-home-hero: 4.35rem;
   --leading-caption: 1.35;
   --leading-body: 1.62;
   --leading-lead: 1.45;
@@ -93,7 +94,8 @@ svg {
 main,
 section,
 .hero-copy,
-.proof-board {
+.proof-board,
+.evidence-table {
   min-width: 0;
 }
 
@@ -278,8 +280,8 @@ h1 {
 }
 
 .home-proof-hero h1 {
-  max-width: 11.6ch;
-  font-size: var(--text-hero);
+  max-width: 12.6ch;
+  font-size: var(--text-home-hero);
   letter-spacing: 0;
 }
 
@@ -289,18 +291,18 @@ h1 {
 
 .home-proof-hero {
   width: 100%;
-  grid-template-columns: minmax(22rem, 0.43fr) minmax(36rem, 0.57fr);
-  gap: clamp(2rem, 4.2vw, 5rem);
+  grid-template-columns: minmax(22rem, 0.42fr) minmax(36rem, 0.58fr);
+  gap: clamp(2rem, 4.8vw, 5.5rem);
   min-height: min(820px, calc(100svh - 77px));
-  padding: clamp(3.5rem, 6.8vw, 6.5rem) max(1.25rem, calc((100vw - 1320px) / 2));
+  padding: clamp(4rem, 7vw, 7rem) max(1.25rem, calc((100vw - 1320px) / 2));
   border-block-end: 0;
   background:
-    radial-gradient(circle at 88% 16%, color-mix(in oklch, var(--color-sky), transparent 86%), transparent 26rem),
-    radial-gradient(circle at 26% 4%, color-mix(in oklch, var(--color-dark-honey), transparent 90%), transparent 28rem),
-    linear-gradient(180deg, color-mix(in oklch, var(--color-dark-panel), transparent 4%), var(--color-dark)),
-    var(--color-dark);
-  box-shadow: inset 0 -1px var(--color-dark-rule);
-  color: var(--color-dark-ink);
+    linear-gradient(90deg, color-mix(in oklch, var(--color-sky), transparent 88%) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklch, var(--color-mint), transparent 90%) 1px, transparent 1px),
+    linear-gradient(180deg, var(--color-bg), color-mix(in oklch, var(--color-honey-soft), var(--color-bg) 82%));
+  background-size: 4.5rem 4.5rem, 4.5rem 4.5rem, auto;
+  box-shadow: inset 0 -1px var(--color-rule);
+  color: var(--color-ink);
 }
 
 .home-proof-hero .hero-copy {
@@ -312,19 +314,19 @@ h1 {
 }
 
 .home-proof-hero .signal-line {
-  color: var(--color-dark-honey);
+  color: var(--color-mint-ink);
 }
 
 .home-proof-hero .hero-lead {
   max-width: 51ch;
-  color: var(--color-dark-muted);
+  color: var(--color-muted);
   overflow-wrap: break-word;
 }
 
 .home-proof-hero .button-secondary {
-  border-color: var(--color-dark-rule);
-  background: transparent;
-  color: var(--color-dark-ink);
+  border-color: color-mix(in oklch, var(--color-sky), var(--color-rule) 35%);
+  background: color-mix(in oklch, var(--color-sky), var(--color-bg) 88%);
+  color: var(--color-sky-ink);
 }
 
 h2 {
@@ -504,6 +506,120 @@ h2 {
   text-wrap: pretty;
 }
 
+.evidence-table {
+  position: relative;
+  isolation: isolate;
+  align-self: center;
+  justify-self: end;
+  width: min(100%, 61rem);
+  min-height: clamp(31rem, 43vw, 39rem);
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklch, var(--color-mint), var(--color-rule) 42%);
+  background:
+    linear-gradient(90deg, color-mix(in oklch, var(--color-rule), transparent 45%) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklch, var(--color-rule), transparent 55%) 1px, transparent 1px),
+    linear-gradient(145deg, color-mix(in oklch, var(--color-mint), var(--color-bg) 86%), var(--color-bg) 52%, color-mix(in oklch, var(--color-sky), var(--color-bg) 86%));
+  background-size: 3.8rem 3.8rem, 3.8rem 3.8rem, auto;
+  box-shadow: 0 1.4rem 3.5rem color-mix(in oklch, var(--color-sky-ink), transparent 88%);
+}
+
+.evidence-table::before {
+  content: "";
+  position: absolute;
+  inset: 1.1rem;
+  z-index: -1;
+  border: 1px solid color-mix(in oklch, var(--color-mint), transparent 28%);
+}
+
+.evidence-table-caption {
+  position: absolute;
+  inset-block-start: 1.8rem;
+  inset-inline-start: 1.8rem;
+  z-index: 5;
+  width: min(25rem, calc(100% - 3.6rem));
+  border: 1px solid color-mix(in oklch, var(--color-rule), var(--color-mint) 26%);
+  background: color-mix(in oklch, var(--color-bg), transparent 4%);
+  padding: 1rem 1.1rem;
+  box-shadow: 0 1rem 2.5rem color-mix(in oklch, var(--color-ink), transparent 90%);
+}
+
+.evidence-table-caption span,
+.evidence-table-caption strong {
+  font-family: var(--font-display);
+}
+
+.evidence-table-caption span {
+  display: block;
+  color: var(--color-mint-ink);
+  font-size: var(--text-caption);
+  font-weight: 680;
+}
+
+.evidence-table-caption strong {
+  display: block;
+  margin-block-start: 0.35rem;
+  font-size: 1.2rem;
+  line-height: 1.12;
+}
+
+.evidence-table-caption p {
+  margin: 0.5rem 0 0;
+  color: var(--color-muted);
+  font-size: var(--text-small);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.evidence-shot,
+.evidence-system-map {
+  position: absolute;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklch, var(--color-rule), var(--color-ink) 8%);
+  background: var(--color-bg);
+  box-shadow: 0 1rem 2.2rem color-mix(in oklch, var(--color-ink), transparent 88%);
+}
+
+.evidence-shot img,
+.evidence-system-map img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.evidence-shot-primary {
+  inset-block-start: 10.4rem;
+  inset-inline-start: 4.2rem;
+  width: 55%;
+  aspect-ratio: 1.6;
+}
+
+.evidence-shot-secondary {
+  inset-block-start: 4.8rem;
+  inset-inline-end: 3rem;
+  width: 38%;
+  aspect-ratio: 1.78;
+}
+
+.evidence-shot-tertiary {
+  inset-inline-end: 5rem;
+  inset-block-end: 3.2rem;
+  width: 34%;
+  aspect-ratio: 1.78;
+}
+
+.evidence-system-map {
+  inset-inline-start: 7.3rem;
+  inset-block-end: 2.6rem;
+  width: 40%;
+  aspect-ratio: 1.85;
+  background: var(--color-dark);
+}
+
+.evidence-system-map img {
+  object-position: center;
+}
+
 .ledger-section {
   padding-block: clamp(3rem, 7vw, 6.5rem);
 }
@@ -634,16 +750,17 @@ h2 {
   width: 100%;
   margin-block: clamp(1rem, 4vw, 3rem);
   padding: clamp(3.5rem, 8vw, 7rem) max(1rem, calc((100vw - 1180px) / 2));
-  border-block: 1px solid var(--color-dark-rule);
+  border-block: 1px solid var(--color-rule);
   background:
-    radial-gradient(circle at 82% 18%, color-mix(in oklch, var(--color-sky), transparent 84%), transparent 21rem),
-    linear-gradient(140deg, color-mix(in oklch, var(--color-mint), transparent 92%), transparent 32rem),
-    var(--color-dark);
-  color: var(--color-dark-ink);
+    linear-gradient(90deg, color-mix(in oklch, var(--color-mint), transparent 86%) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklch, var(--color-sky), transparent 90%) 1px, transparent 1px),
+    linear-gradient(180deg, color-mix(in oklch, var(--color-mint), var(--color-bg) 86%), var(--color-bg));
+  background-size: 4.25rem 4.25rem, 4.25rem 4.25rem, auto;
+  color: var(--color-ink);
 }
 
 .architecture-stage h2 {
-  color: var(--color-dark-ink);
+  color: var(--color-ink);
 }
 
 .architecture-copy p,
@@ -657,7 +774,7 @@ h2 {
 }
 
 .architecture-stage .architecture-copy p {
-  color: var(--color-dark-muted);
+  color: var(--color-muted);
 }
 
 .architecture-proof-stack {
@@ -668,8 +785,9 @@ h2 {
 .architecture-proof-visual {
   margin: 0;
   overflow: hidden;
-  border: 1px solid var(--color-dark-rule);
-  background: var(--color-dark-panel);
+  border: 1px solid color-mix(in oklch, var(--color-rule), var(--color-mint) 25%);
+  background: var(--color-dark);
+  box-shadow: 0 1rem 2.4rem color-mix(in oklch, var(--color-ink), transparent 90%);
 }
 
 .architecture-proof-visual img {
@@ -682,24 +800,24 @@ h2 {
 .architecture-track {
   display: grid;
   align-content: center;
-  border-block-start: 1px solid var(--color-dark-rule);
+  border-block-start: 1px solid var(--color-rule);
 }
 
 .architecture-step {
   display: grid;
   grid-template-columns: minmax(8rem, 0.34fr) minmax(0, 1fr);
   gap: 1rem;
-  border-block-end: 1px solid var(--color-dark-rule);
+  border-block-end: 1px solid var(--color-rule);
   padding-block: 1.25rem;
 }
 
 .architecture-step span {
-  color: var(--color-mint);
+  color: var(--color-mint-ink);
 }
 
 .architecture-step p {
   margin: 0;
-  color: var(--color-dark-muted);
+  color: var(--color-muted);
   line-height: var(--leading-body);
 }
 
@@ -737,20 +855,19 @@ h2 {
   align-items: end;
   width: 100%;
   margin-inline: 0;
-  border-block: 1px solid var(--color-dark-rule);
+  border-block: 1px solid var(--color-rule);
   padding: clamp(2.4rem, 6vw, 5rem) max(1rem, calc((100vw - 1180px) / 2));
   background:
-    radial-gradient(circle at 86% 30%, color-mix(in oklch, var(--color-coral), transparent 88%), transparent 20rem),
-    var(--color-dark);
-  color: var(--color-dark-ink);
+    linear-gradient(90deg, color-mix(in oklch, var(--color-primary), var(--color-bg) 76%), color-mix(in oklch, var(--color-mint), var(--color-bg) 78%));
+  color: var(--color-ink);
 }
 
 .contact-band p {
-  color: var(--color-dark-muted);
+  color: var(--color-muted);
 }
 
 .contact-band h2 {
-  color: var(--color-dark-ink);
+  color: var(--color-ink);
 }
 
 .contact-actions {
@@ -775,9 +892,10 @@ h2 {
   margin-inline: 0;
   padding: clamp(3.5rem, 7vw, 7rem) max(1rem, calc((100vw - 1180px) / 2));
   background:
-    radial-gradient(circle at 90% 10%, color-mix(in oklch, var(--color-sky), transparent 84%), transparent 28rem),
-    radial-gradient(circle at 14% 24%, color-mix(in oklch, var(--color-mint), transparent 89%), transparent 24rem),
+    linear-gradient(90deg, color-mix(in oklch, var(--color-sky), transparent 90%) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklch, var(--color-mint), transparent 91%) 1px, transparent 1px),
     var(--color-dark);
+  background-size: 4.5rem 4.5rem, 4.5rem 4.5rem, auto;
   color: var(--color-dark-ink);
 }
 
@@ -945,8 +1063,10 @@ h2 {
   padding: clamp(4rem, 9vw, 7rem) max(1rem, calc((100vw - 1180px) / 2)) clamp(3rem, 6vw, 5.5rem);
   border-block-end: 1px solid var(--color-dark-rule);
   background:
-    radial-gradient(circle at 78% 14%, color-mix(in oklch, var(--color-mint), transparent 84%), transparent 24rem),
+    linear-gradient(90deg, color-mix(in oklch, var(--color-mint), transparent 90%) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklch, var(--color-sky), transparent 93%) 1px, transparent 1px),
     var(--color-dark);
+  background-size: 4.5rem 4.5rem, 4.5rem 4.5rem, auto;
   color: var(--color-dark-ink);
 }
 
@@ -1116,9 +1236,10 @@ h2 {
   padding: clamp(4rem, 9vw, 7rem) max(1rem, calc((100vw - 1180px) / 2)) clamp(3rem, 6vw, 5.5rem);
   border-block-end: 1px solid var(--color-dark-rule);
   background:
-    radial-gradient(circle at 78% 22%, color-mix(in oklch, var(--color-primary), transparent 82%), transparent 23rem),
-    linear-gradient(135deg, color-mix(in oklch, var(--color-mint), transparent 91%), transparent 34rem),
+    linear-gradient(90deg, color-mix(in oklch, var(--color-primary), transparent 91%) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklch, var(--color-mint), transparent 92%) 1px, transparent 1px),
     var(--color-dark);
+  background-size: 4.5rem 4.5rem, 4.5rem 4.5rem, auto;
   color: var(--color-dark-ink);
 }
 
@@ -1325,9 +1446,10 @@ h2 {
   margin-inline: 0;
   padding: clamp(3.5rem, 7vw, 7rem) max(1.25rem, calc((100vw - 1320px) / 2));
   background:
-    radial-gradient(circle at 86% 18%, color-mix(in oklch, var(--color-mint), transparent 86%), transparent 28rem),
-    radial-gradient(circle at 16% 8%, color-mix(in oklch, var(--color-dark-honey), transparent 90%), transparent 28rem),
+    linear-gradient(90deg, color-mix(in oklch, var(--color-mint), transparent 91%) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklch, var(--color-primary), transparent 93%) 1px, transparent 1px),
     var(--color-dark);
+  background-size: 4.5rem 4.5rem, 4.5rem 4.5rem, auto;
   color: var(--color-dark-ink);
   box-shadow: inset 0 -1px var(--color-dark-rule);
 }
@@ -1680,6 +1802,7 @@ h2 {
   :root {
     --text-h2: 2.65rem;
     --text-hero: 3.35rem;
+    --text-home-hero: 3.35rem;
   }
 
   .site-nav {
@@ -1723,6 +1846,35 @@ h2 {
 
   .home-proof-board {
     min-height: 0;
+  }
+
+  .evidence-table {
+    justify-self: stretch;
+    min-height: 38rem;
+  }
+
+  .evidence-shot-primary {
+    inset-block-start: 10.8rem;
+    inset-inline-start: 2rem;
+    width: 60%;
+  }
+
+  .evidence-shot-secondary {
+    inset-block-start: 6.2rem;
+    inset-inline-end: 1.6rem;
+    width: 42%;
+  }
+
+  .evidence-shot-tertiary {
+    inset-inline-end: 2.2rem;
+    inset-block-end: 2rem;
+    width: 40%;
+  }
+
+  .evidence-system-map {
+    inset-inline-start: 2rem;
+    inset-block-end: 2rem;
+    width: 48%;
   }
 
   .route-hero,
@@ -1825,6 +1977,7 @@ h2 {
     --text-h3: 1.5rem;
     --text-h2: 2.1rem;
     --text-hero: 2.65rem;
+    --text-home-hero: 2.65rem;
   }
 
   h1 {
@@ -1896,6 +2049,43 @@ h2 {
     max-width: 100%;
     min-height: 0;
     aspect-ratio: 16 / 11;
+  }
+
+  .evidence-table {
+    max-width: 100%;
+    min-height: 34rem;
+  }
+
+  .evidence-table-caption {
+    inset-block-start: 0.85rem;
+    inset-inline: 0.85rem;
+    width: auto;
+    padding: 0.8rem;
+  }
+
+  .evidence-shot-primary {
+    inset-block-start: 11.6rem;
+    inset-inline: 0.9rem auto;
+    width: calc(100% - 1.8rem);
+  }
+
+  .evidence-shot-secondary {
+    inset-block-start: auto;
+    inset-inline-start: 0.9rem;
+    inset-inline-end: auto;
+    inset-block-end: 0.9rem;
+    width: calc(50% - 1.15rem);
+  }
+
+  .evidence-shot-tertiary {
+    inset-inline-start: auto;
+    inset-inline-end: 0.9rem;
+    inset-block-end: 0.9rem;
+    width: calc(50% - 1.15rem);
+  }
+
+  .evidence-system-map {
+    display: none;
   }
 
   .proof-board-caption {
