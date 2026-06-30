@@ -53,6 +53,25 @@ async function fetchWithRetries(url: string, init: RequestInit): Promise<Respons
   );
 }
 
+async function assertWithRetries(description: string, assertion: () => Promise<void>): Promise<void> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt += 1) {
+    try {
+      await assertion();
+      return;
+    } catch (error) {
+      lastError = error;
+
+      if (attempt < MAX_FETCH_ATTEMPTS) {
+        await wait(FETCH_RETRY_DELAY_MS);
+      }
+    }
+  }
+
+  throw new Error(`${description} did not pass after ${MAX_FETCH_ATTEMPTS} attempts. ${formatFetchError(lastError)}`);
+}
+
 async function fetchText(url: string): Promise<{
   status: number;
   url: string;
@@ -228,36 +247,41 @@ try {
   const environment = parseEnvironment(process.argv[2]);
   const plan = buildCloudflarePagesDeployPlan(environment);
   const baseUrl = normalizeUrl(process.env.SMOKE_BASE_URL?.trim() || process.env.PUBLIC_SITE_URL?.trim() || plan.siteUrl);
-  const result = await fetchText(baseUrl);
+  let smokeResultUrl = baseUrl;
 
-  if (result.status < 200 || result.status >= 300) {
-    throw new Error(`Expected ${baseUrl} to return a 2xx response. Received ${result.status}.`);
-  }
+  await assertWithRetries("Public preview shell", async () => {
+    const result = await fetchText(baseUrl);
+    smokeResultUrl = result.url;
 
-  if (!result.body.includes('data-site-shell="public"')) {
-    throw new Error(`Expected ${baseUrl} to render the public site shell.`);
-  }
+    if (result.status < 200 || result.status >= 300) {
+      throw new Error(`Expected ${baseUrl} to return a 2xx response. Received ${result.status}.`);
+    }
 
-  if (!result.body.includes(`rel="canonical" href="${normalizeUrl(plan.canonicalUrl)}"`)) {
-    throw new Error(`Expected ${baseUrl} to render the ${plan.canonicalUrl} canonical URL.`);
-  }
+    if (!result.body.includes('data-site-shell="public"')) {
+      throw new Error(`Expected ${baseUrl} to render the public site shell.`);
+    }
 
-  assertHeaderContains(result.headers, "content-security-policy", "https://us-assets.i.posthog.com");
-  assertHeaderContains(result.headers, "content-security-policy", "script-src-elem 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
-  assertHeaderContains(result.headers, "content-security-policy", "https://us.i.posthog.com");
-  assertHeaderContains(result.headers, "content-security-policy", "https://*.convex.site");
-  assertHeaderContains(result.headers, "content-security-policy", "report-uri /observability/csp");
+    if (!result.body.includes(`rel="canonical" href="${normalizeUrl(plan.canonicalUrl)}"`)) {
+      throw new Error(`Expected ${baseUrl} to render the ${plan.canonicalUrl} canonical URL.`);
+    }
 
-  await assertDashboardBoundary(baseUrl);
+    assertHeaderContains(result.headers, "content-security-policy", "https://us-assets.i.posthog.com");
+    assertHeaderContains(result.headers, "content-security-policy", "script-src-elem 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
+    assertHeaderContains(result.headers, "content-security-policy", "https://us.i.posthog.com");
+    assertHeaderContains(result.headers, "content-security-policy", "https://*.convex.site");
+    assertHeaderContains(result.headers, "content-security-policy", "report-uri /observability/csp");
+  });
+
+  await assertWithRetries("Dashboard boundary", async () => assertDashboardBoundary(baseUrl));
   await assertContactBoundary(baseUrl, environment);
-  await assertCspReportBoundary(baseUrl);
+  await assertWithRetries("CSP report boundary", async () => assertCspReportBoundary(baseUrl));
 
   const redirectUrl = process.env.SMOKE_CANONICAL_REDIRECT_URL?.trim();
   if (redirectUrl) {
     await assertCanonicalRedirect(redirectUrl);
   }
 
-  console.log(`${environment} smoke check passed at ${result.url}.`);
+  console.log(`${environment} smoke check passed at ${smokeResultUrl}.`);
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
