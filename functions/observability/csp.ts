@@ -1,5 +1,12 @@
 import type { CspReportEnvironment } from "../../apps/site/src/csp-reporting.js";
-import { PRIVATE_NO_STORE_HEADERS } from "../../apps/site/src/security-headers.js";
+
+const FALLBACK_PRIVATE_NO_STORE_HEADERS = {
+  "cache-control": "no-store",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "x-content-type-options": "nosniff",
+  "x-frame-options": "DENY",
+  "x-robots-tag": "noindex, nofollow",
+} as const;
 
 export async function onRequest(context: {
   request: Request;
@@ -11,7 +18,7 @@ export async function onRequest(context: {
   } catch {
     return new Response(null, {
       status: 204,
-      headers: PRIVATE_NO_STORE_HEADERS,
+      headers: FALLBACK_PRIVATE_NO_STORE_HEADERS,
     });
   }
 }

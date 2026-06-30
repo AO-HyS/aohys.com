@@ -1,5 +1,13 @@
 import type { DashboardAccessEnvironment } from "../../apps/site/src/dashboard-access.js";
-import { PRIVATE_HTML_HEADERS } from "../../apps/site/src/security-headers.js";
+
+const FALLBACK_PRIVATE_HTML_HEADERS = {
+  "cache-control": "no-store",
+  "content-type": "text/html; charset=utf-8",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "x-content-type-options": "nosniff",
+  "x-frame-options": "DENY",
+  "x-robots-tag": "noindex, nofollow",
+} as const;
 
 function normalizeDashboardPath(request: Request): string {
   const pathname = new URL(request.url).pathname;
@@ -61,7 +69,7 @@ export async function onRequest(context: {
 
     return new Response(unavailableDashboardHtml(), {
       status: 502,
-      headers: PRIVATE_HTML_HEADERS,
+      headers: FALLBACK_PRIVATE_HTML_HEADERS,
     });
   }
 }

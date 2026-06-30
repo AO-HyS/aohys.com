@@ -79,6 +79,8 @@ Current explicit PostHog events:
 
 Cloudflare Pages sends CSP violation reports to `/observability/csp`. This endpoint is intentionally tiny and best-effort: it returns `204` for valid reports and preflight checks even if PostHog is temporarily unavailable so CSP reporting never breaks a visitor path. It exists because a broken CSP can prevent the browser PostHog bundle from loading, so the report path must not depend on `posthog-js`. Static pages get the policy from `apps/site/public/_headers`; Pages Functions use the shared `apps/site/src/security-headers.ts` module so private dashboard, redirects, and observability responses do not drift.
 
+Cloudflare Pages runtime bindings are audited separately from GitHub Environment variables. GitHub is the release source of truth, but Pages Functions execute with Cloudflare deployment config values. The release train runs `pnpm run audit:cloudflare-pages-runtime` before deploy so `/dashboard`, `/api/auth/*`, and `/observability/csp` cannot silently lose `CONVEX_SITE_URL`, dashboard auth values, or PostHog server-capture keys.
+
 ## Provider Responsibilities
 
 | Provider | Contract responsibility |

@@ -22,6 +22,9 @@ describe("public site source quality", () => {
     const analytics = read("src/analytics.ts");
     const posthogClient = read("src/posthog-client.ts");
     const publicContentPage = read("src/components/PublicContentPage.astro");
+    const dashboardFunction = read("../../functions/dashboard/[[path]].ts");
+    const authFunction = read("../../functions/api/auth/[[path]].ts");
+    const cspFunction = read("../../functions/observability/csp.ts");
     const enDictionary = read("src/i18n/en.json");
     const esDictionary = read("src/i18n/es.json");
     const imagePrompts = read("../../docs/aohys-public-site-image-prompts.md");
@@ -72,5 +75,11 @@ describe("public site source quality", () => {
     expect(globalCss).not.toMatch(/font-size:\s*clamp\([^;]*vw/i);
     expect(globalCss).not.toMatch(/--text-[^:]+:\s*clamp\([^;]*vw/i);
     expect(source).not.toMatch(/lorem/i);
+    expect(dashboardFunction).not.toMatch(/^import\s+\{[^}]+\}\s+from/m);
+    expect(authFunction).not.toMatch(/^import\s+\{[^}]+\}\s+from/m);
+    expect(cspFunction).not.toMatch(/^import\s+\{[^}]+\}\s+from/m);
+    expect(dashboardFunction).toContain('await import("../../apps/site/src/dashboard-access.js")');
+    expect(authFunction).toContain('await import("../../../apps/site/src/auth-proxy.js")');
+    expect(cspFunction).toContain('await import("../../apps/site/src/csp-reporting.js")');
   });
 });
