@@ -122,6 +122,7 @@
     "submitLabel": "Enviar solicitud",
     "sendingLabel": "Enviando...",
     "successMessage": "Solicitud recibida. Responderé directamente.",
+    "degradedSuccessMessage": "Solicitud recibida. Si la notificación por correo se retrasa, todavía puedo verla en el dashboard.",
     "errorMessage": "El formulario no pudo enviarse ahora. Usa WhatsApp o correo directo.",
     "validationMessage": "Revisa los campos marcados antes de intentar de nuevo.",
     "emailErrorMessage": "No se pudo enviar el correo de notificación.",

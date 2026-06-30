@@ -466,6 +466,7 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
           data-contact-form
           data-contact-endpoint={contactEndpoint}
           data-success-message={contactCopy.successMessage}
+          data-degraded-success-message={contactCopy.degradedSuccessMessage}
           data-error-message={contactCopy.errorMessage}
           data-validation-message={contactCopy.validationMessage}
           data-email-error-message={contactCopy.emailErrorMessage}
@@ -557,7 +558,7 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
       </section>
 
       <script>
-        const dispatchContactAnalytics = (event: string, properties: Record<string, string> = {}) => {
+        const dispatchContactAnalytics = (event: string, properties: Record<string, string | boolean> = {}) => {
           window.dispatchEvent(new CustomEvent("aohys:analytics", {
             detail: { event, properties },
           }));
@@ -574,6 +575,26 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
             return "";
           }
         };
+
+        const readSubmissionResult = async (response: Response) => {
+          try {
+            return await response.json();
+          } catch {
+            return {};
+          }
+        };
+
+        const stringStatus = (payload: unknown, key: string, fallback: string) => {
+          if (!payload || typeof payload !== "object") {
+            return fallback;
+          }
+
+          const value = (payload as Record<string, unknown>)[key];
+          return typeof value === "string" && value ? value : fallback;
+        };
+
+        const shouldShowDegradedSuccess = (notificationStatus: string) =>
+          notificationStatus === "failed" || notificationStatus === "skipped";
 
         const failureReasonForResponse = (response: Response, code: string) => {
           if (response.status === 400 || code === "validation_error") {
@@ -687,9 +708,22 @@ const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : []
                 return;
               }
 
+              const result = await readSubmissionResult(response);
+              const notificationStatus = stringStatus(result, "notificationStatus", "unknown");
+              const analyticsStatus = stringStatus(result, "analyticsStatus", "unknown");
+              const deliveryDegraded = shouldShowDegradedSuccess(notificationStatus);
+
+              dispatchContactAnalytics("contact_form_submit_succeeded", {
+                notification_status: notificationStatus,
+                analytics_status: analyticsStatus,
+                delivery_degraded: deliveryDegraded,
+              });
+
               form.reset();
               if (status) {
-                status.textContent = form.dataset.successMessage ?? "";
+                status.textContent = deliveryDegraded
+                  ? form.dataset.degradedSuccessMessage ?? form.dataset.successMessage ?? ""
+                  : form.dataset.successMessage ?? "";
               }
             } catch {
               dispatchContactAnalytics("contact_form_submit_failed", {

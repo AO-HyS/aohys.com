@@ -12,6 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
   deployments: write
 
@@ -91,6 +92,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Audit PostHog environment separation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: pnpm run audit:posthog-env
+
       - name: Deploy Cloudflare Pages preview with sync:convex-env
         id: deploy-preview
         run: |
@@ -152,6 +158,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Audit PostHog environment separation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: pnpm run audit:posthog-env
 
       - name: Deploy Cloudflare Pages production with sync:convex-env
         run: pnpm run deploy:production

@@ -122,6 +122,7 @@
     "submitLabel": "Send request",
     "sendingLabel": "Sending...",
     "successMessage": "Request received. I will reply directly.",
+    "degradedSuccessMessage": "Request received. If the email notification is delayed, I can still see it in the dashboard.",
     "errorMessage": "The form could not send right now. Use WhatsApp or email directly.",
     "validationMessage": "Please review the highlighted fields before retrying.",
     "emailErrorMessage": "The notification email could not be sent.",

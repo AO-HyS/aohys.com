@@ -60,6 +60,7 @@ Feature branches should target `develop`. Production promotion should target `ma
 - dashboard protection checks for `/dashboard` noindex/no-store behavior;
 - PostHog/Convex CSP checks so analytics, browser errors, and contact requests are not blocked in preview;
 - contact page endpoint checks before promotion;
+- PostHog preview/production project-key separation before deploy;
 - release-target environment validation before deploy;
 - Cloudflare Preview deploy and smoke checks after `develop` merge;
 - Cloudflare Production deploy and smoke checks after `main` merge;
@@ -69,7 +70,7 @@ The launch-readiness checklist is maintained in [Launch Hardening Checklist](lau
 
 ## GitHub Actions
 
-`.github/workflows/release-train.yml` runs `pnpm verify` on pull requests into `develop` and `main`. Pushes to `develop` deploy preview through GitHub Environment `preview`; pushes to `main` deploy production through GitHub Environment `production`.
+`.github/workflows/release-train.yml` runs `pnpm verify` on pull requests into `develop` and `main`. Pushes to `develop` deploy preview through GitHub Environment `preview`; pushes to `main` deploy production through GitHub Environment `production`. Both deploy jobs run `pnpm run audit:posthog-env` before deploying so preview and production cannot ship while they share the same PostHog project key.
 
 `.github/workflows/quality-gates.yml` is the readable pull-request quality workflow. It installs with `pnpm install --frozen-lockfile`, then runs foundation validation, lint, typecheck, tests, and build as separate steps so failures are easy to diagnose without deployment secrets.
 

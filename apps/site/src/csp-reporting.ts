@@ -76,12 +76,22 @@ export async function handleCspReportRequest(
   environment: CspReportEnvironment,
   transport: PostHogServerTransport = fetch,
 ): Promise<Response> {
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        ...CSP_REPORT_HEADERS,
+        allow: "POST, OPTIONS",
+      },
+    });
+  }
+
   if (request.method !== "POST") {
     return new Response(null, {
       status: 405,
       headers: {
         ...CSP_REPORT_HEADERS,
-        allow: "POST",
+        allow: "POST, OPTIONS",
       },
     });
   }

@@ -34,6 +34,15 @@ pnpm run audit:posthog-env
 SMOKE_BASE_URL=https://develop.aohys-com.pages.dev pnpm run smoke:preview
 ```
 
+If `pnpm run audit:posthog-env` fails, create or select a separate PostHog project for preview and update only the GitHub Environment `preview` public key:
+
+```sh
+gh variable set PUBLIC_POSTHOG_KEY --env preview --repo AO-HyS/aohys.com --body "<preview-posthog-project-key>"
+pnpm run audit:posthog-env
+```
+
+Production should keep the production PostHog project key. The `environment` event property is a secondary filter, not the isolation boundary.
+
 Set GitHub Environment variable `SMOKE_CONTACT_SUBMIT=true` in `preview` when the release train should submit one synthetic lead through the real Convex/Resend/PostHog path. Leave it unset in production unless you deliberately want a live notification smoke.
 
 Manual preview probes:
@@ -56,7 +65,7 @@ Expected results:
 - `pnpm run smoke:preview` checks that the served CSP allows PostHog script/config and ingest hosts plus Convex contact endpoints.
 - `pnpm run smoke:preview` also checks the `/observability/csp` report endpoint so future CSP blocks can still reach PostHog even when `posthog-js` is blocked.
 - Contact page renders direct WhatsApp/email fallback and does not expose private dashboard data.
-- Contact submission should return success once the lead is persisted; Resend/PostHog provider drift should not reject the visitor request.
+- Contact submission should return success once the lead is persisted; Resend/PostHog provider drift should not reject the visitor request, and provider drift should appear as sanitized PostHog operational events.
 - Browser console should not show CSP violations for `us-assets.i.posthog.com`.
 - GitHub Environment `preview` and `production` should use different PostHog project keys. If they match, preview and production events are filterable by `environment` but still land in the same PostHog project.
 

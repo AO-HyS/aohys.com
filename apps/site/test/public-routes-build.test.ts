@@ -240,14 +240,19 @@ describe("built public routes", () => {
     expect(contactHtml).toContain('data-validation-message=');
     expect(contactHtml).toContain('data-email-error-message=');
     expect(contactHtml).toContain('data-backend-error-message=');
+    expect(contactHtml).toContain('data-degraded-success-message=');
     expect(contactHtml).toContain('data-retry-label=');
     expect(contactHtml).toContain("Please review the highlighted fields before retrying.");
     expect(contactHtml).toContain("The notification email could not be sent.");
+    expect(contactHtml).toContain("Request received. If the email notification is delayed, I can still see it in the dashboard.");
     expect(contactHtml).toContain("Try again, or use WhatsApp or email directly.");
     expect(contactHtml).toContain("WhatsApp");
     expect(contactHtml).toContain("I understand AOHYS will use this information to respond to my request.");
     expect(contactHtml).toMatch(/failure_reason:[`"]validation_failed/);
     expect(contactHtml).toMatch(/failure_reason:\w/);
+    expect(contactHtml).toContain("contact_form_submit_succeeded");
+    expect(contactHtml).toContain("notification_status");
+    expect(contactHtml).toContain("analytics_status");
     expect(contactHtml).toContain("email_delivery_failed");
     expect(contactHtml).toMatch(/failure_reason:[`"]backend_unavailable/);
 
@@ -260,9 +265,11 @@ describe("built public routes", () => {
     expect(spanishContactHtml).toContain('data-validation-message=');
     expect(spanishContactHtml).toContain('data-email-error-message=');
     expect(spanishContactHtml).toContain('data-backend-error-message=');
+    expect(spanishContactHtml).toContain('data-degraded-success-message=');
     expect(spanishContactHtml).toContain('data-retry-label=');
     expect(spanishContactHtml).toContain("Revisa los campos marcados antes de intentar de nuevo.");
     expect(spanishContactHtml).toContain("No se pudo enviar el correo de notificación.");
+    expect(spanishContactHtml).toContain("Solicitud recibida. Si la notificación por correo se retrasa, todavía puedo verla en el dashboard.");
     expect(spanishContactHtml).toContain("Intenta de nuevo o usa WhatsApp/correo directo.");
     expect(spanishContactHtml).toContain("WhatsApp");
     expect(spanishContactHtml).toContain("Entiendo que AOHYS usará esta información para responder mi solicitud.");
@@ -277,6 +284,7 @@ describe("built public routes", () => {
     expect(contactHtml).toContain('"environment":"local"');
     expect(contactHtml).toContain('data-analytics-view="contact_form_viewed"');
     expect(contactHtml).toContain('data-analytics-submit="contact_form_submit_attempted"');
+    expect(contactHtml).toContain("contact_form_submit_succeeded");
     expect(contactHtml).toContain('data-analytics-event="whatsapp_cta_clicked"');
     expect(contactHtml).toContain('data-analytics-event="email_cta_clicked"');
     expect(contactHtml).not.toContain("autocapture:true");
@@ -325,6 +333,7 @@ describe("built public routes", () => {
     expect(headers).toContain("Content-Security-Policy:");
     expect(headers).toContain("frame-ancestors 'none'");
     expect(headers).toContain("script-src 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
+    expect(headers).toContain("script-src-elem 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
     expect(headers).toContain("connect-src 'self' https://*.convex.site https://us.i.posthog.com https://us.posthog.com https://us-assets.i.posthog.com");
   });
 });

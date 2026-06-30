@@ -173,6 +173,18 @@ async function assertContactBoundary(baseUrl: string, environment: ReleaseDeploy
 }
 
 async function assertCspReportBoundary(baseUrl: string): Promise<void> {
+  const optionsResponse = await fetchWithRetries(urlFor(baseUrl, "/observability/csp"), {
+    method: "OPTIONS",
+    headers: {
+      "user-agent": "aohys-release-smoke/1.0",
+    },
+    redirect: "manual",
+  });
+
+  if (optionsResponse.status !== 204) {
+    throw new Error(`Expected CSP report preflight endpoint to return 204. Received ${optionsResponse.status}.`);
+  }
+
   const response = await fetchWithRetries(urlFor(baseUrl, "/observability/csp"), {
     method: "POST",
     headers: {
@@ -231,6 +243,7 @@ try {
   }
 
   assertHeaderContains(result.headers, "content-security-policy", "https://us-assets.i.posthog.com");
+  assertHeaderContains(result.headers, "content-security-policy", "script-src-elem 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
   assertHeaderContains(result.headers, "content-security-policy", "https://us.i.posthog.com");
   assertHeaderContains(result.headers, "content-security-policy", "https://*.convex.site");
   assertHeaderContains(result.headers, "content-security-policy", "report-uri /observability/csp");

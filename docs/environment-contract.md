@@ -59,7 +59,7 @@ The public contact form uses `PUBLIC_CONTACT_ENDPOINT`, a browser-safe build val
 
 PostHog browser configuration is intentionally public because the key and host are used by the browser SDK. Preview and production must still use separate GitHub Environment values so analytics streams do not drift together. The preferred setup is two PostHog projects: `AOHYS Public Site - Preview` for branch/develop/previews and `AOHYS Public Site - Production` for `aohys.com`. Every emitted event also includes an `environment` property where the caller has environment context, but that property is a secondary guard, not the primary isolation boundary. Autocapture is a public policy value and starts as `false`; pageviews, conversion events, operational events, and error events are emitted explicitly by the public site or server boundary.
 
-During setup or incident recovery, verify that GitHub Environment `preview` and GitHub Environment `production` do not share the same `PUBLIC_POSTHOG_KEY`. If they do, preview errors and production traffic land in the same PostHog project and should be treated as a configuration bug before release promotion.
+During setup or incident recovery, verify that GitHub Environment `preview` and GitHub Environment `production` do not share the same `PUBLIC_POSTHOG_KEY`. If they do, preview errors and production traffic land in the same PostHog project and should be treated as a configuration bug before release promotion. The Release Train deploy jobs run this audit before deploying `develop` or `main`.
 
 Current explicit PostHog events:
 
@@ -77,7 +77,7 @@ Current explicit PostHog events:
 | `dashboard_runtime_exception` | Cloudflare Pages `/dashboard` guard | Environment, path, source, and error type only; no cookies, tokens, or exception message |
 | `csp_violation_reported` | Cloudflare Pages `/observability/csp` | Environment, path, directive, document path, disposition, and blocked host only; no full URL query, token, contact identity, or message text |
 
-Cloudflare Pages sends CSP violation reports to `/observability/csp`. This endpoint is intentionally tiny and best-effort: it returns `204` even if PostHog is temporarily unavailable so CSP reporting never breaks a visitor path. It exists because a broken CSP can prevent the browser PostHog bundle from loading, so the report path must not depend on `posthog-js`.
+Cloudflare Pages sends CSP violation reports to `/observability/csp`. This endpoint is intentionally tiny and best-effort: it returns `204` for valid reports and preflight checks even if PostHog is temporarily unavailable so CSP reporting never breaks a visitor path. It exists because a broken CSP can prevent the browser PostHog bundle from loading, so the report path must not depend on `posthog-js`.
 
 ## Provider Responsibilities
 

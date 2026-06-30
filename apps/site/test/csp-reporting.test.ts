@@ -68,4 +68,22 @@ describe("CSP reporting boundary", () => {
     expect(response.status).toBe(204);
     expect(transport).not.toHaveBeenCalled();
   });
+
+  it("accepts preflight checks without creating analytics noise", async () => {
+    const transport = vi.fn();
+    const response = await handleCspReportRequest(
+      new Request("https://develop.aohys-com.pages.dev/observability/csp", {
+        method: "OPTIONS",
+      }),
+      {
+        AOHYS_ENV: "preview",
+        PUBLIC_POSTHOG_KEY: "phc_preview",
+      },
+      transport,
+    );
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get("allow")).toBe("POST, OPTIONS");
+    expect(transport).not.toHaveBeenCalled();
+  });
 });
