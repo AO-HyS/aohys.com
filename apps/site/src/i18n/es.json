@@ -48,6 +48,8 @@
     "productionSnapshotAlt": "Captura del hero del sitio en producción de Casa Roca",
     "operationsSnapshot": "Captura de software operativo",
     "operationsSnapshotAlt": "Captura del dashboard operativo de The Barber Central",
+    "deliveryArtifact": "Artefacto generado de entrega",
+    "deliveryArtifactAlt": "Artefacto de arquitectura generado que muestra workflow, revisión, deploy, observabilidad y límites público-privados",
     "shellProof": "Shell público en Astro, ruta privada de dashboard y seams de release tipados.",
     "outcome": "Resultado",
     "outcomeText": "Señal de negocio antes de nombres de stack",

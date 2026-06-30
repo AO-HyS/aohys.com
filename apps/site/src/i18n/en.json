@@ -48,6 +48,8 @@
     "productionSnapshotAlt": "Casa Roca production website hero screenshot",
     "operationsSnapshot": "Operations software snapshot",
     "operationsSnapshotAlt": "The Barber Central operations dashboard screenshot",
+    "deliveryArtifact": "Generated delivery artifact",
+    "deliveryArtifactAlt": "Generated architecture artifact showing workflow, review gates, deployment, observability, and public-private boundaries",
     "shellProof": "Astro public shell, private dashboard path, typed release seams.",
     "outcome": "Outcome",
     "outcomeText": "Business signal before stack names",

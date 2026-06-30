@@ -24,6 +24,7 @@ describe("public site source quality", () => {
     const publicContentPage = read("src/components/PublicContentPage.astro");
     const enDictionary = read("src/i18n/en.json");
     const esDictionary = read("src/i18n/es.json");
+    const imagePrompts = read("../../docs/aohys-public-site-image-prompts.md");
     const source = [
       globalCss,
       home,
@@ -52,6 +53,8 @@ describe("public site source quality", () => {
     expect(header).toContain("getUiCopy");
     expect(footer).toContain("getUiCopy");
     expect(publicContentPage).toContain("getUiCopy");
+    expect(publicContentPage).toContain("/images/generated/aohys-delivery-artifact.png");
+    expect(imagePrompts).toContain("aohys-delivery-artifact.png");
     expect(posthogAnalytics).toContain("buildAnalyticsBootstrapPayload");
     expect(posthogClient).toContain("capture_pageview");
     expect(posthogClient).toContain("captureException");

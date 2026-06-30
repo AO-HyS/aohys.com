@@ -663,6 +663,25 @@ h2 {
   padding-block: clamp(3rem, 7vw, 6.5rem);
 }
 
+.practice-section .section-heading {
+  margin-block-end: clamp(1.25rem, 3vw, 2rem);
+}
+
+.generated-artifact {
+  margin: 0;
+}
+
+.generated-artifact img {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--color-dark);
+  background: var(--color-dark);
+}
+
+.practice-artifact {
+  margin-block-end: clamp(1.5rem, 4vw, 3rem);
+}
+
 .practice-list {
   display: grid;
   border-block-start: 1px solid var(--color-dark);
@@ -1356,10 +1375,13 @@ h2 {
 }
 
 .footer-dashboard-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
   border: 1px solid var(--color-dark);
   background: var(--color-mint);
   color: var(--color-mint-ink);
-  padding-inline: 0.85rem;
+  padding-inline: 1rem;
   text-decoration: none;
 }
 
