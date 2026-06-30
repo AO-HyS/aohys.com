@@ -74,6 +74,15 @@ function bindingNames(project: CloudflarePagesProject, environment: PagesEnviron
   ]);
 }
 
+function readVariable(
+  project: CloudflarePagesProject,
+  environment: PagesEnvironmentName,
+  name: string,
+): CloudflarePagesVariable | string | undefined {
+  return project.deployment_configs?.[environment]?.env_vars?.[name]
+    ?? project.deployment_configs?.[environment]?.secrets?.[name];
+}
+
 function readPlainVariable(
   project: CloudflarePagesProject,
   environment: PagesEnvironmentName,
@@ -83,6 +92,10 @@ function readPlainVariable(
 
   if (typeof variable === "string") {
     return variable;
+  }
+
+  if (variable?.type === "secret_text") {
+    return undefined;
   }
 
   return variable?.value;
@@ -97,6 +110,15 @@ function assertRuntimeBindings(project: CloudflarePagesProject): void {
     for (const binding of REQUIRED_RUNTIME_BINDINGS) {
       if (!names.has(binding)) {
         errors.push(`Cloudflare Pages ${environment} runtime is missing ${binding}.`);
+        continue;
+      }
+
+      const variable = readVariable(project, environment, binding);
+      const value = typeof variable === "string" ? variable : variable?.value;
+      const isSecret = typeof variable !== "string" && variable?.type === "secret_text";
+
+      if (!isSecret && !value?.trim()) {
+        errors.push(`Cloudflare Pages ${environment} runtime has an empty ${binding}.`);
       }
     }
 
@@ -108,6 +130,14 @@ function assertRuntimeBindings(project: CloudflarePagesProject): void {
 
   const previewPostHogKey = readPlainVariable(project, "preview", "PUBLIC_POSTHOG_KEY");
   const productionPostHogKey = readPlainVariable(project, "production", "PUBLIC_POSTHOG_KEY");
+
+  if (!previewPostHogKey) {
+    errors.push("Cloudflare Pages preview PUBLIC_POSTHOG_KEY must be a non-empty plain env var.");
+  }
+
+  if (!productionPostHogKey) {
+    errors.push("Cloudflare Pages production PUBLIC_POSTHOG_KEY must be a non-empty plain env var.");
+  }
 
   if (previewPostHogKey && productionPostHogKey && previewPostHogKey === productionPostHogKey) {
     errors.push("Cloudflare Pages preview and production use the same PUBLIC_POSTHOG_KEY.");
