@@ -18,6 +18,8 @@ describe("public site source quality", () => {
     const layout = read("src/layouts/BaseLayout.astro");
     const header = read("src/components/SiteHeader.astro");
     const footer = read("src/components/SiteFooter.astro");
+    const securityHeaders = read("src/security-headers.ts");
+    const staticHeaders = read("public/_headers");
     const posthogAnalytics = read("src/components/PostHogAnalytics.astro");
     const analytics = read("src/analytics.ts");
     const posthogClient = read("src/posthog-client.ts");
@@ -75,6 +77,14 @@ describe("public site source quality", () => {
     expect(globalCss).not.toMatch(/font-size:\s*clamp\([^;]*vw/i);
     expect(globalCss).not.toMatch(/--text-[^:]+:\s*clamp\([^;]*vw/i);
     expect(source).not.toMatch(/lorem/i);
+    expect(securityHeaders).toContain("script-src-elem");
+    expect(securityHeaders).toContain("https://*.i.posthog.com");
+    expect(securityHeaders).toContain("https://*.posthog.com");
+    expect(securityHeaders).toContain("report-uri /observability/csp");
+    expect(staticHeaders).toContain("script-src-elem");
+    expect(staticHeaders).toContain("https://*.i.posthog.com");
+    expect(staticHeaders).toContain("https://*.posthog.com");
+    expect(staticHeaders).toContain("report-uri /observability/csp");
     expect(dashboardFunction).not.toMatch(/^import\s+\{[^}]+\}\s+from/m);
     expect(authFunction).not.toMatch(/^import\s+\{[^}]+\}\s+from/m);
     expect(cspFunction).not.toMatch(/^import\s+\{[^}]+\}\s+from/m);

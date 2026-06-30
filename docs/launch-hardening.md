@@ -43,6 +43,13 @@ pnpm run audit:posthog-env
 
 Production should keep the production PostHog project key. The `environment` event property is a secondary filter, not the isolation boundary.
 
+When checking PostHog from the MCP or UI, the expected shape is two AOHYS projects:
+
+- `AOHYS Public Site - Preview`: GitHub Environment `preview`, Cloudflare Pages preview runtime, and Convex preview runtime.
+- `AOHYS Public Site - Production`: GitHub Environment `production`, Cloudflare Pages production runtime, and Convex production runtime.
+
+Do not reuse the same `PUBLIC_POSTHOG_KEY` across these two environments. If preview and production use the same key, errors still include `environment` metadata, but they land in the same PostHog project and should be treated as an incident before promotion.
+
 Set GitHub Environment variable `SMOKE_CONTACT_SUBMIT=true` in `preview` when the release train should submit one synthetic lead through the real Convex/Resend/PostHog path. Leave it unset in production unless you deliberately want a live notification smoke.
 
 Manual preview probes:
