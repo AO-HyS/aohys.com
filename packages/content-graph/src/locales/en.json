@@ -2,20 +2,20 @@
   "home": {
     "path": "/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Senior product engineering for business-critical software.",
-    "seoDescription": "Alejandro Ortiz Corro builds business-critical product systems, public websites, private dashboards, backend workflows, and software architecture for teams that need reliable delivery.",
+    "summary": "Senior engineering for business-critical software.",
+    "seoDescription": "Alejandro Ortiz Corro designs and builds reliable product systems, public websites, private dashboards, backend workflows, and software architecture for teams that need delivery they can trust.",
     "primaryActionLabel": "Start a conversation",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "View selected work",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Engineering outcomes that scale with business.",
-      "deck": "I help teams turn unclear workflows into reliable product systems: public sites that earn trust, private tools that remove friction, and backend paths that keep operating when the work gets complicated.",
+      "headline": "Senior engineering. Business outcomes. Measurable impact.",
+      "deck": "I turn ambitious workflows into reliable product systems: public surfaces that earn trust, private tools that remove friction, and backend paths that keep operating when the work gets complicated.",
       "proofBoardLabel": "AOHYS public proof board",
       "proofBoardTitle": "Public pages, private operations, observable delivery.",
       "proofBoardBody": "A compact system view for the public sample behind AOHYS.",
       "selectedOutcomesHeading": "Proof ledger",
-      "selectedOutcomesIntro": "A short path through public-safe work: what shipped, what it was for, and what can be inspected without exposing private code.",
+      "selectedOutcomesIntro": "A short path through public-safe work: what shipped, why it mattered, and what can be inspected without exposing private code.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",

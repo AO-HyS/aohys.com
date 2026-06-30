@@ -17,8 +17,10 @@
   --color-coral: oklch(0.68 0.15 35);
   --color-dark: oklch(0.09 0.006 260);
   --color-dark-surface: oklch(0.14 0.01 260);
+  --color-dark-panel: oklch(0.115 0.012 260);
   --color-dark-ink: oklch(0.96 0.01 160);
   --color-dark-muted: oklch(0.76 0.035 180);
+  --color-dark-rule: color-mix(in oklch, var(--color-dark-ink), transparent 78%);
   --color-honey-soft: oklch(0.92 0.08 82);
   --color-focus: oklch(0.48 0.16 255);
   --color-architecture-bg: oklch(0.12 0.006 260);
@@ -120,6 +122,12 @@ section,
   backdrop-filter: blur(14px);
 }
 
+.site-shell[data-content-id="home"] .site-header {
+  border-block-end-color: var(--color-dark-rule);
+  background: color-mix(in oklch, var(--color-dark), transparent 6%);
+  color: var(--color-dark-ink);
+}
+
 .site-nav {
   display: flex;
   align-items: center;
@@ -153,6 +161,10 @@ section,
   background: color-mix(in oklch, var(--color-sky), var(--color-bg) 82%);
 }
 
+.site-shell[data-content-id="home"] .brand-symbol {
+  background: color-mix(in oklch, var(--color-mint), var(--color-dark) 72%);
+}
+
 .brand-mark {
   display: block;
   width: 2.75rem;
@@ -172,6 +184,10 @@ section,
   color: var(--color-muted);
   font-size: var(--text-caption);
   font-weight: var(--weight-medium);
+}
+
+.site-shell[data-content-id="home"] .brand-text small {
+  color: var(--color-dark-muted);
 }
 
 .nav-links {
@@ -253,57 +269,66 @@ h1 {
 }
 
 .home-proof-hero h1 {
-  max-width: 11em;
+  max-width: 16ch;
+  font-size: 2.95rem;
+}
+
+.home-headline span {
+  display: block;
 }
 
 .home-proof-hero {
   width: 100%;
-  grid-template-columns: minmax(19rem, 0.72fr) minmax(30rem, 1.1fr);
-  gap: 0;
+  grid-template-columns: minmax(30rem, 0.82fr) minmax(31rem, 0.96fr);
+  gap: clamp(2rem, 4vw, 4.25rem);
   margin-inline: 0;
-  padding-block: 0;
-  padding-inline: max(1rem, calc((100vw - 1180px) / 2)) 0;
-  border-block-end: 1px solid var(--color-rule);
-  background: var(--color-bg);
-  color: var(--color-ink);
+  min-height: min(760px, calc(100svh - 77px));
+  padding-block: clamp(2.75rem, 5vw, 5rem);
+  padding-inline: max(1rem, calc((100vw - 1180px) / 2));
+  border-block-end: 1px solid var(--color-dark-rule);
+  background:
+    linear-gradient(120deg, color-mix(in oklch, var(--color-mint), transparent 92%), transparent 28rem),
+    radial-gradient(circle at 82% 12%, color-mix(in oklch, var(--color-sky), transparent 86%), transparent 22rem),
+    var(--color-dark);
+  color: var(--color-dark-ink);
 }
 
 .home-proof-hero .hero-copy {
-  padding-block: clamp(4rem, 10vw, 7.5rem);
-  padding-inline-end: clamp(2rem, 5vw, 4rem);
+  padding-block: clamp(1rem, 3vw, 2.5rem);
+  padding-inline-end: 0;
 }
 
 .home-proof-hero .signal-line {
-  color: color-mix(in oklch, var(--color-primary), var(--color-primary-ink) 22%);
+  color: var(--color-mint);
 }
 
 .home-proof-hero .hero-lead {
   max-width: 54ch;
-  color: var(--color-ink);
+  color: var(--color-dark-muted);
 }
 
 .home-proof-hero .button-secondary {
-  background: var(--color-bg);
-  color: var(--color-ink);
+  border-color: var(--color-dark-rule);
+  background: transparent;
+  color: var(--color-dark-ink);
 }
 
 .hero-principles {
   display: grid;
-  gap: 0.8rem;
-  margin: 2rem 0 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem 1rem;
+  margin: 1.6rem 0 0;
   padding: 0;
   list-style: none;
 }
 
 .hero-principles li {
   display: grid;
-  grid-template-columns: 2rem minmax(0, 1fr);
-  gap: 0.8rem;
-  align-items: start;
+  gap: 0.25rem;
 }
 
 .hero-principles span {
-  color: var(--color-mint-ink);
+  color: var(--color-primary);
   font-family: var(--font-display);
   font-size: var(--text-caption);
   font-weight: 760;
@@ -312,12 +337,12 @@ h1 {
 
 .hero-principles p {
   margin: 0;
-  color: var(--color-muted);
+  color: var(--color-dark-muted);
   line-height: 1.5;
 }
 
 .hero-principles strong {
-  color: var(--color-ink);
+  color: var(--color-dark-ink);
   font-family: var(--font-display);
   font-weight: 760;
 }
@@ -373,29 +398,29 @@ h2 {
 
 .proof-board {
   position: relative;
-  min-height: 38rem;
+  min-height: clamp(29rem, 43vw, 37rem);
   margin: 0;
   overflow: hidden;
 }
 
 .home-proof-board {
   isolation: isolate;
-  min-height: 100%;
-  border-inline-start: 1px solid color-mix(in oklch, var(--color-dark-ink), transparent 82%);
+  align-self: stretch;
+  border: 1px solid var(--color-dark-rule);
   background:
     linear-gradient(90deg, color-mix(in oklch, var(--color-sky), transparent 92%) 1px, transparent 1px),
     linear-gradient(0deg, color-mix(in oklch, var(--color-mint), transparent 92%) 1px, transparent 1px),
     radial-gradient(circle at 72% 20%, color-mix(in oklch, var(--color-mint), transparent 82%), transparent 26rem),
-    var(--color-dark);
+    var(--color-dark-panel);
   background-size: 92px 92px, 92px 92px, auto, auto;
 }
 
 .system-map-asset {
   position: absolute;
-  inset-block-start: 5rem;
-  inset-inline: 4% 4%;
+  inset-block-start: clamp(4.4rem, 6vw, 5.8rem);
+  inset-inline: 3.5%;
   z-index: 1;
-  width: 92%;
+  width: 93%;
   filter: saturate(1.08);
 }
 
@@ -407,8 +432,8 @@ h2 {
 }
 
 .proof-board-caption {
-  inset-block-start: 2rem;
-  inset-inline-start: 2rem;
+  inset-block-start: 1.6rem;
+  inset-inline-start: 1.6rem;
   max-width: min(31rem, calc(100% - 4rem));
   border-color: transparent;
   padding: 0;
@@ -449,16 +474,16 @@ h2 {
 }
 
 .proof-shot-casa {
-  inset-block-end: 2rem;
-  inset-inline-start: 2.2rem;
-  width: min(34%, 16rem);
+  inset-block-end: 1.5rem;
+  inset-inline-start: 1.5rem;
+  width: min(30%, 14rem);
   aspect-ratio: 1.42;
 }
 
 .proof-shot-ops {
-  inset-block-end: 2rem;
-  inset-inline-end: 2.2rem;
-  width: min(28%, 12rem);
+  inset-block-end: 1.5rem;
+  inset-inline-end: 1.5rem;
+  width: min(24%, 10.5rem);
   aspect-ratio: 0.72;
 }
 
@@ -1351,13 +1376,21 @@ h2 {
   }
 
   .site-nav {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
   .nav-links {
-    justify-content: flex-start;
-    width: 100%;
+    flex: 1 1 22rem;
+    justify-content: flex-end;
+    overflow-x: auto;
+    scrollbar-width: none;
+    white-space: nowrap;
+  }
+
+  .nav-links::-webkit-scrollbar {
+    display: none;
   }
 
   .hero-section {
@@ -1367,8 +1400,10 @@ h2 {
 
   .home-proof-hero {
     grid-template-columns: 1fr;
+    gap: clamp(1.5rem, 5vw, 2.5rem);
+    min-height: auto;
     padding-inline: max(1rem, calc((100vw - 1180px) / 2));
-    padding-block-start: clamp(2.5rem, 8vw, 5rem);
+    padding-block: clamp(2rem, 7vw, 4rem);
   }
 
   .home-proof-hero .hero-copy {
@@ -1376,12 +1411,8 @@ h2 {
     padding-inline-end: 0;
   }
 
-  .home-proof-board {
-    border: 1px solid color-mix(in oklch, var(--color-dark-ink), transparent 82%);
-  }
-
   .proof-board {
-    min-height: 34rem;
+    min-height: clamp(27rem, 78vw, 34rem);
   }
 
   .route-hero,
@@ -1478,12 +1509,13 @@ h2 {
   }
 
   .home-proof-hero h1 {
-    max-width: 13.5ch;
+    max-width: 15ch;
+    font-size: 2.15rem;
   }
 
   .hero-section {
-    gap: 1.35rem;
-    padding-block: 1.5rem 0.75rem;
+    gap: 1.25rem;
+    padding-block: 1.25rem 0.75rem;
   }
 
   .home-proof-hero {
@@ -1497,6 +1529,16 @@ h2 {
     max-width: calc(100vw - 2rem);
   }
 
+  .hero-principles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .hero-principles li {
+    max-width: none;
+  }
+
   .hero-lead {
     margin-block-start: 1.05rem;
   }
@@ -1506,15 +1548,24 @@ h2 {
     margin-block-start: 1.3rem;
   }
 
-  .brand-text small {
+  .brand-text {
     display: none;
   }
 
+  .site-nav {
+    flex-wrap: nowrap;
+  }
+
+  .brand-lockup {
+    min-width: 2.75rem;
+  }
+
   .nav-links {
-    display: grid;
-    grid-template-columns: repeat(3, max-content);
-    column-gap: 0.9rem;
-    row-gap: 0.2rem;
+    flex: 1 1 auto;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.85rem;
+    justify-content: flex-start;
   }
 
   .nav-links a,
@@ -1524,11 +1575,11 @@ h2 {
 
   .proof-board {
     max-width: calc(100vw - 2rem);
-    min-height: 27rem;
+    min-height: 18rem;
   }
 
   .system-map-asset {
-    inset-block-start: 7.3rem;
+    inset-block-start: 4.9rem;
     inset-inline: 0.7rem;
     width: calc(100% - 1.4rem);
   }
@@ -1547,13 +1598,13 @@ h2 {
   .proof-shot-casa {
     inset-block-end: 1rem;
     inset-inline-start: 0.75rem;
-    width: 58%;
+    width: 44%;
   }
 
   .proof-shot-ops {
-    inset-block-end: 1.6rem;
+    inset-block-end: 1rem;
     inset-inline-end: 0.75rem;
-    width: 36%;
+    width: 28%;
   }
 }
 

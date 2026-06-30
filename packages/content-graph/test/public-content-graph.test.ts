@@ -99,7 +99,7 @@ describe("Public Content Graph", () => {
     const englishHome = getHomePageContent("en");
     const spanishHome = getHomePageContent("es");
 
-    expect(englishHome.headline).toContain("Engineering outcomes");
+    expect(englishHome.headline).toContain("Senior engineering");
     expect(englishHome.selectedOutcomes).toHaveLength(4);
     expect(englishHome.selectedOutcomes.map((outcome) => outcome.path)).toEqual([
       "/case-studies/casa-roca",

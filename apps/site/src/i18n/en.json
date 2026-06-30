@@ -4,10 +4,10 @@
     "aria": "Primary",
     "homeLabel": "AO AOH&S home",
     "small": "Product engineering",
-    "language": "Español",
+    "language": "ES",
     "nav": {
-      "caseStudies": "Selected work",
-      "architecture": "Architecture",
+      "caseStudies": "Work",
+      "architecture": "System",
       "resume": "Resume",
       "contact": "Contact"
     }
@@ -30,18 +30,18 @@
     "heroPrinciples": [
       {
         "mark": "01",
-        "label": "Find the workflow.",
-        "text": "The business problem comes before the stack."
+        "label": "Model the work.",
+        "text": "Workflow before tooling."
       },
       {
         "mark": "02",
-        "label": "Make it reliable.",
-        "text": "Boundaries, data, auth, delivery, and recovery are designed together."
+        "label": "Shape the system.",
+        "text": "One connected product path."
       },
       {
         "mark": "03",
-        "label": "Prove the change.",
-        "text": "A feature is not done until it can be reviewed, shipped, and observed."
+        "label": "Prove the release.",
+        "text": "Preview, observe, verify."
       }
     ],
     "productionSnapshot": "Production site snapshot",

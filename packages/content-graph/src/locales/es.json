@@ -2,20 +2,20 @@
   "home": {
     "path": "/es/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Ingeniería de producto senior para software crítico de negocio.",
-    "seoDescription": "Alejandro Ortiz Corro construye sistemas de producto, sitios públicos, dashboards privados, workflows de backend y arquitectura de software para equipos que necesitan entrega confiable.",
+    "summary": "Ingeniería senior para software crítico de negocio.",
+    "seoDescription": "Alejandro Ortiz Corro diseña y construye sistemas de producto confiables, sitios públicos, dashboards privados, workflows de backend y arquitectura de software para equipos que necesitan entrega segura.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Ingeniería que convierte objetivos de negocio en sistemas confiables.",
-      "deck": "Ayudo a convertir flujos poco claros en sistemas de producto confiables: sitios públicos que generan confianza, herramientas privadas que quitan fricción y caminos de backend que siguen operando cuando el trabajo se complica.",
+      "headline": "Ingeniería senior. Resultados de negocio. Impacto visible.",
+      "deck": "Convierto workflows ambiciosos en sistemas de producto confiables: superficies públicas que generan confianza, herramientas privadas que quitan fricción y caminos de backend que siguen operando cuando el trabajo se complica.",
       "proofBoardLabel": "Tablero de prueba pública de AOHYS",
       "proofBoardTitle": "Páginas públicas, operación privada y entrega observable.",
       "proofBoardBody": "Una vista compacta del sistema detrás de la muestra pública de AOHYS.",
       "selectedOutcomesHeading": "Ledger de prueba",
-      "selectedOutcomesIntro": "Un recorrido corto por trabajo público seguro: qué se construyó, para qué sirvió y qué puede revisarse sin exponer código privado.",
+      "selectedOutcomesIntro": "Un recorrido corto por trabajo público seguro: qué se construyó, por qué importó y qué puede revisarse sin exponer código privado.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",

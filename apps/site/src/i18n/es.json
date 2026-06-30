@@ -4,10 +4,10 @@
     "aria": "Principal",
     "homeLabel": "AO AOH&S inicio",
     "small": "Ingeniería de producto",
-    "language": "English",
+    "language": "EN",
     "nav": {
       "caseStudies": "Casos",
-      "architecture": "Arquitectura",
+      "architecture": "Sistema",
       "resume": "CV",
       "contact": "Contacto"
     }
@@ -30,18 +30,18 @@
     "heroPrinciples": [
       {
         "mark": "01",
-        "label": "Entender el flujo.",
-        "text": "El problema de negocio va antes que el stack."
+        "label": "Modelar el trabajo.",
+        "text": "Workflow antes que herramienta."
       },
       {
         "mark": "02",
-        "label": "Hacerlo confiable.",
-        "text": "Límites, datos, auth, entrega y recuperación se diseñan juntos."
+        "label": "Dar forma al sistema.",
+        "text": "Un camino de producto."
       },
       {
         "mark": "03",
-        "label": "Probar el cambio.",
-        "text": "Una feature no está lista hasta que puede revisarse, desplegarse y observarse."
+        "label": "Probar la entrega.",
+        "text": "Preview, observar, verificar."
       }
     ],
     "productionSnapshot": "Captura de sitio en producción",

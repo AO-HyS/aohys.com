@@ -53,6 +53,19 @@ const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
 const publicContactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL ?? "alejandro.ortiz@aohys.com";
 const publicWhatsAppUrl = import.meta.env.PUBLIC_WHATSAPP_URL ?? "https://wa.me/522299020825";
 const directEmailHref = `mailto:${publicContactEmail}`;
+
+function splitHeadline(headline: string): string[] {
+  const parts = headline.split(". ");
+  return parts.map((part, index) => {
+    if (index < parts.length - 1 && !part.endsWith(".")) {
+      return `${part}.`;
+    }
+
+    return part;
+  });
+}
+
+const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : [];
 ---
 
 {
@@ -61,7 +74,9 @@ const directEmailHref = `mailto:${publicContactEmail}`;
       <section class="hero-section home-proof-hero" aria-labelledby="home-title" data-home-content-id={id}>
         <div class="hero-copy">
           <p class="signal-line">{copy.signal}</p>
-          <h1 id="home-title">{homeContent.headline}</h1>
+          <h1 id="home-title" class="home-headline" aria-label={homeContent.headline}>
+            {homeHeadlineParts.map((part) => <span aria-hidden="true">{part}</span>)}
+          </h1>
           <p class="hero-lead">
             {homeContent.deck}
           </p>

@@ -62,9 +62,9 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain('data-home-content-id="home"');
-    expect(homeHtml).toContain("Engineering outcomes that scale with business.");
+    expect(homeHtml).toContain("Senior engineering.");
     expect(homeHtml).toContain("Proof ledger");
-    expect(homeHtml).toContain("Find the workflow.");
+    expect(homeHtml).toContain("Model the work.");
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
     expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
@@ -80,9 +80,9 @@ describe("built public routes", () => {
     expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Ingeniería que convierte objetivos de negocio en sistemas confiables.");
+    expect(spanishHomeHtml).toContain("Ingeniería senior.");
     expect(spanishHomeHtml).toContain("Ledger de prueba");
-    expect(spanishHomeHtml).toContain("Entender el flujo.");
+    expect(spanishHomeHtml).toContain("Modelar el trabajo.");
     expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
     expect(spanishHomeHtml).toContain('aria-label="Evidencia pública segura de Casa Roca"');
     expect(spanishHomeHtml).toContain("WhatsApp");
