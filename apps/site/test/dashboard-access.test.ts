@@ -157,8 +157,7 @@ describe("dashboard access guard", () => {
     expect(html).not.toContain("https://effervescent-minnow-483.convex.site");
   });
 
-  it("returns a private unavailable state and reports unexpected dashboard runtime failures", async () => {
-    const capture = vi.fn(async () => undefined);
+  it("redirects stale or unreadable session cookies back to sign-in", async () => {
     const response = await safeHandleDashboardRequest(
       new Request("https://preview.aohys.com/dashboard/leads", {
         headers: {
@@ -169,6 +168,34 @@ describe("dashboard access guard", () => {
       vi.fn(async () => {
         throw new Error("Convex session fetch failed with private details.");
       }),
+    );
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe("/dashboard/sign-in?callbackURL=%2Fdashboard%2Fleads");
+    expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+  });
+
+  it("returns a private unavailable state and reports unexpected dashboard runtime failures", async () => {
+    const capture = vi.fn(async () => undefined);
+    const fetchDashboard = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+
+      if (url.endsWith("/api/auth/get-session")) {
+        return new Response(JSON.stringify({
+          user: { email: "alejandro.ortiz@aohys.com" },
+        }));
+      }
+
+      throw new Error("Private lead provider failed with private details.");
+    });
+    const response = await safeHandleDashboardRequest(
+      new Request("https://preview.aohys.com/dashboard/leads", {
+        headers: {
+          cookie: "better-auth.session_token=valid",
+        },
+      }),
+      validEnvironment,
+      fetchDashboard,
       { capture },
     );
     const html = await response.text();

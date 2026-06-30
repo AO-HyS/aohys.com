@@ -554,29 +554,33 @@ async function readBetterAuthSession(
   cookie: string,
   fetchSession: DashboardFetch,
 ): Promise<{ user: { email: string } } | null> {
-  const response = await fetchSession(
-    `${environment.CONVEX_SITE_URL.replace(/\/$/, "")}/api/auth/get-session`,
-    {
-      headers: {
-        accept: "application/json",
-        cookie,
+  try {
+    const response = await fetchSession(
+      `${environment.CONVEX_SITE_URL.replace(/\/$/, "")}/api/auth/get-session`,
+      {
+        headers: {
+          accept: "application/json",
+          cookie,
+        },
       },
-    },
-  );
+    );
 
-  if (!response.ok) {
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = await response.json() as {
+      user?: { email?: string | null } | null;
+    };
+
+    if (!payload.user?.email) {
+      return null;
+    }
+
+    return { user: { email: payload.user.email } };
+  } catch {
     return null;
   }
-
-  const payload = await response.json() as {
-    user?: { email?: string | null } | null;
-  };
-
-  if (!payload.user?.email) {
-    return null;
-  }
-
-  return { user: { email: payload.user.email } };
 }
 
 function redirectToSignIn(path: string): Response {
