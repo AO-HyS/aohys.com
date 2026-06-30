@@ -2,6 +2,20 @@
 
 These prompts are for the final generated bitmap layer of the AOHYS public site. Screenshots remain the source of truth for project proof. Generated images should support the visual system, not fake client work.
 
+## Generated North-Star Mock
+
+Current asset: `docs/design/aohys-public-site-north-star.png`
+
+Prompt used:
+
+> High-fidelity desktop website north-star mock for AOHYS, a senior software engineering portfolio and public code sample. Use the approved visual lane: dark ink + pastel signal, matching a logo with deep teal, mint, honey amber, and a small star accent. Composition: white sticky nav on top; first viewport split with left hero copy area and right technical architecture diagram on a dark ink panel. No generic SaaS cards, no gradients, no glassmorphism, no terminal UI, no fake metrics. The hero headline should be represented as readable typographic blocks but do not render exact real text. The right panel shows a crisp system map: clients -> edge -> application layer -> data layer -> integrations, with thin mint/honey/coral connector lines and small screenshot insets. Second fold visible: a clean proof ledger with 3 horizontal rows, each row has a project screenshot crop, scope label, outcome label, and a slim arrow. Style: precise architectural drafting table meets optimistic professional engineering studio, generous space, crisp rules, small pastel accents, no beige, no purple gradients, no nested cards. 16:10 desktop website mock, realistic browser-free full page composition.
+
+Implementation notes:
+
+- The mock is a direction contract for composition, density, and palette.
+- Do not rasterize live copy from the mock.
+- The implemented page uses semantic HTML, real copy, the real AOHYS logo, a custom SVG system map, and public-safe screenshots.
+
 ## Hero System Image
 
 Create a precise, premium product architecture scene for a software engineer's public site. Dark ink background with optimistic pastel honey, mint, coral, and sky accents. Show business goals becoming software systems through a clean decision map, deployment path, feedback loop, and observability signals. The image should feel like a senior product architecture review on a digital drafting table. No fake UI text, no code terminal, no purple gradients, no glassmorphism, no mascot, no stock people. Leave generous negative space for overlaying real screenshots.

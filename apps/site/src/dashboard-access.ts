@@ -30,6 +30,10 @@ export interface DashboardAccessEnvironment extends Record<string, string | unde
   PUBLIC_POSTHOG_HOST?: string;
 }
 
+type DashboardAccessEnvironmentInput =
+  Partial<DashboardAccessEnvironment> &
+  Record<string, string | undefined>;
+
 export type DashboardFetch = typeof fetch;
 
 export interface DashboardRuntimeExceptionEvent {
@@ -73,17 +77,20 @@ const PRIVATE_HEADERS = {
 
 export async function safeHandleDashboardRequest(
   request: Request,
-  environment: DashboardAccessEnvironment,
+  environmentInput: DashboardAccessEnvironmentInput = {},
   fetchSession: DashboardFetch = fetch,
-  reporter: DashboardRuntimeErrorReporter = createPostHogDashboardErrorReporter(environment),
+  reporter?: DashboardRuntimeErrorReporter,
 ): Promise<Response> {
+  const environment = normalizeDashboardEnvironment(request, environmentInput);
+  const runtimeReporter = reporter ?? createPostHogDashboardErrorReporter(environment);
+
   try {
     return await handleDashboardRequest(request, environment, fetchSession);
   } catch (error) {
     const url = new URL(request.url);
 
     await reportDashboardRuntimeError(
-      reporter,
+      runtimeReporter,
       {
         event: "dashboard_runtime_exception",
         distinctId: `dashboard:${environment.AOHYS_ENV}`,
@@ -102,11 +109,12 @@ export async function safeHandleDashboardRequest(
 
 export async function handleDashboardRequest(
   request: Request,
-  environment: DashboardAccessEnvironment,
+  environmentInput: DashboardAccessEnvironmentInput,
   fetchSession: DashboardFetch = fetch,
 ): Promise<Response> {
   const url = new URL(request.url);
   const path = normalizeDashboardPath(url.pathname);
+  const environment = normalizeDashboardEnvironment(request, environmentInput);
   const contract = validateEnvironmentContract(environment.AOHYS_ENV, environment, {
     target: "dashboard-runtime",
   });
@@ -189,6 +197,39 @@ export async function handleDashboardRequest(
     activePath: path,
     title: titleForPath(path),
   }));
+}
+
+function normalizeDashboardEnvironment(
+  request: Request,
+  environment: DashboardAccessEnvironmentInput | undefined,
+): DashboardAccessEnvironment {
+  const values = environment ?? {};
+
+  return {
+    ...values,
+    AOHYS_ENV: normalizeEnvironmentName(values.AOHYS_ENV, request),
+  } as DashboardAccessEnvironment;
+}
+
+function normalizeEnvironmentName(
+  value: string | undefined,
+  request: Request,
+): EnvironmentName {
+  if (value === "local" || value === "preview" || value === "production") {
+    return value;
+  }
+
+  const hostname = new URL(request.url).hostname;
+
+  if (hostname === "localhost" || hostname === "127.0.0.1") {
+    return "local";
+  }
+
+  if (hostname === "aohys.com" || hostname === "www.aohys.com") {
+    return "production";
+  }
+
+  return "preview";
 }
 
 function createPostHogDashboardErrorReporter(

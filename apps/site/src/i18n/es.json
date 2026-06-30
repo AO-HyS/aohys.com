@@ -3,7 +3,7 @@
     "skip": "Saltar al contenido",
     "aria": "Principal",
     "homeLabel": "AO AOH&S inicio",
-    "small": "Sistemas de software",
+    "small": "Ingeniería de producto",
     "language": "English",
     "nav": {
       "caseStudies": "Casos",
@@ -14,7 +14,7 @@
   },
   "footer": {
     "kicker": "Muestra pública, trabajo privado.",
-    "body": "Este sitio de código público es una muestra de los estándares de ingeniería de AOHYS. El código de clientes y productos permanece privado.",
+    "body": "Este sitio queda abierto para revisión como muestra de ingeniería de AOHYS. El código de clientes y productos permanece privado.",
     "privacy": "Privacidad",
     "architecture": "Notas del sistema",
     "dashboard": "Dashboard",
@@ -25,7 +25,25 @@
     "signal": "Alejandro Ortiz Corro · AOH&S",
     "actions": "Acciones principales",
     "boardLabel": "Tablero de prueba pública de AOHYS",
-    "publicSample": "Muestra pública",
+    "publicSample": "Mapa del sistema",
+    "heroPrinciplesAria": "Cómo trabaja Alejandro",
+    "heroPrinciples": [
+      {
+        "mark": "01",
+        "label": "Entender el flujo.",
+        "text": "El problema de negocio va antes que el stack."
+      },
+      {
+        "mark": "02",
+        "label": "Hacerlo confiable.",
+        "text": "Límites, datos, auth, entrega y recuperación se diseñan juntos."
+      },
+      {
+        "mark": "03",
+        "label": "Probar el cambio.",
+        "text": "Una feature no está lista hasta que puede revisarse, desplegarse y observarse."
+      }
+    ],
     "productionSnapshot": "Captura de sitio en producción",
     "productionSnapshotAlt": "Captura del hero del sitio en producción de Casa Roca",
     "operationsSnapshot": "Captura de software operativo",
@@ -34,11 +52,11 @@
     "outcome": "Resultado",
     "outcomeText": "Señal de negocio antes de nombres de stack",
     "architecture": "Arquitectura",
-    "architectureText": "Cloudflare · Convex · PostHog · Resend",
+    "architectureText": "Límite público/privado, observabilidad y ruta de entrega",
     "reviewPath": "Ruta de revisión",
     "reviewPathText": "feature → develop → main",
     "homeLead": "Diseño y construyo software que conecta intención de producto, confiabilidad de backend, claridad operativa y prácticas modernas de entrega. Este sitio también es la muestra pública detrás de esa promesa.",
-    "proofHeadingSignal": "Primera fila de prueba",
+    "proofHeadingSignal": "Trabajo seleccionado",
     "proofHeading": "El shell empieza con evidencia, no con decoración.",
     "proofRows": [
       {
@@ -55,7 +73,7 @@
       },
       {
         "label": "Señal profesional",
-        "text": "Ruta de CV legible para ATS con contexto más completo en línea.",
+        "text": "Una ruta clara de CV con contexto técnico más profundo en línea.",
         "action": "Ver CV",
         "contentId": "resume"
       }

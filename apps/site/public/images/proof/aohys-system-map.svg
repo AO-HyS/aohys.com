@@ -1,88 +1,157 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 760" role="img" aria-labelledby="title desc">
-  <title id="title">AOHYS product system map</title>
-  <desc id="desc">A structured map showing business intent moving through product shape, software architecture, delivery, and operational feedback.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+  <title id="title">AOHYS public sample architecture map</title>
+  <desc id="desc">A structured architecture map showing clients, edge, application layer, data layer, integrations, and a security boundary.</desc>
   <defs>
     <style>
       :root {
-        --map-bg-start: oklch(0.25 0.035 185);
-        --map-bg-end: oklch(0.13 0.014 235);
-        --map-grid: oklch(0.36 0.052 190);
-        --map-paper: oklch(0.98 0.016 126);
-        --map-paper-ink: oklch(0.24 0.045 145);
-        --map-paper-muted: oklch(0.43 0.05 168);
-        --map-honey: oklch(0.86 0.13 88);
-        --map-honey-deep: oklch(0.76 0.16 52);
-        --map-honey-ink: oklch(0.22 0.04 75);
-        --map-mint: oklch(0.84 0.105 160);
-        --map-sky: oklch(0.79 0.09 235);
-        --map-sky-ink: oklch(0.23 0.055 235);
-        --map-coral: oklch(0.76 0.15 45);
-        --map-coral-ink: oklch(0.22 0.055 45);
-        --map-white: oklch(1 0 0);
+        --bg: oklch(0.105 0.012 235);
+        --panel: oklch(0.155 0.018 225);
+        --panel-soft: oklch(0.21 0.024 215);
+        --ink: oklch(0.955 0.012 165);
+        --muted: oklch(0.73 0.036 180);
+        --rule: oklch(0.34 0.04 205);
+        --mint: oklch(0.78 0.105 160);
+        --honey: oklch(0.76 0.145 78);
+        --coral: oklch(0.68 0.15 35);
+        --sky: oklch(0.74 0.09 240);
+        --purple: oklch(0.66 0.1 315);
+      }
+
+      text {
+        font-family: "Mona Sans", ui-sans-serif, system-ui, sans-serif;
+      }
+
+      .label {
+        fill: var(--muted);
+        font-size: 15px;
+        font-weight: 720;
+      }
+
+      .title {
+        fill: var(--ink);
+        font-size: 20px;
+        font-weight: 760;
+      }
+
+      .item {
+        fill: var(--ink);
+        font-size: 16px;
+        font-weight: 560;
+      }
+
+      .small {
+        fill: var(--muted);
+        font-size: 13px;
+        font-weight: 560;
+      }
+
+      .box {
+        fill: color-mix(in oklch, var(--panel), transparent 8%);
+        stroke-width: 2;
+      }
+
+      .fine {
+        fill: none;
+        stroke: var(--rule);
+        stroke-width: 1;
+      }
+
+      .flow {
+        fill: none;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .dash {
+        stroke-dasharray: 8 8;
       }
     </style>
-    <linearGradient id="surface" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="var(--map-bg-start)"/>
-      <stop offset="1" stop-color="var(--map-bg-end)"/>
-    </linearGradient>
-    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="var(--map-honey)"/>
-      <stop offset="1" stop-color="var(--map-honey-deep)"/>
-    </linearGradient>
-    <linearGradient id="mint" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="var(--map-mint)"/>
-      <stop offset="1" stop-color="var(--map-sky)"/>
-    </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="10" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
+    <marker id="arrowMint" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="var(--mint)" />
+    </marker>
+    <marker id="arrowHoney" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="var(--honey)" />
+    </marker>
+    <marker id="arrowCoral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="var(--coral)" />
+    </marker>
   </defs>
-  <rect width="1120" height="760" rx="0" fill="url(#surface)"/>
-  <path d="M70 650H1048M70 518H1048M70 386H1048M70 254H1048M70 122H1048M172 80V680M356 80V680M540 80V680M724 80V680M908 80V680" fill="none" stroke="var(--map-grid)" stroke-width="1"/>
-  <path d="M126 528C234 358 366 276 512 284C665 292 720 426 858 398C934 382 983 323 1010 278" fill="none" stroke="url(#mint)" stroke-width="5" stroke-linecap="round" filter="url(#glow)"/>
-  <path d="M126 528C248 528 331 574 448 566C579 557 642 475 760 486C855 495 905 558 1010 548" fill="none" stroke="url(#gold)" stroke-width="3" stroke-linecap="round"/>
-  <g font-family="Mona Sans, Arial, sans-serif">
-    <g transform="translate(90 92)">
-      <rect width="250" height="118" fill="var(--map-paper)" opacity=".98"/>
-      <text x="24" y="36" fill="var(--map-paper-ink)" font-size="18" font-weight="700">Business outcome</text>
-      <text x="24" y="68" fill="var(--map-paper-muted)" font-size="15">Revenue path</text>
-      <text x="24" y="94" fill="var(--map-paper-muted)" font-size="15">Operational clarity</text>
-    </g>
-    <g transform="translate(410 236)">
-      <rect width="256" height="132" fill="var(--map-honey)" opacity=".96"/>
-      <text x="24" y="38" fill="var(--map-honey-ink)" font-size="18" font-weight="750">Product shape</text>
-      <text x="24" y="72" fill="var(--map-honey-ink)" font-size="15">Workflow model</text>
-      <text x="24" y="98" fill="var(--map-honey-ink)" font-size="15">Content graph</text>
-    </g>
-    <g transform="translate(730 150)">
-      <rect width="276" height="132" fill="var(--map-mint)" opacity=".95"/>
-      <text x="24" y="38" fill="var(--map-paper-ink)" font-size="18" font-weight="750">Architecture</text>
-      <text x="24" y="72" fill="var(--map-paper-muted)" font-size="15">Boundaries and auth</text>
-      <text x="24" y="98" fill="var(--map-paper-muted)" font-size="15">Deployable seams</text>
-    </g>
-    <g transform="translate(210 518)">
-      <rect width="284" height="122" fill="var(--map-sky)" opacity=".96"/>
-      <text x="24" y="38" fill="var(--map-sky-ink)" font-size="18" font-weight="750">Delivery proof</text>
-      <text x="24" y="72" fill="var(--map-sky-ink)" font-size="15">Tests, review, release train</text>
-      <text x="24" y="98" fill="var(--map-sky-ink)" font-size="15">Browser QA and observability</text>
-    </g>
-    <g transform="translate(662 514)">
-      <rect width="286" height="122" fill="var(--map-coral)" opacity=".96"/>
-      <text x="24" y="38" fill="var(--map-coral-ink)" font-size="18" font-weight="750">Feedback loop</text>
-      <text x="24" y="72" fill="var(--map-coral-ink)" font-size="15">Leads, errors, analytics</text>
-      <text x="24" y="98" fill="var(--map-coral-ink)" font-size="15">Next useful decision</text>
-    </g>
+
+  <rect width="1280" height="760" fill="var(--bg)" />
+  <g opacity="0.34">
+    <path d="M56 126H1224M56 266H1224M56 406H1224M56 546H1224M180 72V690M390 72V690M600 72V690M810 72V690M1020 72V690" class="fine" />
   </g>
-  <g fill="var(--map-white)" opacity=".82">
-    <circle cx="126" cy="528" r="8"/>
-    <circle cx="512" cy="284" r="8"/>
-    <circle cx="858" cy="398" r="8"/>
-    <circle cx="1010" cy="278" r="8"/>
-    <circle cx="448" cy="566" r="6"/>
-    <circle cx="760" cy="486" r="6"/>
+
+  <text x="70" y="76" class="label">SYSTEM MAP · AOHYS PUBLIC SAMPLE</text>
+
+  <g transform="translate(70 142)">
+    <text x="0" y="0" class="label">CLIENTS</text>
+    <text x="0" y="52" class="item">Web</text>
+    <text x="0" y="96" class="item">Mobile</text>
+    <text x="0" y="140" class="item">API</text>
+    <text x="0" y="184" class="item">Partners</text>
+    <path d="M96 44H156V176H96" class="fine dash" stroke="var(--mint)" />
+  </g>
+
+  <g transform="translate(266 178)">
+    <rect width="170" height="196" class="box" stroke="var(--mint)" />
+    <text x="28" y="42" class="title">Edge</text>
+    <text x="28" y="84" class="item">CDN</text>
+    <text x="28" y="122" class="item">WAF</text>
+    <text x="28" y="160" class="item">Rate limit</text>
+  </g>
+
+  <g transform="translate(530 154)">
+    <rect width="230" height="244" class="box" stroke="var(--honey)" />
+    <text x="30" y="44" class="title">Application layer</text>
+    <text x="30" y="92" class="item">Public pages</text>
+    <text x="30" y="132" class="item">Private dashboard</text>
+    <text x="30" y="172" class="item">Contact workflow</text>
+    <text x="30" y="212" class="item">Release checks</text>
+  </g>
+
+  <g transform="translate(850 178)">
+    <rect width="184" height="196" class="box" stroke="var(--coral)" />
+    <text x="28" y="42" class="title">Data layer</text>
+    <text x="28" y="84" class="item">Content graph</text>
+    <text x="28" y="122" class="item">Lead records</text>
+    <text x="28" y="160" class="item">Media refs</text>
+  </g>
+
+  <g transform="translate(1110 178)">
+    <rect width="130" height="196" class="box" stroke="var(--purple)" />
+    <text x="22" y="42" class="title">Integrations</text>
+    <text x="22" y="84" class="item">Email</text>
+    <text x="22" y="122" class="item">Analytics</text>
+    <text x="22" y="160" class="item">Deploys</text>
+  </g>
+
+  <path d="M226 276H258" class="flow" stroke="var(--mint)" marker-end="url(#arrowMint)" />
+  <path d="M436 276H520" class="flow" stroke="var(--mint)" marker-end="url(#arrowMint)" />
+  <path d="M760 276H838" class="flow" stroke="var(--honey)" marker-end="url(#arrowHoney)" />
+  <path d="M1034 276H1100" class="flow" stroke="var(--coral)" marker-end="url(#arrowCoral)" />
+
+  <g transform="translate(426 482)">
+    <rect width="448" height="132" fill="transparent" stroke="var(--mint)" stroke-width="2" stroke-dasharray="9 8" />
+    <text x="146" y="36" class="label">SECURITY BOUNDARY</text>
+    <text x="52" y="86" class="item">IAM</text>
+    <text x="146" y="86" class="item">Secrets</text>
+    <text x="266" y="86" class="item">Encryption</text>
+    <text x="372" y="86" class="item">Noindex</text>
+  </g>
+
+  <path d="M645 398V466" class="flow dash" stroke="var(--mint)" marker-end="url(#arrowMint)" />
+  <path d="M942 374V466" class="flow dash" stroke="var(--coral)" marker-end="url(#arrowCoral)" />
+  <path d="M650 482C650 430 722 434 742 398" class="flow dash" stroke="var(--honey)" />
+  <path d="M734 614C818 666 934 652 1022 614" class="flow dash" stroke="var(--sky)" />
+
+  <g transform="translate(70 638)">
+    <path d="M0 0H118" class="fine" stroke="var(--mint)" />
+    <text x="0" y="36" class="small">Data flow</text>
+    <path d="M140 0H258" class="fine dash" stroke="var(--sky)" />
+    <text x="140" y="36" class="small">Control plane</text>
+    <path d="M296 0H414" class="fine dash" stroke="var(--coral)" />
+    <text x="296" y="36" class="small">Observed failure</text>
   </g>
 </svg>

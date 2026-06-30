@@ -65,6 +65,14 @@ const directEmailHref = `mailto:${publicContactEmail}`;
           <p class="hero-lead">
             {homeContent.deck}
           </p>
+          <ul class="hero-principles" aria-label={copy.heroPrinciplesAria}>
+            {copy.heroPrinciples.map((principle) => (
+              <li>
+                <span aria-hidden="true">{principle.mark}</span>
+                <p><strong>{principle.label}</strong> {principle.text}</p>
+              </li>
+            ))}
+          </ul>
           <div class="hero-actions" aria-label={copy.actions}>
             {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
             {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
@@ -72,6 +80,10 @@ const directEmailHref = `mailto:${publicContactEmail}`;
         </div>
 
         <figure class="proof-board home-proof-board" aria-label={homeContent.proofBoardLabel}>
+          <figcaption class="proof-board-caption">
+            <span>{copy.publicSample}</span>
+            <strong>{homeContent.proofBoardTitle}</strong>
+          </figcaption>
           <img
             class="system-map-asset"
             src="/images/proof/aohys-system-map.svg"
@@ -79,11 +91,6 @@ const directEmailHref = `mailto:${publicContactEmail}`;
             loading="eager"
             decoding="async"
           />
-          <figcaption class="proof-board-caption">
-            <span>{copy.publicSample}</span>
-            <strong>{homeContent.proofBoardTitle}</strong>
-            <p>{homeContent.proofBoardBody}</p>
-          </figcaption>
           <div class="proof-shot proof-shot-casa" aria-label={copy.productionSnapshot}>
             <img
               src="/images/proof/casa-roca-production.png"
@@ -110,22 +117,23 @@ const directEmailHref = `mailto:${publicContactEmail}`;
           <p class="section-intro">{homeContent.selectedOutcomesIntro}</p>
         </div>
         <div class="outcome-ledger">
-          {homeContent.selectedOutcomes.map((outcome) => (
+          {homeContent.selectedOutcomes.map((outcome, index) => (
             <a class="outcome-row" href={outcome.path}>
-              <span class="outcome-label">{outcome.label}</span>
-              <strong>{outcome.title}</strong>
-              <p>{outcome.outcome}</p>
-              <figure class="outcome-evidence" aria-label={outcome.evidence.altText}>
+              <span class="outcome-index">{String(index + 1).padStart(2, "0")}</span>
+              <figure class="outcome-shot" aria-label={outcome.evidence.altText}>
                 {outcome.evidence.src ? (
                   <img src={outcome.evidence.src} alt={outcome.evidence.altText} loading="eager" decoding="async" />
                 ) : (
                   <span class="evidence-fallback">{outcome.evidence.label}</span>
                 )}
-                <figcaption>
-                  <span>{outcome.evidence.label}</span>
-                  <em>{outcome.role}</em>
-                </figcaption>
               </figure>
+              <div class="outcome-summary">
+                <span class="outcome-label">{outcome.label}</span>
+                <strong>{outcome.title}</strong>
+                <p>{outcome.outcome}</p>
+              </div>
+              <p class="outcome-scope">{outcome.role}</p>
+              <span class="outcome-arrow" aria-hidden="true">→</span>
             </a>
           ))}
         </div>

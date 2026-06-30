@@ -56,7 +56,7 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - CTA: Primary CTA is neutral: "Start a conversation" / "Hablemos"; contact form captures lead intent.
 - Privacy: Include serious minimal privacy pages from V1; no newsletter in V1.
 - CV: `/resume` is the primary dynamic resume URL; `/es/cv` is the Spanish route. The downloadable PDF lives at `/downloads/alejandro-ortiz-corro-resume.pdf`.
-- Resume SEO: Resume content is graph-backed, ATS-readable, linked to the PDF artifact, and linked back to dynamic site context.
+- Resume SEO: Resume content is graph-backed, readable by people and parsing tools, linked to the PDF artifact, and linked back to dynamic site context.
 - Public V1 pages EN: `/`, `/case-studies`, `/case-studies/casa-roca`, `/case-studies/the-barber-central`, `/case-studies/nutri-plan`, `/case-studies/enterprise-systems`, `/case-studies/engineering-practice`, `/practice`, `/architecture`, `/resume`, `/contact`, `/privacy`.
 - Public V1 pages ES: `/es/`, `/es/casos`, `/es/casos/casa-roca`, `/es/casos/the-barber-central`, `/es/casos/nutri-plan`, `/es/casos/sistemas-enterprise`, `/es/casos/practica-de-ingenieria`, `/es/practica`, `/es/arquitectura`, `/es/cv`, `/es/contacto`, `/es/privacidad`.
 - Dashboard V1 sections: Overview, Leads, Case studies, Media, Site settings, Resume.
@@ -83,7 +83,7 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Layout bans: No identical icon-card grids, no nested cards, no hero metric template, no terminal aesthetic, no repeated uppercase section eyebrows, no numbered section scaffolding, no beige editorial default, no glassmorphism, no gradient text, no soft ghost-card shadows.
 - Motion: Motion should feel like review, assembly, and reveal: annotations settle, screenshots align, and proof artifacts enter with purpose. Content must never depend on animation to appear.
 - Visual assets: Generated editorial assets plus sanitized screenshots, optimized through Cloudflare. Generated imagery should be limited and purposeful; screenshots carry most case-study proof.
-- Current proof assets: the first Impeccable home pass uses a production screenshot from Casa Roca, a sanitized Barber Central operations screenshot, a cropped Nutri Plan landing screenshot, and a custom AOHYS system map SVG under `apps/site/public/images/proof/`.
+- Current proof assets: the Impeccable home direction now has a generated north-star mock at `docs/design/aohys-public-site-north-star.png`, the real AOHYS logo at `apps/site/public/images/brand/aohys-logo.png`, a production screenshot from Casa Roca, a sanitized Barber Central operations screenshot, a cropped Nutri Plan landing screenshot, and a custom AOHYS system map SVG under `apps/site/public/images/proof/`.
 - Quality gates: Local behavior tests should use Vitest for package and built-site checks; Husky pre-commit plus GitHub Actions verification are implemented in issue #31. The pre-commit hook runs foundation validation, lint, typecheck, and tests; pull-request CI runs install, foundation validation, lint, typecheck, tests, and build as readable steps.
 
 ## Design System Snapshot
@@ -168,7 +168,7 @@ Recommended home sequence:
 5. Engineering practice: agent-assisted workflow, QA discipline, observability, deployment, and documentation as current practice.
 6. Contact: form, email, and large but discreet WhatsApp CTA.
 
-Current implementation status: the first real home pass is graph-backed and includes Alejandro-first copy, selected outcome rows, real public-safe proof imagery, a dark architecture section, engineering practice rows, institutional email, and WhatsApp CTA. The dedicated contact route now owns the full lead capture UI and provider-backed submission path. Future case-study issues should expand these screenshots into richer detail pages instead of reverting to placeholders.
+Current implementation status: the home is graph-backed and follows the dark-ink plus pastel-signal direction: white hero copy, technical architecture panel, real public-safe proof imagery, horizontal proof-ledger rows, lighter system notes, institutional email, and WhatsApp CTA. The dedicated contact route owns the full lead capture UI and provider-backed submission path. Future case-study issues should expand these screenshots into richer detail pages instead of reverting to placeholders.
 
 Architecture page status: `/architecture` and `/es/arquitectura` now render graph-backed public source framing, public/private boundary copy, Release Train, Environment Contract, Public Content Graph, provider responsibilities, and GitHub source/documentation links.
 
@@ -186,9 +186,9 @@ Case study pages should use the same proof-ledger rhythm:
 - Public evidence.
 - Confidentiality note.
 
-Resume page status: `/resume` and `/es/cv` now render graph-backed semantic CV content, localized metadata, contact links, dynamic context links, and a downloadable ATS-first PDF artifact. The PDF is generated from the English graph content with `apps/site/scripts/build-resume-pdf.py` and is intentionally single-column and text-based.
+Resume page status: `/resume` and `/es/cv` now render graph-backed semantic CV content, localized metadata, contact links, dynamic context links, and a downloadable hiring-friendly PDF artifact. The PDF is generated from the English graph content with `apps/site/scripts/build-resume-pdf.py` and is intentionally single-column and text-based.
 
-Resume pages should remain typography-first, ATS-friendly, and visibly linked to the dynamic site. Do not over-design the resume surface in a way that hurts parsing or readability.
+Resume pages should remain typography-first, easy to parse, and visibly linked to the dynamic site. Do not over-design the resume surface in a way that hurts parsing or readability.
 
 ## Implementation Sequence
 
@@ -203,10 +203,10 @@ Resume pages should remain typography-first, ATS-friendly, and visibly linked to
 9. Implement the first real home page with the approved visual system.
 10. Run browser QA for desktop and mobile, then use Impeccable polish on the visible public home.
 11. Add case study detail content and resume content.
-12. Add contact form integration with Convex and Resend. Current status: implemented with Convex HTTP action, provider adapters, and PostHog safe conversion metadata.
-13. Add PostHog analytics and error capture. Current status: implemented for explicit pageviews, selected CTA/form conversion events, fixed-shape browser error capture, disabled autocapture, and documented preview/production Environment Contract values.
-14. Add Cloudflare/Wrangler release path. Current status: implemented with Convex deploy before Cloudflare Pages Direct Upload, GitHub Actions release workflow, preview/production Environment Contract validation, Cloudflare Pages project naming, smoke commands, and a versioned Cloudflare Redirect Rules manifest for canonical host redirects.
-15. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction. Current status: first dashboard guard/shell implemented with Cloudflare Pages functions, Dashboard UI Kit renderers, server-side Better Auth Google sign-in bridge through Convex, admin allowlist checks, noindex/no-store responses, auth-specific Environment Contract targets, lead review backed by private Convex dashboard endpoints, and a metadata-only content/media/settings/resume workflow that preserves Public Content Graph IDs and localized paths. Cloudflare media originals/variants remain a future Media Pipeline decision.
+12. Add contact form integration with Convex and Resend. Current status: implemented with Convex HTTP action, provider adapters, PostHog safe conversion metadata, and sanitized `lead_intake_failed` events for pre-persistence backend failures.
+13. Add PostHog analytics and error capture. Current status: implemented for explicit pageviews, selected CTA/form conversion events, fixed-shape browser error capture, disabled autocapture, documented preview/production Environment Contract values, and a requirement that preview/production use different PostHog project keys before launch promotion.
+14. Add Cloudflare/Wrangler release path. Current status: implemented with Convex deploy before Cloudflare Pages Direct Upload, GitHub Actions release workflow, preview/production Environment Contract validation, Cloudflare Pages project naming, smoke commands that verify CSP/dashboard/contact boundaries, and a versioned Cloudflare Redirect Rules manifest for canonical host redirects.
+15. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction. Current status: first dashboard guard/shell implemented with Cloudflare Pages functions, Dashboard UI Kit renderers, server-side Better Auth Google sign-in bridge through Convex, admin allowlist checks, noindex/no-store responses, auth-specific Environment Contract targets, lead review backed by private Convex dashboard endpoints, metadata-only content/media/settings/resume workflow that preserves Public Content Graph IDs and localized paths, and a safer Pages env boundary that returns private configuration states instead of raw Worker 1101 pages when runtime bindings drift. Cloudflare media originals/variants remain a future Media Pipeline decision.
 16. Harden privacy, security, and launch readiness. Current status: privacy routes now explain contact data, PostHog analytics/errors, and private project boundaries; Cloudflare Pages `_headers` applies security headers; contact form states distinguish validation, endpoint missing, email/provider, backend, and retry paths; launch QA is documented in `docs/launch-hardening.md`.
 17. Publish the public source evaluation package. Current status: `README.md` explains how to evaluate the repo without private credentials, maps the architecture and provider responsibilities, documents local/preview/production environment boundaries, links the PRD, issue breakdown, TDD plan, Release Train, Environment Contract, Public Content Graph, Dashboard UI Kit, and Launch Hardening docs, and clarifies that code is MIT while content, brand, CV, case-study material, images, screenshots, and generated media are reserved.
 18. Install quality gates. Current status: Husky pre-commit runs `pnpm run verify:precommit`, `pnpm verify` runs the complete CI gate through `verify:ci`, and `.github/workflows/quality-gates.yml` verifies pull requests into `develop` and `main` without requiring private provider secrets.

@@ -49,7 +49,7 @@ export interface LeadNotification {
 }
 
 export interface LeadAnalyticsEvent {
-  event: "lead_submitted" | "lead_provider_failed";
+  event: "lead_submitted" | "lead_provider_failed" | "lead_intake_failed";
   distinctId: string;
   properties: Record<string, string | number | boolean>;
 }

@@ -53,7 +53,12 @@ async function fetchWithRetries(url: string, init: RequestInit): Promise<Respons
   );
 }
 
-async function fetchText(url: string): Promise<{ status: number; url: string; body: string }> {
+async function fetchText(url: string): Promise<{
+  status: number;
+  url: string;
+  body: string;
+  headers: Headers;
+}> {
   const response = await fetchWithRetries(url, {
     headers: {
       "user-agent": "aohys-release-smoke/1.0",
@@ -65,7 +70,62 @@ async function fetchText(url: string): Promise<{ status: number; url: string; bo
     status: response.status,
     url: response.url,
     body: await response.text(),
+    headers: response.headers,
   };
+}
+
+function urlFor(baseUrl: string, pathname: string): string {
+  return new URL(pathname, normalizeUrl(baseUrl)).toString();
+}
+
+function assertHeaderContains(headers: Headers, name: string, fragment: string): void {
+  const value = headers.get(name) ?? "";
+
+  if (!value.includes(fragment)) {
+    throw new Error(`Expected ${name} to include ${fragment}. Received ${value || "empty header"}.`);
+  }
+}
+
+async function assertDashboardBoundary(baseUrl: string): Promise<void> {
+  const dashboardUrl = urlFor(baseUrl, "/dashboard");
+  const response = await fetchWithRetries(dashboardUrl, {
+    headers: {
+      "user-agent": "aohys-release-smoke/1.0",
+    },
+    redirect: "manual",
+  });
+  const location = response.headers.get("location") ?? "";
+
+  if (![302, 303, 307, 308].includes(response.status) || !location.startsWith("/dashboard/sign-in")) {
+    throw new Error(
+      `Expected ${dashboardUrl} to redirect anonymous visitors to /dashboard/sign-in. Received ${response.status} ${location || "without Location header"}.`,
+    );
+  }
+
+  const signIn = await fetchText(urlFor(baseUrl, "/dashboard/sign-in"));
+
+  if (signIn.status < 200 || signIn.status >= 300) {
+    throw new Error(`Expected /dashboard/sign-in to return 2xx. Received ${signIn.status}.`);
+  }
+
+  if (!signIn.body.includes('data-dashboard-shell="sign-in"')) {
+    throw new Error("Expected /dashboard/sign-in to render the private dashboard sign-in shell.");
+  }
+
+  assertHeaderContains(signIn.headers, "x-robots-tag", "noindex");
+  assertHeaderContains(signIn.headers, "cache-control", "no-store");
+}
+
+async function assertContactBoundary(baseUrl: string): Promise<void> {
+  const contact = await fetchText(urlFor(baseUrl, "/contact/"));
+
+  if (contact.status < 200 || contact.status >= 300) {
+    throw new Error(`Expected /contact/ to return 2xx. Received ${contact.status}.`);
+  }
+
+  if (!contact.body.includes("data-contact-endpoint=")) {
+    throw new Error("Expected /contact/ to expose the environment-specific contact endpoint.");
+  }
 }
 
 async function assertCanonicalRedirect(sourceUrl: string): Promise<void> {
@@ -101,6 +161,13 @@ try {
   if (!result.body.includes(`rel="canonical" href="${normalizeUrl(plan.canonicalUrl)}"`)) {
     throw new Error(`Expected ${baseUrl} to render the ${plan.canonicalUrl} canonical URL.`);
   }
+
+  assertHeaderContains(result.headers, "content-security-policy", "https://us-assets.i.posthog.com");
+  assertHeaderContains(result.headers, "content-security-policy", "https://us.i.posthog.com");
+  assertHeaderContains(result.headers, "content-security-policy", "https://*.convex.site");
+
+  await assertDashboardBoundary(baseUrl);
+  await assertContactBoundary(baseUrl);
 
   const redirectUrl = process.env.SMOKE_CANONICAL_REDIRECT_URL?.trim();
   if (redirectUrl) {

@@ -19,6 +19,7 @@ What these cover:
 - Contact form visible states for validation failure, email/provider failure, backend failure, endpoint missing, and retry copy.
 - Analytics sanitization so contact message text, email, phone, company, and form data do not enter PostHog browser events.
 - Contact lead intake persists before optional Resend/PostHog provider delivery, and provider failures produce sanitized operational events when PostHog is configured.
+- Contact intake failures before persistence emit sanitized `lead_intake_failed` events when PostHog is configured.
 - Dashboard runtime exceptions are caught by the Cloudflare Pages boundary and return a private unavailable state instead of a raw Worker 1101 page.
 - Environment Contract separation for local, preview, production, release, contact runtime, and dashboard runtime targets.
 - Dashboard UI Kit state surfaces for loading, empty, saved, validation, unauthorized, configuration, and Environment Contract failures.
@@ -29,6 +30,7 @@ After merge to `develop`, wait for the Release Train preview job:
 
 ```sh
 gh run list --branch develop --limit 5
+pnpm run audit:posthog-env
 SMOKE_BASE_URL=https://develop.aohys-com.pages.dev pnpm run smoke:preview
 ```
 
@@ -45,9 +47,11 @@ Expected results:
 - `/dashboard` and all private dashboard paths redirect anonymous visitors to `/dashboard/sign-in`.
 - Dashboard responses include `x-robots-tag: noindex, nofollow` and `cache-control: no-store`.
 - Public pages include the Cloudflare Pages security headers once served by Cloudflare.
+- `pnpm run smoke:preview` checks that the served CSP allows PostHog script/config and ingest hosts plus Convex contact endpoints.
 - Contact page renders direct WhatsApp/email fallback and does not expose private dashboard data.
 - Contact submission should return success once the lead is persisted; Resend/PostHog provider drift should not reject the visitor request.
 - Browser console should not show CSP violations for `us-assets.i.posthog.com`.
+- GitHub Environment `preview` and `production` should use different PostHog project keys. If they match, preview and production events are filterable by `environment` but still land in the same PostHog project.
 
 ## Production promotion checks
 

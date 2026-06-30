@@ -62,8 +62,9 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain('data-home-content-id="home"');
-    expect(homeHtml).toContain("Alejandro Ortiz Corro turns messy business work into software people can rely on.");
-    expect(homeHtml).toContain("Proof you can inspect");
+    expect(homeHtml).toContain("Engineering outcomes that scale with business.");
+    expect(homeHtml).toContain("Proof ledger");
+    expect(homeHtml).toContain("Find the workflow.");
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
     expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
@@ -73,12 +74,15 @@ describe("built public routes", () => {
     expect(homeHtml).toContain("/images/proof/casa-roca-production.png");
     expect(homeHtml).toContain("/images/proof/barber-central-ops.png");
     expect(homeHtml).toContain("/images/proof/nutri-plan-proof.png");
+    expect(homeHtml).toContain("/images/brand/aohys-logo.png");
     expect(homeHtml).toContain("WhatsApp");
     expect(homeHtml).not.toContain("Cloudflare · Convex · PostHog · Resend");
+    expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Alejandro Ortiz Corro convierte trabajo de negocio desordenado en software confiable.");
-    expect(spanishHomeHtml).toContain("Prueba que puedes revisar");
+    expect(spanishHomeHtml).toContain("Ingeniería que convierte objetivos de negocio en sistemas confiables.");
+    expect(spanishHomeHtml).toContain("Ledger de prueba");
+    expect(spanishHomeHtml).toContain("Entender el flujo.");
     expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
     expect(spanishHomeHtml).toContain('aria-label="Evidencia pública segura de Casa Roca"');
     expect(spanishHomeHtml).toContain("WhatsApp");
@@ -200,6 +204,8 @@ describe("built public routes", () => {
     expect(resumeHtml).toContain("Technical skills");
     expect(resumeHtml).toContain("Dynamic resume context");
     expect(resumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
+    expect(resumeHtml).toContain("Download PDF");
+    expect(resumeHtml).not.toContain("Download ATS PDF");
     expect(resumeHtml).toContain('href="/case-studies"');
     expect(resumeHtml).toContain('href="/architecture"');
 
@@ -211,6 +217,8 @@ describe("built public routes", () => {
     expect(spanishResumeHtml).toContain("Habilidades técnicas");
     expect(spanishResumeHtml).toContain("Contexto dinámico del CV");
     expect(spanishResumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
+    expect(spanishResumeHtml).toContain("Descargar PDF");
+    expect(spanishResumeHtml).not.toContain("Descargar PDF ATS");
     expect(spanishResumeHtml).toContain('href="/es/casos"');
     expect(spanishResumeHtml).toContain('href="/es/arquitectura"');
 

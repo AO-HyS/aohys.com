@@ -2,27 +2,27 @@
   "home": {
     "path": "/es/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Sistemas de software confiables para trabajo de negocio que no puede seguir desordenado.",
-    "seoDescription": "Alejandro Ortiz Corro construye sistemas de producto confiables, software de negocio, sitios públicos, dashboards privados, flujos asistidos por IA y arquitectura de software para equipos que necesitan calidad y confianza.",
+    "summary": "Ingeniería de producto senior para software crítico de negocio.",
+    "seoDescription": "Alejandro Ortiz Corro construye sistemas de producto, sitios públicos, dashboards privados, workflows de backend y arquitectura de software para equipos que necesitan entrega confiable.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Alejandro Ortiz Corro convierte trabajo de negocio desordenado en software confiable.",
-      "deck": "Construyo la capa de producto entre un objetivo de negocio y el sistema que tiene que sostenerlo: sitios públicos que generan confianza, herramientas privadas que reducen fricción y workflows de backend que siguen funcionando cuando el trabajo se complica.",
+      "headline": "Ingeniería que convierte objetivos de negocio en sistemas confiables.",
+      "deck": "Ayudo a convertir flujos poco claros en sistemas de producto confiables: sitios públicos que generan confianza, herramientas privadas que quitan fricción y caminos de backend que siguen operando cuando el trabajo se complica.",
       "proofBoardLabel": "Tablero de prueba pública de AOHYS",
-      "proofBoardTitle": "Una muestra pública construida como producción.",
-      "proofBoardBody": "El sitio muestra la disciplina detrás del trabajo: páginas SEO bilingües, límite privado de dashboard, contacto observable y una ruta de release que separa preview de producción.",
-      "selectedOutcomesHeading": "Prueba que puedes revisar",
-      "selectedOutcomesIntro": "Evidencia pública segura de trabajo en producción, builds activos, sistemas privados de producto y entrega enterprise. El código de clientes sigue privado; el criterio sí es visible.",
+      "proofBoardTitle": "Páginas públicas, operación privada y entrega observable.",
+      "proofBoardBody": "Una vista compacta del sistema detrás de la muestra pública de AOHYS.",
+      "selectedOutcomesHeading": "Ledger de prueba",
+      "selectedOutcomesIntro": "Un recorrido corto por trabajo público seguro: qué se construyó, para qué sirvió y qué puede revisarse sin exponer código privado.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",
-          "label": "Prueba en producción",
+          "label": "Sitio público",
           "title": "Casa Roca",
-          "outcome": "Sitio público de negocio diseñado para confianza, visibilidad en búsqueda, cuidado de rendimiento y disciplina de release.",
-          "role": "Entrega de sitio público, superficie SEO, disciplina de deploy.",
+          "outcome": "Sitio de hospitalidad en producción con señales de confianza más claras, páginas legibles para búsqueda y contacto directo.",
+          "role": "Estrategia, SEO, entrega",
           "evidence": {
             "label": "Sitio público",
             "altText": "Evidencia pública segura de Casa Roca",
@@ -33,10 +33,10 @@
         },
         {
           "contentId": "case-study:the-barber-central",
-          "label": "Producto activo",
+          "label": "Producto operativo",
           "title": "The Barber Central",
-          "outcome": "Reservaciones y operaciones organizadas alrededor de cómo funciona realmente un negocio local de servicios.",
-          "role": "Arquitectura de producto, booking, pagos, comunicación con clientes.",
+          "outcome": "Reservas, disponibilidad, pagos y comunicación con clientes diseñados alrededor de cómo opera un negocio local.",
+          "role": "Arquitectura de producto, full-stack",
           "evidence": {
             "label": "Preview de desarrollo",
             "altText": "Evidencia pública segura de The Barber Central",
@@ -49,8 +49,8 @@
           "contentId": "case-study:nutri-plan",
           "label": "Sistema privado",
           "title": "Nutri Plan",
-          "outcome": "Flujos de clientes, planes estructurados y claridad operativa para un producto todavía privado.",
-          "role": "Diseño de workflow, operaciones privadas, práctica de calidad.",
+          "outcome": "Flujos de clientes, planes estructurados, dashboards y acceso móvil organizados alrededor de un mismo modelo.",
+          "role": "Diseño de workflow, operación privada",
           "evidence": {
             "label": "Preview sanitizado",
             "altText": "Evidencia pública segura de Nutri Plan",
@@ -61,10 +61,10 @@
         },
         {
           "contentId": "case-study:enterprise-systems",
-          "label": "Sistemas enterprise",
+          "label": "Entrega enterprise",
           "title": "Sistemas enterprise",
-          "outcome": "Escalations, payment plans, cashback, customs workflows y backend delivery en ambientes complejos.",
-          "role": "Backend, escalations, confiabilidad, confidencialidad.",
+          "outcome": "Escalations, payment plans, cashback, customs workflows y backend delivery dentro de sistemas complejos de negocio.",
+          "role": "Backend, confiabilidad, confidencialidad",
           "evidence": {
             "label": "Resumen confidencial",
             "altText": "Evidencia pública segura de sistemas enterprise",
@@ -73,8 +73,8 @@
           }
         }
       ],
-      "architectureHeading": "El sitio también carga la prueba.",
-      "architectureBody": "Las páginas públicas SEO y las operaciones privadas viven en un solo dominio, pero los límites son intencionales. El visitante ve evidencia; el dashboard privado queda autenticado, noindex y operativo.",
+      "architectureHeading": "La muestra también vende el criterio.",
+      "architectureBody": "Las páginas públicas son rápidas y legibles para búsqueda. El dashboard privado, el contacto, las analíticas y el flujo de deploy están separados para que los fallos sean visibles antes de que un cliente tenga que reportarlos.",
       "architectureStages": [
         {
           "label": "Superficie pública",
@@ -89,24 +89,24 @@
           "text": "Las ramas de feature pasan primero a develop; la promoción a producción es otra revisión hacia main."
         }
       ],
-      "practiceHeading": "El proceso es parte del producto.",
-      "practiceBody": "La forma en que se diseña, prueba, revisa, localiza, despliega y observa el trabajo importa tanto como la primera pantalla, porque eso mantiene útil el software después del lanzamiento.",
+      "practiceHeading": "Cómo trabajo",
+      "practiceBody": "No vendo un stack. Entiendo el flujo, construyo el sistema alrededor de él y mantengo la entrega revisable.",
       "practicePoints": [
         {
-          "label": "Entrega asistida por IA",
-          "text": "Los agentes aceleran implementación, pero el estándar sigue siendo arquitectura, revisión, pruebas y software funcionando."
+          "label": "Modelar el trabajo",
+          "text": "Aclarar el flujo de negocio, restricciones y operación real antes de elegir la forma de implementación."
         },
         {
-          "label": "Quality gates",
-          "text": "Pruebas de comportamiento, source checks, browser QA y flujo de ramas protegidas mantienen honesta la muestra."
+          "label": "Construir el sistema",
+          "text": "Hacer que UI, datos, auth, correo, observabilidad y deploy funcionen juntos, no como pendientes separados."
         },
         {
-          "label": "Ajuste a negocio",
-          "text": "Las decisiones técnicas son evidencia. El trabajo empieza por el resultado que el sistema necesita crear."
+          "label": "Probar el release",
+          "text": "Usar tests, browser QA, ramas protegidas, previews y verificación en producción para mantener la calidad visible."
         }
       ],
-      "contactHeading": "Empieza por el resultado que necesitas.",
-      "contactBody": "Manda el rol, proyecto, problema de arquitectura o workflow que quieres mejorar. Te respondo con el siguiente paso útil.",
+      "contactHeading": "Trae el flujo que te está costando tiempo.",
+      "contactBody": "Manda el rol, proyecto, problema de arquitectura o flujo de producto. Te respondo con el siguiente paso útil.",
       "emailLabel": "Escribir a Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",
       "whatsappLabel": "WhatsApp",
@@ -485,8 +485,8 @@
   "resume": {
     "path": "/es/cv",
     "title": "CV",
-    "summary": "Ruta clara para personas y ATS sobre la experiencia de Alejandro Ortiz Corro en ingeniería de software.",
-    "seoDescription": "CV de Alejandro Ortiz Corro para hiring managers, líderes técnicos y ATS que revisan experiencia en ingeniería de software.",
+    "summary": "Ruta clara hacia la experiencia de Alejandro Ortiz Corro en ingeniería de software.",
+    "seoDescription": "CV de Alejandro Ortiz Corro para hiring managers y líderes técnicos que revisan experiencia en ingeniería de software.",
     "primaryActionLabel": "Contactar a Alejandro",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
@@ -497,10 +497,10 @@
       "location": "México",
       "intro": "Desarrollador Frontend Senior con más de 9 años de experiencia construyendo aplicaciones web de alto rendimiento, workflows enterprise, sistemas de producto y prácticas modernas de ingeniería asistida por IA.",
       "pdf": {
-        "label": "Descargar PDF ATS",
+        "label": "Descargar PDF",
         "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
         "fileName": "alejandro-ortiz-corro-resume.pdf",
-        "description": "PDF de una columna, basado en texto, para ATS y revisiones de hiring."
+        "description": "PDF de una columna, basado en texto, para revisiones de hiring."
       },
       "contactLinks": [
         {

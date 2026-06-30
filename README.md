@@ -128,6 +128,7 @@ Release validation commands:
 ```sh
 pnpm run release:env:preview
 pnpm run release:env:production
+pnpm run audit:posthog-env
 ```
 
 Deploy commands:
@@ -142,13 +143,15 @@ pnpm run smoke:production
 
 Release deploys validate GitHub Environment values, sync the Convex runtime environment from those values, push Convex, then deploy Cloudflare Pages. The canonical host redirect from `aohys.net` to `aohys.com` is represented in `cloudflare/redirect-rules.json` because Cloudflare Pages `_redirects` does not support domain-level redirects.
 
+The PostHog audit compares GitHub Environment `preview` and `production` public analytics values and fails if both environments use the same project key. Smoke commands also verify served CSP, anonymous dashboard redirect/sign-in behavior, and the configured contact endpoint.
+
 ## Provider Responsibilities
 
 | Provider | Responsibility in this repo |
 | --- | --- |
 | Cloudflare | DNS, `aohys.com` hosting, `aohys.net` redirect rules, Pages deploys through Wrangler, preview/production surfaces, security headers, future Cloudflare Images and/or R2 media delivery |
 | Convex | Application state, contact leads, content/media metadata, site settings, resume versions, Better Auth integration, private dashboard endpoints |
-| PostHog | Explicit pageviews, selected conversion events, browser error capture, dashboard/error analysis outside the repo |
+| PostHog | Separate preview/production projects, explicit pageviews, selected conversion events, browser error capture, sanitized contact/dashboard operational events, dashboard/error analysis outside the repo |
 | Resend | Lead notification email from the institutional sender once provider credentials and DNS are ready |
 | Better Auth | Google sign-in, session handling through Convex, trusted origins, admin allowlist integration |
 | GitHub | Public source hosting, protected `develop` and `main`, GitHub Environments, pull-request checks, Release Train workflow |

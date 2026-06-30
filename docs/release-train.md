@@ -45,18 +45,21 @@ Feature branches should target `develop`. Production promotion should target `ma
 | `pnpm run cloudflare:local` | Build the Astro site and serve `apps/site/dist` with Wrangler Pages dev. |
 | `pnpm run release:env:preview` | Validate GitHub Environment values for preview deploys without printing secrets. |
 | `pnpm run release:env:production` | Validate GitHub Environment values for production deploys without printing secrets. |
+| `pnpm run audit:posthog-env` | Compare GitHub Environment `preview` and `production` PostHog public values and fail if both environments use the same project key. |
 | `pnpm run sync:convex-env:preview` | Sync preview runtime values from GitHub Environment variables into the preview Convex deployment without printing secret values. |
 | `pnpm run sync:convex-env:production` | Sync production runtime values from GitHub Environment variables into the production Convex deployment without printing secret values. |
 | `pnpm run deploy:preview` | Validate preview env, sync Convex preview runtime variables, deploy Convex with the preview deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
 | `pnpm run deploy:production` | Validate production env, sync Convex production runtime variables, deploy Convex with the production deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch main`. |
-| `pnpm run smoke:preview` | Fetch the preview smoke URL, verify a 2xx HTML response, public shell marker, and the production canonical URL. |
-| `pnpm run smoke:production` | Fetch `https://aohys.com`, verify a 2xx HTML response, public shell marker, and the production canonical URL. |
+| `pnpm run smoke:preview` | Fetch the preview smoke URL, verify a 2xx public shell, production canonical URL, PostHog/Convex CSP allowances, anonymous `/dashboard` redirect, private sign-in shell, and configured contact endpoint. |
+| `pnpm run smoke:production` | Fetch `https://aohys.com` and verify the same public shell, canonical, security, dashboard, and contact boundaries against production. |
 
 ## Required Gates
 
 - install/build/type/lint verification;
 - route-level public site smoke checks;
 - dashboard protection checks for `/dashboard` noindex/no-store behavior;
+- PostHog/Convex CSP checks so analytics, browser errors, and contact requests are not blocked in preview;
+- contact page endpoint checks before promotion;
 - release-target environment validation before deploy;
 - Cloudflare Preview deploy and smoke checks after `develop` merge;
 - Cloudflare Production deploy and smoke checks after `main` merge;

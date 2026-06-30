@@ -136,6 +136,9 @@ describe("Cloudflare Pages release plan", () => {
     expect(rootPackage.scripts["release:env:production"]).toBe(
       "tsx scripts/validate-release-env.ts production",
     );
+    expect(rootPackage.scripts["audit:posthog-env"]).toBe(
+      "tsx scripts/audit-posthog-env-separation.ts",
+    );
     expect(rootPackage.scripts["sync:convex-env:preview"]).toBe(
       "tsx scripts/sync-convex-env.ts preview",
     );

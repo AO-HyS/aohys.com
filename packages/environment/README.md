@@ -54,7 +54,7 @@ The public contact form uses `PUBLIC_CONTACT_ENDPOINT` as a browser-safe build v
 
 The public site uses PostHog through explicit events only. `PUBLIC_POSTHOG_KEY` and `PUBLIC_POSTHOG_HOST` are public browser values, while `PUBLIC_POSTHOG_AUTOCAPTURE` is a public policy value that starts as `false`.
 
-Preview and production values belong in separate GitHub Environments. The browser client sends `$pageview`, selected CTA/form events, and fixed-shape error metadata without contact message text or contact identity. The Convex contact workflow separately emits `lead_submitted` with safe conversion metadata after a valid submission.
+Preview and production values belong in separate GitHub Environments and should point to separate PostHog project keys. The browser client sends `$pageview`, selected CTA/form events, and fixed-shape error metadata without contact message text or contact identity. The Convex contact workflow separately emits `lead_submitted` with safe conversion metadata after a valid submission, `lead_provider_failed` when Resend/PostHog provider delivery fails after persistence, and `lead_intake_failed` when the backend rejects or cannot persist a submission.
 
 ## Cloudflare Coverage
 

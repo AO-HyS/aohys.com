@@ -1,3 +1,6 @@
+import type { EnvironmentName } from "@aohys/environment";
+import type { ContactLeadInput, LeadAnalyticsEvent } from "./contact-workflow.js";
+
 export type PublicContactErrorCode =
   | "validation_error"
   | "provider_configuration_error"
@@ -11,6 +14,50 @@ export interface PublicContactError {
     ok: false;
     code: PublicContactErrorCode;
     error: string;
+  };
+}
+
+export interface ContactIntakeFailureEventInput {
+  environment: EnvironmentName;
+  input?: Partial<ContactLeadInput>;
+  publicError: PublicContactError;
+  error: unknown;
+}
+
+function safeString(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+function errorTypeFor(error: unknown): string {
+  return error instanceof Error ? error.name : "UnknownError";
+}
+
+export function buildContactIntakeFailureEvent({
+  environment,
+  input,
+  publicError,
+  error,
+}: ContactIntakeFailureEventInput): LeadAnalyticsEvent {
+  const sourcePath = safeString(input?.sourcePath);
+  const locale = safeString(input?.locale);
+  const intent = safeString(input?.intent);
+  const preferredContactPath = safeString(input?.preferredContactPath);
+
+  return {
+    event: "lead_intake_failed",
+    distinctId: `lead-intake:${environment}`,
+    properties: {
+      environment,
+      code: publicError.body.code,
+      status: publicError.status,
+      errorType: errorTypeFor(error),
+      ...(sourcePath ? { sourcePath } : {}),
+      ...(locale ? { locale } : {}),
+      ...(intent ? { intent } : {}),
+      ...(preferredContactPath ? { preferredContactPath } : {}),
+      hasCompany: Boolean(input?.company),
+      hasPhone: Boolean(input?.phone),
+    },
   };
 }
 

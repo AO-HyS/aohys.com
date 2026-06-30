@@ -157,6 +157,20 @@ describe("dashboard access guard", () => {
     expect(html).not.toContain("https://effervescent-minnow-483.convex.site");
   });
 
+  it("returns a private configuration state instead of throwing when Pages env bindings are absent", async () => {
+    const response = await safeHandleDashboardRequest(
+      new Request("https://develop.aohys-com.pages.dev/dashboard"),
+      undefined,
+      vi.fn(),
+    );
+    const html = await response.text();
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(html).toContain("Dashboard configuration needs attention");
+  });
+
   it("redirects stale or unreadable session cookies back to sign-in", async () => {
     const response = await safeHandleDashboardRequest(
       new Request("https://preview.aohys.com/dashboard/leads", {
