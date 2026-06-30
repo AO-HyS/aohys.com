@@ -56,8 +56,9 @@ function collectConvexValues(
 try {
   const environment = parseEnvironment(process.argv[2]);
   const deployment = process.env.CONVEX_DEPLOYMENT?.trim();
+  const deployKey = process.env.CONVEX_DEPLOY_KEY?.trim();
 
-  if (!deployment) {
+  if (!deployment && !deployKey) {
     throw new Error("CONVEX_DEPLOYMENT is required before syncing Convex environment variables.");
   }
 
@@ -78,21 +79,25 @@ try {
       { encoding: "utf8", mode: 0o600 },
     );
 
+    const convexArgs = [
+      "--filter",
+      "@aohys/backend",
+      "exec",
+      "convex",
+      "env",
+      "set",
+      "--from-file",
+      envPath,
+      "--force",
+    ];
+
+    if (!deployKey && deployment) {
+      convexArgs.splice(6, 0, "--deployment", deployment);
+    }
+
     const result = spawnSync(
       "pnpm",
-      [
-        "--filter",
-        "@aohys/backend",
-        "exec",
-        "convex",
-        "env",
-        "set",
-        "--deployment",
-        deployment,
-        "--from-file",
-        envPath,
-        "--force",
-      ],
+      convexArgs,
       {
         stdio: "inherit",
       },
