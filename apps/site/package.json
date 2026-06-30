@@ -10,7 +10,7 @@
     "lint": "vitest run test/source-quality.test.ts",
     "preview": "astro preview",
     "typecheck": "astro check && tsc --noEmit -p tsconfig.functions.json",
-    "test": "vitest run test/analytics.test.ts test/dashboard-access.test.ts test/auth-proxy.test.ts && astro build && vitest run test/public-shell-build.test.ts test/public-routes-build.test.ts"
+    "test": "vitest run test/analytics.test.ts test/csp-reporting.test.ts test/dashboard-access.test.ts test/auth-proxy.test.ts && astro build && vitest run test/public-shell-build.test.ts test/public-routes-build.test.ts"
   },
   "dependencies": {
     "@aohys/content-graph": "workspace:*",

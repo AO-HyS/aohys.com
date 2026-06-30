@@ -17,6 +17,7 @@ import {
 import { PUBLIC_CONTENT_NODES, getLocaleVariant } from "@aohys/content-graph";
 import { isOneOf } from "@aohys/core";
 import { validateEnvironmentContract, type EnvironmentName } from "@aohys/environment";
+import { capturePostHogServerEvent } from "./posthog-server.js";
 
 export interface DashboardAccessEnvironment extends Record<string, string | undefined> {
   AOHYS_ENV: EnvironmentName;
@@ -238,27 +239,11 @@ function createPostHogDashboardErrorReporter(
 ): DashboardRuntimeErrorReporter {
   return {
     capture: async (event) => {
-      const apiKey = environment.PUBLIC_POSTHOG_KEY?.trim();
-
-      if (!apiKey) {
-        return;
-      }
-
-      const host = (environment.PUBLIC_POSTHOG_HOST?.trim() || "https://us.i.posthog.com")
-        .replace(/\/+$/, "");
-
-      await reporterFetch(`${host}/capture/`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          api_key: apiKey,
-          event: event.event,
-          distinct_id: event.distinctId,
-          properties: event.properties,
-        }),
-      });
+      await capturePostHogServerEvent(environment, {
+        event: event.event,
+        distinctId: event.distinctId,
+        properties: event.properties,
+      }, reporterFetch);
     },
   };
 }

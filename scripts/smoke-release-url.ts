@@ -86,6 +86,10 @@ function assertHeaderContains(headers: Headers, name: string, fragment: string):
   }
 }
 
+function isEnabled(value: string | undefined): boolean {
+  return /^(1|true|yes)$/i.test(value?.trim() ?? "");
+}
+
 async function assertDashboardBoundary(baseUrl: string): Promise<void> {
   const dashboardUrl = urlFor(baseUrl, "/dashboard");
   const response = await fetchWithRetries(dashboardUrl, {
@@ -116,15 +120,79 @@ async function assertDashboardBoundary(baseUrl: string): Promise<void> {
   assertHeaderContains(signIn.headers, "cache-control", "no-store");
 }
 
-async function assertContactBoundary(baseUrl: string): Promise<void> {
+function extractContactEndpoint(body: string): string {
+  const match = body.match(/data-contact-endpoint="([^"]+)"/);
+  return match?.[1] ?? "";
+}
+
+async function assertContactSubmission(baseUrl: string, endpoint: string, environment: ReleaseDeploymentEnvironment): Promise<void> {
+  const response = await fetchWithRetries(endpoint, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "user-agent": "aohys-release-smoke/1.0",
+    },
+    body: JSON.stringify({
+      name: "AOHYS release smoke",
+      email: "alejandro.ortiz@aohys.com",
+      company: "AOHYS",
+      phone: "",
+      preferredContactPath: "email",
+      intent: "other",
+      message: `Synthetic ${environment} release smoke check. Please ignore.`,
+      sourcePath: "/contact",
+      locale: "en",
+      referrer: urlFor(baseUrl, "/contact/"),
+      consentToContact: true,
+      website: "",
+      formStartedAt: Date.now() - 10_000,
+    }),
+  });
+
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(`Expected contact submission smoke to return 2xx. Received ${response.status}.`);
+  }
+}
+
+async function assertContactBoundary(baseUrl: string, environment: ReleaseDeploymentEnvironment): Promise<void> {
   const contact = await fetchText(urlFor(baseUrl, "/contact/"));
 
   if (contact.status < 200 || contact.status >= 300) {
     throw new Error(`Expected /contact/ to return 2xx. Received ${contact.status}.`);
   }
 
-  if (!contact.body.includes("data-contact-endpoint=")) {
+  const contactEndpoint = extractContactEndpoint(contact.body);
+
+  if (!contactEndpoint) {
     throw new Error("Expected /contact/ to expose the environment-specific contact endpoint.");
+  }
+
+  if (isEnabled(process.env.SMOKE_CONTACT_SUBMIT)) {
+    await assertContactSubmission(baseUrl, contactEndpoint, environment);
+  }
+}
+
+async function assertCspReportBoundary(baseUrl: string): Promise<void> {
+  const response = await fetchWithRetries(urlFor(baseUrl, "/observability/csp"), {
+    method: "POST",
+    headers: {
+      "content-type": "application/csp-report",
+      "user-agent": "aohys-release-smoke/1.0",
+    },
+    body: JSON.stringify({
+      "csp-report": {
+        "document-uri": urlFor(baseUrl, "/contact/"),
+        "violated-directive": "script-src-elem",
+        "effective-directive": "script-src-elem",
+        "blocked-uri": "https://example.invalid/config.js",
+        disposition: "enforce",
+      },
+    }),
+    redirect: "manual",
+  });
+
+  if (response.status !== 204) {
+    throw new Error(`Expected CSP report endpoint to return 204. Received ${response.status}.`);
   }
 }
 
@@ -165,9 +233,11 @@ try {
   assertHeaderContains(result.headers, "content-security-policy", "https://us-assets.i.posthog.com");
   assertHeaderContains(result.headers, "content-security-policy", "https://us.i.posthog.com");
   assertHeaderContains(result.headers, "content-security-policy", "https://*.convex.site");
+  assertHeaderContains(result.headers, "content-security-policy", "report-uri /observability/csp");
 
   await assertDashboardBoundary(baseUrl);
-  await assertContactBoundary(baseUrl);
+  await assertContactBoundary(baseUrl, environment);
+  await assertCspReportBoundary(baseUrl);
 
   const redirectUrl = process.env.SMOKE_CANONICAL_REDIRECT_URL?.trim();
   if (redirectUrl) {

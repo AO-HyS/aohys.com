@@ -34,12 +34,18 @@ pnpm run audit:posthog-env
 SMOKE_BASE_URL=https://develop.aohys-com.pages.dev pnpm run smoke:preview
 ```
 
+Set GitHub Environment variable `SMOKE_CONTACT_SUBMIT=true` in `preview` when the release train should submit one synthetic lead through the real Convex/Resend/PostHog path. Leave it unset in production unless you deliberately want a live notification smoke.
+
 Manual preview probes:
 
 ```sh
 curl -sS -D - -o /tmp/aohys-dashboard.html https://develop.aohys-com.pages.dev/dashboard
 curl -sS -D - -o /tmp/aohys-dashboard-case-studies.html https://develop.aohys-com.pages.dev/dashboard/case-studies
 curl -sS -D - -o /tmp/aohys-contact.html https://develop.aohys-com.pages.dev/contact
+curl -sS -D - -o /tmp/aohys-csp.txt \
+  -H 'content-type: application/csp-report' \
+  --data '{"csp-report":{"document-uri":"https://develop.aohys-com.pages.dev/contact/","violated-directive":"script-src-elem","effective-directive":"script-src-elem","blocked-uri":"https://example.invalid/config.js","disposition":"enforce"}}' \
+  https://develop.aohys-com.pages.dev/observability/csp
 ```
 
 Expected results:
@@ -48,6 +54,7 @@ Expected results:
 - Dashboard responses include `x-robots-tag: noindex, nofollow` and `cache-control: no-store`.
 - Public pages include the Cloudflare Pages security headers once served by Cloudflare.
 - `pnpm run smoke:preview` checks that the served CSP allows PostHog script/config and ingest hosts plus Convex contact endpoints.
+- `pnpm run smoke:preview` also checks the `/observability/csp` report endpoint so future CSP blocks can still reach PostHog even when `posthog-js` is blocked.
 - Contact page renders direct WhatsApp/email fallback and does not expose private dashboard data.
 - Contact submission should return success once the lead is persisted; Resend/PostHog provider drift should not reject the visitor request.
 - Browser console should not show CSP violations for `us-assets.i.posthog.com`.

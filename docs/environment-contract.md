@@ -75,6 +75,9 @@ Current explicit PostHog events:
 | `lead_provider_failed` | Convex contact workflow | Provider, operation, environment, lead id, and error type only; no message text or contact identity |
 | `lead_intake_failed` | Convex contact HTTP boundary | Environment, public error code/status, source path, locale, intent, and boolean presence flags only; no message text or contact identity |
 | `dashboard_runtime_exception` | Cloudflare Pages `/dashboard` guard | Environment, path, source, and error type only; no cookies, tokens, or exception message |
+| `csp_violation_reported` | Cloudflare Pages `/observability/csp` | Environment, path, directive, document path, disposition, and blocked host only; no full URL query, token, contact identity, or message text |
+
+Cloudflare Pages sends CSP violation reports to `/observability/csp`. This endpoint is intentionally tiny and best-effort: it returns `204` even if PostHog is temporarily unavailable so CSP reporting never breaks a visitor path. It exists because a broken CSP can prevent the browser PostHog bundle from loading, so the report path must not depend on `posthog-js`.
 
 ## Provider Responsibilities
 
