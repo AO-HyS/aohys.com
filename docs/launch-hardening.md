@@ -41,6 +41,8 @@ gh variable set PUBLIC_POSTHOG_KEY --env preview --repo AO-HyS/aohys.com --body 
 pnpm run audit:posthog-env
 ```
 
+If the GitHub Environment audit passes but the Release Train fails at `pnpm run audit:cloudflare-pages-runtime`, update the matching Cloudflare Pages runtime binding as well. GitHub remains the release source of truth, but Pages Functions execute with the Cloudflare deployment config values already stored on the Pages project.
+
 Production should keep the production PostHog project key. The `environment` event property is a secondary filter, not the isolation boundary.
 
 When checking PostHog from the MCP or UI, the expected shape is two AOHYS projects:
