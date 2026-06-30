@@ -29,7 +29,6 @@ describe("public site source quality", () => {
     const cspFunction = read("../../functions/observability/csp.ts");
     const enDictionary = read("src/i18n/en.json");
     const esDictionary = read("src/i18n/es.json");
-    const imagePrompts = read("../../docs/aohys-public-site-image-prompts.md");
     const source = [
       globalCss,
       home,
@@ -58,14 +57,16 @@ describe("public site source quality", () => {
     expect(header).toContain("getUiCopy");
     expect(footer).toContain("getUiCopy");
     expect(publicContentPage).toContain("getUiCopy");
-    expect(publicContentPage).toContain("/images/generated/aohys-delivery-artifact.png");
-    expect(imagePrompts).toContain("aohys-delivery-artifact.png");
+    expect(publicContentPage).toContain("/images/proof/casa-roca-production.png");
+    expect(publicContentPage).toContain("/images/proof/barber-central-ops.png");
+    expect(publicContentPage).toContain("/images/proof/nutri-plan-proof.png");
+    expect(publicContentPage).toContain("/images/proof/aohys-system-map.svg");
     expect(posthogAnalytics).toContain("buildAnalyticsBootstrapPayload");
     expect(posthogClient).toContain("capture_pageview");
     expect(posthogClient).toContain("captureException");
     expect(source).toContain("contact_form_submit_failed");
     expect(source).not.toContain("autocapture: true");
-    expect(enDictionary).toContain("client and product code stays private");
+    expect(enDictionary).toContain("Client code, product code");
     expect(esDictionary).toContain("Los límites público/privado");
     expect(routePage).toContain("getPublicRouteMap");
     expect(layout).toContain('rel="alternate"');

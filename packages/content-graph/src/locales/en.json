@@ -2,26 +2,26 @@
   "home": {
     "path": "/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Senior software engineering for teams that need business outcomes, reliable architecture, and delivery that can be inspected.",
-    "seoDescription": "Alejandro Ortiz Corro builds reliable product systems, business software, public websites, private dashboards, backend workflows, and software architecture for teams that need quality, security, scalability, and measurable outcomes.",
+    "summary": "Product engineer building websites, dashboards, backend workflows, and AI-assisted systems that make business operations easier to run.",
+    "seoDescription": "Alejandro Ortiz Corro is a product engineer who builds reliable business software: public websites, private dashboards, backend workflows, payments, lead flows, AI-assisted operations, and release systems for teams that need quality and scale.",
     "primaryActionLabel": "Start a conversation",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "View selected work",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Senior engineering. Business outcomes. Measurable impact.",
-      "deck": "I design and ship product systems for teams that need clearer operations, reliable releases, and software that can survive real business pressure.",
+      "headline": "I build software that makes the business easier to run.",
+      "deck": "I am Alejandro Ortiz. I turn messy operations into product systems: public sites, private dashboards, payments, lead flow, AI-assisted workflows, and the release discipline around them.",
       "proofBoardLabel": "AOHYS evidence map",
-      "proofBoardTitle": "Public pages. Private work. Observable releases.",
-      "proofBoardBody": "The site itself shows how I separate search surfaces, protected tools, leads, deployments, and errors.",
-      "selectedOutcomesHeading": "Selected proof",
-      "selectedOutcomesIntro": "Public-safe evidence from live work, active builds, private operating systems, and confidential enterprise delivery.",
+      "proofBoardTitle": "Real pages, real workflows, public-safe evidence.",
+      "proofBoardBody": "The work behind most products is private. This page shows the parts that can be reviewed without exposing client code or data.",
+      "selectedOutcomesHeading": "Work I can show",
+      "selectedOutcomesIntro": "A production site, active product builds, private operating systems, and enterprise work summarized without leaking what should stay private.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",
           "label": "Public site",
           "title": "Casa Roca",
-          "outcome": "A production hospitality site shaped around trust, search-readable content, and direct inquiry paths.",
+        "outcome": "A hospitality site in production, built to make the place easy to understand and easy to contact.",
           "role": "Public trust, SEO, conversion path",
           "evidence": {
             "label": "Public site",
@@ -35,7 +35,7 @@
           "contentId": "case-study:the-barber-central",
           "label": "Operations product",
           "title": "The Barber Central",
-          "outcome": "Booking, availability, payments, and customer communication designed around the daily pressure of a local service business.",
+        "outcome": "A service-business product for bookings, availability, payments, and customer communication.",
           "role": "Operations workflow, payments, customer flow",
           "evidence": {
             "label": "Development preview",
@@ -49,7 +49,7 @@
           "contentId": "case-study:nutri-plan",
           "label": "Private system",
           "title": "Nutri Plan",
-          "outcome": "Plans, dashboards, and client workflows organized into one operating model instead of disconnected screens.",
+        "outcome": "A private operating system for plans, dashboards, and client workflows that need to stay organized.",
           "role": "Private tools, structured workflows, client delivery",
           "evidence": {
             "label": "Sanitized preview",
@@ -63,7 +63,7 @@
           "contentId": "case-study:enterprise-systems",
           "label": "Enterprise delivery",
           "title": "Enterprise systems",
-          "outcome": "Escalations, payment plans, cashback, customs workflows, and backend delivery inside complex business systems.",
+        "outcome": "Three years inside complex product and backend work: escalations, payment plans, cashback, customs workflows, and delivery across many projects.",
           "role": "Reliability, backend delivery, confidentiality",
           "evidence": {
             "label": "Confidential summary",
@@ -73,40 +73,40 @@
           }
         }
       ],
-      "architectureHeading": "The system should reveal how it is built.",
-      "architectureBody": "This site is more than a portfolio page: public SEO, private dashboard routes, contact handling, observability, and release promotion are designed as one inspectable system.",
+      "architectureHeading": "This site is part of the proof.",
+      "architectureBody": "The repository shows the parts that usually get hand-waved: bilingual content, auth boundaries, contact handling, PostHog errors, preview checks, production promotion, and Cloudflare deploys.",
       "architectureStages": [
         {
           "label": "Public surface",
-          "text": "SEO pages resolve from stable content IDs, localized slugs, canonical URLs, and sitemap rules."
+        "text": "Public pages use stable content IDs, localized slugs, canonical URLs, and sitemap rules."
         },
         {
           "label": "Private surface",
-          "text": "Dashboard routes stay out of public search and use authenticated workflows instead of public content shortcuts."
+        "text": "Dashboard routes stay private, authenticated, noindex, and separate from the public content surface."
         },
         {
           "label": "Release path",
-          "text": "Feature branches move into develop first; production promotion is a separate review path into main."
+        "text": "Changes go through preview first; production promotion stays separate and reviewable."
         }
       ],
-      "practiceHeading": "Operating principles",
-      "practiceBody": "I do not start by selling a stack. I map the workflow, decide the boundaries, and keep the release path visible enough that quality can be inspected.",
+      "practiceHeading": "How I work",
+      "practiceBody": "I start with the business pressure, then make the software boring where it should be boring: clear data, safe auth, observable failures, and releases people can trust.",
       "practicePoints": [
         {
           "label": "Clarify the work",
-          "text": "Turn loose goals into flows, constraints, boundaries, and a release path."
+        "text": "Turn loose goals into flows, constraints, boundaries, and the path to release."
         },
         {
           "label": "Build the system",
-          "text": "Make UI, data, auth, communication, observability, and deployment fit together."
+        "text": "Make UI, data, auth, communication, observability, and deployment fit together."
         },
         {
           "label": "Prove it early",
-          "text": "Use tests, browser QA, protected branches, preview checks, and production verification so failures are visible before customers find them."
+        "text": "Use tests, browser QA, protected branches, preview checks, and production verification so problems show up before customers report them."
         }
       ],
-      "contactHeading": "Tell me what needs to work.",
-      "contactBody": "Send the role, project, architecture problem, or product flow. I will reply with a practical next step.",
+      "contactHeading": "Send me the thing you need to make work.",
+      "contactBody": "A role, a product idea, a messy workflow, an architecture problem, or a page that needs to convert. I will reply with a practical next step.",
       "emailLabel": "Email Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",
       "whatsappLabel": "WhatsApp",
@@ -115,9 +115,9 @@
   },
   "case-studies": {
     "path": "/case-studies",
-    "title": "Selected work",
-    "summary": "A public-safe view of shipped work, active products, and confidential enterprise delivery.",
-    "seoDescription": "Review selected AOHYS work across production websites, active product builds, business systems, and enterprise software delivery.",
+    "title": "Work I can show",
+    "summary": "A practical look at production work, active builds, private systems, and enterprise delivery without exposing client code or data.",
+    "seoDescription": "Review selected work by Alejandro Ortiz Corro across production websites, active product builds, business systems, and enterprise software delivery.",
     "primaryActionLabel": "Discuss a project",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Read architecture notes",
@@ -413,7 +413,7 @@
     "title": "Practice",
     "summary": "How modern AI-assisted engineering, quality checks, and release discipline shape the work.",
     "seoDescription": "AOHYS practice explains modern AI-assisted engineering, test discipline, review loops, quality gates, and release habits.",
-    "primaryActionLabel": "See the public source",
+    "primaryActionLabel": "Review the repo",
     "primaryActionContentId": "architecture",
     "secondaryActionLabel": "Start a conversation",
     "secondaryActionContentId": "contact"
@@ -421,15 +421,15 @@
   "architecture": {
     "path": "/architecture",
     "title": "Architecture",
-    "summary": "How this public sample separates search pages, private operations, delivery checks, leads, and observability.",
-    "seoDescription": "Architecture notes for the AOHYS public source sample: Astro SEO pages, private dashboard boundaries, Cloudflare deploys, Convex workflows, and PostHog observability.",
+    "summary": "The engineering decisions behind this site: public pages, private dashboard, contact flow, observability, and release checks.",
+    "seoDescription": "Architecture notes for Alejandro Ortiz Corro's public source sample: Astro SEO pages, private dashboard boundaries, Cloudflare deploys, Convex workflows, PostHog observability, and preview-to-production release checks.",
     "primaryActionLabel": "Review selected work",
     "primaryActionContentId": "case-studies",
     "secondaryActionLabel": "Contact Alejandro",
     "secondaryActionContentId": "contact",
     "architectureContent": {
-      "heading": "Public source sample, private client work.",
-      "deck": "This site is intentionally inspectable: public search pages, bilingual routing, release documentation, dashboard boundaries, and provider seams are visible in the source. Client and product code stays private.",
+      "heading": "The public code shows the work around the work.",
+      "deck": "Client code stays private. This repo shows how I think about the parts around a product: content structure, auth boundaries, releases, errors, providers, and the dashboard surface.",
       "sourceLabel": "Inspect the source",
       "sourceLinks": [
         {
@@ -456,15 +456,15 @@
       "sections": [
         {
           "title": "Public surface",
-          "body": "Astro owns the public SEO pages. The route map comes from stable content IDs, localized slugs, canonical metadata, language alternates, sitemap eligibility, and robots behavior instead of scattered page constants."
+        "body": "Astro owns the public pages. The route map comes from stable content IDs, localized slugs, canonical metadata, language alternates, sitemap eligibility, and robots behavior instead of scattered page constants."
         },
         {
           "title": "Private boundary",
-          "body": "The dashboard belongs on the same domain, but it is a different surface: authenticated, omitted from the sitemap, and noindex. The public site can demonstrate the boundary without implying private work is public."
+        "body": "The dashboard belongs on the same domain, but it is a different surface: authenticated, omitted from the sitemap, and noindex. The public page can show the boundary without making private work public."
         },
         {
           "title": "Release Train",
-          "body": "Feature branches target develop first. Production moves through a separate main promotion path with Cloudflare/Wrangler checks, environment validation, and smoke verification before the canonical domain changes."
+        "body": "Feature branches target develop first. Production moves through a separate main promotion path with Cloudflare/Wrangler checks, environment validation, and smoke verification before the canonical domain changes."
         },
         {
           "title": "Environment Contract",
@@ -479,7 +479,7 @@
           "body": "Cloudflare handles hosting and media delivery, Convex owns application state and dashboard workflows, PostHog owns analytics and errors, and Resend handles lead notifications. Technology appears as evidence, not as the sales pitch."
         }
       ],
-      "boundaryNote": "This public repository is a working sample of AOHYS engineering standards. It does not make private client code, product code, credentials, screenshots, or operational data public."
+      "boundaryNote": "This repository is a public working sample. It does not make private client code, product code, credentials, private screenshots, or operational data public."
     }
   },
   "resume": {
@@ -495,7 +495,7 @@
       "name": "Alejandro Ortiz Corro",
       "role": "Senior Product Engineer / Frontend Systems",
       "location": "Mexico",
-      "intro": "I build software where product judgment, interface quality, backend workflows, release discipline, and AI-assisted delivery have to hold together in production.",
+      "intro": "I build software that has to hold together after launch: product judgment, interface quality, backend workflows, release discipline, and AI-assisted delivery.",
       "pdf": {
         "label": "Download resume PDF",
         "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
@@ -503,8 +503,8 @@
         "description": "A compact PDF for hiring review. This site adds the proof surface: public work, architecture notes, source structure, and delivery practice."
       },
       "proof": {
-        "label": "Dynamic source sample",
-        "title": "The page is part of the evidence.",
+        "label": "Reviewable work",
+        "title": "The site supports the resume.",
         "body": "The resume is backed by the same public site that shows case studies, architecture boundaries, i18n, QA gates, observability, and release practice."
       },
       "contactLinks": [
@@ -544,7 +544,7 @@
         {
           "label": "Architecture",
           "href": "/architecture",
-          "text": "Public source sample, release train, environment contract, and public/private boundaries."
+          "text": "Public code, release train, environment contract, and public/private boundaries."
         },
         {
           "label": "Contact",
@@ -557,7 +557,7 @@
         "Senior product engineer with 9+ years of experience across React, TypeScript, Next.js, product architecture, performance, SEO, and maintainable UI systems.",
         "I have shipped across enterprise systems, startup products, healthcare workflows, e-commerce platforms, public business sites, and systems serving 30.5M+ monthly users.",
         "My recent work goes beyond screens: Next.js as a backend surface, backend workflow delivery, escalation ownership, payment plans, cashback, customs workflows, and cross-functional product execution.",
-        "I work with agents, TDD, browser QA, release discipline, observability, and documentation so ambiguous goals become software that teams can inspect, operate, and improve."
+        "I work with agents, TDD, browser QA, release discipline, observability, and documentation so ambiguous goals become software teams can operate and improve."
       ],
       "highlightsTitle": "Selected impact",
       "highlights": [
@@ -574,8 +574,8 @@
           "text": "Implemented keyboard dispatch workflows for a major US emergency response platform with zero-error tolerance requirements."
         },
         {
-          "label": "Public source sample",
-          "text": "Built this site as an inspectable source sample for SEO, i18n, content graph, QA, branch protection, and release practice."
+          "label": "Public working sample",
+          "text": "Built this site so technical evaluators can review SEO, i18n, content graph, QA, branch protection, and release practice."
         }
       ],
       "projectsTitle": "Key projects",
@@ -742,14 +742,14 @@
     "path": "/privacy",
     "title": "Privacy",
     "summary": "How AOHYS treats contact data, analytics, errors, and private project information.",
-    "seoDescription": "AOHYS privacy route explaining contact data, analytics, error reporting, private project boundaries, and public source limits.",
+    "seoDescription": "AOHYS privacy route explaining contact data, analytics, error reporting, private project boundaries, and public code limits.",
     "primaryActionLabel": "Contact Alejandro",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Back home",
     "secondaryActionContentId": "home",
     "privacyContent": {
       "heading": "Privacy",
-      "intro": "This site is public source as an engineering sample, but private client work and operational data stay private.",
+      "intro": "This site is public code as an engineering sample, but private client work and operational data stay private.",
       "sections": [
         {
           "title": "Contact requests",
@@ -761,7 +761,7 @@
         },
         {
           "title": "Private project boundaries",
-          "body": "This repository is an inspectable source sample. Private client code, credentials, operational records, and dashboard data are not public."
+        "body": "This repository is public for review. Private client code, credentials, operational records, and dashboard data are not public."
         }
       ],
       "boundaryNote": "The private dashboard under /dashboard is authenticated, noindexed, excluded from the sitemap, and separate from public SEO pages."

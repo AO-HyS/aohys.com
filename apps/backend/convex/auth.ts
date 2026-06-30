@@ -14,7 +14,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
 
   return betterAuth({
     appName: "AOHYS",
-    baseURL: authBaseUrl,
+    baseURL: createBetterAuthBaseUrl(authBaseUrl, siteUrl, process.env.AOHYS_ENV),
     secret: requireEnvironmentValue("BETTER_AUTH_SECRET"),
     trustedOrigins: parseTrustedOrigins(),
     database: authComponent.adapter(ctx),
@@ -29,6 +29,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     },
     advanced: {
       useSecureCookies: siteUrl.startsWith("https://"),
+      trustedProxyHeaders: true,
     },
     plugins: [
       crossDomain({ siteUrl }),
@@ -43,6 +44,28 @@ export const getCurrentUser = query({
   args: {},
   handler: async (ctx) => authComponent.safeGetAuthUser(ctx),
 });
+
+export function createBetterAuthBaseUrl(
+  authBaseUrl: string,
+  siteUrl: string,
+  environment: string | undefined,
+): BetterAuthOptions["baseURL"] {
+  if (environment !== "preview" && environment !== "local") {
+    return authBaseUrl;
+  }
+
+  return {
+    allowedHosts: uniqueStrings([
+      hostnameFromUrl(authBaseUrl),
+      hostnameFromUrl(siteUrl),
+      "localhost",
+      "127.0.0.1",
+      "*.aohys-com.pages.dev",
+    ].filter(isDefinedString)),
+    fallback: authBaseUrl,
+    protocol: "auto",
+  };
+}
 
 function parseTrustedOrigins(): string[] {
   return (process.env.BETTER_AUTH_TRUSTED_ORIGINS ?? "")
@@ -59,4 +82,20 @@ function requireEnvironmentValue(name: string): string {
   }
 
   return value;
+}
+
+function hostnameFromUrl(value: string): string | undefined {
+  try {
+    return new URL(value).hostname;
+  } catch {
+    return undefined;
+  }
+}
+
+function uniqueStrings(values: string[]): string[] {
+  return Array.from(new Set(values));
+}
+
+function isDefinedString(value: string | undefined): value is string {
+  return typeof value === "string";
 }

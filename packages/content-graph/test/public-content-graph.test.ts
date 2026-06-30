@@ -99,8 +99,8 @@ describe("Public Content Graph", () => {
     const englishHome = getHomePageContent("en");
     const spanishHome = getHomePageContent("es");
 
-    expect(englishHome.headline).toContain("Senior engineering");
-    expect(spanishHome.headline).toContain("Ingeniería senior");
+    expect(englishHome.headline).toContain("makes the business easier to run");
+    expect(spanishHome.headline).toContain("hace más fácil operar el negocio");
     expect(englishHome.selectedOutcomes).toHaveLength(4);
     expect(englishHome.selectedOutcomes.map((outcome) => outcome.path)).toEqual([
       "/case-studies/casa-roca",
@@ -120,7 +120,7 @@ describe("Public Content Graph", () => {
     const englishArchitecture = getArchitecturePageContent("en");
     const spanishArchitecture = getArchitecturePageContent("es");
 
-    expect(englishArchitecture.heading).toBe("Public source sample, private client work.");
+    expect(englishArchitecture.heading).toBe("The public code shows the work around the work.");
     expect(englishArchitecture.sourceLinks.map((link) => link.href)).toEqual([
       "https://github.com/AO-HyS/aohys.com",
       "https://github.com/AO-HyS/aohys.com/blob/develop/README.md",
@@ -132,7 +132,7 @@ describe("Public Content Graph", () => {
     expect(englishArchitecture.sections.map((section) => section.title)).toContain("Environment Contract");
     expect(englishArchitecture.sections.map((section) => section.title)).toContain("Public Content Graph");
     expect(englishArchitecture.sections.every((section) => section.body.length > 40)).toBe(true);
-    expect(spanishArchitecture.heading).toBe("Muestra pública, trabajo privado.");
+    expect(spanishArchitecture.heading).toBe("El código público muestra el trabajo alrededor del trabajo.");
     expect(spanishArchitecture.sourceLinks[0]?.href).toBe("https://github.com/AO-HyS/aohys.com");
   });
 
@@ -174,7 +174,7 @@ describe("Public Content Graph", () => {
       href: "/downloads/alejandro-ortiz-corro-resume.pdf",
       fileName: "alejandro-ortiz-corro-resume.pdf",
     });
-    expect(englishResume.proof.title).toMatch(/evidence/i);
+    expect(englishResume.proof.title).toBe("The site supports the resume.");
     expect(englishResume.summary.join(" ")).toMatch(/React|TypeScript|Next\.js|agents|observability/i);
     expect(englishResume.contextLinks.map((link) => link.href)).toEqual([
       "/case-studies",
