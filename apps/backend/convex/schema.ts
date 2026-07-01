@@ -104,6 +104,22 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("by_content_id", ["contentId"]),
 
+  projectDrafts: defineTable({
+    contentId: v.string(),
+    locale: localeValidator,
+    title: v.string(),
+    summary: v.string(),
+    seoDescription: v.string(),
+    projectUrl: v.optional(v.string()),
+    ctaLabel: v.string(),
+    ctaHref: v.string(),
+    achievements: v.string(),
+    structureNotes: v.string(),
+    updatedAt: v.number(),
+  })
+    .index("by_content_id", ["contentId"])
+    .index("by_content_id_and_locale", ["contentId", "locale"]),
+
   resumeVersions: defineTable({
     locale: localeValidator,
     version: v.string(),

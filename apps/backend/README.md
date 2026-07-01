@@ -52,6 +52,7 @@ The first schema includes:
 - `mediaMetadata`
 - `siteSettings`
 - `caseStudyMetadata`
+- `projectDrafts`
 - `resumeVersions`
 
 The public `leads.submit` mutation validates through `src/lead-intake.ts` before inserting into Convex. Reusable normalization and assertion primitives come from `@aohys/core` instead of staying embedded in feature code. Tests exercise this boundary without direct database coupling.
@@ -61,7 +62,8 @@ The public contact endpoint is implemented as a Convex HTTP action at `/contact`
 Private dashboard endpoints are implemented as Convex HTTP actions protected by `DASHBOARD_API_TOKEN`:
 
 - `GET /dashboard/leads` and `POST /dashboard/leads/status` for lead review.
-- `GET /dashboard/content` for case-study, media, site setting, and resume metadata.
+- `GET /dashboard/content` for project drafts, case-study status metadata, media metadata, site settings, and resume metadata.
+- `POST /dashboard/content/project` for project-centered dashboard drafts: localized text, SEO description, public URL, CTA, achievements, structure notes, status, and evidence state.
 - `POST /dashboard/content/case-study` for Public Content Graph case-study metadata.
 - `POST /dashboard/content/media` for metadata-only media records with alt text and usage intent.
 - `POST /dashboard/content/setting` for `PUBLIC_` site settings only.
