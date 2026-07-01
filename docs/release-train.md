@@ -48,7 +48,8 @@ Feature branches should target `develop`. Production promotion should target `ma
 | `pnpm run audit:posthog-env` | Locally compare GitHub Environment `preview` and `production` PostHog public values; in GitHub Actions, validate the injected target environment before the Cloudflare runtime audit compares deployed bindings. |
 | `pnpm run sync:convex-env:preview` | Sync preview runtime values from GitHub Environment variables into the preview Convex deployment without printing secret values. |
 | `pnpm run sync:convex-env:production` | Sync production runtime values from GitHub Environment variables into the production Convex deployment without printing secret values. |
-| `pnpm run deploy:preview` | Validate preview env, audit PostHog project separation, sync Convex preview runtime variables, deploy Convex with the preview deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
+| `pnpm run seed:dashboard:preview` | Idempotently seed the private preview dashboard with project drafts and public contact settings through Convex HTTP endpoints protected by `DASHBOARD_API_TOKEN`. |
+| `pnpm run deploy:preview` | Validate preview env, audit PostHog project separation, sync Convex preview runtime variables, deploy Convex with the preview deploy key, seed preview dashboard drafts/settings, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
 | `pnpm run deploy:production` | Validate production env, audit PostHog project separation, sync Convex production runtime variables, deploy Convex with the production deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch main`. |
 | `pnpm run smoke:preview` | Fetch the preview smoke URL, verify a 2xx public shell, production canonical URL, PostHog/Convex CSP allowances, anonymous `/dashboard` redirect, private sign-in shell, and configured contact endpoint. |
 | `pnpm run smoke:production` | Fetch `https://aohys.com` and verify the same public shell, canonical, security, dashboard, and contact boundaries against production. |
@@ -98,6 +99,14 @@ env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typec
 ```
 
 `CONVEX_DEPLOYMENT` is unset for the deploy command so CI selects the target deployment from `CONVEX_DEPLOY_KEY`.
+
+Preview deploys then seed private dashboard working data through:
+
+```sh
+pnpm run seed:dashboard:preview
+```
+
+The seed runs only with `AOHYS_ENV=preview`. It uses the already-synced `CONVEX_SITE_URL` and server-only `DASHBOARD_API_TOKEN` from GitHub Environment `preview` to upsert bilingual project drafts and the public WhatsApp setting through Convex HTTP actions. It does not run for production and does not seed media rows, because media metadata creation is intentionally non-idempotent until the future Media Pipeline adds stable asset IDs.
 
 The Cloudflare Pages project name is `aohys-com`. Site deploys use Wrangler Pages Direct Upload:
 

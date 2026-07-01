@@ -148,8 +148,11 @@ describe("Cloudflare Pages release plan", () => {
     expect(rootPackage.scripts["sync:convex-env:production"]).toBe(
       "tsx scripts/sync-convex-env.ts production",
     );
+    expect(rootPackage.scripts["seed:dashboard:preview"]).toBe(
+      "tsx scripts/seed-dashboard-preview.ts",
+    );
     expect(rootPackage.scripts["deploy:preview"]).toBe(
-      "pnpm run release:env:preview && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:preview && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"preview release\" && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop",
+      "pnpm run release:env:preview && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:preview && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"preview release\" && pnpm run seed:dashboard:preview && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop",
     );
     expect(rootPackage.scripts["deploy:production"]).toBe(
       "pnpm run release:env:production && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:production && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"production release\" && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main",
