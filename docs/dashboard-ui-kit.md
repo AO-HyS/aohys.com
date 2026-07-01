@@ -22,6 +22,14 @@ Issue #15 adds the first real workflow surface: lead list, lead detail, review s
 
 Issue #16 adds the first content and media workflow surface. `/dashboard/case-studies`, `/dashboard/media`, `/dashboard/settings`, and `/dashboard/resume` render through `renderDashboardContentWorkflow`, merge Convex metadata with the Public Content Graph for stable IDs/localized paths/sitemap eligibility, and save only metadata through private Convex endpoints. Media originals and Cloudflare Images/R2 upload flows remain behind the future Media Pipeline decision; this slice stores metadata, alt text, usage intent, and safe references only.
 
+The June 30 refinement separates the previously repeated content workflow into distinct task surfaces:
+
+- `/dashboard/case-studies` focuses on public proof: status, evidence state, localized paths, sitemap eligibility, and asset health.
+- `/dashboard/media` focuses on proof assets: storage key, alt text, usage intent, content ID attachment, and case-study mapping.
+- `/dashboard/settings` focuses on public runtime values: contact paths, provider outputs, policy values, and the boundary between public settings and private secrets.
+- `/dashboard/resume` focuses on hiring artifacts: downloadable resume versions and keeping the dynamic resume page aligned with the public graph.
+- The authenticated frame now includes persistent View site, Public work, and Sign out actions.
+
 ## Primitive Adapter
 
 Use `shadcn/ui` as the Dashboard Primitive Adapter, not as the dashboard interface.
@@ -55,11 +63,11 @@ Implemented V1 surfaces:
 
 | Export | Purpose |
 | --- | --- |
-| `renderDashboardShell` | Authenticated frame with navigation, page title, admin identity, and operational overview. |
+| `renderDashboardShell` | Authenticated frame with navigation, page title, admin identity, sign-out, public surface links, and publishing-room overview. |
 | `renderDashboardSignIn` | Private Google sign-in entry point with noindex metadata. |
 | `renderDashboardState` | Loading, unauthorized, provider/configuration error, and unavailable states. |
 | `renderDashboardLeadWorkflow` | Lead list/detail workflow with review status updates, empty/saved/validation/provider states, and compact mobile controls. |
-| `renderDashboardContentWorkflow` | Case-study, media, site settings, and resume metadata workflow with Public Content Graph guardrails, form states, and compact mobile controls. |
+| `renderDashboardContentWorkflow` | Route-aware case-study, media, site settings, and resume metadata workflow with Public Content Graph guardrails, form states, side panels, and compact mobile controls. |
 
 ## Mobile Behavior
 

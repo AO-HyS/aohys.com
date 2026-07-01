@@ -3,18 +3,21 @@
 
 :root {
   color-scheme: light;
-  --color-bg: oklch(1 0 0);
-  --color-surface: oklch(0.965 0.002 260);
-  --color-ink: oklch(0.18 0.012 260);
-  --color-muted: oklch(0.42 0.018 250);
-  --color-rule: oklch(0.88 0.006 260);
-  --color-primary: oklch(0.7 0.145 78);
+  --color-bg: oklch(0.992 0.012 94);
+  --color-surface: oklch(0.973 0.016 105);
+  --color-ink: oklch(0.19 0.018 252);
+  --color-muted: oklch(0.43 0.026 238);
+  --color-rule: oklch(0.885 0.014 108);
+  --color-primary: oklch(0.78 0.13 78);
   --color-primary-ink: oklch(0.15 0.015 80);
-  --color-mint: oklch(0.78 0.105 160);
+  --color-mint: oklch(0.82 0.105 162);
   --color-mint-ink: oklch(0.18 0.04 165);
-  --color-sky: oklch(0.74 0.09 240);
+  --color-sky: oklch(0.82 0.085 230);
   --color-sky-ink: oklch(0.18 0.04 245);
-  --color-coral: oklch(0.68 0.15 35);
+  --color-coral: oklch(0.78 0.13 35);
+  --color-blush: oklch(0.9 0.055 28);
+  --color-lilac: oklch(0.89 0.05 302);
+  --color-aqua-soft: oklch(0.91 0.06 185);
   --color-dark: oklch(0.09 0.006 260);
   --color-dark-surface: oklch(0.14 0.01 260);
   --color-dark-panel: oklch(0.115 0.012 260);
@@ -34,8 +37,8 @@
   --text-lead: 1.25rem;
   --text-h3: 1.75rem;
   --text-h2: 3.25rem;
-  --text-hero: 4.75rem;
-  --text-home-hero: 4.35rem;
+  --text-hero: 4.25rem;
+  --text-home-hero: 4.05rem;
   --leading-caption: 1.35;
   --leading-body: 1.62;
   --leading-lead: 1.45;
@@ -49,6 +52,8 @@
   --focus-outline-offset: 4px;
   --container: min(100% - clamp(1rem, 4vw, 3rem), 1180px);
   --container-wide: min(100% - clamp(1rem, 4vw, 3rem), 1440px);
+  --shadow-soft: 0 1.35rem 4rem color-mix(in oklch, var(--color-sky-ink), transparent 88%);
+  --shadow-lifted: 0 1rem 2.6rem color-mix(in oklch, var(--color-ink), transparent 90%);
 }
 
 * {
@@ -131,8 +136,8 @@ section,
 }
 
 .site-shell[data-content-id="home"] .site-header {
-  border-block-end-color: color-mix(in oklch, var(--color-rule), transparent 25%);
-  background: color-mix(in oklch, var(--color-bg), transparent 8%);
+  border-block-end-color: color-mix(in oklch, var(--color-dark-ink), transparent 84%);
+  background: color-mix(in oklch, var(--color-bg), transparent 4%);
   color: var(--color-ink);
 }
 
@@ -293,15 +298,18 @@ h1 {
   width: 100%;
   grid-template-columns: minmax(22rem, 0.42fr) minmax(36rem, 0.58fr);
   gap: clamp(2rem, 4.8vw, 5.5rem);
-  min-height: min(820px, calc(100svh - 77px));
-  padding: clamp(4rem, 7vw, 7rem) max(1.25rem, calc((100vw - 1320px) / 2));
+  min-height: min(720px, calc(100svh - 77px));
+  padding: clamp(3rem, 5.2vw, 5.4rem) max(1.25rem, calc((100vw - 1320px) / 2)) clamp(1.25rem, 2.6vw, 2.4rem);
   border-block-end: 0;
   background:
-    linear-gradient(90deg, color-mix(in oklch, var(--color-sky), transparent 88%) 1px, transparent 1px),
-    linear-gradient(0deg, color-mix(in oklch, var(--color-mint), transparent 90%) 1px, transparent 1px),
-    linear-gradient(180deg, var(--color-bg), color-mix(in oklch, var(--color-honey-soft), var(--color-bg) 82%));
-  background-size: 4.5rem 4.5rem, 4.5rem 4.5rem, auto;
-  box-shadow: inset 0 -1px var(--color-rule);
+    radial-gradient(circle at 18% 20%, color-mix(in oklch, var(--color-blush), transparent 18%), transparent 24rem),
+    radial-gradient(circle at 78% 12%, color-mix(in oklch, var(--color-sky), transparent 26%), transparent 27rem),
+    radial-gradient(circle at 68% 76%, color-mix(in oklch, var(--color-mint), transparent 28%), transparent 30rem),
+    linear-gradient(90deg, color-mix(in oklch, var(--color-ink), transparent 94%) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklch, var(--color-ink), transparent 96%) 1px, transparent 1px),
+    var(--color-bg);
+  background-size: auto, auto, auto, 4.5rem 4.5rem, 4.5rem 4.5rem, auto;
+  box-shadow: inset 0 -1px color-mix(in oklch, var(--color-rule), transparent 18%);
   color: var(--color-ink);
 }
 
@@ -314,7 +322,7 @@ h1 {
 }
 
 .home-proof-hero .signal-line {
-  color: var(--color-mint-ink);
+  color: var(--color-coral);
 }
 
 .home-proof-hero .hero-lead {
@@ -324,9 +332,9 @@ h1 {
 }
 
 .home-proof-hero .button-secondary {
-  border-color: color-mix(in oklch, var(--color-sky), var(--color-rule) 35%);
-  background: color-mix(in oklch, var(--color-sky), var(--color-bg) 88%);
-  color: var(--color-sky-ink);
+  border-color: color-mix(in oklch, var(--color-ink), transparent 76%);
+  background: color-mix(in oklch, var(--color-bg), transparent 18%);
+  color: var(--color-ink);
 }
 
 h2 {
@@ -389,11 +397,14 @@ h2 {
   isolation: isolate;
   align-self: center;
   justify-self: end;
-  width: min(100%, 60rem);
-  min-height: clamp(28rem, 40vw, 37rem);
+  width: min(100%, 56rem);
+  min-height: clamp(24rem, 34vw, 32rem);
   aspect-ratio: 16 / 10;
-  border: 1px solid color-mix(in oklch, var(--color-mint), transparent 44%);
-  background: var(--color-dark-panel);
+  border: 1px solid color-mix(in oklch, var(--color-mint), var(--color-rule) 44%);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, color-mix(in oklch, var(--color-bg), transparent 3%), color-mix(in oklch, var(--color-sky), var(--color-bg) 78%));
+  box-shadow: var(--shadow-soft);
 }
 
 .home-proof-board::after {
@@ -403,8 +414,8 @@ h2 {
   z-index: 2;
   pointer-events: none;
   background:
-    linear-gradient(90deg, color-mix(in oklch, var(--color-dark), transparent 4%), transparent 42%),
-    linear-gradient(180deg, transparent 62%, color-mix(in oklch, var(--color-dark), transparent 12%));
+    linear-gradient(90deg, color-mix(in oklch, var(--color-bg), transparent 10%), transparent 44%),
+    linear-gradient(180deg, transparent 56%, color-mix(in oklch, var(--color-bg), transparent 18%));
 }
 
 .hero-artifact-asset {
@@ -415,7 +426,43 @@ h2 {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  filter: saturate(1.08) contrast(1.04);
+  opacity: 0.42;
+  filter: saturate(0.96) contrast(0.94);
+}
+
+.hero-proof-shots {
+  position: absolute;
+  inset: clamp(1rem, 2vw, 1.6rem);
+  z-index: 3;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.82fr);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.7rem, 1.3vw, 1rem);
+  pointer-events: none;
+}
+
+.hero-proof-shots img {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 1px solid color-mix(in oklch, var(--color-rule), var(--color-ink) 8%);
+  border-radius: 6px;
+  background: var(--color-bg);
+  box-shadow: var(--shadow-lifted);
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+.hero-proof-shots img:first-child {
+  grid-row: 1 / span 2;
+}
+
+.hero-proof-shots img:nth-child(2) {
+  object-position: center top;
+}
+
+.hero-proof-shots img:nth-child(3) {
+  object-position: left top;
 }
 
 .hero-proof-ribbon {
@@ -425,18 +472,20 @@ h2 {
   z-index: 3;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-block-start: 1px solid var(--color-dark-rule);
-  background: color-mix(in oklch, var(--color-dark), transparent 10%);
-  backdrop-filter: blur(10px);
+  overflow: hidden;
+  border: 1px solid color-mix(in oklch, var(--color-rule), transparent 18%);
+  border-radius: 6px;
+  background: color-mix(in oklch, var(--color-bg), transparent 12%);
+  backdrop-filter: blur(18px);
 }
 
 .hero-proof-ribbon-item {
   display: grid;
   gap: 0.2rem;
   min-width: 0;
-  border-inline-end: 1px solid var(--color-dark-rule);
+  border-inline-end: 1px solid color-mix(in oklch, var(--color-rule), transparent 20%);
   padding: 0.8rem 0.9rem;
-  color: var(--color-dark-ink);
+  color: var(--color-ink);
   text-decoration: none;
 }
 
@@ -452,7 +501,7 @@ h2 {
 }
 
 .hero-proof-ribbon-item span {
-  color: var(--color-dark-muted);
+  color: var(--color-muted);
   font-family: var(--font-display);
   font-size: var(--text-caption);
   font-weight: 680;
@@ -472,15 +521,17 @@ h2 {
   z-index: 4;
   max-width: min(24rem, calc(100% - 2rem));
   overflow: hidden;
-  border: 1px solid var(--color-dark-rule);
-  background: color-mix(in oklch, var(--color-dark), transparent 8%);
+  border: 1px solid color-mix(in oklch, var(--color-rule), var(--color-mint) 22%);
+  border-radius: 6px;
+  background: color-mix(in oklch, var(--color-bg), transparent 8%);
   padding: 0.85rem 0.95rem;
-  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-lifted);
+  backdrop-filter: blur(18px);
 }
 
 .proof-board-caption span,
 .proof-board-caption p {
-  color: var(--color-dark-muted);
+  color: var(--color-muted);
 }
 
 .proof-board-caption span {
@@ -624,6 +675,11 @@ h2 {
   padding-block: clamp(3rem, 7vw, 6.5rem);
 }
 
+.selected-outcomes {
+  width: 100%;
+  padding-inline: max(1rem, calc((100vw - 1180px) / 2));
+}
+
 .section-heading {
   display: grid;
   gap: 0.2rem;
@@ -651,10 +707,10 @@ h2 {
 
 .outcome-row {
   display: grid;
-  grid-template-columns: 3rem minmax(14rem, 0.34fr) minmax(14rem, 0.3fr) minmax(12rem, 0.22fr) 2.5rem;
+  grid-template-columns: 3rem minmax(16rem, 0.34fr) minmax(15rem, 0.28fr) minmax(12rem, 0.24fr) 2.5rem;
   gap: clamp(1rem, 2.4vw, 2.25rem);
   align-items: center;
-  min-height: 10.2rem;
+  min-height: 12.25rem;
   border-block-end: 1px solid var(--color-rule);
   color: inherit;
   text-decoration: none;
@@ -708,7 +764,7 @@ h2 {
 .outcome-shot img,
 .evidence-fallback {
   width: 100%;
-  aspect-ratio: 1.9;
+  aspect-ratio: 1.78;
   margin: 0;
 }
 
@@ -722,6 +778,14 @@ h2 {
   background: var(--color-surface);
   object-fit: cover;
   object-position: center 34%;
+}
+
+.outcome-row:nth-child(2) .outcome-shot img {
+  object-position: center 18%;
+}
+
+.outcome-row:nth-child(3) .outcome-shot img {
+  object-position: left top;
 }
 
 .evidence-fallback {
@@ -752,10 +816,12 @@ h2 {
   padding: clamp(3.5rem, 8vw, 7rem) max(1rem, calc((100vw - 1180px) / 2));
   border-block: 1px solid var(--color-rule);
   background:
-    linear-gradient(90deg, color-mix(in oklch, var(--color-mint), transparent 86%) 1px, transparent 1px),
-    linear-gradient(0deg, color-mix(in oklch, var(--color-sky), transparent 90%) 1px, transparent 1px),
-    linear-gradient(180deg, color-mix(in oklch, var(--color-mint), var(--color-bg) 86%), var(--color-bg));
-  background-size: 4.25rem 4.25rem, 4.25rem 4.25rem, auto;
+    radial-gradient(circle at 20% 20%, color-mix(in oklch, var(--color-mint), transparent 32%), transparent 24rem),
+    radial-gradient(circle at 86% 14%, color-mix(in oklch, var(--color-blush), transparent 34%), transparent 26rem),
+    linear-gradient(90deg, color-mix(in oklch, var(--color-ink), transparent 95%) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklch, var(--color-ink), transparent 96%) 1px, transparent 1px),
+    var(--color-surface);
+  background-size: auto, auto, 4.25rem 4.25rem, 4.25rem 4.25rem, auto;
   color: var(--color-ink);
 }
 
@@ -785,9 +851,10 @@ h2 {
 .architecture-proof-visual {
   margin: 0;
   overflow: hidden;
-  border: 1px solid color-mix(in oklch, var(--color-rule), var(--color-mint) 25%);
-  background: var(--color-dark);
-  box-shadow: 0 1rem 2.4rem color-mix(in oklch, var(--color-ink), transparent 90%);
+  border: 1px solid color-mix(in oklch, var(--color-rule), var(--color-ink) 8%);
+  border-radius: 8px;
+  background: var(--color-bg);
+  box-shadow: var(--shadow-lifted);
 }
 
 .architecture-proof-visual img {
@@ -800,19 +867,19 @@ h2 {
 .architecture-track {
   display: grid;
   align-content: center;
-  border-block-start: 1px solid var(--color-rule);
+  border-block-start: 1px solid color-mix(in oklch, var(--color-rule), transparent 16%);
 }
 
 .architecture-step {
   display: grid;
   grid-template-columns: minmax(8rem, 0.34fr) minmax(0, 1fr);
   gap: 1rem;
-  border-block-end: 1px solid var(--color-rule);
+  border-block-end: 1px solid color-mix(in oklch, var(--color-rule), transparent 16%);
   padding-block: 1.25rem;
 }
 
 .architecture-step span {
-  color: var(--color-mint-ink);
+  color: var(--color-coral);
 }
 
 .architecture-step p {
@@ -1221,8 +1288,19 @@ h2 {
   grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.36fr);
   gap: clamp(2rem, 6vw, 6rem);
   align-items: end;
+  width: 100%;
+  margin-inline: 0;
   min-height: min(720px, calc(100svh - 78px));
-  padding-block: clamp(4rem, 9vw, 7rem) clamp(2.5rem, 6vw, 5rem);
+  padding: clamp(4rem, 9vw, 7rem) max(1rem, calc((100vw - 1180px) / 2)) clamp(2.5rem, 6vw, 5rem);
+  border-block-end: 1px solid color-mix(in oklch, var(--color-rule), transparent 18%);
+  background:
+    radial-gradient(circle at 14% 24%, color-mix(in oklch, var(--color-aqua-soft), transparent 20%), transparent 24rem),
+    radial-gradient(circle at 82% 18%, color-mix(in oklch, var(--color-lilac), transparent 28%), transparent 26rem),
+    linear-gradient(90deg, color-mix(in oklch, var(--color-ink), transparent 95%) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklch, var(--color-ink), transparent 96%) 1px, transparent 1px),
+    var(--color-bg);
+  background-size: auto, auto, 4.5rem 4.5rem, 4.5rem 4.5rem, auto;
+  color: var(--color-ink);
 }
 
 .case-study-index-hero {
@@ -1234,22 +1312,42 @@ h2 {
   margin-inline: 0;
   min-height: min(640px, calc(100svh - 78px));
   padding: clamp(4rem, 9vw, 7rem) max(1rem, calc((100vw - 1180px) / 2)) clamp(3rem, 6vw, 5.5rem);
-  border-block-end: 1px solid var(--color-dark-rule);
+  border-block-end: 1px solid color-mix(in oklch, var(--color-rule), transparent 18%);
   background:
-    linear-gradient(90deg, color-mix(in oklch, var(--color-primary), transparent 91%) 1px, transparent 1px),
-    linear-gradient(0deg, color-mix(in oklch, var(--color-mint), transparent 92%) 1px, transparent 1px),
-    var(--color-dark);
-  background-size: 4.5rem 4.5rem, 4.5rem 4.5rem, auto;
-  color: var(--color-dark-ink);
+    radial-gradient(circle at 18% 26%, color-mix(in oklch, var(--color-blush), transparent 24%), transparent 24rem),
+    radial-gradient(circle at 76% 18%, color-mix(in oklch, var(--color-sky), transparent 24%), transparent 26rem),
+    radial-gradient(circle at 72% 74%, color-mix(in oklch, var(--color-mint), transparent 34%), transparent 30rem),
+    linear-gradient(90deg, color-mix(in oklch, var(--color-ink), transparent 95%) 1px, transparent 1px),
+    linear-gradient(0deg, color-mix(in oklch, var(--color-ink), transparent 96%) 1px, transparent 1px),
+    var(--color-bg);
+  background-size: auto, auto, auto, 4.5rem 4.5rem, 4.5rem 4.5rem, auto;
+  color: var(--color-ink);
 }
 
 .case-study-hero-copy {
   max-width: 66rem;
 }
 
+.case-study-hero .hero-lead,
+.case-study-hero .signal-line {
+  color: var(--color-muted);
+}
+
+.case-study-hero .button-secondary {
+  border-color: color-mix(in oklch, var(--color-ink), transparent 76%);
+  background: color-mix(in oklch, var(--color-bg), transparent 14%);
+  color: var(--color-ink);
+}
+
 .case-study-index-hero .hero-lead,
 .case-study-index-hero .signal-line {
-  color: var(--color-dark-muted);
+  color: var(--color-muted);
+}
+
+.case-study-index-hero .button-secondary {
+  border-color: color-mix(in oklch, var(--color-ink), transparent 76%);
+  background: color-mix(in oklch, var(--color-bg), transparent 14%);
+  color: var(--color-ink);
 }
 
 .case-index-proof-wall {
@@ -1265,8 +1363,10 @@ h2 {
   width: 100%;
   height: 100%;
   min-height: 0;
-  border: 1px solid var(--color-dark-rule);
-  background: var(--color-dark-panel);
+  border: 1px solid color-mix(in oklch, var(--color-rule), var(--color-ink) 8%);
+  border-radius: 6px;
+  background: var(--color-bg);
+  box-shadow: var(--shadow-lifted);
   object-fit: cover;
   object-position: center 34%;
 }
@@ -1282,14 +1382,18 @@ h2 {
 .case-study-status {
   display: grid;
   gap: 0.75rem;
-  border-block: 1px solid var(--color-dark);
-  padding-block: 1.1rem;
+  border: 1px solid color-mix(in oklch, var(--color-rule), var(--color-ink) 8%);
+  border-radius: 8px;
+  background: color-mix(in oklch, var(--color-bg), transparent 8%);
+  box-shadow: var(--shadow-lifted);
+  padding: 1rem;
 }
 
 .case-study-status img {
   width: 100%;
   aspect-ratio: 1.75;
-  border: 1px solid var(--color-rule);
+  border: 1px solid color-mix(in oklch, var(--color-rule), transparent 16%);
+  border-radius: 6px;
   background: var(--color-surface);
   object-fit: cover;
   object-position: center 34%;
@@ -1303,6 +1407,10 @@ h2 {
   font-family: var(--font-display);
   font-size: var(--text-small);
   font-weight: 680;
+}
+
+.case-study-hero .case-study-status span {
+  color: var(--color-coral);
 }
 
 .selected-work-row em {
@@ -2048,7 +2156,31 @@ h2 {
   .home-proof-board {
     max-width: 100%;
     min-height: 0;
-    aspect-ratio: 16 / 11;
+    aspect-ratio: 1 / 1.08;
+  }
+
+  .hero-proof-shots {
+    inset: 0.75rem;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  .hero-proof-shots img:first-child {
+    grid-row: auto;
+  }
+
+  .hero-proof-shots img:nth-child(2),
+  .hero-proof-shots img:nth-child(3) {
+    display: none;
+  }
+
+  .home-proof-board .proof-board-caption {
+    display: none;
+  }
+
+  .hero-proof-ribbon {
+    inset-inline: 0.75rem;
+    inset-block-end: 0.75rem;
   }
 
   .evidence-table {

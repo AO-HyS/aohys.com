@@ -2,30 +2,30 @@
   "home": {
     "path": "/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Product engineer building websites, dashboards, backend workflows, and AI-assisted systems that make business operations easier to run.",
-    "seoDescription": "Alejandro Ortiz Corro is a product engineer who builds reliable business software: public websites, private dashboards, backend workflows, payments, lead flows, AI-assisted operations, and release systems for teams that need quality and scale.",
+    "summary": "Product engineer building websites, dashboards, workflows, and private business tools that help teams sell, operate, and ship with less friction.",
+    "seoDescription": "Alejandro Ortiz Corro is a product engineer building reliable business software: public websites, private dashboards, backend workflows, payments, lead flows, AI-assisted delivery practices, and release systems for teams that need quality and scale.",
     "primaryActionLabel": "Start a conversation",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "View selected work",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "I build software that makes the business easier to run.",
-      "deck": "I am Alejandro Ortiz. I turn messy operations into product systems: public sites, private dashboards, payments, lead flow, AI-assisted workflows, and the release discipline around them.",
+      "headline": "I build software that helps businesses sell, operate, and ship.",
+      "deck": "I am Alejandro Ortiz. I work across public websites, private dashboards, lead flows, payments, internal tools, and the release process around them. I care about the parts customers see and the parts teams depend on every day.",
       "proofBoardLabel": "AOHYS evidence map",
-      "proofBoardTitle": "Real pages, real workflows, public-safe evidence.",
-      "proofBoardBody": "The work behind most products is private. This page shows the parts that can be reviewed without exposing client code or data.",
+      "proofBoardTitle": "Real work, visible proof, private details protected.",
+      "proofBoardBody": "Some work can be opened in a browser. Some can only be shown as sanitized screens or architecture notes. This page keeps that boundary clear.",
       "selectedOutcomesHeading": "Work I can show",
-      "selectedOutcomesIntro": "A production site, active product builds, private operating systems, and enterprise work summarized without leaking what should stay private.",
+      "selectedOutcomesIntro": "A live hospitality site, active product builds, confidential enterprise work, and the engineering process behind this public sample.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",
           "label": "Public site",
           "title": "Casa Roca",
-        "outcome": "A hospitality site in production, built to make the place easy to understand and easy to contact.",
-          "role": "Public trust, SEO, conversion path",
+        "outcome": "A live hospitality site that gives guests a clear first impression and a direct path to contact.",
+          "role": "Public trust, search, conversion path",
           "evidence": {
             "label": "Public site",
-            "altText": "Public-safe evidence for Casa Roca",
+            "altText": "Casa Roca production website hero screenshot",
             "kind": "public-site",
             "publicSafe": true,
             "src": "/images/proof/casa-roca-production.png"
@@ -35,66 +35,67 @@
           "contentId": "case-study:the-barber-central",
           "label": "Operations product",
           "title": "The Barber Central",
-        "outcome": "A service-business product for bookings, availability, payments, and customer communication.",
+        "outcome": "A service-business product shaped around booking, availability, payment readiness, and customer communication.",
           "role": "Operations workflow, payments, customer flow",
           "evidence": {
             "label": "Development preview",
-            "altText": "Public-safe evidence for The Barber Central",
+            "altText": "The Barber Central development landing page",
             "kind": "development-preview",
             "publicSafe": true,
-            "src": "/images/proof/barber-central-ops.png"
+            "src": "/images/proof/barber-central-landing.png"
           }
         },
         {
           "contentId": "case-study:nutri-plan",
           "label": "Private system",
           "title": "Nutri Plan",
-        "outcome": "A private operating system for plans, dashboards, and client workflows that need to stay organized.",
+        "outcome": "A private operating system for plans, dashboards, client workflows, and educational content.",
           "role": "Private tools, structured workflows, client delivery",
           "evidence": {
             "label": "Sanitized preview",
-            "altText": "Public-safe evidence for Nutri Plan",
+            "altText": "Nutri Plan administrative dashboard screenshot",
             "kind": "development-preview",
             "publicSafe": true,
-            "src": "/images/proof/nutri-plan-proof.png"
+            "src": "/images/proof/nutri-plan-dashboard.png"
           }
         },
         {
           "contentId": "case-study:enterprise-systems",
           "label": "Enterprise delivery",
           "title": "Enterprise systems",
-        "outcome": "Three years inside complex product and backend work: escalations, payment plans, cashback, customs workflows, and delivery across many projects.",
+        "outcome": "Three years inside complex product and backend work: escalations, payment plans, cashback, customs workflows, and release support across many projects.",
           "role": "Reliability, backend delivery, confidentiality",
           "evidence": {
             "label": "Confidential summary",
-            "altText": "Public-safe evidence for enterprise systems",
+            "altText": "Public-safe enterprise delivery map",
             "kind": "private-system",
-            "publicSafe": true
+            "publicSafe": true,
+            "src": "/images/proof/enterprise-delivery-map.svg"
           }
         }
       ],
-      "architectureHeading": "This site is part of the proof.",
-      "architectureBody": "The repository shows the parts that usually get hand-waved: bilingual content, auth boundaries, contact handling, PostHog errors, preview checks, production promotion, and Cloudflare deploys.",
+      "architectureHeading": "The page is simple. The system behind it is intentional.",
+      "architectureBody": "Public pages stay fast and readable. The dashboard stays private. Contact runs through the backend. Errors go to PostHog. Preview and production stay separate. The repo is open so the decisions can be reviewed.",
       "architectureStages": [
         {
           "label": "Public surface",
-        "text": "Public pages use stable content IDs, localized slugs, canonical URLs, and sitemap rules."
+        "text": "Public pages use stable IDs, localized slugs, canonical URLs, and sitemap rules."
         },
         {
           "label": "Private surface",
-        "text": "Dashboard routes stay private, authenticated, noindex, and separate from the public content surface."
+        "text": "Dashboard routes stay authenticated, noindex, and separate from what search engines should see."
         },
         {
           "label": "Release path",
-        "text": "Changes go through preview first; production promotion stays separate and reviewable."
+        "text": "Changes go through preview first; production promotion is separate and reviewable."
         }
       ],
       "practiceHeading": "How I work",
-      "practiceBody": "I start with the business pressure, then make the software boring where it should be boring: clear data, safe auth, observable failures, and releases people can trust.",
+      "practiceBody": "I start with the business pressure, then make the software dependable where it matters: clear data, safe auth, visible failures, and releases people can trust.",
       "practicePoints": [
         {
           "label": "Clarify the work",
-        "text": "Turn loose goals into flows, constraints, boundaries, and the path to release."
+        "text": "Turn loose goals into flows, constraints, boundaries, and a path to release."
         },
         {
           "label": "Build the system",
@@ -102,11 +103,11 @@
         },
         {
           "label": "Prove it early",
-        "text": "Use tests, browser QA, protected branches, preview checks, and production verification so problems show up before customers report them."
+        "text": "Use tests, browser QA, protected branches, preview checks, and production verification so problems show up before customers do."
         }
       ],
-      "contactHeading": "Send me the thing you need to make work.",
-      "contactBody": "A role, a product idea, a messy workflow, an architecture problem, or a page that needs to convert. I will reply with a practical next step.",
+      "contactHeading": "Tell me what needs to work.",
+      "contactBody": "A role, a product idea, a broken workflow, an architecture problem, or a page that needs to convert. Send the context and I will reply with a practical next step.",
       "emailLabel": "Email Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",
       "whatsappLabel": "WhatsApp",
@@ -116,8 +117,8 @@
   "case-studies": {
     "path": "/case-studies",
     "title": "Work I can show",
-    "summary": "A practical look at production work, active builds, private systems, and enterprise delivery without exposing client code or data.",
-    "seoDescription": "Review selected work by Alejandro Ortiz Corro across production websites, active product builds, business systems, and enterprise software delivery.",
+    "summary": "A small set of work you can inspect without exposing private client systems: one live site, active product builds, enterprise delivery context, and the engineering practice behind this public sample.",
+    "seoDescription": "Review selected work by Alejandro Ortiz Corro across production websites, active product builds, private business systems, confidential enterprise delivery, and modern software engineering practice.",
     "primaryActionLabel": "Discuss a project",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Read architecture notes",
@@ -126,22 +127,22 @@
   "case-study:casa-roca": {
     "path": "/case-studies/casa-roca",
     "title": "Casa Roca",
-    "summary": "Production proof for a public business site with careful SEO, performance, and deployment discipline.",
-    "seoDescription": "Casa Roca is production evidence for public business site delivery, SEO readiness, performance care, and release discipline.",
+    "summary": "A live hospitality site with a clear public story, direct contact path, and production delivery discipline.",
+    "seoDescription": "Casa Roca is live production evidence for public business site delivery, search-ready pages, performance care, and release discipline.",
     "primaryActionLabel": "Start a similar build",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Back to selected work",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
       "statusLabel": "Production proof",
-      "overview": "Casa Roca is a live hospitality website for a boutique stay in Roca Partida, Veracruz. The public case study focuses on trust, discoverability, performance-minded delivery, and the separation between public marketing pages and private operations.",
+      "overview": "Casa Roca is a live hospitality website for a boutique stay in Roca Partida, Veracruz. The useful proof is simple: the site exists, it explains the place, it gives guests a contact path, and the private operational work stays out of the public surface.",
       "problem": {
         "title": "Problem",
-        "body": "The business needed a public web presence that could communicate place, experience, and credibility without exposing the operational systems behind reservations, media management, and private administration."
+        "body": "The business needed a public presence that could communicate place, experience, and credibility without exposing reservation details, internal media work, or private administration."
       },
       "businessOutcome": {
         "title": "Business outcome",
-        "body": "A production website gives Casa Roca a public destination for guests, search traffic, brand trust, and direct inquiry paths while keeping the operational back office separate from the public proof surface."
+        "body": "The production site gives Casa Roca a public destination for guests, search traffic, brand trust, and direct inquiries while keeping the back office separate."
       },
       "role": {
         "title": "Role",
@@ -167,9 +168,9 @@
       "publicEvidence": [
         {
           "label": "Production website",
-          "description": "Live public Casa Roca website used as production-safe evidence.",
+          "description": "Open the live Casa Roca website.",
           "href": "https://casa-roca.mx",
-          "altText": "Public-safe evidence for the Casa Roca production website",
+          "altText": "Casa Roca production website",
           "kind": "public-site",
           "publicSafe": true
         }
@@ -183,15 +184,15 @@
   "case-study:the-barber-central": {
     "path": "/case-studies/the-barber-central",
     "title": "The Barber Central",
-    "summary": "An active booking and operations product shaped around local business workflows.",
-    "seoDescription": "The Barber Central shows active product architecture for booking, operations, payments, and customer communication workflows.",
+    "summary": "An active booking and operations product shaped around the daily workflow of service businesses.",
+    "seoDescription": "The Barber Central shows active product architecture for booking, operations, payment readiness, and customer communication workflows.",
     "primaryActionLabel": "Discuss operations software",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Back to selected work",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
       "statusLabel": "Active build",
-      "overview": "The Barber Central is an active product build for service businesses that need booking, operations, customer communication, and payments to work as one system.",
+      "overview": "The Barber Central is an active product build for service businesses that need booking, availability, customer communication, and payments to feel like one system instead of a pile of tools.",
       "problem": {
         "title": "Problem",
         "body": "Local service businesses often run bookings, reminders, staff operations, and payments across disconnected tools, which makes growth harder and creates avoidable manual work."
@@ -210,7 +211,7 @@
       },
       "architectureDecisions": {
         "title": "Architecture decisions",
-        "body": "Use a modern full-stack app shape with a realtime backend, authenticated dashboard boundaries, graph-backed public narrative, and provider integrations treated as explicit operational seams."
+        "body": "Keep the public page sharp, make the operational dashboard task-first, and treat provider integrations as explicit business boundaries instead of hidden glue."
       },
       "executionHighlights": {
         "title": "Execution highlights",
@@ -224,38 +225,38 @@
       "publicEvidence": [
         {
           "label": "Development preview",
-          "description": "Public-safe summary of an active product build; screenshots and preview URLs can be added after final sanitation.",
-          "href": "/case-studies/the-barber-central",
-          "altText": "Public-safe development preview summary for The Barber Central",
+          "description": "Open the development landing page for The Barber Central.",
+          "href": "https://the-barber-central-landing.a-ortizcrr.workers.dev",
+          "altText": "The Barber Central development landing page",
           "kind": "development-preview",
           "publicSafe": true
         }
       ],
       "confidentialityNote": {
         "title": "Confidentiality note",
-        "body": "Only the public-safe product direction is shown. Private implementation details, secrets, test data, customer records, provider dashboards, and unpublished business information stay private."
+        "body": "Only the product direction and public development page are shown. Private implementation details, secrets, test data, customer records, provider dashboards, and unpublished business information stay private."
       }
     }
   },
   "case-study:nutri-plan": {
     "path": "/case-studies/nutri-plan",
     "title": "Nutri Plan",
-    "summary": "An active product system for client workflows, plans, and operational clarity.",
-    "seoDescription": "Nutri Plan shows active product work around client workflows, structured plans, operational tools, and delivery quality.",
+    "summary": "A private product system for client workflows, plans, dashboards, and educational content.",
+    "seoDescription": "Nutri Plan shows active product work around client workflows, structured plans, operational dashboards, educational content, and delivery quality.",
     "primaryActionLabel": "Plan a product workflow",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Back to selected work",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
       "statusLabel": "Private build",
-      "overview": "Nutri Plan is a private product system for nutrition workflows, dashboards, mobile access, and operational clarity across several surfaces.",
+      "overview": "Nutri Plan is a private product system for nutrition workflows, dashboards, mobile access, educational content, and operational clarity across several surfaces.",
       "problem": {
         "title": "Problem",
         "body": "Nutrition operations need connected client records, plans, dashboards, and mobile experiences, but the domain becomes fragile when workflow state is split across unrelated tools."
       },
       "businessOutcome": {
         "title": "Business outcome",
-        "body": "The build organizes the product around real operational roles and shared backend state so the system can support client work, admin work, and mobile access from one model."
+        "body": "The build organizes the product around real operational roles and shared backend state so client work, admin work, and mobile access can come from one model."
       },
       "role": {
         "title": "Role",
@@ -281,9 +282,9 @@
       "publicEvidence": [
         {
           "label": "Sanitized preview",
-          "description": "Public-safe private-build summary; production screenshots should be sanitized before they become visual evidence.",
+          "description": "Review the sanitized product screen and workflow notes for a private active build.",
           "href": "/case-studies/nutri-plan",
-          "altText": "Public-safe sanitized preview summary for Nutri Plan",
+          "altText": "Nutri Plan sanitized product preview",
           "kind": "development-preview",
           "publicSafe": true
         }
@@ -297,15 +298,15 @@
   "case-study:enterprise-systems": {
     "path": "/case-studies/enterprise-systems",
     "title": "Enterprise systems",
-    "summary": "Confidential work framed through outcomes, architecture decisions, escalation ownership, and delivery practice.",
-    "seoDescription": "Enterprise systems summarizes confidential software work through business outcomes, architecture judgment, escalation ownership, and delivery practice.",
+    "summary": "Confidential enterprise work summarized through outcomes, architecture judgment, escalation leadership, and release support.",
+    "seoDescription": "Enterprise Systems summarizes confidential software delivery through business outcomes, architecture judgment, escalation leadership, backend delivery, and quality practice.",
     "primaryActionLabel": "Talk about complex systems",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Read architecture notes",
     "secondaryActionContentId": "architecture",
     "caseStudyContent": {
       "statusLabel": "Enterprise/confidential",
-      "overview": "Enterprise systems work is presented through public-safe outcomes: escalation ownership, payment plans, cashback, customs workflows, backend delivery, and reliability in complex environments.",
+      "overview": "Enterprise work cannot be shown as screenshots or source code. What can be shown is the kind of responsibility involved: escalations, payment plans, cashback, customs workflows, backend delivery, and reliability inside complex environments.",
       "problem": {
         "title": "Problem",
         "body": "Large systems accumulate operational edge cases, integration pressure, and support escalations where the cost of unclear ownership is high."
@@ -338,9 +339,9 @@
       "publicEvidence": [
         {
           "label": "Confidential summary",
-          "description": "Public-safe enterprise summary without private employer, customer, incident, or source-code details.",
+          "description": "Read the enterprise delivery summary without private employer, customer, incident, or source-code details.",
           "href": "/case-studies/enterprise-systems",
-          "altText": "Public-safe confidential summary for enterprise systems work",
+          "altText": "Confidential enterprise delivery summary",
           "kind": "private-system",
           "publicSafe": true
         }

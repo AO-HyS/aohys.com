@@ -165,21 +165,22 @@ export function renderDashboardShell(input: DashboardShellInput): string {
     ...input,
     body: `
       <section class="dashboard-overview" data-dashboard-surface="overview" aria-labelledby="dashboard-overview-title">
-        <div>
-          <p class="dashboard-kicker">Operational overview</p>
-          <h2 id="dashboard-overview-title">Operations overview</h2>
-          <p>Review leads, content readiness, media metadata, and release state from one private surface.</p>
+        <div class="dashboard-overview-copy">
+          <p class="dashboard-kicker">Today</p>
+          <h2 id="dashboard-overview-title">Publishing room</h2>
+          <p>Use this dashboard to keep the public site honest: review leads, connect proof assets to case studies, and check the private settings that affect the Astro pages.</p>
         </div>
-        <div class="dashboard-metrics" aria-label="Dashboard setup status">
-          <div><span>Auth</span><strong>Better Auth</strong></div>
-          <div><span>Backend</span><strong>Convex</strong></div>
-          <div><span>Privacy</span><strong>Noindex</strong></div>
+        <div class="dashboard-release-card" aria-label="Dashboard operating boundary">
+          <span>Private surface</span>
+          <strong>noindex · authenticated · preview aware</strong>
+          <p>Public pages carry SEO. This dashboard carries operations.</p>
         </div>
       </section>
       <section class="dashboard-workflow-grid" aria-label="Dashboard workflows">
-        ${renderWorkflowCard("New leads", "Review incoming project or hiring conversations.")}
-        ${renderWorkflowCard("Content safety", "Keep case studies and resume content aligned with public-safe evidence.")}
-        ${renderWorkflowCard("Media queue", "Track screenshots, generated assets, alt text, and Cloudflare delivery metadata.")}
+        ${renderWorkflowCard("/dashboard/leads", "Lead inbox", "Reply while the context is fresh.")}
+        ${renderWorkflowCard("/dashboard/case-studies", "Case-study evidence", "Check each public page has a link, status, and safe proof asset.")}
+        ${renderWorkflowCard("/dashboard/media", "Media queue", "Track screenshots, alt text, Cloudflare keys, and where each asset appears.")}
+        ${renderWorkflowCard("/dashboard/settings", "Site settings", "Review public values such as contact paths, provider outputs, and policy text.")}
       </section>
     `,
   });
@@ -213,26 +214,105 @@ export function renderDashboardLeadWorkflow(input: DashboardLeadWorkflowInput): 
 export function renderDashboardContentWorkflow(input: DashboardContentWorkflowInput): string {
   const itemCount = input.caseStudies.length + input.media.length + input.settings.length + input.resumeVersions.length;
   const workflowState = input.workflowState ?? (itemCount > 0 ? "ready" : "empty");
+  const surface = contentSurfaceForPath(input.activePath);
 
   return renderDashboardChrome({
     ...input,
     body: `
-      <section class="content-workflow" data-dashboard-surface="content-workflow" data-workflow-state="${workflowState}" aria-labelledby="content-workflow-title">
+      <section class="content-workflow" data-dashboard-surface="content-workflow" data-content-surface="${surface.id}" data-workflow-state="${workflowState}" aria-labelledby="content-workflow-title">
         <div class="dashboard-section-heading">
-          <p class="dashboard-kicker">Publishing guardrails</p>
-          <h2 id="content-workflow-title">Content and media workflow</h2>
-          <p>Review public graph metadata, media safety, site settings, and resume versions before anything reaches the public surface.</p>
+          <p class="dashboard-kicker">${escapeHtml(surface.kicker)}</p>
+          <h2 id="content-workflow-title">${escapeHtml(surface.title)}</h2>
+          <p>${escapeHtml(surface.body)}</p>
         </div>
         ${renderContentWorkflowNotice(workflowState, input.validationMessage)}
-        <div class="content-panel-grid">
-          ${renderCaseStudyPanel(input.caseStudies)}
-          ${renderMediaPanel(input.media, input.caseStudies)}
-          ${renderSettingsPanel(input.settings)}
-          ${renderResumePanel(input.resumeVersions)}
-        </div>
+        ${renderContentSurface(input, surface.id)}
       </section>
     `,
   });
+}
+
+type DashboardContentSurfaceId = "case-studies" | "media" | "settings" | "resume";
+
+interface DashboardContentSurface {
+  id: DashboardContentSurfaceId;
+  kicker: string;
+  title: string;
+  body: string;
+}
+
+function contentSurfaceForPath(path: string): DashboardContentSurface {
+  const normalizedPath = normalizePath(path);
+
+  if (normalizedPath === "/dashboard/media") {
+    return {
+      id: "media",
+      kicker: "Proof assets",
+      title: "Media queue",
+      body: "Register screenshots, generated images, alt text, storage keys, and the public content node each asset supports.",
+    };
+  }
+
+  if (normalizedPath === "/dashboard/settings") {
+    return {
+      id: "settings",
+      kicker: "Runtime values",
+      title: "Site settings",
+      body: "Keep public values explicit: contact paths, provider outputs, policy values, and environment-specific settings.",
+    };
+  }
+
+  if (normalizedPath === "/dashboard/resume") {
+    return {
+      id: "resume",
+      kicker: "Hiring surface",
+      title: "Resume versions",
+      body: "Track downloadable resume artifacts and keep the dynamic resume page aligned with the public content graph.",
+    };
+  }
+
+  return {
+    id: "case-studies",
+    kicker: "Public proof",
+    title: "Case-study evidence",
+    body: "Review the pages that sell the work: status, localized routes, sitemap visibility, and whether each case has proof that is safe to show.",
+  };
+}
+
+function renderContentSurface(
+  input: DashboardContentWorkflowInput,
+  surfaceId: DashboardContentSurfaceId,
+): string {
+  switch (surfaceId) {
+    case "media":
+      return `
+        <div class="content-workspace">
+          ${renderMediaPanel(input.media, input.caseStudies)}
+          ${renderCaseStudyReferencePanel(input.caseStudies)}
+        </div>
+      `;
+    case "settings":
+      return `
+        <div class="content-workspace">
+          ${renderSettingsPanel(input.settings)}
+          ${renderSiteBoundaryPanel()}
+        </div>
+      `;
+    case "resume":
+      return `
+        <div class="content-workspace">
+          ${renderResumePanel(input.resumeVersions)}
+          ${renderResumeContextPanel()}
+        </div>
+      `;
+    default:
+      return `
+        <div class="content-workspace content-workspace-case-studies">
+          ${renderCaseStudyPanel(input.caseStudies)}
+          ${renderMediaReferencePanel(input.media)}
+        </div>
+      `;
+  }
 }
 
 function renderContentWorkflowNotice(
@@ -310,6 +390,24 @@ function renderCaseStudyRow(caseStudy: DashboardCaseStudyMetadata): string {
   `;
 }
 
+function renderCaseStudyReferencePanel(caseStudies: DashboardCaseStudyMetadata[]): string {
+  return `
+    <aside class="content-side-panel" aria-labelledby="media-case-map-title">
+      <p class="dashboard-kicker">Where media lands</p>
+      <h3 id="media-case-map-title">Case-study map</h3>
+      <p>Attach every screenshot or generated asset to one public content ID. Assets without a content ID should stay draft.</p>
+      <div class="content-list">
+        ${caseStudies.length > 0 ? caseStudies.map((caseStudy) => `
+          <a class="content-reference-link" href="${escapeHtml(caseStudy.englishPath)}">
+            <strong>${escapeHtml(caseStudy.title)}</strong>
+            <span>${escapeHtml(caseStudy.contentId)} · ${formatLabel(caseStudy.evidenceStatus)}</span>
+          </a>
+        `).join("") : renderContentEmptyState("No case-study routes available.")}
+      </div>
+    </aside>
+  `;
+}
+
 function renderMediaPanel(
   mediaItems: DashboardMediaMetadata[],
   caseStudies: DashboardCaseStudyMetadata[],
@@ -354,6 +452,24 @@ function renderMediaPanel(
   `;
 }
 
+function renderMediaReferencePanel(mediaItems: DashboardMediaMetadata[]): string {
+  const publishedMedia = mediaItems.filter((media) => media.status === "published").length;
+  const draftMedia = mediaItems.filter((media) => media.status === "draft").length;
+
+  return `
+    <aside class="content-side-panel" aria-labelledby="case-media-status-title">
+      <p class="dashboard-kicker">Asset health</p>
+      <h3 id="case-media-status-title">Proof asset status</h3>
+      <p>Case-study pages should not reuse the same weak screenshot. Prefer one strong asset per case, with clear alt text and a content ID.</p>
+      <div class="dashboard-mini-ledger">
+        <div><span>Published</span><strong>${publishedMedia}</strong></div>
+        <div><span>Draft</span><strong>${draftMedia}</strong></div>
+        <div><span>Total</span><strong>${mediaItems.length}</strong></div>
+      </div>
+    </aside>
+  `;
+}
+
 function renderMediaRow(media: DashboardMediaMetadata): string {
   return `
     <section class="content-row">
@@ -364,6 +480,21 @@ function renderMediaRow(media: DashboardMediaMetadata): string {
         ${media.contentId ? `<span>${escapeHtml(media.contentId)}</span>` : ""}
       </div>
     </section>
+  `;
+}
+
+function renderSiteBoundaryPanel(): string {
+  return `
+    <aside class="content-side-panel" aria-labelledby="settings-boundary-title">
+      <p class="dashboard-kicker">Boundary</p>
+      <h3 id="settings-boundary-title">What belongs here</h3>
+      <p>Use settings for values the public site needs to render correctly. Secrets and provider credentials belong in the Environment Contract, not in content settings.</p>
+      <div class="dashboard-check-list">
+        <span>Contact URLs are public build values.</span>
+        <span>Provider outputs are safe summaries only.</span>
+        <span>Policy values affect visible public copy.</span>
+      </div>
+    </aside>
   `;
 }
 
@@ -409,6 +540,21 @@ function renderSettingRow(setting: DashboardSiteSetting): string {
         <span>${escapeHtml(setting.value)}</span>
       </div>
     </section>
+  `;
+}
+
+function renderResumeContextPanel(): string {
+  return `
+    <aside class="content-side-panel" aria-labelledby="resume-boundary-title">
+      <p class="dashboard-kicker">Publishing rule</p>
+      <h3 id="resume-boundary-title">Resume stays readable</h3>
+      <p>The dynamic resume can show context and links. The PDF should stay compact, plain, parseable, and easy for a hiring manager to scan.</p>
+      <div class="dashboard-check-list">
+        <span>One current English PDF artifact.</span>
+        <span>Spanish route remains a readable public page.</span>
+        <span>Private project details stay out of both.</span>
+      </div>
+    </aside>
   `;
 }
 
@@ -505,7 +651,12 @@ function renderDashboardChrome(input: DashboardShellInput & { body: string }): s
             <p class="dashboard-kicker">Private dashboard</p>
             <h1>${escapeHtml(input.title)}</h1>
           </div>
-          <p class="dashboard-admin">${escapeHtml(input.adminEmail)}</p>
+          <div class="dashboard-topbar-actions" aria-label="Dashboard actions">
+            <p class="dashboard-admin">${escapeHtml(input.adminEmail)}</p>
+            <a class="dashboard-link-action" href="/">View site</a>
+            <a class="dashboard-link-action" href="/case-studies">Public work</a>
+            <a class="dashboard-action dashboard-action-secondary" href="/dashboard/sign-out">Sign out</a>
+          </div>
         </header>
         ${input.body}
       </main>
@@ -545,12 +696,12 @@ export function renderDashboardSignIn(input: DashboardSignInInput): string {
   });
 }
 
-function renderWorkflowCard(title: string, body: string): string {
+function renderWorkflowCard(href: string, title: string, body: string): string {
   return `
-    <article class="dashboard-workflow-card">
+    <a class="dashboard-workflow-card" href="${escapeHtml(href)}">
       <h3>${escapeHtml(title)}</h3>
       <p>${escapeHtml(body)}</p>
-    </article>
+    </a>
   `;
 }
 
@@ -711,19 +862,20 @@ function escapeHtml(value: string): string {
 const DASHBOARD_CSS = `
 :root {
   color-scheme: light;
-  --dashboard-bg: #f7faf9;
-  --dashboard-panel: #ffffff;
-  --dashboard-panel-subtle: #fbfdfc;
-  --dashboard-ink: #16201d;
-  --dashboard-muted: #5a6b66;
-  --dashboard-line: #d9e5e1;
-  --dashboard-accent: #1f7a6b;
-  --dashboard-on-accent: #ffffff;
-  --dashboard-accent-soft: #dff4ed;
-  --dashboard-warning: #a35718;
-  --dashboard-warning-soft: #fff3e7;
-  --dashboard-info: #1767a3;
-  --dashboard-info-soft: #eaf7ff;
+  --dashboard-bg: oklch(0.975 0.006 165);
+  --dashboard-panel: oklch(1 0 0);
+  --dashboard-panel-subtle: oklch(0.962 0.005 180);
+  --dashboard-ink: oklch(0.18 0.015 205);
+  --dashboard-muted: oklch(0.44 0.022 190);
+  --dashboard-line: oklch(0.88 0.012 185);
+  --dashboard-accent: oklch(0.47 0.1 170);
+  --dashboard-on-accent: oklch(1 0 0);
+  --dashboard-accent-soft: oklch(0.92 0.05 165);
+  --dashboard-warning: oklch(0.48 0.115 55);
+  --dashboard-warning-soft: oklch(0.95 0.05 72);
+  --dashboard-info: oklch(0.46 0.11 235);
+  --dashboard-info-soft: oklch(0.94 0.04 230);
+  --dashboard-focus: oklch(0.5 0.16 255);
 }
 * { box-sizing: border-box; }
 body {
@@ -786,6 +938,8 @@ a { color: inherit; }
 }
 .dashboard-main {
   min-width: 0;
+  width: min(100%, 1240px);
+  margin-inline: auto;
   padding: 24px;
 }
 .dashboard-topbar {
@@ -813,6 +967,25 @@ h3 { margin-block-end: 8px; font-size: 1rem; }
   color: var(--dashboard-muted);
   font-size: 0.92rem;
 }
+.dashboard-topbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  align-items: center;
+}
+.dashboard-link-action {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 8px;
+  background: var(--dashboard-panel);
+  padding: 8px 12px;
+  color: var(--dashboard-ink);
+  font-weight: 700;
+  text-decoration: none;
+}
 .dashboard-overview {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.8fr);
@@ -822,28 +995,37 @@ h3 { margin-block-end: 8px; font-size: 1rem; }
   background: var(--dashboard-panel);
   padding: 20px;
 }
-.dashboard-metrics {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-.dashboard-metrics div,
+.dashboard-release-card,
 .dashboard-workflow-card {
   border: 1px solid var(--dashboard-line);
   border-radius: 8px;
   background: var(--dashboard-panel-subtle);
   padding: 14px;
 }
-.dashboard-metrics span {
+.dashboard-release-card span,
+.dashboard-mini-ledger span {
   display: block;
   color: var(--dashboard-muted);
   font-size: 0.78rem;
+  font-weight: 750;
+}
+.dashboard-release-card p {
+  margin-block: 8px 0;
+  color: var(--dashboard-muted);
 }
 .dashboard-workflow-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
   margin-block-start: 14px;
+}
+.dashboard-workflow-card {
+  color: inherit;
+  text-decoration: none;
+}
+.dashboard-workflow-card:hover,
+.dashboard-link-action:hover {
+  border-color: var(--dashboard-accent);
 }
 .dashboard-state {
   width: min(560px, calc(100vw - 32px));
@@ -865,6 +1047,11 @@ h3 { margin-block-end: 8px; font-size: 1rem; }
   font: inherit;
   font-weight: 750;
   text-decoration: none;
+}
+.dashboard-action-secondary {
+  border: 1px solid var(--dashboard-line);
+  background: var(--dashboard-panel);
+  color: var(--dashboard-ink);
 }
 .dashboard-section-heading {
   margin-block-end: 16px;
@@ -1003,17 +1190,31 @@ h3 { margin-block-end: 8px; font-size: 1rem; }
   display: grid;
   gap: 16px;
 }
+.content-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.34fr);
+  gap: 16px;
+  align-items: start;
+}
+.content-workspace-case-studies {
+  grid-template-columns: minmax(0, 1.12fr) minmax(260px, 0.32fr);
+}
 .content-panel-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
-.content-panel {
+.content-panel,
+.content-side-panel {
   min-width: 0;
   border: 1px solid var(--dashboard-line);
   border-radius: 8px;
   background: var(--dashboard-panel);
   padding: 16px;
+}
+.content-side-panel {
+  position: sticky;
+  inset-block-start: 18px;
 }
 .content-list {
   display: grid;
@@ -1030,6 +1231,44 @@ h3 { margin-block-end: 8px; font-size: 1rem; }
 .content-row {
   display: grid;
   gap: 12px;
+}
+.content-reference-link {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--dashboard-line);
+  border-radius: 8px;
+  background: var(--dashboard-panel-subtle);
+  padding: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+.content-reference-link span {
+  color: var(--dashboard-muted);
+  font-size: 0.86rem;
+}
+.dashboard-mini-ledger {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-block-start: 12px;
+}
+.dashboard-mini-ledger div,
+.dashboard-check-list span {
+  border: 1px solid var(--dashboard-line);
+  border-radius: 8px;
+  background: var(--dashboard-panel-subtle);
+  padding: 10px;
+}
+.dashboard-mini-ledger strong {
+  display: block;
+  margin-block-start: 2px;
+  font-size: 1.4rem;
+}
+.dashboard-check-list {
+  display: grid;
+  gap: 8px;
+  margin-block-start: 12px;
+  color: var(--dashboard-muted);
 }
 .content-row strong,
 .content-row span {
@@ -1071,6 +1310,10 @@ h3 { margin-block-end: 8px; font-size: 1rem; }
 .content-form textarea {
   resize: vertical;
 }
+:focus-visible {
+  outline: 3px solid var(--dashboard-focus);
+  outline-offset: 3px;
+}
 @media (max-width: 720px) {
   .dashboard-shell[data-dashboard-shell="authenticated"] {
     display: block;
@@ -1093,9 +1336,9 @@ h3 { margin-block-end: 8px; font-size: 1rem; }
   .dashboard-workflow-grid {
     display: block;
   }
-  .dashboard-metrics {
-    grid-template-columns: 1fr;
-    margin-block-start: 16px;
+  .dashboard-topbar-actions {
+    justify-content: flex-start;
+    margin-block-start: 12px;
   }
   .dashboard-workflow-card {
     margin-block-start: 12px;
@@ -1103,13 +1346,16 @@ h3 { margin-block-end: 8px; font-size: 1rem; }
   .lead-workflow,
   .lead-metadata,
   .lead-status-controls,
-  .content-panel-grid {
+  .content-panel-grid,
+  .content-workspace {
     display: block;
   }
   .lead-detail-panel {
     margin-block-start: 14px;
   }
-  .content-panel {
+  .content-panel,
+  .content-side-panel {
+    position: static;
     margin-block-start: 12px;
   }
   .lead-metadata div,

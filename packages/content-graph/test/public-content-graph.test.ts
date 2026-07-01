@@ -99,8 +99,8 @@ describe("Public Content Graph", () => {
     const englishHome = getHomePageContent("en");
     const spanishHome = getHomePageContent("es");
 
-    expect(englishHome.headline).toContain("makes the business easier to run");
-    expect(spanishHome.headline).toContain("hace más fácil operar el negocio");
+    expect(englishHome.headline).toContain("sell, operate, and ship");
+    expect(spanishHome.headline).toContain("vender, operar y lanzar");
     expect(englishHome.selectedOutcomes).toHaveLength(4);
     expect(englishHome.selectedOutcomes.map((outcome) => outcome.path)).toEqual([
       "/case-studies/casa-roca",
@@ -207,12 +207,12 @@ describe("Public Content Graph", () => {
     expect(englishCaseStudy?.publicEvidence[0]).toMatchObject({
       href: "https://casa-roca.mx",
       publicSafe: true,
-      altText: "Public-safe evidence for the Casa Roca production website",
+      altText: "Casa Roca production website",
     });
     expect(englishCaseStudy?.confidentialityNote.body).toMatch(/operational data remain private/i);
     expect(spanishCaseStudy?.statusLabel).toBe("Prueba en producción");
     expect(spanishCaseStudy?.publicEvidence[0]?.altText).toBe(
-      "Evidencia pública segura del sitio en producción de Casa Roca",
+      "Sitio Casa Roca en producción",
     );
   });
 
