@@ -5,7 +5,7 @@
   "description": "Astro public SEO surface for aohys.com.",
   "type": "module",
   "scripts": {
-    "build": "astro build",
+    "build": "astro build && pnpm --filter @aohys/dashboard build && node ../../scripts/copy-dashboard-assets.mjs",
     "dev": "astro dev",
     "lint": "vitest run test/source-quality.test.ts",
     "preview": "astro preview",

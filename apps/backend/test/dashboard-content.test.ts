@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   parseDashboardCaseStudyMetadataPayload,
   parseDashboardMediaMetadataPayload,
+  parseDashboardProjectDraftPayload,
   parseDashboardResumeVersionPayload,
   parseDashboardSiteSettingPayload,
 } from "../src/dashboard-content.js";
@@ -36,6 +37,64 @@ describe("dashboard content HTTP boundary", () => {
 
     await expect(parseDashboardCaseStudyMetadataPayload(request)).rejects.toThrow(
       "contentId is not supported.",
+    );
+  });
+
+  it("parses project drafts as the primary editable dashboard record", async () => {
+    const request = new Request("https://aohys-preview.convex.site/dashboard/content/project", {
+      method: "POST",
+      body: JSON.stringify({
+        contentId: "case-study:casa-roca",
+        locale: "en",
+        status: "production-proof",
+        evidenceStatus: "published",
+        title: "Casa Roca",
+        summary: "Production hospitality site.",
+        seoDescription: "Casa Roca production site proof.",
+        projectUrl: "https://casa-roca.mx",
+        ctaLabel: "Start a similar build",
+        ctaHref: "/contact",
+        achievements: "Clear public presence.",
+        structureNotes: "Static public page, private workflows protected.",
+      }),
+    });
+
+    await expect(parseDashboardProjectDraftPayload(request)).resolves.toEqual({
+      contentId: "case-study:casa-roca",
+      locale: "en",
+      status: "production-proof",
+      evidenceStatus: "published",
+      title: "Casa Roca",
+      summary: "Production hospitality site.",
+      seoDescription: "Casa Roca production site proof.",
+      projectUrl: "https://casa-roca.mx",
+      ctaLabel: "Start a similar build",
+      ctaHref: "/contact",
+      achievements: "Clear public presence.",
+      structureNotes: "Static public page, private workflows protected.",
+    });
+  });
+
+  it("rejects project drafts with unsupported CTA hrefs", async () => {
+    const request = new Request("https://aohys-preview.convex.site/dashboard/content/project", {
+      method: "POST",
+      body: JSON.stringify({
+        contentId: "case-study:casa-roca",
+        locale: "en",
+        status: "production-proof",
+        evidenceStatus: "published",
+        title: "Casa Roca",
+        summary: "Production hospitality site.",
+        seoDescription: "Casa Roca production site proof.",
+        ctaLabel: "Start a similar build",
+        ctaHref: "javascript:alert(1)",
+        achievements: "Clear public presence.",
+        structureNotes: "Static public page, private workflows protected.",
+      }),
+    });
+
+    await expect(parseDashboardProjectDraftPayload(request)).rejects.toThrow(
+      "CTA href must be a public path or an http or https URL.",
     );
   });
 

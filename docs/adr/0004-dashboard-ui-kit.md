@@ -1,18 +1,28 @@
-# Dashboard UI Kit
+# Dashboard App Architecture
 
-Status: accepted
+Status: accepted, amended
 
-AOHYS uses a Dashboard UI Kit module for private dashboard workflow composition, with shadcn/ui treated as a primitive adapter rather than the dashboard interface. This is deliberate because the private dashboard will span leads, content, media, site settings, and resume workflows; letting each route compose raw primitives directly would make mobile behavior, accessibility, state handling, and publishing invariants shallow and inconsistent.
+AOHYS uses a private React dashboard app in `apps/dashboard`. The public Astro site in `apps/site` does not implement dashboard workflows directly; it owns authentication, admin authorization, private response headers, and `/dashboard/api/*` proxying to Convex.
+
+The earlier Dashboard UI Kit direction was useful for the first guard/shell slice, but it produced the wrong product shape: HTML fragments attached to the public site instead of a real operations application. The active architecture is now a routed React app backed by Convex.
 
 ## Considered Options
 
-- Route files compose shadcn/ui primitives directly: fast initially, but workflow states, mobile behavior, forms, tables, and empty/error handling would duplicate across routes.
-- Build custom primitives from scratch: maximum control, but unnecessary because shadcn/ui already provides accessible source primitives.
-- Dashboard UI Kit over shadcn/ui: more upfront structure, but it gives dashboard routes a stable seam while preserving shadcn/ui as editable source implementation.
+- Server-render dashboard workflows from `apps/site`: simple to protect, but it keeps the dashboard as scattered HTML and makes real app behavior hard to maintain.
+- Route files compose raw shadcn/ui primitives without app boundaries: fast initially, but state, mobile behavior, forms, tables, and errors would duplicate across routes.
+- React dashboard app behind the Pages guard: more explicit setup, but it gives the dashboard a normal application architecture while preserving the same-domain private boundary.
+
+## Decision
+
+- `apps/dashboard` owns dashboard screens, routing, state, forms, and shadcn/ui components.
+- `apps/site` serves the dashboard shell only after Better Auth session and admin allowlist checks pass.
+- Browser code calls `/dashboard/api/*`; Pages Functions validate the session and forward server-to-server requests to Convex with `DASHBOARD_API_TOKEN`.
+- Convex stores operational records and project drafts. The public Astro site keeps rendering from the Public Content Graph until a deliberate publish pipeline exists.
 
 ## Consequences
 
-- Dashboard route modules should consume workflow surfaces from the Dashboard UI Kit instead of reaching for primitive UI everywhere.
-- shadcn/ui should be installed and managed through its CLI during implementation.
+- Dashboard work should add routed React screens, not server-rendered workflow fragments.
+- shadcn/ui should be installed and managed through its CLI inside `apps/dashboard`.
 - Mobile dashboard behavior should be a first-class acceptance surface, including 390px checks.
-- Public Content Graph publishing invariants and Environment Contract failures should surface through dashboard workflow states.
+- Public Content Graph publishing invariants and Environment Contract failures should surface through dashboard app states.
+- `packages/dashboard-ui` remains a legacy fallback package for private sign-in/state HTML until those surfaces are moved or deleted.

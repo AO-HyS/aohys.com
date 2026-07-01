@@ -57,6 +57,19 @@ export const listForDashboard = internalQuery({
       evidenceStatus: evidenceStatusValidator,
       updatedAt: v.number(),
     })),
+    projectDrafts: v.array(v.object({
+      contentId: v.string(),
+      locale: localeValidator,
+      title: v.string(),
+      summary: v.string(),
+      seoDescription: v.string(),
+      projectUrl: v.optional(v.string()),
+      ctaLabel: v.string(),
+      ctaHref: v.string(),
+      achievements: v.string(),
+      structureNotes: v.string(),
+      updatedAt: v.number(),
+    })),
     media: v.array(v.object({
       id: v.id("mediaMetadata"),
       storageProvider: mediaStorageProviderValidator,
@@ -87,8 +100,9 @@ export const listForDashboard = internalQuery({
     })),
   }),
   handler: async (ctx) => {
-    const [caseStudies, media, settings, resumeVersions] = await Promise.all([
+    const [caseStudies, projectDrafts, media, settings, resumeVersions] = await Promise.all([
       ctx.db.query("caseStudyMetadata").collect(),
+      ctx.db.query("projectDrafts").collect(),
       ctx.db.query("mediaMetadata").take(100),
       ctx.db.query("siteSettings").take(100),
       ctx.db.query("resumeVersions").take(50),
@@ -100,6 +114,19 @@ export const listForDashboard = internalQuery({
         status: caseStudy.status,
         evidenceStatus: caseStudy.evidenceStatus,
         updatedAt: caseStudy.updatedAt,
+      })),
+      projectDrafts: projectDrafts.map((projectDraft) => ({
+        contentId: projectDraft.contentId,
+        locale: projectDraft.locale,
+        title: projectDraft.title,
+        summary: projectDraft.summary,
+        seoDescription: projectDraft.seoDescription,
+        projectUrl: projectDraft.projectUrl,
+        ctaLabel: projectDraft.ctaLabel,
+        ctaHref: projectDraft.ctaHref,
+        achievements: projectDraft.achievements,
+        structureNotes: projectDraft.structureNotes,
+        updatedAt: projectDraft.updatedAt,
       })),
       media: media.map((item) => ({
         id: item._id,
@@ -129,6 +156,82 @@ export const listForDashboard = internalQuery({
         createdAt: resumeVersion.createdAt,
         publishedAt: resumeVersion.publishedAt,
       })),
+    };
+  },
+});
+
+export const upsertProjectDraftFromDashboard = internalMutation({
+  args: {
+    contentId: v.string(),
+    status: caseStudyStatusValidator,
+    evidenceStatus: evidenceStatusValidator,
+    locale: localeValidator,
+    title: v.string(),
+    summary: v.string(),
+    seoDescription: v.string(),
+    projectUrl: v.optional(v.string()),
+    ctaLabel: v.string(),
+    ctaHref: v.string(),
+    achievements: v.string(),
+    structureNotes: v.string(),
+  },
+  returns: v.object({
+    contentId: v.string(),
+    locale: localeValidator,
+    updatedAt: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    const updatedAt = Date.now();
+    const existingCaseStudy = await ctx.db
+      .query("caseStudyMetadata")
+      .withIndex("by_content_id", (query) => query.eq("contentId", args.contentId))
+      .first();
+
+    if (existingCaseStudy) {
+      await ctx.db.patch(existingCaseStudy._id, {
+        status: args.status,
+        evidenceStatus: args.evidenceStatus,
+        updatedAt,
+      });
+    } else {
+      await ctx.db.insert("caseStudyMetadata", {
+        contentId: args.contentId,
+        status: args.status,
+        evidenceStatus: args.evidenceStatus,
+        updatedAt,
+      });
+    }
+
+    const existingProjectDraft = await ctx.db
+      .query("projectDrafts")
+      .withIndex("by_content_id_and_locale", (query) =>
+        query.eq("contentId", args.contentId).eq("locale", args.locale),
+      )
+      .first();
+    const projectDraft = {
+      contentId: args.contentId,
+      locale: args.locale,
+      title: args.title,
+      summary: args.summary,
+      seoDescription: args.seoDescription,
+      projectUrl: args.projectUrl,
+      ctaLabel: args.ctaLabel,
+      ctaHref: args.ctaHref,
+      achievements: args.achievements,
+      structureNotes: args.structureNotes,
+      updatedAt,
+    };
+
+    if (existingProjectDraft) {
+      await ctx.db.patch(existingProjectDraft._id, projectDraft);
+    } else {
+      await ctx.db.insert("projectDrafts", projectDraft);
+    }
+
+    return {
+      contentId: args.contentId,
+      locale: args.locale,
+      updatedAt,
     };
   },
 });

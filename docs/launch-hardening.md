@@ -22,7 +22,7 @@ What these cover:
 - Contact intake failures before persistence emit sanitized `lead_intake_failed` events when PostHog is configured.
 - Dashboard runtime exceptions are caught by the Cloudflare Pages boundary and return a private unavailable state instead of a raw Worker 1101 page.
 - Environment Contract separation for local, preview, production, release, contact runtime, and dashboard runtime targets.
-- Dashboard UI Kit state surfaces for loading, empty, saved, validation, unauthorized, configuration, and Environment Contract failures.
+- React dashboard app state surfaces for loading, empty, saved, validation, unauthorized, configuration, and Environment Contract failures.
 
 ## Preview release checks
 
@@ -58,7 +58,7 @@ Manual preview probes:
 
 ```sh
 curl -sS -D - -o /tmp/aohys-dashboard.html https://develop.aohys-com.pages.dev/dashboard
-curl -sS -D - -o /tmp/aohys-dashboard-case-studies.html https://develop.aohys-com.pages.dev/dashboard/case-studies
+curl -sS -D - -o /tmp/aohys-dashboard-projects.html https://develop.aohys-com.pages.dev/dashboard/projects
 curl -sS -D - -o /tmp/aohys-contact.html https://develop.aohys-com.pages.dev/contact
 curl -sS -D - -o /tmp/aohys-csp.txt \
   -H 'content-type: application/csp-report' \
@@ -99,7 +99,7 @@ After production deploy:
 Use a real browser or Computer Use against preview before production:
 
 - Public routes: `/`, `/case-studies`, `/architecture`, `/resume`, `/contact`, `/privacy`, `/es/`, `/es/contacto`.
-- Private routes: `/dashboard`, `/dashboard/leads`, `/dashboard/case-studies`.
+- Private routes: `/dashboard`, `/dashboard/projects`, `/dashboard/leads`, `/dashboard/resume`.
 - Dashboard mobile: validate at `390px` width; no horizontal overflow, no duplicate controls with the same meaning, visible text at least `12px`, and touch targets at least `44px`.
 - Console cleanliness: no uncaught errors on public routes or dashboard sign-in, and no PostHog CSP violations.
 - Contact failure states: endpoint missing, backend error, email/provider error, and validation error show safe copy plus retry/direct-contact fallback.

@@ -12,7 +12,7 @@ Environment Contract: `docs/environment-contract.md`
 
 Public Content Graph: `docs/public-content-graph.md`
 
-Dashboard UI Kit: `docs/dashboard-ui-kit.md`
+Dashboard architecture: `docs/dashboard-ui-kit.md`
 
 ## Published Issues
 
@@ -147,9 +147,9 @@ Current implementation status: release scripts, Wrangler Pages Direct Upload pla
 
 **User stories covered:** 16, 21, 22, 23, 35, 36, 59.
 
-Create the private dashboard shell with Better Auth, Convex integration, admin allowlist, protected route behavior, noindex/robots protection, Dashboard UI Kit shell/surfaces, operational overview, and Environment Contract validation for auth origins/secrets.
+Create the private dashboard shell with Better Auth, Convex integration, admin allowlist, protected route behavior, noindex/robots protection, React app shell, operational overview, and Environment Contract validation for auth origins/secrets.
 
-Current implementation status: Cloudflare Pages functions protect `/dashboard`, render the Dashboard UI Kit shell/sign-in/states, mark private responses noindex/no-store, start Google OAuth through `/dashboard/sign-in/google`, proxy `/api/auth/*` to Convex while preserving the public host, catch unexpected dashboard runtime exceptions before Cloudflare can show a raw Worker 1101 page, and mount Better Auth in Convex with Google OAuth through the official `@convex-dev/better-auth` component.
+Current implementation status: Cloudflare Pages functions protect `/dashboard`, serve the Vite React dashboard shell, mark private responses noindex/no-store, start Google OAuth through `/dashboard/sign-in/google`, proxy `/api/auth/*` to Convex while preserving the public host, catch unexpected dashboard runtime exceptions before Cloudflare can show a raw Worker 1101 page, and mount Better Auth in Convex with Google OAuth through the official `@convex-dev/better-auth` component.
 
 ### 14. Dashboard Lead Review Workflow
 
@@ -157,9 +157,9 @@ Current implementation status: Cloudflare Pages functions protect `/dashboard`, 
 
 **User stories covered:** 16, 56, 57, 59.
 
-Build the first real dashboard workflow through the Dashboard UI Kit: list incoming leads, view details, update review/contact status, preserve privacy, represent loading/empty/error/saved states, and verify that changes reflect in Convex.
+Build the first real dashboard workflow in the React dashboard app: list incoming leads, view details, update review/contact status, preserve privacy, represent loading/empty/error/saved states, and verify that changes reflect in Convex.
 
-Current implementation status: Cloudflare Pages renders `/dashboard/leads` through `renderDashboardLeadWorkflow`, verifies the Better Auth session and admin allowlist before fetching private lead data, and updates lead review status through Convex HTTP actions protected by `DASHBOARD_API_TOKEN`. Local tests and browser QA cover noindex sign-in, 390px behavior, unauthorized access, token-protected Convex reads, and persisted status updates.
+Current implementation status: Cloudflare Pages serves the React app at `/dashboard/leads`, verifies the Better Auth session and admin allowlist before exposing `/dashboard/api/leads`, and updates lead review status through Convex HTTP actions protected by `DASHBOARD_API_TOKEN`. Local tests cover noindex sign-in, unauthorized access, token-protected Convex reads, and persisted status updates.
 
 ### 15. Dashboard Content and Media Workflow
 
@@ -167,9 +167,9 @@ Current implementation status: Cloudflare Pages renders `/dashboard/leads` throu
 
 **User stories covered:** 17, 18, 19, 20, 43, 44, 45, 46, 59, 60.
 
-Build dashboard workflows through the Dashboard UI Kit for case-study content, media metadata, site settings, and resume content. Include Cloudflare media integration once the product choice is decided, and preserve Public Content Graph invariants when dashboard workflows publish public content.
+Build dashboard workflows in the React dashboard app for project content, media metadata, contact settings, and resume content. Include Cloudflare media integration once the product choice is decided, and preserve Public Content Graph invariants when dashboard workflows publish public content.
 
-Current implementation status: `/dashboard/case-studies`, `/dashboard/media`, `/dashboard/settings`, and `/dashboard/resume` render through `renderDashboardContentWorkflow`; Cloudflare Pages merges private Convex metadata with the Public Content Graph for stable content IDs, localized paths, and sitemap eligibility; private Convex endpoints store case-study metadata, media metadata with alt text/usage intent, `PUBLIC_` site settings, and resume PDF/version records. Cloudflare Images/R2 upload behavior remains deferred to the future Media Pipeline module.
+Current implementation status: `/dashboard/projects` is the primary React workspace; legacy `/dashboard/case-studies`, `/dashboard/media`, and `/dashboard/settings` route into it. Cloudflare Pages exposes `/dashboard/api/content` by merging private Convex metadata with the Public Content Graph for stable content IDs, localized paths, and sitemap eligibility. Private Convex endpoints store project drafts, case-study metadata, media metadata with alt text/usage intent, `PUBLIC_` site settings, and resume PDF/version records. Cloudflare Images/R2 upload behavior remains deferred to the future Media Pipeline module.
 
 ### 16. Privacy, Security, and Launch Hardening
 
@@ -177,7 +177,7 @@ Current implementation status: `/dashboard/case-studies`, `/dashboard/media`, `/
 
 **User stories covered:** 21, 22, 38, 39, 41, 58, 59.
 
-Harden the launch surface: privacy page accuracy, Public Content Graph sitemap/robots behavior, Dashboard UI Kit mobile/state behavior, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, Environment Contract separation, Release Train readiness checks, production smoke checks, and browser QA.
+Harden the launch surface: privacy page accuracy, Public Content Graph sitemap/robots behavior, React dashboard mobile/state behavior, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, Environment Contract separation, Release Train readiness checks, production smoke checks, and browser QA.
 
 Current implementation status: privacy pages render graph-backed bilingual copy for contact data, PostHog analytics/errors, and private project boundaries; Cloudflare Pages ships `_headers` with security headers and PostHog CSP allowances; the contact form has safe validation, endpoint missing, email/provider, backend, and retry states; backend contact intake persists before optional provider delivery; dashboard runtime exceptions return private unavailable states instead of raw Worker 1101 pages; launch QA commands and browser checks live in `docs/launch-hardening.md`.
 
@@ -187,9 +187,9 @@ Current implementation status: privacy pages render graph-backed bilingual copy 
 
 **User stories covered:** 9, 10, 28, 29, 30, 61, 62, 67, 68, 69.
 
-Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, Dashboard UI Kit, Public Content Graph, Environment Contract, Release Train, license boundaries, and no-contribution framing.
+Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, dashboard architecture, Public Content Graph, Environment Contract, Release Train, license boundaries, and no-contribution framing.
 
-Current implementation status: `README.md` now acts as the public evaluation package. It explains how to inspect and run the repo without private credentials, maps the architecture and providers, documents dashboard boundaries, distinguishes local/preview/production credentials, links the PRD, issue breakdown, TDD plan, Release Train, Environment Contract, Public Content Graph, Dashboard UI Kit, and Launch Hardening docs, and states the MIT-code versus reserved-content/license boundary. `verify:foundation` now checks for the required README sections and boundary language.
+Current implementation status: `README.md` now acts as the public evaluation package. It explains how to inspect and run the repo without private credentials, maps the architecture and providers, documents dashboard boundaries, distinguishes local/preview/production credentials, links the PRD, issue breakdown, TDD plan, Release Train, Environment Contract, Public Content Graph, dashboard architecture, and Launch Hardening docs, and states the MIT-code versus reserved-content/license boundary. `verify:foundation` now checks for the required README sections and boundary language.
 
 ### 18. Quality Gates: Husky pre-commit and GitHub Actions verify workflow
 
@@ -203,14 +203,14 @@ Current implementation status: Husky is installed through the root `prepare` scr
 
 ## Architecture Review Notes
 
-The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module. The second selected candidate is the Environment Contract module. The third selected candidate is the Public Content Graph module. The fourth selected candidate is the Dashboard UI Kit module. The quality-gates issue (#31) now tracks the local hook and PR-check surface that should support all of those modules.
+The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module. The second selected candidate is the Environment Contract module. The third selected candidate is the Public Content Graph module. The fourth selected candidate is the Dashboard architecture module. The quality-gates issue (#31) now tracks the local hook and PR-check surface that should support all of those modules.
 
 Expected order for architecture deepening:
 
 1. Release Train. Completed in documentation and issues.
 2. Environment Contract. Completed in documentation and issues.
 3. Public Content Graph. Completed in documentation and issues.
-4. Dashboard UI Kit. Current architecture focus.
+4. Dashboard architecture. Current architecture focus.
 
 The Release Train should create locality for deployment rules and leverage for future agents. Branch protection, GitHub Actions, Wrangler, Cloudflare Preview/Production, environment validation, and smoke checks should not be scattered across unrelated issue work.
 
@@ -218,7 +218,7 @@ The Environment Contract should create locality for secrets, public variables, p
 
 The Public Content Graph should create locality for bilingual routes, SEO metadata, sitemap eligibility, evidence assets, case-study structure, resume content, and future dashboard publishing. Astro route files should consume the graph rather than becoming independent sources of content truth.
 
-The Dashboard UI Kit should create locality for private dashboard shell, workflow surfaces, forms, lists/details, state handling, mobile behavior, and shadcn/ui primitive usage. Authenticated dashboard routes should consume dashboard workflow surfaces rather than composing raw primitives directly.
+The dashboard app should create locality for private routes, project workflows, forms, lists/details, state handling, mobile behavior, and shadcn/ui primitive usage. Authenticated dashboard routes should render through the React app while Pages Functions own auth and private Convex proxying.
 
 ## Granularity Notes
 

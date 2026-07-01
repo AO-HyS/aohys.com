@@ -23,6 +23,7 @@ import {
 import {
   parseDashboardCaseStudyMetadataPayload,
   parseDashboardMediaMetadataPayload,
+  parseDashboardProjectDraftPayload,
   parseDashboardResumeVersionPayload,
   parseDashboardSiteSettingPayload,
 } from "../src/dashboard-content.js";
@@ -234,6 +235,28 @@ http.route({
       return privateJsonResponse({ ok: true, ...result });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Case-study metadata could not be saved.";
+      const status = message.includes("token") ? 401 : 400;
+
+      return privateJsonResponse({ ok: false, error: message }, { status });
+    }
+  }),
+});
+
+http.route({
+  path: "/dashboard/content/project",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
+      const payload = await parseDashboardProjectDraftPayload(request);
+      const result = await ctx.runMutation(
+        internal.content.upsertProjectDraftFromDashboard,
+        payload,
+      );
+
+      return privateJsonResponse({ ok: true, ...result });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Project draft could not be saved.";
       const status = message.includes("token") ? 401 : 400;
 
       return privateJsonResponse({ ok: false, error: message }, { status });

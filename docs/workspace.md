@@ -17,13 +17,13 @@ The root `package.json` pins pnpm through `packageManager`. The root `verify` co
 
 | Path | Role |
 | --- | --- |
-| `apps/site` | Astro public site for SEO pages, bilingual routes, metadata, sitemap, and public shell. |
-| `apps/dashboard` | Future private dashboard surface under `/dashboard`. |
+| `apps/site` | Astro public site for SEO pages, bilingual routes, metadata, sitemap, public shell, dashboard auth guard, and private API proxy. |
+| `apps/dashboard` | Private React dashboard app served under `/dashboard` with TanStack Router, shadcn/ui, and Convex-backed workflows. |
 | `apps/backend` | Convex backend surface for leads, content, media, settings, resume, auth, and dashboard workflows. |
 | `packages/core` | Shared TypeScript primitives used across app and package boundaries. |
 | `packages/environment` | Environment Contract implementation for provider variable definitions and runtime/release validation. |
 | `packages/content-graph` | Public Content Graph implementation for stable content IDs, bilingual routes, SEO metadata, sitemap behavior, and private route exclusions. |
-| `packages/dashboard-ui` | Future Dashboard UI Kit implementation over the dashboard primitive adapter. |
+| `packages/dashboard-ui` | Legacy fallback HTML renderers for private sign-in/state surfaces. Active dashboard workflows live in `apps/dashboard`. |
 | `packages/release-train` | Release Train checks, deploy plans, and smoke-check helpers. |
 | `scripts` | Repository-level verification, release environment validation, and smoke commands. |
 
@@ -34,7 +34,7 @@ The foundation is intentionally shallow on implementation and strict on seams:
 - Public routes should use `packages/content-graph` for identity, localized paths, metadata, sitemap rules, and private route exclusions.
 - Reusable primitives should live in `packages/core` once they cross a single feature boundary or are likely to repeat across apps.
 - App and backend code should use `packages/environment` for provider variable classification and validation.
-- Dashboard routes should use `packages/dashboard-ui` once the private dashboard exists.
+- Dashboard workflows should live in `apps/dashboard`; `apps/site` should only protect routes, serve the app shell, and proxy private `/dashboard/api/*` calls to Convex.
 - Deployment and smoke checks should collect in `packages/release-train`, root scripts, and `.github/workflows/release-train.yml`.
 - Convex code lives under `apps/backend/convex`; generated bindings in `apps/backend/convex/_generated` are committed because backend functions typecheck against them.
 

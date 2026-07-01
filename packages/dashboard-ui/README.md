@@ -1,20 +1,19 @@
 # @aohys/dashboard-ui
 
-Dashboard UI Kit implementation package.
+Legacy private HTML fallback renderers.
 
-This package hides dashboard shell/state markup behind AOHYS-specific renderers. Cloudflare Pages functions consume these renderers for the first private dashboard shell without exposing private data or client-side secrets.
+The active dashboard application is `apps/dashboard`: a Vite React app with TanStack Router and shadcn/ui, served under `/dashboard` by `apps/site` after Better Auth and admin checks.
+
+This package remains only for small private sign-in/state fallbacks while the migration is completed. New dashboard workflows should not be added here.
 
 ## Current API
 
-- `renderDashboardShell()` renders the authenticated shell with navigation, page title, admin identity, and operational overview.
 - `renderDashboardSignIn()` renders the private Google sign-in entry point.
-- `renderDashboardState()` renders loading, unauthorized, configuration-error, and unavailable states.
-
-The output is intentionally script-free HTML for the first guard/shell slice. Later dashboard workflows can add a shadcn/ui-backed adapter behind the same package boundary without rewriting route protection.
+- `renderDashboardState()` renders unavailable, unauthorized, loading, and configuration states.
+- Older shell/workflow renderers remain exported for compatibility tests, but they are not the active dashboard architecture.
 
 ## Rules
 
-- Keep private dashboard routes noindex.
-- Use CSS variables for colors and sizing decisions; avoid hardcoded one-off values in route code.
-- Preserve 390px usability, no horizontal overflow, and 44px touch targets.
-- Keep primitive implementation details inside this package, not inside Cloudflare route handlers.
+- Keep private dashboard responses noindex and no-store.
+- Do not add new project, lead, media, settings, or resume workflows here.
+- Add new dashboard UI in `apps/dashboard` and expose data through `/dashboard/api/*`.

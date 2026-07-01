@@ -63,10 +63,11 @@ describe("dashboard access guard", () => {
         }),
       }),
     );
-    expect(html).toContain('data-dashboard-shell="authenticated"');
-    expect(html).toContain("Publishing room");
+    expect(html).toContain('<div id="root"></div>');
+    expect(html).toContain("/dashboard-app/assets/dashboard.css");
+    expect(html).toContain("/dashboard-app/assets/dashboard.js");
     expect(html).toContain("alejandro.ortiz@aohys.com");
-    expect(html).toContain("/dashboard/sign-out");
+    expect(html).toContain('"environment":"preview"');
   });
 
   it("signs out by clearing Better Auth cookies and returning to sign-in", async () => {
@@ -108,6 +109,7 @@ describe("dashboard access guard", () => {
 
     expect(response.status).toBe(200);
     expect(html).toContain("a.ortizcrr@gmail.com");
+    expect(html).toContain("/dashboard-app/assets/dashboard.js");
   });
 
   it("blocks signed-in users who are not on the admin allowlist", async () => {
@@ -226,7 +228,7 @@ describe("dashboard access guard", () => {
       throw new Error("Private lead provider failed with private details.");
     });
     const response = await safeHandleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/leads", {
+      new Request("https://preview.aohys.com/dashboard/api/leads", {
         headers: {
           cookie: "better-auth.session_token=valid",
         },
@@ -248,7 +250,7 @@ describe("dashboard access guard", () => {
       properties: {
         environment: "preview",
         source: "cloudflare_pages_dashboard",
-        path: "/dashboard/leads",
+        path: "/dashboard/api/leads",
         errorType: "Error",
       },
     });
@@ -368,7 +370,7 @@ describe("dashboard access guard", () => {
     );
   });
 
-  it("renders dashboard leads after admin session verification using the private Convex token", async () => {
+  it("serves the React app shell for dashboard app routes without fetching workflow data", async () => {
     const fetchDashboard = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
 
@@ -378,26 +380,7 @@ describe("dashboard access guard", () => {
         }));
       }
 
-      return new Response(JSON.stringify({
-        leads: [
-          {
-            id: "lead_123",
-            name: "Casa Roca",
-            email: "ops@casaroca.mx",
-            company: "Casa Roca",
-            phone: "+52 229 000 0000",
-            preferredContactPath: "whatsapp",
-            consentToContact: true,
-            intent: "website",
-            message: "We need a booking workflow.",
-            sourcePath: "/contact",
-            locale: "en",
-            status: "new",
-            createdAt: 1_720_000_000_000,
-            updatedAt: 1_720_000_000_000,
-          },
-        ],
-      }));
+      throw new Error(`Unexpected private endpoint call: ${url}`);
     });
 
     const response = await handleDashboardRequest(
@@ -410,20 +393,11 @@ describe("dashboard access guard", () => {
     const html = await response.text();
 
     expect(response.status).toBe(200);
-    expect(html).toContain('data-dashboard-surface="lead-workflow"');
-    expect(html).toContain("Casa Roca");
-    expect(html).toContain("We need a booking workflow.");
-    expect(fetchDashboard).toHaveBeenCalledWith(
-      "https://effervescent-minnow-483.convex.site/dashboard/leads",
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          authorization: "Bearer dashboard-api-token",
-        }),
-      }),
-    );
+    expect(html).toContain("/dashboard-app/assets/dashboard.js");
+    expect(fetchDashboard).toHaveBeenCalledTimes(1);
   });
 
-  it("renders dashboard content workflow through the Public Content Graph seam", async () => {
+  it("returns project-centered dashboard content through the private JSON API", async () => {
     const fetchDashboard = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
 
@@ -464,21 +438,37 @@ describe("dashboard access guard", () => {
     });
 
     const response = await handleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/case-studies", {
+      new Request("https://preview.aohys.com/dashboard/api/content", {
         headers: { cookie: "better-auth.session_token=valid" },
       }),
       validEnvironment,
       fetchDashboard,
     );
-    const html = await response.text();
+    const payload = await response.json() as {
+      projects: Array<{
+        contentId: string;
+        title: string;
+        englishPath: string;
+        spanishPath: string;
+        images: Array<{ source: string; storageKey?: string }>;
+      }>;
+    };
 
     expect(response.status).toBe(200);
-    expect(html).toContain('data-dashboard-surface="content-workflow"');
-    expect(html).toContain("Casa Roca");
-    expect(html).toContain("/case-studies/casa-roca");
-    expect(html).toContain("/es/casos/casa-roca");
-    expect(html).toContain("Proof asset status");
-    expect(html).not.toContain("dashboard:lead-review");
+    expect(payload.projects[0]).toMatchObject({
+      contentId: "case-study:casa-roca",
+      title: "Casa Roca",
+      englishPath: "/case-studies/casa-roca",
+      spanishPath: "/es/casos/casa-roca",
+    });
+    expect(payload.projects[0]?.images).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          source: "media-metadata",
+          storageKey: "screenshots/casa-roca-home",
+        }),
+      ]),
+    );
     expect(fetchDashboard).toHaveBeenCalledWith(
       "https://effervescent-minnow-483.convex.site/dashboard/content",
       expect.objectContaining({
@@ -487,6 +477,52 @@ describe("dashboard access guard", () => {
         }),
       }),
     );
+  });
+
+  it("returns dashboard leads through the private JSON API", async () => {
+    const fetchDashboard = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+
+      if (url.endsWith("/api/auth/get-session")) {
+        return new Response(JSON.stringify({
+          user: { email: "alejandro.ortiz@aohys.com" },
+        }));
+      }
+
+      expect(url).toBe("https://effervescent-minnow-483.convex.site/dashboard/leads");
+
+      return new Response(JSON.stringify({
+        leads: [
+          {
+            id: "lead_123",
+            name: "Casa Roca",
+            email: "ops@casaroca.mx",
+            intent: "website",
+            message: "We need a booking workflow.",
+            sourcePath: "/contact",
+            locale: "en",
+            status: "new",
+            createdAt: 1_720_000_000_000,
+            updatedAt: 1_720_000_000_000,
+          },
+        ],
+      }));
+    });
+
+    const response = await handleDashboardRequest(
+      new Request("https://preview.aohys.com/dashboard/api/leads", {
+        headers: { cookie: "better-auth.session_token=valid" },
+      }),
+      validEnvironment,
+      fetchDashboard,
+    );
+    const payload = await response.json() as { leads: Array<{ name: string; message: string }> };
+
+    expect(response.status).toBe(200);
+    expect(payload.leads[0]).toMatchObject({
+      name: "Casa Roca",
+      message: "We need a booking workflow.",
+    });
   });
 
   it("saves case-study metadata through the private content endpoint", async () => {
@@ -538,7 +574,73 @@ describe("dashboard access guard", () => {
     );
 
     expect(response.status).toBe(302);
-    expect(response.headers.get("location")).toBe("/dashboard/case-studies?saved=1");
+    expect(response.headers.get("location")).toBe("/dashboard/projects?saved=1");
+  });
+
+  it("saves project drafts through the private dashboard JSON API", async () => {
+    const fetchDashboard = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+
+      if (url.endsWith("/api/auth/get-session")) {
+        return new Response(JSON.stringify({
+          user: { email: "alejandro.ortiz@aohys.com" },
+        }));
+      }
+
+      expect(url).toBe("https://effervescent-minnow-483.convex.site/dashboard/content/project");
+      expect(init).toMatchObject({
+        method: "POST",
+        headers: expect.objectContaining({
+          authorization: "Bearer dashboard-api-token",
+          "content-type": "application/json",
+        }),
+        body: JSON.stringify({
+          contentId: "case-study:casa-roca",
+          locale: "en",
+          status: "production-proof",
+          evidenceStatus: "published",
+          title: "Casa Roca",
+          summary: "Production hospitality site.",
+          seoDescription: "Casa Roca production site proof.",
+          projectUrl: "https://casa-roca.mx",
+          ctaLabel: "Start a similar build",
+          ctaHref: "/contact",
+          achievements: "Clear public presence.",
+          structureNotes: "Static public page, private workflows protected.",
+        }),
+      });
+
+      return new Response(JSON.stringify({ ok: true }));
+    });
+
+    const response = await handleDashboardRequest(
+      new Request("https://preview.aohys.com/dashboard/api/content/project", {
+        method: "POST",
+        headers: {
+          cookie: "better-auth.session_token=valid",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          contentId: "case-study:casa-roca",
+          locale: "en",
+          status: "production-proof",
+          evidenceStatus: "published",
+          title: "Casa Roca",
+          summary: "Production hospitality site.",
+          seoDescription: "Casa Roca production site proof.",
+          projectUrl: "https://casa-roca.mx",
+          ctaLabel: "Start a similar build",
+          ctaHref: "/contact",
+          achievements: "Clear public presence.",
+          structureNotes: "Static public page, private workflows protected.",
+        }),
+      }),
+      validEnvironment,
+      fetchDashboard,
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ ok: true });
   });
 
   it("updates a lead status through the private Convex endpoint and redirects back to the selected lead", async () => {

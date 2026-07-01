@@ -44,8 +44,9 @@ UI copy that belongs to the shell lives in locale JSON files under `src/i18n`. P
 
 Private behavior is implemented outside the Astro route graph:
 
-- `/dashboard/*` is handled by Cloudflare Pages functions and renders `@aohys/dashboard-ui`.
+- `/dashboard/*` is handled by Cloudflare Pages functions and serves the `@aohys/dashboard` React app after session/admin checks.
+- `/dashboard/api/*` is the private JSON boundary used by the React app. It proxies to Convex with `DASHBOARD_API_TOKEN`; the token never reaches the browser.
 - `/dashboard/sign-in/google` starts Google OAuth server-side, sets the Better Auth state cookie, and redirects to Google without client-side script.
-- `/dashboard/case-studies`, `/dashboard/media`, `/dashboard/settings`, and `/dashboard/resume` render the content workflow by combining Public Content Graph nodes with private Convex metadata.
+- `/dashboard/projects` combines Public Content Graph nodes with Convex project drafts, image metadata, site contact values, and resume artifacts.
 - `/api/auth/*` is proxied by Cloudflare Pages functions to Convex Better Auth routes.
 - Private responses are `noindex, nofollow`, `cache-control: no-store`, and carry the shared CSP/reporting policy; dashboard routes stay out of sitemap generation.

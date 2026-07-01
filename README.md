@@ -2,13 +2,13 @@
 
 Public source website for Alejandro Ortiz Corro and AOH&S.
 
-This repository is a working sample of engineering standards: an Astro public site, a private dashboard surface, Convex backend workflows, Cloudflare deployment and media handling, PostHog analytics/errors, Resend lead notifications, Better Auth authentication, and a protected release path.
+This repository is a working sample of engineering standards: an Astro public site, a private React dashboard app, Convex backend workflows, Cloudflare deployment and media handling, PostHog analytics/errors, Resend lead notifications, Better Auth authentication, and a protected release path.
 
 The canonical public domain is `https://aohys.com`. `aohys.net` is intended to redirect to `aohys.com` through Cloudflare Redirect Rules.
 
 ## Status
 
-The repository foundation, public Astro shell, bilingual Public Content Graph routes, proof narrative, case-study routes, resume route, contact backend, explicit PostHog analytics, Cloudflare/Wrangler release path, private dashboard guard/shell, lead review workflow, metadata-only content/media dashboard workflow, and launch hardening are scaffolded through the approved vertical-slice issues.
+The repository foundation, public Astro shell, bilingual Public Content Graph routes, proof narrative, case-study routes, resume route, contact backend, explicit PostHog analytics, Cloudflare/Wrangler release path, private React dashboard app, lead review workflow, project workspace, and launch hardening are scaffolded through the approved vertical-slice issues.
 
 Cloudflare media originals and generated/screenshot asset production remain future Media Pipeline work. The current dashboard stores metadata and public-safe references only.
 
@@ -24,7 +24,7 @@ Start with the docs:
 - [Release Train](docs/release-train.md)
 - [Environment Contract](docs/environment-contract.md)
 - [Public Content Graph](docs/public-content-graph.md)
-- [Dashboard UI Kit](docs/dashboard-ui-kit.md)
+- [Dashboard architecture](docs/dashboard-ui-kit.md)
 - [Launch Hardening](docs/launch-hardening.md)
 
 Run the repo locally from the root:
@@ -63,8 +63,8 @@ Husky installs through the root `prepare` script and runs `.husky/pre-commit` be
 
 | Area | Location | Responsibility |
 | --- | --- | --- |
-| Public SEO site | `apps/site` | Astro routes, bilingual pages, metadata, sitemap, robots, public contact UI, dashboard route guard functions |
-| Private dashboard surface | `/dashboard` plus `packages/dashboard-ui` | Protected operational workflows, English dashboard copy, mobile-safe workflow surfaces, noindex/no-store responses |
+| Public SEO site | `apps/site` | Astro routes, bilingual pages, metadata, sitemap, robots, public contact UI, dashboard route guard and private API proxy |
+| Private dashboard app | `apps/dashboard` served under `/dashboard` | React app with TanStack Router, shadcn/ui, project workflows, lead review, resume operations, and private API access through the site guard |
 | Backend | `apps/backend` | Convex schema, HTTP actions, contact leads, email notification adapters, PostHog server events, Better Auth routes, dashboard private endpoints |
 | Environment Contract | `packages/environment` | Shared variable registry, local/preview/production validation, public-vs-secret boundaries |
 | Public Content Graph | `packages/content-graph` | Stable content IDs, localized routes, SEO metadata, sitemap eligibility, public-safe content relationships |
@@ -76,13 +76,13 @@ The system intentionally keeps public marketing/content concerns separate from p
 ## Workspace
 
 - [Workspace foundation](docs/workspace.md)
-- `apps/site`: Astro public SEO surface and Cloudflare Pages functions.
-- `apps/dashboard`: private dashboard workspace placeholder for future dashboard app growth.
+- `apps/site`: Astro public SEO surface and Cloudflare Pages functions for dashboard auth/API proxying.
+- `apps/dashboard`: private React dashboard app for project, lead, and resume workflows.
 - `apps/backend`: Convex backend surface for contact workflows, Better Auth routes, leads, content/media metadata, site settings, resume versions, and private operations.
 - `packages/core`: shared foundation package.
 - `packages/environment`: Environment Contract implementation.
 - `packages/content-graph`: Public Content Graph implementation for stable IDs, bilingual routes, SEO metadata, sitemap behavior, and private route exclusions.
-- `packages/dashboard-ui`: Dashboard UI Kit shell/state/workflow renderers for the private surface.
+- `packages/dashboard-ui`: legacy private fallback renderers for sign-in/state pages while the active dashboard app lives in `apps/dashboard`.
 - `packages/release-train`: Release Train deployment plans, environment validation, workflow checks, and smoke helpers.
 
 ## Public Source Boundary
@@ -167,12 +167,12 @@ Dashboard rules:
 - dashboard routes are authenticated;
 - dashboard responses are `noindex` and `no-store`;
 - dashboard routes are omitted from the public sitemap;
-- dashboard workflows use the Dashboard UI Kit instead of ad hoc page composition;
+- dashboard workflows run in the React app instead of server-rendered HTML route fragments;
 - dashboard copy is English-only for V1;
 - private dashboard data is loaded through server-side Convex HTTP endpoints protected by `DASHBOARD_API_TOKEN`;
 - public browser bundles never receive dashboard secrets.
 
-Current V1 dashboard workflows include sign-in, overview, leads, case studies, media metadata, site settings, and resume versions. The dashboard is part of the working sample, but public evaluators should inspect architecture and boundary behavior rather than expecting access to private operational data.
+Current V1 dashboard workflows include sign-in, overview, leads, project content, image metadata, WhatsApp/contact setting, and resume versions. Projects are the core dashboard unit: text, achievements, structure notes, public URL, CTA, SEO description, status, evidence state, and images belong together. The dashboard is part of the working sample, but public evaluators should inspect architecture and boundary behavior rather than expecting access to private operational data.
 
 ## Privacy and Security
 
@@ -204,11 +204,11 @@ Current protections:
 - [Launch Hardening](docs/launch-hardening.md)
 - [Environment Contract](docs/environment-contract.md)
 - [Public Content Graph](docs/public-content-graph.md)
-- [Dashboard UI Kit](docs/dashboard-ui-kit.md)
+- [Dashboard architecture](docs/dashboard-ui-kit.md)
 - [ADR 0001: Protected Release Train](docs/adr/0001-protected-release-train.md)
 - [ADR 0002: Environment Contract Source of Truth](docs/adr/0002-environment-contract-source-of-truth.md)
 - [ADR 0003: Public Content Graph](docs/adr/0003-public-content-graph.md)
-- [ADR 0004: Dashboard UI Kit](docs/adr/0004-dashboard-ui-kit.md)
+- [ADR 0004: Dashboard App Architecture](docs/adr/0004-dashboard-ui-kit.md)
 
 ## License and Asset Boundaries
 

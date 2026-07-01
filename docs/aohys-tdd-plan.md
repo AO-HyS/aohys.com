@@ -76,13 +76,13 @@ Use for:
 
 ### Dashboard
 
-Highest seam: authenticated browser behavior against the Dashboard UI Kit shell and workflow surfaces.
+Highest seam: authenticated browser behavior against the React dashboard app, backed by Cloudflare Pages auth/API proxying and Convex HTTP endpoints.
 
 Use for:
 
 - Access control.
 - Lead review.
-- Content/media settings.
+- Project content, image metadata, and contact settings.
 - Resume management.
 - Dashboard noindex and private routing.
 - Workflow state surfaces.
@@ -132,9 +132,9 @@ Use for:
 | #11 Contact Lead Capture With Email Notification | Contact form and Environment Contract | A valid contact submission stores a lead, sends notification through the email adapter, and records only safe analytics metadata when provider settings validate. |
 | #12 PostHog Analytics and Error Capture | Analytics adapter and Environment Contract | Pageview and conversion events are explicit, environment-aware, and do not include contact message text. |
 | #13 Cloudflare and Wrangler Deployment Path | Release Train and Wrangler/build commands | Cloudflare-compatible build command completes and exposes documented output for preview and production smoke testing. |
-| #14 Better Auth and Private Dashboard Shell | Dashboard route, Environment Contract, and Dashboard UI Kit | Anonymous visitor cannot access `/dashboard`; allowlisted admin can reach the shell, auth origins/secrets validate, and the shell exposes navigation plus operational overview. |
-| #15 Dashboard Lead Review Workflow | Dashboard UI Kit lead workflow surface | Admin can view a newly submitted lead, update its review status, and see loading/empty/error/saved states. |
-| #16 Dashboard Content and Media Workflow | Dashboard UI Kit content/media workflow surfaces | Admin can create or update one public content/media metadata item with alt text, safe validation, and Public Content Graph invariants preserved. |
+| #14 Better Auth and Private Dashboard Shell | Dashboard route, Environment Contract, React app shell, and private API proxy | Anonymous visitor cannot access `/dashboard`; allowlisted admin can reach the React shell, auth origins/secrets validate, and the shell exposes navigation plus operational overview. |
+| #15 Dashboard Lead Review Workflow | React dashboard lead workflow | Admin can view a newly submitted lead, update its review status through `/dashboard/api/leads/status`, and see loading/empty/error/saved states. |
+| #16 Dashboard Content and Media Workflow | React dashboard project workspace | Admin can manage one project's text, SEO description, CTA, URL, achievements, structure notes, status, evidence state, and image metadata while Public Content Graph invariants are preserved. |
 | #17 Privacy, Security, and Launch Hardening | Production-like smoke suite | Public routes, dashboard protection, dashboard mobile/state behavior, privacy copy, analytics privacy, and contact error states pass launch smoke checks. |
 | #18 Public README and Source Evaluation Package | Repository documentation | README gives an evaluator enough information to run, inspect, and understand the repo without private credentials, including dashboard architecture. |
 | #31 Quality Gates: Husky and GitHub Actions | Local hooks and pull request workflow | Pre-commit and PR checks run the same core quality commands, including lint, typecheck, test, and build, without requiring private provider secrets. |
@@ -181,5 +181,5 @@ Refactor only after a vertical behavior is green. In this repo, expected refacto
 - Reading environment variables ad hoc across app modules instead of through the Environment Contract seam.
 - Duplicating slugs, canonical URLs, language alternates, sitemap rules, or case-study structure across individual route files.
 - Letting dashboard publishing mutate public content without preserving Public Content Graph invariants.
-- Composing private dashboard routes directly from primitive UI everywhere instead of using Dashboard UI Kit workflow surfaces.
+- Returning to server-rendered dashboard HTML fragments instead of a real React dashboard app with routed workflows.
 - Treating mobile dashboard usability as a late polish pass.

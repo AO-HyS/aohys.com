@@ -44,6 +44,18 @@ export interface DashboardCaseStudyMetadataPayload {
   evidenceStatus: DashboardEvidenceStatus;
 }
 
+export interface DashboardProjectDraftPayload extends DashboardCaseStudyMetadataPayload {
+  locale: DashboardLocale;
+  title: string;
+  summary: string;
+  seoDescription: string;
+  projectUrl?: string;
+  ctaLabel: string;
+  ctaHref: string;
+  achievements: string;
+  structureNotes: string;
+}
+
 export interface DashboardMediaMetadataPayload {
   storageProvider: DashboardMediaStorageProvider;
   storageKey: string;
@@ -73,6 +85,18 @@ interface DashboardCaseStudyMetadataRawPayload {
   contentId?: string;
   status?: string;
   evidenceStatus?: string;
+}
+
+interface DashboardProjectDraftRawPayload extends DashboardCaseStudyMetadataRawPayload {
+  locale?: string;
+  title?: string;
+  summary?: string;
+  seoDescription?: string;
+  projectUrl?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  achievements?: string;
+  structureNotes?: string;
 }
 
 interface DashboardMediaMetadataRawPayload {
@@ -116,6 +140,52 @@ export async function parseDashboardCaseStudyMetadataPayload(
     contentId,
     status,
     evidenceStatus,
+  };
+}
+
+export async function parseDashboardProjectDraftPayload(
+  request: Request,
+): Promise<DashboardProjectDraftPayload> {
+  const payload = await readJsonPayload<DashboardProjectDraftRawPayload>(request);
+  const contentId = requireTrimmed(payload.contentId, "contentId");
+  const status = requireTrimmed(payload.status, "status");
+  const evidenceStatus = requireTrimmed(payload.evidenceStatus, "evidenceStatus");
+  const locale = requireTrimmed(payload.locale, "locale");
+  const title = requireTrimmed(payload.title, "title");
+  const summary = requireTrimmed(payload.summary, "summary");
+  const seoDescription = requireTrimmed(payload.seoDescription, "seoDescription");
+  const ctaLabel = requireTrimmed(payload.ctaLabel, "ctaLabel");
+  const ctaHref = requireTrimmed(payload.ctaHref, "ctaHref");
+  const achievements = requireTrimmed(payload.achievements, "achievements");
+  const structureNotes = requireTrimmed(payload.structureNotes, "structureNotes");
+  const projectUrl = trimToUndefined(payload.projectUrl);
+
+  assertOneOf(contentId, DASHBOARD_CASE_STUDY_CONTENT_IDS, "contentId");
+  assertOneOf(status, DASHBOARD_CASE_STUDY_STATUSES, "status");
+  assertOneOf(evidenceStatus, DASHBOARD_EVIDENCE_STATUSES, "evidenceStatus");
+  assertOneOf(locale, DASHBOARD_LOCALES, "locale");
+
+  if (projectUrl && !isHttpUrl(projectUrl)) {
+    throw new Error("Project URL must be an http or https URL.");
+  }
+
+  if (!isSafePublicHref(ctaHref)) {
+    throw new Error("CTA href must be a public path or an http or https URL.");
+  }
+
+  return {
+    contentId,
+    status,
+    evidenceStatus,
+    locale,
+    title,
+    summary,
+    seoDescription,
+    projectUrl,
+    ctaLabel,
+    ctaHref,
+    achievements,
+    structureNotes,
   };
 }
 
@@ -244,4 +314,12 @@ function isHttpUrl(value: string): boolean {
   } catch {
     return false;
   }
+}
+
+function isSafePublicHref(value: string): boolean {
+  if (value.startsWith("/") && !value.startsWith("//")) {
+    return true;
+  }
+
+  return isHttpUrl(value);
 }

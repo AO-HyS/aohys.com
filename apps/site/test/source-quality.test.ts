@@ -24,6 +24,9 @@ describe("public site source quality", () => {
     const analytics = read("src/analytics.ts");
     const posthogClient = read("src/posthog-client.ts");
     const publicContentPage = read("src/components/PublicContentPage.astro");
+    const dashboardAccess = read("src/dashboard-access.ts");
+    const dashboardApp = read("../../apps/dashboard/src/main.tsx");
+    const dashboardPackage = read("../../apps/dashboard/package.json");
     const dashboardFunction = read("../../functions/dashboard/[[path]].ts");
     const authFunction = read("../../functions/api/auth/[[path]].ts");
     const cspFunction = read("../../functions/observability/csp.ts");
@@ -95,5 +98,10 @@ describe("public site source quality", () => {
     expect(dashboardFunction).toContain('await import("../../apps/site/src/dashboard-access.js")');
     expect(authFunction).toContain('await import("../../../apps/site/src/auth-proxy.js")');
     expect(cspFunction).toContain('await import("../../apps/site/src/csp-reporting.js")');
+    expect(dashboardAccess).toContain("/dashboard-app/assets/dashboard.js");
+    expect(dashboardAccess).toContain("/dashboard/api/content/project");
+    expect(dashboardApp).toContain("@tanstack/react-router");
+    expect(dashboardApp).toContain("RouterProvider");
+    expect(dashboardPackage).toContain("vite build");
   });
 });
