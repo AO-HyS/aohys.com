@@ -59,7 +59,9 @@ describe("public site source quality", () => {
     expect(publicContentPage).toContain("getUiCopy");
     expect(publicContentPage).toContain("/images/proof/casa-roca-production.png");
     expect(publicContentPage).toContain("/images/proof/barber-central-landing.png");
+    expect(publicContentPage).toContain("/images/proof/barber-central-proof-thumb.png");
     expect(publicContentPage).toContain("/images/proof/nutri-plan-dashboard.png");
+    expect(publicContentPage).toContain("/images/proof/nutri-plan-proof-thumb.png");
     expect(publicContentPage).toContain("/images/proof/enterprise-delivery-map.svg");
     expect(publicContentPage).toContain("/images/generated/aohys-architecture-proof-surface.png");
     expect(posthogAnalytics).toContain("buildAnalyticsBootstrapPayload");

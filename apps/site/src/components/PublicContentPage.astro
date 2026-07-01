@@ -77,26 +77,33 @@ const routeSignalById: Partial<Record<ContentId | string, string>> = {
 };
 const routeSignal = routeSignalById[id] ?? variant.summary;
 
-const evidenceImageByContentId: Partial<Record<ContentId | string, { src: string; alt: string }>> = {
+const evidenceImageByContentId: Partial<Record<ContentId | string, { src: string; thumbSrc?: string; alt: string; kind: string }>> = {
   "case-study:casa-roca": {
     src: "/images/proof/casa-roca-production.png",
     alt: locale === "es" ? "Captura pública del sitio Casa Roca en producción" : "Public Casa Roca production website screenshot",
+    kind: "site",
   },
   "case-study:the-barber-central": {
     src: "/images/proof/barber-central-landing.png",
+    thumbSrc: "/images/proof/barber-central-proof-thumb.png",
     alt: locale === "es" ? "Landing page de desarrollo de The Barber Central" : "The Barber Central development landing page",
+    kind: "landing",
   },
   "case-study:nutri-plan": {
     src: "/images/proof/nutri-plan-dashboard.png",
+    thumbSrc: "/images/proof/nutri-plan-proof-thumb.png",
     alt: locale === "es" ? "Dashboard administrativo de Nutri Plan" : "Nutri Plan administrative dashboard",
+    kind: "dashboard",
   },
   "case-study:enterprise-systems": {
     src: "/images/proof/enterprise-delivery-map.svg",
     alt: locale === "es" ? "Mapa público seguro de trabajo enterprise confidencial" : "Public-safe map of confidential enterprise systems work",
+    kind: "diagram",
   },
   "case-study:engineering-practice": {
     src: "/images/generated/aohys-architecture-proof-surface.png",
     alt: locale === "es" ? "Superficie visual de arquitectura pública de AOHYS" : "AOHYS public architecture proof surface",
+    kind: "diagram",
   },
 };
 
@@ -165,12 +172,15 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           <div class="hero-proof-shots" aria-hidden="true">
             {homeContent.selectedOutcomes.slice(0, 3).map((outcome) => (
               outcome.evidence.src ? (
-                <img
-                  src={outcome.evidence.src}
-                  alt=""
-                  loading="eager"
-                  decoding="async"
-                />
+                <span class={`hero-proof-frame hero-proof-frame-${evidenceImageForPath(outcome.path)?.kind ?? "site"}`}>
+                  <img
+                    class={`proof-image proof-image-${evidenceImageForPath(outcome.path)?.kind ?? "site"}`}
+                    src={evidenceImageForPath(outcome.path)?.thumbSrc ?? outcome.evidence.src}
+                    alt=""
+                    loading="eager"
+                    decoding="async"
+                  />
+                </span>
               ) : null
             ))}
           </div>
@@ -200,9 +210,9 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           {homeContent.selectedOutcomes.map((outcome, index) => (
             <a class="outcome-row" href={outcome.path}>
               <span class="outcome-index">{String(index + 1).padStart(2, "0")}</span>
-              <figure class="outcome-shot" aria-label={outcome.evidence.altText}>
+              <figure class={`outcome-shot outcome-shot-${evidenceImageForPath(outcome.path)?.kind ?? "site"}`} aria-label={outcome.evidence.altText}>
                 {outcome.evidence.src ? (
-                  <img src={outcome.evidence.src} alt={outcome.evidence.altText} loading="eager" decoding="async" />
+                  <img src={evidenceImageForPath(outcome.path)?.thumbSrc ?? outcome.evidence.src} alt={outcome.evidence.altText} loading="eager" decoding="async" />
                 ) : (
                   <span class="evidence-fallback">{outcome.evidence.label}</span>
                 )}
@@ -342,9 +352,15 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           </div>
         </div>
         <figure class="case-index-proof-wall" aria-label={locale === "es" ? "Capturas públicas de proyectos seleccionados" : "Public screenshots from selected work"}>
-          <img src="/images/proof/casa-roca-production.png" alt={locale === "es" ? "Captura pública de Casa Roca" : "Public Casa Roca screenshot"} loading="eager" decoding="async" />
-          <img src="/images/proof/barber-central-landing.png" alt={locale === "es" ? "Landing page de The Barber Central" : "The Barber Central landing page"} loading="eager" decoding="async" />
-          <img src="/images/proof/nutri-plan-dashboard.png" alt={locale === "es" ? "Dashboard administrativo de Nutri Plan" : "Nutri Plan administrative dashboard"} loading="eager" decoding="async" />
+          <span class="case-index-proof-frame case-index-proof-frame-site">
+            <img src="/images/proof/casa-roca-production.png" alt={locale === "es" ? "Captura pública de Casa Roca" : "Public Casa Roca screenshot"} loading="eager" decoding="async" />
+          </span>
+          <span class="case-index-proof-frame case-index-proof-frame-landing">
+            <img src="/images/proof/barber-central-proof-thumb.png" alt={locale === "es" ? "Landing page de The Barber Central" : "The Barber Central landing page"} loading="eager" decoding="async" />
+          </span>
+          <span class="case-index-proof-frame case-index-proof-frame-dashboard">
+            <img src="/images/proof/nutri-plan-proof-thumb.png" alt={locale === "es" ? "Dashboard administrativo de Nutri Plan" : "Nutri Plan administrative dashboard"} loading="eager" decoding="async" />
+          </span>
         </figure>
       </section>
 
@@ -357,12 +373,12 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           {caseStudyIndexContent.entries.map((entry) => (
             <a class="selected-work-row" href={entry.path}>
               <span>{entry.statusLabel}</span>
-              <figure class="selected-work-shot">
+              <figure class={`selected-work-shot selected-work-shot-${evidenceImageForPath(entry.path)?.kind ?? "site"}`}>
                 {(() => {
                   const evidenceImage = evidenceImageForPath(entry.path);
                   return evidenceImage ? (
                     <img
-                      src={evidenceImage.src}
+                      src={evidenceImage.thumbSrc ?? evidenceImage.src}
                       alt={evidenceImage.alt}
                       loading="lazy"
                       decoding="async"
