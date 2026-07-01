@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">Enterprise delivery map</title>
+  <desc id="desc">Confidential enterprise work summarized as public-safe product, backend, payment, and escalation flows.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#06181a"/>
+      <stop offset="0.55" stop-color="#0d2028"/>
+      <stop offset="1" stop-color="#11101c"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" x2="1">
+      <stop offset="0" stop-color="#ffd34d"/>
+      <stop offset="1" stop-color="#ff8a66"/>
+    </linearGradient>
+    <linearGradient id="mint" x1="0" x2="1">
+      <stop offset="0" stop-color="#7ee6b2"/>
+      <stop offset="1" stop-color="#7db7ff"/>
+    </linearGradient>
+    <filter id="soft">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect width="1440" height="900" fill="url(#bg)"/>
+  <path d="M70 110H1370M70 790H1370M120 70V830M1320 70V830" stroke="#dcecff" stroke-opacity=".16"/>
+  <path d="M160 248H1280M160 451H1280M160 654H1280" stroke="#dcecff" stroke-opacity=".09" stroke-dasharray="8 12"/>
+  <text x="92" y="90" fill="#f7fff9" font-family="Mona Sans, Arial, sans-serif" font-size="42" font-weight="760">Enterprise systems</text>
+  <text x="95" y="132" fill="#9fb8b6" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="22">Public-safe map of confidential delivery work</text>
+  <g filter="url(#soft)">
+    <rect x="142" y="210" width="254" height="128" rx="14" fill="#0f2830" stroke="#7ee6b2" stroke-opacity=".58"/>
+    <rect x="442" y="210" width="254" height="128" rx="14" fill="#111f35" stroke="#7db7ff" stroke-opacity=".62"/>
+    <rect x="742" y="210" width="254" height="128" rx="14" fill="#231e12" stroke="#ffd34d" stroke-opacity=".66"/>
+    <rect x="1042" y="210" width="254" height="128" rx="14" fill="#251715" stroke="#ff8a66" stroke-opacity=".64"/>
+    <rect x="292" y="548" width="254" height="128" rx="14" fill="#0f2830" stroke="#7ee6b2" stroke-opacity=".58"/>
+    <rect x="592" y="548" width="254" height="128" rx="14" fill="#111f35" stroke="#7db7ff" stroke-opacity=".62"/>
+    <rect x="892" y="548" width="254" height="128" rx="14" fill="#231e12" stroke="#ffd34d" stroke-opacity=".66"/>
+  </g>
+  <g font-family="Mona Sans, Arial, sans-serif" font-weight="760" font-size="25" fill="#f7fff9">
+    <text x="176" y="264">Escalations</text>
+    <text x="476" y="264">Payment plans</text>
+    <text x="776" y="264">Cashback</text>
+    <text x="1076" y="264">Customs flows</text>
+    <text x="326" y="602">Backend delivery</text>
+    <text x="626" y="602">Release support</text>
+    <text x="926" y="602">Operational reliability</text>
+  </g>
+  <g font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="18" fill="#b9c7c9">
+    <text x="176" y="298">Urgent product paths</text>
+    <text x="476" y="298">PTP workflows</text>
+    <text x="776" y="298">Financial behavior</text>
+    <text x="1076" y="298">Domain constraints</text>
+    <text x="326" y="636">Services, APIs, data</text>
+    <text x="626" y="636">QA, deploys, incidents</text>
+    <text x="926" y="636">Thousands of moving parts</text>
+  </g>
+  <g fill="none" stroke-linecap="round" stroke-width="4">
+    <path d="M396 274H442" stroke="url(#mint)"/>
+    <path d="M696 274H742" stroke="url(#gold)"/>
+    <path d="M996 274H1042" stroke="#ff8a66"/>
+    <path d="M1169 338V447H1019V548" stroke="#ff8a66" stroke-dasharray="10 12"/>
+    <path d="M269 338V447H419V548" stroke="#7ee6b2" stroke-dasharray="10 12"/>
+    <path d="M569 338V447H719V548" stroke="#7db7ff" stroke-dasharray="10 12"/>
+    <path d="M846 612H892" stroke="url(#gold)"/>
+  </g>
+  <g transform="translate(156 390)">
+    <rect width="1128" height="92" rx="14" fill="#071316" stroke="#9fb8b6" stroke-opacity=".25"/>
+    <text x="34" y="39" fill="#7ee6b2" font-family="Mona Sans, Arial, sans-serif" font-size="19" font-weight="760">CONFIDENTIALITY BOUNDARY</text>
+    <text x="34" y="67" fill="#b9c7c9" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="17">Show outcomes, roles, and decisions. Keep employers, client data, incident details, credentials, and source code private.</text>
+  </g>
+  <g transform="translate(100 744)" font-family="Mona Sans, Arial, sans-serif" font-size="17" font-weight="700">
+    <circle cx="12" cy="12" r="7" fill="#7ee6b2"/>
+    <text x="32" y="18" fill="#b9c7c9">Product operations</text>
+    <circle cx="247" cy="12" r="7" fill="#7db7ff"/>
+    <text x="267" y="18" fill="#b9c7c9">Authenticated delivery</text>
+    <circle cx="510" cy="12" r="7" fill="#ffd34d"/>
+    <text x="530" y="18" fill="#b9c7c9">Business workflows</text>
+    <circle cx="768" cy="12" r="7" fill="#ff8a66"/>
+    <text x="788" y="18" fill="#b9c7c9">Risk and exceptions</text>
+  </g>
+</svg>

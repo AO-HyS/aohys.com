@@ -83,16 +83,20 @@ const evidenceImageByContentId: Partial<Record<ContentId | string, { src: string
     alt: locale === "es" ? "Captura pública del sitio Casa Roca en producción" : "Public Casa Roca production website screenshot",
   },
   "case-study:the-barber-central": {
-    src: "/images/proof/barber-central-ops.png",
-    alt: locale === "es" ? "Captura sanitizada de operaciones de The Barber Central" : "Sanitized The Barber Central operations screenshot",
+    src: "/images/proof/barber-central-landing.png",
+    alt: locale === "es" ? "Landing page de desarrollo de The Barber Central" : "The Barber Central development landing page",
   },
   "case-study:nutri-plan": {
-    src: "/images/proof/nutri-plan-proof.png",
-    alt: locale === "es" ? "Captura sanitizada de Nutri Plan" : "Sanitized Nutri Plan screenshot",
+    src: "/images/proof/nutri-plan-dashboard.png",
+    alt: locale === "es" ? "Dashboard administrativo de Nutri Plan" : "Nutri Plan administrative dashboard",
+  },
+  "case-study:enterprise-systems": {
+    src: "/images/proof/enterprise-delivery-map.svg",
+    alt: locale === "es" ? "Mapa público seguro de trabajo enterprise confidencial" : "Public-safe map of confidential enterprise systems work",
   },
   "case-study:engineering-practice": {
-    src: "/images/proof/aohys-system-map.svg",
-    alt: locale === "es" ? "Mapa de arquitectura pública de AOHYS" : "AOHYS public architecture map",
+    src: "/images/generated/aohys-architecture-proof-surface.png",
+    alt: locale === "es" ? "Superficie visual de arquitectura pública de AOHYS" : "AOHYS public architecture proof surface",
   },
 };
 
@@ -111,6 +115,10 @@ function evidenceImageForPath(path: string) {
 
   if (path.includes("nutri-plan")) {
     return evidenceImageForContent("case-study:nutri-plan");
+  }
+
+  if (path.includes("enterprise-systems") || path.includes("sistemas-enterprise")) {
+    return evidenceImageForContent("case-study:enterprise-systems");
   }
 
   if (
@@ -146,38 +154,38 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           </div>
         </div>
 
-        <figure class="evidence-table" aria-label={homeContent.proofBoardLabel}>
-          <figcaption class="evidence-table-caption">
+        <figure class="proof-board home-proof-board" aria-label={homeContent.proofBoardLabel}>
+          <img
+            class="hero-artifact-asset"
+            src="/images/generated/aohys-architecture-proof-surface.png"
+            alt={locale === "es" ? "Mapa visual del sistema público, privado y observable de AOHYS" : "Visual map of the AOHYS public, private, and observable system"}
+            loading="eager"
+            decoding="async"
+          />
+          <div class="hero-proof-shots" aria-hidden="true">
+            {homeContent.selectedOutcomes.slice(0, 3).map((outcome) => (
+              outcome.evidence.src ? (
+                <img
+                  src={outcome.evidence.src}
+                  alt=""
+                  loading="eager"
+                  decoding="async"
+                />
+              ) : null
+            ))}
+          </div>
+          <figcaption class="proof-board-caption">
             <span>{copy.publicSample}</span>
             <strong>{homeContent.proofBoardTitle}</strong>
             <p>{homeContent.proofBoardBody}</p>
           </figcaption>
-          <div class="evidence-shot evidence-shot-primary">
-            <img
-              src="/images/proof/casa-roca-production.png"
-              alt={locale === "es" ? "Captura pública de Casa Roca en producción" : "Public Casa Roca production screenshot"}
-              loading="eager"
-              decoding="async"
-            />
-          </div>
-          <div class="evidence-shot evidence-shot-secondary">
-            <img
-              src="/images/proof/barber-central-ops.png"
-              alt={locale === "es" ? "Captura sanitizada de The Barber Central" : "Sanitized The Barber Central screenshot"}
-              loading="eager"
-              decoding="async"
-            />
-          </div>
-          <div class="evidence-shot evidence-shot-tertiary">
-            <img
-              src="/images/proof/nutri-plan-proof.png"
-              alt={locale === "es" ? "Captura sanitizada de Nutri Plan" : "Sanitized Nutri Plan screenshot"}
-              loading="eager"
-              decoding="async"
-            />
-          </div>
-          <div class="evidence-system-map" aria-hidden="true">
-            <img src="/images/proof/aohys-system-map.svg" alt="" loading="eager" decoding="async" />
+          <div class="hero-proof-ribbon" aria-label={homeContent.selectedOutcomesHeading}>
+            {homeContent.selectedOutcomes.slice(0, 3).map((outcome) => (
+              <a class="hero-proof-ribbon-item" href={outcome.path}>
+                <span>{outcome.label}</span>
+                <strong>{outcome.title}</strong>
+              </a>
+            ))}
           </div>
         </figure>
       </section>
@@ -219,7 +227,7 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         <div class="architecture-proof-stack">
           <figure class="architecture-proof-visual">
             <img
-              src="/images/proof/aohys-system-map.svg"
+              src="/images/generated/aohys-architecture-proof-surface.png"
               alt={locale === "es" ? "Mapa del sistema público y privado de AOHYS" : "AOHYS public and private system map"}
               loading="lazy"
               decoding="async"
@@ -335,8 +343,8 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </div>
         <figure class="case-index-proof-wall" aria-label={locale === "es" ? "Capturas públicas de proyectos seleccionados" : "Public screenshots from selected work"}>
           <img src="/images/proof/casa-roca-production.png" alt={locale === "es" ? "Captura pública de Casa Roca" : "Public Casa Roca screenshot"} loading="eager" decoding="async" />
-          <img src="/images/proof/barber-central-ops.png" alt={locale === "es" ? "Captura sanitizada de The Barber Central" : "Sanitized The Barber Central screenshot"} loading="eager" decoding="async" />
-          <img src="/images/proof/nutri-plan-proof.png" alt={locale === "es" ? "Captura sanitizada de Nutri Plan" : "Sanitized Nutri Plan screenshot"} loading="eager" decoding="async" />
+          <img src="/images/proof/barber-central-landing.png" alt={locale === "es" ? "Landing page de The Barber Central" : "The Barber Central landing page"} loading="eager" decoding="async" />
+          <img src="/images/proof/nutri-plan-dashboard.png" alt={locale === "es" ? "Dashboard administrativo de Nutri Plan" : "Nutri Plan administrative dashboard"} loading="eager" decoding="async" />
         </figure>
       </section>
 
@@ -420,7 +428,13 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </div>
         <div class="evidence-list">
           {caseStudyContent.publicEvidence.map((evidence) => (
-            <a class="evidence-link" href={evidence.href} aria-label={evidence.altText}>
+            <a
+              class="evidence-link"
+              href={evidence.href}
+              aria-label={evidence.altText}
+              target={evidence.href.startsWith("http") ? "_blank" : undefined}
+              rel={evidence.href.startsWith("http") ? "noreferrer" : undefined}
+            >
               <span>{evidence.label}</span>
               <strong>{evidence.description}</strong>
             </a>

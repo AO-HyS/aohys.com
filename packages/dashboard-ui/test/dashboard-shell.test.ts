@@ -17,12 +17,14 @@ describe("Dashboard UI Kit shell", () => {
 
     expect(html).toContain('data-dashboard-shell="authenticated"');
     expect(html).toContain('aria-label="Dashboard navigation"');
-    expect(html).toContain("Operations overview");
+    expect(html).toContain("Publishing room");
     expect(html).toContain("Leads");
     expect(html).toContain("Case studies");
     expect(html).toContain("Media");
     expect(html).toContain("Settings");
     expect(html).toContain("alejandro.ortiz@aohys.com");
+    expect(html).toContain("Sign out");
+    expect(html).toContain("/dashboard/sign-out");
     expect(html).toContain('data-dashboard-surface="overview"');
     expect(html).toContain('min-height: 44px');
     expect(html).not.toMatch(/<script/i);
@@ -152,12 +154,11 @@ describe("Dashboard UI Kit shell", () => {
     });
 
     expect(html).toContain('data-dashboard-surface="content-workflow"');
+    expect(html).toContain('data-content-surface="case-studies"');
     expect(html).toContain('data-workflow-state="save-success"');
     expect(html).toContain("Casa Roca");
     expect(html).toContain("/es/casos/casa-roca");
-    expect(html).toContain("Casa Roca public landing page screenshot.");
-    expect(html).toContain("PUBLIC_WHATSAPP_URL");
-    expect(html).toContain("2026.06");
+    expect(html).toContain("Proof asset status");
     expect(html).toContain("Content metadata saved.");
     expect(html).toContain("@media (max-width: 720px)");
     expect(html).toContain(".content-workflow");
@@ -177,6 +178,7 @@ describe("Dashboard UI Kit shell", () => {
     });
 
     expect(html).toContain('data-workflow-state="environment-unavailable"');
+    expect(html).toContain('data-content-surface="settings"');
     expect(html).toContain("Environment Contract is complete");
   });
 });

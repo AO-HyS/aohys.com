@@ -111,6 +111,11 @@ export async function handleDashboardRequest(
   const url = new URL(request.url);
   const path = normalizeDashboardPath(url.pathname);
   const environment = normalizeDashboardEnvironment(request, environmentInput);
+
+  if (path === "/dashboard/sign-out") {
+    return signOutDashboard();
+  }
+
   const contract = validateEnvironmentContract(environment.AOHYS_ENV, environment, {
     target: "dashboard-runtime",
   });
@@ -606,6 +611,32 @@ function redirectToSignIn(path: string): Response {
       location: `/dashboard/sign-in?callbackURL=${encodeURIComponent(path)}`,
     },
   });
+}
+
+const DASHBOARD_AUTH_COOKIE_NAMES = [
+  "better-auth.session_token",
+  "__Secure-better-auth.session_token",
+  "better-auth.state",
+  "__Secure-better-auth.state",
+] as const;
+
+function signOutDashboard(): Response {
+  const headers = new Headers(PRIVATE_NO_STORE_HEADERS);
+  headers.set("location", "/dashboard/sign-in");
+
+  for (const cookieName of DASHBOARD_AUTH_COOKIE_NAMES) {
+    headers.append("set-cookie", expireCookie(cookieName, cookieName.startsWith("__Secure-")));
+  }
+
+  return new Response(null, {
+    status: 302,
+    headers,
+  });
+}
+
+function expireCookie(cookieName: string, secure: boolean): string {
+  const secureDirective = secure ? "; Secure" : "";
+  return `${cookieName}=; Path=/; Max-Age=0; HttpOnly${secureDirective}; SameSite=Lax`;
 }
 
 function htmlResponse(html: string, status = 200): Response {

@@ -58,9 +58,10 @@ describe("public site source quality", () => {
     expect(footer).toContain("getUiCopy");
     expect(publicContentPage).toContain("getUiCopy");
     expect(publicContentPage).toContain("/images/proof/casa-roca-production.png");
-    expect(publicContentPage).toContain("/images/proof/barber-central-ops.png");
-    expect(publicContentPage).toContain("/images/proof/nutri-plan-proof.png");
-    expect(publicContentPage).toContain("/images/proof/aohys-system-map.svg");
+    expect(publicContentPage).toContain("/images/proof/barber-central-landing.png");
+    expect(publicContentPage).toContain("/images/proof/nutri-plan-dashboard.png");
+    expect(publicContentPage).toContain("/images/proof/enterprise-delivery-map.svg");
+    expect(publicContentPage).toContain("/images/generated/aohys-architecture-proof-surface.png");
     expect(posthogAnalytics).toContain("buildAnalyticsBootstrapPayload");
     expect(posthogClient).toContain("capture_pageview");
     expect(posthogClient).toContain("captureException");

@@ -41,7 +41,7 @@ describe("built public routes", () => {
       expect(includesAlternate(html, "es", seo.alternates.es)).toBe(true);
       expect(includesAlternate(html, "x-default", seo.alternates["x-default"])).toBe(true);
       expect(html).toContain(`<title>${seo.title}</title>`);
-      expect(html).not.toMatch(/lorem|todo|placeholder/i);
+      expect(html).not.toMatch(/lorem|\btodo\b|placeholder/i);
     }
   });
 
@@ -63,30 +63,30 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain('data-home-content-id="home"');
-    expect(homeHtml).toContain("I build software that makes the business easier to run.");
+    expect(homeHtml).toContain("I build software that helps businesses sell, operate, and ship.");
     expect(homeHtml).toContain("Work I can show");
-    expect(homeHtml).toContain("Real pages, real workflows, public-safe evidence.");
-    expect(homeHtml).toContain("/images/proof/aohys-system-map.svg");
+    expect(homeHtml).toContain("Real work, visible proof, private details protected.");
+    expect(homeHtml).toContain("/images/proof/enterprise-delivery-map.svg");
+    expect(homeHtml).toContain("/images/generated/aohys-architecture-proof-surface.png");
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
     expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
     expect(homeHtml).toContain('href="/case-studies/enterprise-systems"');
-    expect(homeHtml).toContain('aria-label="Public-safe evidence for Casa Roca"');
+    expect(homeHtml).toContain('aria-label="Casa Roca production website hero screenshot"');
     expect(homeHtml).toContain("/images/proof/casa-roca-production.png");
-    expect(homeHtml).toContain("/images/proof/barber-central-ops.png");
-    expect(homeHtml).toContain("/images/proof/nutri-plan-proof.png");
-    expect(homeHtml).not.toContain("/images/generated/");
+    expect(homeHtml).toContain("/images/proof/barber-central-landing.png");
+    expect(homeHtml).toContain("/images/proof/nutri-plan-dashboard.png");
     expect(homeHtml).toContain("/images/brand/aohys-logo.png");
     expect(homeHtml).toContain("WhatsApp");
     expect(homeHtml).not.toContain("Cloudflare · Convex · PostHog · Resend");
     expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Construyo software que hace más fácil operar el negocio.");
+    expect(spanishHomeHtml).toContain("Construyo software para vender, operar y lanzar sin fricción.");
     expect(spanishHomeHtml).toContain("Trabajo que puedo mostrar");
-    expect(spanishHomeHtml).toContain("Páginas reales, workflows reales, evidencia pública.");
+    expect(spanishHomeHtml).toContain("Trabajo real, pruebas visibles y detalles privados protegidos.");
     expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
-    expect(spanishHomeHtml).toContain('aria-label="Evidencia pública segura de Casa Roca"');
+    expect(spanishHomeHtml).toContain('aria-label="Hero del sitio Casa Roca en producción"');
     expect(spanishHomeHtml).toContain("WhatsApp");
   });
 
@@ -130,7 +130,7 @@ describe("built public routes", () => {
     expect(casaRocaHtml).toContain("Public evidence");
     expect(casaRocaHtml).toContain("Confidentiality note");
     expect(casaRocaHtml).toContain('href="https://casa-roca.mx"');
-    expect(casaRocaHtml).toContain('aria-label="Public-safe evidence for the Casa Roca production website"');
+    expect(casaRocaHtml).toContain('aria-label="Casa Roca production website"');
 
     expect(spanishCasaRocaHtml).toContain('data-case-study-content-id="case-study:casa-roca"');
     expect(spanishCasaRocaHtml).toContain("Prueba en producción");
@@ -144,7 +144,7 @@ describe("built public routes", () => {
     expect(spanishCasaRocaHtml).toContain("Evidencia pública");
     expect(spanishCasaRocaHtml).toContain("Nota de confidencialidad");
     expect(spanishCasaRocaHtml).toContain('href="https://casa-roca.mx"');
-    expect(spanishCasaRocaHtml).toContain('aria-label="Evidencia pública segura del sitio en producción de Casa Roca"');
+    expect(spanishCasaRocaHtml).toContain('aria-label="Sitio Casa Roca en producción"');
   });
 
   it("renders the selected work index and remaining case-study statuses from the graph", () => {

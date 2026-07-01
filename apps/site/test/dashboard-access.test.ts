@@ -64,8 +64,27 @@ describe("dashboard access guard", () => {
       }),
     );
     expect(html).toContain('data-dashboard-shell="authenticated"');
-    expect(html).toContain("Operations overview");
+    expect(html).toContain("Publishing room");
     expect(html).toContain("alejandro.ortiz@aohys.com");
+    expect(html).toContain("/dashboard/sign-out");
+  });
+
+  it("signs out by clearing Better Auth cookies and returning to sign-in", async () => {
+    const response = await handleDashboardRequest(
+      new Request("https://preview.aohys.com/dashboard/sign-out", {
+        headers: {
+          cookie: "better-auth.session_token=valid",
+        },
+      }),
+      {},
+      vi.fn(),
+    );
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe("/dashboard/sign-in");
+    expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
+    const setCookieHeaders = response.headers.getSetCookie().join("\n");
+    expect(setCookieHeaders).toContain("better-auth.session_token=; Path=/; Max-Age=0");
   });
 
   it("supports multiple admin allowlist emails for Google account and institutional email", async () => {
@@ -458,7 +477,7 @@ describe("dashboard access guard", () => {
     expect(html).toContain("Casa Roca");
     expect(html).toContain("/case-studies/casa-roca");
     expect(html).toContain("/es/casos/casa-roca");
-    expect(html).toContain("Casa Roca public landing page screenshot.");
+    expect(html).toContain("Proof asset status");
     expect(html).not.toContain("dashboard:lead-review");
     expect(fetchDashboard).toHaveBeenCalledWith(
       "https://effervescent-minnow-483.convex.site/dashboard/content",
