@@ -74,8 +74,8 @@ describe("built public routes", () => {
     expect(homeHtml).toContain('href="/case-studies/enterprise-systems"');
     expect(homeHtml).toContain('aria-label="Casa Roca production website hero screenshot"');
     expect(homeHtml).toContain("/images/proof/casa-roca-production.png");
-    expect(homeHtml).toContain("/images/proof/barber-central-landing.png");
-    expect(homeHtml).toContain("/images/proof/nutri-plan-dashboard.png");
+    expect(homeHtml).toContain("/images/proof/barber-central-proof-thumb.png");
+    expect(homeHtml).toContain("/images/proof/nutri-plan-proof-thumb.png");
     expect(homeHtml).toContain("/images/brand/aohys-logo.png");
     expect(homeHtml).toContain("WhatsApp");
     expect(homeHtml).not.toContain("Cloudflare · Convex · PostHog · Resend");
