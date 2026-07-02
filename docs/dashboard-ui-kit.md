@@ -21,6 +21,7 @@ The React app uses:
 
 - Vite for the SPA build;
 - TanStack Router for dashboard routes;
+- TanStack Table for lead review tables with sorting and pagination;
 - shadcn/ui with Radix primitives and Tailwind v4 tokens;
 - project-centered screens instead of unrelated case-study/media/settings pages.
 
@@ -46,11 +47,17 @@ Projects are the dashboard unit. A project owns:
 - public project URL;
 - achievements;
 - implementation structure notes;
-- status and evidence status;
+- status and public link state;
 - image metadata;
-- public-safe evidence links.
+- public-safe public links.
 
-The public Astro site still renders from the Public Content Graph for SEO stability. Dashboard edits are stored as Convex project drafts until a future publishing step promotes them into the static graph.
+The public Astro site still renders from the Public Content Graph for SEO stability. Dashboard edits are stored as Convex project drafts until a publishing step promotes reviewed content into the static graph and triggers the release train. Save draft is not publish.
+
+## Gaps To Close
+
+- Media upload: replace temporary public URL metadata with Cloudflare Images direct upload from the dashboard. This needs a narrow runtime secret and an upload URL endpoint; do not place a broad Cloudflare release token into browser code.
+- Publishing: add a reviewed publish action that writes content graph changes through source control or a safe build-dispatch workflow.
+- Resume editor: add Convex resume section drafts for summary, experience, projects, skills, and education before treating `/dashboard/resume` as a full content editor.
 
 ## Build
 

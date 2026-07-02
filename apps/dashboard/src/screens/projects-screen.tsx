@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ExternalLinkIcon, ImageIcon, LoaderCircleIcon, SaveIcon } from "lucide-react";
+import { ExternalLinkIcon, ImageIcon, LoaderCircleIcon, RocketIcon, SaveIcon } from "lucide-react";
 import {
   loadDashboardContent,
   saveMediaMetadata,
@@ -86,7 +86,7 @@ export function ProjectsScreen() {
     setNotice(null);
     try {
       await saveProjectDraft(payload);
-      setNotice(`${payload.title} ${payload.locale.toUpperCase()} draft saved.`);
+      setNotice(`${payload.title} ${payload.locale.toUpperCase()} draft saved in Convex. Public pages update only after the publish pipeline runs.`);
       await refresh();
     } catch (error) {
       setLoadError(error instanceof Error ? error.message : "Project draft could not be saved.");
@@ -101,7 +101,7 @@ export function ProjectsScreen() {
     setNotice(null);
     try {
       await saveMediaMetadata(payload);
-      setNotice("Image metadata saved to the project.");
+      setNotice("Image metadata saved to the project. Public pages update only after the publish pipeline runs.");
       await refresh();
     } catch (error) {
       setLoadError(error instanceof Error ? error.message : "Image metadata could not be saved.");
@@ -119,7 +119,7 @@ export function ProjectsScreen() {
         value,
         classification: "public-build-value",
       });
-      setNotice("Contact setting saved.");
+      setNotice("Contact setting saved. Public pages update only after the publish pipeline runs.");
       await refresh();
     } catch (error) {
       setLoadError(error instanceof Error ? error.message : "Contact setting could not be saved.");
@@ -139,8 +139,8 @@ export function ProjectsScreen() {
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Project workspace</h1>
           <p className="max-w-3xl text-muted-foreground">
-            Edit the project records that should eventually feed the public Astro content graph:
-            project text, achievements, structure, images, CTA, URL, and SEO metadata.
+            Edit private project drafts: story, outcome, structure, images, CTA, URL, and SEO metadata.
+            Saving keeps the data in the dashboard; publishing is the separate release step.
           </p>
         </div>
       </section>
@@ -157,25 +157,30 @@ export function ProjectsScreen() {
         </Alert>
       ) : null}
       {content ? (
-        <Tabs defaultValue={content.projects[0]?.contentId} className="flex flex-col gap-4">
-          <TabsList className="h-auto w-full justify-start overflow-x-auto">
-            {content.projects.map((project) => (
-              <TabsTrigger key={project.contentId} value={project.contentId}>
-                {project.title}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          {content.projects.map((project) => (
-            <TabsContent key={project.contentId} value={project.contentId} className="mt-0">
-              <ProjectEditor
-                project={project}
-                savingKey={savingKey}
-                onSaveMedia={handleSaveMedia}
-                onSaveProject={handleSaveProject}
-              />
-            </TabsContent>
-          ))}
-        </Tabs>
+        <>
+          <PublishBoundaryCard />
+          <Tabs defaultValue={content.projects[0]?.contentId} className="grid gap-4 lg:grid-cols-[15rem_minmax(0,1fr)]">
+            <TabsList className="h-auto w-full justify-start gap-1 overflow-x-auto bg-transparent p-0 lg:flex-col lg:items-stretch lg:overflow-visible">
+              {content.projects.map((project) => (
+                <TabsTrigger key={project.contentId} value={project.contentId} className="shrink-0 justify-start text-left lg:w-full">
+                  {project.title}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <div className="min-w-0">
+              {content.projects.map((project) => (
+                <TabsContent key={project.contentId} value={project.contentId} className="mt-0">
+                  <ProjectEditor
+                    project={project}
+                    savingKey={savingKey}
+                    onSaveMedia={handleSaveMedia}
+                    onSaveProject={handleSaveProject}
+                  />
+                </TabsContent>
+              ))}
+            </div>
+          </Tabs>
+        </>
       ) : null}
       {content ? (
         <ContactSettingsCard
@@ -210,12 +215,12 @@ function ProjectEditor({
             </CardDescription>
             <CardAction>
               <Badge variant={project.evidenceStatus === "published" ? "default" : "secondary"}>
-                {formatLabel(project.evidenceStatus)}
+                {formatReferenceState(project.evidenceStatus)}
               </Badge>
             </CardAction>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-3">
-            <Metric label="Status" value={formatLabel(project.status)} />
+            <Metric label="Status" value={formatProjectStatus(project.status)} />
             <Metric label="Sitemap" value={project.sitemapIncluded ? "Included" : "Noindex"} />
             <Metric label="Project URL" value={project.projectUrl ?? "Not set"} />
           </CardContent>
@@ -304,14 +309,14 @@ function ProjectLocaleForm({
                     <SelectContent>
                       <SelectGroup>
                         {caseStudyStatuses.map((status) => (
-                          <SelectItem key={status} value={status}>{formatLabel(status)}</SelectItem>
+                          <SelectItem key={status} value={status}>{formatProjectStatus(status)}</SelectItem>
                         ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
                 </Field>
                 <Field>
-                  <FieldLabel>Evidence</FieldLabel>
+                  <FieldLabel>Public link state</FieldLabel>
                   <Select
                     value={form.evidenceStatus}
                     onValueChange={(value) => update("evidenceStatus", value as DashboardEvidenceStatus)}
@@ -322,7 +327,7 @@ function ProjectLocaleForm({
                     <SelectContent>
                       <SelectGroup>
                         {evidenceStatuses.map((status) => (
-                          <SelectItem key={status} value={status}>{formatLabel(status)}</SelectItem>
+                          <SelectItem key={status} value={status}>{formatReferenceState(status)}</SelectItem>
                         ))}
                       </SelectGroup>
                     </SelectContent>
@@ -361,7 +366,7 @@ function ProjectLocaleForm({
             </FieldGroup>
           </FieldSet>
           <FieldSet>
-            <FieldLegend>Business proof</FieldLegend>
+            <FieldLegend>Business outcome</FieldLegend>
             <FieldGroup>
               <div className="grid gap-4 md:grid-cols-2">
                 <Field>
@@ -408,7 +413,7 @@ function ProjectImagesCard({ project }: { project: DashboardProject }) {
     <Card>
       <CardHeader>
         <CardTitle>Images</CardTitle>
-        <CardDescription>Assets attached to this project.</CardDescription>
+        <CardDescription>Public-safe media attached to this project.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {project.images.length > 0 ? project.images.map((image) => (
@@ -464,8 +469,8 @@ function ImageMetadataForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Add image metadata</CardTitle>
-        <CardDescription>Attach screenshots or Cloudflare-hosted assets to this project.</CardDescription>
+        <CardTitle>Add project media</CardTitle>
+        <CardDescription>Attach a public-safe image reference. Cloudflare upload is a separate backend pipeline.</CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -478,15 +483,36 @@ function ImageMetadataForm({
         >
           <FieldGroup>
             <Field>
+              <FieldLabel>Local file</FieldLabel>
+              <Input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) {
+                    return;
+                  }
+
+                  setForm((current) => ({
+                    ...current,
+                    storageKey: current.storageKey || file.name.replace(/\s+/g, "-").toLowerCase(),
+                  }));
+                }}
+              />
+              <FieldDescription>
+                Selection is ready for the Cloudflare direct-upload pipeline; this release still stores metadata and public URLs.
+              </FieldDescription>
+            </Field>
+            <Field>
               <FieldLabel>Storage key</FieldLabel>
               <Input
                 value={form.storageKey}
                 onChange={(event) => setForm((current) => ({ ...current, storageKey: event.target.value }))}
-                placeholder="proof/casa-roca-home"
+                placeholder="media/casa-roca-home"
               />
             </Field>
             <Field>
-              <FieldLabel>Public URL</FieldLabel>
+              <FieldLabel>Temporary public URL</FieldLabel>
               <Input
                 value={form.publicUrl ?? ""}
                 onChange={(event) => setForm((current) => ({ ...current, publicUrl: event.target.value }))}
@@ -552,7 +578,7 @@ function ContactSettingsCard({
     <Card id="contact-settings">
       <CardHeader>
         <CardTitle>Contact setting</CardTitle>
-        <CardDescription>Only the public WhatsApp/contact value belongs here.</CardDescription>
+        <CardDescription>Only the public WhatsApp/contact value belongs here. It publishes through the release path.</CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -585,6 +611,18 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
+function PublishBoundaryCard() {
+  return (
+    <Alert>
+      <RocketIcon data-icon="inline-start" />
+      <AlertTitle>Save draft is not publish</AlertTitle>
+      <AlertDescription>
+        Dashboard edits are private Convex drafts. The public Astro site still builds from the Public Content Graph until a publish action writes reviewed content into the repo and triggers the release train.
+      </AlertDescription>
+    </Alert>
+  );
+}
+
 function ProjectsSkeleton() {
   return (
     <div className="flex flex-col gap-4">
@@ -593,6 +631,28 @@ function ProjectsSkeleton() {
       <Skeleton className="h-96 w-full" />
     </div>
   );
+}
+
+function formatProjectStatus(value: string): string {
+  const labels: Record<string, string> = {
+    "production-proof": "Live site",
+    "active-build": "Active build",
+    "private-build": "Private system",
+    "enterprise-confidential": "Confidential enterprise work",
+    "engineering-practice": "Engineering practice",
+  };
+
+  return labels[value] ?? formatLabel(value);
+}
+
+function formatReferenceState(value: string): string {
+  const labels: Record<string, string> = {
+    missing: "No public link",
+    sanitized: "Sanitized reference",
+    published: "Public link live",
+  };
+
+  return labels[value] ?? formatLabel(value);
 }
 
 function formatLabel(value: string): string {

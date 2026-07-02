@@ -40,8 +40,8 @@
     "reviewPath": "Ruta de revisión",
     "reviewPathText": "feature → develop → main",
     "homeLead": "Diseño y construyo software que conecta intención de producto, confiabilidad de backend, claridad operativa y prácticas modernas de entrega. Este sitio es el ejemplo público revisable detrás de esa promesa.",
-    "proofHeadingSignal": "Evidencia de trabajo",
-    "proofHeading": "El shell empieza con evidencia, no con decoración.",
+    "proofHeadingSignal": "Trabajo visible",
+    "proofHeading": "El shell empieza con trabajo real, no con decoración.",
     "proofRows": [
       {
         "label": "Arquitectura",
@@ -103,8 +103,8 @@
     "consentLabel": "Entiendo que AOHYS usará esta información para responder mi solicitud.",
     "submitLabel": "Enviar solicitud",
     "sendingLabel": "Enviando...",
-    "successMessage": "Solicitud recibida. Responderé directamente.",
-    "degradedSuccessMessage": "Solicitud recibida. Si la notificación por correo se retrasa, todavía puedo verla en el dashboard.",
+    "successMessage": "Mensaje enviado. Responderé por la vía de contacto que seleccionaste.",
+    "degradedSuccessMessage": "Mensaje guardado. Puedo verlo en el dashboard aunque la notificación por correo se retrase.",
     "errorMessage": "El formulario no pudo enviarse ahora. Usa WhatsApp o correo directo.",
     "validationMessage": "Revisa los campos marcados antes de intentar de nuevo.",
     "emailErrorMessage": "No se pudo enviar el correo de notificación.",

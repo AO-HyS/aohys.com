@@ -18,6 +18,10 @@ Current app routes:
 
 Legacy URLs `/dashboard/case-studies`, `/dashboard/media`, and `/dashboard/settings` are handled by the same React app and land on the project workspace.
 
-The primary workflow is project-centered: title, summary, SEO description, CTA, project URL, achievements, structure notes, image metadata, evidence status, and public content graph IDs live together.
+The primary workflow is project-centered: title, summary, SEO description, CTA, project URL, achievements, structure notes, project media metadata, public link state, and public content graph IDs live together.
+
+Saving in the dashboard writes private drafts to Convex. It does not rebuild the Astro site by itself yet. The next publishing increment should add an explicit `Publish` action that validates drafts, writes the public content graph, and triggers the Cloudflare Pages build for the target environment.
+
+Media upload is also intentionally incomplete: the UI can capture local file intent and metadata, but production-ready upload still needs a direct Cloudflare Images or R2 upload flow so editors do not hand-enter public URLs.
 
 All private dashboard responses must remain `noindex, nofollow` and `cache-control: no-store`.

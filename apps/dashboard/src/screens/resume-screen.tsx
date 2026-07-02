@@ -63,9 +63,9 @@ export function ResumeScreen() {
       <section className="flex flex-col gap-3">
         <Badge className="w-fit" variant="secondary">Resume</Badge>
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Resume publishing</h1>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Resume workspace</h1>
           <p className="max-w-3xl text-muted-foreground">
-            Track downloadable resume versions. Resume copy remains graph-backed until the next publishing pipeline moves it into editable project and experience records.
+            Track downloadable PDF artifacts now. Editable summary, experience, skills, education, and project sections need the same draft-to-publish pipeline as project content.
           </p>
         </div>
       </section>
@@ -78,8 +78,8 @@ export function ResumeScreen() {
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <Card>
           <CardHeader>
-            <CardTitle>Resume versions</CardTitle>
-            <CardDescription>Downloadable PDF artifacts managed by the dashboard.</CardDescription>
+            <CardTitle>Downloadable PDFs</CardTitle>
+            <CardDescription>Public PDF artifacts managed by the dashboard.</CardDescription>
           </CardHeader>
           <CardContent>
             {!versions ? (
@@ -116,8 +116,8 @@ export function ResumeScreen() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Add version</CardTitle>
-            <CardDescription>Register a new public PDF artifact.</CardDescription>
+            <CardTitle>Add PDF artifact</CardTitle>
+            <CardDescription>Register the PDF path that the public resume can link to after publish.</CardDescription>
           </CardHeader>
           <CardContent>
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -156,6 +156,12 @@ export function ResumeScreen() {
           </CardContent>
         </Card>
       </div>
+      <Alert>
+        <AlertTitle>Resume sections are not editable yet</AlertTitle>
+        <AlertDescription>
+          The current dashboard only stores PDF artifacts. A proper resume editor needs Convex resume section drafts, repeatable experience/project rows, and a publish action that writes reviewed content into the Public Content Graph.
+        </AlertDescription>
+      </Alert>
     </>
   );
 }

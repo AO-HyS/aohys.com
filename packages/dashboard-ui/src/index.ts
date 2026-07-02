@@ -133,7 +133,7 @@ const NAV_ITEMS = [
   { href: "/dashboard/leads", label: "Leads" },
   { href: "/dashboard/case-studies", label: "Case studies" },
   { href: "/dashboard/media", label: "Media" },
-  { href: "/dashboard/settings", label: "Settings" },
+  { href: "/dashboard/settings", label: "Contact value" },
   { href: "/dashboard/resume", label: "Resume" },
 ] as const;
 
@@ -168,7 +168,7 @@ export function renderDashboardShell(input: DashboardShellInput): string {
         <div class="dashboard-overview-copy">
           <p class="dashboard-kicker">Today</p>
           <h2 id="dashboard-overview-title">Publishing room</h2>
-          <p>Use this dashboard to keep the public site honest: review leads, connect proof assets to case studies, and check the private settings that affect the Astro pages.</p>
+          <p>Use this dashboard to keep the public site honest: review leads, connect project media to case studies, and check the public contact value that affects the Astro pages.</p>
         </div>
         <div class="dashboard-release-card" aria-label="Dashboard operating boundary">
           <span>Private surface</span>
@@ -178,7 +178,7 @@ export function renderDashboardShell(input: DashboardShellInput): string {
       </section>
       <section class="dashboard-workflow-grid" aria-label="Dashboard workflows">
         ${renderWorkflowCard("/dashboard/leads", "Lead inbox", "Reply while the context is fresh.")}
-        ${renderWorkflowCard("/dashboard/case-studies", "Case-study evidence", "Check each public page has a link, status, and safe proof asset.")}
+        ${renderWorkflowCard("/dashboard/case-studies", "Project pages", "Check each public page has a link, status, and safe media.")}
         ${renderWorkflowCard("/dashboard/media", "Media queue", "Track screenshots, alt text, Cloudflare keys, and where each asset appears.")}
         ${renderWorkflowCard("/dashboard/settings", "Site settings", "Review public values such as contact paths, provider outputs, and policy text.")}
       </section>
@@ -247,7 +247,7 @@ function contentSurfaceForPath(path: string): DashboardContentSurface {
   if (normalizedPath === "/dashboard/media") {
     return {
       id: "media",
-      kicker: "Proof assets",
+      kicker: "Project media",
       title: "Media queue",
       body: "Register screenshots, generated images, alt text, storage keys, and the public content node each asset supports.",
     };
@@ -273,9 +273,9 @@ function contentSurfaceForPath(path: string): DashboardContentSurface {
 
   return {
     id: "case-studies",
-    kicker: "Public proof",
-    title: "Case-study evidence",
-    body: "Review the pages that sell the work: status, localized routes, sitemap visibility, and whether each case has proof that is safe to show.",
+    kicker: "Public pages",
+    title: "Project pages",
+    body: "Review the pages that sell the work: status, localized routes, sitemap visibility, and the public link or media that is safe to show.",
   };
 }
 
@@ -377,7 +377,7 @@ function renderCaseStudyRow(caseStudy: DashboardCaseStudyMetadata): string {
           </select>
         </label>
         <label>
-          <span>Evidence</span>
+          <span>Public link state</span>
           <select name="evidenceStatus">
             ${renderEvidenceStatusOption("missing", caseStudy.evidenceStatus)}
             ${renderEvidenceStatusOption("sanitized", caseStudy.evidenceStatus)}
@@ -459,7 +459,7 @@ function renderMediaReferencePanel(mediaItems: DashboardMediaMetadata[]): string
   return `
     <aside class="content-side-panel" aria-labelledby="case-media-status-title">
       <p class="dashboard-kicker">Asset health</p>
-      <h3 id="case-media-status-title">Proof asset status</h3>
+      <h3 id="case-media-status-title">Project media status</h3>
       <p>Case-study pages should not reuse the same weak screenshot. Prefer one strong asset per case, with clear alt text and a content ID.</p>
       <div class="dashboard-mini-ledger">
         <div><span>Published</span><strong>${publishedMedia}</strong></div>

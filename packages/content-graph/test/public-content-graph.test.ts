@@ -148,7 +148,7 @@ describe("Public Content Graph", () => {
       "case-study:engineering-practice",
     ]);
     expect(englishIndex.entries.map((entry) => entry.statusLabel)).toEqual([
-      "Production proof",
+      "Live hospitality site",
       "Active build",
       "Private build",
       "Enterprise/confidential",
@@ -195,7 +195,7 @@ describe("Public Content Graph", () => {
     const englishCaseStudy = getCaseStudyPageContent("case-study:casa-roca", "en");
     const spanishCaseStudy = getCaseStudyPageContent("case-study:casa-roca", "es");
 
-    expect(englishCaseStudy?.statusLabel).toBe("Production proof");
+    expect(englishCaseStudy?.statusLabel).toBe("Live hospitality site");
     expect(englishCaseStudy?.problem.title).toBe("Problem");
     expect(englishCaseStudy?.businessOutcome.title).toBe("Business outcome");
     expect(englishCaseStudy?.role.body).toMatch(/Public site delivery/i);
@@ -210,7 +210,7 @@ describe("Public Content Graph", () => {
       altText: "Casa Roca production website",
     });
     expect(englishCaseStudy?.confidentialityNote.body).toMatch(/operational data remain private/i);
-    expect(spanishCaseStudy?.statusLabel).toBe("Prueba en producción");
+    expect(spanishCaseStudy?.statusLabel).toBe("Sitio de hospitalidad en vivo");
     expect(spanishCaseStudy?.publicEvidence[0]?.altText).toBe(
       "Sitio Casa Roca en producción",
     );

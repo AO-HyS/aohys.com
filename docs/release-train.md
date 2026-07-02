@@ -106,7 +106,7 @@ Preview deploys then seed private dashboard working data through:
 pnpm run seed:dashboard:preview
 ```
 
-The seed runs only with `AOHYS_ENV=preview`. It uses the already-synced `CONVEX_SITE_URL` and server-only `DASHBOARD_API_TOKEN` from GitHub Environment `preview` to upsert bilingual project drafts and the public WhatsApp setting through Convex HTTP actions. It does not run for production and does not seed media rows, because media metadata creation is intentionally non-idempotent until the future Media Pipeline adds stable asset IDs.
+The seed runs only with `AOHYS_ENV=preview`. It uses the already-synced `CONVEX_SITE_URL` and server-only `DASHBOARD_API_TOKEN` from GitHub Environment `preview` to read existing dashboard content first, then create only missing bilingual project drafts and the public WhatsApp setting. It must not overwrite edits made in the dashboard. It does not run for production and does not seed media rows, because media metadata creation is intentionally non-idempotent until the future Media Pipeline adds stable asset IDs.
 
 The Cloudflare Pages project name is `aohys-com`. Site deploys use Wrangler Pages Direct Upload:
 

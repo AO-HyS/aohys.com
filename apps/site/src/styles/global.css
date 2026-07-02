@@ -1064,6 +1064,32 @@ h2 {
   line-height: 1.55;
 }
 
+.contact-status:not(:empty) {
+  border: 1px solid var(--color-rule);
+  padding: 0.85rem 0.95rem;
+  font-family: var(--font-display);
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+}
+
+.contact-status[data-state="success"] {
+  border-color: color-mix(in oklch, var(--color-mint) 55%, var(--color-rule));
+  background: color-mix(in oklch, var(--color-mint) 18%, var(--color-bg));
+  color: var(--color-mint-ink);
+}
+
+.contact-status[data-state="warning"] {
+  border-color: color-mix(in oklch, var(--color-primary) 55%, var(--color-rule));
+  background: color-mix(in oklch, var(--color-primary) 16%, var(--color-bg));
+  color: var(--color-primary-ink);
+}
+
+.contact-status[data-state="error"] {
+  border-color: color-mix(in oklch, var(--color-coral) 60%, var(--color-rule));
+  background: color-mix(in oklch, var(--color-coral) 12%, var(--color-bg));
+  color: var(--color-ink);
+}
+
 .field-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

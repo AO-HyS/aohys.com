@@ -93,6 +93,9 @@ describe("contact lead workflow", () => {
       from: "Alejandro Ortiz <contact@aohys.com>",
       replyTo: "alejandro.ortiz@aohys.com",
     });
+    expect(JSON.stringify(notifications[0])).toContain("Open lead inbox");
+    expect(JSON.stringify(notifications[0])).toContain("New project request");
+    expect(JSON.stringify(notifications[0])).toContain("https://preview.aohys.com/dashboard/leads");
     expect(analyticsEvents[0]).toMatchObject({
       event: "lead_submitted",
       distinctId: "lead:lead_123",

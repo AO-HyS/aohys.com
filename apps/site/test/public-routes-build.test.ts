@@ -119,7 +119,7 @@ describe("built public routes", () => {
 
     expect(casaRocaHtml).toContain('data-case-study-content-id="case-study:casa-roca"');
     expect(casaRocaHtml).toContain("Casa Roca");
-    expect(casaRocaHtml).toContain("Production proof");
+    expect(casaRocaHtml).toContain("Live hospitality site");
     expect(casaRocaHtml).toContain("Problem");
     expect(casaRocaHtml).toContain("Business outcome");
     expect(casaRocaHtml).toContain("Role");
@@ -127,13 +127,13 @@ describe("built public routes", () => {
     expect(casaRocaHtml).toContain("Architecture decisions");
     expect(casaRocaHtml).toContain("Execution highlights");
     expect(casaRocaHtml).toContain("Quality, security, and performance");
-    expect(casaRocaHtml).toContain("Public evidence");
+    expect(casaRocaHtml).toContain("Public links");
     expect(casaRocaHtml).toContain("Confidentiality note");
     expect(casaRocaHtml).toContain('href="https://casa-roca.mx"');
     expect(casaRocaHtml).toContain('aria-label="Casa Roca production website"');
 
     expect(spanishCasaRocaHtml).toContain('data-case-study-content-id="case-study:casa-roca"');
-    expect(spanishCasaRocaHtml).toContain("Prueba en producción");
+    expect(spanishCasaRocaHtml).toContain("Sitio de hospitalidad en vivo");
     expect(spanishCasaRocaHtml).toContain("Problema");
     expect(spanishCasaRocaHtml).toContain("Resultado de negocio");
     expect(spanishCasaRocaHtml).toContain("Rol");
@@ -141,7 +141,7 @@ describe("built public routes", () => {
     expect(spanishCasaRocaHtml).toContain("Decisiones de arquitectura");
     expect(spanishCasaRocaHtml).toContain("Ejecución");
     expect(spanishCasaRocaHtml).toContain("Calidad, seguridad y rendimiento");
-    expect(spanishCasaRocaHtml).toContain("Evidencia pública");
+    expect(spanishCasaRocaHtml).toContain("Enlaces públicos");
     expect(spanishCasaRocaHtml).toContain("Nota de confidencialidad");
     expect(spanishCasaRocaHtml).toContain('href="https://casa-roca.mx"');
     expect(spanishCasaRocaHtml).toContain('aria-label="Sitio Casa Roca en producción"');
@@ -161,7 +161,7 @@ describe("built public routes", () => {
     expect(indexHtml).toContain('href="/case-studies/nutri-plan"');
     expect(indexHtml).toContain('href="/case-studies/enterprise-systems"');
     expect(indexHtml).toContain('href="/case-studies/engineering-practice"');
-    expect(indexHtml).toContain("Production proof");
+    expect(indexHtml).toContain("Live hospitality site");
     expect(indexHtml).toContain("Active build");
     expect(indexHtml).toContain("Private build");
     expect(indexHtml).toContain("Enterprise/confidential");
@@ -173,7 +173,7 @@ describe("built public routes", () => {
     expect(spanishIndexHtml).toContain('href="/es/casos/nutri-plan"');
     expect(spanishIndexHtml).toContain('href="/es/casos/sistemas-enterprise"');
     expect(spanishIndexHtml).toContain('href="/es/casos/practica-de-ingenieria"');
-    expect(spanishIndexHtml).toContain("Prueba en producción");
+    expect(spanishIndexHtml).toContain("Sitio de hospitalidad en vivo");
     expect(spanishIndexHtml).toContain("Build activo");
     expect(spanishIndexHtml).toContain("Build privado");
     expect(spanishIndexHtml).toContain("Enterprise/confidencial");
@@ -246,7 +246,7 @@ describe("built public routes", () => {
     expect(contactHtml).toContain('data-retry-label=');
     expect(contactHtml).toContain("Please review the highlighted fields before retrying.");
     expect(contactHtml).toContain("The notification email could not be sent.");
-    expect(contactHtml).toContain("Request received. If the email notification is delayed, I can still see it in the dashboard.");
+    expect(contactHtml).toContain("Message saved. I can see it in the dashboard even if the email notification is delayed.");
     expect(contactHtml).toContain("Try again, or use WhatsApp or email directly.");
     expect(contactHtml).toContain("WhatsApp");
     expect(contactHtml).toContain("I understand AOHYS will use this information to respond to my request.");
@@ -271,7 +271,7 @@ describe("built public routes", () => {
     expect(spanishContactHtml).toContain('data-retry-label=');
     expect(spanishContactHtml).toContain("Revisa los campos marcados antes de intentar de nuevo.");
     expect(spanishContactHtml).toContain("No se pudo enviar el correo de notificación.");
-    expect(spanishContactHtml).toContain("Solicitud recibida. Si la notificación por correo se retrasa, todavía puedo verla en el dashboard.");
+    expect(spanishContactHtml).toContain("Mensaje guardado. Puedo verlo en el dashboard aunque la notificación por correo se retrase.");
     expect(spanishContactHtml).toContain("Intenta de nuevo o usa WhatsApp/correo directo.");
     expect(spanishContactHtml).toContain("WhatsApp");
     expect(spanishContactHtml).toContain("Entiendo que AOHYS usará esta información para responder mi solicitud.");
