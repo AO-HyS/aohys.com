@@ -21,7 +21,7 @@ describe("Dashboard UI Kit shell", () => {
     expect(html).toContain("Leads");
     expect(html).toContain("Case studies");
     expect(html).toContain("Media");
-    expect(html).toContain("Settings");
+    expect(html).toContain("Contact value");
     expect(html).toContain("alejandro.ortiz@aohys.com");
     expect(html).toContain("Sign out");
     expect(html).toContain("/dashboard/sign-out");
@@ -158,7 +158,7 @@ describe("Dashboard UI Kit shell", () => {
     expect(html).toContain('data-workflow-state="save-success"');
     expect(html).toContain("Casa Roca");
     expect(html).toContain("/es/casos/casa-roca");
-    expect(html).toContain("Proof asset status");
+    expect(html).toContain("Project media status");
     expect(html).toContain("Content metadata saved.");
     expect(html).toContain("@media (max-width: 720px)");
     expect(html).toContain(".content-workflow");

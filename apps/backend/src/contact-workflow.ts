@@ -181,6 +181,7 @@ function buildLeadNotification(
   leadId: string,
   lead: PreparedContactLead,
   values: Record<string, string | undefined>,
+  environment: EnvironmentName,
 ): LeadNotification {
   const to = values.LEAD_NOTIFICATION_EMAIL;
   const from = values.RESEND_FROM;
@@ -190,25 +191,33 @@ function buildLeadNotification(
   }
 
   const subject = `New AOHYS lead: ${lead.intent}`;
+  const dashboardUrl = values.PUBLIC_SITE_URL
+    ? `${values.PUBLIC_SITE_URL.replace(/\/$/, "")}/dashboard/leads`
+    : undefined;
   const text = [
     `Lead: ${lead.name}`,
     `Email: ${lead.email}`,
     `Preferred contact: ${lead.preferredContactPath}`,
     lead.phone ? `Phone: ${lead.phone}` : undefined,
     lead.company ? `Company: ${lead.company}` : undefined,
+    `Intent: ${lead.intent}`,
+    `Locale: ${lead.locale}`,
+    `Environment: ${environment}`,
     `Source: ${lead.sourcePath}`,
+    lead.referrer ? `Referrer: ${lead.referrer}` : undefined,
+    dashboardUrl ? `Dashboard: ${dashboardUrl}` : undefined,
     "",
     lead.message,
   ]
     .filter(Boolean)
     .join("\n");
 
-  const html = [
-    `<p><strong>Lead:</strong> ${escapeHtml(lead.name)}</p>`,
-    `<p><strong>Email:</strong> ${escapeHtml(lead.email)}</p>`,
-    `<p><strong>Preferred contact:</strong> ${escapeHtml(lead.preferredContactPath)}</p>`,
-    `<p>${escapeHtml(lead.message)}</p>`,
-  ].join("");
+  const html = renderLeadNotificationEmail({
+    leadId,
+    lead,
+    dashboardUrl,
+    environment,
+  });
 
   return {
     leadId,
@@ -219,6 +228,86 @@ function buildLeadNotification(
     text,
     html,
   };
+}
+
+function renderLeadNotificationEmail({
+  leadId,
+  lead,
+  dashboardUrl,
+  environment,
+}: {
+  leadId: string;
+  lead: PreparedContactLead;
+  dashboardUrl?: string;
+  environment: EnvironmentName;
+}): string {
+  const escapedMessage = escapeHtml(lead.message).replace(/\n/g, "<br />");
+  const rows = [
+    ["Name", lead.name],
+    ["Email", lead.email],
+    ["Preferred contact", lead.preferredContactPath],
+    ["Intent", lead.intent],
+    ["Locale", lead.locale],
+    ["Environment", environment],
+    ["Source", lead.sourcePath],
+    lead.company ? ["Company", lead.company] : undefined,
+    lead.phone ? ["Phone", lead.phone] : undefined,
+    lead.referrer ? ["Referrer", lead.referrer] : undefined,
+  ].filter(Boolean) as Array<[string, string]>;
+
+  const metadataRows = rows.map(([label, value]) => `
+    <tr>
+      <td style="padding: 10px 0; color: #4b5f64; font-size: 12px; font-weight: 700; text-transform: uppercase;">${escapeHtml(label)}</td>
+      <td style="padding: 10px 0; color: #102126; font-size: 14px;">${escapeHtml(value)}</td>
+    </tr>
+  `).join("");
+
+  const dashboardLink = dashboardUrl
+    ? `<a href="${escapeHtml(dashboardUrl)}" style="display: inline-block; padding: 12px 16px; background: #0f8a73; color: #ffffff; font-size: 14px; font-weight: 700; text-decoration: none;">Open lead inbox</a>`
+    : "";
+
+  return `<!doctype html>
+<html lang="en">
+  <body style="margin: 0; background: #edf8f5; color: #102126; font-family: Arial, Helvetica, sans-serif;">
+    <div style="display: none; max-height: 0; overflow: hidden;">New AOHYS lead from ${escapeHtml(lead.name)}.</div>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: #edf8f5; padding: 32px 16px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 640px; background: #ffffff; border: 1px solid #cfe4df;">
+            <tr>
+              <td style="padding: 28px 28px 20px;">
+                <p style="margin: 0 0 10px; color: #0f8a73; font-size: 12px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase;">AOHYS contact</p>
+                <h1 style="margin: 0; color: #102126; font-size: 28px; line-height: 1.12;">New ${escapeHtml(lead.intent)} request</h1>
+                <p style="margin: 12px 0 0; color: #4b5f64; font-size: 15px; line-height: 1.6;">Reply directly to this email. The sender is already set as reply-to.</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 0 28px 8px;">
+                <div style="background: #fff7dc; border: 1px solid #efd083; padding: 16px 18px;">
+                  <p style="margin: 0 0 8px; color: #6d4b00; font-size: 12px; font-weight: 800; text-transform: uppercase;">Message</p>
+                  <p style="margin: 0; color: #102126; font-size: 16px; line-height: 1.65;">${escapedMessage}</p>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 28px 4px;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
+                  ${metadataRows}
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 18px 28px 30px;">
+                ${dashboardLink}
+                <p style="margin: 18px 0 0; color: #6b7c80; font-size: 12px; line-height: 1.5;">Lead ID: ${escapeHtml(leadId)}. This email intentionally avoids analytics payloads and only includes the submitted contact context.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
 }
 
 function buildLeadAnalyticsEvent(
@@ -275,7 +364,7 @@ export async function submitContactLead(
   if (hasNotificationSettings(context.values)) {
     try {
       const notification = await context.adapters.sendNotification(
-        buildLeadNotification(leadId, lead, context.values),
+        buildLeadNotification(leadId, lead, context.values, context.environment),
       );
       notificationId = notification.notificationId;
       notificationStatus = "sent";

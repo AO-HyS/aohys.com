@@ -128,14 +128,14 @@
     "path": "/es/casos/casa-roca",
     "title": "Casa Roca",
     "summary": "Un sitio de hospitalidad en vivo con historia pública clara, contacto directo y disciplina de producción.",
-    "seoDescription": "Casa Roca es evidencia en producción de entrega para un sitio público de negocio, páginas listas para búsqueda, rendimiento y disciplina de release.",
+    "seoDescription": "Casa Roca es un sitio de hospitalidad en vivo para una estancia boutique en Veracruz, con historia clara del lugar, contacto directo, páginas listas para búsqueda y disciplina de release.",
     "primaryActionLabel": "Crear algo similar",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
-      "statusLabel": "Prueba en producción",
-      "overview": "Casa Roca es un sitio de hospitalidad en producción para una estancia boutique en Roca Partida, Veracruz. La prueba útil es simple: el sitio existe, explica el lugar, da un camino de contacto y mantiene la operación privada fuera de la superficie pública.",
+      "statusLabel": "Sitio de hospitalidad en vivo",
+      "overview": "Casa Roca es el sitio público de una estancia boutique en Roca Partida, Veracruz. Ayuda a que los huéspedes entiendan rápido el lugar, decidan si encaja con su viaje y contacten al negocio sin exponer reservaciones ni operación interna.",
       "problem": {
         "title": "Problema",
         "body": "El negocio necesitaba una presencia pública capaz de comunicar lugar, experiencia y credibilidad sin exponer detalles de reservaciones, trabajo interno de media ni administración privada."
@@ -154,17 +154,17 @@
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
-        "body": "Mantener páginas públicas rápidas e inspeccionables, tratar contenido bilingüe y metadata SEO como parte central, y separar evidencia pública de workflows privados para presentar el trabajo con seguridad."
+        "body": "Mantener las páginas para huéspedes rápidas e inspeccionables, tratar contenido bilingüe y metadata SEO como parte central, y dejar reservaciones y administración fuera del sitio público."
       },
       "executionHighlights": {
         "title": "Ejecución",
-        "body": "El trabajo priorizó posicionamiento claro de hospitalidad, rutas públicas localizadas, disciplina de despliegue, seguridad de contenido y una ruta de evidencia revisable sin acceso privilegiado."
+        "body": "El trabajo priorizó posicionamiento claro de hospitalidad, rutas localizadas, disciplina de despliegue, seguridad de contenido y un sitio en vivo que cualquiera puede abrir sin acceso privilegiado."
       },
       "qualitySecurityPerformance": {
         "title": "Calidad, seguridad y rendimiento",
-        "body": "La superficie pública se verifica como evidencia en producción, evita datos operativos sensibles, usa metadata explícita y está planteada alrededor de páginas rápidas, estables y legibles para búsqueda."
+        "body": "La superficie pública está en vivo, evita datos operativos sensibles, usa metadata explícita y está planteada alrededor de páginas rápidas, estables y legibles para búsqueda."
       },
-      "publicEvidenceTitle": "Evidencia pública",
+      "publicEvidenceTitle": "Enlaces públicos",
       "publicEvidence": [
         {
           "label": "Sitio en producción",
@@ -221,7 +221,7 @@
         "title": "Calidad, seguridad y rendimiento",
         "body": "El proyecto enfatiza entornos protegidos, comandos de verificación explícitos, browser QA, source checks y manejo cuidadoso de auth/configuración de proveedores antes del lanzamiento público."
       },
-      "publicEvidenceTitle": "Evidencia pública",
+      "publicEvidenceTitle": "Enlaces públicos",
       "publicEvidence": [
         {
           "label": "Preview de desarrollo",
@@ -278,7 +278,7 @@
         "title": "Calidad, seguridad y rendimiento",
         "body": "El proyecto usa QA funcional, route sweeps, separación de ambientes, ramas protegidas de release y validación en preview cuando cambian auth, routing, UI o comportamiento."
       },
-      "publicEvidenceTitle": "Evidencia pública",
+      "publicEvidenceTitle": "Enlaces públicos",
       "publicEvidence": [
         {
           "label": "Preview sanitizado",
@@ -335,7 +335,7 @@
         "title": "Calidad, seguridad y rendimiento",
         "body": "El trabajo depende de change management cuidadoso, awareness de producción, sensibilidad de datos, handoffs claros y pruebas alrededor de workflows con riesgo operativo."
       },
-      "publicEvidenceTitle": "Evidencia pública",
+      "publicEvidenceTitle": "Enlaces públicos",
       "publicEvidence": [
         {
           "label": "Resumen confidencial",
@@ -392,13 +392,13 @@
         "title": "Calidad, seguridad y rendimiento",
         "body": "Calidad incluye source checks, type checks, pruebas de comportamiento, build verification, visual QA, cero datos privados en rutas públicas y deploy paths auditables."
       },
-      "publicEvidenceTitle": "Evidencia pública",
+      "publicEvidenceTitle": "Enlaces públicos",
       "publicEvidence": [
         {
-          "label": "Evidencia de proceso",
+          "label": "Proceso de ingeniería",
           "description": "Source público, pruebas, documentación e historial de PRs muestran el workflow de ingeniería detrás del sitio.",
           "href": "https://github.com/AO-HyS/aohys.com",
-          "altText": "Evidencia pública segura de la práctica de ingeniería de AOHYS",
+          "altText": "Proceso público de ingeniería de AOHYS",
           "kind": "architecture-note",
           "publicSafe": true
         }

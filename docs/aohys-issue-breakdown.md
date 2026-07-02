@@ -85,7 +85,7 @@ Build the architecture page as a Public Content Graph node explaining the public
 
 **User stories covered:** 11, 32, 34, 46, 47, 50.
 
-Create the reusable case-study detail experience from graph-backed case-study nodes, then ship Casa Roca as the first complete production-proof case study with public evidence, confidentiality notes, responsive layout, and SEO metadata.
+Create the reusable case-study detail experience from graph-backed case-study nodes, then ship Casa Roca as the first complete live-site case study with public links/media, confidentiality notes, responsive layout, and SEO metadata.
 
 ### 7. Remaining Selected Work Case Studies
 
@@ -216,7 +216,7 @@ The Release Train should create locality for deployment rules and leverage for f
 
 The Environment Contract should create locality for secrets, public variables, provider outputs, and environment validation. App code, dashboard code, Convex functions, and release workflows should cross the same validation seam instead of reading ad hoc provider variables directly.
 
-The Public Content Graph should create locality for bilingual routes, SEO metadata, sitemap eligibility, evidence assets, case-study structure, resume content, and future dashboard publishing. Astro route files should consume the graph rather than becoming independent sources of content truth.
+The Public Content Graph should create locality for bilingual routes, SEO metadata, sitemap eligibility, public media, case-study structure, resume content, and future dashboard publishing. Astro route files should consume the graph rather than becoming independent sources of content truth.
 
 The dashboard app should create locality for private routes, project workflows, forms, lists/details, state handling, mobile behavior, and shadcn/ui primitive usage. Authenticated dashboard routes should render through the React app while Pages Functions own auth and private Convex proxying.
 

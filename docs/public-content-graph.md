@@ -1,6 +1,6 @@
 # AOHYS Public Content Graph
 
-This document defines the Public Content Graph module for `aohys.com`. It exists so Astro routes, localized slugs, SEO metadata, sitemap rules, evidence assets, case studies, resume content, and future dashboard editing all share one stable content model.
+This document defines the Public Content Graph module for `aohys.com`. It exists so Astro routes, localized slugs, SEO metadata, sitemap rules, public media, case studies, resume content, and future dashboard editing all share one stable content model.
 
 ## Goal
 
@@ -67,7 +67,7 @@ The implementation can evolve, but every public content node should carry these 
 - robots/sitemap eligibility;
 - draft or published state;
 - source boundary classification;
-- evidence assets;
+- public media and links;
 - confidentiality note when relevant.
 
 Case-study nodes should additionally carry:
@@ -80,7 +80,7 @@ Case-study nodes should additionally carry:
 - architecture decisions;
 - execution highlights;
 - quality/security/performance notes;
-- public evidence links or assets.
+- public links or media.
 
 Resume nodes should additionally carry:
 
@@ -99,7 +99,7 @@ Default public sitemap entries:
 
 - published English public pages;
 - published Spanish public pages;
-- case-study detail pages with safe public evidence;
+- case-study detail pages with safe public links and media;
 - resume page and dynamic resume URL.
 
 Excluded from sitemap:
@@ -113,21 +113,21 @@ Excluded from sitemap:
 
 Robots/noindex behavior should also be graph-driven for public pages and explicitly enforced for private routes.
 
-## Evidence Assets
+## Public Media
 
-Evidence assets are references that support public claims: sanitized screenshots, public URLs, generated editorial images, architecture diagrams, PDF artifacts, and source links.
+Public media references support public pages: sanitized screenshots, public URLs, generated editorial images, architecture diagrams, PDF artifacts, and source links.
 
 Rules:
 
-- Evidence assets should not expose private data, secrets, private code, or internal client material.
+- Public media should not expose private data, secrets, private code, or internal client material.
 - Screenshots carry most proof; generated images should be purposeful and limited.
 - Media storage and optimization stay behind the future Media Pipeline module, while the graph stores usage intent and safe references.
-- The graph may include stable public `src` references for first-party proof assets that ship with the Astro site. Those paths must point to sanitized assets only.
-- Alt text is part of the content node or evidence asset metadata, not an afterthought in page markup.
+- The graph may include stable public `src` references for first-party media that ships with the Astro site. Those paths must point to sanitized assets only.
+- Alt text is part of the content node or public media metadata, not an afterthought in page markup.
 
 ## Dashboard Dependency
 
-The private dashboard can now manage metadata for case-study content, media, site settings, and resume versions. It must not bypass the Public Content Graph. Dashboard workflows should mutate content through a publishing seam that preserves stable IDs, locale variants, SEO fields, sitemap rules, and evidence safety. The current implementation keeps public copy in the graph and stores dashboard-managed metadata in Convex.
+The private dashboard can now manage metadata for case-study content, media, site settings, and resume versions. It must not bypass the Public Content Graph. Dashboard workflows should mutate content through a publishing seam that preserves stable IDs, locale variants, SEO fields, sitemap rules, and public-media safety. The current implementation keeps public copy in the graph and stores dashboard-managed metadata in Convex.
 
 ## Current Test Surface
 
@@ -140,13 +140,13 @@ The Public Content Graph is tested with Vitest through route and metadata behavi
 - `/dashboard` and private routes are excluded;
 - missing locale variants fail explicitly.
 
-Astro route smoke tests consume the built site output instead of using ad hoc Node assertions. Later tracers should cover richer case-study content shape, resume/PDF relationships, evidence asset safety, and dashboard publishing invariants.
+Astro route smoke tests consume the built site output instead of using ad hoc Node assertions. Later tracers should cover richer case-study content shape, resume/PDF relationships, public-media safety, and dashboard publishing invariants.
 
-The current home tracer also uses the graph for the public proof narrative: selected outcomes resolve to localized case-study paths, evidence entries carry public-safe labels, optional sanitized image sources, and accessible text, and the contact CTA keeps the institutional email plus WhatsApp path in the same locale-aware content seam.
+The current home tracer also uses the graph for the public work narrative: selected outcomes resolve to localized case-study paths, public entries carry safe labels, optional sanitized image sources, and accessible text, and the contact CTA keeps the institutional email plus WhatsApp path in the same locale-aware content seam.
 
 The architecture page also resolves its public source framing through the graph. Its content owns the public/private boundary note, source links, Release Train, Environment Contract, Public Content Graph, and provider responsibility sections for English and Spanish routes.
 
-Casa Roca is the first complete graph-backed case study. `case-study:casa-roca` owns its localized status label, overview, problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance notes, public evidence link, alt text, and confidentiality note. Case-study routes without complete detail content continue to render skeleton route pages until their public-safe content is added.
+Casa Roca is the first complete graph-backed case study. `case-study:casa-roca` owns its localized status label, overview, problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance notes, public link, alt text, and confidentiality note. Case-study routes without complete detail content continue to render skeleton route pages until their public-safe content is added.
 
 The selected-work index is also graph-backed. It resolves Casa Roca, The Barber Central, Nutri Plan, Enterprise Systems, and Engineering Practice from stable case-study IDs, localized paths, explicit project statuses, public-safe evidence labels, and the same confidentiality-aware detail shape.
 

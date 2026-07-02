@@ -15,7 +15,7 @@ const cards = [
   {
     to: "/projects",
     title: "Projects",
-    body: "Manage public story, SEO, CTA, proof images, achievements, and implementation notes.",
+    body: "Manage public story, SEO, CTA, project media, achievements, and implementation notes.",
     icon: BriefcaseBusinessIcon,
   },
   {
@@ -43,7 +43,7 @@ export function DashboardHome() {
           </h1>
           <p className="max-w-3xl text-muted-foreground">
             The Astro site stays static and SEO-focused. This React dashboard manages the private
-            drafts, metadata, proof assets, leads, and resume artifacts that prepare changes for review.
+            drafts, metadata, project media, leads, and resume artifacts that prepare changes for review.
           </p>
         </div>
       </section>

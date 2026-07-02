@@ -10,10 +10,10 @@ Astro routes, sitemap generation, metadata helpers, resume rendering, case-study
 - English and Spanish route paths;
 - canonical URLs and language alternates;
 - localized titles, summaries, SEO titles, and SEO descriptions;
-- graph-backed home proof narrative, selected outcomes, evidence labels, and contact CTA data;
+- graph-backed home narrative, selected outcomes, public link/media labels, and contact CTA data;
 - graph-backed architecture/source-framing content and source documentation links;
 - graph-backed selected-work index entries with status labels and localized paths;
-- graph-backed case-study detail content, public evidence, and confidentiality notes;
+- graph-backed case-study detail content, public links/media, and confidentiality notes;
 - graph-backed resume content, contact links, dynamic context links, and PDF artifact metadata;
 - sitemap eligibility;
 - private dashboard route exclusions;
@@ -24,7 +24,7 @@ Astro routes, sitemap generation, metadata helpers, resume rendering, case-study
 - `getPublicRouteMap()` lists all public route variants.
 - `resolvePublicPath(pathname)` resolves a URL path to its graph route or returns `null` for unknown/private paths.
 - `getLocalizedPath(contentId, locale)` returns the route path for a stable content ID.
-- `getHomePageContent(locale)` returns the localized home proof narrative with graph-backed case-study paths.
+- `getHomePageContent(locale)` returns the localized home narrative with graph-backed case-study paths.
 - `getArchitecturePageContent(locale)` returns the localized architecture page framing and source links.
 - `getCaseStudyIndexContent(locale)` returns the localized selected-work index entries.
 - `getCaseStudyPageContent(contentId, locale)` returns localized case-study detail content when a case study has a complete public page.

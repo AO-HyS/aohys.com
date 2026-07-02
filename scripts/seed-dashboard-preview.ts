@@ -26,6 +26,17 @@ const DRY_RUN_FLAG = "--dry-run";
 
 type ProjectId = (typeof PROJECT_IDS)[number];
 
+interface DashboardSeedState {
+  projectDrafts?: Array<{
+    contentId: string;
+    locale: Locale;
+  }>;
+  settings?: Array<{
+    key: string;
+    environment: string;
+  }>;
+}
+
 interface ProjectSeedCopy {
   summary: string;
   seoDescription: string;
@@ -49,33 +60,33 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
     projectUrl: "https://casa-roca.mx",
     copy: {
       en: {
-        summary: "Live hospitality site for Casa Roca: clear first impression, direct inquiry path, and private operations kept out of the public surface.",
-        seoDescription: "Casa Roca is a live hospitality website delivered with bilingual public routes, search-ready metadata, production verification, and a safe boundary between guest-facing content and private operations.",
+        summary: "Live hospitality site for Casa Roca: place story, guest inquiry path, and private operations kept out of the public surface.",
+        seoDescription: "Casa Roca is a live hospitality website for a boutique stay in Veracruz, with clear place storytelling, direct guest inquiry paths, search-ready pages, and production release discipline.",
         ctaLabel: "Open live site",
         ctaHref: "https://casa-roca.mx",
         achievements: [
-          "Production site with a public URL a client or recruiter can inspect.",
-          "Clear hospitality story, location context, and direct contact path.",
-          "Public proof assets without exposing bookings, credentials, analytics, or admin workflows.",
+          "Guests can understand the place, location context, and contact path from one public website.",
+          "The business gets a stable public destination for referrals, search traffic, and direct inquiries.",
+          "Reservations, credentials, analytics, and admin workflows stay outside the public case study.",
         ].join("\n"),
         structureNotes: [
-          "Public evidence: live website and production screenshot.",
+          "Public link: live website and production screenshot.",
           "Public content: localized route, SEO metadata, case-study narrative, and CTA.",
           "Private boundary: booking/admin/customer data stays outside the public case study.",
         ].join("\n"),
       },
       es: {
-        summary: "Sitio de hospitalidad en producción para Casa Roca: primera impresión clara, contacto directo y operación privada fuera de la superficie pública.",
-        seoDescription: "Casa Roca es un sitio de hospitalidad en producción con rutas bilingües, metadata lista para búsqueda, verificación de release y un límite seguro entre contenido público y operación privada.",
+        summary: "Sitio de hospitalidad en vivo para Casa Roca: historia del lugar, contacto directo y operación privada fuera de la superficie pública.",
+        seoDescription: "Casa Roca es un sitio de hospitalidad en vivo para una estancia boutique en Veracruz, con historia clara del lugar, contacto directo, páginas listas para búsqueda y disciplina de release.",
         ctaLabel: "Abrir sitio en vivo",
         ctaHref: "https://casa-roca.mx",
         achievements: [
-          "Sitio en producción con una URL pública que se puede revisar.",
-          "Historia de hospitalidad clara, contexto del lugar y camino directo de contacto.",
-          "Evidencia pública sin exponer reservaciones, credenciales, analíticas ni workflows administrativos.",
+          "Los huéspedes pueden entender el lugar, el contexto y el camino de contacto desde un sitio público.",
+          "El negocio obtiene un destino estable para referencias, búsqueda y solicitudes directas.",
+          "Reservaciones, credenciales, analíticas y workflows administrativos quedan fuera del caso público.",
         ].join("\n"),
         structureNotes: [
-          "Evidencia pública: sitio en vivo y screenshot de producción.",
+          "Enlace público: sitio en vivo y screenshot de producción.",
           "Contenido público: ruta localizada, metadata SEO, caso de estudio y CTA.",
           "Límite privado: datos de booking, administración y clientes quedan fuera del caso público.",
         ].join("\n"),
@@ -98,7 +109,7 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
           "Development evidence is public-safe while provider data and customer records stay private.",
         ].join("\n"),
         structureNotes: [
-          "Public evidence: development landing page and sanitized product direction.",
+          "Public link: development landing page and sanitized product direction.",
           "Core modules: booking, availability, staff/customer communication, payments, and dashboard operations.",
           "Boundary: active build; do not publish provider dashboards, secrets, customer data, or unfinished internals.",
         ].join("\n"),
@@ -114,7 +125,7 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
           "La evidencia de desarrollo es pública y segura; datos de proveedores y clientes permanecen privados.",
         ].join("\n"),
         structureNotes: [
-          "Evidencia pública: landing de desarrollo y dirección de producto sanitizada.",
+          "Enlace público: landing de desarrollo y dirección de producto sanitizada.",
           "Módulos: booking, disponibilidad, comunicación, pagos y operaciones del dashboard.",
           "Límite: build activo; no publicar dashboards de proveedores, secretos, datos de clientes ni internals sin terminar.",
         ].join("\n"),
@@ -137,7 +148,7 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
           "Uses preview validation, route checks, and backend state discipline for a private active build.",
         ].join("\n"),
         structureNotes: [
-          "Public evidence: sanitized screenshots and architecture notes only.",
+          "Public link: sanitized screenshots and architecture notes only.",
           "Core modules: plans, client workflows, dashboard/admin surfaces, mobile access, and content delivery.",
           "Boundary: no health records, client data, private code, credentials, or provider details in public content.",
         ].join("\n"),
@@ -153,7 +164,7 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
           "Usa validación en preview, route checks y disciplina de estado backend para un build activo privado.",
         ].join("\n"),
         structureNotes: [
-          "Evidencia pública: sólo screenshots sanitizados y notas de arquitectura.",
+          "Enlace público: sólo screenshots sanitizados y notas de arquitectura.",
           "Módulos: planes, workflows de clientes, dashboard/admin, acceso móvil y entrega de contenido.",
           "Límite: nada de datos de salud/clientes, código privado, credenciales ni detalles de proveedores.",
         ].join("\n"),
@@ -176,7 +187,7 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
           "Public case study explains responsibility and judgment while protecting private source, incidents, and metrics.",
         ].join("\n"),
         structureNotes: [
-          "Public evidence: confidential delivery map and responsibility summary.",
+          "Public link: confidential delivery map and responsibility summary.",
           "Core areas: backend workflows, operational edge cases, integrations, escalations, and releases.",
           "Boundary: no employer code, customer data, internal metrics, incidents, credentials, or proprietary architecture.",
         ].join("\n"),
@@ -192,7 +203,7 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
           "El caso público explica responsabilidad y criterio protegiendo source, incidentes y métricas privadas.",
         ].join("\n"),
         structureNotes: [
-          "Evidencia pública: mapa confidencial de entrega y resumen de responsabilidades.",
+          "Enlace público: mapa confidencial de entrega y resumen de responsabilidades.",
           "Áreas: workflows backend, edge cases operativos, integraciones, escalations y releases.",
           "Límite: nada de código de empleador, datos de clientes, métricas internas, incidentes, credenciales ni arquitectura propietaria.",
         ].join("\n"),
@@ -215,7 +226,7 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
           "AI-assisted workflow is visible as engineering practice, not as vague marketing copy.",
         ].join("\n"),
         structureNotes: [
-          "Public evidence: source, docs, PRs, issue plan, tests, and release workflow.",
+          "Public link: source, docs, PRs, issue plan, tests, and release workflow.",
           "Core modules: Astro public site, React dashboard, Convex backend, PostHog events/errors, Resend, Cloudflare Pages.",
           "Boundary: public sample code is inspectable; private project code, customer data, credentials, and operational screenshots stay private.",
         ].join("\n"),
@@ -231,7 +242,7 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
           "El trabajo con IA se presenta como práctica de ingeniería, no como copy vacío.",
         ].join("\n"),
         structureNotes: [
-          "Evidencia pública: source, docs, PRs, plan de issues, tests y release workflow.",
+          "Enlace público: source, docs, PRs, plan de issues, tests y release workflow.",
           "Módulos: sitio Astro, dashboard React, backend Convex, PostHog, Resend y Cloudflare Pages.",
           "Límite: el código público se puede inspeccionar; código privado, datos de clientes, credenciales y screenshots operativos quedan fuera.",
         ].join("\n"),
@@ -292,6 +303,21 @@ async function postJson(
   throw new Error(`Dashboard preview seed failed for ${url}: ${response.status} ${message}`);
 }
 
+async function getDashboardSeedState(url: string, token: string): Promise<DashboardSeedState> {
+  const response = await fetch(url, {
+    headers: {
+      accept: "application/json",
+      authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Dashboard preview seed failed to read existing content: ${response.status} ${response.statusText}`);
+  }
+
+  return await response.json() as DashboardSeedState;
+}
+
 function projectPayloads(): DashboardProjectDraftPayload[] {
   return PROJECT_IDS.flatMap((contentId) => {
     const definition = projectSeedDefinitions[contentId];
@@ -350,18 +376,32 @@ async function main(): Promise<void> {
 
   const convexSiteUrl = requireEnvironmentValue("CONVEX_SITE_URL");
   const dashboardApiToken = requireEnvironmentValue("DASHBOARD_API_TOKEN");
+  const contentEndpoint = endpointFor(convexSiteUrl, "/dashboard/content");
   const projectEndpoint = endpointFor(convexSiteUrl, "/dashboard/content/project");
   const settingEndpoint = endpointFor(convexSiteUrl, "/dashboard/content/setting");
+  const existingContent = await getDashboardSeedState(contentEndpoint, dashboardApiToken);
+  const existingProjectKeys = new Set(
+    (existingContent.projectDrafts ?? []).map((project) => `${project.contentId}:${project.locale}`),
+  );
+  const existingSettingKeys = new Set(
+    (existingContent.settings ?? []).map((setting) => `${setting.environment}:${setting.key}`),
+  );
+  const missingProjects = projects.filter((project) =>
+    !existingProjectKeys.has(`${project.contentId}:${project.locale}`),
+  );
+  const missingSettings = settings.filter((setting) =>
+    !existingSettingKeys.has(`${setting.environment}:${setting.key}`),
+  );
 
-  for (const project of projects) {
+  for (const project of missingProjects) {
     await postJson(projectEndpoint, dashboardApiToken, project);
   }
 
-  for (const setting of settings) {
+  for (const setting of missingSettings) {
     await postJson(settingEndpoint, dashboardApiToken, setting);
   }
 
-  console.log(`Seeded dashboard preview content: ${projects.length} project drafts, ${settings.length} settings.`);
+  console.log(`Seeded dashboard preview content: ${missingProjects.length} missing project drafts, ${missingSettings.length} missing settings. Preserved existing dashboard edits.`);
 }
 
 main().catch((error) => {

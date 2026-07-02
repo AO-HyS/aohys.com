@@ -128,14 +128,14 @@
     "path": "/case-studies/casa-roca",
     "title": "Casa Roca",
     "summary": "A live hospitality site with a clear public story, direct contact path, and production delivery discipline.",
-    "seoDescription": "Casa Roca is live production evidence for public business site delivery, search-ready pages, performance care, and release discipline.",
+    "seoDescription": "Casa Roca is a live hospitality website for a boutique stay in Veracruz, with clear place storytelling, direct guest inquiry paths, search-ready pages, and production release discipline.",
     "primaryActionLabel": "Start a similar build",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Back to selected work",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
-      "statusLabel": "Production proof",
-      "overview": "Casa Roca is a live hospitality website for a boutique stay in Roca Partida, Veracruz. The useful proof is simple: the site exists, it explains the place, it gives guests a contact path, and the private operational work stays out of the public surface.",
+      "statusLabel": "Live hospitality site",
+      "overview": "Casa Roca is the public website for a boutique stay in Roca Partida, Veracruz. It helps guests understand the place quickly, decide whether it fits their trip, and contact the business without exposing reservations or back-office work.",
       "problem": {
         "title": "Problem",
         "body": "The business needed a public presence that could communicate place, experience, and credibility without exposing reservation details, internal media work, or private administration."
@@ -154,17 +154,17 @@
       },
       "architectureDecisions": {
         "title": "Architecture decisions",
-        "body": "Keep public pages fast and inspectable, treat bilingual content and SEO metadata as first-class concerns, and separate public evidence from private business workflows so the site can be presented safely."
+        "body": "Keep the guest-facing pages fast and easy to inspect, treat bilingual content and SEO metadata as first-class concerns, and keep private booking and administration workflows outside the public site."
       },
       "executionHighlights": {
         "title": "Execution highlights",
-        "body": "The work emphasized clear hospitality positioning, localized public routes, production deployment discipline, content safety, and a public evidence path that can be reviewed without privileged access."
+        "body": "The work emphasized clear hospitality positioning, localized routes, production deployment discipline, content safety, and a live website that anyone can open without privileged access."
       },
       "qualitySecurityPerformance": {
         "title": "Quality, security, and performance",
-        "body": "The public surface is verified as live production evidence, avoids sensitive operational data, uses explicit metadata, and is framed around fast, stable, search-readable pages."
+        "body": "The public surface is live, avoids sensitive operational data, uses explicit metadata, and is framed around fast, stable, search-readable pages."
       },
-      "publicEvidenceTitle": "Public evidence",
+      "publicEvidenceTitle": "Public links",
       "publicEvidence": [
         {
           "label": "Production website",
@@ -207,7 +207,7 @@
       },
       "constraints": {
         "title": "Constraints",
-        "body": "The build is still in development, so public proof must avoid private business data, unfinished dashboard internals, secrets, and customer records while still showing the product judgment."
+        "body": "The build is still in development, so the public page must avoid private business data, unfinished dashboard internals, secrets, and customer records while still showing the product judgment."
       },
       "architectureDecisions": {
         "title": "Architecture decisions",
@@ -221,7 +221,7 @@
         "title": "Quality, security, and performance",
         "body": "The project emphasizes protected environments, explicit verification commands, browser QA, source checks, and careful handling of auth/provider configuration before public launch."
       },
-      "publicEvidenceTitle": "Public evidence",
+      "publicEvidenceTitle": "Public links",
       "publicEvidence": [
         {
           "label": "Development preview",
@@ -278,7 +278,7 @@
         "title": "Quality, security, and performance",
         "body": "The project uses functional QA, route sweeps, environment separation, protected release branches, and preview validation when auth, routing, UI, or behavior changes."
       },
-      "publicEvidenceTitle": "Public evidence",
+      "publicEvidenceTitle": "Public links",
       "publicEvidence": [
         {
           "label": "Sanitized preview",
@@ -335,7 +335,7 @@
         "title": "Quality, security, and performance",
         "body": "The work depends on careful change management, production awareness, data sensitivity, clear handoffs, and testing around workflows where mistakes become operational risk."
       },
-      "publicEvidenceTitle": "Public evidence",
+      "publicEvidenceTitle": "Public links",
       "publicEvidence": [
         {
           "label": "Confidential summary",
@@ -392,7 +392,7 @@
         "title": "Quality, security, and performance",
         "body": "Quality includes source checks, type checks, behavior tests, build verification, visual QA, no private data in public routes, and deployment paths that can be audited."
       },
-      "publicEvidenceTitle": "Public evidence",
+      "publicEvidenceTitle": "Public links",
       "publicEvidence": [
         {
           "label": "Process evidence",
@@ -540,7 +540,7 @@
         {
           "label": "Selected work",
           "href": "/case-studies",
-          "text": "Production proof, active builds, private product systems, and enterprise delivery."
+          "text": "Live sites, active builds, private product systems, and enterprise delivery."
         },
         {
           "label": "Architecture",

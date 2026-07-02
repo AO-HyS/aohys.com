@@ -1,5 +1,21 @@
-import { useEffect, useState } from "react";
-import { LoaderCircleIcon, SaveIcon } from "lucide-react";
+import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+  LoaderCircleIcon,
+  SaveIcon,
+} from "lucide-react";
+import {
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type ColumnDef,
+  type SortingState,
+} from "@tanstack/react-table";
 import { loadDashboardLeads, saveLeadStatus } from "@/api";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +39,10 @@ export function LeadsScreen() {
   const [leads, setLeads] = useState<DashboardLead[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savingLeadId, setSavingLeadId] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "createdAt", desc: true },
+  ]);
 
   async function refresh() {
     setError(null);
@@ -40,8 +60,10 @@ export function LeadsScreen() {
 
   async function updateStatus(leadId: string, status: DashboardLeadStatus) {
     setSavingLeadId(leadId);
+    setNotice(null);
     try {
       await saveLeadStatus(leadId, status);
+      setNotice("Lead status saved.");
       await refresh();
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "Lead status could not be saved.");
@@ -67,10 +89,16 @@ export function LeadsScreen() {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       ) : null}
+      {notice ? (
+        <Alert>
+          <AlertTitle>Saved</AlertTitle>
+          <AlertDescription>{notice}</AlertDescription>
+        </Alert>
+      ) : null}
       <Card>
         <CardHeader>
           <CardTitle>Incoming leads</CardTitle>
-          <CardDescription>{leads ? `${leads.length} stored lead${leads.length === 1 ? "" : "s"}` : "Loading leads"}</CardDescription>
+          <CardDescription>{leads ? `${leads.length} stored lead${leads.length === 1 ? "" : "s"} · sorted and paginated locally` : "Loading leads"}</CardDescription>
         </CardHeader>
         <CardContent>
           {!leads ? (
@@ -78,27 +106,13 @@ export function LeadsScreen() {
           ) : leads.length === 0 ? (
             <p className="text-sm text-muted-foreground">No leads yet.</p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Intent</TableHead>
-                  <TableHead>Message</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Save</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {leads.map((lead) => (
-                  <LeadRow
-                    key={lead.id}
-                    lead={lead}
-                    isSaving={savingLeadId === lead.id}
-                    onSave={updateStatus}
-                  />
-                ))}
-              </TableBody>
-            </Table>
+            <LeadTable
+              leads={leads}
+              savingLeadId={savingLeadId}
+              sorting={sorting}
+              onSortingChange={setSorting}
+              onSave={updateStatus}
+            />
           )}
         </CardContent>
       </Card>
@@ -106,7 +120,162 @@ export function LeadsScreen() {
   );
 }
 
-function LeadRow({
+function LeadTable({
+  leads,
+  savingLeadId,
+  sorting,
+  onSortingChange,
+  onSave,
+}: {
+  leads: DashboardLead[];
+  savingLeadId: string | null;
+  sorting: SortingState;
+  onSortingChange: Dispatch<SetStateAction<SortingState>>;
+  onSave: (leadId: string, status: DashboardLeadStatus) => void | Promise<void>;
+}) {
+  const columns = useMemo<ColumnDef<DashboardLead>[]>(
+    () => [
+      {
+        id: "createdAt",
+        accessorKey: "createdAt",
+        header: "Created",
+        cell: ({ row }) => (
+          <span className="text-xs text-muted-foreground">
+            {formatDate(row.original.createdAt)}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "name",
+        header: "Lead",
+        cell: ({ row }) => (
+          <div className="flex min-w-48 flex-col gap-1">
+            <span className="font-medium">{row.original.name}</span>
+            <span className="text-xs text-muted-foreground">{row.original.email}</span>
+            {row.original.phone ? <span className="text-xs text-muted-foreground">{row.original.phone}</span> : null}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "intent",
+        header: "Intent",
+        cell: ({ row }) => <Badge variant="secondary">{row.original.intent}</Badge>,
+      },
+      {
+        accessorKey: "message",
+        header: "Message",
+        cell: ({ row }) => (
+          <p className="line-clamp-3 max-w-xl text-sm text-muted-foreground">
+            {row.original.message}
+          </p>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => (
+          <LeadStatusControl
+            lead={row.original}
+            isSaving={savingLeadId === row.original.id}
+            onSave={onSave}
+          />
+        ),
+      },
+    ],
+    [onSave, savingLeadId],
+  );
+  const table = useReactTable({
+    data: leads,
+    columns,
+    state: { sorting },
+    onSortingChange,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageIndex: 0,
+        pageSize: 10,
+      },
+    },
+  });
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="overflow-x-auto rounded-lg">
+        <Table className="min-w-[960px] table-fixed">
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id} className={leadColumnClass(header.id)}>
+                    {header.isPlaceholder ? null : (
+                      <button
+                        className="inline-flex min-h-10 items-center gap-1 text-left font-medium"
+                        type="button"
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.column.getIsSorted() === "asc" ? "↑" : header.column.getIsSorted() === "desc" ? "↓" : null}
+                      </button>
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id} className={leadColumnClass(cell.column.id)}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-muted-foreground">
+          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()} · showing {table.getRowModel().rows.length} of {leads.length}
+        </p>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()} aria-label="First page">
+            <ChevronsLeftIcon />
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} aria-label="Previous page">
+            <ChevronLeftIcon />
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()} aria-label="Next page">
+            <ChevronRightIcon />
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => table.setPageIndex(table.getPageCount() - 1)} disabled={!table.getCanNextPage()} aria-label="Last page">
+            <ChevronsRightIcon />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function leadColumnClass(columnId: string): string {
+  switch (columnId) {
+    case "createdAt":
+      return "w-32";
+    case "name":
+      return "w-56";
+    case "intent":
+      return "w-24";
+    case "status":
+      return "w-56";
+    default:
+      return "w-auto";
+  }
+}
+
+function LeadStatusControl({
   lead,
   isSaving,
   onSave,
@@ -122,19 +291,9 @@ function LeadRow({
   }, [lead.status]);
 
   return (
-    <TableRow>
-      <TableCell>
-        <div className="flex flex-col gap-1">
-          <span className="font-medium">{lead.name}</span>
-          <span className="text-xs text-muted-foreground">{lead.email}</span>
-          {lead.phone ? <span className="text-xs text-muted-foreground">{lead.phone}</span> : null}
-        </div>
-      </TableCell>
-      <TableCell>{lead.intent}</TableCell>
-      <TableCell className="max-w-md text-muted-foreground">{lead.message}</TableCell>
-      <TableCell>
+    <div className="flex min-w-0 items-center justify-start gap-2">
         <Select value={status} onValueChange={(value) => setStatus(value as DashboardLeadStatus)}>
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-32">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -145,13 +304,24 @@ function LeadRow({
             </SelectGroup>
           </SelectContent>
         </Select>
-      </TableCell>
-      <TableCell className="text-right">
-        <Button size="sm" disabled={isSaving || status === lead.status} onClick={() => void onSave(lead.id, status)}>
+        <Button
+          size="sm"
+          variant={status === lead.status ? "outline" : "default"}
+          disabled={isSaving || status === lead.status}
+          onClick={() => void onSave(lead.id, status)}
+        >
           {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <SaveIcon data-icon="inline-start" />}
           Save
         </Button>
-      </TableCell>
-    </TableRow>
+    </div>
   );
+}
+
+function formatDate(timestamp: number): string {
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(timestamp));
 }

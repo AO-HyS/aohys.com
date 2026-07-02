@@ -125,7 +125,7 @@ Use for:
 | #4 Bilingual Routing, SEO, and Public Page Skeletons | Public Content Graph and public route map | Stable content IDs for `/` and `/es/` resolve to localized routes with correct canonical and language alternate metadata. |
 | #5 Home Page Proof Narrative | Graph-backed public home route | Visitor sees Alejandro-first positioning, primary CTA, and selected-work proof section sourced from graph-backed content. |
 | #6 Architecture and Public Code Sample Page | Graph-backed architecture route | Architecture page explains public/private boundaries and links to repo context, with sitemap and metadata behavior from the graph. |
-| #7 Case Study Template and Casa Roca Detail | Graph-backed case-study detail route | Casa Roca page renders the complete case-study structure with public evidence and confidentiality note. |
+| #7 Case Study Template and Casa Roca Detail | Graph-backed case-study detail route | Casa Roca page renders the complete case-study structure with public links/media and confidentiality note. |
 | #8 Remaining Selected Work Case Studies | Graph-backed case-study index and detail routes | Each selected work entry appears in the index and links to a detail page with the correct project status. |
 | #9 Resume Page and ATS-Friendly PDF | Graph-backed resume route and PDF artifact | Resume page renders semantic sections and the PDF artifact is text-based, downloadable, and linked from the graph. |
 | #10 Convex Backend Foundation | Convex public API/functions and Environment Contract | A valid lead-like payload can be validated through the public function boundary without direct DB coupling, and Convex variables map to the current environment. |

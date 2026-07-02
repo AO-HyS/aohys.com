@@ -13,7 +13,6 @@ import {
   FileTextIcon,
   InboxIcon,
   LogOutIcon,
-  SettingsIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -48,9 +47,6 @@ function AppLayout() {
             </DashboardNavLink>
             <DashboardNavLink to="/resume" icon={<FileTextIcon data-icon="inline-start" />}>
               Resume
-            </DashboardNavLink>
-            <DashboardNavLink to="/projects" hash="contact-settings" icon={<SettingsIcon data-icon="inline-start" />}>
-              Contact
             </DashboardNavLink>
           </nav>
           <div className="mt-auto flex flex-col gap-3 text-xs text-muted-foreground">

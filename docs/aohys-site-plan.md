@@ -36,10 +36,10 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Resend DNS: Verify Cloudflare DNS before production, especially SPF alignment for Resend.
 - i18n: English is default at `/`; Spanish lives under `/es/`.
 - Slugs: Public section slugs are localized; internal IDs remain stable.
-- Public Content Graph: stable content IDs own route paths, locale variants, SEO metadata, sitemap eligibility, and evidence relationships.
+- Public Content Graph: stable content IDs own route paths, locale variants, SEO metadata, sitemap eligibility, and public link/media relationships.
 - Public route implementation: Astro uses native i18n config, the public shell uses locale JSON for UI copy, and the Public Content Graph owns page identity, localized slugs, metadata, sitemap rules, and private route exclusions.
 - Content source of truth: public pages should resolve through the graph instead of duplicating slugs, metadata, alternates, and sitemap rules in each route file.
-- Content safety: evidence assets must carry public-safe usage intent and alt text; private work details, private data, and dashboard routes are excluded from the public graph.
+- Content safety: public media must carry public-safe usage intent and alt text; private work details, private data, and dashboard routes are excluded from the public graph.
 - Content documentation: The canonical content planning document is `docs/public-content-graph.md`; the architectural decision is `docs/adr/0003-public-content-graph.md`.
 - Dashboard language: English only.
 - Release Train: `develop` is the Development Branch, `main` is the Production Branch, and both branches should be protected.
@@ -66,8 +66,8 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Dashboard primitive adapter: use shadcn/ui source components through the CLI and semantic Tailwind tokens.
 - Dashboard mobile: validate dashboard workflows at 390px, avoid horizontal overflow, keep visible tap targets at least 44px, and do not render duplicate mobile/desktop controls with the same meaning.
 - Dashboard documentation: The canonical dashboard planning document is `docs/dashboard-ui-kit.md`; it documents the React app architecture, Pages auth/API boundary, Convex backend shape, and legacy fallback package boundary.
-- Case study structure: Problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance, public evidence, confidentiality note.
-- Case study ordering: Casa Roca as production proof; The Barber Central as modern technical flagship; Nutri Plan as active private build; Enterprise Systems as scale/credibility; Engineering Practice as current AI-assisted process.
+- Case study structure: Problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance, public links/media, confidentiality note.
+- Case study ordering: Casa Roca as live hospitality site; The Barber Central as modern technical flagship; Nutri Plan as active private build; Enterprise Systems as scale/credibility; Engineering Practice as current AI-assisted process.
 - Casa Roca: Present with real name and public link to `casa-roca.mx`.
 - The Barber Central and Nutri Plan: Present as active builds, with visible development pages/screenshots when useful.
 - Enterprise work: Include a dedicated home section for Tala, Drift, Prenuvo, AutoZone/DataZone, Accenture, and CEMEX/NEORIS, summarized with confidentiality.
@@ -84,9 +84,9 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Layout bans: No identical icon-card grids, no nested cards, no hero metric template, no terminal aesthetic, no repeated uppercase section eyebrows, no numbered section scaffolding, no beige editorial default, no glassmorphism, no gradient text, no soft ghost-card shadows.
 - Motion: Motion should feel like review, assembly, and reveal: annotations settle, screenshots align, and proof artifacts enter with purpose. Content must never depend on animation to appear.
 - Visual assets: Real screenshots and authored system maps should carry most of the proof. Generated imagery is allowed only when it adds a specific missing scene; it should not become a repeated generic style.
-- Current proof and support assets: the home proof surface now prioritizes the real AOHYS logo at `apps/site/public/images/brand/aohys-logo.png`, the generated architecture proof surface at `apps/site/public/images/generated/aohys-architecture-proof-surface.png`, the Casa Roca production screenshot, the real The Barber Central landing screenshot, the Nutri Plan admin dashboard screenshot, cropped proof thumbnails for compact frames, and the public-safe Enterprise delivery map. Earlier weaker screenshots (`barber-central-ops.png`, `nutri-plan-proof.png`) should not be reintroduced as the default proof treatment unless a future pass crops or replaces them with stronger evidence.
-- Public site refinement status: the July 1 polish pass moved the public site into a lighter pastel proof-ledger direction, rewrote the home and primary case-study copy to avoid internal/robotic phrasing, added distinct evidence assets per case, introduced cropped thumbnails where full screenshots became unreadable in compact frames, and made external evidence links open actual public or development pages when one exists.
-- Dashboard refinement status: the private dashboard is now a real React app. Projects are the primary unit and own text, achievements, structure, images, URL, CTA, SEO metadata, status, and evidence state. Legacy `/dashboard/case-studies`, `/dashboard/media`, and `/dashboard/settings` paths route into Projects.
+- Current public media assets: the home surface now prioritizes the real AOHYS logo at `apps/site/public/images/brand/aohys-logo.png`, the generated architecture support surface at `apps/site/public/images/generated/aohys-architecture-proof-surface.png`, the Casa Roca production screenshot, the real The Barber Central landing screenshot, the Nutri Plan admin dashboard screenshot, cropped thumbnails for compact frames, and the public-safe Enterprise delivery map. Earlier weaker screenshots (`barber-central-ops.png`, `nutri-plan-proof.png`) should not be reintroduced as the default treatment unless a future pass crops or replaces them with stronger media.
+- Public site refinement status: the July 1 polish pass moved the public site into a lighter pastel work-ledger direction, rewrote the home and primary case-study copy to avoid internal/robotic phrasing, added distinct public media per case, introduced cropped thumbnails where full screenshots became unreadable in compact frames, and made external links open actual public or development pages when one exists.
+- Dashboard refinement status: the private dashboard is now a real React app. Projects are the primary unit and own text, achievements, structure, images, URL, CTA, SEO metadata, status, and public link state. Legacy `/dashboard/case-studies`, `/dashboard/media`, and `/dashboard/settings` paths route into Projects. Saving writes private drafts to Convex; public pages change only after the future Publish action validates drafts, updates the public content graph, and triggers the Astro/Cloudflare build.
 - Preview dashboard data status: `pnpm run deploy:preview` now runs `pnpm run seed:dashboard:preview` after the Convex preview deploy. The seed upserts bilingual project drafts and `PUBLIC_WHATSAPP_URL` into the private preview Convex deployment through token-protected HTTP endpoints so reviewers can inspect a filled dashboard without touching production data.
 - Quality gates: Local behavior tests should use Vitest for package and built-site checks; Husky pre-commit plus GitHub Actions verification are implemented in issue #31. The pre-commit hook runs foundation validation, lint, typecheck, and tests; pull-request CI runs install, foundation validation, lint, typecheck, tests, and build as readable steps.
 
@@ -187,7 +187,7 @@ Case study pages should use the same proof-ledger rhythm:
 - Architecture decisions.
 - Execution highlights.
 - Quality/security/performance notes.
-- Public evidence.
+- Public links/media.
 - Confidentiality note.
 
 Resume page status: `/resume` and `/es/cv` now render graph-backed semantic CV content, localized metadata, a dark proof hero, generated architecture artifact support, contact links, dynamic context links, and a downloadable hiring-friendly PDF artifact. The PDF is generated from the English graph content with `apps/site/scripts/build-resume-pdf.py` and is intentionally single-column and text-based.

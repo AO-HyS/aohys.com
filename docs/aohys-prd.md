@@ -145,7 +145,7 @@ The visual implementation will follow the Impeccable process and the approved de
 - Code license should be MIT; content, brand, copy, CV, case-study material, images, and assets remain reserved.
 - The hero should focus on business outcomes and reliable architecture, not stack names.
 - Stack choices should appear as evidence in architecture, README, and implementation details.
-- Case studies should follow the agreed structure: problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance, public evidence, and confidentiality note.
+- Case studies should follow the agreed structure: problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance, public links/media, and confidentiality note.
 - Case study ordering should start with Casa Roca, then The Barber Central, Nutri Plan, Enterprise Systems, and Engineering Practice.
 - Enterprise work should mention Tala, Drift, Prenuvo, AutoZone/DataZone, Accenture, and CEMEX/NEORIS with appropriate confidentiality.
 - Engineering Practice should describe modern agent-assisted engineering, QA, architecture, observability, deployment, and documentation as practice.

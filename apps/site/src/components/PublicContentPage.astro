@@ -482,8 +482,8 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         <aside class="resume-proof-panel" aria-label={resumeContent.proof.label}>
           <figure class="resume-proof-visual">
             <img
-              src="/images/proof/aohys-system-map.svg"
-              alt={locale === "es" ? "Artefacto visual del sistema público, privado y observable de AOHYS" : "Visual artifact of the AOHYS public, private, and observable system"}
+              src="/images/generated/aohys-delivery-artifact.png"
+              alt={locale === "es" ? "Artefacto visual de entrega, QA y release de AOHYS" : "Visual artifact of AOHYS delivery, QA, and release practice"}
               loading="eager"
               decoding="async"
             />
@@ -625,8 +625,8 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           </div>
           <figure class="contact-architecture-card">
             <img
-              src="/images/proof/aohys-system-map.svg"
-              alt={locale === "es" ? "Ruta visual de contacto, entrega y observabilidad de AOHYS" : "Visual route for AOHYS contact, delivery, and observability"}
+              src="/images/generated/aohys-hero-system-map.png"
+              alt={locale === "es" ? "Mapa visual del flujo de contacto y operación de AOHYS" : "Visual map of the AOHYS contact and operations flow"}
               loading="lazy"
               decoding="async"
             />
@@ -821,7 +821,8 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
             }
 
             if (!form.checkValidity()) {
-              if (status) {
+              if (status instanceof HTMLElement) {
+                status.dataset.state = "error";
                 status.textContent = messageWithRetry(
                   form.dataset.validationMessage,
                   form.dataset.retryLabel,
@@ -835,7 +836,8 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
             }
 
             if (!endpoint) {
-              if (status) {
+              if (status instanceof HTMLElement) {
+                status.dataset.state = "error";
                 status.textContent = messageWithRetry(
                   form.dataset.endpointMissing,
                   form.dataset.retryLabel,
@@ -855,6 +857,10 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
               submitButton.disabled = true;
               submitButton.textContent = submitButton.dataset.sendingLabel ?? submitButton.textContent;
             }
+            if (status instanceof HTMLElement) {
+              status.dataset.state = "sending";
+              status.textContent = "";
+            }
 
             try {
               const response = await fetch(endpoint, {
@@ -873,7 +879,8 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
                 dispatchContactAnalytics("contact_form_submit_failed", {
                   failure_reason: failureReason,
                 });
-                if (status) {
+                if (status instanceof HTMLElement) {
+                  status.dataset.state = "error";
                   status.textContent = messageWithRetry(
                     failureMessageForReason(form, failureReason),
                     form.dataset.retryLabel,
@@ -894,7 +901,8 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
               });
 
               form.reset();
-              if (status) {
+              if (status instanceof HTMLElement) {
+                status.dataset.state = deliveryDegraded ? "warning" : "success";
                 status.textContent = deliveryDegraded
                   ? form.dataset.degradedSuccessMessage ?? form.dataset.successMessage ?? ""
                   : form.dataset.successMessage ?? "";
@@ -903,7 +911,8 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
               dispatchContactAnalytics("contact_form_submit_failed", {
                 failure_reason: "backend_unavailable",
               });
-              if (status) {
+              if (status instanceof HTMLElement) {
+                status.dataset.state = "error";
                 status.textContent = messageWithRetry(
                   form.dataset.backendErrorMessage ?? form.dataset.errorMessage,
                   form.dataset.retryLabel,
