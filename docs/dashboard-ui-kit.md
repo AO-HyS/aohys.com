@@ -75,3 +75,5 @@ The public Astro site still renders from the Public Content Graph for SEO stabil
 - Use `FieldGroup` and `Field` for forms.
 - Keep the dashboard task-first, dense, and operational.
 - Keep public SEO copy out of private runtime rendering until the publish pipeline exists.
+- Project workspace layout is `project rail + editor` at normal desktop widths. Do not add a third media column until the viewport can support it; media becomes a side column only at wide desktop. On mobile, project selection uses a compact grid, not floating tabs or hidden horizontal overflow.
+- Dashboard visual polish should keep high-contrast product tokens, visible active states, and save/publish feedback in the task flow.

@@ -54,38 +54,38 @@ body {
 }
 
 :root {
-  --background: oklch(0.985 0.014 92);
-  --foreground: oklch(0.16 0.035 246);
+  --background: oklch(0.978 0.006 235);
+  --foreground: oklch(0.17 0.035 242);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.035 246);
+  --card-foreground: oklch(0.17 0.035 242);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.035 246);
-  --primary: oklch(0.43 0.105 166);
-  --primary-foreground: oklch(0.99 0.008 96);
-  --secondary: oklch(0.935 0.038 201);
-  --secondary-foreground: oklch(0.21 0.055 241);
-  --muted: oklch(0.944 0.018 82);
-  --muted-foreground: oklch(0.39 0.04 244);
-  --accent: oklch(0.82 0.145 78);
-  --accent-foreground: oklch(0.18 0.045 65);
+  --popover-foreground: oklch(0.17 0.035 242);
+  --primary: oklch(0.44 0.13 170);
+  --primary-foreground: oklch(0.99 0.01 170);
+  --secondary: oklch(0.93 0.025 205);
+  --secondary-foreground: oklch(0.22 0.055 232);
+  --muted: oklch(0.94 0.01 232);
+  --muted-foreground: oklch(0.38 0.038 238);
+  --accent: oklch(0.78 0.14 78);
+  --accent-foreground: oklch(0.19 0.045 68);
   --destructive: oklch(0.58 0.2 28);
-  --border: oklch(0.84 0.018 88);
-  --input: oklch(0.84 0.018 88);
-  --ring: oklch(0.48 0.11 166);
+  --border: oklch(0.84 0.012 235);
+  --input: oklch(0.84 0.012 235);
+  --ring: oklch(0.48 0.12 170);
   --chart-1: oklch(0.58 0.12 174);
   --chart-2: oklch(0.78 0.15 78);
   --chart-3: oklch(0.68 0.15 24);
   --chart-4: oklch(0.58 0.12 252);
   --chart-5: oklch(0.7 0.1 326);
   --radius: 0.625rem;
-  --sidebar: oklch(0.2 0.058 240);
-  --sidebar-foreground: oklch(0.96 0.012 92);
-  --sidebar-primary: oklch(0.76 0.14 79);
-  --sidebar-primary-foreground: oklch(0.17 0.048 240);
-  --sidebar-accent: oklch(0.29 0.075 239);
-  --sidebar-accent-foreground: oklch(0.985 0.01 92);
-  --sidebar-border: oklch(0.34 0.058 239);
-  --sidebar-ring: oklch(0.76 0.14 79);
+  --sidebar: oklch(0.18 0.052 236);
+  --sidebar-foreground: oklch(0.96 0.012 218);
+  --sidebar-primary: oklch(0.77 0.14 79);
+  --sidebar-primary-foreground: oklch(0.17 0.048 236);
+  --sidebar-accent: oklch(0.26 0.07 234);
+  --sidebar-accent-foreground: oklch(0.985 0.01 218);
+  --sidebar-border: oklch(0.31 0.055 234);
+  --sidebar-ring: oklch(0.77 0.14 79);
 }
 
 .dark {
@@ -136,69 +136,95 @@ body {
 
 @layer components {
   .dashboard-workspace {
-    @apply flex flex-col gap-6;
+    @apply flex flex-col gap-7;
   }
 
   .dashboard-page-heading {
-    @apply flex max-w-4xl flex-col gap-3;
+    @apply flex max-w-3xl flex-col gap-3;
   }
 
   .dashboard-page-heading h1 {
-    @apply text-4xl font-semibold leading-[1.02] tracking-normal text-foreground sm:text-5xl;
+    @apply text-3xl font-semibold leading-tight tracking-normal text-foreground sm:text-4xl;
   }
 
   .dashboard-page-heading p {
-    @apply mt-3 max-w-3xl text-base leading-7 text-muted-foreground;
+    @apply mt-2 max-w-3xl text-base leading-7 text-muted-foreground;
   }
 
   .status-alert {
-    @apply max-w-5xl border-l-4 border-l-primary bg-card;
+    @apply sticky top-4 z-10 max-w-5xl border-primary/30 bg-card shadow-sm;
   }
 
   .project-shell {
-    @apply grid gap-5;
+    display: grid !important;
+    @apply gap-6;
   }
 
   .project-nav-panel {
-    @apply h-fit rounded-lg border bg-card p-3 shadow-sm;
+    @apply h-fit min-w-0 rounded-xl border bg-card p-3 shadow-sm;
+  }
+
+  .project-nav-header {
+    @apply mb-3 flex items-start justify-between gap-3 px-1;
   }
 
   .project-nav-label {
-    @apply px-2 pb-2 text-xs font-semibold uppercase text-muted-foreground;
+    @apply text-xs font-semibold uppercase text-muted-foreground;
+  }
+
+  .project-nav-header p {
+    @apply mt-1 text-xs leading-5 text-muted-foreground;
   }
 
   .project-tabs-list {
-    @apply h-auto w-full flex-col items-stretch justify-start gap-1 bg-transparent p-0;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    @apply h-auto w-full max-w-full min-w-0 items-stretch justify-start gap-2 overflow-visible bg-transparent p-0;
   }
 
   .project-tab-trigger {
-    @apply h-auto w-full justify-start rounded-md px-3 py-3 text-left data-[state=active]:bg-primary data-[state=active]:text-primary-foreground;
+    @apply h-auto min-h-14 w-full min-w-0 flex-col items-start justify-center rounded-lg border border-transparent bg-muted/45 px-3 py-2.5 text-left text-foreground/75 hover:border-primary/20 hover:bg-secondary/70 hover:text-foreground data-active:border-primary/25 data-active:bg-primary data-active:text-primary-foreground data-[state=active]:border-primary/25 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground;
   }
 
-  .project-tab-trigger span,
+  .project-tab-title,
   .project-tab-trigger small {
     @apply block truncate;
+  }
+
+  .project-tab-title {
+    @apply max-w-full text-sm font-semibold;
   }
 
   .project-tab-trigger small {
     @apply mt-1 text-xs opacity-75;
   }
 
+  .project-tabs-list .project-tab-trigger[data-state="active"],
+  .project-tabs-list .project-tab-trigger[data-active] {
+    background: var(--primary) !important;
+    border-color: color-mix(in oklch, var(--primary), white 24%) !important;
+    color: var(--primary-foreground) !important;
+  }
+
   .project-editor-grid {
-    @apply grid gap-5;
+    @apply grid gap-6;
   }
 
   .project-main-column,
   .project-side-column {
-    @apply flex min-w-0 flex-col gap-5;
+    @apply flex min-w-0 flex-col gap-6;
   }
 
   .project-summary-card {
-    @apply overflow-hidden border-primary/20;
+    @apply overflow-hidden border-primary/20 bg-card shadow-sm;
+  }
+
+  .project-summary-header {
+    @apply gap-2 border-b bg-secondary/35 pb-4;
   }
 
   .project-summary-content {
-    @apply flex flex-col gap-4;
+    @apply flex flex-col gap-5;
   }
 
   .metric-grid {
@@ -206,7 +232,7 @@ body {
   }
 
   .metric-tile {
-    @apply rounded-md border bg-muted/45 p-3;
+    @apply rounded-lg border bg-background p-3.5;
   }
 
   .metric-tile div {
@@ -214,11 +240,11 @@ body {
   }
 
   .metric-tile strong {
-    @apply mt-1 block break-words text-sm font-semibold text-foreground;
+    @apply mt-1.5 block break-words text-sm font-semibold leading-5 text-foreground;
   }
 
   .publish-panel {
-    @apply flex flex-col gap-4 rounded-md border border-primary/25 bg-primary/5 p-4 lg:flex-row lg:items-center lg:justify-between;
+    @apply flex flex-col gap-4 rounded-lg border border-primary/25 bg-primary/5 p-4 lg:flex-row lg:items-center lg:justify-between;
   }
 
   .publish-panel-title {
@@ -242,7 +268,15 @@ body {
   }
 
   .locale-tabs-list {
-    @apply h-auto w-fit bg-muted p-1;
+    @apply h-auto w-fit border bg-card p-1 shadow-sm;
+  }
+
+  .project-form-card {
+    @apply shadow-sm;
+  }
+
+  .project-form-header {
+    @apply border-b bg-card pb-4;
   }
 
   .content-edit-form {
@@ -258,19 +292,29 @@ body {
   }
 
   .form-action-row {
-    @apply flex flex-col gap-3 border-t pt-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between;
+    @apply flex flex-col gap-3 border-t bg-muted/30 px-4 py-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between;
   }
 
   .media-list {
     @apply flex flex-col gap-3;
   }
 
+  .media-card,
+  .upload-card,
+  .contact-settings-card {
+    @apply shadow-sm;
+  }
+
+  .media-card-header {
+    @apply border-b bg-secondary/25 pb-4;
+  }
+
   .media-row {
-    @apply flex items-start gap-3 rounded-md border bg-muted/35 p-3;
+    @apply flex items-start gap-3 rounded-lg border bg-background p-3;
   }
 
   .media-icon {
-    @apply grid size-10 shrink-0 place-items-center rounded-md bg-background text-primary;
+    @apply grid size-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary;
   }
 
   .media-row p {
@@ -306,9 +350,9 @@ body {
   }
 }
 
-@media (min-width: 1100px) {
+@media (min-width: 900px) {
   .project-shell {
-    grid-template-columns: 14rem minmax(0, 1fr);
+    grid-template-columns: minmax(14rem, 17rem) minmax(0, 1fr);
     align-items: start;
   }
 
@@ -316,11 +360,29 @@ body {
     position: sticky;
     top: 1.5rem;
   }
+
+  .project-tabs-list {
+    display: flex !important;
+    min-width: 0;
+    flex-direction: column !important;
+    overflow: visible;
+    gap: 0.375rem;
+  }
+
+  .project-tab-trigger {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1536px) {
   .project-editor-grid {
-    grid-template-columns: minmax(0, 1fr) 22rem;
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 22rem);
     align-items: start;
+  }
+
+  .project-side-column {
+    position: sticky;
+    top: 1.5rem;
   }
 }

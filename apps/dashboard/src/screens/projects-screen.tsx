@@ -243,7 +243,7 @@ export function ProjectsScreen() {
 
       {content ? (
         <>
-          <Tabs defaultValue={content.projects[0]?.contentId} className="project-shell">
+          <Tabs defaultValue={content.projects[0]?.contentId} orientation="vertical" className="project-shell">
             <ProjectTabs projects={content.projects} />
             <div className="min-w-0">
               {content.projects.map((project) => (
@@ -275,11 +275,17 @@ export function ProjectsScreen() {
 function ProjectTabs({ projects }: { projects: DashboardProject[] }) {
   return (
     <aside className="project-nav-panel">
-      <div className="project-nav-label">Projects</div>
+      <div className="project-nav-header">
+        <div>
+          <div className="project-nav-label">Projects</div>
+          <p>Choose the content record to edit.</p>
+        </div>
+        <Badge variant="outline">{projects.length}</Badge>
+      </div>
       <TabsList className="project-tabs-list">
         {projects.map((project) => (
           <TabsTrigger key={project.contentId} value={project.contentId} className="project-tab-trigger">
-            <span>{project.title}</span>
+            <span className="project-tab-title">{project.title}</span>
             <small>{formatProjectStatus(project.status)}</small>
           </TabsTrigger>
         ))}
@@ -359,7 +365,7 @@ function ProjectSummaryCard({
 
   return (
     <Card className="project-summary-card">
-      <CardHeader>
+      <CardHeader className="project-summary-header">
         <div>
           <CardTitle>{project.title}</CardTitle>
           <CardDescription>
@@ -437,8 +443,8 @@ function ProjectLocaleForm({
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="project-form-card">
+      <CardHeader className="project-form-header">
         <div>
           <CardTitle>{localeContent.locale === "en" ? "English content" : "Spanish content"}</CardTitle>
           <CardDescription>
@@ -581,8 +587,8 @@ function ProjectLocaleForm({
 
 function ProjectImagesCard({ project }: { project: DashboardProject }) {
   return (
-    <Card>
-      <CardHeader>
+    <Card className="media-card">
+      <CardHeader className="media-card-header">
         <CardTitle>Project media</CardTitle>
         <CardDescription>Images attached to this project and available for the publish pipeline.</CardDescription>
       </CardHeader>
@@ -647,8 +653,8 @@ function ImageUploadForm({
   }, [project.contentId]);
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="upload-card">
+      <CardHeader className="media-card-header">
         <CardTitle>Upload image</CardTitle>
         <CardDescription>Select a local image. The dashboard requests a direct Cloudflare upload URL and stores the resulting media record.</CardDescription>
       </CardHeader>
@@ -746,7 +752,7 @@ function ContactSettingsCard({
   }, [currentValue]);
 
   return (
-    <Card id="contact-settings">
+    <Card id="contact-settings" className="contact-settings-card">
       <CardHeader>
         <CardTitle>Contact setting</CardTitle>
         <CardDescription>Only the public WhatsApp/contact value belongs here. It publishes through the same release path.</CardDescription>
