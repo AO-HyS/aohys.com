@@ -22,11 +22,18 @@ import {
 } from "../src/dashboard-leads.js";
 import {
   parseDashboardCaseStudyMetadataPayload,
+  parseDashboardMediaUploadPayload,
   parseDashboardMediaMetadataPayload,
+  parseDashboardPublishPayload,
+  parseDashboardResumeDraftPayload,
   parseDashboardProjectDraftPayload,
   parseDashboardResumeVersionPayload,
   parseDashboardSiteSettingPayload,
 } from "../src/dashboard-content.js";
+import {
+  createCloudflareImagesDirectUpload,
+  triggerGitHubPublishWorkflow,
+} from "../src/dashboard-providers.js";
 
 const http = httpRouter();
 
@@ -102,6 +109,10 @@ function getContactEnvironmentValues(): Record<string, string | undefined> {
     CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID,
     CLOUDFLARE_PROJECT_NAME: process.env.CLOUDFLARE_PROJECT_NAME,
     CLOUDFLARE_IMAGES_ACCOUNT_HASH: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
+    CLOUDFLARE_IMAGES_API_TOKEN: process.env.CLOUDFLARE_IMAGES_API_TOKEN,
+    PUBLISH_GITHUB_REPOSITORY: process.env.PUBLISH_GITHUB_REPOSITORY,
+    PUBLISH_GITHUB_TOKEN: process.env.PUBLISH_GITHUB_TOKEN,
+    PUBLISH_GITHUB_WORKFLOW_ID: process.env.PUBLISH_GITHUB_WORKFLOW_ID,
     PUBLIC_CONTACT_EMAIL: process.env.PUBLIC_CONTACT_EMAIL,
     PUBLIC_WHATSAPP_URL: process.env.PUBLIC_WHATSAPP_URL,
   };
@@ -287,6 +298,42 @@ http.route({
 });
 
 http.route({
+  path: "/dashboard/content/media/upload-url",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
+      const payload = await parseDashboardMediaUploadPayload(request);
+      const upload = await createCloudflareImagesDirectUpload(payload, {
+        accountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
+        accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
+        apiToken: process.env.CLOUDFLARE_IMAGES_API_TOKEN,
+      });
+      const result = await ctx.runMutation(
+        internal.content.createMediaMetadataFromDashboard,
+        {
+          storageProvider: "cloudflare-images",
+          storageKey: upload.imageId,
+          publicUrl: upload.publicUrl,
+          altText: payload.altText,
+          contentId: payload.contentId,
+          usage: payload.usage,
+          status: "draft",
+          locale: payload.locale,
+        },
+      );
+
+      return privateJsonResponse({ ok: true, ...upload, ...result });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Cloudflare Images upload could not start.";
+      const status = message.includes("token") ? 401 : 400;
+
+      return privateJsonResponse({ ok: false, error: message }, { status });
+    }
+  }),
+});
+
+http.route({
   path: "/dashboard/content/setting",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
@@ -309,6 +356,28 @@ http.route({
 });
 
 http.route({
+  path: "/dashboard/content/resume-draft",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
+      const payload = await parseDashboardResumeDraftPayload(request);
+      const result = await ctx.runMutation(
+        internal.content.upsertResumeDraftFromDashboard,
+        payload,
+      );
+
+      return privateJsonResponse({ ok: true, ...result });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Resume draft could not be saved.";
+      const status = message.includes("token") ? 401 : 400;
+
+      return privateJsonResponse({ ok: false, error: message }, { status });
+    }
+  }),
+});
+
+http.route({
   path: "/dashboard/content/resume",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
@@ -323,6 +392,34 @@ http.route({
       return privateJsonResponse({ ok: true, ...result });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Resume version could not be saved.";
+      const status = message.includes("token") ? 401 : 400;
+
+      return privateJsonResponse({ ok: false, error: message }, { status });
+    }
+  }),
+});
+
+http.route({
+  path: "/dashboard/content/publish",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
+      const payload = await parseDashboardPublishPayload(request);
+      const result = await ctx.runMutation(
+        internal.content.publishContentFromDashboard,
+        payload,
+      );
+      const workflow = await triggerGitHubPublishWorkflow({
+        environment: getContactEnvironment(),
+        repository: process.env.PUBLISH_GITHUB_REPOSITORY,
+        token: process.env.PUBLISH_GITHUB_TOKEN,
+        workflowId: process.env.PUBLISH_GITHUB_WORKFLOW_ID,
+      });
+
+      return privateJsonResponse({ ok: true, ...result, workflow });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Published content could not be queued.";
       const status = message.includes("token") ? 401 : 400;
 
       return privateJsonResponse({ ok: false, error: message }, { status });

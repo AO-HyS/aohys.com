@@ -1,11 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
-import { ExternalLinkIcon, ImageIcon, LoaderCircleIcon, RocketIcon, SaveIcon } from "lucide-react";
 import {
+  CheckCircle2Icon,
+  ExternalLinkIcon,
+  ImageIcon,
+  LoaderCircleIcon,
+  RocketIcon,
+  SaveIcon,
+  UploadCloudIcon,
+} from "lucide-react";
+import {
+  createMediaUpload,
   loadDashboardContent,
-  saveMediaMetadata,
+  publishContent,
   saveProjectDraft,
   saveSiteSetting,
-  type MediaMetadataRequest,
+  uploadMediaFile,
+  type MediaUploadRequest,
   type ProjectDraftRequest,
 } from "@/api";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -50,6 +60,13 @@ import type {
 } from "@/types";
 
 type ProjectFormState = ProjectDraftRequest;
+type NoticeTone = "success" | "info" | "error";
+
+interface Notice {
+  tone: NoticeTone;
+  title: string;
+  message: string;
+}
 
 const caseStudyStatuses: DashboardCaseStudyStatus[] = [
   "production-proof",
@@ -65,7 +82,8 @@ export function ProjectsScreen() {
   const [content, setContent] = useState<DashboardContentPayload | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [savingKey, setSavingKey] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [publishingKey, setPublishingKey] = useState<string | null>(null);
+  const [notice, setNotice] = useState<Notice | null>(null);
 
   async function refresh() {
     setLoadError(null);
@@ -83,28 +101,60 @@ export function ProjectsScreen() {
   async function handleSaveProject(payload: ProjectFormState) {
     const key = `${payload.contentId}:${payload.locale}`;
     setSavingKey(key);
-    setNotice(null);
+    setNotice({
+      tone: "info",
+      title: "Saving draft",
+      message: "Writing this project draft to Convex.",
+    });
+
     try {
       await saveProjectDraft(payload);
-      setNotice(`${payload.title} ${payload.locale.toUpperCase()} draft saved in Convex. Public pages update only after the publish pipeline runs.`);
       await refresh();
+      setNotice({
+        tone: "success",
+        title: "Draft saved",
+        message: `${payload.title} ${payload.locale.toUpperCase()} is saved. Use Publish to rebuild the public site with this content.`,
+      });
     } catch (error) {
-      setLoadError(error instanceof Error ? error.message : "Project draft could not be saved.");
+      setNotice({
+        tone: "error",
+        title: "Draft save failed",
+        message: error instanceof Error ? error.message : "Project draft could not be saved.",
+      });
     } finally {
       setSavingKey(null);
     }
   }
 
-  async function handleSaveMedia(payload: MediaMetadataRequest) {
+  async function handleUploadMedia(payload: MediaUploadRequest, file: File) {
     const key = `${payload.contentId}:media`;
     setSavingKey(key);
-    setNotice(null);
+    setNotice({
+      tone: "info",
+      title: "Preparing media upload",
+      message: "Requesting a Cloudflare Images direct upload URL.",
+    });
+
     try {
-      await saveMediaMetadata(payload);
-      setNotice("Image metadata saved to the project. Public pages update only after the publish pipeline runs.");
+      const upload = await createMediaUpload(payload);
+      setNotice({
+        tone: "info",
+        title: "Uploading image",
+        message: "Cloudflare accepted the upload slot. Sending the selected file now.",
+      });
+      await uploadMediaFile(upload.uploadURL, file);
       await refresh();
+      setNotice({
+        tone: "success",
+        title: "Image uploaded",
+        message: "The image is attached as project media. Publish when you want it available to the Astro build.",
+      });
     } catch (error) {
-      setLoadError(error instanceof Error ? error.message : "Image metadata could not be saved.");
+      setNotice({
+        tone: "error",
+        title: "Media upload failed",
+        message: error instanceof Error ? error.message : "Image upload could not be completed.",
+      });
     } finally {
       setSavingKey(null);
     }
@@ -112,19 +162,61 @@ export function ProjectsScreen() {
 
   async function handleSaveContact(value: string) {
     setSavingKey("contact-settings");
-    setNotice(null);
+    setNotice({
+      tone: "info",
+      title: "Saving contact setting",
+      message: "Updating the public WhatsApp value in Convex.",
+    });
+
     try {
       await saveSiteSetting({
         key: "PUBLIC_WHATSAPP_URL",
         value,
         classification: "public-build-value",
       });
-      setNotice("Contact setting saved. Public pages update only after the publish pipeline runs.");
       await refresh();
+      setNotice({
+        tone: "success",
+        title: "Contact setting saved",
+        message: "This value will be applied to the public build after publish.",
+      });
     } catch (error) {
-      setLoadError(error instanceof Error ? error.message : "Contact setting could not be saved.");
+      setNotice({
+        tone: "error",
+        title: "Contact save failed",
+        message: error instanceof Error ? error.message : "Contact setting could not be saved.",
+      });
     } finally {
       setSavingKey(null);
+    }
+  }
+
+  async function handlePublishProject(project: DashboardProject) {
+    setPublishingKey(project.contentId);
+    setNotice({
+      tone: "info",
+      title: "Publishing project",
+      message: "Marking reviewed drafts as published and queuing the release train.",
+    });
+
+    try {
+      const result = await publishContent({ scope: "project", contentId: project.contentId });
+      await refresh();
+      setNotice({
+        tone: result.workflow.status === "queued" ? "success" : "info",
+        title: result.workflow.status === "queued" ? "Publish queued" : "Published in Convex",
+        message: result.workflow.status === "queued"
+          ? `GitHub Actions is rebuilding ${result.workflow.ref ?? "develop"} for ${project.title}.`
+          : `${project.title} was marked published, but ${result.workflow.reason ?? "the workflow token is not configured."}`,
+      });
+    } catch (error) {
+      setNotice({
+        tone: "error",
+        title: "Publish failed",
+        message: error instanceof Error ? error.message : "Project publish could not be queued.",
+      });
+    } finally {
+      setPublishingKey(null);
     }
   }
 
@@ -133,117 +225,177 @@ export function ProjectsScreen() {
   }
 
   return (
-    <>
-      <section className="flex flex-col gap-3">
-        <Badge className="w-fit" variant="secondary">Projects</Badge>
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Project workspace</h1>
-          <p className="max-w-3xl text-muted-foreground">
-            Edit private project drafts: story, outcome, structure, images, CTA, URL, and SEO metadata.
-            Saving keeps the data in the dashboard; publishing is the separate release step.
-          </p>
-        </div>
-      </section>
+    <div className="dashboard-workspace">
+      <PageHeading
+        eyebrow="Projects"
+        title="Project workspace"
+        description="Edit project stories, outcomes, structure, images, CTA, URL, and SEO metadata. Save stores work privately; Publish sends reviewed content through the release train."
+      />
+
+      <NoticeAlert notice={notice} />
+
       {loadError ? (
         <Alert variant="destructive">
           <AlertTitle>Dashboard data problem</AlertTitle>
           <AlertDescription>{loadError}</AlertDescription>
         </Alert>
       ) : null}
-      {notice ? (
-        <Alert>
-          <AlertTitle>Saved</AlertTitle>
-          <AlertDescription>{notice}</AlertDescription>
-        </Alert>
-      ) : null}
+
       {content ? (
         <>
-          <PublishBoundaryCard />
-          <Tabs defaultValue={content.projects[0]?.contentId} className="grid gap-4 lg:grid-cols-[15rem_minmax(0,1fr)]">
-            <TabsList className="h-auto w-full justify-start gap-1 overflow-x-auto bg-transparent p-0 lg:flex-col lg:items-stretch lg:overflow-visible">
-              {content.projects.map((project) => (
-                <TabsTrigger key={project.contentId} value={project.contentId} className="shrink-0 justify-start text-left lg:w-full">
-                  {project.title}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+          <Tabs defaultValue={content.projects[0]?.contentId} className="project-shell">
+            <ProjectTabs projects={content.projects} />
             <div className="min-w-0">
               {content.projects.map((project) => (
                 <TabsContent key={project.contentId} value={project.contentId} className="mt-0">
                   <ProjectEditor
                     project={project}
+                    isPublishing={publishingKey === project.contentId}
                     savingKey={savingKey}
-                    onSaveMedia={handleSaveMedia}
+                    onPublish={() => handlePublishProject(project)}
+                    onSaveMedia={handleUploadMedia}
                     onSaveProject={handleSaveProject}
                   />
                 </TabsContent>
               ))}
             </div>
           </Tabs>
+
+          <ContactSettingsCard
+            settings={content.settings}
+            isSaving={savingKey === "contact-settings"}
+            onSave={handleSaveContact}
+          />
         </>
       ) : null}
-      {content ? (
-        <ContactSettingsCard
-          settings={content.settings}
-          isSaving={savingKey === "contact-settings"}
-          onSave={handleSaveContact}
-        />
-      ) : null}
-    </>
+    </div>
+  );
+}
+
+function ProjectTabs({ projects }: { projects: DashboardProject[] }) {
+  return (
+    <aside className="project-nav-panel">
+      <div className="project-nav-label">Projects</div>
+      <TabsList className="project-tabs-list">
+        {projects.map((project) => (
+          <TabsTrigger key={project.contentId} value={project.contentId} className="project-tab-trigger">
+            <span>{project.title}</span>
+            <small>{formatProjectStatus(project.status)}</small>
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </aside>
   );
 }
 
 function ProjectEditor({
   project,
+  isPublishing,
   savingKey,
+  onPublish,
   onSaveProject,
   onSaveMedia,
 }: {
   project: DashboardProject;
+  isPublishing: boolean;
   savingKey: string | null;
+  onPublish: () => void | Promise<void>;
   onSaveProject: (payload: ProjectFormState) => void | Promise<void>;
-  onSaveMedia: (payload: MediaMetadataRequest) => void | Promise<void>;
+  onSaveMedia: (payload: MediaUploadRequest, file: File) => void | Promise<void>;
 }) {
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
-      <div className="flex flex-col gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>{project.title}</CardTitle>
-            <CardDescription>
-              {project.contentId} · {project.englishPath} · {project.spanishPath}
-            </CardDescription>
-            <CardAction>
-              <Badge variant={project.evidenceStatus === "published" ? "default" : "secondary"}>
-                {formatReferenceState(project.evidenceStatus)}
-              </Badge>
-            </CardAction>
-          </CardHeader>
-          <CardContent className="grid gap-3 sm:grid-cols-3">
-            <Metric label="Status" value={formatProjectStatus(project.status)} />
-            <Metric label="Sitemap" value={project.sitemapIncluded ? "Included" : "Noindex"} />
-            <Metric label="Project URL" value={project.projectUrl ?? "Not set"} />
-          </CardContent>
-        </Card>
-        {project.locales.map((localeContent) => (
-          <ProjectLocaleForm
-            key={`${project.contentId}:${localeContent.locale}`}
-            localeContent={localeContent}
-            project={project}
-            isSaving={savingKey === `${project.contentId}:${localeContent.locale}`}
-            onSave={onSaveProject}
-          />
-        ))}
+    <div className="project-editor-grid">
+      <div className="project-main-column">
+        <ProjectSummaryCard project={project} isPublishing={isPublishing} onPublish={onPublish} />
+        <Tabs defaultValue="en" className="locale-editor-tabs">
+          <TabsList className="locale-tabs-list">
+            {project.locales.map((localeContent) => (
+              <TabsTrigger key={localeContent.locale} value={localeContent.locale}>
+                {localeContent.locale === "en" ? "English" : "Spanish"}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {project.locales.map((localeContent) => (
+            <TabsContent key={`${project.contentId}:${localeContent.locale}`} value={localeContent.locale} className="mt-4">
+              <ProjectLocaleForm
+                localeContent={localeContent}
+                project={project}
+                isSaving={savingKey === `${project.contentId}:${localeContent.locale}`}
+                onSave={onSaveProject}
+              />
+            </TabsContent>
+          ))}
+        </Tabs>
       </div>
-      <aside className="flex flex-col gap-4">
+      <aside className="project-side-column">
         <ProjectImagesCard project={project} />
-        <ImageMetadataForm
+        <ImageUploadForm
           project={project}
           isSaving={savingKey === `${project.contentId}:media`}
           onSave={onSaveMedia}
         />
       </aside>
     </div>
+  );
+}
+
+function ProjectSummaryCard({
+  project,
+  isPublishing,
+  onPublish,
+}: {
+  project: DashboardProject;
+  isPublishing: boolean;
+  onPublish: () => void | Promise<void>;
+}) {
+  const latestDraft = project.locales
+    .map((localeContent) => localeContent.draft)
+    .filter(Boolean)
+    .sort((a, b) => (b?.updatedAt ?? 0) - (a?.updatedAt ?? 0))[0];
+  const latestPublished = project.locales
+    .map((localeContent) => localeContent.draft?.publishedAt)
+    .filter((value): value is number => typeof value === "number")
+    .sort((a, b) => b - a)[0];
+
+  return (
+    <Card className="project-summary-card">
+      <CardHeader>
+        <div>
+          <CardTitle>{project.title}</CardTitle>
+          <CardDescription>
+            {project.englishPath} · {project.spanishPath}
+          </CardDescription>
+        </div>
+        <CardAction>
+          <Badge variant={project.evidenceStatus === "published" ? "default" : "secondary"}>
+            {formatReferenceState(project.evidenceStatus)}
+          </Badge>
+        </CardAction>
+      </CardHeader>
+      <CardContent className="project-summary-content">
+        <div className="metric-grid">
+          <Metric label="Status" value={formatProjectStatus(project.status)} />
+          <Metric label="Sitemap" value={project.sitemapIncluded ? "Included" : "Noindex"} />
+          <Metric label="URL" value={project.projectUrl ?? "Not set"} />
+        </div>
+        <div className="publish-panel">
+          <div>
+            <div className="publish-panel-title">Publish to preview</div>
+            <p>
+              Save changes first. Publish marks the reviewed drafts and queues the GitHub release workflow so Astro can rebuild with the new content.
+            </p>
+            <div className="publish-meta">
+              <span>Last saved: {latestDraft ? formatDate(latestDraft.updatedAt) : "No draft yet"}</span>
+              <span>Last published: {latestPublished ? formatDate(latestPublished) : "Not published"}</span>
+            </div>
+          </div>
+          <Button type="button" onClick={() => void onPublish()} disabled={isPublishing}>
+            {isPublishing ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <RocketIcon data-icon="inline-start" />}
+            Publish
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -258,7 +410,7 @@ function ProjectLocaleForm({
   isSaving: boolean;
   onSave: (payload: ProjectFormState) => void | Promise<void>;
 }) {
-  const [form, setForm] = useState<ProjectFormState>(() => ({
+  const initialForm = useMemo(() => ({
     contentId: project.contentId,
     locale: localeContent.locale,
     status: project.status,
@@ -271,7 +423,14 @@ function ProjectLocaleForm({
     ctaHref: localeContent.draft?.ctaHref ?? localeContent.ctaHref,
     achievements: localeContent.draft?.achievements ?? localeContent.achievements,
     structureNotes: localeContent.draft?.structureNotes ?? localeContent.structureNotes,
-  }));
+  }), [localeContent, project]);
+  const [form, setForm] = useState<ProjectFormState>(initialForm);
+
+  useEffect(() => {
+    setForm(initialForm);
+  }, [initialForm]);
+
+  const hasChanges = JSON.stringify(form) !== JSON.stringify(initialForm);
 
   function update<K extends keyof ProjectFormState>(key: K, value: ProjectFormState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -280,23 +439,30 @@ function ProjectLocaleForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{localeContent.locale === "en" ? "English content" : "Spanish content"}</CardTitle>
-        <CardDescription>
-          {localeContent.path} · source: {localeContent.draft ? "dashboard draft" : "content graph"}
-        </CardDescription>
+        <div>
+          <CardTitle>{localeContent.locale === "en" ? "English content" : "Spanish content"}</CardTitle>
+          <CardDescription>
+            {localeContent.path} · {localeContent.draft ? "private dashboard draft" : "public content graph"}
+          </CardDescription>
+        </div>
+        <CardAction>
+          <Badge variant={hasChanges ? "secondary" : "outline"}>
+            {hasChanges ? "Unsaved changes" : "Up to date"}
+          </Badge>
+        </CardAction>
       </CardHeader>
       <CardContent>
         <form
-          className="flex flex-col gap-5"
+          className="content-edit-form"
           onSubmit={(event) => {
             event.preventDefault();
             void onSave(form);
           }}
         >
           <FieldSet>
-            <FieldLegend>Publishing metadata</FieldLegend>
+            <FieldLegend>Identity</FieldLegend>
             <FieldGroup>
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="form-grid-3">
                 <Field>
                   <FieldLabel>Status</FieldLabel>
                   <Select
@@ -351,7 +517,7 @@ function ProjectLocaleForm({
                 <Textarea
                   value={form.summary}
                   onChange={(event) => update("summary", event.target.value)}
-                  rows={3}
+                  rows={4}
                 />
               </Field>
               <Field>
@@ -359,16 +525,17 @@ function ProjectLocaleForm({
                 <Textarea
                   value={form.seoDescription}
                   onChange={(event) => update("seoDescription", event.target.value)}
-                  rows={3}
+                  rows={4}
                 />
-                <FieldDescription>Keep this direct and readable for robots and humans.</FieldDescription>
+                <FieldDescription>Write for search results and humans. No vague proof language.</FieldDescription>
               </Field>
             </FieldGroup>
           </FieldSet>
+
           <FieldSet>
-            <FieldLegend>Business outcome</FieldLegend>
+            <FieldLegend>Outcome and structure</FieldLegend>
             <FieldGroup>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="form-grid-2">
                 <Field>
                   <FieldLabel>CTA label</FieldLabel>
                   <Input value={form.ctaLabel} onChange={(event) => update("ctaLabel", event.target.value)} />
@@ -379,11 +546,11 @@ function ProjectLocaleForm({
                 </Field>
               </div>
               <Field>
-                <FieldLabel>Achievements</FieldLabel>
+                <FieldLabel>Business outcome</FieldLabel>
                 <Textarea
                   value={form.achievements}
                   onChange={(event) => update("achievements", event.target.value)}
-                  rows={4}
+                  rows={7}
                 />
               </Field>
               <Field>
@@ -391,15 +558,19 @@ function ProjectLocaleForm({
                 <Textarea
                   value={form.structureNotes}
                   onChange={(event) => update("structureNotes", event.target.value)}
-                  rows={4}
+                  rows={7}
                 />
               </Field>
             </FieldGroup>
           </FieldSet>
-          <div className="flex justify-end">
-            <Button type="submit" disabled={isSaving}>
+
+          <div className="form-action-row">
+            <span aria-live="polite">
+              {isSaving ? "Saving..." : hasChanges ? "Draft has local changes." : "No unsaved changes."}
+            </span>
+            <Button type="submit" disabled={isSaving || !hasChanges}>
               {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <SaveIcon data-icon="inline-start" />}
-              Save {localeContent.locale.toUpperCase()} draft
+              Save {localeContent.locale.toUpperCase()}
             </Button>
           </div>
         </form>
@@ -412,119 +583,119 @@ function ProjectImagesCard({ project }: { project: DashboardProject }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Images</CardTitle>
-        <CardDescription>Public-safe media attached to this project.</CardDescription>
+        <CardTitle>Project media</CardTitle>
+        <CardDescription>Images attached to this project and available for the publish pipeline.</CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3">
+      <CardContent className="media-list">
         {project.images.length > 0 ? project.images.map((image) => (
-          <div key={`${image.source}:${image.label}:${image.storageKey ?? image.href ?? image.src ?? ""}`} className="rounded-lg border bg-muted/30 p-3">
-            <div className="flex items-start gap-3">
-              <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-background">
-                <ImageIcon />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="font-medium">{image.label}</div>
-                <p className="text-sm text-muted-foreground">{image.altText}</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <Badge variant="secondary">{image.source}</Badge>
-                  {image.status ? <Badge variant="outline">{image.status}</Badge> : null}
-                  {image.href ? (
-                    <Button asChild variant="link" size="sm" className="h-auto p-0">
-                      <a href={image.href} target="_blank" rel="noreferrer">
-                        Open
-                        <ExternalLinkIcon data-icon="inline-end" />
-                      </a>
-                    </Button>
-                  ) : null}
-                </div>
+          <div key={`${image.source}:${image.label}:${image.storageKey ?? image.href ?? image.src ?? ""}`} className="media-row">
+            <div className="media-icon">
+              <ImageIcon />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="font-medium">{image.label}</div>
+              <p>{image.altText}</p>
+              <div className="media-row-actions">
+                <Badge variant="secondary">{image.source}</Badge>
+                {image.status ? <Badge variant="outline">{image.status}</Badge> : null}
+                {image.href ? (
+                  <Button asChild variant="link" size="sm" className="h-auto p-0">
+                    <a href={image.href} target="_blank" rel="noreferrer">
+                      Open
+                      <ExternalLinkIcon data-icon="inline-end" />
+                    </a>
+                  </Button>
+                ) : null}
               </div>
             </div>
           </div>
         )) : (
-          <p className="text-sm text-muted-foreground">No image metadata has been attached yet.</p>
+          <p className="text-sm text-muted-foreground">No project media has been attached yet.</p>
         )}
       </CardContent>
     </Card>
   );
 }
 
-function ImageMetadataForm({
+function ImageUploadForm({
   project,
   isSaving,
   onSave,
 }: {
   project: DashboardProject;
   isSaving: boolean;
-  onSave: (payload: MediaMetadataRequest) => void | Promise<void>;
+  onSave: (payload: MediaUploadRequest, file: File) => void | Promise<void>;
 }) {
-  const [form, setForm] = useState<MediaMetadataRequest>({
+  const [file, setFile] = useState<File | null>(null);
+  const [form, setForm] = useState<MediaUploadRequest>({
     contentId: project.contentId,
-    storageKey: "",
-    publicUrl: "",
+    storageKey: `media/${project.contentId.replace("case-study:", "")}`,
     altText: "",
     usage: "case-study",
     locale: "en",
   });
 
+  useEffect(() => {
+    setFile(null);
+    setForm({
+      contentId: project.contentId,
+      storageKey: `media/${project.contentId.replace("case-study:", "")}`,
+      altText: "",
+      usage: "case-study",
+      locale: "en",
+    });
+  }, [project.contentId]);
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Add project media</CardTitle>
-        <CardDescription>Attach a public-safe image reference. Cloudflare upload is a separate backend pipeline.</CardDescription>
+        <CardTitle>Upload image</CardTitle>
+        <CardDescription>Select a local image. The dashboard requests a direct Cloudflare upload URL and stores the resulting media record.</CardDescription>
       </CardHeader>
       <CardContent>
         <form
-          className="flex flex-col gap-4"
+          className="content-edit-form"
           onSubmit={(event) => {
             event.preventDefault();
-            void onSave(form);
-            setForm((current) => ({ ...current, storageKey: "", publicUrl: "", altText: "" }));
+            if (!file) {
+              return;
+            }
+            void onSave(form, file);
           }}
         >
           <FieldGroup>
             <Field>
-              <FieldLabel>Local file</FieldLabel>
+              <FieldLabel>Local image</FieldLabel>
               <Input
                 type="file"
                 accept="image/png,image/jpeg,image/webp"
                 onChange={(event) => {
-                  const file = event.target.files?.[0];
-                  if (!file) {
-                    return;
-                  }
+                  const selectedFile = event.target.files?.[0] ?? null;
+                  setFile(selectedFile);
 
-                  setForm((current) => ({
-                    ...current,
-                    storageKey: current.storageKey || file.name.replace(/\s+/g, "-").toLowerCase(),
-                  }));
+                  if (selectedFile) {
+                    setForm((current) => ({
+                      ...current,
+                      storageKey: `${current.storageKey}/${selectedFile.name.replace(/\.[^.]+$/, "").replace(/\s+/g, "-").toLowerCase()}`,
+                    }));
+                  }
                 }}
               />
-              <FieldDescription>
-                Selection is ready for the Cloudflare direct-upload pipeline; this release still stores metadata and public URLs.
-              </FieldDescription>
             </Field>
             <Field>
               <FieldLabel>Storage key</FieldLabel>
               <Input
                 value={form.storageKey}
                 onChange={(event) => setForm((current) => ({ ...current, storageKey: event.target.value }))}
-                placeholder="media/casa-roca-home"
               />
-            </Field>
-            <Field>
-              <FieldLabel>Temporary public URL</FieldLabel>
-              <Input
-                value={form.publicUrl ?? ""}
-                onChange={(event) => setForm((current) => ({ ...current, publicUrl: event.target.value }))}
-                placeholder="https://..."
-              />
+              <FieldDescription>Readable key used as the Cloudflare Images custom ID.</FieldDescription>
             </Field>
             <Field>
               <FieldLabel>Alt text</FieldLabel>
               <Textarea
                 value={form.altText}
                 onChange={(event) => setForm((current) => ({ ...current, altText: event.target.value }))}
-                rows={3}
+                rows={4}
               />
             </Field>
             <Field>
@@ -545,9 +716,9 @@ function ImageMetadataForm({
               </Select>
             </Field>
           </FieldGroup>
-          <Button type="submit" disabled={isSaving}>
-            {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <SaveIcon data-icon="inline-start" />}
-            Save image
+          <Button type="submit" disabled={isSaving || !file || !form.altText.trim()}>
+            {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <UploadCloudIcon data-icon="inline-start" />}
+            Upload image
           </Button>
         </form>
       </CardContent>
@@ -578,11 +749,11 @@ function ContactSettingsCard({
     <Card id="contact-settings">
       <CardHeader>
         <CardTitle>Contact setting</CardTitle>
-        <CardDescription>Only the public WhatsApp/contact value belongs here. It publishes through the release path.</CardDescription>
+        <CardDescription>Only the public WhatsApp/contact value belongs here. It publishes through the same release path.</CardDescription>
       </CardHeader>
       <CardContent>
         <form
-          className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto]"
+          className="contact-setting-form"
           onSubmit={(event) => {
             event.preventDefault();
             void onSave(value);
@@ -592,7 +763,7 @@ function ContactSettingsCard({
             <FieldLabel>PUBLIC_WHATSAPP_URL</FieldLabel>
             <Input value={value} onChange={(event) => setValue(event.target.value)} />
           </Field>
-          <Button className="self-end" type="submit" disabled={isSaving}>
+          <Button className="self-end" type="submit" disabled={isSaving || value === currentValue}>
             {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <SaveIcon data-icon="inline-start" />}
             Save contact
           </Button>
@@ -602,24 +773,46 @@ function ContactSettingsCard({
   );
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
+function PageHeading({
+  eyebrow,
+  title,
+  description,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+}) {
   return (
-    <div className="rounded-lg border bg-muted/30 p-3">
-      <div className="text-xs font-medium uppercase text-muted-foreground">{label}</div>
-      <div className="mt-1 break-words text-sm font-medium">{value}</div>
-    </div>
+    <section className="dashboard-page-heading">
+      <Badge className="w-fit" variant="secondary">{eyebrow}</Badge>
+      <div>
+        <h1>{title}</h1>
+        <p>{description}</p>
+      </div>
+    </section>
   );
 }
 
-function PublishBoundaryCard() {
+function NoticeAlert({ notice }: { notice: Notice | null }) {
+  if (!notice) {
+    return null;
+  }
+
   return (
-    <Alert>
-      <RocketIcon data-icon="inline-start" />
-      <AlertTitle>Save draft is not publish</AlertTitle>
-      <AlertDescription>
-        Dashboard edits are private Convex drafts. The public Astro site still builds from the Public Content Graph until a publish action writes reviewed content into the repo and triggers the release train.
-      </AlertDescription>
+    <Alert variant={notice.tone === "error" ? "destructive" : "default"} className="status-alert">
+      {notice.tone === "success" ? <CheckCircle2Icon data-icon="inline-start" /> : null}
+      <AlertTitle>{notice.title}</AlertTitle>
+      <AlertDescription>{notice.message}</AlertDescription>
     </Alert>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="metric-tile">
+      <div>{label}</div>
+      <strong>{value}</strong>
+    </div>
   );
 }
 
@@ -638,7 +831,7 @@ function formatProjectStatus(value: string): string {
     "production-proof": "Live site",
     "active-build": "Active build",
     "private-build": "Private system",
-    "enterprise-confidential": "Confidential enterprise work",
+    "enterprise-confidential": "Confidential enterprise",
     "engineering-practice": "Engineering practice",
   };
 
@@ -660,4 +853,11 @@ function formatLabel(value: string): string {
     .split("-")
     .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
     .join(" ");
+}
+
+function formatDate(value: number): string {
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
 }

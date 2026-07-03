@@ -66,10 +66,13 @@ Private dashboard endpoints are implemented as Convex HTTP actions protected by 
 - `POST /dashboard/content/project` for project-centered dashboard drafts: localized text, SEO description, public URL, CTA, achievements, structure notes, status, and evidence state.
 - `POST /dashboard/content/case-study` for Public Content Graph case-study metadata.
 - `POST /dashboard/content/media` for metadata-only media records with alt text and usage intent.
+- `POST /dashboard/content/media/upload-url` for Cloudflare Images direct-upload URL creation and metadata registration.
 - `POST /dashboard/content/setting` for `PUBLIC_` site settings only.
+- `POST /dashboard/content/resume-draft` for editable resume content drafts.
 - `POST /dashboard/content/resume` for resume PDF/version records.
+- `POST /dashboard/content/publish` for marking reviewed project/resume drafts as published and dispatching the Release Train workflow.
 
-The content endpoints store metadata and public-safe references only. Cloudflare Images/R2 uploads remain a future Media Pipeline decision; Convex should not store image originals.
+The content endpoints store metadata and public-safe references only. Cloudflare Images uploads use direct creator upload URLs so browser code never receives Cloudflare API credentials; Convex should not store image originals.
 
 ## Better Auth
 

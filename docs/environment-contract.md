@@ -131,6 +131,7 @@ Current Cloudflare variables:
 | `CLOUDFLARE_API_TOKEN` | Server secret | Server-only | release only in preview/production |
 | `CLOUDFLARE_PROJECT_NAME` | Provider output | Server-only | release only in preview/production |
 | `CLOUDFLARE_IMAGES_ACCOUNT_HASH` | Provider output | Server-only | optional until Cloudflare Images is activated |
+| `CLOUDFLARE_IMAGES_API_TOKEN` | Server secret | Server-only | optional until Cloudflare Images is activated |
 
 ## Validation Gates
 

@@ -29,6 +29,8 @@ const validPreviewValues = {
   CLOUDFLARE_API_TOKEN: "cloudflare-api-token",
   CLOUDFLARE_PROJECT_NAME: "aohys-com",
   CLOUDFLARE_IMAGES_ACCOUNT_HASH: "images-hash",
+  CLOUDFLARE_IMAGES_API_TOKEN: "cloudflare-images-token",
+  PUBLISH_GITHUB_TOKEN: "github-publish-token",
   PUBLIC_CONTACT_EMAIL: "alejandro.ortiz@aohys.com",
   PUBLIC_WHATSAPP_URL: "https://wa.me/522299020825",
 };
@@ -86,7 +88,6 @@ describe("Convex Environment Contract", () => {
         ...validPreviewValues,
         CONVEX_DEPLOY_KEY: undefined,
         CLOUDFLARE_API_TOKEN: undefined,
-        CLOUDFLARE_IMAGES_ACCOUNT_HASH: undefined,
       },
       { target: "runtime" },
     );
@@ -220,11 +221,33 @@ describe("Convex Environment Contract", () => {
         BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
         ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
         DASHBOARD_API_TOKEN: "dashboard-api-token",
+        CLOUDFLARE_ACCOUNT_ID: "cloudflare-account",
+        CLOUDFLARE_IMAGES_ACCOUNT_HASH: "images-hash",
+        CLOUDFLARE_IMAGES_API_TOKEN: "cloudflare-images-token",
+        PUBLISH_GITHUB_TOKEN: "github-publish-token",
       },
       { target: "dashboard-runtime" },
     );
 
     expect(dashboardRuntime).toEqual({ ok: true, errors: [] });
+
+    const dashboardRuntimeWithoutImages = validateEnvironmentContract(
+      "preview",
+      {
+        AOHYS_ENV: "preview",
+        PUBLIC_SITE_URL: "https://preview.aohys.com",
+        CONVEX_SITE_URL: "https://aohys-preview.convex.site",
+        BETTER_AUTH_URL: "https://preview.aohys.com",
+        BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+        ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+        DASHBOARD_API_TOKEN: "dashboard-api-token",
+        CLOUDFLARE_ACCOUNT_ID: "cloudflare-account",
+        PUBLISH_GITHUB_TOKEN: "github-publish-token",
+      },
+      { target: "dashboard-runtime" },
+    );
+
+    expect(dashboardRuntimeWithoutImages).toEqual({ ok: true, errors: [] });
 
     const missingDashboardAuthTarget = validateEnvironmentContract(
       "preview",

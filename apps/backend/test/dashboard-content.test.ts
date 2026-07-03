@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   parseDashboardCaseStudyMetadataPayload,
+  parseDashboardMediaUploadPayload,
   parseDashboardMediaMetadataPayload,
+  parseDashboardPublishPayload,
   parseDashboardProjectDraftPayload,
+  parseDashboardResumeDraftPayload,
   parseDashboardResumeVersionPayload,
   parseDashboardSiteSettingPayload,
 } from "../src/dashboard-content.js";
@@ -171,6 +174,66 @@ describe("dashboard content HTTP boundary", () => {
       version: "2026.06",
       pdfPath: "/downloads/alejandro-ortiz-corro-resume.pdf",
       isPublished: true,
+    });
+  });
+
+  it("parses Cloudflare Images upload requests without hand-written public URLs", async () => {
+    const request = new Request("https://aohys-preview.convex.site/dashboard/content/media/upload-url", {
+      method: "POST",
+      body: JSON.stringify({
+        storageKey: "media/Casa Roca Hero",
+        altText: "Casa Roca homepage hero.",
+        contentId: "case-study:casa-roca",
+        usage: "case-study",
+        locale: "en",
+      }),
+    });
+
+    await expect(parseDashboardMediaUploadPayload(request)).resolves.toEqual({
+      storageKey: "media/Casa-Roca-Hero",
+      altText: "Casa Roca homepage hero.",
+      contentId: "case-study:casa-roca",
+      usage: "case-study",
+      locale: "en",
+    });
+  });
+
+  it("parses resume drafts and publish requests for reviewed content", async () => {
+    const contentJson = JSON.stringify({
+      name: "Alejandro Ortiz Corro",
+      role: "Senior Product Engineer",
+      location: "Mexico",
+      intro: "Builds reliable business software.",
+      summary: ["Product engineer."],
+      highlights: [],
+      projects: [],
+      experience: [],
+      skills: [],
+      education: [],
+      languages: [],
+    });
+
+    await expect(parseDashboardResumeDraftPayload(new Request("https://aohys-preview.convex.site/dashboard/content/resume-draft", {
+      method: "POST",
+      body: JSON.stringify({
+        locale: "en",
+        contentJson,
+      }),
+    }))).resolves.toEqual({
+      locale: "en",
+      contentJson,
+    });
+
+    await expect(parseDashboardPublishPayload(new Request("https://aohys-preview.convex.site/dashboard/content/publish", {
+      method: "POST",
+      body: JSON.stringify({
+        scope: "project",
+        contentId: "case-study:casa-roca",
+      }),
+    }))).resolves.toEqual({
+      scope: "project",
+      contentId: "case-study:casa-roca",
+      locale: undefined,
     });
   });
 });

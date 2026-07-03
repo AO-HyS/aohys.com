@@ -8,9 +8,9 @@ The canonical public domain is `https://aohys.com`. `aohys.net` is intended to r
 
 ## Status
 
-The repository foundation, public Astro shell, bilingual Public Content Graph routes, proof narrative, case-study routes, resume route, contact backend, explicit PostHog analytics, Cloudflare/Wrangler release path, private React dashboard app, lead review workflow, project workspace, and launch hardening are scaffolded through the approved vertical-slice issues.
+The repository foundation, public Astro shell, bilingual Public Content Graph routes, case-study routes, resume route, contact backend, explicit PostHog analytics, Cloudflare/Wrangler release path, private React dashboard app, lead review workflow, project workspace, resume editor, dashboard publish flow, and launch hardening are scaffolded through the approved vertical-slice issues.
 
-Cloudflare media originals and generated/screenshot asset production remain future Media Pipeline work. The current dashboard stores metadata and public-safe references only.
+The dashboard can save private Convex drafts, publish reviewed project/resume content into the next Astro build, and request direct Cloudflare Images upload URLs without exposing Cloudflare tokens to the browser.
 
 ## Evaluation Guide
 
@@ -149,14 +149,14 @@ The PostHog audit compares GitHub Environment `preview` and `production` public 
 
 | Provider | Responsibility in this repo |
 | --- | --- |
-| Cloudflare | DNS, `aohys.com` hosting, `aohys.net` redirect rules, Pages deploys through Wrangler, preview/production surfaces, security headers, future Cloudflare Images and/or R2 media delivery |
-| Convex | Application state, contact leads, content/media metadata, site settings, resume versions, Better Auth integration, private dashboard endpoints |
+| Cloudflare | DNS, `aohys.com` hosting, `aohys.net` redirect rules, Pages deploys through Wrangler, preview/production surfaces, security headers, Cloudflare Images delivery |
+| Convex | Application state, contact leads, content/media metadata, project and resume drafts, site settings, resume versions, Better Auth integration, private dashboard endpoints |
 | PostHog | Separate preview/production projects, explicit pageviews, selected conversion events, browser error capture, sanitized contact/dashboard operational events, dashboard/error analysis outside the repo |
 | Resend | Lead notification email from the institutional sender once provider credentials and DNS are ready |
 | Better Auth | Google sign-in, session handling through Convex, trusted origins, admin allowlist integration |
-| GitHub | Public source hosting, protected `develop` and `main`, GitHub Environments, pull-request checks, Release Train workflow |
+| GitHub | Public source hosting, protected `develop` and `main`, GitHub Environments, pull-request checks, Release Train workflow, dashboard-triggered `workflow_dispatch` publishes |
 
-Cloudflare Images is mentioned in the architecture because Cloudflare should own media optimization and delivery. The current implementation defers originals/variants to the future Media Pipeline module while preserving metadata shapes in Convex.
+Cloudflare Images owns dashboard media delivery. Convex creates short-lived direct upload URLs with a narrow Images token, stores only metadata and delivery URLs, and never stores image originals.
 
 ## Dashboard Architecture
 

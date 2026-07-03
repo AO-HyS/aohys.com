@@ -49,8 +49,8 @@ Feature branches should target `develop`. Production promotion should target `ma
 | `pnpm run sync:convex-env:preview` | Sync preview runtime values from GitHub Environment variables into the preview Convex deployment without printing secret values. |
 | `pnpm run sync:convex-env:production` | Sync production runtime values from GitHub Environment variables into the production Convex deployment without printing secret values. |
 | `pnpm run seed:dashboard:preview` | Idempotently seed the private preview dashboard with project drafts and public contact settings through Convex HTTP endpoints protected by `DASHBOARD_API_TOKEN`. |
-| `pnpm run deploy:preview` | Validate preview env, audit PostHog project separation, sync Convex preview runtime variables, deploy Convex with the preview deploy key, seed preview dashboard drafts/settings, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
-| `pnpm run deploy:production` | Validate production env, audit PostHog project separation, sync Convex production runtime variables, deploy Convex with the production deploy key, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch main`. |
+| `pnpm run deploy:preview` | Validate preview env, audit PostHog project separation, sync Convex preview runtime variables, deploy Convex with the preview deploy key, seed preview dashboard drafts/settings, apply published dashboard content, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
+| `pnpm run deploy:production` | Validate production env, audit PostHog project separation, sync Convex production runtime variables, deploy Convex with the production deploy key, apply published dashboard content, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch main`. |
 | `pnpm run smoke:preview` | Fetch the preview smoke URL, verify a 2xx public shell, production canonical URL, PostHog/Convex CSP allowances, anonymous `/dashboard` redirect, private sign-in shell, and configured contact endpoint. |
 | `pnpm run smoke:production` | Fetch `https://aohys.com` and verify the same public shell, canonical, security, dashboard, and contact boundaries against production. |
 
@@ -90,7 +90,7 @@ pnpm run sync:convex-env:preview
 pnpm run sync:convex-env:production
 ```
 
-The sync script reads the already-validated GitHub Environment values, writes a temporary `.env` file with `0600` permissions, runs `convex env set --from-file --force --deployment "$CONVEX_DEPLOYMENT"`, and deletes the temporary file. It excludes deploy-only provider credentials such as Cloudflare API tokens and Convex deploy keys.
+The sync script reads the already-validated GitHub Environment values, writes a temporary `.env` file with `0600` permissions, runs `convex env set --from-file --force --deployment "$CONVEX_DEPLOYMENT"`, and deletes the temporary file. It excludes deploy-only provider credentials such as the broad Wrangler Cloudflare API token and Convex deploy keys, but it does sync dashboard-runtime credentials such as the narrow Cloudflare Images token and GitHub publish token.
 
 Convex deploys then run before Cloudflare Pages deploys through:
 
@@ -106,7 +106,15 @@ Preview deploys then seed private dashboard working data through:
 pnpm run seed:dashboard:preview
 ```
 
-The seed runs only with `AOHYS_ENV=preview`. It uses the already-synced `CONVEX_SITE_URL` and server-only `DASHBOARD_API_TOKEN` from GitHub Environment `preview` to read existing dashboard content first, then create only missing bilingual project drafts and the public WhatsApp setting. It must not overwrite edits made in the dashboard. It does not run for production and does not seed media rows, because media metadata creation is intentionally non-idempotent until the future Media Pipeline adds stable asset IDs.
+The seed runs only with `AOHYS_ENV=preview`. It uses the already-synced `CONVEX_SITE_URL` and server-only `DASHBOARD_API_TOKEN` from GitHub Environment `preview` to read existing dashboard content first, then create missing bilingual project drafts and the public WhatsApp setting. It can replace retired seed copy that used old "proof/evidence" language, but it must not overwrite current dashboard edits. It does not run for production and does not seed media rows.
+
+Before Astro builds, deploy commands run:
+
+```sh
+pnpm run publish:content:build
+```
+
+That bridge reads token-protected dashboard content from Convex, applies only drafts with `publishedAt` to the local Public Content Graph JSON files, and writes generated public media/settings modules consumed by Astro. Local builds without `CONVEX_SITE_URL` or `DASHBOARD_API_TOKEN` skip the bridge. Dashboard Publish marks reviewed drafts/media, queues `workflow_dispatch`, and lets the Release Train rebuild preview or production. Save draft is not publish.
 
 The Cloudflare Pages project name is `aohys-com`. Site deploys use Wrangler Pages Direct Upload:
 

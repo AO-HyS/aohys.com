@@ -54,38 +54,38 @@ body {
 }
 
 :root {
-  --background: oklch(0.982 0.004 245);
-  --foreground: oklch(0.18 0.018 238);
+  --background: oklch(0.985 0.014 92);
+  --foreground: oklch(0.16 0.035 246);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.018 238);
+  --card-foreground: oklch(0.16 0.035 246);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.018 238);
-  --primary: oklch(0.58 0.12 170);
-  --primary-foreground: oklch(0.99 0.004 170);
-  --secondary: oklch(0.965 0.018 210);
-  --secondary-foreground: oklch(0.26 0.04 230);
-  --muted: oklch(0.952 0.01 230);
-  --muted-foreground: oklch(0.45 0.024 238);
-  --accent: oklch(0.92 0.08 82);
-  --accent-foreground: oklch(0.24 0.045 58);
+  --popover-foreground: oklch(0.16 0.035 246);
+  --primary: oklch(0.43 0.105 166);
+  --primary-foreground: oklch(0.99 0.008 96);
+  --secondary: oklch(0.935 0.038 201);
+  --secondary-foreground: oklch(0.21 0.055 241);
+  --muted: oklch(0.944 0.018 82);
+  --muted-foreground: oklch(0.39 0.04 244);
+  --accent: oklch(0.82 0.145 78);
+  --accent-foreground: oklch(0.18 0.045 65);
   --destructive: oklch(0.58 0.2 28);
-  --border: oklch(0.885 0.01 235);
-  --input: oklch(0.885 0.01 235);
-  --ring: oklch(0.62 0.13 170);
-  --chart-1: oklch(0.68 0.12 178);
-  --chart-2: oklch(0.72 0.12 75);
-  --chart-3: oklch(0.74 0.11 330);
-  --chart-4: oklch(0.66 0.1 245);
-  --chart-5: oklch(0.78 0.08 135);
+  --border: oklch(0.84 0.018 88);
+  --input: oklch(0.84 0.018 88);
+  --ring: oklch(0.48 0.11 166);
+  --chart-1: oklch(0.58 0.12 174);
+  --chart-2: oklch(0.78 0.15 78);
+  --chart-3: oklch(0.68 0.15 24);
+  --chart-4: oklch(0.58 0.12 252);
+  --chart-5: oklch(0.7 0.1 326);
   --radius: 0.625rem;
-  --sidebar: oklch(0.19 0.026 235);
-  --sidebar-foreground: oklch(0.94 0.012 230);
-  --sidebar-primary: oklch(0.72 0.12 80);
-  --sidebar-primary-foreground: oklch(0.17 0.024 235);
-  --sidebar-accent: oklch(0.28 0.04 232);
-  --sidebar-accent-foreground: oklch(0.98 0.006 230);
-  --sidebar-border: oklch(0.32 0.032 232);
-  --sidebar-ring: oklch(0.72 0.12 80);
+  --sidebar: oklch(0.2 0.058 240);
+  --sidebar-foreground: oklch(0.96 0.012 92);
+  --sidebar-primary: oklch(0.76 0.14 79);
+  --sidebar-primary-foreground: oklch(0.17 0.048 240);
+  --sidebar-accent: oklch(0.29 0.075 239);
+  --sidebar-accent-foreground: oklch(0.985 0.01 92);
+  --sidebar-border: oklch(0.34 0.058 239);
+  --sidebar-ring: oklch(0.76 0.14 79);
 }
 
 .dark {
@@ -131,5 +131,196 @@ body {
   }
   html {
     @apply font-sans;
+  }
+}
+
+@layer components {
+  .dashboard-workspace {
+    @apply flex flex-col gap-6;
+  }
+
+  .dashboard-page-heading {
+    @apply flex max-w-4xl flex-col gap-3;
+  }
+
+  .dashboard-page-heading h1 {
+    @apply text-4xl font-semibold leading-[1.02] tracking-normal text-foreground sm:text-5xl;
+  }
+
+  .dashboard-page-heading p {
+    @apply mt-3 max-w-3xl text-base leading-7 text-muted-foreground;
+  }
+
+  .status-alert {
+    @apply max-w-5xl border-l-4 border-l-primary bg-card;
+  }
+
+  .project-shell {
+    @apply grid gap-5;
+  }
+
+  .project-nav-panel {
+    @apply h-fit rounded-lg border bg-card p-3 shadow-sm;
+  }
+
+  .project-nav-label {
+    @apply px-2 pb-2 text-xs font-semibold uppercase text-muted-foreground;
+  }
+
+  .project-tabs-list {
+    @apply h-auto w-full flex-col items-stretch justify-start gap-1 bg-transparent p-0;
+  }
+
+  .project-tab-trigger {
+    @apply h-auto w-full justify-start rounded-md px-3 py-3 text-left data-[state=active]:bg-primary data-[state=active]:text-primary-foreground;
+  }
+
+  .project-tab-trigger span,
+  .project-tab-trigger small {
+    @apply block truncate;
+  }
+
+  .project-tab-trigger small {
+    @apply mt-1 text-xs opacity-75;
+  }
+
+  .project-editor-grid {
+    @apply grid gap-5;
+  }
+
+  .project-main-column,
+  .project-side-column {
+    @apply flex min-w-0 flex-col gap-5;
+  }
+
+  .project-summary-card {
+    @apply overflow-hidden border-primary/20;
+  }
+
+  .project-summary-content {
+    @apply flex flex-col gap-4;
+  }
+
+  .metric-grid {
+    @apply grid gap-3 md:grid-cols-3;
+  }
+
+  .metric-tile {
+    @apply rounded-md border bg-muted/45 p-3;
+  }
+
+  .metric-tile div {
+    @apply text-xs font-semibold uppercase text-muted-foreground;
+  }
+
+  .metric-tile strong {
+    @apply mt-1 block break-words text-sm font-semibold text-foreground;
+  }
+
+  .publish-panel {
+    @apply flex flex-col gap-4 rounded-md border border-primary/25 bg-primary/5 p-4 lg:flex-row lg:items-center lg:justify-between;
+  }
+
+  .publish-panel-title {
+    @apply text-sm font-semibold text-foreground;
+  }
+
+  .publish-panel p {
+    @apply mt-1 max-w-2xl text-sm leading-6 text-muted-foreground;
+  }
+
+  .publish-meta {
+    @apply mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground;
+  }
+
+  .publish-meta span {
+    @apply rounded-full bg-background px-2.5 py-1;
+  }
+
+  .locale-editor-tabs {
+    @apply min-w-0;
+  }
+
+  .locale-tabs-list {
+    @apply h-auto w-fit bg-muted p-1;
+  }
+
+  .content-edit-form {
+    @apply flex flex-col gap-6;
+  }
+
+  .form-grid-2 {
+    @apply grid gap-4 md:grid-cols-2;
+  }
+
+  .form-grid-3 {
+    @apply grid gap-4 md:grid-cols-3;
+  }
+
+  .form-action-row {
+    @apply flex flex-col gap-3 border-t pt-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .media-list {
+    @apply flex flex-col gap-3;
+  }
+
+  .media-row {
+    @apply flex items-start gap-3 rounded-md border bg-muted/35 p-3;
+  }
+
+  .media-icon {
+    @apply grid size-10 shrink-0 place-items-center rounded-md bg-background text-primary;
+  }
+
+  .media-row p {
+    @apply mt-1 text-sm leading-5 text-muted-foreground;
+  }
+
+  .media-row-actions {
+    @apply mt-3 flex flex-wrap items-center gap-2;
+  }
+
+  .contact-setting-form {
+    @apply grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto];
+  }
+
+  .resume-toolbar {
+    @apply mb-5 flex flex-col gap-4 border-b pb-5 xl:flex-row xl:items-center xl:justify-between;
+  }
+
+  .resume-actions {
+    @apply border-t-0 p-0 xl:min-w-[32rem];
+  }
+
+  .resume-editor-grid {
+    @apply grid gap-5;
+  }
+
+  .array-row {
+    @apply grid gap-3 md:grid-cols-[minmax(0,1fr)_auto];
+  }
+
+  .nested-editor-row {
+    @apply flex flex-col gap-4 rounded-md border bg-muted/30 p-4;
+  }
+}
+
+@media (min-width: 1100px) {
+  .project-shell {
+    grid-template-columns: 14rem minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .project-nav-panel {
+    position: sticky;
+    top: 1.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .project-editor-grid {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    align-items: start;
   }
 }

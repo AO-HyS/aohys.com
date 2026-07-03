@@ -58,7 +58,7 @@ Preview and production values belong in separate GitHub Environments and should 
 
 ## Cloudflare Coverage
 
-Cloudflare release variables are release-only unless a later runtime feature needs them.
+Cloudflare release variables are release-only unless a runtime feature needs them. Dashboard media upload is a runtime feature: Convex needs the account ID, Images delivery hash, and a narrow Images API token to create one-time upload URLs when Cloudflare Images is activated. The browser never receives those values.
 
 | Variable | Class | Exposure |
 | --- | --- | --- |
@@ -66,5 +66,6 @@ Cloudflare release variables are release-only unless a later runtime feature nee
 | `CLOUDFLARE_API_TOKEN` | Server secret | Server-only |
 | `CLOUDFLARE_PROJECT_NAME` | Provider output | Server-only |
 | `CLOUDFLARE_IMAGES_ACCOUNT_HASH` | Provider output | Server-only |
+| `CLOUDFLARE_IMAGES_API_TOKEN` | Server secret | Server-only |
 
-`CLOUDFLARE_IMAGES_ACCOUNT_HASH` is optional until Cloudflare Images is activated for this account. The deploy path uses `CLOUDFLARE_API_TOKEN` through GitHub Environment secrets.
+The deploy path uses the broad `CLOUDFLARE_API_TOKEN` through GitHub Environment secrets. The dashboard upload path uses `CLOUDFLARE_IMAGES_API_TOKEN` in Convex only. `CLOUDFLARE_IMAGES_ACCOUNT_HASH` and `CLOUDFLARE_IMAGES_API_TOKEN` are optional until the Images product is activated for the account; if present, `scripts/sync-convex-env.ts` syncs them to Convex runtime automatically.

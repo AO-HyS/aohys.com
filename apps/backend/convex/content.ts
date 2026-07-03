@@ -69,6 +69,13 @@ export const listForDashboard = internalQuery({
       achievements: v.string(),
       structureNotes: v.string(),
       updatedAt: v.number(),
+      publishedAt: v.optional(v.number()),
+    })),
+    resumeDrafts: v.array(v.object({
+      locale: localeValidator,
+      contentJson: v.string(),
+      updatedAt: v.number(),
+      publishedAt: v.optional(v.number()),
     })),
     media: v.array(v.object({
       id: v.id("mediaMetadata"),
@@ -100,9 +107,10 @@ export const listForDashboard = internalQuery({
     })),
   }),
   handler: async (ctx) => {
-    const [caseStudies, projectDrafts, media, settings, resumeVersions] = await Promise.all([
+    const [caseStudies, projectDrafts, resumeDrafts, media, settings, resumeVersions] = await Promise.all([
       ctx.db.query("caseStudyMetadata").collect(),
       ctx.db.query("projectDrafts").collect(),
+      ctx.db.query("resumeDrafts").collect(),
       ctx.db.query("mediaMetadata").take(100),
       ctx.db.query("siteSettings").take(100),
       ctx.db.query("resumeVersions").take(50),
@@ -127,6 +135,13 @@ export const listForDashboard = internalQuery({
         achievements: projectDraft.achievements,
         structureNotes: projectDraft.structureNotes,
         updatedAt: projectDraft.updatedAt,
+        publishedAt: projectDraft.publishedAt,
+      })),
+      resumeDrafts: resumeDrafts.map((resumeDraft) => ({
+        locale: resumeDraft.locale,
+        contentJson: resumeDraft.contentJson,
+        updatedAt: resumeDraft.updatedAt,
+        publishedAt: resumeDraft.publishedAt,
       })),
       media: media.map((item) => ({
         id: item._id,
@@ -220,6 +235,7 @@ export const upsertProjectDraftFromDashboard = internalMutation({
       achievements: args.achievements,
       structureNotes: args.structureNotes,
       updatedAt,
+      publishedAt: undefined,
     };
 
     if (existingProjectDraft) {
@@ -232,6 +248,114 @@ export const upsertProjectDraftFromDashboard = internalMutation({
       contentId: args.contentId,
       locale: args.locale,
       updatedAt,
+    };
+  },
+});
+
+export const upsertResumeDraftFromDashboard = internalMutation({
+  args: {
+    locale: localeValidator,
+    contentJson: v.string(),
+  },
+  returns: v.object({
+    locale: localeValidator,
+    updatedAt: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    const updatedAt = Date.now();
+    const existingResumeDraft = await ctx.db
+      .query("resumeDrafts")
+      .withIndex("by_locale", (query) => query.eq("locale", args.locale))
+      .first();
+
+    if (existingResumeDraft) {
+      await ctx.db.patch(existingResumeDraft._id, {
+        contentJson: args.contentJson,
+        updatedAt,
+        publishedAt: undefined,
+      });
+    } else {
+      await ctx.db.insert("resumeDrafts", {
+        locale: args.locale,
+        contentJson: args.contentJson,
+        updatedAt,
+      });
+    }
+
+    return {
+      locale: args.locale,
+      updatedAt,
+    };
+  },
+});
+
+export const publishContentFromDashboard = internalMutation({
+  args: {
+    scope: v.union(v.literal("project"), v.literal("resume"), v.literal("all")),
+    contentId: v.optional(v.string()),
+    locale: v.optional(localeValidator),
+  },
+  returns: v.object({
+    publishedAt: v.number(),
+    projectDraftsPublished: v.number(),
+    resumeDraftsPublished: v.number(),
+    mediaPublished: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    const publishedAt = Date.now();
+    let projectDraftsPublished = 0;
+    let resumeDraftsPublished = 0;
+    let mediaPublished = 0;
+
+    if (args.scope === "project" || args.scope === "all") {
+      const projectDrafts = args.contentId
+        ? await ctx.db
+          .query("projectDrafts")
+          .withIndex("by_content_id", (query) => query.eq("contentId", args.contentId ?? ""))
+          .collect()
+        : await ctx.db.query("projectDrafts").collect();
+
+      await Promise.all(projectDrafts.map((projectDraft) =>
+        ctx.db.patch(projectDraft._id, { publishedAt }),
+      ));
+      projectDraftsPublished = projectDrafts.length;
+
+      const mediaRows = args.contentId
+        ? await ctx.db
+          .query("mediaMetadata")
+          .withIndex("by_content_id", (query) => query.eq("contentId", args.contentId))
+          .collect()
+        : await ctx.db.query("mediaMetadata").collect();
+      const publishableMediaRows = mediaRows.filter((media) => media.status !== "archived");
+
+      await Promise.all(publishableMediaRows.map((media) =>
+        ctx.db.patch(media._id, {
+          status: "published",
+          updatedAt: publishedAt,
+        }),
+      ));
+      mediaPublished = publishableMediaRows.length;
+    }
+
+    if (args.scope === "resume" || args.scope === "all") {
+      const resumeDrafts = args.locale
+        ? await ctx.db
+          .query("resumeDrafts")
+          .withIndex("by_locale", (query) => query.eq("locale", args.locale ?? "en"))
+          .collect()
+        : await ctx.db.query("resumeDrafts").collect();
+
+      await Promise.all(resumeDrafts.map((resumeDraft) =>
+        ctx.db.patch(resumeDraft._id, { publishedAt }),
+      ));
+      resumeDraftsPublished = resumeDrafts.length;
+    }
+
+    return {
+      publishedAt,
+      projectDraftsPublished,
+      resumeDraftsPublished,
+      mediaPublished,
     };
   },
 });
