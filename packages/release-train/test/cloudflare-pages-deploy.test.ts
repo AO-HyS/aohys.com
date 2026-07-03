@@ -31,6 +31,7 @@ const validPreviewReleaseValues = {
   CLOUDFLARE_ACCOUNT_ID: "cloudflare-account",
   CLOUDFLARE_API_TOKEN: "cloudflare-api-token",
   CLOUDFLARE_PROJECT_NAME: "aohys-com",
+  PUBLISH_GITHUB_TOKEN: "github-publish-token",
   PUBLIC_CONTACT_EMAIL: "alejandro.ortiz@aohys.com",
   PUBLIC_WHATSAPP_URL: "https://wa.me/522299020825",
 };

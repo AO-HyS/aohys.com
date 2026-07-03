@@ -238,7 +238,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "provider-output",
     exposure: "server-only",
     requiredIn: ["preview", "production"],
-    requiredTargets: ["release", "dashboard-runtime"],
+    requiredTargets: ["release"],
     description: "Cloudflare account identifier for release workflows and Images direct-upload URLs.",
   },
   {
@@ -283,7 +283,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "server-secret",
     exposure: "server-only",
     requiredIn: ["preview", "production"],
-    requiredTargets: ["dashboard-runtime"],
+    requiredTargets: ["release"],
     description: "Token used by Convex to queue the Release Train workflow after dashboard publish.",
   },
   {
