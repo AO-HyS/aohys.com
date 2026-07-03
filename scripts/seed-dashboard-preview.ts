@@ -30,6 +30,9 @@ interface DashboardSeedState {
   projectDrafts?: Array<{
     contentId: string;
     locale: Locale;
+    summary?: string;
+    achievements?: string;
+    structureNotes?: string;
   }>;
   settings?: Array<{
     key: string;
@@ -380,15 +383,17 @@ async function main(): Promise<void> {
   const projectEndpoint = endpointFor(convexSiteUrl, "/dashboard/content/project");
   const settingEndpoint = endpointFor(convexSiteUrl, "/dashboard/content/setting");
   const existingContent = await getDashboardSeedState(contentEndpoint, dashboardApiToken);
-  const existingProjectKeys = new Set(
-    (existingContent.projectDrafts ?? []).map((project) => `${project.contentId}:${project.locale}`),
+  const existingProjectsByKey = new Map(
+    (existingContent.projectDrafts ?? []).map((project) => [`${project.contentId}:${project.locale}`, project]),
   );
   const existingSettingKeys = new Set(
     (existingContent.settings ?? []).map((setting) => `${setting.environment}:${setting.key}`),
   );
-  const missingProjects = projects.filter((project) =>
-    !existingProjectKeys.has(`${project.contentId}:${project.locale}`),
-  );
+  const missingProjects = projects.filter((project) => {
+    const existingProject = existingProjectsByKey.get(`${project.contentId}:${project.locale}`);
+
+    return !existingProject || hasRetiredSeedCopy(existingProject);
+  });
   const missingSettings = settings.filter((setting) =>
     !existingSettingKeys.has(`${setting.environment}:${setting.key}`),
   );
@@ -402,6 +407,26 @@ async function main(): Promise<void> {
   }
 
   console.log(`Seeded dashboard preview content: ${missingProjects.length} missing project drafts, ${missingSettings.length} missing settings. Preserved existing dashboard edits.`);
+}
+
+function hasRetiredSeedCopy(project: {
+  summary?: string;
+  achievements?: string;
+  structureNotes?: string;
+}): boolean {
+  const haystack = [
+    project.summary,
+    project.achievements,
+    project.structureNotes,
+  ].filter(Boolean).join("\n").toLowerCase();
+
+  return [
+    "production site with a public url a client or recruiter can inspect",
+    "public proof",
+    "public evidence:",
+    "evidencia pública",
+    "proof assets",
+  ].some((phrase) => haystack.includes(phrase));
 }
 
 main().catch((error) => {

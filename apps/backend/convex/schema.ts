@@ -116,9 +116,17 @@ export default defineSchema({
     achievements: v.string(),
     structureNotes: v.string(),
     updatedAt: v.number(),
+    publishedAt: v.optional(v.number()),
   })
     .index("by_content_id", ["contentId"])
     .index("by_content_id_and_locale", ["contentId", "locale"]),
+
+  resumeDrafts: defineTable({
+    locale: localeValidator,
+    contentJson: v.string(),
+    updatedAt: v.number(),
+    publishedAt: v.optional(v.number()),
+  }).index("by_locale", ["locale"]),
 
   resumeVersions: defineTable({
     locale: localeValidator,

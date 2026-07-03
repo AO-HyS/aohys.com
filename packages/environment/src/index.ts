@@ -13,6 +13,7 @@ export type ProviderName =
   | "cloudflare"
   | "convex"
   | "better-auth"
+  | "github"
   | "posthog"
   | "resend";
 
@@ -237,8 +238,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "provider-output",
     exposure: "server-only",
     requiredIn: ["preview", "production"],
-    requiredTargets: ["release"],
-    description: "Cloudflare account identifier for release workflows.",
+    requiredTargets: ["release", "dashboard-runtime"],
+    description: "Cloudflare account identifier for release workflows and Images direct-upload URLs.",
   },
   {
     name: "CLOUDFLARE_API_TOKEN",
@@ -264,7 +265,42 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "provider-output",
     exposure: "server-only",
     requiredIn: [],
-    description: "Cloudflare Images delivery account hash for media URLs.",
+    requiredTargets: ["dashboard-runtime"],
+    description: "Optional Cloudflare Images delivery account hash for dashboard media URLs.",
+  },
+  {
+    name: "CLOUDFLARE_IMAGES_API_TOKEN",
+    provider: "cloudflare",
+    classification: "server-secret",
+    exposure: "server-only",
+    requiredIn: [],
+    requiredTargets: ["dashboard-runtime"],
+    description: "Optional narrow Cloudflare Images token used by Convex to create direct upload URLs.",
+  },
+  {
+    name: "PUBLISH_GITHUB_TOKEN",
+    provider: "github",
+    classification: "server-secret",
+    exposure: "server-only",
+    requiredIn: ["preview", "production"],
+    requiredTargets: ["dashboard-runtime"],
+    description: "Token used by Convex to queue the Release Train workflow after dashboard publish.",
+  },
+  {
+    name: "PUBLISH_GITHUB_REPOSITORY",
+    provider: "github",
+    classification: "policy-value",
+    exposure: "server-only",
+    requiredIn: [],
+    description: "Optional owner/repo override for dashboard-triggered publish workflow dispatch.",
+  },
+  {
+    name: "PUBLISH_GITHUB_WORKFLOW_ID",
+    provider: "github",
+    classification: "policy-value",
+    exposure: "server-only",
+    requiredIn: [],
+    description: "Optional workflow file override for dashboard-triggered publish workflow dispatch.",
   },
   {
     name: "PUBLIC_CONTACT_EMAIL",

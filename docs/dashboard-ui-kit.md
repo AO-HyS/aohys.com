@@ -51,13 +51,13 @@ Projects are the dashboard unit. A project owns:
 - image metadata;
 - public-safe public links.
 
-The public Astro site still renders from the Public Content Graph for SEO stability. Dashboard edits are stored as Convex project drafts until a publishing step promotes reviewed content into the static graph and triggers the release train. Save draft is not publish.
+The public Astro site still renders from the Public Content Graph for SEO stability. Dashboard edits are stored as Convex drafts. Publish marks reviewed drafts, triggers the Release Train through GitHub Actions, and `pnpm run publish:content:build` applies published drafts to the static graph before Astro builds. Save draft is not publish.
 
 ## Gaps To Close
 
-- Media upload: replace temporary public URL metadata with Cloudflare Images direct upload from the dashboard. This needs a narrow runtime secret and an upload URL endpoint; do not place a broad Cloudflare release token into browser code.
-- Publishing: add a reviewed publish action that writes content graph changes through source control or a safe build-dispatch workflow.
-- Resume editor: add Convex resume section drafts for summary, experience, projects, skills, and education before treating `/dashboard/resume` as a full content editor.
+- Media variants: decide whether Cloudflare Images variants alone are enough or whether R2 originals should be added later.
+- Publish audit trail: add a dashboard-visible workflow run link after GitHub returns enough run metadata for the dispatched release.
+- Bundle split: the dashboard currently builds as one Vite bundle; route-level code splitting can reduce the warning once the product surface stabilizes.
 
 ## Build
 

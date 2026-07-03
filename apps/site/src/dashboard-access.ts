@@ -15,6 +15,7 @@ import {
   PUBLIC_CONTENT_NODES,
   getCaseStudyPageContent,
   getLocaleVariant,
+  getResumePageContent,
 } from "@aohys/content-graph";
 import { isOneOf } from "@aohys/core";
 import { validateEnvironmentContract, type EnvironmentName } from "@aohys/environment";
@@ -58,6 +59,9 @@ type DashboardContentActionPath =
   | "/dashboard/content/case-study"
   | "/dashboard/content/project"
   | "/dashboard/content/media"
+  | "/dashboard/content/media/upload-url"
+  | "/dashboard/content/publish"
+  | "/dashboard/content/resume-draft"
   | "/dashboard/content/setting"
   | "/dashboard/content/resume";
 
@@ -65,6 +69,9 @@ type DashboardApiPath =
   | "/dashboard/api/content"
   | "/dashboard/api/content/project"
   | "/dashboard/api/content/media"
+  | "/dashboard/api/content/media/upload-url"
+  | "/dashboard/api/content/publish"
+  | "/dashboard/api/content/resume-draft"
   | "/dashboard/api/content/setting"
   | "/dashboard/api/content/resume"
   | "/dashboard/api/leads"
@@ -78,6 +85,7 @@ interface DashboardContentPayload {
     updatedAt: number;
   }>;
   projectDrafts?: DashboardProjectDraft[];
+  resumeDrafts?: DashboardResumeDraft[];
   media?: DashboardMediaMetadata[];
   settings?: DashboardSiteSetting[];
   resumeVersions?: DashboardResumeVersion[];
@@ -95,6 +103,14 @@ interface DashboardProjectDraft {
   achievements: string;
   structureNotes: string;
   updatedAt: number;
+  publishedAt?: number;
+}
+
+interface DashboardResumeDraft {
+  locale: "en" | "es";
+  contentJson: string;
+  updatedAt: number;
+  publishedAt?: number;
 }
 
 interface DashboardProject {
@@ -391,6 +407,11 @@ async function handleDashboardApiRequest(
       projects: buildDashboardProjectRows(contentResult.content, media),
       media,
       settings: contentResult.content.settings ?? [],
+      resumeContent: {
+        en: getResumePageContent("en"),
+        es: getResumePageContent("es"),
+      },
+      resumeDrafts: contentResult.content.resumeDrafts ?? [],
       resumeVersions: contentResult.content.resumeVersions ?? [],
     });
   }
@@ -930,6 +951,9 @@ function isDashboardApiPath(path: string): path is DashboardApiPath {
     "/dashboard/api/content",
     "/dashboard/api/content/project",
     "/dashboard/api/content/media",
+    "/dashboard/api/content/media/upload-url",
+    "/dashboard/api/content/publish",
+    "/dashboard/api/content/resume-draft",
     "/dashboard/api/content/setting",
     "/dashboard/api/content/resume",
     "/dashboard/api/leads",
@@ -942,6 +966,9 @@ function isDashboardContentActionPath(path: string): path is DashboardContentAct
     "/dashboard/content/case-study",
     "/dashboard/content/project",
     "/dashboard/content/media",
+    "/dashboard/content/media/upload-url",
+    "/dashboard/content/publish",
+    "/dashboard/content/resume-draft",
     "/dashboard/content/setting",
     "/dashboard/content/resume",
   ].includes(path);
@@ -985,6 +1012,25 @@ function contentPayloadFromFormData(
         status: "draft",
         locale: valueFromFormData(formData.get("locale")),
       };
+    case "/dashboard/content/media/upload-url":
+      return {
+        storageKey: valueFromFormData(formData.get("storageKey")),
+        altText: valueFromFormData(formData.get("altText")),
+        contentId: valueFromFormData(formData.get("contentId")),
+        usage: valueFromFormData(formData.get("usage")),
+        locale: valueFromFormData(formData.get("locale")),
+      };
+    case "/dashboard/content/publish":
+      return {
+        scope: valueFromFormData(formData.get("scope")),
+        contentId: valueFromFormData(formData.get("contentId")),
+        locale: valueFromFormData(formData.get("locale")),
+      };
+    case "/dashboard/content/resume-draft":
+      return {
+        locale: valueFromFormData(formData.get("locale")),
+        contentJson: valueFromFormData(formData.get("contentJson")),
+      };
     case "/dashboard/content/setting":
       return {
         key: valueFromFormData(formData.get("key")),
@@ -1008,6 +1054,12 @@ function redirectPathForContentAction(actionPath: DashboardContentActionPath): s
       return "/dashboard/projects";
     case "/dashboard/content/media":
       return "/dashboard/projects";
+    case "/dashboard/content/media/upload-url":
+      return "/dashboard/projects";
+    case "/dashboard/content/publish":
+      return "/dashboard/projects";
+    case "/dashboard/content/resume-draft":
+      return "/dashboard/resume";
     case "/dashboard/content/setting":
       return "/dashboard/projects";
     case "/dashboard/content/resume":

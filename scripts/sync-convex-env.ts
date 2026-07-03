@@ -7,10 +7,8 @@ import type { ReleaseDeploymentEnvironment } from "@aohys/release-train";
 
 const RELEASE_ENVIRONMENTS = ["preview", "production"] as const;
 const DEPLOY_ONLY_VARIABLES = new Set([
-  "CLOUDFLARE_ACCOUNT_ID",
   "CLOUDFLARE_API_TOKEN",
   "CLOUDFLARE_PROJECT_NAME",
-  "CLOUDFLARE_IMAGES_ACCOUNT_HASH",
   "CONVEX_DEPLOY_KEY",
 ]);
 
@@ -24,8 +22,14 @@ function parseEnvironment(input: string | undefined): ReleaseDeploymentEnvironme
 
 function convexRuntimeVariableNames(environment: ReleaseDeploymentEnvironment): string[] {
   return getEnvironmentVariableDefinitions()
-    .filter((definition) => definition.requiredIn.includes(environment))
     .filter((definition) => !DEPLOY_ONLY_VARIABLES.has(definition.name))
+    .filter((definition) => {
+      if (definition.requiredIn.includes(environment)) {
+        return true;
+      }
+
+      return definition.requiredTargets?.includes("dashboard-runtime") && Boolean(process.env[definition.name]?.trim());
+    })
     .map((definition) => definition.name);
 }
 

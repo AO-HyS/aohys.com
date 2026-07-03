@@ -22,6 +22,7 @@ export const DASHBOARD_MEDIA_USAGES = ["case-study", "resume", "architecture", "
 export const DASHBOARD_MEDIA_STATUSES = ["draft", "published", "archived"] as const;
 export const DASHBOARD_LOCALES = ["en", "es"] as const;
 export const DASHBOARD_ENVIRONMENTS = ["local", "preview", "production"] as const;
+export const DASHBOARD_PUBLISH_SCOPES = ["project", "resume", "all"] as const;
 export const DASHBOARD_SETTING_CLASSIFICATIONS = [
   "public-build-value",
   "provider-output",
@@ -36,6 +37,7 @@ export type DashboardMediaUsage = (typeof DASHBOARD_MEDIA_USAGES)[number];
 export type DashboardMediaStatus = (typeof DASHBOARD_MEDIA_STATUSES)[number];
 export type DashboardLocale = (typeof DASHBOARD_LOCALES)[number];
 export type DashboardEnvironment = (typeof DASHBOARD_ENVIRONMENTS)[number];
+export type DashboardPublishScope = (typeof DASHBOARD_PUBLISH_SCOPES)[number];
 export type DashboardSettingClassification = (typeof DASHBOARD_SETTING_CLASSIFICATIONS)[number];
 
 export interface DashboardCaseStudyMetadataPayload {
@@ -67,6 +69,14 @@ export interface DashboardMediaMetadataPayload {
   locale?: DashboardLocale;
 }
 
+export interface DashboardMediaUploadPayload {
+  storageKey: string;
+  altText: string;
+  contentId?: DashboardCaseStudyContentId;
+  usage: DashboardMediaUsage;
+  locale?: DashboardLocale;
+}
+
 export interface DashboardSiteSettingPayload {
   key: string;
   environment: DashboardEnvironment;
@@ -79,6 +89,17 @@ export interface DashboardResumeVersionPayload {
   version: string;
   pdfPath: string;
   isPublished: boolean;
+}
+
+export interface DashboardResumeDraftPayload {
+  locale: DashboardLocale;
+  contentJson: string;
+}
+
+export interface DashboardPublishPayload {
+  scope: DashboardPublishScope;
+  contentId?: DashboardCaseStudyContentId;
+  locale?: DashboardLocale;
 }
 
 interface DashboardCaseStudyMetadataRawPayload {
@@ -110,6 +131,14 @@ interface DashboardMediaMetadataRawPayload {
   locale?: string;
 }
 
+interface DashboardMediaUploadRawPayload {
+  storageKey?: string;
+  altText?: string;
+  contentId?: string;
+  usage?: string;
+  locale?: string;
+}
+
 interface DashboardSiteSettingRawPayload {
   key?: string;
   environment?: string;
@@ -122,6 +151,17 @@ interface DashboardResumeVersionRawPayload {
   version?: string;
   pdfPath?: string;
   isPublished?: boolean;
+}
+
+interface DashboardResumeDraftRawPayload {
+  locale?: string;
+  contentJson?: string;
+}
+
+interface DashboardPublishRawPayload {
+  scope?: string;
+  contentId?: string;
+  locale?: string;
 }
 
 export async function parseDashboardCaseStudyMetadataPayload(
@@ -194,7 +234,7 @@ export async function parseDashboardMediaMetadataPayload(
 ): Promise<DashboardMediaMetadataPayload> {
   const payload = await readJsonPayload<DashboardMediaMetadataRawPayload>(request);
   const storageProvider = requireTrimmed(payload.storageProvider, "storageProvider");
-  const storageKey = requireTrimmed(payload.storageKey, "storageKey");
+  const storageKey = normalizeStorageKey(requireTrimmed(payload.storageKey, "storageKey"));
   const altText = requireTrimmed(payload.altText, "altText");
   const usage = requireTrimmed(payload.usage, "usage");
   const status = requireTrimmed(payload.status, "status");
@@ -238,6 +278,39 @@ export async function parseDashboardMediaMetadataPayload(
   };
 }
 
+export async function parseDashboardMediaUploadPayload(
+  request: Request,
+): Promise<DashboardMediaUploadPayload> {
+  const payload = await readJsonPayload<DashboardMediaUploadRawPayload>(request);
+  const storageKey = normalizeStorageKey(requireTrimmed(payload.storageKey, "storageKey"));
+  const altText = requireTrimmed(payload.altText, "altText");
+  const usage = requireTrimmed(payload.usage, "usage");
+  const contentId = trimToUndefined(payload.contentId);
+  const locale = trimToUndefined(payload.locale);
+  let validatedContentId: DashboardCaseStudyContentId | undefined;
+  let validatedLocale: DashboardLocale | undefined;
+
+  assertOneOf(usage, DASHBOARD_MEDIA_USAGES, "usage");
+
+  if (contentId) {
+    assertOneOf(contentId, DASHBOARD_CASE_STUDY_CONTENT_IDS, "contentId");
+    validatedContentId = contentId;
+  }
+
+  if (locale) {
+    assertOneOf(locale, DASHBOARD_LOCALES, "locale");
+    validatedLocale = locale;
+  }
+
+  return {
+    storageKey,
+    altText,
+    contentId: validatedContentId,
+    usage,
+    locale: validatedLocale,
+  };
+}
+
 export async function parseDashboardSiteSettingPayload(
   request: Request,
 ): Promise<DashboardSiteSettingPayload> {
@@ -259,6 +332,59 @@ export async function parseDashboardSiteSettingPayload(
     environment,
     value,
     classification,
+  };
+}
+
+export async function parseDashboardResumeDraftPayload(
+  request: Request,
+): Promise<DashboardResumeDraftPayload> {
+  const payload = await readJsonPayload<DashboardResumeDraftRawPayload>(request);
+  const locale = requireTrimmed(payload.locale, "locale");
+  const contentJson = requireTrimmed(payload.contentJson, "contentJson");
+
+  assertOneOf(locale, DASHBOARD_LOCALES, "locale");
+  assertValidResumeDraftJson(contentJson);
+
+  return {
+    locale,
+    contentJson,
+  };
+}
+
+export async function parseDashboardPublishPayload(
+  request: Request,
+): Promise<DashboardPublishPayload> {
+  const payload = await readJsonPayload<DashboardPublishRawPayload>(request);
+  const scope = requireTrimmed(payload.scope, "scope");
+  const contentId = trimToUndefined(payload.contentId);
+  const locale = trimToUndefined(payload.locale);
+  let validatedContentId: DashboardCaseStudyContentId | undefined;
+  let validatedLocale: DashboardLocale | undefined;
+
+  assertOneOf(scope, DASHBOARD_PUBLISH_SCOPES, "scope");
+
+  if (contentId) {
+    assertOneOf(contentId, DASHBOARD_CASE_STUDY_CONTENT_IDS, "contentId");
+    validatedContentId = contentId;
+  }
+
+  if (locale) {
+    assertOneOf(locale, DASHBOARD_LOCALES, "locale");
+    validatedLocale = locale;
+  }
+
+  if (scope === "project" && !validatedContentId) {
+    throw new Error("contentId is required for project publish.");
+  }
+
+  if (scope === "resume" && !validatedLocale) {
+    throw new Error("locale is required for resume publish.");
+  }
+
+  return {
+    scope,
+    contentId: validatedContentId,
+    locale: validatedLocale,
   };
 }
 
@@ -304,6 +430,51 @@ function requireTrimmed(value: string | undefined, fieldName: string): string {
   }
 
   return trimmed;
+}
+
+function normalizeStorageKey(value: string): string {
+  const normalized = value
+    .trim()
+    .replace(/^\/+/, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-zA-Z0-9/_-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/\/+/g, "/");
+
+  if (!normalized || normalized.includes("..")) {
+    throw new Error("storageKey must be a safe Cloudflare image path.");
+  }
+
+  return normalized;
+}
+
+function assertValidResumeDraftJson(contentJson: string): void {
+  let payload: unknown;
+
+  try {
+    payload = JSON.parse(contentJson);
+  } catch {
+    throw new Error("contentJson must be valid JSON.");
+  }
+
+  if (!payload || typeof payload !== "object") {
+    throw new Error("contentJson must be a resume content object.");
+  }
+
+  const record = payload as Record<string, unknown>;
+  const requiredTextFields = ["name", "role", "location", "intro"];
+
+  for (const field of requiredTextFields) {
+    if (typeof record[field] !== "string" || !record[field]) {
+      throw new Error(`resume.${field} is required.`);
+    }
+  }
+
+  for (const field of ["summary", "highlights", "projects", "experience", "skills", "education", "languages"]) {
+    if (!Array.isArray(record[field])) {
+      throw new Error(`resume.${field} must be an array.`);
+    }
+  }
 }
 
 function isHttpUrl(value: string): boolean {

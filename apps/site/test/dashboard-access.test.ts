@@ -14,6 +14,10 @@ const validEnvironment: DashboardAccessEnvironment = {
   BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
   ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
   DASHBOARD_API_TOKEN: "dashboard-api-token",
+  CLOUDFLARE_ACCOUNT_ID: "cloudflare-account-id",
+  CLOUDFLARE_IMAGES_ACCOUNT_HASH: "cloudflare-images-hash",
+  CLOUDFLARE_IMAGES_API_TOKEN: "cloudflare-images-token",
+  PUBLISH_GITHUB_TOKEN: "github-publish-token",
 };
 
 describe("dashboard access guard", () => {

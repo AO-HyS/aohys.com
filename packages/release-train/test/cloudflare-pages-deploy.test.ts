@@ -151,11 +151,14 @@ describe("Cloudflare Pages release plan", () => {
     expect(rootPackage.scripts["seed:dashboard:preview"]).toBe(
       "tsx scripts/seed-dashboard-preview.ts",
     );
+    expect(rootPackage.scripts["publish:content:build"]).toBe(
+      "tsx scripts/apply-dashboard-published-content.ts",
+    );
     expect(rootPackage.scripts["deploy:preview"]).toBe(
-      "pnpm run release:env:preview && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:preview && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"preview release\" && pnpm run seed:dashboard:preview && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop",
+      "pnpm run release:env:preview && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:preview && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"preview release\" && pnpm run seed:dashboard:preview && pnpm run publish:content:build && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop",
     );
     expect(rootPackage.scripts["deploy:production"]).toBe(
-      "pnpm run release:env:production && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:production && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"production release\" && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main",
+      "pnpm run release:env:production && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:production && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"production release\" && pnpm run publish:content:build && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main",
     );
 
     expect(existsSync(workflowPath), "release-train.yml must exist").toBe(true);
