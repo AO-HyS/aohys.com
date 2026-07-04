@@ -1,5 +1,6 @@
 import enContent from "./locales/en.json" with { type: "json" };
 import esContent from "./locales/es.json" with { type: "json" };
+import { DASHBOARD_PUBLIC_PROJECT_IDS } from "./generated/dashboard-public-projects.js";
 
 export const SITE_URL = "https://aohys.com";
 export const DEFAULT_LOCALE = "en";
@@ -53,7 +54,7 @@ export interface EvidenceAsset {
 }
 
 export interface HomeOutcome {
-  contentId: ContentId;
+  contentId: ContentId | string;
   path: string;
   label: string;
   title: string;
@@ -136,7 +137,7 @@ export interface CaseStudyPageContent {
 }
 
 export interface CaseStudyIndexEntry {
-  contentId: ContentId;
+  contentId: ContentId | string;
   path: string;
   title: string;
   summary: string;
@@ -282,9 +283,9 @@ interface LocalizedContentEntry {
   seoTitle?: string;
   seoDescription: string;
   primaryActionLabel?: string;
-  primaryActionContentId?: ContentId;
+  primaryActionContentId?: ContentId | string;
   secondaryActionLabel?: string;
-  secondaryActionContentId?: ContentId;
+  secondaryActionContentId?: ContentId | string;
   homeContent?: Omit<HomePageContent, "selectedOutcomes"> & {
     selectedOutcomes: Array<Omit<HomeOutcome, "path">>;
   };
@@ -294,8 +295,8 @@ interface LocalizedContentEntry {
   privacyContent?: PrivacyPageContent;
 }
 
-type ContentDictionary = Record<ContentId, LocalizedContentEntry>;
-type BaseContentNode = Omit<PublicContentNode, "id" | "variants"> & { id: ContentId };
+type ContentDictionary = Record<string, LocalizedContentEntry>;
+type BaseContentNode = Omit<PublicContentNode, "id" | "variants"> & { id: ContentId | string };
 
 export class MissingLocaleVariantError extends Error {
   constructor(contentId: string, locale: Locale) {
@@ -309,7 +310,7 @@ const contentByLocale = {
   es: esContent,
 } as Record<Locale, ContentDictionary>;
 
-const CASE_STUDY_IDS = [
+const STATIC_CASE_STUDY_IDS = [
   "case-study:casa-roca",
   "case-study:the-barber-central",
   "case-study:nutri-plan",
@@ -317,7 +318,50 @@ const CASE_STUDY_IDS = [
   "case-study:engineering-practice",
 ] as const satisfies readonly ContentId[];
 
-const baseNodes = [
+const STATIC_CONTENT_IDS = [
+  "home",
+  "case-studies",
+  ...STATIC_CASE_STUDY_IDS,
+  "practice",
+  "architecture",
+  "resume",
+  "contact",
+  "privacy",
+] as const satisfies readonly ContentId[];
+
+function isCaseStudyContentId(contentId: string): contentId is `case-study:${string}` {
+  return /^case-study:[a-z0-9]+(?:-[a-z0-9]+)*$/.test(contentId);
+}
+
+function staticActionContentId(contentId: ContentId | string | undefined): ContentId | undefined {
+  return typeof contentId === "string" && STATIC_CONTENT_IDS.includes(contentId as ContentId)
+    ? contentId as ContentId
+    : undefined;
+}
+
+function dashboardCaseStudyIds(projectIds: readonly string[]): string[] {
+  const seen = new Set<string>(STATIC_CASE_STUDY_IDS);
+  const caseStudyIds: string[] = [];
+
+  for (const projectId of projectIds) {
+    if (!isCaseStudyContentId(projectId) || seen.has(projectId)) {
+      continue;
+    }
+
+    seen.add(projectId);
+    caseStudyIds.push(projectId);
+  }
+
+  return caseStudyIds;
+}
+
+const DASHBOARD_CASE_STUDY_IDS = dashboardCaseStudyIds(DASHBOARD_PUBLIC_PROJECT_IDS);
+const CASE_STUDY_IDS: readonly (ContentId | string)[] = [
+  ...STATIC_CASE_STUDY_IDS,
+  ...DASHBOARD_CASE_STUDY_IDS,
+];
+
+const staticBaseNodes = [
   {
     id: "home",
     type: "landing",
@@ -392,6 +436,22 @@ const baseNodes = [
   },
 ] as const satisfies readonly BaseContentNode[];
 
+const dashboardCaseStudyNodes: BaseContentNode[] = DASHBOARD_CASE_STUDY_IDS.map((contentId, index) => ({
+  id: contentId,
+  type: "case-study",
+  status: "published",
+  sitemap: {
+    include: true,
+    changefreq: "monthly",
+    priority: Math.max(0.6, 0.7 - index * 0.01),
+  },
+}));
+
+const baseNodes: readonly BaseContentNode[] = [
+  ...staticBaseNodes,
+  ...dashboardCaseStudyNodes,
+];
+
 function assertLocale(locale: string): asserts locale is Locale {
   if (!LOCALES.includes(locale as Locale)) {
     throw new Error(`Unsupported locale "${locale}".`);
@@ -409,7 +469,7 @@ function getDictionaryEntry(contentId: ContentId | string, locale: Locale): Loca
   return entry;
 }
 
-function variantFromDictionary(contentId: ContentId, locale: Locale): LocaleVariant {
+function variantFromDictionary(contentId: ContentId | string, locale: Locale): LocaleVariant {
   const entry = getDictionaryEntry(contentId, locale);
 
   return {
@@ -420,9 +480,9 @@ function variantFromDictionary(contentId: ContentId, locale: Locale): LocaleVari
     seoTitle: entry.seoTitle ?? `${entry.title} | AOHYS`,
     seoDescription: entry.seoDescription,
     primaryActionLabel: entry.primaryActionLabel,
-    primaryActionContentId: entry.primaryActionContentId,
+    primaryActionContentId: staticActionContentId(entry.primaryActionContentId),
     secondaryActionLabel: entry.secondaryActionLabel,
-    secondaryActionContentId: entry.secondaryActionContentId,
+    secondaryActionContentId: staticActionContentId(entry.secondaryActionContentId),
   };
 }
 
@@ -506,12 +566,21 @@ export function getHomePageContent(locale: Locale): HomePageContent {
     throw new Error(`Home content is missing for locale "${locale}".`);
   }
 
+  const selectedOutcomes = home.homeContent.selectedOutcomes.map((outcome) => ({
+    ...outcome,
+    path: getLocalizedPath(outcome.contentId, locale),
+  }));
+  const selectedOutcomeIds = new Set(selectedOutcomes.map((outcome) => outcome.contentId));
+  const dashboardOutcomes = DASHBOARD_CASE_STUDY_IDS
+    .filter((contentId) => !selectedOutcomeIds.has(contentId))
+    .map((contentId) => homeOutcomeFromCaseStudy(contentId, locale));
+
   return {
     ...home.homeContent,
-    selectedOutcomes: home.homeContent.selectedOutcomes.map((outcome) => ({
-      ...outcome,
-      path: getLocalizedPath(outcome.contentId, locale),
-    })),
+    selectedOutcomes: [
+      ...selectedOutcomes,
+      ...dashboardOutcomes,
+    ],
   };
 }
 
@@ -535,6 +604,30 @@ export function getCaseStudyPageContent(contentId: ContentId | string, locale: L
   const caseStudy = getDictionaryEntry(contentId, locale);
 
   return caseStudy.caseStudyContent;
+}
+
+function homeOutcomeFromCaseStudy(contentId: ContentId | string, locale: Locale): HomeOutcome {
+  const variant = getLocaleVariant(contentId, locale);
+  const caseStudyContent = getCaseStudyPageContent(contentId, locale);
+
+  if (!caseStudyContent) {
+    throw new Error(`Home selected outcome "${contentId}" is missing detail content in locale "${locale}".`);
+  }
+
+  return {
+    contentId,
+    path: variant.path,
+    label: caseStudyContent.statusLabel,
+    title: variant.title,
+    outcome: variant.summary,
+    role: caseStudyContent.role.body,
+    evidence: caseStudyContent.publicEvidence[0] ?? {
+      label: caseStudyContent.publicEvidenceTitle,
+      altText: variant.title,
+      kind: "public-site",
+      publicSafe: true,
+    },
+  };
 }
 
 export function getCaseStudyIndexContent(locale: Locale): CaseStudyIndexContent {

@@ -1,4 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import enContent from "../src/locales/en.json" with { type: "json" };
+import esContent from "../src/locales/es.json" with { type: "json" };
 import {
   DEFAULT_LOCALE,
   LOCALES,
@@ -17,6 +19,78 @@ import {
   isPrivateRoute,
   resolvePublicPath,
 } from "../src/index.js";
+
+const staticCaseStudyIds = [
+  "case-study:casa-roca",
+  "case-study:the-barber-central",
+  "case-study:nutri-plan",
+  "case-study:enterprise-systems",
+  "case-study:engineering-practice",
+] as const;
+
+function dynamicCaseStudyEntry(locale: "en" | "es") {
+  const isSpanish = locale === "es";
+
+  return {
+    path: isSpanish ? "/es/casos/dashboard-alpha" : "/case-studies/dashboard-alpha",
+    title: isSpanish ? "Dashboard Alpha ES" : "Dashboard Alpha",
+    summary: isSpanish
+      ? "Caso publicado desde dashboard con contenido localizado completo."
+      : "A dashboard-published case study with complete localized public content.",
+    seoDescription: isSpanish
+      ? "Caso dinamico publicado desde dashboard para validar rutas publicas localizadas."
+      : "Dynamic dashboard-published case study for validating localized public routes.",
+    caseStudyContent: {
+      statusLabel: isSpanish ? "Proyecto publicado" : "Published project",
+      overview: isSpanish
+        ? "El dashboard publico este caso con las secciones necesarias."
+        : "The dashboard published this case with the required sections.",
+      problem: {
+        title: isSpanish ? "Problema" : "Problem",
+        body: isSpanish ? "Necesitaba una pagina publica." : "It needed a public page.",
+      },
+      businessOutcome: {
+        title: isSpanish ? "Resultado" : "Business outcome",
+        body: isSpanish ? "El caso ya aparece en el sitio publico." : "The case appears on the public site.",
+      },
+      role: {
+        title: isSpanish ? "Rol" : "Role",
+        body: isSpanish ? "Publicacion segura desde dashboard." : "Safe dashboard publication.",
+      },
+      constraints: {
+        title: isSpanish ? "Restricciones" : "Constraints",
+        body: isSpanish ? "Sin datos privados." : "No private data.",
+      },
+      architectureDecisions: {
+        title: isSpanish ? "Arquitectura" : "Architecture decisions",
+        body: isSpanish ? "Usa el grafo publico." : "Uses the public graph.",
+      },
+      executionHighlights: {
+        title: isSpanish ? "Ejecucion" : "Execution highlights",
+        body: isSpanish ? "Publicado con manifest generado." : "Published with a generated manifest.",
+      },
+      qualitySecurityPerformance: {
+        title: isSpanish ? "Calidad" : "Quality, security, and performance",
+        body: isSpanish ? "Solo contenido seguro." : "Only safe content.",
+      },
+      publicEvidenceTitle: isSpanish ? "Enlaces publicos" : "Public links",
+      publicEvidence: [
+        {
+          label: isSpanish ? "Sitio en vivo" : "Live site",
+          description: isSpanish ? "Abrir Dashboard Alpha." : "Open Dashboard Alpha.",
+          href: "https://example.com/dashboard-alpha",
+          altText: isSpanish ? "Dashboard Alpha publicado" : "Dashboard Alpha published",
+          kind: "public-site",
+          publicSafe: true,
+        },
+      ],
+      confidentialityNote: {
+        title: isSpanish ? "Nota" : "Confidentiality note",
+        body: isSpanish ? "Los datos privados no se publican." : "Private data is not published.",
+      },
+    },
+  };
+}
 
 describe("Public Content Graph", () => {
   it("uses English as the default locale and Spanish as the secondary locale", () => {
@@ -114,6 +188,119 @@ describe("Public Content Graph", () => {
     );
     expect(spanishHome.selectedOutcomes[0]?.path).toBe("/es/casos/casa-roca");
     expect(spanishHome.whatsappHref).toMatch(/^https:\/\/wa\.me\/52/);
+  });
+
+  it("creates locale entries and public manifest ids for new dashboard case studies", async () => {
+    const {
+      applyProjectDraft,
+      publicProjectIdsFromDictionaries,
+    } = await import("../../../scripts/apply-dashboard-published-content.js");
+    const dictionaries: Record<"en" | "es", Record<string, any>> = {
+      en: {},
+      es: {},
+    };
+    const contentId = "case-study:dashboard-alpha";
+
+    expect(applyProjectDraft(dictionaries.en, {
+      contentId,
+      locale: "en",
+      title: "Dashboard Alpha",
+      summary: "A dashboard-published project.",
+      seoDescription: "A public dashboard-published project case study.",
+      projectUrl: "https://example.com/dashboard-alpha",
+      ctaLabel: "Open project",
+      ctaHref: "https://example.com/dashboard-alpha",
+      achievements: "Reached public launch.\n\nCreated a safe case study.",
+      structureNotes: "Uses generated content graph entries.\n\nKeeps private data out.",
+      publishedAt: 123,
+    })).toBe(true);
+
+    expect(publicProjectIdsFromDictionaries(dictionaries, [contentId])).toEqual([]);
+    expect(dictionaries.en[contentId]).toMatchObject({
+      path: "/case-studies/dashboard-alpha",
+      title: "Dashboard Alpha",
+      primaryActionLabel: "Open project",
+      caseStudyContent: {
+        statusLabel: "Published dashboard project",
+        publicEvidence: [
+          {
+            href: "https://example.com/dashboard-alpha",
+            publicSafe: true,
+          },
+        ],
+      },
+    });
+
+    expect(applyProjectDraft(dictionaries.es, {
+      contentId,
+      locale: "es",
+      title: "Dashboard Alpha ES",
+      summary: "Un proyecto publicado desde dashboard.",
+      seoDescription: "Un caso publico publicado desde dashboard.",
+      projectUrl: "https://example.com/dashboard-alpha",
+      ctaLabel: "Abrir proyecto",
+      ctaHref: "https://example.com/dashboard-alpha",
+      achievements: "Llego a publicacion.\n\nCreo un caso seguro.",
+      structureNotes: "Usa entradas generadas del grafo.\n\nMantiene datos privados fuera.",
+      publishedAt: 124,
+    })).toBe(true);
+
+    expect(publicProjectIdsFromDictionaries(dictionaries, [
+      "case-study:casa-roca",
+      contentId,
+      contentId,
+    ])).toEqual([contentId]);
+  });
+
+  it("includes generated dashboard case studies in routes, sitemap, index, and home outcomes", async () => {
+    const contentId = "case-study:dashboard-alpha";
+
+    vi.resetModules();
+    vi.doMock("../src/generated/dashboard-public-projects.js", () => ({
+      DASHBOARD_PUBLIC_PROJECT_IDS: [contentId],
+    }));
+    vi.doMock("../src/locales/en.json", () => ({
+      default: {
+        ...enContent,
+        [contentId]: dynamicCaseStudyEntry("en"),
+      },
+    }));
+    vi.doMock("../src/locales/es.json", () => ({
+      default: {
+        ...esContent,
+        [contentId]: dynamicCaseStudyEntry("es"),
+      },
+    }));
+
+    try {
+      const dynamicGraph = await import("../src/index.js");
+
+      expect(dynamicGraph.getLocalizedPath(contentId, "en")).toBe("/case-studies/dashboard-alpha");
+      expect(dynamicGraph.getLocalizedPath(contentId, "es")).toBe("/es/casos/dashboard-alpha");
+      expect(dynamicGraph.resolvePublicPath("/case-studies/dashboard-alpha")?.id).toBe(contentId);
+      expect(dynamicGraph.getPublicRouteMap().filter((route) => route.id === contentId)).toHaveLength(2);
+      expect(dynamicGraph.getSitemapEntries().map((entry) => entry.url)).toContain(
+        "https://aohys.com/case-studies/dashboard-alpha",
+      );
+
+      expect(dynamicGraph.getCaseStudyIndexContent("en").entries.map((entry) => entry.contentId)).toEqual([
+        ...staticCaseStudyIds,
+        contentId,
+      ]);
+      expect(dynamicGraph.getHomePageContent("en").selectedOutcomes.at(-1)).toMatchObject({
+        contentId,
+        path: "/case-studies/dashboard-alpha",
+        evidence: {
+          href: "https://example.com/dashboard-alpha",
+          publicSafe: true,
+        },
+      });
+    } finally {
+      vi.doUnmock("../src/generated/dashboard-public-projects.js");
+      vi.doUnmock("../src/locales/en.json");
+      vi.doUnmock("../src/locales/es.json");
+      vi.resetModules();
+    }
   });
 
   it("returns architecture page content with source and architecture document links", () => {

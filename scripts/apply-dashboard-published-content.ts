@@ -1,5 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 type Locale = "en" | "es";
 
@@ -50,17 +51,25 @@ interface DashboardContentPayload {
 }
 
 interface LocalizedEntry {
+  path?: string;
   title?: string;
   summary?: string;
+  seoTitle?: string;
   seoDescription?: string;
   primaryActionLabel?: string;
   primaryActionContentId?: string;
+  secondaryActionLabel?: string;
+  secondaryActionContentId?: string;
   caseStudyContent?: {
+    statusLabel?: string;
     overview?: string;
-    businessOutcome?: { body?: string };
-    architectureDecisions?: { body?: string };
-    executionHighlights?: { body?: string };
-    qualitySecurityPerformance?: { body?: string };
+    problem?: { title?: string; body?: string };
+    businessOutcome?: { title?: string; body?: string };
+    role?: { title?: string; body?: string };
+    constraints?: { title?: string; body?: string };
+    architectureDecisions?: { title?: string; body?: string };
+    executionHighlights?: { title?: string; body?: string };
+    qualitySecurityPerformance?: { title?: string; body?: string };
     publicEvidenceTitle?: string;
     publicEvidence?: Array<{
       label: string;
@@ -70,6 +79,7 @@ interface LocalizedEntry {
       kind: string;
       publicSafe: boolean;
     }>;
+    confidentialityNote?: { title?: string; body?: string };
   };
   resumeContent?: unknown;
 }
@@ -80,9 +90,19 @@ const localeFiles: Record<Locale, string> = {
   en: path.resolve("packages/content-graph/src/locales/en.json"),
   es: path.resolve("packages/content-graph/src/locales/es.json"),
 };
+const generatedContentGraphDir = path.resolve("packages/content-graph/src/generated");
+const generatedPublicProjectsFile = path.join(generatedContentGraphDir, "dashboard-public-projects.ts");
 const generatedSiteDir = path.resolve("apps/site/src/generated");
 const generatedMediaFile = path.join(generatedSiteDir, "dashboard-public-media.ts");
 const generatedSettingsFile = path.join(generatedSiteDir, "dashboard-public-settings.ts");
+
+const STATIC_CASE_STUDY_IDS = new Set([
+  "case-study:casa-roca",
+  "case-study:the-barber-central",
+  "case-study:nutri-plan",
+  "case-study:enterprise-systems",
+  "case-study:engineering-practice",
+]);
 
 function endpointFor(siteUrl: string): string {
   return `${siteUrl.replace(/\/$/, "")}/dashboard/content`;
@@ -136,6 +156,36 @@ function restParagraphs(value: string): string {
   return rest.join("\n\n") || value.trim();
 }
 
+function localized(locale: Locale, english: string, spanish: string): string {
+  return locale === "es" ? spanish : english;
+}
+
+function isCaseStudyContentId(contentId: string): boolean {
+  return /^case-study:[a-z0-9]+(?:-[a-z0-9]+)*$/.test(contentId);
+}
+
+function slugFromContentId(contentId: string): string {
+  return contentId.slice("case-study:".length);
+}
+
+function caseStudyPath(contentId: string, locale: Locale): string {
+  const slug = slugFromContentId(contentId);
+
+  return locale === "es" ? `/es/casos/${slug}` : `/case-studies/${slug}`;
+}
+
+function fallbackText(value: string, fallback: string): string {
+  return value.trim() || fallback;
+}
+
+function firstParagraphOrFallback(value: string, fallback: string): string {
+  return fallbackText(firstParagraph(value), fallback);
+}
+
+function restParagraphsOrFallback(value: string, fallback: string): string {
+  return fallbackText(restParagraphs(value), fallback);
+}
+
 function contentIdFromPath(href: string, locale: Locale): string | undefined {
   const normalized = href.replace(/\/$/, "");
 
@@ -144,6 +194,12 @@ function contentIdFromPath(href: string, locale: Locale): string | undefined {
     if (normalized === "/es/casos") return "case-studies";
     if (normalized === "/es/cv") return "resume";
     if (normalized === "/es/arquitectura") return "architecture";
+    const dynamicMatch = normalized.match(/^\/es\/casos\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
+
+    if (dynamicMatch?.[1]) {
+      return `case-study:${dynamicMatch[1]}`;
+    }
+
     return undefined;
   }
 
@@ -151,16 +207,125 @@ function contentIdFromPath(href: string, locale: Locale): string | undefined {
   if (normalized === "/case-studies") return "case-studies";
   if (normalized === "/resume") return "resume";
   if (normalized === "/architecture") return "architecture";
+  const dynamicMatch = normalized.match(/^\/case-studies\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
+
+  if (dynamicMatch?.[1]) {
+    return `case-study:${dynamicMatch[1]}`;
+  }
 
   return undefined;
 }
 
-function applyProjectDraft(dictionary: LocaleDictionary, draft: DashboardProjectDraft): void {
-  const entry = dictionary[draft.contentId];
+function publicHrefForDraft(draft: DashboardProjectDraft): string | undefined {
+  return draft.projectUrl || (draft.ctaHref.startsWith("http") ? draft.ctaHref : undefined);
+}
+
+function achievementFallbackForDraft(draft: DashboardProjectDraft): string {
+  return localized(
+    draft.locale,
+    `${draft.title} has a public case-study narrative published from the dashboard.`,
+    `${draft.title} tiene una narrativa pública publicada desde el dashboard.`,
+  );
+}
+
+function structureFallbackForDraft(draft: DashboardProjectDraft): string {
+  return localized(
+    draft.locale,
+    `${draft.title} uses the public content graph to expose only safe project context.`,
+    `${draft.title} usa el grafo público de contenido para exponer sólo contexto seguro del proyecto.`,
+  );
+}
+
+function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
+  const locale = draft.locale;
+  const title = draft.title;
+  const publicHref = publicHrefForDraft(draft);
+  const achievementFallback = achievementFallbackForDraft(draft);
+  const structureFallback = structureFallbackForDraft(draft);
+
+  return {
+    path: caseStudyPath(draft.contentId, locale),
+    title,
+    summary: draft.summary,
+    seoDescription: draft.seoDescription,
+    primaryActionLabel: draft.ctaLabel,
+    secondaryActionLabel: localized(locale, "Back to selected work", "Volver a casos"),
+    secondaryActionContentId: "case-studies",
+    caseStudyContent: {
+      statusLabel: localized(locale, "Published dashboard project", "Proyecto publicado desde dashboard"),
+      overview: draft.summary,
+      problem: {
+        title: localized(locale, "Problem", "Problema"),
+        body: draft.summary,
+      },
+      businessOutcome: {
+        title: localized(locale, "Business outcome", "Resultado de negocio"),
+        body: firstParagraphOrFallback(draft.achievements, achievementFallback),
+      },
+      role: {
+        title: localized(locale, "Role", "Rol"),
+        body: localized(
+          locale,
+          "Product engineering, delivery planning, public-content shaping, and safe publication from the dashboard workflow.",
+          "Ingeniería de producto, planeación de entrega, estructura de contenido público y publicación segura desde el flujo de dashboard.",
+        ),
+      },
+      constraints: {
+        title: localized(locale, "Constraints", "Restricciones"),
+        body: localized(
+          locale,
+          "The public case study can show sanitized project context and links, while private implementation details, credentials, operations data, and client-specific records stay out of the public site.",
+          "El caso público puede mostrar contexto sanitizado del proyecto y enlaces, mientras detalles privados de implementación, credenciales, datos operativos y registros específicos del cliente quedan fuera del sitio público.",
+        ),
+      },
+      architectureDecisions: {
+        title: localized(locale, "Architecture decisions", "Decisiones de arquitectura"),
+        body: firstParagraphOrFallback(draft.structureNotes, structureFallback),
+      },
+      executionHighlights: {
+        title: localized(locale, "Execution highlights", "Ejecución"),
+        body: restParagraphsOrFallback(draft.achievements, achievementFallback),
+      },
+      qualitySecurityPerformance: {
+        title: localized(locale, "Quality, security, and performance", "Calidad, seguridad y rendimiento"),
+        body: restParagraphsOrFallback(draft.structureNotes, structureFallback),
+      },
+      publicEvidenceTitle: localized(locale, "Public links", "Enlaces públicos"),
+      publicEvidence: publicHref
+        ? [
+            {
+              label: localized(locale, "Live site", "Sitio en vivo"),
+              description: localized(locale, `Open ${title}.`, `Abrir ${title}.`),
+              href: publicHref,
+              altText: title,
+              kind: "public-site",
+              publicSafe: true,
+            },
+          ]
+        : [],
+      confidentialityNote: {
+        title: localized(locale, "Confidentiality note", "Nota de confidencialidad"),
+        body: localized(
+          locale,
+          "Only public-safe project context is shown here. Private code, dashboards, credentials, analytics, operational records, and customer data remain private.",
+          "Aquí sólo se muestra contexto seguro para publicación. Código privado, dashboards, credenciales, analíticas, registros operativos y datos de clientes permanecen privados.",
+        ),
+      },
+    },
+  };
+}
+
+export function applyProjectDraft(dictionary: LocaleDictionary, draft: DashboardProjectDraft): boolean {
+  let entry = dictionary[draft.contentId];
 
   if (!entry) {
-    console.log(`Skipping unknown content entry ${draft.contentId} (${draft.locale}).`);
-    return;
+    if (!isCaseStudyContentId(draft.contentId)) {
+      console.log(`Skipping unknown content entry ${draft.contentId} (${draft.locale}).`);
+      return false;
+    }
+
+    entry = createProjectEntry(draft);
+    dictionary[draft.contentId] = entry;
   }
 
   entry.title = draft.title;
@@ -175,27 +340,30 @@ function applyProjectDraft(dictionary: LocaleDictionary, draft: DashboardProject
   }
 
   if (entry.caseStudyContent) {
+    const achievementFallback = achievementFallbackForDraft(draft);
+    const structureFallback = structureFallbackForDraft(draft);
+
     entry.caseStudyContent.overview = draft.summary;
 
     if (entry.caseStudyContent.businessOutcome) {
-      entry.caseStudyContent.businessOutcome.body = firstParagraph(draft.achievements);
+      entry.caseStudyContent.businessOutcome.body = firstParagraphOrFallback(draft.achievements, achievementFallback);
     }
 
     if (entry.caseStudyContent.executionHighlights) {
-      entry.caseStudyContent.executionHighlights.body = restParagraphs(draft.achievements);
+      entry.caseStudyContent.executionHighlights.body = restParagraphsOrFallback(draft.achievements, achievementFallback);
     }
 
     if (entry.caseStudyContent.architectureDecisions) {
-      entry.caseStudyContent.architectureDecisions.body = firstParagraph(draft.structureNotes);
+      entry.caseStudyContent.architectureDecisions.body = firstParagraphOrFallback(draft.structureNotes, structureFallback);
     }
 
     if (entry.caseStudyContent.qualitySecurityPerformance) {
-      entry.caseStudyContent.qualitySecurityPerformance.body = restParagraphs(draft.structureNotes);
+      entry.caseStudyContent.qualitySecurityPerformance.body = restParagraphsOrFallback(draft.structureNotes, structureFallback);
     }
 
     entry.caseStudyContent.publicEvidenceTitle = draft.locale === "es" ? "Enlaces públicos" : "Public links";
 
-    const publicHref = draft.projectUrl || (draft.ctaHref.startsWith("http") ? draft.ctaHref : undefined);
+    const publicHref = publicHrefForDraft(draft);
 
     if (publicHref) {
       entry.caseStudyContent.publicEvidence = [
@@ -210,6 +378,8 @@ function applyProjectDraft(dictionary: LocaleDictionary, draft: DashboardProject
       ];
     }
   }
+
+  return true;
 }
 
 function applyResumeDraft(dictionary: LocaleDictionary, draft: DashboardResumeDraft): void {
@@ -308,6 +478,67 @@ function writeGeneratedPublicSettings(settings: DashboardSiteSetting[]): number 
   return Object.keys(settingsLiteral).length;
 }
 
+function hasPublicCaseStudyEntry(dictionary: LocaleDictionary, contentId: string): boolean {
+  const entry = dictionary[contentId];
+  const caseStudy = entry?.caseStudyContent;
+
+  return Boolean(
+    entry?.path &&
+    entry.title &&
+    entry.summary &&
+    entry.seoDescription &&
+    caseStudy?.statusLabel &&
+    caseStudy.overview &&
+    caseStudy.problem?.body &&
+    caseStudy.businessOutcome?.body &&
+    caseStudy.role?.body &&
+    caseStudy.constraints?.body &&
+    caseStudy.architectureDecisions?.body &&
+    caseStudy.executionHighlights?.body &&
+    caseStudy.qualitySecurityPerformance?.body &&
+    caseStudy.publicEvidenceTitle &&
+    caseStudy.confidentialityNote?.body,
+  );
+}
+
+export function publicProjectIdsFromDictionaries(
+  dictionaries: Record<Locale, LocaleDictionary>,
+  candidateContentIds: readonly string[],
+): string[] {
+  const seen = new Set<string>();
+  const projectIds: string[] = [];
+
+  for (const contentId of candidateContentIds) {
+    if (
+      seen.has(contentId) ||
+      STATIC_CASE_STUDY_IDS.has(contentId) ||
+      !isCaseStudyContentId(contentId) ||
+      !hasPublicCaseStudyEntry(dictionaries.en, contentId) ||
+      !hasPublicCaseStudyEntry(dictionaries.es, contentId)
+    ) {
+      continue;
+    }
+
+    seen.add(contentId);
+    projectIds.push(contentId);
+  }
+
+  return projectIds.sort((left, right) => left.localeCompare(right));
+}
+
+function writeGeneratedPublicProjectIds(projectIds: readonly string[]): number {
+  mkdirSync(generatedContentGraphDir, { recursive: true });
+  writeFileSync(generatedPublicProjectsFile, [
+    "// Generated by scripts/apply-dashboard-published-content.ts.",
+    "export const DASHBOARD_PUBLIC_PROJECT_IDS: readonly string[] = [",
+    ...projectIds.map((projectId) => `  ${JSON.stringify(projectId)},`),
+    "];",
+    "",
+  ].join("\n"));
+
+  return projectIds.length;
+}
+
 async function main(): Promise<void> {
   const content = await loadDashboardContent();
 
@@ -321,14 +552,18 @@ async function main(): Promise<void> {
   };
   let appliedProjects = 0;
   let appliedResumes = 0;
+  const publishedProjectContentIds: string[] = [];
 
   for (const draft of content.projectDrafts ?? []) {
     if (!draft.publishedAt) {
       continue;
     }
 
-    applyProjectDraft(dictionaries[draft.locale], draft);
-    appliedProjects += 1;
+    publishedProjectContentIds.push(draft.contentId);
+
+    if (applyProjectDraft(dictionaries[draft.locale], draft)) {
+      appliedProjects += 1;
+    }
   }
 
   for (const draft of content.resumeDrafts ?? []) {
@@ -342,13 +577,17 @@ async function main(): Promise<void> {
 
   writeLocaleFile("en", dictionaries.en);
   writeLocaleFile("es", dictionaries.es);
+  const publicProjectIds = publicProjectIdsFromDictionaries(dictionaries, publishedProjectContentIds);
+  const generatedPublicProjects = writeGeneratedPublicProjectIds(publicProjectIds);
   const appliedMedia = writeGeneratedPublicMedia(content.media ?? []);
   const appliedSettings = writeGeneratedPublicSettings(content.settings ?? []);
 
-  console.log(`Applied ${appliedProjects} published project draft(s), ${appliedResumes} published resume draft(s), ${appliedMedia} media asset(s), and ${appliedSettings} public setting(s).`);
+  console.log(`Applied ${appliedProjects} published project draft(s), ${appliedResumes} published resume draft(s), ${appliedMedia} media asset(s), ${appliedSettings} public setting(s), and ${generatedPublicProjects} generated public project id(s).`);
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  });
+}
