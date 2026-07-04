@@ -188,19 +188,22 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
             decoding="async"
           />
           <div class="hero-proof-shots" aria-hidden="true">
-            {homeContent.selectedOutcomes.slice(0, 3).map((outcome) => (
-              outcome.evidence.src ? (
-                <span class={`hero-proof-frame hero-proof-frame-${evidenceImageForPath(outcome.path)?.kind ?? "site"}`}>
+            {homeContent.selectedOutcomes.slice(0, 3).map((outcome) => {
+              const evidenceImage = evidenceImageForPath(outcome.path);
+              const imageSrc = evidenceImage?.thumbSrc ?? outcome.evidence.src;
+
+              return imageSrc ? (
+                <span class={`hero-proof-frame hero-proof-frame-${evidenceImage?.kind ?? "site"}`}>
                   <img
-                    class={`proof-image proof-image-${evidenceImageForPath(outcome.path)?.kind ?? "site"}`}
-                    src={evidenceImageForPath(outcome.path)?.thumbSrc ?? outcome.evidence.src}
+                    class={`proof-image proof-image-${evidenceImage?.kind ?? "site"}`}
+                    src={imageSrc}
                     alt=""
                     loading="eager"
                     decoding="async"
                   />
                 </span>
-              ) : null
-            ))}
+              ) : null;
+            })}
           </div>
           <figcaption class="proof-board-caption">
             <span>{copy.publicSample}</span>
@@ -228,13 +231,23 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           {homeContent.selectedOutcomes.map((outcome, index) => (
             <a class="outcome-row" href={outcome.path}>
               <span class="outcome-index">{String(index + 1).padStart(2, "0")}</span>
-              <figure class={`outcome-shot outcome-shot-${evidenceImageForPath(outcome.path)?.kind ?? "site"}`} aria-label={outcome.evidence.altText}>
-                {outcome.evidence.src ? (
-                  <img src={evidenceImageForPath(outcome.path)?.thumbSrc ?? outcome.evidence.src} alt={outcome.evidence.altText} loading="eager" decoding="async" />
-                ) : (
-                  <span class="evidence-fallback">{outcome.evidence.label}</span>
-                )}
-              </figure>
+              {(() => {
+                const evidenceImage = evidenceImageForPath(outcome.path);
+                const imageSrc = evidenceImage?.thumbSrc ?? outcome.evidence.src;
+                const imageAlt = outcome.evidence.src
+                  ? outcome.evidence.altText
+                  : evidenceImage?.alt ?? outcome.evidence.altText;
+
+                return (
+                  <figure class={`outcome-shot outcome-shot-${evidenceImage?.kind ?? "site"}`} aria-label={imageAlt}>
+                    {imageSrc ? (
+                      <img src={imageSrc} alt={imageAlt} loading="eager" decoding="async" />
+                    ) : (
+                      <span class="evidence-fallback">{outcome.evidence.label}</span>
+                    )}
+                  </figure>
+                );
+              })()}
               <div class="outcome-summary">
                 <span class="outcome-label">{outcome.label}</span>
                 <strong>{outcome.title}</strong>

@@ -514,20 +514,35 @@ function hasPublicCaseStudyEntry(dictionary: LocaleDictionary, contentId: string
   );
 }
 
+function hasPublicEvidence(caseStudy: LocalizedEntry["caseStudyContent"]): boolean {
+  return Boolean(
+    caseStudy?.publicEvidence?.some((evidence) => (
+      evidence.publicSafe === true &&
+      /^https?:\/\//.test(evidence.href)
+    )),
+  );
+}
+
 export function publicProjectIdsFromDictionaries(
   dictionaries: Record<Locale, LocaleDictionary>,
   candidateContentIds: readonly string[],
+  publicMediaByContentId: ReadonlyMap<string, DashboardMediaMetadata> = new Map(),
 ): string[] {
   const seen = new Set<string>();
   const projectIds: string[] = [];
 
   for (const contentId of candidateContentIds) {
+    const hasSelectedMedia = publicMediaByContentId.has(contentId);
+
     if (
       seen.has(contentId) ||
       STATIC_CASE_STUDY_IDS.has(contentId) ||
       !isCaseStudyContentId(contentId) ||
       !hasPublicCaseStudyEntry(dictionaries.en, contentId) ||
-      !hasPublicCaseStudyEntry(dictionaries.es, contentId)
+      !hasPublicCaseStudyEntry(dictionaries.es, contentId) ||
+      (!hasSelectedMedia &&
+        (!hasPublicEvidence(dictionaries.en[contentId]?.caseStudyContent) ||
+          !hasPublicEvidence(dictionaries.es[contentId]?.caseStudyContent)))
     ) {
       continue;
     }
@@ -590,7 +605,12 @@ async function main(): Promise<void> {
 
   writeLocaleFile("en", dictionaries.en);
   writeLocaleFile("es", dictionaries.es);
-  const publicProjectIds = publicProjectIdsFromDictionaries(dictionaries, publishedProjectContentIds);
+  const publicMediaByContentId = publicMediaItemsByContentId(content.media ?? []);
+  const publicProjectIds = publicProjectIdsFromDictionaries(
+    dictionaries,
+    publishedProjectContentIds,
+    publicMediaByContentId,
+  );
   const generatedPublicProjects = writeGeneratedPublicProjectIds(publicProjectIds);
   const appliedMedia = writeGeneratedPublicMedia(content.media ?? []);
   const appliedSettings = writeGeneratedPublicSettings(content.settings ?? []);

@@ -252,6 +252,63 @@ describe("Public Content Graph", () => {
     ])).toEqual([contentId]);
   });
 
+  it("keeps dashboard case studies out of the public manifest until they have evidence or media", async () => {
+    const {
+      applyProjectDraft,
+      publicMediaItemsByContentId,
+      publicProjectIdsFromDictionaries,
+    } = await import("../../../scripts/apply-dashboard-published-content.js");
+    const dictionaries: Record<"en" | "es", Record<string, any>> = {
+      en: {},
+      es: {},
+    };
+    const contentId = "case-study:dashboard-beta";
+
+    expect(applyProjectDraft(dictionaries.en, {
+      contentId,
+      locale: "en",
+      title: "Dashboard Beta",
+      summary: "A dashboard-published project.",
+      seoDescription: "A public dashboard-published project case study.",
+      ctaLabel: "Contact",
+      ctaHref: "/contact",
+      achievements: "Prepared a safe case study.",
+      structureNotes: "Uses generated content graph entries.",
+      publishedAt: 123,
+    })).toBe(true);
+    expect(applyProjectDraft(dictionaries.es, {
+      contentId,
+      locale: "es",
+      title: "Dashboard Beta ES",
+      summary: "Un proyecto publicado desde dashboard.",
+      seoDescription: "Un caso publico publicado desde dashboard.",
+      ctaLabel: "Contacto",
+      ctaHref: "/es/contacto",
+      achievements: "Preparo un caso seguro.",
+      structureNotes: "Usa entradas generadas del grafo.",
+      publishedAt: 124,
+    })).toBe(true);
+
+    expect(publicProjectIdsFromDictionaries(dictionaries, [contentId])).toEqual([]);
+
+    const publicMediaByContentId = publicMediaItemsByContentId([
+      {
+        storageKey: "media/dashboard-beta/selected",
+        publicUrl: "https://example.com/dashboard-beta.png",
+        altText: "Selected Dashboard Beta project preview.",
+        contentId,
+        usage: "case-study",
+        status: "published",
+        selectedForPublic: true,
+        updatedAt: 100,
+      },
+    ]);
+
+    expect(publicProjectIdsFromDictionaries(dictionaries, [contentId], publicMediaByContentId)).toEqual([
+      contentId,
+    ]);
+  });
+
   it("prefers dashboard-selected public media over the latest fallback", async () => {
     const {
       publicMediaItemsByContentId,
