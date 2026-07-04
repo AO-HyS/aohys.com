@@ -1,6 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { hasConvexDeploymentAccess, runConvexFunction } from "./convex-run.js";
 
 type Locale = "en" | "es";
 
@@ -105,31 +106,13 @@ const STATIC_CASE_STUDY_IDS = new Set([
   "case-study:engineering-practice",
 ]);
 
-function endpointFor(siteUrl: string): string {
-  return `${siteUrl.replace(/\/$/, "")}/dashboard/content`;
-}
-
 async function loadDashboardContent(): Promise<DashboardContentPayload | null> {
-  const convexSiteUrl = process.env.CONVEX_SITE_URL?.trim();
-  const dashboardToken = process.env.DASHBOARD_API_TOKEN?.trim();
-
-  if (!convexSiteUrl || !dashboardToken) {
-    console.log("Dashboard published content bridge skipped: CONVEX_SITE_URL or DASHBOARD_API_TOKEN is missing.");
+  if (!hasConvexDeploymentAccess()) {
+    console.log("Dashboard published content bridge skipped: CONVEX_DEPLOY_KEY and CONVEX_DEPLOYMENT are missing.");
     return null;
   }
 
-  const response = await fetch(endpointFor(convexSiteUrl), {
-    headers: {
-      accept: "application/json",
-      authorization: `Bearer ${dashboardToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Dashboard published content bridge failed with HTTP ${response.status}.`);
-  }
-
-  return await response.json() as DashboardContentPayload;
+  return runConvexFunction<DashboardContentPayload>("content:listForDashboardInternal", {});
 }
 
 function readLocaleFile(locale: Locale): LocaleDictionary {
