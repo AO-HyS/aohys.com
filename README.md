@@ -187,7 +187,7 @@ Current protections:
 - browser PostHog autocapture starts disabled;
 - preview and production PostHog projects stay separated through environment-specific public keys plus an `environment` event property;
 - dashboard runtime exceptions are caught at the Cloudflare Pages boundary and reported as sanitized PostHog events before a private unavailable state is returned;
-- Cloudflare Pages `_headers` applies security headers for static public pages, and the shared Pages Functions header module applies the same CSP/reporting policy to private dashboard and observability responses;
+- Cloudflare Pages `_headers` is generated from the shared security header module and applies security headers for static public pages; Pages Functions use that same module directly for private dashboard and observability responses;
 - `/dashboard` is omitted from sitemap and returns private-cache/robot headers;
 - smoke checks verify public HTML, canonical behavior, and dashboard privacy boundaries.
 

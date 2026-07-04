@@ -38,7 +38,7 @@ python3 apps/site/scripts/build-resume-pdf.py
 
 The current shell includes the graph-backed home proof narrative, selected-work index, case-study detail pages, resume page, text-based PDF artifact, bilingual route skeletons, global tokens, font loading, graph-backed metadata, navigation, footer, sitemap, robots output, Astro native i18n config, and Vitest route/build smoke checks.
 
-Cloudflare Pages security headers live in `public/_headers` for static assets and `src/security-headers.ts` for Pages Functions responses such as `/dashboard` and `/observability/csp`. The route build tests verify the header artifact alongside sitemap, robots, privacy, analytics, and contact failure-state behavior.
+Cloudflare Pages security headers are authored in `src/security-headers.ts`. `public/_headers` is generated from that shared source with `pnpm --filter @aohys/site sync:headers`, and `sync:headers:check` guards it during site lint/test. Pages Functions responses such as `/dashboard` and `/observability/csp` use the same module directly. The route build tests verify the generated header artifact alongside sitemap, robots, privacy, analytics, and contact failure-state behavior.
 
 UI copy that belongs to the shell lives in locale JSON files under `src/i18n`. Public page identity, localized slugs, SEO metadata, and sitemap eligibility come from `@aohys/content-graph`.
 

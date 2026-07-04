@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { getPublicRouteMap, getSeoMetadata, getSitemapEntries } from "@aohys/content-graph";
 import { describe, expect, it } from "vitest";
-import { CONTENT_SECURITY_POLICY } from "../src/security-headers.js";
+import { CONTENT_SECURITY_POLICY, renderCloudflarePagesStaticHeaders } from "../src/security-headers.js";
 
 const siteRoot = process.cwd();
 const distRoot = path.join(siteRoot, "dist");
@@ -328,6 +328,7 @@ describe("built public routes", () => {
   it("publishes Cloudflare Pages security headers for public and private surfaces", () => {
     const headers = readDist("_headers");
 
+    expect(headers).toBe(renderCloudflarePagesStaticHeaders());
     expect(headers).toContain("X-Content-Type-Options: nosniff");
     expect(headers).toContain("Referrer-Policy: strict-origin-when-cross-origin");
     expect(headers).toContain("X-Frame-Options: DENY");

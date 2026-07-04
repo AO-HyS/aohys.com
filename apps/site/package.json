@@ -5,12 +5,14 @@
   "description": "Astro public SEO surface for aohys.com.",
   "type": "module",
   "scripts": {
-    "build": "astro build && pnpm --filter @aohys/dashboard build && node ../../scripts/copy-dashboard-assets.mjs",
+    "build": "pnpm run sync:headers && astro build && pnpm --filter @aohys/dashboard build && node ../../scripts/copy-dashboard-assets.mjs",
     "dev": "astro dev",
-    "lint": "vitest run test/source-quality.test.ts",
+    "lint": "pnpm run sync:headers:check && vitest run test/source-quality.test.ts",
     "preview": "astro preview",
+    "sync:headers": "tsx ../../scripts/sync-site-static-headers.ts",
+    "sync:headers:check": "tsx ../../scripts/sync-site-static-headers.ts --check",
     "typecheck": "astro check && tsc --noEmit -p tsconfig.functions.json",
-    "test": "vitest run test/analytics.test.ts test/csp-reporting.test.ts test/dashboard-access.test.ts test/auth-proxy.test.ts && astro build && vitest run test/public-shell-build.test.ts test/public-routes-build.test.ts"
+    "test": "pnpm run sync:headers:check && vitest run test/analytics.test.ts test/csp-reporting.test.ts test/dashboard-access.test.ts test/auth-proxy.test.ts && astro build && vitest run test/public-shell-build.test.ts test/public-routes-build.test.ts"
   },
   "dependencies": {
     "@aohys/content-graph": "workspace:*",
