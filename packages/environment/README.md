@@ -15,7 +15,7 @@ The current contract classifies these Convex values:
 
 | Variable | Class | Exposure |
 | --- | --- | --- |
-| `CONVEX_URL` | Provider output | Server-only |
+| `CONVEX_URL` | Provider output | Public browser |
 | `CONVEX_SITE_URL` | Provider output | Server-only |
 | `CONVEX_DEPLOYMENT` | Provider output | Server-only |
 | `CONVEX_DEPLOY_KEY` | Server secret | Server-only |
@@ -31,7 +31,7 @@ The private dashboard uses Cloudflare Pages functions for route protection and C
 | Variable | Class | Exposure | Runtime target |
 | --- | --- | --- | --- |
 | `BETTER_AUTH_SECRET` | Server secret | Server-only | auth-runtime |
-| `BETTER_AUTH_URL` | Provider output | Server-only | dashboard-runtime and auth-runtime |
+| `BETTER_AUTH_URL` | Provider output | Public browser | dashboard-runtime and auth-runtime |
 | `BETTER_AUTH_TRUSTED_ORIGINS` | Policy value | Server-only | dashboard-runtime and auth-runtime |
 | `ADMIN_EMAIL` | Policy value | Server-only | dashboard-runtime and auth-runtime |
 | `GOOGLE_CLIENT_ID` | Provider output | Server-only | auth-runtime |

@@ -43,7 +43,7 @@ describe("Convex Environment Contract", () => {
 
     expect(byName.get("CONVEX_URL")).toMatchObject({
       classification: "provider-output",
-      exposure: "server-only",
+      exposure: "public-browser",
     });
     expect(byName.get("CONVEX_DEPLOYMENT")).toMatchObject({
       classification: "provider-output",
@@ -158,6 +158,13 @@ describe("Convex Environment Contract", () => {
       "GOOGLE_CLIENT_ID",
       "GOOGLE_CLIENT_SECRET",
     ]);
+    expect(definitions).toContainEqual(
+      expect.objectContaining({
+        name: "BETTER_AUTH_URL",
+        classification: "provider-output",
+        exposure: "public-browser",
+      }),
+    );
 
     const missingTrustedOrigins = validateEnvironmentContract("preview", {
       ...validPreviewValues,

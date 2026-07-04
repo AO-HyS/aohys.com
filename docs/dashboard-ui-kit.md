@@ -11,7 +11,7 @@ Cloudflare Pages Functions remain the guard:
 - verify Better Auth session through Convex;
 - enforce the admin allowlist;
 - serve the React app shell for `/dashboard/*`;
-- inject `CONVEX_URL`, `CONVEX_SITE_URL`, and public delivery config for the React app;
+- inject `CONVEX_URL`, `BETTER_AUTH_URL`, and public delivery config for the React app;
 - return `noindex`, `nofollow`, and `no-store` for private responses.
 
 ## Dashboard App

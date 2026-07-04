@@ -110,7 +110,7 @@ Current Better Auth variables:
 | Variable | Class | Exposure | Required target |
 | --- | --- | --- | --- |
 | `BETTER_AUTH_SECRET` | Server secret | Server-only | runtime, auth-runtime, and release in preview/production |
-| `BETTER_AUTH_URL` | Provider output | Server-only | runtime, dashboard-runtime, auth-runtime, and release |
+| `BETTER_AUTH_URL` | Provider output | Public browser | runtime, dashboard-runtime, auth-runtime, and release |
 | `BETTER_AUTH_TRUSTED_ORIGINS` | Policy value | Server-only | runtime, dashboard-runtime, auth-runtime, and release |
 | `ADMIN_EMAIL` | Policy value | Server-only | runtime, dashboard-runtime, auth-runtime, and release |
 | `GOOGLE_CLIENT_ID` | Provider output | Server-only | runtime, auth-runtime, and release in preview/production |
@@ -120,7 +120,7 @@ Cloudflare Pages owns `/dashboard` and `/api/auth/*` at the public domain. `/das
 
 Until `preview.aohys.com` resolves in DNS, preview auth must explicitly trust `https://develop.aohys-com.pages.dev` in `BETTER_AUTH_TRUSTED_ORIGINS`. The release plan may still use `preview.aohys.com` as the stable fallback URL, but Google OAuth and Better Auth callbacks must allow the Pages host users actually open during review.
 
-Cloudflare Pages runtime variables for the dashboard are `AOHYS_ENV`, `PUBLIC_SITE_URL`, `CONVEX_URL`, `CONVEX_SITE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_TRUSTED_ORIGINS`, `ADMIN_EMAIL`, and the optional `CLOUDFLARE_IMAGES_ACCOUNT_HASH`. Pages uses these values to validate the shell request and inject direct Convex dashboard runtime config; public browser code never receives server-only provider secrets. Preview and production variables are configured on the Pages project; local `wrangler pages dev` must pass them as explicit `-b` bindings.
+Cloudflare Pages runtime variables for the dashboard are `AOHYS_ENV`, `PUBLIC_SITE_URL`, `CONVEX_URL`, `CONVEX_SITE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_TRUSTED_ORIGINS`, `ADMIN_EMAIL`, and the optional `CLOUDFLARE_IMAGES_ACCOUNT_HASH`. Pages uses `CONVEX_SITE_URL` server-side for Better Auth session checks, then injects `CONVEX_URL`, `BETTER_AUTH_URL`, and public delivery config into the dashboard shell. Public browser code never receives server-only provider secrets. Preview and production variables are configured on the Pages project; local `wrangler pages dev` must pass them as explicit `-b` bindings.
 
 Current Cloudflare variables:
 

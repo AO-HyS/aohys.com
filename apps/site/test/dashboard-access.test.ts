@@ -74,7 +74,7 @@ describe("dashboard access guard", () => {
     expect(html).toContain('"adminEmail":"alejandro.ortiz@aohys.com"');
     expect(html).toContain('"environment":"preview"');
     expect(html).toContain('"convexUrl":"https://effervescent-minnow-483.convex.cloud"');
-    expect(html).toContain('"betterAuthUrl":"https://effervescent-minnow-483.convex.site"');
+    expect(html).toContain('"betterAuthUrl":"https://preview.aohys.com"');
     expect(html).toContain('"imagesAccountHash":"cloudflare-images-hash"');
   });
 
@@ -97,6 +97,7 @@ describe("dashboard access guard", () => {
 
     expect(response.status).toBe(200);
     expect(html).toContain('"convexUrl":"https://effervescent-minnow-483.convex.cloud"');
+    expect(html).toContain('"betterAuthUrl":"https://preview.aohys.com"');
     expect(html).not.toContain("imagesAccountHash");
   });
 

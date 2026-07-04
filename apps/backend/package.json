@@ -10,8 +10,7 @@
       "default": "./convex/_generated/api.js"
     },
     "./convex/_generated/dataModel": {
-      "types": "./convex/_generated/dataModel.d.ts",
-      "default": "./convex/_generated/dataModel.d.ts"
+      "types": "./convex/_generated/dataModel.d.ts"
     }
   },
   "scripts": {
