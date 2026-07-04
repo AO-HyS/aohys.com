@@ -340,6 +340,40 @@ describe("Public Content Graph", () => {
     );
   });
 
+  it("derives published Cloudflare Images media from storage keys when publicUrl is missing", async () => {
+    const previousHash = process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH;
+
+    process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH = "cloudflare-hash";
+
+    try {
+      const {
+        publicMediaItemsByContentId,
+      } = await import("../../../scripts/apply-dashboard-published-content.js");
+      const mediaByContentId = publicMediaItemsByContentId([
+        {
+          storageProvider: "cloudflare-images",
+          storageKey: "media/dashboard-alpha/selected",
+          altText: "Selected dashboard image.",
+          contentId: "case-study:dashboard-alpha",
+          usage: "case-study",
+          status: "published",
+          selectedForPublic: true,
+          updatedAt: 100,
+        },
+      ]);
+
+      expect(mediaByContentId.get("case-study:dashboard-alpha")?.publicUrl).toBe(
+        "https://imagedelivery.net/cloudflare-hash/media/dashboard-alpha/selected/public",
+      );
+    } finally {
+      if (previousHash === undefined) {
+        delete process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH;
+      } else {
+        process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH = previousHash;
+      }
+    }
+  });
+
   it("includes generated dashboard case studies in routes, sitemap, index, and home outcomes", async () => {
     const contentId = "case-study:dashboard-alpha";
 

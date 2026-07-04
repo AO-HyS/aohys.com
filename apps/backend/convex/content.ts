@@ -188,7 +188,7 @@ async function listForDashboardHandler(ctx: QueryCtx) {
       id: item._id,
       storageProvider: item.storageProvider,
       storageKey: item.storageKey,
-      publicUrl: item.publicUrl,
+      publicUrl: publicMediaUrl(item),
       altText: item.altText,
       contentId: item.contentId,
       usage: item.usage,
@@ -214,6 +214,26 @@ async function listForDashboardHandler(ctx: QueryCtx) {
       publishedAt: resumeVersion.publishedAt,
     })),
   };
+}
+
+function publicMediaUrl(
+  media: {
+    storageProvider: "cloudflare-images" | "cloudflare-r2" | "external";
+    storageKey: string;
+    publicUrl?: string;
+  },
+): string | undefined {
+  if (media.publicUrl) {
+    return media.publicUrl;
+  }
+
+  const accountHash = process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH?.trim();
+
+  if (media.storageProvider !== "cloudflare-images" || !accountHash) {
+    return undefined;
+  }
+
+  return `https://imagedelivery.net/${accountHash}/${media.storageKey}/public`;
 }
 
 async function upsertProjectDraftHandler(

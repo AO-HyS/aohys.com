@@ -53,6 +53,37 @@ export interface EvidenceAsset {
   src?: string;
 }
 
+export interface StaticEvidenceImageAsset {
+  src: string;
+  thumbSrc?: string;
+  kind: "site" | "landing" | "dashboard" | "diagram";
+}
+
+export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceImageAsset> = {
+  "case-study:casa-roca": {
+    src: "/images/proof/casa-roca-production.png",
+    kind: "site",
+  },
+  "case-study:the-barber-central": {
+    src: "/images/proof/barber-central-landing.png",
+    thumbSrc: "/images/proof/barber-central-proof-thumb.png",
+    kind: "landing",
+  },
+  "case-study:nutri-plan": {
+    src: "/images/proof/nutri-plan-dashboard.png",
+    thumbSrc: "/images/proof/nutri-plan-proof-thumb.png",
+    kind: "dashboard",
+  },
+  "case-study:enterprise-systems": {
+    src: "/images/proof/enterprise-delivery-map.svg",
+    kind: "diagram",
+  },
+  "case-study:engineering-practice": {
+    src: "/images/generated/aohys-architecture-proof-surface.png",
+    kind: "diagram",
+  },
+};
+
 export interface HomeOutcome {
   contentId: ContentId | string;
   path: string;
