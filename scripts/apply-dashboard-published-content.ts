@@ -26,6 +26,7 @@ interface DashboardResumeDraft {
 }
 
 export interface DashboardMediaMetadata {
+  storageProvider?: "cloudflare-images" | "cloudflare-r2" | "external";
   storageKey: string;
   publicUrl?: string;
   altText: string;
@@ -36,6 +37,8 @@ export interface DashboardMediaMetadata {
   selectedForPublic?: boolean;
   updatedAt: number;
 }
+
+type PublicDashboardMediaMetadata = DashboardMediaMetadata & { publicUrl: string };
 
 interface DashboardSiteSetting {
   key: string;
@@ -395,18 +398,24 @@ function generatedMediaKind(item: DashboardMediaMetadata): string {
 }
 
 export function publicMediaItemsByContentId(mediaItems: DashboardMediaMetadata[]): Map<string, DashboardMediaMetadata> {
-  const mediaByContentId = new Map<string, DashboardMediaMetadata>();
+  const mediaByContentId = new Map<string, PublicDashboardMediaMetadata>();
 
   for (const item of mediaItems) {
+    const publicUrl = publicMediaUrl(item);
+
     if (
       !item.contentId ||
-      !item.publicUrl ||
+      !publicUrl ||
       item.status !== "published" ||
       (item.usage !== "case-study" && item.usage !== "site" && item.usage !== "architecture")
     ) {
       continue;
     }
 
+    const publicItem: PublicDashboardMediaMetadata = {
+      ...item,
+      publicUrl,
+    };
     const existing = mediaByContentId.get(item.contentId);
     const itemIsSelected = item.selectedForPublic === true;
     const existingIsSelected = existing?.selectedForPublic === true;
@@ -416,11 +425,25 @@ export function publicMediaItemsByContentId(mediaItems: DashboardMediaMetadata[]
       (itemIsSelected && !existingIsSelected) ||
       (itemIsSelected === existingIsSelected && item.updatedAt > existing.updatedAt)
     ) {
-      mediaByContentId.set(item.contentId, item);
+      mediaByContentId.set(item.contentId, publicItem);
     }
   }
 
   return mediaByContentId;
+}
+
+function publicMediaUrl(item: DashboardMediaMetadata): string | undefined {
+  if (item.publicUrl) {
+    return item.publicUrl;
+  }
+
+  const accountHash = process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH?.trim();
+
+  if (item.storageProvider !== "cloudflare-images" || !accountHash) {
+    return undefined;
+  }
+
+  return `https://imagedelivery.net/${accountHash}/${item.storageKey}/public`;
 }
 
 function writeGeneratedPublicMedia(mediaItems: DashboardMediaMetadata[]): number {

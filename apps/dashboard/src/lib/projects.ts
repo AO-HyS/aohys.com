@@ -1,6 +1,7 @@
 import { api as convexApi } from "@aohys/backend/convex/_generated/api";
 import {
   PUBLIC_CONTENT_NODES,
+  STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID,
   getCaseStudyPageContent,
   getLocaleVariant,
   getResumePageContent,
@@ -80,6 +81,7 @@ function buildDashboardProjectRows(
       ? getLocaleVariant(node, "es")
       : fallbackProjectVariant(contentId, "es", spanishDraft ?? englishDraft);
     const publicEvidence = node ? getCaseStudyPageContent(node.id, "en")?.publicEvidence ?? [] : [];
+    const staticEvidenceImage = STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID[contentId];
     const media = mediaRows.filter((item) => item.contentId === contentId);
     const firstProjectUrl = publicEvidence.find((item) => isHttpUrl(item.href))?.href;
     const firstDraftUrl = (content.projectDrafts ?? [])
@@ -126,12 +128,16 @@ function buildDashboardProjectRows(
         };
       }),
       images: [
-        ...publicEvidence.map((asset) => ({
+        ...publicEvidence.map((asset, index) => ({
           label: asset.label,
           altText: asset.altText,
           source: "content-graph" as const,
           href: asset.href,
-          src: isImageHref(asset.href) ? asset.href : undefined,
+          src: isImageHref(asset.href)
+            ? asset.href
+            : index === 0
+              ? staticEvidenceImage?.thumbSrc ?? staticEvidenceImage?.src
+              : undefined,
         })),
         ...media.map((item) => {
           const deliveryUrl = item.publicUrl ?? cloudflareImagesDeliveryUrl(item, imagesAccountHash);
