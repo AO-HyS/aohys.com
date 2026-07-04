@@ -323,6 +323,7 @@ export function ProjectsScreen() {
           <Button
             type="button"
             variant={isCreateOpen ? "secondary" : "default"}
+            aria-expanded={isCreateOpen}
             onClick={() => setIsCreateOpen((current) => !current)}
           >
             <PlusIcon data-icon="inline-start" />
