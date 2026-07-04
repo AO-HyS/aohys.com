@@ -54,6 +54,7 @@ export interface DashboardProjectImage {
   source: "content-graph" | "media-metadata";
   href?: string;
   src?: string;
+  previewStatus?: "ready" | "missing-url";
   storageKey?: string;
   status?: DashboardMediaStatus;
   usage?: DashboardMediaUsage;

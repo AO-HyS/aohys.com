@@ -437,6 +437,14 @@ function publicMediaUrl(item: DashboardMediaMetadata): string | undefined {
     return item.publicUrl;
   }
 
+  if (isHttpUrl(item.storageKey)) {
+    return item.storageKey;
+  }
+
+  if (isPublicAssetPath(item.storageKey)) {
+    return item.storageKey.startsWith("/") ? item.storageKey : `/${item.storageKey}`;
+  }
+
   const accountHash = process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH?.trim();
 
   if (item.storageProvider !== "cloudflare-images" || !accountHash) {
@@ -444,6 +452,20 @@ function publicMediaUrl(item: DashboardMediaMetadata): string | undefined {
   }
 
   return `https://imagedelivery.net/${accountHash}/${item.storageKey}/public`;
+}
+
+function isHttpUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function isPublicAssetPath(value: string): boolean {
+  return /^(?:\/)?images\/.+\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(value);
 }
 
 function writeGeneratedPublicMedia(mediaItems: DashboardMediaMetadata[]): number {

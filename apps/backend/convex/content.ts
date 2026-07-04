@@ -227,6 +227,14 @@ function publicMediaUrl(
     return media.publicUrl;
   }
 
+  if (isHttpUrl(media.storageKey)) {
+    return media.storageKey;
+  }
+
+  if (isPublicAssetPath(media.storageKey)) {
+    return media.storageKey.startsWith("/") ? media.storageKey : `/${media.storageKey}`;
+  }
+
   const accountHash = process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH?.trim();
 
   if (media.storageProvider !== "cloudflare-images" || !accountHash) {
@@ -234,6 +242,20 @@ function publicMediaUrl(
   }
 
   return `https://imagedelivery.net/${accountHash}/${media.storageKey}/public`;
+}
+
+function isHttpUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function isPublicAssetPath(value: string): boolean {
+  return /^(?:\/)?images\/.+\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(value);
 }
 
 async function upsertProjectDraftHandler(
@@ -673,6 +695,33 @@ export const archiveMedia = mutation({
     return {
       mediaId: args.mediaId,
       updatedAt: now,
+    };
+  },
+});
+
+export const deleteMedia = mutation({
+  args: {
+    mediaId: v.id("mediaMetadata"),
+    contentId: v.string(),
+  },
+  returns: v.object({
+    mediaId: v.id("mediaMetadata"),
+    deletedAt: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+
+    const media = await ctx.db.get(args.mediaId);
+
+    if (!media || media.contentId !== args.contentId) {
+      throw new Error("Selected media does not belong to this project.");
+    }
+
+    await ctx.db.delete(args.mediaId);
+
+    return {
+      mediaId: args.mediaId,
+      deletedAt: Date.now(),
     };
   },
 });

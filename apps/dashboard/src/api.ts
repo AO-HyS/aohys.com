@@ -162,6 +162,18 @@ export function useArchiveProjectMedia() {
   );
 }
 
+export function useDeleteProjectMedia() {
+  const deleteProjectMedia = useMutation(convexApi.content.deleteMedia);
+
+  return useCallback(
+    (payload: MediaSelectionRequest) => deleteProjectMedia({
+      mediaId: payload.mediaId as Id<"mediaMetadata">,
+      contentId: payload.contentId,
+    }),
+    [deleteProjectMedia],
+  );
+}
+
 export function useCreateMediaUpload() {
   const createMediaUpload = useAction(convexApi.contentActions.createMediaUploadUrl);
 
