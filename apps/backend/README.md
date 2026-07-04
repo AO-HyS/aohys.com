@@ -59,20 +59,13 @@ The public `leads.submit` mutation validates through `src/lead-intake.ts` before
 
 The public contact endpoint is implemented as a Convex HTTP action at `/contact`. It validates the submission, persists the lead through an internal mutation, sends a Resend notification through an injected provider adapter, and captures a PostHog conversion event with metadata only. Once a lead is persisted, Resend and PostHog provider drift is reported through sanitized operational events instead of rejecting the visitor request. Public failures return safe codes such as `validation_error` and `backend_unavailable`; private provider messages and contact fields are not reflected back to the browser.
 
-Private dashboard endpoints are implemented as Convex HTTP actions protected by `DASHBOARD_API_TOKEN`:
+Private dashboard workflows are exposed as public Convex functions guarded by `requireAdmin(ctx)`, which validates the Better Auth session and `ADMIN_EMAIL` allowlist:
 
-- `GET /dashboard/leads` and `POST /dashboard/leads/status` for lead review.
-- `GET /dashboard/content` for project drafts, case-study status metadata, media metadata, site settings, and resume metadata.
-- `POST /dashboard/content/project` for project-centered dashboard drafts: localized text, SEO description, public URL, CTA, achievements, structure notes, status, and evidence state.
-- `POST /dashboard/content/case-study` for Public Content Graph case-study metadata.
-- `POST /dashboard/content/media` for metadata-only media records with alt text and usage intent.
-- `POST /dashboard/content/media/upload-url` for Cloudflare Images direct-upload URL creation before the browser uploads the file.
-- `POST /dashboard/content/media/select` for marking the public media asset a project should publish.
-- `POST /dashboard/content/media/archive` for removing a project media asset from the public publishing flow.
-- `POST /dashboard/content/setting` for `PUBLIC_` site settings only.
-- `POST /dashboard/content/resume-draft` for editable resume content drafts.
-- `POST /dashboard/content/resume` for resume PDF/version records.
-- `POST /dashboard/content/publish` for marking reviewed project/resume drafts as published and dispatching the Release Train workflow.
+- `leads.listForDashboard` and `leads.updateStatus` power lead review.
+- `content.listForDashboard` returns project drafts, case-study status metadata, media metadata, site settings, resume drafts, and resume versions.
+- `content.upsertProjectDraft`, `content.createMediaMetadata`, `content.selectMediaForPublic`, `content.archiveMedia`, `content.upsertSiteSetting`, `content.upsertResumeDraft`, and `content.createResumeVersion` store dashboard edits.
+- `contentActions.createMediaUploadUrl` creates Cloudflare Images direct-upload URLs before the browser uploads the file.
+- `contentActions.publishContent` marks reviewed project/resume drafts as published and dispatches the Release Train workflow.
 
 The content endpoints store metadata and public-safe references only. Cloudflare Images uploads use direct creator upload URLs so browser code never receives Cloudflare API credentials; Convex should not store image originals.
 
@@ -95,6 +88,5 @@ Required auth runtime values:
 | `BETTER_AUTH_URL` | Public auth base URL, usually `https://aohys.com` or `https://preview.aohys.com`. |
 | `BETTER_AUTH_TRUSTED_ORIGINS` | Comma-separated allowed origins, including `BETTER_AUTH_URL` and `PUBLIC_SITE_URL`. |
 | `ADMIN_EMAIL` | Allowlisted dashboard admin email. |
-| `DASHBOARD_API_TOKEN` | Server-to-server token required by private dashboard HTTP endpoints. |
 | `GOOGLE_CLIENT_ID` | Google OAuth client id. |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret. |

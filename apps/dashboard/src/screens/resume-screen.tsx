@@ -7,13 +7,12 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import {
-  loadDashboardContent,
-  publishContent,
-  saveResumeDraft,
-  saveResumeVersion,
   serializeResumeDraft,
+  useDashboardContent,
+  usePublishContent,
+  useSaveResumeDraft,
+  useSaveResumeVersion,
 } from "@/api";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,7 +32,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import type {
-  DashboardContentPayload,
   DashboardLocale,
   DashboardResumeContent,
   DashboardResumeVersion,
@@ -45,10 +43,12 @@ import type {
 } from "@/types";
 
 export function ResumeScreen() {
-  const [payload, setPayload] = useState<DashboardContentPayload | null>(null);
+  const payload = useDashboardContent();
+  const publishContent = usePublishContent();
+  const saveResumeDraft = useSaveResumeDraft();
+  const saveResumeVersion = useSaveResumeVersion();
   const [selectedLocale, setSelectedLocale] = useState<DashboardLocale>("en");
   const [form, setForm] = useState<DashboardResumeContent | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [versionForm, setVersionForm] = useState({
@@ -57,19 +57,6 @@ export function ResumeScreen() {
     pdfPath: "/downloads/alejandro-ortiz-corro-resume.pdf",
     isPublished: true,
   });
-
-  async function refresh() {
-    setError(null);
-    try {
-      setPayload(await loadDashboardContent());
-    } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Resume content could not load.");
-    }
-  }
-
-  useEffect(() => {
-    void refresh();
-  }, []);
 
   const baseline = useMemo(() => {
     if (!payload) {
@@ -112,7 +99,6 @@ export function ResumeScreen() {
         locale: selectedLocale,
         contentJson: serializeResumeDraft(form),
       });
-      await refresh();
       toast.success("Resume saved", {
         id: toastId,
         description: "The editable resume draft is saved. Publish to rebuild the public Astro resume.",
@@ -143,7 +129,6 @@ export function ResumeScreen() {
         contentJson: serializeResumeDraft(form),
       });
       const result = await publishContent({ scope: "resume", locale: selectedLocale });
-      await refresh();
       const description = result.workflow.status === "queued"
         ? `GitHub Actions is rebuilding ${result.workflow.ref ?? "develop"} with the ${selectedLocale.toUpperCase()} resume.`
         : result.workflow.reason ?? "The publish workflow token is not configured.";
@@ -171,7 +156,6 @@ export function ResumeScreen() {
     try {
       await saveResumeVersion(versionForm);
       setVersionForm((current) => ({ ...current, version: "" }));
-      await refresh();
       toast.success("PDF artifact saved", {
         id: toastId,
         description: "The PDF artifact is registered. Resume copy is edited in the main editor above.",
@@ -195,13 +179,6 @@ export function ResumeScreen() {
           <p>Edit the public resume content directly. Save stores the draft; Publish applies it to the next Astro build.</p>
         </div>
       </section>
-
-      {error ? (
-        <Alert variant="destructive">
-          <AlertTitle>Resume data problem</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      ) : null}
 
       {!payload || !form ? (
         <Skeleton className="h-96 w-full" />

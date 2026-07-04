@@ -23,11 +23,11 @@ pnpm exec wrangler pages dev apps/site/dist \
   --compatibility-date=2026-06-28 \
   -b AOHYS_ENV=local \
   -b PUBLIC_SITE_URL=http://localhost:8788 \
+  -b CONVEX_URL=https://patient-bird-955.convex.cloud \
   -b CONVEX_SITE_URL=https://patient-bird-955.convex.site \
   -b BETTER_AUTH_URL=http://localhost:8788 \
   -b BETTER_AUTH_TRUSTED_ORIGINS=http://localhost:8788,http://localhost:4321 \
-  -b ADMIN_EMAIL=a.ortizcrr@gmail.com,alejandro.ortiz@aohys.com \
-  -b DASHBOARD_API_TOKEN=local-dashboard-token
+  -b ADMIN_EMAIL=a.ortizcrr@gmail.com,alejandro.ortiz@aohys.com
 ```
 
 Regenerate the text-based resume PDF after editing English resume graph content:
@@ -45,7 +45,7 @@ UI copy that belongs to the shell lives in locale JSON files under `src/i18n`. P
 Private behavior is implemented outside the Astro route graph:
 
 - `/dashboard/*` is handled by Cloudflare Pages functions and serves the `@aohys/dashboard` React app after session/admin checks.
-- `/dashboard/api/*` is the private JSON boundary used by the React app. It proxies to Convex with `DASHBOARD_API_TOKEN`; the token never reaches the browser.
+- Dashboard data is read and written directly by the React app through admin-gated Convex functions. The shell injects `CONVEX_URL`, `CONVEX_SITE_URL`, and the optional Cloudflare Images delivery hash as browser runtime config.
 - `/dashboard/sign-in/google` starts Google OAuth server-side, sets the Better Auth state cookie, and redirects to Google without client-side script.
 - `/dashboard/projects` combines Public Content Graph nodes with Convex project drafts, image metadata, site contact values, and resume artifacts.
 - `/api/auth/*` is proxied by Cloudflare Pages functions to Convex Better Auth routes.

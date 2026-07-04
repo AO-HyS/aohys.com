@@ -13,6 +13,9 @@ export type DashboardMediaStatus = "draft" | "published" | "archived";
 export interface DashboardRuntimeConfig {
   adminEmail: string;
   environment: "local" | "preview" | "production";
+  convexUrl: string;
+  betterAuthUrl: string;
+  imagesAccountHash?: string;
 }
 
 export interface DashboardProjectDraft {

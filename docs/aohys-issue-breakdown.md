@@ -159,7 +159,7 @@ Current implementation status: Cloudflare Pages functions protect `/dashboard`, 
 
 Build the first real dashboard workflow in the React dashboard app: list incoming leads, view details, update review/contact status, preserve privacy, represent loading/empty/error/saved states, and verify that changes reflect in Convex.
 
-Current implementation status: Cloudflare Pages serves the React app at `/dashboard/leads`, verifies the Better Auth session and admin allowlist before exposing `/dashboard/api/leads`, and updates lead review status through Convex HTTP actions protected by `DASHBOARD_API_TOKEN`. Local tests cover noindex sign-in, unauthorized access, token-protected Convex reads, and persisted status updates.
+Current implementation status: Cloudflare Pages serves the React app at `/dashboard/leads`, verifies the Better Auth session and admin allowlist before serving the shell, and the dashboard reads/updates lead review status through admin-gated Convex functions. Local tests cover noindex sign-in, unauthorized access, direct Convex dashboard hooks, and persisted status updates.
 
 ### 15. Dashboard Content and Media Workflow
 
@@ -169,7 +169,7 @@ Current implementation status: Cloudflare Pages serves the React app at `/dashbo
 
 Build dashboard workflows in the React dashboard app for project content, media metadata, contact settings, and resume content. Include Cloudflare media integration once the product choice is decided, and preserve Public Content Graph invariants when dashboard workflows publish public content.
 
-Current implementation status: `/dashboard/projects` is the primary React workspace; legacy `/dashboard/case-studies`, `/dashboard/media`, and `/dashboard/settings` route into it. Cloudflare Pages exposes `/dashboard/api/content` by merging private Convex metadata with the Public Content Graph for stable content IDs, localized paths, and sitemap eligibility. Private Convex endpoints store project drafts, resume drafts, case-study metadata, media metadata with alt text/usage intent, `PUBLIC_` site settings, and resume PDF/version records. Cloudflare Images direct upload URLs are created server-side, the dashboard publishes reviewed drafts through GitHub Actions `workflow_dispatch`, and the release build applies published drafts before Astro compiles.
+Current implementation status: `/dashboard/projects` is the primary React workspace; legacy `/dashboard/case-studies`, `/dashboard/media`, and `/dashboard/settings` route into it. The dashboard calls admin-gated Convex functions directly and merges Convex metadata with the Public Content Graph in the React app for stable content IDs, localized paths, and sitemap eligibility. Convex stores project drafts, resume drafts, case-study metadata, media metadata with alt text/usage intent, `PUBLIC_` site settings, and resume PDF/version records. Cloudflare Images direct upload URLs are created server-side, the dashboard publishes reviewed drafts through GitHub Actions `workflow_dispatch`, and the release build applies published drafts before Astro compiles.
 
 ### 16. Privacy, Security, and Launch Hardening
 

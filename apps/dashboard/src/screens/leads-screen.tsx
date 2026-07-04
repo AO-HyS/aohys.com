@@ -16,8 +16,7 @@ import {
   type ColumnDef,
   type SortingState,
 } from "@tanstack/react-table";
-import { loadDashboardLeads, saveLeadStatus } from "@/api";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useDashboardLeads, useSaveLeadStatus } from "@/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,26 +36,12 @@ import type { DashboardLead, DashboardLeadStatus } from "@/types";
 const statuses: DashboardLeadStatus[] = ["new", "reviewing", "closed"];
 
 export function LeadsScreen() {
-  const [leads, setLeads] = useState<DashboardLead[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const leads = useDashboardLeads();
+  const saveLeadStatus = useSaveLeadStatus();
   const [savingLeadId, setSavingLeadId] = useState<string | null>(null);
   const [sorting, setSorting] = useState<SortingState>([
     { id: "createdAt", desc: true },
   ]);
-
-  async function refresh() {
-    setError(null);
-    try {
-      const payload = await loadDashboardLeads();
-      setLeads(payload.leads);
-    } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Leads could not load.");
-    }
-  }
-
-  useEffect(() => {
-    void refresh();
-  }, []);
 
   async function updateStatus(leadId: string, status: DashboardLeadStatus) {
     setSavingLeadId(leadId);
@@ -66,7 +51,6 @@ export function LeadsScreen() {
 
     try {
       await saveLeadStatus(leadId, status);
-      await refresh();
       toast.success("Lead status saved", {
         id: toastId,
         description: "The inbox is up to date.",
@@ -92,12 +76,6 @@ export function LeadsScreen() {
           </p>
         </div>
       </section>
-      {error ? (
-        <Alert variant="destructive">
-          <AlertTitle>Lead data problem</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      ) : null}
       <Card>
         <CardHeader>
           <CardTitle>Incoming leads</CardTitle>
