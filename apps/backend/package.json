@@ -4,6 +4,16 @@
   "private": true,
   "description": "Convex backend surface for AOHYS leads, content, media, and dashboard workflows.",
   "type": "module",
+  "exports": {
+    "./convex/_generated/api": {
+      "types": "./convex/_generated/api.d.ts",
+      "default": "./convex/_generated/api.js"
+    },
+    "./convex/_generated/dataModel": {
+      "types": "./convex/_generated/dataModel.d.ts",
+      "default": "./convex/_generated/dataModel.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc --noEmit -p tsconfig.json",
     "codegen": "convex codegen --typecheck=disable",
