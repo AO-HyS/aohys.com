@@ -78,6 +78,65 @@ describe("buildDashboardContentPayload", () => {
     });
   });
 
+  it("uses a public image asset path stored as the storage key", () => {
+    const publicAssetPath = "images/proof/casa-roca-production.png?variant=dashboard#hero";
+    const payload = buildDashboardContentPayload({
+      ...emptyDashboardContent,
+      media: [
+        {
+          id: "public-asset-media-id",
+          storageProvider: "external",
+          storageKey: publicAssetPath,
+          altText: "Casa Roca public asset image.",
+          contentId: "case-study:casa-roca",
+          usage: "case-study",
+          status: "draft",
+          updatedAt: 457,
+        },
+      ],
+    } as unknown as DashboardConvexContentPayload);
+    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
+    const publicAssetMedia = casaRoca?.images.find((image) => image.id === "public-asset-media-id");
+
+    expect(publicAssetMedia).toMatchObject({
+      src: "/images/proof/casa-roca-production.png?variant=dashboard#hero",
+      href: "/images/proof/casa-roca-production.png?variant=dashboard#hero",
+      previewStatus: "ready",
+    });
+  });
+
+  it("rejects public asset storage paths with unsafe segments", () => {
+    const unsafeStorageKeys = [
+      "images/../outside.png",
+      "/images/./same-directory.png",
+      "images//empty-segment.png",
+      "images/%2e%2e/encoded-parent.png",
+      "images/folder%2fencoded-slash.png",
+    ];
+    const payload = buildDashboardContentPayload({
+      ...emptyDashboardContent,
+      media: unsafeStorageKeys.map((storageKey, index) => ({
+        id: `unsafe-media-id-${index}`,
+        storageProvider: "external",
+        storageKey,
+        altText: "Unsafe public asset path.",
+        contentId: "case-study:casa-roca",
+        usage: "case-study",
+        status: "draft",
+        updatedAt: 500 + index,
+      })),
+    } as unknown as DashboardConvexContentPayload);
+    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
+
+    for (const index of unsafeStorageKeys.keys()) {
+      expect(casaRoca?.images.find((image) => image.id === `unsafe-media-id-${index}`)).toMatchObject({
+        src: undefined,
+        href: undefined,
+        previewStatus: "missing-url",
+      });
+    }
+  });
+
   it("marks media without a resolvable public image URL as missing a preview", () => {
     const payload = buildDashboardContentPayload({
       ...emptyDashboardContent,

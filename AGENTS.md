@@ -2,6 +2,8 @@
 
 This repo uses an execution-only orchestration workflow. Visual planning and visual recap are separate artifacts; do not run them as part of normal execution unless the user asks for them.
 
+Merge gate: agents may push branches, open pull requests, and resolve or close review threads as part of normal execution. Do not merge any PR or branch into `develop`, `main`, or production release branches unless the user explicitly approves that merge after reviewing the result. General instructions like "avanza", "haz todo", or "continua" are not merge approval.
+
 For any non-trivial implementation, verification, PR-review, release-readiness, Browser QA, Computer Use, Convex, auth, env, or dashboard task:
 
 1. Start by generating a repo-local execution run:

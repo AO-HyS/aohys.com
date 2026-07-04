@@ -465,7 +465,31 @@ function isHttpUrl(value: string): boolean {
 }
 
 function isPublicAssetPath(value: string): boolean {
-  return /^(?:\/)?images\/.+\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(value);
+  const path = value.split(/[?#]/, 1)[0] ?? "";
+
+  if (!/^(?:\/)?images\/.+\.(?:avif|gif|jpe?g|png|svg|webp)$/i.test(path)) {
+    return false;
+  }
+
+  return publicAssetPathSegments(path).every(isSafePublicAssetPathSegment);
+}
+
+function publicAssetPathSegments(path: string): string[] {
+  return (path.startsWith("/") ? path.slice(1) : path).split("/");
+}
+
+function isSafePublicAssetPathSegment(segment: string): boolean {
+  if (!segment) {
+    return false;
+  }
+
+  try {
+    const decodedSegment = decodeURIComponent(segment);
+
+    return decodedSegment !== "." && decodedSegment !== ".." && !decodedSegment.includes("/") && !decodedSegment.includes("\\");
+  } catch {
+    return false;
+  }
 }
 
 function writeGeneratedPublicMedia(mediaItems: DashboardMediaMetadata[]): number {
