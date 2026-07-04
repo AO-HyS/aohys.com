@@ -435,4 +435,28 @@ describe("dashboard access guard", () => {
 
     expect(fetchDashboard).toHaveBeenCalledTimes(3);
   });
+
+  it("uses the active Pages host as the dashboard Better Auth client base URL", async () => {
+    const response = await handleDashboardRequest(
+      new Request("https://develop.aohys-com.pages.dev/dashboard/projects", {
+        headers: { cookie: "better-auth.session_token=valid" },
+      }),
+      {
+        ...validEnvironment,
+        BETTER_AUTH_TRUSTED_ORIGINS: [
+          validEnvironment.BETTER_AUTH_TRUSTED_ORIGINS,
+          "https://develop.aohys-com.pages.dev",
+        ].join(","),
+      },
+      vi.fn(async () => new Response(JSON.stringify({
+        user: { email: "alejandro.ortiz@aohys.com" },
+      }))),
+    );
+    const html = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(html).toContain('"convexUrl":"https://effervescent-minnow-483.convex.cloud"');
+    expect(html).toContain('"betterAuthUrl":"https://develop.aohys-com.pages.dev"');
+    expect(html).not.toContain('"betterAuthUrl":"https://preview.aohys.com"');
+  });
 });
