@@ -1,5 +1,6 @@
 import { v } from "convex/values";
-import { internalMutation, internalQuery, mutation } from "./_generated/server.js";
+import { internalMutation, mutation, query } from "./_generated/server.js";
+import { requireAdmin } from "./auth.js";
 import { prepareLeadIntake } from "../src/lead-intake.js";
 
 const leadIntentValidator = v.union(
@@ -79,7 +80,7 @@ export const createFromContact = internalMutation({
   },
 });
 
-export const listForDashboard = internalQuery({
+export const listForDashboard = query({
   args: {},
   returns: v.array(v.object({
     id: v.id("leads"),
@@ -99,6 +100,8 @@ export const listForDashboard = internalQuery({
     updatedAt: v.number(),
   })),
   handler: async (ctx) => {
+    await requireAdmin(ctx);
+
     const leads = await ctx.db
       .query("leads")
       .withIndex("by_status_and_created_at")
@@ -125,7 +128,7 @@ export const listForDashboard = internalQuery({
   },
 });
 
-export const updateStatusFromDashboard = internalMutation({
+export const updateStatus = mutation({
   args: {
     leadId: v.id("leads"),
     status: leadStatusValidator,
@@ -136,6 +139,8 @@ export const updateStatusFromDashboard = internalMutation({
     updatedAt: v.number(),
   }),
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+
     const existingLead = await ctx.db.get(args.leadId);
 
     if (!existingLead) {

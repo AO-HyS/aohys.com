@@ -55,7 +55,8 @@ const AUTH_RUNTIME_TARGETS = [
   "release",
   "auth-runtime",
 ] as const satisfies readonly EnvironmentValidationTarget[];
-const DASHBOARD_PRIVATE_TARGETS = [
+const CONVEX_CLIENT_TARGETS = [
+  "runtime",
   "release",
   "dashboard-runtime",
 ] as const satisfies readonly EnvironmentValidationTarget[];
@@ -91,9 +92,10 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     name: "CONVEX_URL",
     provider: "convex",
     classification: "provider-output",
-    exposure: "server-only",
+    exposure: "public-browser",
     requiredIn: ["preview", "production"],
-    description: "Convex deployment URL consumed by server and dashboard integration code.",
+    requiredTargets: CONVEX_CLIENT_TARGETS,
+    description: "Convex deployment URL consumed by server code and the dashboard SPA runtime.",
   },
   {
     name: "CONVEX_DEPLOYMENT",
@@ -182,7 +184,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     name: "BETTER_AUTH_URL",
     provider: "better-auth",
     classification: "provider-output",
-    exposure: "server-only",
+    exposure: "public-browser",
     requiredIn: ["local", "preview", "production"],
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Trusted Better Auth base URL for the current environment.",
@@ -204,15 +206,6 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredIn: ["local", "preview", "production"],
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Comma-separated admin allowlist email addresses.",
-  },
-  {
-    name: "DASHBOARD_API_TOKEN",
-    provider: "core",
-    classification: "server-secret",
-    exposure: "server-only",
-    requiredIn: ["local", "preview", "production"],
-    requiredTargets: DASHBOARD_PRIVATE_TARGETS,
-    description: "Server-to-server token used by Cloudflare Pages dashboard routes to call private Convex dashboard HTTP endpoints.",
   },
   {
     name: "GOOGLE_CLIENT_ID",

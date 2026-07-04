@@ -16,4 +16,4 @@ This package remains only for small private sign-in/state fallbacks while the mi
 
 - Keep private dashboard responses noindex and no-store.
 - Do not add new project, lead, media, settings, or resume workflows here.
-- Add new dashboard UI in `apps/dashboard` and expose data through `/dashboard/api/*`.
+- Add new dashboard UI in `apps/dashboard` and expose data through admin-gated Convex functions.

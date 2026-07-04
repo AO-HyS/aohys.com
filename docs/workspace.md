@@ -17,7 +17,7 @@ The root `package.json` pins pnpm through `packageManager`. The root `verify` co
 
 | Path | Role |
 | --- | --- |
-| `apps/site` | Astro public site for SEO pages, bilingual routes, metadata, sitemap, public shell, dashboard auth guard, and private API proxy. |
+| `apps/site` | Astro public site for SEO pages, bilingual routes, metadata, sitemap, public shell, and dashboard auth guard. |
 | `apps/dashboard` | Private React dashboard app served under `/dashboard` with TanStack Router, shadcn/ui, and Convex-backed workflows. |
 | `apps/backend` | Convex backend surface for leads, content, media, settings, resume, auth, and dashboard workflows. |
 | `packages/core` | Shared TypeScript primitives used across app and package boundaries. |
@@ -34,7 +34,7 @@ The foundation is intentionally shallow on implementation and strict on seams:
 - Public routes should use `packages/content-graph` for identity, localized paths, metadata, sitemap rules, and private route exclusions.
 - Reusable primitives should live in `packages/core` once they cross a single feature boundary or are likely to repeat across apps.
 - App and backend code should use `packages/environment` for provider variable classification and validation.
-- Dashboard workflows should live in `apps/dashboard`; `apps/site` should only protect routes, serve the app shell, and proxy private `/dashboard/api/*` calls to Convex.
+- Dashboard workflows should live in `apps/dashboard`; `apps/site` should only protect routes, serve the app shell, and inject the runtime config needed for direct Convex access.
 - Deployment and smoke checks should collect in `packages/release-train`, root scripts, and `.github/workflows/release-train.yml`.
 - Convex code lives under `apps/backend/convex`; generated bindings in `apps/backend/convex/_generated` are committed because backend functions typecheck against them.
 

@@ -63,9 +63,9 @@ Husky installs through the root `prepare` script and runs `.husky/pre-commit` be
 
 | Area | Location | Responsibility |
 | --- | --- | --- |
-| Public SEO site | `apps/site` | Astro routes, bilingual pages, metadata, sitemap, robots, public contact UI, dashboard route guard and private API proxy |
-| Private dashboard app | `apps/dashboard` served under `/dashboard` | React app with TanStack Router, shadcn/ui, project workflows, lead review, resume operations, and private API access through the site guard |
-| Backend | `apps/backend` | Convex schema, HTTP actions, contact leads, email notification adapters, PostHog server events, Better Auth routes, dashboard private endpoints |
+| Public SEO site | `apps/site` | Astro routes, bilingual pages, metadata, sitemap, robots, public contact UI, dashboard route guard, and shell runtime config |
+| Private dashboard app | `apps/dashboard` served under `/dashboard` | React app with TanStack Router, shadcn/ui, project workflows, lead review, resume operations, and direct admin-gated Convex access |
+| Backend | `apps/backend` | Convex schema, HTTP actions, contact leads, email notification adapters, PostHog server events, Better Auth routes, and admin-gated dashboard functions |
 | Environment Contract | `packages/environment` | Shared variable registry, local/preview/production validation, public-vs-secret boundaries |
 | Public Content Graph | `packages/content-graph` | Stable content IDs, localized routes, SEO metadata, sitemap eligibility, public-safe content relationships |
 | Release Train | `packages/release-train` and `.github/workflows/release-train.yml` | Branch-to-environment release plan, Cloudflare deploy commands, smoke checks, redirect manifest |
@@ -121,7 +121,7 @@ Copy `.env.example` to `.env.local` for local development. Real local secrets st
 | `preview` | `develop` branch verification | GitHub Environment `preview` | Non-production Cloudflare, Convex, PostHog, Resend, Better Auth, and Google OAuth values |
 | `production` | `main` branch and `aohys.com` | GitHub Environment `production` | Production Cloudflare, Convex, PostHog, Resend, Better Auth, and Google OAuth values |
 
-The repository distinguishes browser-safe public values from server-only secrets. Public values use explicit `PUBLIC_` names when they can enter the browser. Secret values such as `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, `DASHBOARD_API_TOKEN`, `GOOGLE_CLIENT_SECRET`, `CONVEX_DEPLOY_KEY`, and `CLOUDFLARE_API_TOKEN` must never be committed or exposed through the public site bundle.
+The repository distinguishes browser-safe public values from server-only secrets. Public values use explicit `PUBLIC_` names when they can enter the browser. Secret values such as `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_SECRET`, `CONVEX_DEPLOY_KEY`, and `CLOUDFLARE_API_TOKEN` must never be committed or exposed through the public site bundle.
 
 Release validation commands:
 
@@ -169,7 +169,7 @@ Dashboard rules:
 - dashboard routes are omitted from the public sitemap;
 - dashboard workflows run in the React app instead of server-rendered HTML route fragments;
 - dashboard copy is English-only for V1;
-- private dashboard data is loaded through server-side Convex HTTP endpoints protected by `DASHBOARD_API_TOKEN`;
+- private dashboard data is loaded directly through admin-gated Convex functions after the Pages shell verifies the session/admin allowlist;
 - public browser bundles never receive dashboard secrets.
 
 Current V1 dashboard workflows include sign-in, overview, leads, project content, image metadata, WhatsApp/contact setting, and resume versions. Projects are the core dashboard unit: text, achievements, structure notes, public URL, CTA, SEO description, status, evidence state, and images belong together. The dashboard is part of the working sample, but public evaluators should inspect architecture and boundary behavior rather than expecting access to private operational data.

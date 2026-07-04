@@ -11,20 +11,19 @@ import {
   UploadCloudIcon,
 } from "lucide-react";
 import {
-  archiveProjectMedia,
-  createMediaUpload,
-  loadDashboardContent,
-  publishContent,
-  saveMediaMetadata,
-  saveProjectDraft,
-  selectProjectMedia,
+  useArchiveProjectMedia,
+  useCreateMediaUpload,
+  useDashboardContent,
+  usePublishContent,
+  useSaveMediaMetadata,
+  useSaveProjectDraft,
+  useSelectProjectMedia,
   uploadMediaFile,
   type MediaMetadataRequest,
   type MediaSelectionRequest,
   type MediaUploadRequest,
   type ProjectDraftRequest,
 } from "@/api";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -58,7 +57,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type {
   DashboardCaseStudyStatus,
-  DashboardContentPayload,
   DashboardEvidenceStatus,
   DashboardLocale,
   DashboardProject,
@@ -85,29 +83,29 @@ const caseStudyStatuses: DashboardCaseStudyStatus[] = [
 const evidenceStatuses: DashboardEvidenceStatus[] = ["missing", "sanitized", "published"];
 
 export function ProjectsScreen() {
-  const [content, setContent] = useState<DashboardContentPayload | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const content = useDashboardContent();
+  const archiveProjectMedia = useArchiveProjectMedia();
+  const createMediaUpload = useCreateMediaUpload();
+  const publishContent = usePublishContent();
+  const saveMediaMetadata = useSaveMediaMetadata();
+  const saveProjectDraft = useSaveProjectDraft();
+  const selectProjectMedia = useSelectProjectMedia();
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [publishingKey, setPublishingKey] = useState<string | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | undefined>();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  async function refresh(): Promise<DashboardContentPayload | null> {
-    setLoadError(null);
-    try {
-      const nextContent = await loadDashboardContent();
-      setContent(nextContent);
-      setSelectedProjectId((current) => current ?? nextContent.projects[0]?.contentId);
-      return nextContent;
-    } catch (error) {
-      setLoadError(error instanceof Error ? error.message : "Dashboard content could not load.");
-      return null;
-    }
-  }
-
   useEffect(() => {
-    void refresh();
-  }, []);
+    if (!content?.projects.length) {
+      return;
+    }
+
+    setSelectedProjectId((current) =>
+      current && content.projects.some((project) => project.contentId === current)
+        ? current
+        : content.projects[0]?.contentId,
+    );
+  }, [content]);
 
   async function handleSaveProject(payload: ProjectFormState) {
     const key = `${payload.contentId}:${payload.locale}`;
@@ -118,7 +116,6 @@ export function ProjectsScreen() {
 
     try {
       await saveProjectDraft(payload);
-      await refresh();
       toast.success("Draft saved", {
         id: toastId,
         description: "Publish when this content is ready for the Astro build.",
@@ -161,7 +158,6 @@ export function ProjectsScreen() {
         locale: payload.locale,
         selectedForPublic: payload.selectedForPublic ?? true,
       });
-      await refresh();
       toast.success("Image uploaded", {
         id: toastId,
         description: "It is selected for the public Astro build. Publish when ready.",
@@ -185,7 +181,6 @@ export function ProjectsScreen() {
 
     try {
       await saveMediaMetadata(payload);
-      await refresh();
       toast.success("Media reference saved", {
         id: toastId,
         description: "It is selected for the public Astro build. Publish when ready.",
@@ -207,7 +202,6 @@ export function ProjectsScreen() {
 
     try {
       await selectProjectMedia(payload);
-      await refresh();
       toast.success("Public image selected", {
         id: toastId,
         description: "This image is the one the Astro build will use for the project.",
@@ -229,7 +223,6 @@ export function ProjectsScreen() {
 
     try {
       await archiveProjectMedia(payload);
-      await refresh();
       toast.success("Image hidden from publish", {
         id: toastId,
         description: "The media record is archived and will not be sent to Astro.",
@@ -264,10 +257,7 @@ export function ProjectsScreen() {
         saveProjectDraft(buildNewProjectDraft(input, "en")),
         saveProjectDraft(buildNewProjectDraft(input, "es")),
       ]);
-      const nextContent = await refresh();
-      setSelectedProjectId(nextContent?.projects.some((project) => project.contentId === contentId)
-        ? contentId
-        : nextContent?.projects[0]?.contentId);
+      setSelectedProjectId(contentId);
       toast.success("Project created", {
         id: toastId,
         description: "The draft exists in both languages. Save details, attach media, then publish.",
@@ -290,7 +280,6 @@ export function ProjectsScreen() {
 
     try {
       const result = await publishContent({ scope: "project", contentId: project.contentId });
-      await refresh();
       const description = result.workflow.status === "queued"
           ? `GitHub Actions is rebuilding ${result.workflow.ref ?? "develop"} for ${project.title}.`
           : `${project.title} was marked published, but ${result.workflow.reason ?? "the workflow token is not configured."}`;
@@ -309,7 +298,7 @@ export function ProjectsScreen() {
     }
   }
 
-  if (!content && !loadError) {
+  if (!content) {
     return <ProjectsSkeleton />;
   }
 
@@ -323,7 +312,6 @@ export function ProjectsScreen() {
           <Button
             type="button"
             variant={isCreateOpen ? "secondary" : "default"}
-            aria-expanded={isCreateOpen}
             onClick={() => setIsCreateOpen((current) => !current)}
           >
             <PlusIcon data-icon="inline-start" />
@@ -331,13 +319,6 @@ export function ProjectsScreen() {
           </Button>
         }
       />
-
-      {loadError ? (
-        <Alert variant="destructive">
-          <AlertTitle>Dashboard data problem</AlertTitle>
-          <AlertDescription>{loadError}</AlertDescription>
-        </Alert>
-      ) : null}
 
       {content ? (
         <>

@@ -6,7 +6,7 @@ Private dashboard workspace for `aohys.com/dashboard`.
 
 Route protection still lives in Cloudflare Pages Functions so `/dashboard` can stay on the same public domain while Astro keeps the SEO-only public pages static. Auth/session verification goes through Better Auth routes backed by Convex, and the Pages Function enforces the admin allowlist before it serves the React shell.
 
-The browser never receives `DASHBOARD_API_TOKEN`. React calls `/dashboard/api/*`; the Pages Function validates the session/admin and proxies the request to private Convex HTTP endpoints.
+The browser receives only the dashboard runtime config needed to connect to Convex: `convexUrl`, `betterAuthUrl`, environment, admin email, and the optional Cloudflare Images delivery hash. React reads and writes through admin-gated public Convex functions with Better Auth JWTs; the Pages Function no longer proxies dashboard JSON requests.
 
 Current app routes:
 

@@ -14,6 +14,8 @@ describe("dashboard app contract", () => {
     const projects = read("src/screens/projects-screen.tsx");
     const settings = read("src/screens/settings-screen.tsx");
     const api = read("src/api.ts");
+    const authClient = read("src/lib/auth-client.ts");
+    const projectProjection = read("src/lib/projects.ts");
     const viteConfig = read("vite.config.ts");
 
     expect(main).toContain('basepath: "/dashboard"');
@@ -21,6 +23,8 @@ describe("dashboard app contract", () => {
     expect(main).toContain('path: "/case-studies"');
     expect(main).toContain('path: "/settings"');
     expect(main).toContain("@tanstack/react-router");
+    expect(main).toContain("ConvexBetterAuthProvider");
+    expect(main).toContain("ConvexReactClient");
     expect(projects).toContain("Project workspace");
     expect(projects).toContain("Create project");
     expect(projects).toContain("This project slug already exists.");
@@ -30,9 +34,15 @@ describe("dashboard app contract", () => {
     expect(settings).toContain("PUBLIC_WHATSAPP_URL");
     expect(projects).toContain("saveProjectDraft");
     expect(projects).toContain("selectProjectMedia");
-    expect(api).toContain('/dashboard/api${path}');
-    expect(api).toContain('"/content/project"');
-    expect(api).toContain('"/content/media/select"');
+    expect(api).toContain("useQuery(convexApi.content.listForDashboard");
+    expect(api).toContain("useMutation(convexApi.content.upsertProjectDraft");
+    expect(api).toContain("useMutation(convexApi.content.selectMediaForPublic");
+    expect(api).toContain("useAction(convexApi.contentActions.publishContent");
+    expect(api).not.toContain("/dashboard/api");
+    expect(authClient).toContain("convexClient()");
+    expect(authClient).toContain("crossDomainClient()");
+    expect(projectProjection).toContain("buildDashboardContentPayload");
+    expect(projectProjection).toContain("@aohys/content-graph");
     expect(viteConfig).toContain('base: "/dashboard-app/"');
     expect(viteConfig).toContain('entryFileNames: "assets/dashboard.js"');
     expect(viteConfig).toContain("assetFileNames:");

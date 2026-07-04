@@ -54,6 +54,15 @@ importers:
 
   apps/dashboard:
     dependencies:
+      '@aohys/backend':
+        specifier: workspace:*
+        version: link:../backend
+      '@aohys/content-graph':
+        specifier: workspace:*
+        version: link:../../packages/content-graph
+      '@convex-dev/better-auth':
+        specifier: ^0.12.5
+        version: 0.12.5(@standard-schema/spec@1.1.0)(better-auth@1.6.22(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.9(@types/node@26.0.1)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))))(convex@1.42.0(react@19.2.7))(hono@4.12.27)(react@19.2.7)(typescript@6.0.3)
       '@fontsource-variable/geist':
         specifier: ^5.2.9
         version: 5.2.9
@@ -63,12 +72,18 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      better-auth:
+        specifier: ^1.6.22
+        version: 1.6.22(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.9(@types/node@26.0.1)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)))
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      convex:
+        specifier: ^1.42.0
+        version: 1.42.0(react@19.2.7)
       lucide-react:
         specifier: ^1.22.0
         version: 1.22.0(react@19.2.7)

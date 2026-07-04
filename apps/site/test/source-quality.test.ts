@@ -99,7 +99,9 @@ describe("public site source quality", () => {
     expect(authFunction).toContain('await import("../../../apps/site/src/auth-proxy.js")');
     expect(cspFunction).toContain('await import("../../apps/site/src/csp-reporting.js")');
     expect(dashboardAccess).toContain("/dashboard-app/assets/dashboard.js");
-    expect(dashboardAccess).toContain("/dashboard/api/content/project");
+    expect(dashboardAccess).toContain("window.__AOHYS_DASHBOARD__");
+    expect(dashboardAccess).toContain("convexUrl");
+    expect(dashboardAccess).not.toContain("DASHBOARD_API_TOKEN");
     expect(dashboardApp).toContain("@tanstack/react-router");
     expect(dashboardApp).toContain("RouterProvider");
     expect(dashboardPackage).toContain("vite build");

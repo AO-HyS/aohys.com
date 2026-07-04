@@ -105,7 +105,7 @@ The visual implementation will follow the Impeccable process and the approved de
 - Keep the private dashboard in English only.
 - Use `apps/dashboard` as the owner of dashboard routing, screens, workflow state, forms, and shadcn/ui components.
 - Treat shadcn/ui as editable source components inside the dashboard app.
-- Keep `apps/site` limited to dashboard auth, admin authorization, private response headers, shell serving, and `/dashboard/api/*` proxying to Convex.
+- Keep `apps/site` limited to dashboard auth, admin authorization, private response headers, shell serving, and runtime config injection for direct Convex access.
 - Validate dashboard workflows at 390px and treat mobile usability as part of the dashboard acceptance surface.
 - Record the dashboard decision in `docs/adr/0004-dashboard-ui-kit.md` and the operational shape in `docs/dashboard-ui-kit.md`.
 - Host all public and private surfaces under one domain, with the dashboard under `/dashboard`.
@@ -176,7 +176,7 @@ The visual implementation will follow the Impeccable process and the approved de
 - Release Train tests should validate observable release behavior: local verification, Cloudflare-compatible build output, preview smoke checks, production smoke checks, and branch/source assumptions.
 - Environment Contract tests should validate observable configuration behavior: missing required values fail, safe local placeholders pass local validation, and production validation rejects preview/local provider targets.
 - Public Content Graph tests should validate observable route and metadata behavior: stable IDs resolve to English/Spanish paths, canonical URLs and language alternates are correct, sitemap eligibility is explicit, and private dashboard routes remain excluded.
-- Dashboard app tests should validate authenticated workflow behavior: shell access, routed navigation, state surfaces, mobile layout, no duplicate controls, private API proxying, and preservation of Public Content Graph and Environment Contract invariants.
+- Dashboard app tests should validate authenticated workflow behavior: shell access, routed navigation, state surfaces, mobile layout, no duplicate controls, direct Convex data access, and preservation of Public Content Graph and Environment Contract invariants.
 - The visual QA seam is Impeccable-backed browser review: use the approved design context, check typography, color, spatial rhythm, responsive behavior, motion, UX copy, and slop-pattern avoidance.
 - Public page tests should cover the home page, case study index, one case study detail page, architecture page, resume page, contact page, and privacy page in both language trees where applicable.
 - SEO tests should verify canonical URLs, localized alternates, page titles, meta descriptions, robots behavior, sitemap inclusion/exclusion, and dashboard noindex.

@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import {
   Link,
   Outlet,
@@ -8,6 +9,7 @@ import {
   createRoute,
   createRouter,
 } from "@tanstack/react-router";
+import { ConvexReactClient } from "convex/react";
 import {
   BriefcaseBusinessIcon,
   FileTextIcon,
@@ -18,6 +20,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { authClient } from "@/lib/auth-client";
+import { dashboardRuntimeConfig } from "@/runtime-config";
 import { DashboardHome } from "@/screens/dashboard-home";
 import { LeadsScreen } from "@/screens/leads-screen";
 import { ProjectsScreen } from "@/screens/projects-screen";
@@ -25,10 +29,10 @@ import { ResumeScreen } from "@/screens/resume-screen";
 import { SettingsScreen } from "@/screens/settings-screen";
 import "./styles.css";
 
-const runtimeConfig = window.__AOHYS_DASHBOARD__ ?? {
-  adminEmail: "local@aohys.com",
-  environment: "local" as const,
-};
+const runtimeConfig = dashboardRuntimeConfig;
+const convex = new ConvexReactClient(runtimeConfig.convexUrl, {
+  expectAuth: true,
+});
 
 function AppLayout() {
   return (
@@ -193,6 +197,8 @@ declare module "@tanstack/react-router" {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <ConvexBetterAuthProvider client={convex} authClient={authClient}>
+      <RouterProvider router={router} />
+    </ConvexBetterAuthProvider>
   </StrictMode>,
 );

@@ -2,7 +2,7 @@
 
 Status: accepted, amended
 
-AOHYS uses a private React dashboard app in `apps/dashboard`. The public Astro site in `apps/site` does not implement dashboard workflows directly; it owns authentication, admin authorization, private response headers, and `/dashboard/api/*` proxying to Convex.
+AOHYS uses a private React dashboard app in `apps/dashboard`. The public Astro site in `apps/site` does not implement dashboard workflows directly; it owns authentication, admin authorization, private response headers, and shell delivery.
 
 The earlier Dashboard UI Kit direction was useful for the first guard/shell slice, but it produced the wrong product shape: HTML fragments attached to the public site instead of a real operations application. The active architecture is now a routed React app backed by Convex.
 
@@ -16,8 +16,8 @@ The earlier Dashboard UI Kit direction was useful for the first guard/shell slic
 
 - `apps/dashboard` owns dashboard screens, routing, state, forms, and shadcn/ui components.
 - `apps/site` serves the dashboard shell only after Better Auth session and admin allowlist checks pass.
-- Browser code calls `/dashboard/api/*`; Pages Functions validate the session and forward server-to-server requests to Convex with `DASHBOARD_API_TOKEN`.
-- Convex stores operational records and project drafts. The public Astro site keeps rendering from the Public Content Graph until a deliberate publish pipeline exists.
+- Browser code calls admin-gated public Convex functions directly through Better Auth JWTs; Pages Functions remain a route guard and shell renderer.
+- Convex stores operational records and project drafts. The public Astro site keeps rendering from the Public Content Graph and applies reviewed dashboard drafts during the publish pipeline.
 
 ## Consequences
 

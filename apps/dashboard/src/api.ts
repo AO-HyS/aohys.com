@@ -1,3 +1,9 @@
+import { useCallback, useMemo } from "react";
+import { api as convexApi } from "@aohys/backend/convex/_generated/api";
+import type { Id } from "@aohys/backend/convex/_generated/dataModel";
+import { useAction, useMutation, useQuery } from "convex/react";
+import { buildDashboardContentPayload } from "@/lib/projects";
+import { dashboardRuntimeConfig } from "@/runtime-config";
 import type {
   DashboardCaseStudyStatus,
   DashboardContentPayload,
@@ -51,7 +57,6 @@ export interface MediaSelectionRequest {
 }
 
 export interface MediaUploadResponse {
-  ok: true;
   imageId: string;
   publicUrl: string;
   uploadURL: string;
@@ -82,7 +87,6 @@ export interface PublishContentRequest {
 }
 
 export interface PublishContentResponse {
-  ok: true;
   publishedAt: number;
   projectDraftsPublished: number;
   resumeDraftsPublished: number;
@@ -96,76 +100,75 @@ export interface PublishContentResponse {
   };
 }
 
-async function dashboardRequest<T>(
-  path: string,
-  init: RequestInit = {},
-): Promise<T> {
-  const response = await fetch(`/dashboard/api${path}`, {
-    ...init,
-    headers: {
-      accept: "application/json",
-      ...(init.body ? { "content-type": "application/json" } : {}),
-      ...init.headers,
-    },
-  });
+export function useDashboardContent(): DashboardContentPayload | undefined {
+  const content = useQuery(convexApi.content.listForDashboard, {});
+  const imagesAccountHash = dashboardRuntimeConfig.imagesAccountHash;
 
-  if (!response.ok) {
-    let message = "Dashboard request failed.";
-
-    try {
-      const payload = await response.json() as { error?: string };
-      message = payload.error ?? message;
-    } catch {
-      message = response.statusText || message;
-    }
-
-    throw new Error(message);
-  }
-
-  return await response.json() as T;
+  return useMemo(
+    () => content ? buildDashboardContentPayload(content, imagesAccountHash) : undefined,
+    [content, imagesAccountHash],
+  );
 }
 
-export function loadDashboardContent(): Promise<DashboardContentPayload> {
-  return dashboardRequest<DashboardContentPayload>("/content");
+export function useSaveProjectDraft() {
+  const saveProjectDraft = useMutation(convexApi.content.upsertProjectDraft);
+
+  return useCallback(
+    (payload: ProjectDraftRequest) => saveProjectDraft(payload),
+    [saveProjectDraft],
+  );
 }
 
-export function saveProjectDraft(payload: ProjectDraftRequest): Promise<{ ok: true }> {
-  return dashboardRequest<{ ok: true }>("/content/project", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-}
+export function useSaveMediaMetadata() {
+  const saveMediaMetadata = useMutation(convexApi.content.createMediaMetadata);
 
-export function saveMediaMetadata(payload: MediaMetadataRequest): Promise<{ ok: true }> {
-  return dashboardRequest<{ ok: true }>("/content/media", {
-    method: "POST",
-    body: JSON.stringify({
-      ...payload,
+  return useCallback(
+    (payload: MediaMetadataRequest) => saveMediaMetadata({
       storageProvider: payload.storageProvider ?? "external",
       status: "draft",
+      storageKey: payload.storageKey,
+      publicUrl: payload.publicUrl,
+      altText: payload.altText,
+      contentId: payload.contentId,
+      usage: payload.usage,
+      locale: payload.locale,
+      selectedForPublic: payload.selectedForPublic,
     }),
-  });
+    [saveMediaMetadata],
+  );
 }
 
-export function selectProjectMedia(payload: MediaSelectionRequest): Promise<{ ok: true }> {
-  return dashboardRequest<{ ok: true }>("/content/media/select", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+export function useSelectProjectMedia() {
+  const selectProjectMedia = useMutation(convexApi.content.selectMediaForPublic);
+
+  return useCallback(
+    (payload: MediaSelectionRequest) => selectProjectMedia({
+      mediaId: payload.mediaId as Id<"mediaMetadata">,
+      contentId: payload.contentId,
+    }),
+    [selectProjectMedia],
+  );
 }
 
-export function archiveProjectMedia(payload: MediaSelectionRequest): Promise<{ ok: true }> {
-  return dashboardRequest<{ ok: true }>("/content/media/archive", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+export function useArchiveProjectMedia() {
+  const archiveProjectMedia = useMutation(convexApi.content.archiveMedia);
+
+  return useCallback(
+    (payload: MediaSelectionRequest) => archiveProjectMedia({
+      mediaId: payload.mediaId as Id<"mediaMetadata">,
+      contentId: payload.contentId,
+    }),
+    [archiveProjectMedia],
+  );
 }
 
-export async function createMediaUpload(payload: MediaUploadRequest): Promise<MediaUploadResponse> {
-  return dashboardRequest<MediaUploadResponse>("/content/media/upload-url", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+export function useCreateMediaUpload() {
+  const createMediaUpload = useAction(convexApi.contentActions.createMediaUploadUrl);
+
+  return useCallback(
+    (payload: MediaUploadRequest): Promise<MediaUploadResponse> => createMediaUpload(payload),
+    [createMediaUpload],
+  );
 }
 
 export async function uploadMediaFile(uploadURL: string, file: File): Promise<void> {
@@ -182,48 +185,59 @@ export async function uploadMediaFile(uploadURL: string, file: File): Promise<vo
   }
 }
 
-export function saveSiteSetting(payload: SiteSettingRequest): Promise<{ ok: true }> {
-  return dashboardRequest<{ ok: true }>("/content/setting", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+export function useSaveSiteSetting() {
+  const saveSiteSetting = useMutation(convexApi.content.upsertSiteSetting);
+
+  return useCallback(
+    (payload: SiteSettingRequest) => saveSiteSetting({
+      ...payload,
+      environment: dashboardRuntimeConfig.environment,
+    }),
+    [saveSiteSetting],
+  );
 }
 
-export function saveResumeVersion(payload: ResumeVersionRequest): Promise<{ ok: true }> {
-  return dashboardRequest<{ ok: true }>("/content/resume", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+export function useSaveResumeVersion() {
+  const saveResumeVersion = useMutation(convexApi.content.createResumeVersion);
+
+  return useCallback(
+    (payload: ResumeVersionRequest) => saveResumeVersion(payload),
+    [saveResumeVersion],
+  );
 }
 
-export function saveResumeDraft(payload: ResumeDraftRequest): Promise<{ ok: true }> {
-  return dashboardRequest<{ ok: true }>("/content/resume-draft", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+export function useSaveResumeDraft() {
+  const saveResumeDraft = useMutation(convexApi.content.upsertResumeDraft);
+
+  return useCallback(
+    (payload: ResumeDraftRequest) => saveResumeDraft(payload),
+    [saveResumeDraft],
+  );
 }
 
-export function publishContent(payload: PublishContentRequest): Promise<PublishContentResponse> {
-  return dashboardRequest<PublishContentResponse>("/content/publish", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+export function usePublishContent() {
+  const publishContent = useAction(convexApi.contentActions.publishContent);
+
+  return useCallback(
+    (payload: PublishContentRequest): Promise<PublishContentResponse> => publishContent(payload),
+    [publishContent],
+  );
 }
 
 export function serializeResumeDraft(content: DashboardResumeContent): string {
   return JSON.stringify(content);
 }
 
-export function loadDashboardLeads(): Promise<{ leads: DashboardLead[] }> {
-  return dashboardRequest<{ leads: DashboardLead[] }>("/leads");
+export function useDashboardLeads(): DashboardLead[] | undefined {
+  return useQuery(convexApi.leads.listForDashboard, {});
 }
 
-export function saveLeadStatus(
-  leadId: string,
-  status: DashboardLeadStatus,
-): Promise<{ ok: true }> {
-  return dashboardRequest<{ ok: true }>("/leads/status", {
-    method: "POST",
-    body: JSON.stringify({ leadId, status }),
-  });
+export function useSaveLeadStatus() {
+  const saveLeadStatus = useMutation(convexApi.leads.updateStatus);
+
+  return useCallback(
+    (leadId: string, status: DashboardLeadStatus) =>
+      saveLeadStatus({ leadId: leadId as Id<"leads">, status }),
+    [saveLeadStatus],
+  );
 }

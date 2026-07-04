@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { LoaderCircleIcon, SaveIcon } from "lucide-react";
-import { loadDashboardContent, saveSiteSetting } from "@/api";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useDashboardContent, useSaveSiteSetting } from "@/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,25 +14,12 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/sonner";
-import type { DashboardContentPayload, DashboardSiteSetting } from "@/types";
+import type { DashboardSiteSetting } from "@/types";
 
 export function SettingsScreen() {
-  const [content, setContent] = useState<DashboardContentPayload | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const content = useDashboardContent();
+  const saveSiteSetting = useSaveSiteSetting();
   const [isSaving, setIsSaving] = useState(false);
-
-  async function refresh() {
-    setLoadError(null);
-    try {
-      setContent(await loadDashboardContent());
-    } catch (error) {
-      setLoadError(error instanceof Error ? error.message : "Dashboard settings could not load.");
-    }
-  }
-
-  useEffect(() => {
-    void refresh();
-  }, []);
 
   async function handleSaveContact(value: string) {
     const toastId = toast.loading("Saving site setting");
@@ -45,7 +31,6 @@ export function SettingsScreen() {
         value,
         classification: "public-build-value",
       });
-      await refresh();
       toast.success("Site setting saved", {
         id: toastId,
         description: "The public WhatsApp URL will be applied by the next content build.",
@@ -60,7 +45,7 @@ export function SettingsScreen() {
     }
   }
 
-  if (!content && !loadError) {
+  if (!content) {
     return (
       <div className="flex flex-col gap-4">
         <Skeleton className="h-10 w-72" />
@@ -78,13 +63,6 @@ export function SettingsScreen() {
           <p>Manage public build values that belong outside an individual project record.</p>
         </div>
       </section>
-
-      {loadError ? (
-        <Alert variant="destructive">
-          <AlertTitle>Dashboard settings problem</AlertTitle>
-          <AlertDescription>{loadError}</AlertDescription>
-        </Alert>
-      ) : null}
 
       {content ? (
         <ContactSettingsCard

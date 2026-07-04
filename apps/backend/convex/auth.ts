@@ -45,6 +45,29 @@ export const getCurrentUser = query({
   handler: async (ctx) => authComponent.safeGetAuthUser(ctx),
 });
 
+export function parseAdminEmails(value: string | undefined): string[] {
+  return (value ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+export async function requireAdmin(ctx: GenericCtx<DataModel>) {
+  const user = await authComponent.safeGetAuthUser(ctx);
+
+  if (!user) {
+    throw new Error("Authentication is required for dashboard access.");
+  }
+
+  const adminEmails = parseAdminEmails(process.env.ADMIN_EMAIL);
+
+  if (adminEmails.length === 0 || !adminEmails.includes(user.email.toLowerCase())) {
+    throw new Error("This account is not allowed to use the dashboard.");
+  }
+
+  return user;
+}
+
 export function createBetterAuthBaseUrl(
   authBaseUrl: string,
   siteUrl: string,

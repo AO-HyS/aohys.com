@@ -1,7 +1,6 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server.js";
 import { internal } from "./_generated/api.js";
-import type { Id } from "./_generated/dataModel.js";
 import { authComponent, createAuth } from "./auth.js";
 import {
   captureLeadAnalyticsWithPostHog,
@@ -16,25 +15,6 @@ import {
   type ContactLeadInput,
   type PreparedContactLead,
 } from "../src/contact-workflow.js";
-import {
-  assertDashboardApiToken,
-  parseDashboardLeadStatusPayload,
-} from "../src/dashboard-leads.js";
-import {
-  parseDashboardCaseStudyMetadataPayload,
-  parseDashboardMediaUploadPayload,
-  parseDashboardMediaMetadataPayload,
-  parseDashboardMediaSelectionPayload,
-  parseDashboardPublishPayload,
-  parseDashboardResumeDraftPayload,
-  parseDashboardProjectDraftPayload,
-  parseDashboardResumeVersionPayload,
-  parseDashboardSiteSettingPayload,
-} from "../src/dashboard-content.js";
-import {
-  createCloudflareImagesDirectUpload,
-  triggerGitHubPublishWorkflow,
-} from "../src/dashboard-providers.js";
 
 const http = httpRouter();
 
@@ -53,11 +33,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
-const privateJsonHeaders = {
-  "Content-Type": "application/json",
-  "Cache-Control": "no-store",
-};
-
 function jsonResponse(
   body: Record<string, unknown>,
   init: ResponseInit = {},
@@ -67,19 +42,6 @@ function jsonResponse(
     headers: {
       ...corsHeaders,
       "Content-Type": "application/json",
-      ...init.headers,
-    },
-  });
-}
-
-function privateJsonResponse(
-  body: Record<string, unknown> | Record<string, unknown>[],
-  init: ResponseInit = {},
-): Response {
-  return new Response(JSON.stringify(body), {
-    ...init,
-    headers: {
-      ...privateJsonHeaders,
       ...init.headers,
     },
   });
@@ -106,7 +68,6 @@ function getContactEnvironmentValues(): Record<string, string | undefined> {
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    DASHBOARD_API_TOKEN: process.env.DASHBOARD_API_TOKEN,
     CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID,
     CLOUDFLARE_PROJECT_NAME: process.env.CLOUDFLARE_PROJECT_NAME,
     CLOUDFLARE_IMAGES_ACCOUNT_HASH: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
@@ -172,297 +133,6 @@ http.route({
   path: "/contact",
   method: "OPTIONS",
   handler: httpAction(async () => new Response(null, { headers: corsHeaders })),
-});
-
-http.route({
-  path: "/dashboard/leads",
-  method: "GET",
-  handler: httpAction(async (ctx, request) => {
-    try {
-      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
-      const leads = await ctx.runQuery(internal.leads.listForDashboard);
-
-      return privateJsonResponse({ leads });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Dashboard leads are unavailable.";
-      const status = message.includes("token") ? 401 : 503;
-
-      return privateJsonResponse({ ok: false, error: message }, { status });
-    }
-  }),
-});
-
-http.route({
-  path: "/dashboard/leads/status",
-  method: "POST",
-  handler: httpAction(async (ctx, request) => {
-    try {
-      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
-      const payload = await parseDashboardLeadStatusPayload(request);
-      const result = await ctx.runMutation(internal.leads.updateStatusFromDashboard, {
-        leadId: payload.leadId as Id<"leads">,
-        status: payload.status,
-      });
-
-      return privateJsonResponse({ ok: true, ...result });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Lead status could not be updated.";
-      const status = message.includes("token") ? 401 : 400;
-
-      return privateJsonResponse({ ok: false, error: message }, { status });
-    }
-  }),
-});
-
-http.route({
-  path: "/dashboard/content",
-  method: "GET",
-  handler: httpAction(async (ctx, request) => {
-    try {
-      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
-      const content = await ctx.runQuery(internal.content.listForDashboard);
-
-      return privateJsonResponse(content);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Dashboard content is unavailable.";
-      const status = message.includes("token") ? 401 : 503;
-
-      return privateJsonResponse({ ok: false, error: message }, { status });
-    }
-  }),
-});
-
-http.route({
-  path: "/dashboard/content/case-study",
-  method: "POST",
-  handler: httpAction(async (ctx, request) => {
-    try {
-      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
-      const payload = await parseDashboardCaseStudyMetadataPayload(request);
-      const result = await ctx.runMutation(
-        internal.content.upsertCaseStudyMetadataFromDashboard,
-        payload,
-      );
-
-      return privateJsonResponse({ ok: true, ...result });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Case-study metadata could not be saved.";
-      const status = message.includes("token") ? 401 : 400;
-
-      return privateJsonResponse({ ok: false, error: message }, { status });
-    }
-  }),
-});
-
-http.route({
-  path: "/dashboard/content/project",
-  method: "POST",
-  handler: httpAction(async (ctx, request) => {
-    try {
-      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
-      const payload = await parseDashboardProjectDraftPayload(request);
-      const result = await ctx.runMutation(
-        internal.content.upsertProjectDraftFromDashboard,
-        payload,
-      );
-
-      return privateJsonResponse({ ok: true, ...result });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Project draft could not be saved.";
-      const status = message.includes("token") ? 401 : 400;
-
-      return privateJsonResponse({ ok: false, error: message }, { status });
-    }
-  }),
-});
-
-http.route({
-  path: "/dashboard/content/media",
-  method: "POST",
-  handler: httpAction(async (ctx, request) => {
-    try {
-      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
-      const payload = await parseDashboardMediaMetadataPayload(request);
-      const result = await ctx.runMutation(
-        internal.content.createMediaMetadataFromDashboard,
-        payload,
-      );
-
-      return privateJsonResponse({ ok: true, ...result });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Media metadata could not be saved.";
-      const status = message.includes("token") ? 401 : 400;
-
-      return privateJsonResponse({ ok: false, error: message }, { status });
-    }
-  }),
-});
-
-http.route({
-  path: "/dashboard/content/media/upload-url",
-  method: "POST",
-  handler: httpAction(async (ctx, request) => {
-    try {
-      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
-      const payload = await parseDashboardMediaUploadPayload(request);
-      const upload = await createCloudflareImagesDirectUpload(payload, {
-        accountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
-        accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
-        apiToken: process.env.CLOUDFLARE_IMAGES_API_TOKEN,
-      });
-
-      return privateJsonResponse({ ok: true, ...upload });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Cloudflare Images upload could not start.";
-      const status = message.includes("token") ? 401 : 400;
-
-      return privateJsonResponse({ ok: false, error: message }, { status });
-    }
-  }),
-});
-
-http.route({
-  path: "/dashboard/content/media/select",
-  method: "POST",
-  handler: httpAction(async (ctx, request) => {
-    try {
-      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
-      const payload = await parseDashboardMediaSelectionPayload(request);
-      const result = await ctx.runMutation(
-        internal.content.selectMediaForPublicFromDashboard,
-        {
-          mediaId: payload.mediaId as Id<"mediaMetadata">,
-          contentId: payload.contentId,
-        },
-      );
-
-      return privateJsonResponse({ ok: true, ...result });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Media selection could not be saved.";
-      const status = message.includes("token") ? 401 : 400;
-
-      return privateJsonResponse({ ok: false, error: message }, { status });
-    }
-  }),
-});
-
-http.route({
-  path: "/dashboard/content/media/archive",
-  method: "POST",
-  handler: httpAction(async (ctx, request) => {
-    try {
-      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
-      const payload = await parseDashboardMediaSelectionPayload(request);
-      const result = await ctx.runMutation(
-        internal.content.archiveMediaFromDashboard,
-        {
-          mediaId: payload.mediaId as Id<"mediaMetadata">,
-          contentId: payload.contentId,
-        },
-      );
-
-      return privateJsonResponse({ ok: true, ...result });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Media could not be hidden.";
-      const status = message.includes("token") ? 401 : 400;
-
-      return privateJsonResponse({ ok: false, error: message }, { status });
-    }
-  }),
-});
-
-http.route({
-  path: "/dashboard/content/setting",
-  method: "POST",
-  handler: httpAction(async (ctx, request) => {
-    try {
-      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
-      const payload = await parseDashboardSiteSettingPayload(request);
-      const result = await ctx.runMutation(
-        internal.content.upsertSiteSettingFromDashboard,
-        payload,
-      );
-
-      return privateJsonResponse({ ok: true, ...result });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Site setting could not be saved.";
-      const status = message.includes("token") ? 401 : 400;
-
-      return privateJsonResponse({ ok: false, error: message }, { status });
-    }
-  }),
-});
-
-http.route({
-  path: "/dashboard/content/resume-draft",
-  method: "POST",
-  handler: httpAction(async (ctx, request) => {
-    try {
-      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
-      const payload = await parseDashboardResumeDraftPayload(request);
-      const result = await ctx.runMutation(
-        internal.content.upsertResumeDraftFromDashboard,
-        payload,
-      );
-
-      return privateJsonResponse({ ok: true, ...result });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Resume draft could not be saved.";
-      const status = message.includes("token") ? 401 : 400;
-
-      return privateJsonResponse({ ok: false, error: message }, { status });
-    }
-  }),
-});
-
-http.route({
-  path: "/dashboard/content/resume",
-  method: "POST",
-  handler: httpAction(async (ctx, request) => {
-    try {
-      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
-      const payload = await parseDashboardResumeVersionPayload(request);
-      const result = await ctx.runMutation(
-        internal.content.createResumeVersionFromDashboard,
-        payload,
-      );
-
-      return privateJsonResponse({ ok: true, ...result });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Resume version could not be saved.";
-      const status = message.includes("token") ? 401 : 400;
-
-      return privateJsonResponse({ ok: false, error: message }, { status });
-    }
-  }),
-});
-
-http.route({
-  path: "/dashboard/content/publish",
-  method: "POST",
-  handler: httpAction(async (ctx, request) => {
-    try {
-      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
-      const payload = await parseDashboardPublishPayload(request);
-      const result = await ctx.runMutation(
-        internal.content.publishContentFromDashboard,
-        payload,
-      );
-      const workflow = await triggerGitHubPublishWorkflow({
-        environment: getContactEnvironment(),
-        repository: process.env.PUBLISH_GITHUB_REPOSITORY,
-        token: process.env.PUBLISH_GITHUB_TOKEN,
-        workflowId: process.env.PUBLISH_GITHUB_WORKFLOW_ID,
-      });
-
-      return privateJsonResponse({ ok: true, ...result, workflow });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Published content could not be queued.";
-      const status = message.includes("token") ? 401 : 400;
-
-      return privateJsonResponse({ ok: false, error: message }, { status });
-    }
-  }),
 });
 
 http.route({

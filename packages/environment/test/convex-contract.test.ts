@@ -22,7 +22,6 @@ const validPreviewValues = {
   BETTER_AUTH_URL: "https://preview.aohys.com",
   BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
   ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
-  DASHBOARD_API_TOKEN: "dashboard-api-token",
   GOOGLE_CLIENT_ID: "google-client-id.apps.googleusercontent.com",
   GOOGLE_CLIENT_SECRET: "google-client-secret",
   CLOUDFLARE_ACCOUNT_ID: "cloudflare-account",
@@ -44,7 +43,7 @@ describe("Convex Environment Contract", () => {
 
     expect(byName.get("CONVEX_URL")).toMatchObject({
       classification: "provider-output",
-      exposure: "server-only",
+      exposure: "public-browser",
     });
     expect(byName.get("CONVEX_DEPLOYMENT")).toMatchObject({
       classification: "provider-output",
@@ -74,7 +73,7 @@ describe("Convex Environment Contract", () => {
     });
 
     expect(missingPreview.ok).toBe(false);
-    expect(missingPreview.errors).toContain("CONVEX_URL is required for preview.");
+    expect(missingPreview.errors).toContain("CONVEX_URL is required for preview release.");
 
     const validPreview = validateEnvironmentContract("preview", validPreviewValues);
 
@@ -159,6 +158,13 @@ describe("Convex Environment Contract", () => {
       "GOOGLE_CLIENT_ID",
       "GOOGLE_CLIENT_SECRET",
     ]);
+    expect(definitions).toContainEqual(
+      expect.objectContaining({
+        name: "BETTER_AUTH_URL",
+        classification: "provider-output",
+        exposure: "public-browser",
+      }),
+    );
 
     const missingTrustedOrigins = validateEnvironmentContract("preview", {
       ...validPreviewValues,
@@ -200,14 +206,11 @@ describe("Convex Environment Contract", () => {
 
     expect(multipleAdminEmails).toEqual({ ok: true, errors: [] });
 
-    expect(getEnvironmentVariableDefinitions()).toContainEqual(
-      expect.objectContaining({
-        name: "DASHBOARD_API_TOKEN",
-        classification: "server-secret",
-        exposure: "server-only",
-        requiredTargets: ["release", "dashboard-runtime"],
-      }),
-    );
+    expect(
+      getEnvironmentVariableDefinitions().some(
+        (definition) => definition.name === "DASHBOARD_API_TOKEN",
+      ),
+    ).toBe(false);
   });
 
   it("validates dashboard runtime without requiring contact or release-only provider secrets", () => {
@@ -216,11 +219,11 @@ describe("Convex Environment Contract", () => {
       {
         AOHYS_ENV: "preview",
         PUBLIC_SITE_URL: "https://preview.aohys.com",
+        CONVEX_URL: "https://aohys-preview.convex.cloud",
         CONVEX_SITE_URL: "https://aohys-preview.convex.site",
         BETTER_AUTH_URL: "https://preview.aohys.com",
         BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
         ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
-        DASHBOARD_API_TOKEN: "dashboard-api-token",
         CLOUDFLARE_ACCOUNT_ID: "cloudflare-account",
         CLOUDFLARE_IMAGES_ACCOUNT_HASH: "images-hash",
         CLOUDFLARE_IMAGES_API_TOKEN: "cloudflare-images-token",
@@ -236,11 +239,11 @@ describe("Convex Environment Contract", () => {
       {
         AOHYS_ENV: "preview",
         PUBLIC_SITE_URL: "https://preview.aohys.com",
+        CONVEX_URL: "https://aohys-preview.convex.cloud",
         CONVEX_SITE_URL: "https://aohys-preview.convex.site",
         BETTER_AUTH_URL: "https://preview.aohys.com",
         BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
         ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
-        DASHBOARD_API_TOKEN: "dashboard-api-token",
       },
       { target: "dashboard-runtime" },
     );
@@ -252,10 +255,10 @@ describe("Convex Environment Contract", () => {
       {
         AOHYS_ENV: "preview",
         PUBLIC_SITE_URL: "https://preview.aohys.com",
+        CONVEX_URL: "https://aohys-preview.convex.cloud",
         BETTER_AUTH_URL: "https://preview.aohys.com",
         BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
         ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
-        DASHBOARD_API_TOKEN: "dashboard-api-token",
       },
       { target: "dashboard-runtime" },
     );
@@ -265,7 +268,7 @@ describe("Convex Environment Contract", () => {
       "CONVEX_SITE_URL is required for preview dashboard-runtime.",
     );
 
-    const missingDashboardToken = validateEnvironmentContract(
+    const missingConvexUrl = validateEnvironmentContract(
       "preview",
       {
         AOHYS_ENV: "preview",
@@ -278,9 +281,9 @@ describe("Convex Environment Contract", () => {
       { target: "dashboard-runtime" },
     );
 
-    expect(missingDashboardToken.ok).toBe(false);
-    expect(missingDashboardToken.errors).toContain(
-      "DASHBOARD_API_TOKEN is required for preview dashboard-runtime.",
+    expect(missingConvexUrl.ok).toBe(false);
+    expect(missingConvexUrl.errors).toContain(
+      "CONVEX_URL is required for preview dashboard-runtime.",
     );
 
     const missingAuthRuntimeOauth = validateEnvironmentContract(
