@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { renderCloudflarePagesStaticHeaders } from "../src/security-headers.js";
 
 const siteRoot = process.cwd();
 
@@ -92,6 +93,7 @@ describe("public site source quality", () => {
     expect(staticHeaders).toContain("https://*.i.posthog.com");
     expect(staticHeaders).toContain("https://*.posthog.com");
     expect(staticHeaders).toContain("report-uri /observability/csp");
+    expect(staticHeaders).toBe(renderCloudflarePagesStaticHeaders());
     expect(dashboardFunction).not.toMatch(/^import\s+\{[^}]+\}\s+from/m);
     expect(authFunction).not.toMatch(/^import\s+\{[^}]+\}\s+from/m);
     expect(cspFunction).not.toMatch(/^import\s+\{[^}]+\}\s+from/m);

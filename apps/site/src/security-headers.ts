@@ -21,6 +21,22 @@ export const BASE_SECURITY_HEADERS = {
   "x-frame-options": "DENY",
 } as const;
 
+export const CLOUDFLARE_PAGES_STATIC_HEADERS = [
+  ["X-Content-Type-Options", BASE_SECURITY_HEADERS["x-content-type-options"]],
+  ["Referrer-Policy", BASE_SECURITY_HEADERS["referrer-policy"]],
+  ["X-Frame-Options", BASE_SECURITY_HEADERS["x-frame-options"]],
+  ["Permissions-Policy", BASE_SECURITY_HEADERS["permissions-policy"]],
+  ["Content-Security-Policy", BASE_SECURITY_HEADERS["content-security-policy"]],
+] as const;
+
+export function renderCloudflarePagesStaticHeaders(): string {
+  return [
+    "/*",
+    ...CLOUDFLARE_PAGES_STATIC_HEADERS.map(([name, value]) => `  ${name}: ${value}`),
+    "",
+  ].join("\n");
+}
+
 export const PRIVATE_NO_STORE_HEADERS = {
   ...BASE_SECURITY_HEADERS,
   "cache-control": "no-store",
