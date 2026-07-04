@@ -24,6 +24,7 @@ import {
   parseDashboardCaseStudyMetadataPayload,
   parseDashboardMediaUploadPayload,
   parseDashboardMediaMetadataPayload,
+  parseDashboardMediaSelectionPayload,
   parseDashboardPublishPayload,
   parseDashboardResumeDraftPayload,
   parseDashboardProjectDraftPayload,
@@ -309,23 +310,60 @@ http.route({
         accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
         apiToken: process.env.CLOUDFLARE_IMAGES_API_TOKEN,
       });
+
+      return privateJsonResponse({ ok: true, ...upload });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Cloudflare Images upload could not start.";
+      const status = message.includes("token") ? 401 : 400;
+
+      return privateJsonResponse({ ok: false, error: message }, { status });
+    }
+  }),
+});
+
+http.route({
+  path: "/dashboard/content/media/select",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
+      const payload = await parseDashboardMediaSelectionPayload(request);
       const result = await ctx.runMutation(
-        internal.content.createMediaMetadataFromDashboard,
+        internal.content.selectMediaForPublicFromDashboard,
         {
-          storageProvider: "cloudflare-images",
-          storageKey: upload.imageId,
-          publicUrl: upload.publicUrl,
-          altText: payload.altText,
+          mediaId: payload.mediaId as Id<"mediaMetadata">,
           contentId: payload.contentId,
-          usage: payload.usage,
-          status: "draft",
-          locale: payload.locale,
         },
       );
 
-      return privateJsonResponse({ ok: true, ...upload, ...result });
+      return privateJsonResponse({ ok: true, ...result });
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Cloudflare Images upload could not start.";
+      const message = error instanceof Error ? error.message : "Media selection could not be saved.";
+      const status = message.includes("token") ? 401 : 400;
+
+      return privateJsonResponse({ ok: false, error: message }, { status });
+    }
+  }),
+});
+
+http.route({
+  path: "/dashboard/content/media/archive",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      assertDashboardApiToken(request, process.env.DASHBOARD_API_TOKEN);
+      const payload = await parseDashboardMediaSelectionPayload(request);
+      const result = await ctx.runMutation(
+        internal.content.archiveMediaFromDashboard,
+        {
+          mediaId: payload.mediaId as Id<"mediaMetadata">,
+          contentId: payload.contentId,
+        },
+      );
+
+      return privateJsonResponse({ ok: true, ...result });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Media could not be hidden.";
       const status = message.includes("token") ? 401 : 400;
 
       return privateJsonResponse({ ok: false, error: message }, { status });

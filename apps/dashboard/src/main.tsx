@@ -13,13 +13,16 @@ import {
   FileTextIcon,
   InboxIcon,
   LogOutIcon,
+  SettingsIcon,
 } from "lucide-react";
+import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DashboardHome } from "@/screens/dashboard-home";
 import { LeadsScreen } from "@/screens/leads-screen";
 import { ProjectsScreen } from "@/screens/projects-screen";
 import { ResumeScreen } from "@/screens/resume-screen";
+import { SettingsScreen } from "@/screens/settings-screen";
 import "./styles.css";
 
 const runtimeConfig = window.__AOHYS_DASHBOARD__ ?? {
@@ -48,6 +51,9 @@ function AppLayout() {
             <DashboardNavLink to="/resume" icon={<FileTextIcon data-icon="inline-start" />}>
               Resume
             </DashboardNavLink>
+            <DashboardNavLink to="/settings" icon={<SettingsIcon data-icon="inline-start" />}>
+              Settings
+            </DashboardNavLink>
           </nav>
           <div className="mt-auto flex flex-col gap-3 text-xs text-sidebar-foreground/75">
             <div className="rounded-lg border border-sidebar-border bg-sidebar-accent px-3 py-2">
@@ -74,6 +80,7 @@ function AppLayout() {
               <MobileNavLink to="/projects">Projects</MobileNavLink>
               <MobileNavLink to="/leads">Leads</MobileNavLink>
               <MobileNavLink to="/resume">Resume</MobileNavLink>
+              <MobileNavLink to="/settings">Settings</MobileNavLink>
             </nav>
           </header>
           <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
@@ -81,6 +88,7 @@ function AppLayout() {
           </main>
         </div>
       </div>
+      <Toaster richColors closeButton position="top-right" />
     </TooltipProvider>
   );
 }
@@ -147,7 +155,7 @@ const legacyMediaRoute = createRoute({
 const legacySettingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/settings",
-  component: ProjectsScreen,
+  component: SettingsScreen,
 });
 
 const leadsRoute = createRoute({
