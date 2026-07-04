@@ -7,8 +7,8 @@ export const CONTENT_SECURITY_POLICY = [
   "script-src-elem 'self' 'unsafe-inline' https://us-assets.i.posthog.com https://*.i.posthog.com https://*.posthog.com",
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self'",
-  "img-src 'self' data: https:",
-  "connect-src 'self' https://*.convex.site https://us.i.posthog.com https://us.posthog.com https://us-assets.i.posthog.com https://*.i.posthog.com https://*.posthog.com",
+  "img-src 'self' blob: data: https:",
+  "connect-src 'self' https://*.convex.site https://upload.imagedelivery.net https://us.i.posthog.com https://us.posthog.com https://us-assets.i.posthog.com https://*.i.posthog.com https://*.posthog.com",
   "form-action 'self' https://*.convex.site mailto:",
   "report-uri /observability/csp",
 ].join("; ");

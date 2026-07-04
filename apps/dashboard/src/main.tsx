@@ -60,7 +60,7 @@ function AppLayout() {
               <div className="font-medium text-sidebar-accent-foreground">{runtimeConfig.adminEmail}</div>
               <div>{runtimeConfig.environment}</div>
             </div>
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" className="text-foreground">
               <a href="/dashboard/sign-out">
                 <LogOutIcon data-icon="inline-start" />
                 Sign out

@@ -336,7 +336,7 @@ describe("built public routes", () => {
     expect(headers).toContain("frame-ancestors 'none'");
     expect(headers).toContain("script-src 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
     expect(headers).toContain("script-src-elem 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
-    expect(headers).toContain("connect-src 'self' https://*.convex.site https://us.i.posthog.com https://us.posthog.com https://us-assets.i.posthog.com");
+    expect(headers).toContain("connect-src 'self' https://*.convex.site https://upload.imagedelivery.net https://us.i.posthog.com https://us.posthog.com https://us-assets.i.posthog.com");
     expect(headers).toContain("report-uri /observability/csp");
   });
 });
