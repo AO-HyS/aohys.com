@@ -13,7 +13,7 @@ describe("agent execution routing", () => {
     });
   });
 
-  it("uses deep orchestration with low-reasoning gpt-5.5 for normal implementation", () => {
+  it("uses xhigh orchestration with low-reasoning gpt-5.5 for normal implementation", () => {
     expect(EXECUTION_WORKERS.find((worker) => worker.role === "orchestrator")).toMatchObject({
       modelId: "gpt-5.5",
       reasoningEffort: "xhigh",
@@ -55,6 +55,11 @@ describe("agent execution routing", () => {
 
   it("escalates Convex, auth, release, and repeated failures to deep judgment", () => {
     expect(routeExecutionTask({ text: "change Convex schema and Better Auth session behavior" })).toMatchObject({
+      role: "convex-specialist",
+      modelId: "gpt-5.5",
+      tier: "deep",
+    });
+    expect(routeExecutionTask({ text: "prepare production release" })).toMatchObject({
       role: "convex-specialist",
       modelId: "gpt-5.5",
       tier: "deep",
@@ -108,5 +113,21 @@ describe("agent execution routing", () => {
       reasoningEffort: "low",
     });
     expect(plan.waves[3]?.workers.map((worker) => worker.role)).toEqual(["reviewer", "browser-qa"]);
+  });
+
+  it("adds release manager verification and smoke gate for release work", () => {
+    const plan = createExecutionRunPlan({
+      text: "Prepare preview release smoke for the dashboard",
+    });
+
+    expect(plan.waves[3]?.workers.map((worker) => worker.role)).toContain("release-manager");
+    expect(plan.waves[3]?.workers.find((worker) => worker.role === "release-manager")).toMatchObject({
+      modelId: "gpt-5.5",
+      reasoningEffort: "xhigh",
+      serviceTier: "priority",
+      canRunInParallel: true,
+      readOnly: true,
+    });
+    expect(plan.gates).toContain("pnpm verify and release smoke readiness");
   });
 });

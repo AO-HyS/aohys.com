@@ -13,10 +13,13 @@ type CliArgs = {
   json?: boolean;
 };
 
+const USAGE =
+  'Usage: pnpm run agent:start -- --goal "Implement ..." [--file path] [--browser] [--computer] [--repo-search-only] [--failure-count count] [--out-dir dir] [--json]';
+
 const args = parseArgs(process.argv.slice(2));
 
 if (!args.goal) {
-  throw new Error('Usage: pnpm run agent:start -- --goal "Implement ..." [--file path] [--browser] [--computer] [--repo-search-only]');
+  throw new Error(USAGE);
 }
 
 const runPlan = createExecutionRunPlan({
