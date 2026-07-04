@@ -623,7 +623,9 @@ function homeOutcomeFromCaseStudy(contentId: ContentId | string, locale: Locale)
     role: caseStudyContent.role.body,
     evidence: caseStudyContent.publicEvidence[0] ?? {
       label: caseStudyContent.publicEvidenceTitle,
-      altText: variant.title,
+      altText: locale === "es"
+        ? `Vista previa del caso de estudio ${variant.title}`
+        : `Preview of the ${variant.title} case study`,
       kind: "public-site",
       publicSafe: true,
     },

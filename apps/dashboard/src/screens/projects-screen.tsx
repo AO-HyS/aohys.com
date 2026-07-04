@@ -985,10 +985,12 @@ function ImageUploadForm({
           className="content-edit-form"
           onSubmit={(event) => {
             event.preventDefault();
-            if (publicUrl.trim()) {
+            const trimmedPublicUrl = publicUrl.trim();
+
+            if (trimmedPublicUrl) {
               void onSaveExternal({
                 ...form,
-                publicUrl,
+                publicUrl: trimmedPublicUrl,
                 selectedForPublic: true,
               });
               return;
