@@ -32,6 +32,7 @@ export interface DashboardAccessEnvironment extends Record<string, string | unde
   DASHBOARD_API_TOKEN: string;
   PUBLIC_POSTHOG_KEY?: string;
   PUBLIC_POSTHOG_HOST?: string;
+  CLOUDFLARE_IMAGES_ACCOUNT_HASH?: string;
 }
 
 type DashboardAccessEnvironmentInput =
@@ -409,7 +410,11 @@ async function handleDashboardApiRequest(
     const media = contentResult.content.media ?? [];
 
     return privateJsonResponse({
-      projects: buildDashboardProjectRows(contentResult.content, media),
+      projects: buildDashboardProjectRows(
+        contentResult.content,
+        media,
+        environment.CLOUDFLARE_IMAGES_ACCOUNT_HASH?.trim() || undefined,
+      ),
       media,
       settings: contentResult.content.settings ?? [],
       resumeContent: {
@@ -518,6 +523,7 @@ async function readDashboardContent(
 function buildDashboardProjectRows(
   content: DashboardContentPayload,
   mediaRows: DashboardMediaMetadata[],
+  imagesAccountHash?: string,
 ): DashboardProject[] {
   const caseStudyRows = buildDashboardCaseStudyRows(content.caseStudies ?? []);
   const metadataByContentId = new Map([
@@ -602,18 +608,22 @@ function buildDashboardProjectRows(
             href: asset.href,
             src: isImageHref(asset.href) ? asset.href : undefined,
           })),
-          ...media.map((item) => ({
-            id: item.id,
-            label: item.storageKey,
-            altText: item.altText,
-            source: "media-metadata" as const,
-            href: item.publicUrl,
-            src: item.publicUrl,
-            storageKey: item.storageKey,
-            status: item.status,
-            usage: item.usage,
-            selectedForPublic: item.selectedForPublic,
-          })),
+          ...media.map((item) => {
+            const deliveryUrl = item.publicUrl ?? cloudflareImagesDeliveryUrl(item, imagesAccountHash);
+
+            return {
+              id: item.id,
+              label: item.storageKey,
+              altText: item.altText,
+              source: "media-metadata" as const,
+              href: deliveryUrl,
+              src: deliveryUrl,
+              storageKey: item.storageKey,
+              status: item.status,
+              usage: item.usage,
+              selectedForPublic: item.selectedForPublic,
+            };
+          }),
         ],
       };
     });
@@ -1176,4 +1186,15 @@ function isHttpUrl(value: string): boolean {
 
 function isImageHref(value: string): boolean {
   return /\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(value);
+}
+
+function cloudflareImagesDeliveryUrl(
+  media: Pick<DashboardMediaMetadata, "storageProvider" | "storageKey">,
+  imagesAccountHash?: string,
+): string | undefined {
+  if (media.storageProvider !== "cloudflare-images" || !imagesAccountHash) {
+    return undefined;
+  }
+
+  return `https://imagedelivery.net/${imagesAccountHash}/${media.storageKey}/public`;
 }

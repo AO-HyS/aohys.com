@@ -90,6 +90,7 @@ export function ProjectsScreen() {
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [publishingKey, setPublishingKey] = useState<string | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | undefined>();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   async function refresh(): Promise<DashboardContentPayload | null> {
     setLoadError(null);
@@ -317,7 +318,18 @@ export function ProjectsScreen() {
       <PageHeading
         eyebrow="Projects"
         title="Project workspace"
-        description="Edit project stories, outcomes, structure, images, CTA, URL, and SEO metadata. Save stores work privately; Publish sends reviewed content through the release train."
+        description="Edit stories, outcomes, structure, images, CTA, URL, and SEO metadata. Save keeps work private; Publish sends reviewed content through the release train."
+        action={
+          <Button
+            type="button"
+            variant={isCreateOpen ? "secondary" : "default"}
+            aria-expanded={isCreateOpen}
+            onClick={() => setIsCreateOpen((current) => !current)}
+          >
+            <PlusIcon data-icon="inline-start" />
+            New project
+          </Button>
+        }
       />
 
       {loadError ? (
@@ -329,11 +341,16 @@ export function ProjectsScreen() {
 
       {content ? (
         <>
-          <NewProjectCard
-            existingContentIds={content.projects.map((project) => project.contentId)}
-            isSaving={savingKey === "new-project"}
-            onCreate={handleCreateProject}
-          />
+          {isCreateOpen ? (
+            <NewProjectCard
+              existingContentIds={content.projects.map((project) => project.contentId)}
+              isSaving={savingKey === "new-project"}
+              onCreate={async (input) => {
+                await handleCreateProject(input);
+                setIsCreateOpen(false);
+              }}
+            />
+          ) : null}
 
           <Tabs
             value={selectedProjectId ?? content.projects[0]?.contentId}
@@ -370,21 +387,16 @@ function ProjectTabs({ projects }: { projects: DashboardProject[] }) {
   return (
     <aside className="project-nav-panel">
       <div className="project-nav-header">
-        <div>
-          <div className="project-nav-label">Projects</div>
-          <p>Choose the content record to edit.</p>
-        </div>
+        <div className="project-nav-label">Projects</div>
         <Badge variant="outline">{projects.length}</Badge>
       </div>
       <TabsList className="project-tabs-list">
-        {projects.map((project, index) => (
+        {projects.map((project) => (
           <TabsTrigger key={project.contentId} value={project.contentId} className="project-tab-trigger">
-            <span className="project-tab-index">{String(index + 1).padStart(2, "0")}</span>
             <span className="project-tab-copy">
               <span className="project-tab-title">{project.title}</span>
-              <small>{project.englishPath}</small>
+              <small>{formatProjectStatus(project.status)}</small>
             </span>
-            <Badge variant="outline">{formatProjectStatus(project.status)}</Badge>
           </TabsTrigger>
         ))}
       </TabsList>
@@ -401,7 +413,6 @@ function NewProjectCard({
   isSaving: boolean;
   onCreate: (input: NewProjectInput) => void | Promise<void>;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState<NewProjectInput>({
     title: "",
     spanishTitle: "",
@@ -434,15 +445,8 @@ function NewProjectCard({
           <CardTitle>Create project</CardTitle>
           <CardDescription>Add a new public case-study draft. It appears in the dashboard immediately and in Astro after publish/build.</CardDescription>
         </div>
-        <CardAction>
-          <Button type="button" variant={isOpen ? "secondary" : "outline"} onClick={() => setIsOpen((current) => !current)}>
-            <PlusIcon data-icon="inline-start" />
-            New project
-          </Button>
-        </CardAction>
       </CardHeader>
-      {isOpen ? (
-        <CardContent>
+      <CardContent>
           <form
             onSubmit={(event) => {
               event.preventDefault();
@@ -511,8 +515,7 @@ function NewProjectCard({
               </Button>
             </FieldGroup>
           </form>
-        </CardContent>
-      ) : null}
+      </CardContent>
     </Card>
   );
 }
@@ -613,34 +616,33 @@ function ProjectSummaryCard({
   return (
     <Card className="project-summary-card">
       <CardHeader className="project-summary-header">
-        <div>
-          <CardTitle>{project.title}</CardTitle>
-          <CardDescription>
+        <div className="min-w-0">
+          <CardTitle className="project-summary-title">{project.title}</CardTitle>
+          <CardDescription className="project-summary-paths">
             {project.englishPath} · {project.spanishPath}
           </CardDescription>
         </div>
-        <CardAction>
-          <Badge variant={project.evidenceStatus === "published" ? "default" : "secondary"}>
+        <CardAction className="project-summary-badges">
+          <Badge variant="secondary">{formatProjectStatus(project.status)}</Badge>
+          <Badge variant={project.evidenceStatus === "published" ? "default" : "outline"}>
             {formatReferenceState(project.evidenceStatus)}
           </Badge>
+          <Badge variant="outline">{project.sitemapIncluded ? "In sitemap" : "Noindex"}</Badge>
         </CardAction>
       </CardHeader>
       <CardContent className="project-summary-content">
-        <div className="metric-grid">
-          <Metric label="Status" value={formatProjectStatus(project.status)} />
-          <Metric label="Sitemap" value={project.sitemapIncluded ? "Included" : "Noindex"} />
-          <Metric label="URL" value={project.projectUrl ?? "Not set"} />
-        </div>
-        <div className="publish-panel">
-          <div>
-            <div className="publish-panel-title">Publish to preview</div>
-            <p>
-              Save changes first. Publish marks the reviewed drafts and queues the GitHub release workflow so Astro can rebuild with the new content.
-            </p>
-            <div className="publish-meta">
-              <span>Last saved: {latestDraft ? formatDate(latestDraft.updatedAt) : "No draft yet"}</span>
-              <span>Last published: {latestPublished ? formatDate(latestPublished) : "Not published"}</span>
-            </div>
+        {project.projectUrl ? (
+          <a className="project-summary-url" href={project.projectUrl} target="_blank" rel="noreferrer">
+            {project.projectUrl}
+            <ExternalLinkIcon data-icon="inline-end" />
+          </a>
+        ) : (
+          <span className="project-summary-url is-empty">No public URL yet</span>
+        )}
+        <div className="publish-bar">
+          <div className="publish-meta">
+            <span>Saved {latestDraft ? formatDate(latestDraft.updatedAt) : "never"}</span>
+            <span>Published {latestPublished ? formatDate(latestPublished) : "never"}</span>
           </div>
           <Button type="button" onClick={() => void onPublish()} disabled={isPublishing}>
             {isPublishing ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <RocketIcon data-icon="inline-start" />}
@@ -853,44 +855,40 @@ function ProjectImagesCard({
         <CardDescription>Choose the exact image that the Astro landing and case-study pages should use.</CardDescription>
       </CardHeader>
       <CardContent className="media-list">
-        {previewImage ? (
-          <div className="media-selected-preview">
-            {previewImage.src ? (
-              <img src={previewImage.src} alt={previewImage.altText} />
-            ) : (
-              <div className="media-preview-empty"><ImageIcon /></div>
-            )}
-            <div>
-              <span>{selectedImage ? "Selected for Astro" : "No dashboard image selected"}</span>
-              <strong>{previewImage.label}</strong>
-              <p>
-                {selectedImage
-                  ? previewImage.altText
-                  : "Choose Use in Astro on one media row to make the public image explicit."}
-              </p>
-            </div>
+        <div className="media-selected-preview">
+          <MediaImage
+            src={previewImage?.src}
+            alt={previewImage?.altText ?? "No project image"}
+            className="media-preview-frame"
+          />
+          <div className="media-preview-copy">
+            <span className={selectedImage ? "is-selected" : undefined}>
+              {selectedImage ? "Selected for Astro" : "No dashboard image selected"}
+            </span>
+            {previewImage ? <strong>{previewImage.label}</strong> : null}
+            <p>
+              {selectedImage
+                ? previewImage?.altText
+                : "Choose Use in Astro on one media row to make the public image explicit."}
+            </p>
           </div>
-        ) : null}
+        </div>
 
         {project.images.length > 0 ? project.images.map((image) => (
           <div
             key={`${image.source}:${image.label}:${image.storageKey ?? image.href ?? image.src ?? ""}`}
             className={`media-row ${image.selectedForPublic ? "media-row-selected" : ""}`}
           >
-            {image.src ? (
-              <img className="media-thumb" src={image.src} alt={image.altText} />
-            ) : (
-              <div className="media-icon">
-                <ImageIcon />
-              </div>
-            )}
-            <div className="min-w-0 flex-1">
-              <div className="font-medium">{image.label}</div>
+            <MediaImage src={image.src} alt={image.altText} className="media-thumb" />
+            <div className="media-row-body">
+              <div className="media-row-title">{image.label}</div>
               <p>{image.altText}</p>
-              <div className="media-row-actions">
-                <Badge variant="secondary">{image.source}</Badge>
+              <div className="media-row-tags">
+                <Badge variant="secondary">{image.source === "media-metadata" ? "Dashboard media" : "Content graph"}</Badge>
                 {image.status ? <Badge variant="outline">{image.status}</Badge> : null}
                 {image.selectedForPublic ? <Badge>Astro image</Badge> : null}
+              </div>
+              <div className="media-row-actions">
                 {image.id && image.status !== "archived" ? (
                   <Button
                     type="button"
@@ -927,10 +925,33 @@ function ProjectImagesCard({
             </div>
           </div>
         )) : (
-          <p className="text-sm text-muted-foreground">No project media has been attached yet.</p>
+          <p className="media-empty-note">No project media has been attached yet. Add an image below to give this case study a public visual.</p>
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function MediaImage({ src, alt, className }: { src?: string; alt: string; className?: string }) {
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+
+  if (!src || failedSrc === src) {
+    return (
+      <div className={`media-image-empty ${className ?? ""}`} role="img" aria-label={alt}>
+        <ImageIcon aria-hidden="true" />
+        {failedSrc === src && src ? <small>Image not reachable</small> : null}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      className={className}
+      src={src}
+      alt={alt}
+      loading="lazy"
+      onError={() => setFailedSrc(src)}
+    />
   );
 }
 
@@ -1003,15 +1024,10 @@ function ImageUploadForm({
           }}
         >
           <FieldGroup>
-            {previewUrl ? (
-              <figure className="upload-preview">
-                <img src={previewUrl} alt={form.altText || "Selected image preview"} />
-                <figcaption>{file?.name}</figcaption>
-              </figure>
-            ) : null}
             <Field>
-              <FieldLabel>Local image</FieldLabel>
+              <FieldLabel htmlFor={`upload-file-${project.contentId}`}>Local image</FieldLabel>
               <Input
+                id={`upload-file-${project.contentId}`}
                 type="file"
                 accept="image/png,image/jpeg,image/webp"
                 onChange={(event) => {
@@ -1031,48 +1047,60 @@ function ImageUploadForm({
                 }}
               />
             </Field>
+            {previewUrl ? (
+              <figure className="upload-preview">
+                <img src={previewUrl} alt={form.altText || "Selected image preview"} />
+                <figcaption>{file?.name}</figcaption>
+              </figure>
+            ) : null}
             <Field>
-              <FieldLabel>Public image URL</FieldLabel>
+              <FieldLabel htmlFor={`upload-url-${project.contentId}`}>Public image URL</FieldLabel>
               <Input
+                id={`upload-url-${project.contentId}`}
                 value={publicUrl}
                 onChange={(event) => setPublicUrl(event.target.value)}
                 placeholder="https://..."
               />
-              <FieldDescription>Use this when the image is already hosted publicly. It becomes the selected Astro image.</FieldDescription>
+              <FieldDescription>Use this instead when the image is already hosted publicly. It becomes the selected Astro image.</FieldDescription>
             </Field>
             <Field>
-              <FieldLabel>Storage key</FieldLabel>
-              <Input
-                value={form.storageKey}
-                onChange={(event) => setForm((current) => ({ ...current, storageKey: event.target.value }))}
-              />
-              <FieldDescription>Readable key used as the Cloudflare Images custom ID.</FieldDescription>
-            </Field>
-            <Field>
-              <FieldLabel>Alt text</FieldLabel>
+              <FieldLabel htmlFor={`upload-alt-${project.contentId}`}>Alt text</FieldLabel>
               <Textarea
+                id={`upload-alt-${project.contentId}`}
                 value={form.altText}
                 onChange={(event) => setForm((current) => ({ ...current, altText: event.target.value }))}
-                rows={4}
+                rows={3}
+                placeholder="Describe what the image shows for screen readers and SEO."
               />
             </Field>
-            <Field>
-              <FieldLabel>Locale</FieldLabel>
-              <Select
-                value={form.locale}
-                onValueChange={(value) => setForm((current) => ({ ...current, locale: value as DashboardLocale }))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="es">Spanish</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </Field>
+            <div className="form-grid-2">
+              <Field>
+                <FieldLabel>Locale</FieldLabel>
+                <Select
+                  value={form.locale}
+                  onValueChange={(value) => setForm((current) => ({ ...current, locale: value as DashboardLocale }))}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="es">Spanish</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor={`upload-key-${project.contentId}`}>Storage key</FieldLabel>
+                <Input
+                  id={`upload-key-${project.contentId}`}
+                  value={form.storageKey}
+                  onChange={(event) => setForm((current) => ({ ...current, storageKey: event.target.value }))}
+                />
+                <FieldDescription>Cloudflare Images custom ID.</FieldDescription>
+              </Field>
+            </div>
           </FieldGroup>
           <Button type="submit" disabled={isSaving || (!file && !publicUrl.trim()) || !form.altText.trim()}>
             {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <UploadCloudIcon data-icon="inline-start" />}
@@ -1088,28 +1116,24 @@ function PageHeading({
   eyebrow,
   title,
   description,
+  action,
 }: {
   eyebrow: string;
   title: string;
   description: string;
+  action?: React.ReactNode;
 }) {
   return (
-    <section className="dashboard-page-heading">
-      <Badge className="w-fit" variant="secondary">{eyebrow}</Badge>
-      <div>
-        <h1>{title}</h1>
-        <p>{description}</p>
+    <section className={`dashboard-page-heading ${action ? "with-action" : ""}`}>
+      <div className="dashboard-page-heading-main">
+        <Badge className="w-fit" variant="secondary">{eyebrow}</Badge>
+        <div>
+          <h1>{title}</h1>
+          <p>{description}</p>
+        </div>
       </div>
+      {action ? <div className="dashboard-page-heading-action">{action}</div> : null}
     </section>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="metric-tile">
-      <div>{label}</div>
-      <strong>{value}</strong>
-    </div>
   );
 }
 
