@@ -133,7 +133,7 @@ export async function handleDashboardRequest(
     adminEmail: session.user.email,
     environment: environment.AOHYS_ENV,
     convexUrl: environment.CONVEX_URL,
-    betterAuthUrl: new URL(request.url).origin,
+    betterAuthUrl: url.origin,
     imagesAccountHash: environment.CLOUDFLARE_IMAGES_ACCOUNT_HASH?.trim() || undefined,
   }));
 }
