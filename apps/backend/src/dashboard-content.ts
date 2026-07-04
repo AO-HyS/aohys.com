@@ -30,6 +30,7 @@ export const DASHBOARD_SETTING_CLASSIFICATIONS = [
 ] as const;
 
 export type DashboardCaseStudyContentId = (typeof DASHBOARD_CASE_STUDY_CONTENT_IDS)[number];
+export type DashboardContentId = DashboardCaseStudyContentId | `case-study:${string}`;
 export type DashboardCaseStudyStatus = (typeof DASHBOARD_CASE_STUDY_STATUSES)[number];
 export type DashboardEvidenceStatus = (typeof DASHBOARD_EVIDENCE_STATUSES)[number];
 export type DashboardMediaStorageProvider = (typeof DASHBOARD_MEDIA_STORAGE_PROVIDERS)[number];
@@ -41,7 +42,7 @@ export type DashboardPublishScope = (typeof DASHBOARD_PUBLISH_SCOPES)[number];
 export type DashboardSettingClassification = (typeof DASHBOARD_SETTING_CLASSIFICATIONS)[number];
 
 export interface DashboardCaseStudyMetadataPayload {
-  contentId: DashboardCaseStudyContentId;
+  contentId: DashboardContentId;
   status: DashboardCaseStudyStatus;
   evidenceStatus: DashboardEvidenceStatus;
 }
@@ -63,18 +64,25 @@ export interface DashboardMediaMetadataPayload {
   storageKey: string;
   publicUrl?: string;
   altText: string;
-  contentId?: DashboardCaseStudyContentId;
+  contentId?: DashboardContentId;
   usage: DashboardMediaUsage;
   status: DashboardMediaStatus;
   locale?: DashboardLocale;
+  selectedForPublic?: boolean;
 }
 
 export interface DashboardMediaUploadPayload {
   storageKey: string;
   altText: string;
-  contentId?: DashboardCaseStudyContentId;
+  contentId?: DashboardContentId;
   usage: DashboardMediaUsage;
   locale?: DashboardLocale;
+  selectedForPublic?: boolean;
+}
+
+export interface DashboardMediaSelectionPayload {
+  mediaId: string;
+  contentId: DashboardContentId;
 }
 
 export interface DashboardSiteSettingPayload {
@@ -98,7 +106,7 @@ export interface DashboardResumeDraftPayload {
 
 export interface DashboardPublishPayload {
   scope: DashboardPublishScope;
-  contentId?: DashboardCaseStudyContentId;
+  contentId?: DashboardContentId;
   locale?: DashboardLocale;
 }
 
@@ -129,6 +137,7 @@ interface DashboardMediaMetadataRawPayload {
   usage?: string;
   status?: string;
   locale?: string;
+  selectedForPublic?: boolean;
 }
 
 interface DashboardMediaUploadRawPayload {
@@ -137,6 +146,12 @@ interface DashboardMediaUploadRawPayload {
   contentId?: string;
   usage?: string;
   locale?: string;
+  selectedForPublic?: boolean;
+}
+
+interface DashboardMediaSelectionRawPayload {
+  mediaId?: string;
+  contentId?: string;
 }
 
 interface DashboardSiteSettingRawPayload {
@@ -172,7 +187,7 @@ export async function parseDashboardCaseStudyMetadataPayload(
   const status = requireTrimmed(payload.status, "status");
   const evidenceStatus = requireTrimmed(payload.evidenceStatus, "evidenceStatus");
 
-  assertOneOf(contentId, DASHBOARD_CASE_STUDY_CONTENT_IDS, "contentId");
+  assertCaseStudyContentId(contentId);
   assertOneOf(status, DASHBOARD_CASE_STUDY_STATUSES, "status");
   assertOneOf(evidenceStatus, DASHBOARD_EVIDENCE_STATUSES, "evidenceStatus");
 
@@ -200,7 +215,7 @@ export async function parseDashboardProjectDraftPayload(
   const structureNotes = requireTrimmed(payload.structureNotes, "structureNotes");
   const projectUrl = trimToUndefined(payload.projectUrl);
 
-  assertOneOf(contentId, DASHBOARD_CASE_STUDY_CONTENT_IDS, "contentId");
+  assertCaseStudyContentId(contentId);
   assertOneOf(status, DASHBOARD_CASE_STUDY_STATUSES, "status");
   assertOneOf(evidenceStatus, DASHBOARD_EVIDENCE_STATUSES, "evidenceStatus");
   assertOneOf(locale, DASHBOARD_LOCALES, "locale");
@@ -241,7 +256,7 @@ export async function parseDashboardMediaMetadataPayload(
   const publicUrl = trimToUndefined(payload.publicUrl);
   const contentId = trimToUndefined(payload.contentId);
   const locale = trimToUndefined(payload.locale);
-  let validatedContentId: DashboardCaseStudyContentId | undefined;
+  let validatedContentId: DashboardContentId | undefined;
   let validatedLocale: DashboardLocale | undefined;
 
   assertOneOf(storageProvider, DASHBOARD_MEDIA_STORAGE_PROVIDERS, "storageProvider");
@@ -249,7 +264,7 @@ export async function parseDashboardMediaMetadataPayload(
   assertOneOf(status, DASHBOARD_MEDIA_STATUSES, "status");
 
   if (contentId) {
-    assertOneOf(contentId, DASHBOARD_CASE_STUDY_CONTENT_IDS, "contentId");
+    assertCaseStudyContentId(contentId);
     validatedContentId = contentId;
   }
 
@@ -275,6 +290,9 @@ export async function parseDashboardMediaMetadataPayload(
     usage,
     status,
     locale: validatedLocale,
+    selectedForPublic: typeof payload.selectedForPublic === "boolean"
+      ? payload.selectedForPublic
+      : undefined,
   };
 }
 
@@ -287,13 +305,13 @@ export async function parseDashboardMediaUploadPayload(
   const usage = requireTrimmed(payload.usage, "usage");
   const contentId = trimToUndefined(payload.contentId);
   const locale = trimToUndefined(payload.locale);
-  let validatedContentId: DashboardCaseStudyContentId | undefined;
+  let validatedContentId: DashboardContentId | undefined;
   let validatedLocale: DashboardLocale | undefined;
 
   assertOneOf(usage, DASHBOARD_MEDIA_USAGES, "usage");
 
   if (contentId) {
-    assertOneOf(contentId, DASHBOARD_CASE_STUDY_CONTENT_IDS, "contentId");
+    assertCaseStudyContentId(contentId);
     validatedContentId = contentId;
   }
 
@@ -308,6 +326,24 @@ export async function parseDashboardMediaUploadPayload(
     contentId: validatedContentId,
     usage,
     locale: validatedLocale,
+    selectedForPublic: typeof payload.selectedForPublic === "boolean"
+      ? payload.selectedForPublic
+      : undefined,
+  };
+}
+
+export async function parseDashboardMediaSelectionPayload(
+  request: Request,
+): Promise<DashboardMediaSelectionPayload> {
+  const payload = await readJsonPayload<DashboardMediaSelectionRawPayload>(request);
+  const mediaId = requireTrimmed(payload.mediaId, "mediaId");
+  const contentId = requireTrimmed(payload.contentId, "contentId");
+
+  assertCaseStudyContentId(contentId);
+
+  return {
+    mediaId,
+    contentId,
   };
 }
 
@@ -358,13 +394,13 @@ export async function parseDashboardPublishPayload(
   const scope = requireTrimmed(payload.scope, "scope");
   const contentId = trimToUndefined(payload.contentId);
   const locale = trimToUndefined(payload.locale);
-  let validatedContentId: DashboardCaseStudyContentId | undefined;
+  let validatedContentId: DashboardContentId | undefined;
   let validatedLocale: DashboardLocale | undefined;
 
   assertOneOf(scope, DASHBOARD_PUBLISH_SCOPES, "scope");
 
   if (contentId) {
-    assertOneOf(contentId, DASHBOARD_CASE_STUDY_CONTENT_IDS, "contentId");
+    assertCaseStudyContentId(contentId);
     validatedContentId = contentId;
   }
 
@@ -446,6 +482,16 @@ function normalizeStorageKey(value: string): string {
   }
 
   return normalized;
+}
+
+function assertCaseStudyContentId(value: string): asserts value is DashboardContentId {
+  if (DASHBOARD_CASE_STUDY_CONTENT_IDS.includes(value as DashboardCaseStudyContentId)) {
+    return;
+  }
+
+  if (!/^case-study:[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
+    throw new Error("contentId must be a safe case-study:<slug> identifier.");
+  }
 }
 
 function assertValidResumeDraftJson(contentJson: string): void {

@@ -66,7 +66,9 @@ Private dashboard endpoints are implemented as Convex HTTP actions protected by 
 - `POST /dashboard/content/project` for project-centered dashboard drafts: localized text, SEO description, public URL, CTA, achievements, structure notes, status, and evidence state.
 - `POST /dashboard/content/case-study` for Public Content Graph case-study metadata.
 - `POST /dashboard/content/media` for metadata-only media records with alt text and usage intent.
-- `POST /dashboard/content/media/upload-url` for Cloudflare Images direct-upload URL creation and metadata registration.
+- `POST /dashboard/content/media/upload-url` for Cloudflare Images direct-upload URL creation before the browser uploads the file.
+- `POST /dashboard/content/media/select` for marking the public media asset a project should publish.
+- `POST /dashboard/content/media/archive` for removing a project media asset from the public publishing flow.
 - `POST /dashboard/content/setting` for `PUBLIC_` site settings only.
 - `POST /dashboard/content/resume-draft` for editable resume content drafts.
 - `POST /dashboard/content/resume` for resume PDF/version records.

@@ -1,20 +1,26 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  CheckCircle2Icon,
   ExternalLinkIcon,
+  EyeIcon,
+  EyeOffIcon,
   ImageIcon,
   LoaderCircleIcon,
+  PlusIcon,
   RocketIcon,
   SaveIcon,
   UploadCloudIcon,
 } from "lucide-react";
 import {
+  archiveProjectMedia,
   createMediaUpload,
   loadDashboardContent,
   publishContent,
+  saveMediaMetadata,
   saveProjectDraft,
-  saveSiteSetting,
+  selectProjectMedia,
   uploadMediaFile,
+  type MediaMetadataRequest,
+  type MediaSelectionRequest,
   type MediaUploadRequest,
   type ProjectDraftRequest,
 } from "@/api";
@@ -38,6 +44,7 @@ import {
   FieldLegend,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/sonner";
 import {
   Select,
   SelectContent,
@@ -56,16 +63,15 @@ import type {
   DashboardLocale,
   DashboardProject,
   DashboardProjectLocaleContent,
-  DashboardSiteSetting,
 } from "@/types";
 
 type ProjectFormState = ProjectDraftRequest;
-type NoticeTone = "success" | "info" | "error";
 
-interface Notice {
-  tone: NoticeTone;
+interface NewProjectInput {
   title: string;
-  message: string;
+  spanishTitle: string;
+  slug: string;
+  status: DashboardCaseStudyStatus;
 }
 
 const caseStudyStatuses: DashboardCaseStudyStatus[] = [
@@ -83,14 +89,18 @@ export function ProjectsScreen() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [publishingKey, setPublishingKey] = useState<string | null>(null);
-  const [notice, setNotice] = useState<Notice | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | undefined>();
 
-  async function refresh() {
+  async function refresh(): Promise<DashboardContentPayload | null> {
     setLoadError(null);
     try {
-      setContent(await loadDashboardContent());
+      const nextContent = await loadDashboardContent();
+      setContent(nextContent);
+      setSelectedProjectId((current) => current ?? nextContent.projects[0]?.contentId);
+      return nextContent;
     } catch (error) {
       setLoadError(error instanceof Error ? error.message : "Dashboard content could not load.");
+      return null;
     }
   }
 
@@ -100,26 +110,22 @@ export function ProjectsScreen() {
 
   async function handleSaveProject(payload: ProjectFormState) {
     const key = `${payload.contentId}:${payload.locale}`;
-    setSavingKey(key);
-    setNotice({
-      tone: "info",
-      title: "Saving draft",
-      message: "Writing this project draft to Convex.",
+    const toastId = toast.loading("Saving project draft", {
+      description: `${payload.title} ${payload.locale.toUpperCase()}`,
     });
+    setSavingKey(key);
 
     try {
       await saveProjectDraft(payload);
       await refresh();
-      setNotice({
-        tone: "success",
-        title: "Draft saved",
-        message: `${payload.title} ${payload.locale.toUpperCase()} is saved. Use Publish to rebuild the public site with this content.`,
+      toast.success("Draft saved", {
+        id: toastId,
+        description: "Publish when this content is ready for the Astro build.",
       });
     } catch (error) {
-      setNotice({
-        tone: "error",
-        title: "Draft save failed",
-        message: error instanceof Error ? error.message : "Project draft could not be saved.",
+      toast.error("Draft save failed", {
+        id: toastId,
+        description: error instanceof Error ? error.message : "Project draft could not be saved.",
       });
     } finally {
       setSavingKey(null);
@@ -128,63 +134,147 @@ export function ProjectsScreen() {
 
   async function handleUploadMedia(payload: MediaUploadRequest, file: File) {
     const key = `${payload.contentId}:media`;
-    setSavingKey(key);
-    setNotice({
-      tone: "info",
-      title: "Preparing media upload",
-      message: "Requesting a Cloudflare Images direct upload URL.",
+    const toastId = toast.loading("Preparing media upload", {
+      description: "Requesting a Cloudflare Images direct upload URL.",
     });
+    setSavingKey(key);
 
     try {
       const upload = await createMediaUpload(payload);
-      setNotice({
-        tone: "info",
-        title: "Uploading image",
-        message: "Cloudflare accepted the upload slot. Sending the selected file now.",
+      toast.loading("Uploading image", {
+        id: toastId,
+        description: "Cloudflare accepted the upload slot. Sending the selected file now.",
       });
       await uploadMediaFile(upload.uploadURL, file);
+      toast.loading("Saving media reference", {
+        id: toastId,
+        description: "The file upload completed. Registering it as the selected Astro image.",
+      });
+      await saveMediaMetadata({
+        storageProvider: "cloudflare-images",
+        storageKey: upload.imageId,
+        publicUrl: upload.publicUrl,
+        altText: payload.altText,
+        contentId: payload.contentId,
+        usage: payload.usage,
+        locale: payload.locale,
+        selectedForPublic: payload.selectedForPublic ?? true,
+      });
       await refresh();
-      setNotice({
-        tone: "success",
-        title: "Image uploaded",
-        message: "The image is attached as project media. Publish when you want it available to the Astro build.",
+      toast.success("Image uploaded", {
+        id: toastId,
+        description: "It is selected for the public Astro build. Publish when ready.",
       });
     } catch (error) {
-      setNotice({
-        tone: "error",
-        title: "Media upload failed",
-        message: error instanceof Error ? error.message : "Image upload could not be completed.",
+      toast.error("Media upload failed", {
+        id: toastId,
+        description: error instanceof Error ? error.message : "Image upload could not be completed.",
       });
     } finally {
       setSavingKey(null);
     }
   }
 
-  async function handleSaveContact(value: string) {
-    setSavingKey("contact-settings");
-    setNotice({
-      tone: "info",
-      title: "Saving contact setting",
-      message: "Updating the public WhatsApp value in Convex.",
+  async function handleSaveExternalMedia(payload: MediaMetadataRequest) {
+    const key = `${payload.contentId}:media`;
+    const toastId = toast.loading("Saving media reference", {
+      description: "Registering the public image URL for this project.",
     });
+    setSavingKey(key);
 
     try {
-      await saveSiteSetting({
-        key: "PUBLIC_WHATSAPP_URL",
-        value,
-        classification: "public-build-value",
-      });
+      await saveMediaMetadata(payload);
       await refresh();
-      setNotice({
-        tone: "success",
-        title: "Contact setting saved",
-        message: "This value will be applied to the public build after publish.",
+      toast.success("Media reference saved", {
+        id: toastId,
+        description: "It is selected for the public Astro build. Publish when ready.",
       });
     } catch (error) {
-      setNotice({
-        tone: "error",
-        title: "Contact save failed",
-        message: error instanceof Error ? error.message : "Contact setting could not be saved.",
+      toast.error("Media reference failed", {
+        id: toastId,
+        description: error instanceof Error ? error.message : "Media reference could not be saved.",
+      });
+    } finally {
+      setSavingKey(null);
+    }
+  }
+
+  async function handleSelectMedia(payload: MediaSelectionRequest) {
+    const key = `${payload.mediaId}:select`;
+    const toastId = toast.loading("Selecting public image");
+    setSavingKey(key);
+
+    try {
+      await selectProjectMedia(payload);
+      await refresh();
+      toast.success("Public image selected", {
+        id: toastId,
+        description: "This image is the one the Astro build will use for the project.",
+      });
+    } catch (error) {
+      toast.error("Image selection failed", {
+        id: toastId,
+        description: error instanceof Error ? error.message : "The selected image could not be saved.",
+      });
+    } finally {
+      setSavingKey(null);
+    }
+  }
+
+  async function handleArchiveMedia(payload: MediaSelectionRequest) {
+    const key = `${payload.mediaId}:archive`;
+    const toastId = toast.loading("Hiding image");
+    setSavingKey(key);
+
+    try {
+      await archiveProjectMedia(payload);
+      await refresh();
+      toast.success("Image hidden from publish", {
+        id: toastId,
+        description: "The media record is archived and will not be sent to Astro.",
+      });
+    } catch (error) {
+      toast.error("Image could not be hidden", {
+        id: toastId,
+        description: error instanceof Error ? error.message : "The media record could not be archived.",
+      });
+    } finally {
+      setSavingKey(null);
+    }
+  }
+
+  async function handleCreateProject(input: NewProjectInput) {
+    const contentId = `case-study:${input.slug}`;
+
+    if (content?.projects.some((project) => project.contentId === contentId)) {
+      toast.error("Project slug already exists", {
+        description: "Choose a different slug before creating this draft.",
+      });
+      return;
+    }
+
+    const toastId = toast.loading("Creating project", {
+      description: input.title,
+    });
+    setSavingKey("new-project");
+
+    try {
+      await Promise.all([
+        saveProjectDraft(buildNewProjectDraft(input, "en")),
+        saveProjectDraft(buildNewProjectDraft(input, "es")),
+      ]);
+      const nextContent = await refresh();
+      setSelectedProjectId(nextContent?.projects.some((project) => project.contentId === contentId)
+        ? contentId
+        : nextContent?.projects[0]?.contentId);
+      toast.success("Project created", {
+        id: toastId,
+        description: "The draft exists in both languages. Save details, attach media, then publish.",
+      });
+    } catch (error) {
+      toast.error("Project creation failed", {
+        id: toastId,
+        description: error instanceof Error ? error.message : "The project draft could not be created.",
       });
     } finally {
       setSavingKey(null);
@@ -193,27 +283,25 @@ export function ProjectsScreen() {
 
   async function handlePublishProject(project: DashboardProject) {
     setPublishingKey(project.contentId);
-    setNotice({
-      tone: "info",
-      title: "Publishing project",
-      message: "Marking reviewed drafts as published and queuing the release train.",
+    const toastId = toast.loading("Publishing project", {
+      description: "Marking reviewed drafts and media for the release train.",
     });
 
     try {
       const result = await publishContent({ scope: "project", contentId: project.contentId });
       await refresh();
-      setNotice({
-        tone: result.workflow.status === "queued" ? "success" : "info",
-        title: result.workflow.status === "queued" ? "Publish queued" : "Published in Convex",
-        message: result.workflow.status === "queued"
+      const description = result.workflow.status === "queued"
           ? `GitHub Actions is rebuilding ${result.workflow.ref ?? "develop"} for ${project.title}.`
-          : `${project.title} was marked published, but ${result.workflow.reason ?? "the workflow token is not configured."}`,
-      });
+          : `${project.title} was marked published, but ${result.workflow.reason ?? "the workflow token is not configured."}`;
+      if (result.workflow.status === "queued") {
+        toast.success("Publish queued", { id: toastId, description });
+      } else {
+        toast.message("Published in Convex", { id: toastId, description });
+      }
     } catch (error) {
-      setNotice({
-        tone: "error",
-        title: "Publish failed",
-        message: error instanceof Error ? error.message : "Project publish could not be queued.",
+      toast.error("Publish failed", {
+        id: toastId,
+        description: error instanceof Error ? error.message : "Project publish could not be queued.",
       });
     } finally {
       setPublishingKey(null);
@@ -232,8 +320,6 @@ export function ProjectsScreen() {
         description="Edit project stories, outcomes, structure, images, CTA, URL, and SEO metadata. Save stores work privately; Publish sends reviewed content through the release train."
       />
 
-      <NoticeAlert notice={notice} />
-
       {loadError ? (
         <Alert variant="destructive">
           <AlertTitle>Dashboard data problem</AlertTitle>
@@ -243,7 +329,18 @@ export function ProjectsScreen() {
 
       {content ? (
         <>
-          <Tabs defaultValue={content.projects[0]?.contentId} orientation="vertical" className="project-shell">
+          <NewProjectCard
+            existingContentIds={content.projects.map((project) => project.contentId)}
+            isSaving={savingKey === "new-project"}
+            onCreate={handleCreateProject}
+          />
+
+          <Tabs
+            value={selectedProjectId ?? content.projects[0]?.contentId}
+            onValueChange={setSelectedProjectId}
+            orientation="vertical"
+            className="project-shell"
+          >
             <ProjectTabs projects={content.projects} />
             <div className="min-w-0">
               {content.projects.map((project) => (
@@ -253,6 +350,9 @@ export function ProjectsScreen() {
                     isPublishing={publishingKey === project.contentId}
                     savingKey={savingKey}
                     onPublish={() => handlePublishProject(project)}
+                    onArchiveMedia={handleArchiveMedia}
+                    onSelectMedia={handleSelectMedia}
+                    onSaveExternalMedia={handleSaveExternalMedia}
                     onSaveMedia={handleUploadMedia}
                     onSaveProject={handleSaveProject}
                   />
@@ -260,12 +360,6 @@ export function ProjectsScreen() {
               ))}
             </div>
           </Tabs>
-
-          <ContactSettingsCard
-            settings={content.settings}
-            isSaving={savingKey === "contact-settings"}
-            onSave={handleSaveContact}
-          />
         </>
       ) : null}
     </div>
@@ -283,14 +377,143 @@ function ProjectTabs({ projects }: { projects: DashboardProject[] }) {
         <Badge variant="outline">{projects.length}</Badge>
       </div>
       <TabsList className="project-tabs-list">
-        {projects.map((project) => (
+        {projects.map((project, index) => (
           <TabsTrigger key={project.contentId} value={project.contentId} className="project-tab-trigger">
-            <span className="project-tab-title">{project.title}</span>
-            <small>{formatProjectStatus(project.status)}</small>
+            <span className="project-tab-index">{String(index + 1).padStart(2, "0")}</span>
+            <span className="project-tab-copy">
+              <span className="project-tab-title">{project.title}</span>
+              <small>{project.englishPath}</small>
+            </span>
+            <Badge variant="outline">{formatProjectStatus(project.status)}</Badge>
           </TabsTrigger>
         ))}
       </TabsList>
     </aside>
+  );
+}
+
+function NewProjectCard({
+  existingContentIds,
+  isSaving,
+  onCreate,
+}: {
+  existingContentIds: string[];
+  isSaving: boolean;
+  onCreate: (input: NewProjectInput) => void | Promise<void>;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [form, setForm] = useState<NewProjectInput>({
+    title: "",
+    spanishTitle: "",
+    slug: "",
+    status: "active-build",
+  });
+
+  function update<K extends keyof NewProjectInput>(key: K, value: NewProjectInput[K]) {
+    setForm((current) => ({
+      ...current,
+      [key]: value,
+      ...(key === "title" && !current.slug ? { slug: slugifyProjectTitle(String(value)) } : {}),
+    }));
+  }
+
+  const normalizedSlug = form.slug.trim().toLowerCase();
+  const nextContentId = `case-study:${normalizedSlug}`;
+  const slugExists = isSafeProjectSlug(normalizedSlug) && existingContentIds.includes(nextContentId);
+  const canCreate = Boolean(
+    form.title.trim()
+    && form.spanishTitle.trim()
+    && isSafeProjectSlug(normalizedSlug)
+    && !slugExists,
+  );
+
+  return (
+    <Card className="new-project-card">
+      <CardHeader className="new-project-header">
+        <div>
+          <CardTitle>Create project</CardTitle>
+          <CardDescription>Add a new public case-study draft. It appears in the dashboard immediately and in Astro after publish/build.</CardDescription>
+        </div>
+        <CardAction>
+          <Button type="button" variant={isOpen ? "secondary" : "outline"} onClick={() => setIsOpen((current) => !current)}>
+            <PlusIcon data-icon="inline-start" />
+            New project
+          </Button>
+        </CardAction>
+      </CardHeader>
+      {isOpen ? (
+        <CardContent>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (!canCreate) {
+                return;
+              }
+              void onCreate({
+                ...form,
+                slug: normalizedSlug,
+                title: form.title.trim(),
+                spanishTitle: form.spanishTitle.trim(),
+              });
+            }}
+          >
+            <FieldGroup className="new-project-form">
+              <Field>
+                <FieldLabel htmlFor="new-project-title">English title</FieldLabel>
+                <Input
+                  id="new-project-title"
+                  value={form.title}
+                  onChange={(event) => update("title", event.target.value)}
+                  placeholder="Project name"
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="new-project-spanish-title">Spanish title</FieldLabel>
+                <Input
+                  id="new-project-spanish-title"
+                  value={form.spanishTitle}
+                  onChange={(event) => update("spanishTitle", event.target.value)}
+                  placeholder="Nombre del proyecto"
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="new-project-slug">Slug</FieldLabel>
+                <Input
+                  id="new-project-slug"
+                  value={form.slug}
+                  onChange={(event) => update("slug", slugifyProjectTitle(event.target.value))}
+                  placeholder="project-slug"
+                />
+                <FieldDescription>
+                  {slugExists
+                    ? "This project slug already exists."
+                    : `Creates case-study:${normalizedSlug || "project-slug"}.`}
+                </FieldDescription>
+              </Field>
+              <Field>
+                <FieldLabel>Status</FieldLabel>
+                <Select value={form.status} onValueChange={(value) => update("status", value as DashboardCaseStudyStatus)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {caseStudyStatuses.map((status) => (
+                        <SelectItem key={status} value={status}>{formatProjectStatus(status)}</SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Button type="submit" disabled={isSaving || !canCreate}>
+                {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <PlusIcon data-icon="inline-start" />}
+                Create draft
+              </Button>
+            </FieldGroup>
+          </form>
+        </CardContent>
+      ) : null}
+    </Card>
   );
 }
 
@@ -301,6 +524,9 @@ function ProjectEditor({
   onPublish,
   onSaveProject,
   onSaveMedia,
+  onSaveExternalMedia,
+  onSelectMedia,
+  onArchiveMedia,
 }: {
   project: DashboardProject;
   isPublishing: boolean;
@@ -308,37 +534,58 @@ function ProjectEditor({
   onPublish: () => void | Promise<void>;
   onSaveProject: (payload: ProjectFormState) => void | Promise<void>;
   onSaveMedia: (payload: MediaUploadRequest, file: File) => void | Promise<void>;
+  onSaveExternalMedia: (payload: MediaMetadataRequest) => void | Promise<void>;
+  onSelectMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
+  onArchiveMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
 }) {
   return (
     <div className="project-editor-grid">
       <div className="project-main-column">
         <ProjectSummaryCard project={project} isPublishing={isPublishing} onPublish={onPublish} />
-        <Tabs defaultValue="en" className="locale-editor-tabs">
-          <TabsList className="locale-tabs-list">
-            {project.locales.map((localeContent) => (
-              <TabsTrigger key={localeContent.locale} value={localeContent.locale}>
-                {localeContent.locale === "en" ? "English" : "Spanish"}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          {project.locales.map((localeContent) => (
-            <TabsContent key={`${project.contentId}:${localeContent.locale}`} value={localeContent.locale} className="mt-4">
-              <ProjectLocaleForm
-                localeContent={localeContent}
-                project={project}
-                isSaving={savingKey === `${project.contentId}:${localeContent.locale}`}
-                onSave={onSaveProject}
-              />
-            </TabsContent>
-          ))}
-        </Tabs>
+        <Card className="locale-editor-card">
+          <Tabs defaultValue="en" className="locale-editor-tabs">
+            <CardHeader className="locale-editor-header">
+              <div>
+                <CardTitle>Localized content</CardTitle>
+                <CardDescription>Choose the language, edit the draft, then save before publishing.</CardDescription>
+              </div>
+              <CardAction>
+                <TabsList className="locale-tabs-list">
+                  {project.locales.map((localeContent) => (
+                    <TabsTrigger key={localeContent.locale} value={localeContent.locale}>
+                      {localeContent.locale === "en" ? "English" : "Spanish"}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </CardAction>
+            </CardHeader>
+            <CardContent>
+              {project.locales.map((localeContent) => (
+                <TabsContent key={`${project.contentId}:${localeContent.locale}`} value={localeContent.locale} className="mt-0">
+                  <ProjectLocaleForm
+                    localeContent={localeContent}
+                    project={project}
+                    isSaving={savingKey === `${project.contentId}:${localeContent.locale}`}
+                    onSave={onSaveProject}
+                  />
+                </TabsContent>
+              ))}
+            </CardContent>
+          </Tabs>
+        </Card>
       </div>
       <aside className="project-side-column">
-        <ProjectImagesCard project={project} />
+        <ProjectImagesCard
+          project={project}
+          savingKey={savingKey}
+          onSelectMedia={onSelectMedia}
+          onArchiveMedia={onArchiveMedia}
+        />
         <ImageUploadForm
           project={project}
           isSaving={savingKey === `${project.contentId}:media`}
           onSave={onSaveMedia}
+          onSaveExternal={onSaveExternalMedia}
         />
       </aside>
     </div>
@@ -443,28 +690,24 @@ function ProjectLocaleForm({
   }
 
   return (
-    <Card className="project-form-card">
-      <CardHeader className="project-form-header">
+    <form
+      className="content-edit-form"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void onSave(form);
+      }}
+    >
+      <div className="project-form-header">
         <div>
-          <CardTitle>{localeContent.locale === "en" ? "English content" : "Spanish content"}</CardTitle>
-          <CardDescription>
+          <h2>{localeContent.locale === "en" ? "English content" : "Spanish content"}</h2>
+          <p>
             {localeContent.path} · {localeContent.draft ? "private dashboard draft" : "public content graph"}
-          </CardDescription>
+          </p>
         </div>
-        <CardAction>
-          <Badge variant={hasChanges ? "secondary" : "outline"}>
-            {hasChanges ? "Unsaved changes" : "Up to date"}
-          </Badge>
-        </CardAction>
-      </CardHeader>
-      <CardContent>
-        <form
-          className="content-edit-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            void onSave(form);
-          }}
-        >
+        <Badge variant={hasChanges ? "secondary" : "outline"}>
+          {hasChanges ? "Unsaved changes" : "Up to date"}
+        </Badge>
+      </div>
           <FieldSet>
             <FieldLegend>Identity</FieldLegend>
             <FieldGroup>
@@ -579,31 +822,99 @@ function ProjectLocaleForm({
               Save {localeContent.locale.toUpperCase()}
             </Button>
           </div>
-        </form>
-      </CardContent>
-    </Card>
+    </form>
   );
 }
 
-function ProjectImagesCard({ project }: { project: DashboardProject }) {
+function ProjectImagesCard({
+  project,
+  savingKey,
+  onSelectMedia,
+  onArchiveMedia,
+}: {
+  project: DashboardProject;
+  savingKey: string | null;
+  onSelectMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
+  onArchiveMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
+}) {
+  const mediaImages = project.images.filter((image) => image.source === "media-metadata");
+  const selectedImage = mediaImages.find((image) => image.selectedForPublic && image.status !== "archived");
+  const fallbackImage = selectedImage
+    ? null
+    : mediaImages.find((image) => image.status === "published")
+      ?? mediaImages.find((image) => image.status !== "archived")
+      ?? project.images.find((image) => image.source === "content-graph");
+  const previewImage = selectedImage ?? fallbackImage;
+
   return (
     <Card className="media-card">
       <CardHeader className="media-card-header">
         <CardTitle>Project media</CardTitle>
-        <CardDescription>Images attached to this project and available for the publish pipeline.</CardDescription>
+        <CardDescription>Choose the exact image that the Astro landing and case-study pages should use.</CardDescription>
       </CardHeader>
       <CardContent className="media-list">
-        {project.images.length > 0 ? project.images.map((image) => (
-          <div key={`${image.source}:${image.label}:${image.storageKey ?? image.href ?? image.src ?? ""}`} className="media-row">
-            <div className="media-icon">
-              <ImageIcon />
+        {previewImage ? (
+          <div className="media-selected-preview">
+            {previewImage.src ? (
+              <img src={previewImage.src} alt={previewImage.altText} />
+            ) : (
+              <div className="media-preview-empty"><ImageIcon /></div>
+            )}
+            <div>
+              <span>{selectedImage ? "Selected for Astro" : "No dashboard image selected"}</span>
+              <strong>{previewImage.label}</strong>
+              <p>
+                {selectedImage
+                  ? previewImage.altText
+                  : "Choose Use in Astro on one media row to make the public image explicit."}
+              </p>
             </div>
+          </div>
+        ) : null}
+
+        {project.images.length > 0 ? project.images.map((image) => (
+          <div
+            key={`${image.source}:${image.label}:${image.storageKey ?? image.href ?? image.src ?? ""}`}
+            className={`media-row ${image.selectedForPublic ? "media-row-selected" : ""}`}
+          >
+            {image.src ? (
+              <img className="media-thumb" src={image.src} alt={image.altText} />
+            ) : (
+              <div className="media-icon">
+                <ImageIcon />
+              </div>
+            )}
             <div className="min-w-0 flex-1">
               <div className="font-medium">{image.label}</div>
               <p>{image.altText}</p>
               <div className="media-row-actions">
                 <Badge variant="secondary">{image.source}</Badge>
                 {image.status ? <Badge variant="outline">{image.status}</Badge> : null}
+                {image.selectedForPublic ? <Badge>Astro image</Badge> : null}
+                {image.id && image.status !== "archived" ? (
+                  <Button
+                    type="button"
+                    variant={image.selectedForPublic ? "secondary" : "outline"}
+                    size="sm"
+                    disabled={savingKey === `${image.id}:select`}
+                    onClick={() => void onSelectMedia({ mediaId: image.id!, contentId: project.contentId })}
+                  >
+                    {savingKey === `${image.id}:select` ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <EyeIcon data-icon="inline-start" />}
+                    Use in Astro
+                  </Button>
+                ) : null}
+                {image.id && image.status !== "archived" ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    disabled={savingKey === `${image.id}:archive`}
+                    onClick={() => void onArchiveMedia({ mediaId: image.id!, contentId: project.contentId })}
+                  >
+                    {savingKey === `${image.id}:archive` ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <EyeOffIcon data-icon="inline-start" />}
+                    Hide
+                  </Button>
+                ) : null}
                 {image.href ? (
                   <Button asChild variant="link" size="sm" className="h-auto p-0">
                     <a href={image.href} target="_blank" rel="noreferrer">
@@ -627,12 +938,16 @@ function ImageUploadForm({
   project,
   isSaving,
   onSave,
+  onSaveExternal,
 }: {
   project: DashboardProject;
   isSaving: boolean;
   onSave: (payload: MediaUploadRequest, file: File) => void | Promise<void>;
+  onSaveExternal: (payload: MediaMetadataRequest) => void | Promise<void>;
 }) {
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [publicUrl, setPublicUrl] = useState("");
   const [form, setForm] = useState<MediaUploadRequest>({
     contentId: project.contentId,
     storageKey: `media/${project.contentId.replace("case-study:", "")}`,
@@ -643,6 +958,8 @@ function ImageUploadForm({
 
   useEffect(() => {
     setFile(null);
+    setPreviewUrl(null);
+    setPublicUrl("");
     setForm({
       contentId: project.contentId,
       storageKey: `media/${project.contentId.replace("case-study:", "")}`,
@@ -652,24 +969,46 @@ function ImageUploadForm({
     });
   }, [project.contentId]);
 
+  useEffect(() => () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+  }, [previewUrl]);
+
   return (
     <Card className="upload-card">
       <CardHeader className="media-card-header">
-        <CardTitle>Upload image</CardTitle>
-        <CardDescription>Select a local image. The dashboard requests a direct Cloudflare upload URL and stores the resulting media record.</CardDescription>
+        <CardTitle>Add image</CardTitle>
+        <CardDescription>Preview the selected file, or register an already public image URL when Cloudflare Images is not configured.</CardDescription>
       </CardHeader>
       <CardContent>
         <form
           className="content-edit-form"
           onSubmit={(event) => {
             event.preventDefault();
+            const trimmedPublicUrl = publicUrl.trim();
+
+            if (trimmedPublicUrl) {
+              void onSaveExternal({
+                ...form,
+                publicUrl: trimmedPublicUrl,
+                selectedForPublic: true,
+              });
+              return;
+            }
             if (!file) {
               return;
             }
-            void onSave(form, file);
+            void onSave({ ...form, selectedForPublic: true }, file);
           }}
         >
           <FieldGroup>
+            {previewUrl ? (
+              <figure className="upload-preview">
+                <img src={previewUrl} alt={form.altText || "Selected image preview"} />
+                <figcaption>{file?.name}</figcaption>
+              </figure>
+            ) : null}
             <Field>
               <FieldLabel>Local image</FieldLabel>
               <Input
@@ -677,7 +1016,11 @@ function ImageUploadForm({
                 accept="image/png,image/jpeg,image/webp"
                 onChange={(event) => {
                   const selectedFile = event.target.files?.[0] ?? null;
+                  if (previewUrl) {
+                    URL.revokeObjectURL(previewUrl);
+                  }
                   setFile(selectedFile);
+                  setPreviewUrl(selectedFile ? URL.createObjectURL(selectedFile) : null);
 
                   if (selectedFile) {
                     setForm((current) => ({
@@ -687,6 +1030,15 @@ function ImageUploadForm({
                   }
                 }}
               />
+            </Field>
+            <Field>
+              <FieldLabel>Public image URL</FieldLabel>
+              <Input
+                value={publicUrl}
+                onChange={(event) => setPublicUrl(event.target.value)}
+                placeholder="https://..."
+              />
+              <FieldDescription>Use this when the image is already hosted publicly. It becomes the selected Astro image.</FieldDescription>
             </Field>
             <Field>
               <FieldLabel>Storage key</FieldLabel>
@@ -722,56 +1074,9 @@ function ImageUploadForm({
               </Select>
             </Field>
           </FieldGroup>
-          <Button type="submit" disabled={isSaving || !file || !form.altText.trim()}>
+          <Button type="submit" disabled={isSaving || (!file && !publicUrl.trim()) || !form.altText.trim()}>
             {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <UploadCloudIcon data-icon="inline-start" />}
-            Upload image
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
-  );
-}
-
-function ContactSettingsCard({
-  settings,
-  isSaving,
-  onSave,
-}: {
-  settings: DashboardSiteSetting[];
-  isSaving: boolean;
-  onSave: (value: string) => void | Promise<void>;
-}) {
-  const currentValue = useMemo(
-    () => settings.find((setting) => setting.key === "PUBLIC_WHATSAPP_URL")?.value ?? "",
-    [settings],
-  );
-  const [value, setValue] = useState(currentValue);
-
-  useEffect(() => {
-    setValue(currentValue);
-  }, [currentValue]);
-
-  return (
-    <Card id="contact-settings" className="contact-settings-card">
-      <CardHeader>
-        <CardTitle>Contact setting</CardTitle>
-        <CardDescription>Only the public WhatsApp/contact value belongs here. It publishes through the same release path.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form
-          className="contact-setting-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            void onSave(value);
-          }}
-        >
-          <Field>
-            <FieldLabel>PUBLIC_WHATSAPP_URL</FieldLabel>
-            <Input value={value} onChange={(event) => setValue(event.target.value)} />
-          </Field>
-          <Button className="self-end" type="submit" disabled={isSaving || value === currentValue}>
-            {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <SaveIcon data-icon="inline-start" />}
-            Save contact
+            {publicUrl.trim() ? "Save image URL" : "Upload image"}
           </Button>
         </form>
       </CardContent>
@@ -799,20 +1104,6 @@ function PageHeading({
   );
 }
 
-function NoticeAlert({ notice }: { notice: Notice | null }) {
-  if (!notice) {
-    return null;
-  }
-
-  return (
-    <Alert variant={notice.tone === "error" ? "destructive" : "default"} className="status-alert">
-      {notice.tone === "success" ? <CheckCircle2Icon data-icon="inline-start" /> : null}
-      <AlertTitle>{notice.title}</AlertTitle>
-      <AlertDescription>{notice.message}</AlertDescription>
-    </Alert>
-  );
-}
-
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="metric-tile">
@@ -830,6 +1121,46 @@ function ProjectsSkeleton() {
       <Skeleton className="h-96 w-full" />
     </div>
   );
+}
+
+function buildNewProjectDraft(input: NewProjectInput, locale: DashboardLocale): ProjectFormState {
+  const isSpanish = locale === "es";
+  const title = isSpanish ? input.spanishTitle : input.title;
+  const summary = isSpanish
+    ? `Caso público en borrador para ${title}.`
+    : `Public case-study draft for ${title}.`;
+
+  return {
+    contentId: `case-study:${input.slug}`,
+    locale,
+    status: input.status,
+    evidenceStatus: "sanitized",
+    title,
+    summary,
+    seoDescription: summary,
+    projectUrl: "",
+    ctaLabel: isSpanish ? "Hablemos de algo similar" : "Start a similar build",
+    ctaHref: isSpanish ? "/es/contacto" : "/contact",
+    achievements: isSpanish
+      ? "Describe el resultado de negocio antes de publicar este caso."
+      : "Describe the business outcome before publishing this case study.",
+    structureNotes: isSpanish
+      ? "Describe la estructura pública, los límites privados y la evidencia segura."
+      : "Describe the public structure, private boundaries, and safe evidence.",
+  };
+}
+
+function slugifyProjectTitle(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-+/g, "-");
+}
+
+function isSafeProjectSlug(value: string): boolean {
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
 }
 
 function formatProjectStatus(value: string): string {

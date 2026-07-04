@@ -23,7 +23,7 @@ The React app uses:
 - TanStack Router for dashboard routes;
 - TanStack Table for lead review tables with sorting and pagination;
 - shadcn/ui with Radix primitives and Tailwind v4 tokens;
-- project-centered screens instead of unrelated case-study/media/settings pages.
+- project-centered screens instead of unrelated case-study/media pages, with Settings reserved for site-level public build values.
 
 Current app routes:
 
@@ -33,8 +33,9 @@ Current app routes:
 | `/dashboard/projects` | Manage project text, SEO, CTA, URL, achievements, structure notes, and images |
 | `/dashboard/leads` | Review and update lead status |
 | `/dashboard/resume` | Manage downloadable resume versions |
+| `/dashboard/settings` | Manage site-level public build values that do not belong to one project |
 
-Legacy URLs `/dashboard/case-studies`, `/dashboard/media`, and `/dashboard/settings` are routed to the project workspace.
+Legacy URLs `/dashboard/case-studies` and `/dashboard/media` are routed to the project workspace.
 
 ## Project Model
 
@@ -50,6 +51,8 @@ Projects are the dashboard unit. A project owns:
 - status and public link state;
 - image metadata;
 - public-safe public links.
+
+Site-level public settings, such as the public WhatsApp contact URL, belong in Settings instead of inside a project record.
 
 The public Astro site still renders from the Public Content Graph for SEO stability. Dashboard edits are stored as Convex drafts. Publish marks reviewed drafts, triggers the Release Train through GitHub Actions, and `pnpm run publish:content:build` applies published drafts to the static graph before Astro builds. Save draft is not publish.
 

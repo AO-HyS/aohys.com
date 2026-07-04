@@ -98,6 +98,7 @@ export interface DashboardMediaMetadata {
   usage: DashboardMediaUsage;
   status: DashboardMediaStatus;
   locale?: "en" | "es";
+  selectedForPublic?: boolean;
   updatedAt: number;
 }
 

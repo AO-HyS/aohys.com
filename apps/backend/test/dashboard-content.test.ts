@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   parseDashboardCaseStudyMetadataPayload,
   parseDashboardMediaUploadPayload,
+  parseDashboardMediaSelectionPayload,
   parseDashboardMediaMetadataPayload,
   parseDashboardPublishPayload,
   parseDashboardProjectDraftPayload,
@@ -39,7 +40,7 @@ describe("dashboard content HTTP boundary", () => {
     });
 
     await expect(parseDashboardCaseStudyMetadataPayload(request)).rejects.toThrow(
-      "contentId is not supported.",
+      "contentId must be a safe case-study:<slug> identifier.",
     );
   });
 
@@ -78,6 +79,54 @@ describe("dashboard content HTTP boundary", () => {
     });
   });
 
+  it("accepts safe dashboard-created case-study IDs", async () => {
+    const request = new Request("https://aohys-preview.convex.site/dashboard/content/project", {
+      method: "POST",
+      body: JSON.stringify({
+        contentId: "case-study:new-public-system",
+        locale: "en",
+        status: "active-build",
+        evidenceStatus: "sanitized",
+        title: "New Public System",
+        summary: "A newly created public case study.",
+        seoDescription: "A newly created public case study from the dashboard.",
+        ctaLabel: "Start a similar build",
+        ctaHref: "/contact",
+        achievements: "A safe public outcome.",
+        structureNotes: "A safe public structure.",
+      }),
+    });
+
+    await expect(parseDashboardProjectDraftPayload(request)).resolves.toMatchObject({
+      contentId: "case-study:new-public-system",
+      locale: "en",
+      title: "New Public System",
+    });
+  });
+
+  it("rejects unsafe dashboard-created case-study IDs", async () => {
+    const request = new Request("https://aohys-preview.convex.site/dashboard/content/project", {
+      method: "POST",
+      body: JSON.stringify({
+        contentId: "case-study:../private",
+        locale: "en",
+        status: "active-build",
+        evidenceStatus: "sanitized",
+        title: "Unsafe",
+        summary: "Unsafe.",
+        seoDescription: "Unsafe.",
+        ctaLabel: "Contact",
+        ctaHref: "/contact",
+        achievements: "Unsafe.",
+        structureNotes: "Unsafe.",
+      }),
+    });
+
+    await expect(parseDashboardProjectDraftPayload(request)).rejects.toThrow(
+      "contentId must be a safe case-study:<slug> identifier.",
+    );
+  });
+
   it("rejects project drafts with unsupported CTA hrefs", async () => {
     const request = new Request("https://aohys-preview.convex.site/dashboard/content/project", {
       method: "POST",
@@ -113,6 +162,7 @@ describe("dashboard content HTTP boundary", () => {
         usage: "case-study",
         status: "draft",
         locale: "en",
+        selectedForPublic: true,
       }),
     });
 
@@ -125,6 +175,36 @@ describe("dashboard content HTTP boundary", () => {
       usage: "case-study",
       status: "draft",
       locale: "en",
+      selectedForPublic: true,
+    });
+  });
+
+  it("preserves omitted media selection intent for callers that only need a direct upload URL", async () => {
+    await expect(parseDashboardMediaMetadataPayload(new Request("https://aohys-preview.convex.site/dashboard/content/media", {
+      method: "POST",
+      body: JSON.stringify({
+        storageProvider: "external",
+        storageKey: "screenshots/casa-roca-secondary",
+        publicUrl: "https://aohys.com/case-studies/casa-roca",
+        altText: "Casa Roca secondary screenshot.",
+        contentId: "case-study:casa-roca",
+        usage: "case-study",
+        status: "draft",
+      }),
+    }))).resolves.toMatchObject({
+      selectedForPublic: undefined,
+    });
+
+    await expect(parseDashboardMediaUploadPayload(new Request("https://aohys-preview.convex.site/dashboard/content/media/upload-url", {
+      method: "POST",
+      body: JSON.stringify({
+        storageKey: "media/Casa Roca Secondary",
+        altText: "Casa Roca secondary upload.",
+        contentId: "case-study:casa-roca",
+        usage: "case-study",
+      }),
+    }))).resolves.toMatchObject({
+      selectedForPublic: undefined,
     });
   });
 
@@ -186,6 +266,7 @@ describe("dashboard content HTTP boundary", () => {
         contentId: "case-study:casa-roca",
         usage: "case-study",
         locale: "en",
+        selectedForPublic: true,
       }),
     });
 
@@ -195,6 +276,22 @@ describe("dashboard content HTTP boundary", () => {
       contentId: "case-study:casa-roca",
       usage: "case-study",
       locale: "en",
+      selectedForPublic: true,
+    });
+  });
+
+  it("parses media selection requests for the public Astro image", async () => {
+    const request = new Request("https://aohys-preview.convex.site/dashboard/content/media/select", {
+      method: "POST",
+      body: JSON.stringify({
+        mediaId: "media_123",
+        contentId: "case-study:new-public-system",
+      }),
+    });
+
+    await expect(parseDashboardMediaSelectionPayload(request)).resolves.toEqual({
+      mediaId: "media_123",
+      contentId: "case-study:new-public-system",
     });
   });
 

@@ -5,6 +5,7 @@ import type {
   DashboardLead,
   DashboardLeadStatus,
   DashboardLocale,
+  DashboardMediaMetadata,
   DashboardMediaUsage,
   DashboardResumeContent,
 } from "@/types";
@@ -25,12 +26,14 @@ export interface ProjectDraftRequest {
 }
 
 export interface MediaMetadataRequest {
+  storageProvider?: DashboardMediaMetadata["storageProvider"];
   storageKey: string;
   publicUrl?: string;
   altText: string;
   contentId: string;
   usage: DashboardMediaUsage;
   locale?: DashboardLocale;
+  selectedForPublic?: boolean;
 }
 
 export interface MediaUploadRequest {
@@ -39,6 +42,12 @@ export interface MediaUploadRequest {
   contentId: string;
   usage: DashboardMediaUsage;
   locale?: DashboardLocale;
+  selectedForPublic?: boolean;
+}
+
+export interface MediaSelectionRequest {
+  mediaId: string;
+  contentId: string;
 }
 
 export interface MediaUploadResponse {
@@ -132,9 +141,23 @@ export function saveMediaMetadata(payload: MediaMetadataRequest): Promise<{ ok: 
     method: "POST",
     body: JSON.stringify({
       ...payload,
-      storageProvider: "external",
+      storageProvider: payload.storageProvider ?? "external",
       status: "draft",
     }),
+  });
+}
+
+export function selectProjectMedia(payload: MediaSelectionRequest): Promise<{ ok: true }> {
+  return dashboardRequest<{ ok: true }>("/content/media/select", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function archiveProjectMedia(payload: MediaSelectionRequest): Promise<{ ok: true }> {
+  return dashboardRequest<{ ok: true }>("/content/media/archive", {
+    method: "POST",
+    body: JSON.stringify(payload),
   });
 }
 

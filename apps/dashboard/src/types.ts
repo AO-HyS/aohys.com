@@ -45,6 +45,7 @@ export interface DashboardProjectLocaleContent {
 }
 
 export interface DashboardProjectImage {
+  id?: string;
   label: string;
   altText: string;
   source: "content-graph" | "media-metadata";
@@ -53,6 +54,7 @@ export interface DashboardProjectImage {
   storageKey?: string;
   status?: DashboardMediaStatus;
   usage?: DashboardMediaUsage;
+  selectedForPublic?: boolean;
 }
 
 export interface DashboardProject {
@@ -79,6 +81,7 @@ export interface DashboardMediaMetadata {
   usage: DashboardMediaUsage;
   status: DashboardMediaStatus;
   locale?: DashboardLocale;
+  selectedForPublic?: boolean;
   updatedAt: number;
 }
 

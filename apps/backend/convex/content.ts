@@ -87,6 +87,7 @@ export const listForDashboard = internalQuery({
       usage: mediaUsageValidator,
       status: mediaStatusValidator,
       locale: v.optional(localeValidator),
+      selectedForPublic: v.optional(v.boolean()),
       updatedAt: v.number(),
     })),
     settings: v.array(v.object({
@@ -153,6 +154,7 @@ export const listForDashboard = internalQuery({
         usage: item.usage,
         status: item.status,
         locale: item.locale,
+        selectedForPublic: item.selectedForPublic,
         updatedAt: item.updatedAt,
       })),
       settings: settings.map((setting) => ({
@@ -326,7 +328,39 @@ export const publishContentFromDashboard = internalMutation({
           .withIndex("by_content_id", (query) => query.eq("contentId", args.contentId))
           .collect()
         : await ctx.db.query("mediaMetadata").collect();
-      const publishableMediaRows = mediaRows.filter((media) => media.status !== "archived");
+      const mediaByPublicSlot = new Map<string, typeof mediaRows>();
+      const mediaPublicSlotKey = (media: (typeof mediaRows)[number]) =>
+        `${media.contentId ?? media._id}:${media.usage}`;
+
+      for (const media of mediaRows) {
+        const groupKey = mediaPublicSlotKey(media);
+        mediaByPublicSlot.set(groupKey, [...(mediaByPublicSlot.get(groupKey) ?? []), media]);
+      }
+
+      const exclusivePublicSlotKeys = new Set<string>();
+      const publishableMediaRows = [...mediaByPublicSlot.entries()].flatMap(([groupKey, projectMediaRows]) => {
+        const selectedRows = projectMediaRows.filter((media) =>
+          media.selectedForPublic === true && media.status !== "archived",
+        );
+
+        if (selectedRows.length > 0) {
+          exclusivePublicSlotKeys.add(groupKey);
+
+          return selectedRows;
+        }
+
+        const latestFallback = projectMediaRows
+          .filter((media) => media.status !== "archived")
+          .sort((left, right) => right.updatedAt - left.updatedAt)[0];
+
+        if (latestFallback) {
+          exclusivePublicSlotKeys.add(groupKey);
+
+          return [latestFallback];
+        }
+
+        return [];
+      });
 
       await Promise.all(publishableMediaRows.map((media) =>
         ctx.db.patch(media._id, {
@@ -334,6 +368,21 @@ export const publishContentFromDashboard = internalMutation({
           updatedAt: publishedAt,
         }),
       ));
+      if (exclusivePublicSlotKeys.size > 0) {
+        const publishableIds = new Set(publishableMediaRows.map((media) => media._id));
+        const unselectedRows = mediaRows.filter((media) =>
+          exclusivePublicSlotKeys.has(mediaPublicSlotKey(media))
+          && media.status === "published"
+          && !publishableIds.has(media._id),
+        );
+
+        await Promise.all(unselectedRows.map((media) =>
+          ctx.db.patch(media._id, {
+            status: "draft",
+            updatedAt: publishedAt,
+          }),
+        ));
+      }
       mediaPublished = publishableMediaRows.length;
     }
 
@@ -407,6 +456,7 @@ export const createMediaMetadataFromDashboard = internalMutation({
     usage: mediaUsageValidator,
     status: mediaStatusValidator,
     locale: v.optional(localeValidator),
+    selectedForPublic: v.optional(v.boolean()),
   },
   returns: v.object({
     mediaId: v.id("mediaMetadata"),
@@ -414,6 +464,20 @@ export const createMediaMetadataFromDashboard = internalMutation({
   }),
   handler: async (ctx, args) => {
     const now = Date.now();
+    if (args.selectedForPublic && args.contentId) {
+      const siblingMedia = await ctx.db
+        .query("mediaMetadata")
+        .withIndex("by_content_id", (query) => query.eq("contentId", args.contentId))
+        .collect();
+
+      await Promise.all(siblingMedia
+        .filter((item) => item.usage === args.usage)
+        .map((item) => ctx.db.patch(item._id, {
+          selectedForPublic: false,
+          updatedAt: now,
+        })));
+    }
+
     const mediaId = await ctx.db.insert("mediaMetadata", {
       ...args,
       createdAt: now,
@@ -422,6 +486,78 @@ export const createMediaMetadataFromDashboard = internalMutation({
 
     return {
       mediaId,
+      updatedAt: now,
+    };
+  },
+});
+
+export const selectMediaForPublicFromDashboard = internalMutation({
+  args: {
+    mediaId: v.id("mediaMetadata"),
+    contentId: v.string(),
+  },
+  returns: v.object({
+    mediaId: v.id("mediaMetadata"),
+    updatedAt: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const selectedMedia = await ctx.db.get(args.mediaId);
+
+    if (!selectedMedia || selectedMedia.contentId !== args.contentId) {
+      throw new Error("Selected media does not belong to this project.");
+    }
+
+    const siblingMedia = await ctx.db
+      .query("mediaMetadata")
+      .withIndex("by_content_id", (query) => query.eq("contentId", args.contentId))
+      .collect();
+
+    await Promise.all(siblingMedia
+      .filter((item) => item.usage === selectedMedia.usage && item._id !== args.mediaId)
+      .map((item) => ctx.db.patch(item._id, {
+        selectedForPublic: false,
+        updatedAt: now,
+      })));
+
+    await ctx.db.patch(args.mediaId, {
+      selectedForPublic: true,
+      status: selectedMedia.status === "archived" ? "draft" : selectedMedia.status,
+      updatedAt: now,
+    });
+
+    return {
+      mediaId: args.mediaId,
+      updatedAt: now,
+    };
+  },
+});
+
+export const archiveMediaFromDashboard = internalMutation({
+  args: {
+    mediaId: v.id("mediaMetadata"),
+    contentId: v.string(),
+  },
+  returns: v.object({
+    mediaId: v.id("mediaMetadata"),
+    updatedAt: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const media = await ctx.db.get(args.mediaId);
+
+    if (!media || media.contentId !== args.contentId) {
+      throw new Error("Selected media does not belong to this project.");
+    }
+
+    await ctx.db.patch(args.mediaId, {
+      selectedForPublic: false,
+      status: "archived",
+      updatedAt: now,
+    });
+
+    return {
+      mediaId: args.mediaId,
       updatedAt: now,
     };
   },

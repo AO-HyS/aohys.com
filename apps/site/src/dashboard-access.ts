@@ -60,6 +60,8 @@ type DashboardContentActionPath =
   | "/dashboard/content/project"
   | "/dashboard/content/media"
   | "/dashboard/content/media/upload-url"
+  | "/dashboard/content/media/select"
+  | "/dashboard/content/media/archive"
   | "/dashboard/content/publish"
   | "/dashboard/content/resume-draft"
   | "/dashboard/content/setting"
@@ -70,6 +72,8 @@ type DashboardApiPath =
   | "/dashboard/api/content/project"
   | "/dashboard/api/content/media"
   | "/dashboard/api/content/media/upload-url"
+  | "/dashboard/api/content/media/select"
+  | "/dashboard/api/content/media/archive"
   | "/dashboard/api/content/publish"
   | "/dashboard/api/content/resume-draft"
   | "/dashboard/api/content/setting"
@@ -145,6 +149,7 @@ interface DashboardProject {
     storageKey?: string;
     status?: DashboardMediaMetadata["status"];
     usage?: DashboardMediaMetadata["usage"];
+    selectedForPublic?: boolean;
   }>;
 }
 
@@ -515,37 +520,57 @@ function buildDashboardProjectRows(
   mediaRows: DashboardMediaMetadata[],
 ): DashboardProject[] {
   const caseStudyRows = buildDashboardCaseStudyRows(content.caseStudies ?? []);
-  const metadataByContentId = new Map(caseStudyRows.map((row) => [row.contentId, row]));
+  const metadataByContentId = new Map([
+    ...caseStudyRows.map((row) => [row.contentId, row] as const),
+    ...(content.caseStudies ?? []).map((row) => [row.contentId, row] as const),
+  ]);
   const draftsByContentIdAndLocale = new Map(
     (content.projectDrafts ?? []).map((draft) => [`${draft.contentId}:${draft.locale}`, draft]),
   );
+  const staticCaseStudyNodes = PUBLIC_CONTENT_NODES.filter((node) => node.type === "case-study");
+  const staticContentIds = staticCaseStudyNodes.map((node) => node.id);
+  const dynamicContentIds = [
+    ...(content.caseStudies ?? []).map((row) => row.contentId),
+    ...(content.projectDrafts ?? []).map((draft) => draft.contentId),
+    ...mediaRows.map((item) => item.contentId).filter((contentId): contentId is string => Boolean(contentId)),
+  ].filter((contentId) => isCaseStudyContentId(contentId));
+  const projectContentIds = unique([...staticContentIds, ...dynamicContentIds]);
 
-  return PUBLIC_CONTENT_NODES
-    .filter((node) => node.type === "case-study")
-    .map((node) => {
-      const metadata = metadataByContentId.get(node.id);
-      const englishVariant = getLocaleVariant(node, "en");
-      const spanishVariant = getLocaleVariant(node, "es");
-      const publicEvidence = getCaseStudyPageContent(node.id, "en")?.publicEvidence ?? [];
-      const media = mediaRows.filter((item) => item.contentId === node.id);
+  return projectContentIds
+    .map((contentId) => {
+      const node = staticCaseStudyNodes.find((item) => item.id === contentId);
+      const metadata = metadataByContentId.get(contentId);
+      const englishDraft = draftsByContentIdAndLocale.get(`${contentId}:en`);
+      const spanishDraft = draftsByContentIdAndLocale.get(`${contentId}:es`);
+      const englishVariant = node
+        ? getLocaleVariant(node, "en")
+        : fallbackProjectVariant(contentId, "en", englishDraft);
+      const spanishVariant = node
+        ? getLocaleVariant(node, "es")
+        : fallbackProjectVariant(contentId, "es", spanishDraft ?? englishDraft);
+      const publicEvidence = node ? getCaseStudyPageContent(node.id, "en")?.publicEvidence ?? [] : [];
+      const media = mediaRows.filter((item) => item.contentId === contentId);
       const firstProjectUrl = publicEvidence.find((item) => isHttpUrl(item.href))?.href;
       const firstDraftUrl = (content.projectDrafts ?? [])
-        .find((draft) => draft.contentId === node.id && draft.projectUrl)?.projectUrl;
+        .find((draft) => draft.contentId === contentId && draft.projectUrl)?.projectUrl;
 
       return {
-        contentId: node.id,
+        contentId,
         title: englishVariant.title,
         englishPath: englishVariant.path,
         spanishPath: spanishVariant.path,
-        sitemapIncluded: node.status === "published" && node.sitemap.include,
+        sitemapIncluded: node ? node.status === "published" && node.sitemap.include : true,
         status: metadata?.status ?? "active-build",
         evidenceStatus: metadata?.evidenceStatus ?? "missing",
         projectUrl: firstDraftUrl ?? firstProjectUrl,
         updatedAt: metadata?.updatedAt ?? 0,
         locales: (["en", "es"] as const).map((locale) => {
-          const variant = getLocaleVariant(node, locale);
-          const pageContent = getCaseStudyPageContent(node.id, locale);
-          const draft = draftsByContentIdAndLocale.get(`${node.id}:${locale}`);
+          const draft = draftsByContentIdAndLocale.get(`${contentId}:${locale}`);
+          const oppositeDraft = draftsByContentIdAndLocale.get(`${contentId}:${locale === "en" ? "es" : "en"}`);
+          const variant = node
+            ? getLocaleVariant(node, locale)
+            : fallbackProjectVariant(contentId, locale, draft ?? oppositeDraft);
+          const pageContent = node ? getCaseStudyPageContent(node.id, locale) : undefined;
 
           return {
             locale,
@@ -575,8 +600,10 @@ function buildDashboardProjectRows(
             altText: asset.altText,
             source: "content-graph" as const,
             href: asset.href,
+            src: isImageHref(asset.href) ? asset.href : undefined,
           })),
           ...media.map((item) => ({
+            id: item.id,
             label: item.storageKey,
             altText: item.altText,
             source: "media-metadata" as const,
@@ -585,10 +612,58 @@ function buildDashboardProjectRows(
             storageKey: item.storageKey,
             status: item.status,
             usage: item.usage,
+            selectedForPublic: item.selectedForPublic,
           })),
         ],
       };
     });
+}
+
+function unique(values: string[]): string[] {
+  return [...new Set(values)];
+}
+
+function isCaseStudyContentId(value: string | undefined): value is string {
+  return Boolean(value && /^case-study:[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value));
+}
+
+function fallbackProjectVariant(
+  contentId: string,
+  locale: "en" | "es",
+  draft?: DashboardProjectDraft,
+): {
+  path: string;
+  title: string;
+  summary: string;
+  seoDescription: string;
+  primaryActionLabel?: string;
+  primaryActionContentId?: string;
+} {
+  const slug = slugFromContentId(contentId);
+  const fallbackTitle = titleFromSlug(slug);
+  const fallbackSummary = locale === "es"
+    ? "Borrador de caso público creado desde el dashboard."
+    : "Public case-study draft created from the dashboard.";
+
+  return {
+    path: locale === "es" ? `/es/casos/${slug}` : `/case-studies/${slug}`,
+    title: draft?.title ?? fallbackTitle,
+    summary: draft?.summary ?? fallbackSummary,
+    seoDescription: draft?.seoDescription ?? draft?.summary ?? fallbackSummary,
+    primaryActionLabel: draft?.ctaLabel ?? (locale === "es" ? "Hablemos" : "Start a conversation"),
+    primaryActionContentId: "contact",
+  };
+}
+
+function slugFromContentId(contentId: string): string {
+  return contentId.replace(/^case-study:/, "");
+}
+
+function titleFromSlug(slug: string): string {
+  return slug
+    .split("-")
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(" ");
 }
 
 function buildDashboardCaseStudyRows(
@@ -952,6 +1027,8 @@ function isDashboardApiPath(path: string): path is DashboardApiPath {
     "/dashboard/api/content/project",
     "/dashboard/api/content/media",
     "/dashboard/api/content/media/upload-url",
+    "/dashboard/api/content/media/select",
+    "/dashboard/api/content/media/archive",
     "/dashboard/api/content/publish",
     "/dashboard/api/content/resume-draft",
     "/dashboard/api/content/setting",
@@ -967,6 +1044,8 @@ function isDashboardContentActionPath(path: string): path is DashboardContentAct
     "/dashboard/content/project",
     "/dashboard/content/media",
     "/dashboard/content/media/upload-url",
+    "/dashboard/content/media/select",
+    "/dashboard/content/media/archive",
     "/dashboard/content/publish",
     "/dashboard/content/resume-draft",
     "/dashboard/content/setting",
@@ -1020,6 +1099,12 @@ function contentPayloadFromFormData(
         usage: valueFromFormData(formData.get("usage")),
         locale: valueFromFormData(formData.get("locale")),
       };
+    case "/dashboard/content/media/select":
+    case "/dashboard/content/media/archive":
+      return {
+        mediaId: valueFromFormData(formData.get("mediaId")),
+        contentId: valueFromFormData(formData.get("contentId")),
+      };
     case "/dashboard/content/publish":
       return {
         scope: valueFromFormData(formData.get("scope")),
@@ -1056,12 +1141,16 @@ function redirectPathForContentAction(actionPath: DashboardContentActionPath): s
       return "/dashboard/projects";
     case "/dashboard/content/media/upload-url":
       return "/dashboard/projects";
+    case "/dashboard/content/media/select":
+      return "/dashboard/projects";
+    case "/dashboard/content/media/archive":
+      return "/dashboard/projects";
     case "/dashboard/content/publish":
       return "/dashboard/projects";
     case "/dashboard/content/resume-draft":
       return "/dashboard/resume";
     case "/dashboard/content/setting":
-      return "/dashboard/projects";
+      return "/dashboard/settings";
     case "/dashboard/content/resume":
       return "/dashboard/resume";
     default:
@@ -1083,4 +1172,8 @@ function isHttpUrl(value: string): boolean {
   } catch {
     return false;
   }
+}
+
+function isImageHref(value: string): boolean {
+  return /\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(value);
 }

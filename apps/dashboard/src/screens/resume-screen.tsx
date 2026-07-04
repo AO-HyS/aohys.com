@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  CheckCircle2Icon,
   LoaderCircleIcon,
   PlusIcon,
   RocketIcon,
@@ -29,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/sonner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,20 +44,11 @@ import type {
   ResumeSkillGroup,
 } from "@/types";
 
-type NoticeTone = "success" | "info" | "error";
-
-interface Notice {
-  tone: NoticeTone;
-  title: string;
-  message: string;
-}
-
 export function ResumeScreen() {
   const [payload, setPayload] = useState<DashboardContentPayload | null>(null);
   const [selectedLocale, setSelectedLocale] = useState<DashboardLocale>("en");
   const [form, setForm] = useState<DashboardResumeContent | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<Notice | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [versionForm, setVersionForm] = useState({
@@ -112,10 +103,8 @@ export function ResumeScreen() {
     }
 
     setIsSaving(true);
-    setNotice({
-      tone: "info",
-      title: "Saving resume",
-      message: `Writing the ${selectedLocale.toUpperCase()} resume draft to Convex.`,
+    const toastId = toast.loading("Saving resume", {
+      description: `Writing the ${selectedLocale.toUpperCase()} resume draft to Convex.`,
     });
 
     try {
@@ -124,16 +113,14 @@ export function ResumeScreen() {
         contentJson: serializeResumeDraft(form),
       });
       await refresh();
-      setNotice({
-        tone: "success",
-        title: "Resume saved",
-        message: "The editable resume draft is saved. Publish to rebuild the public Astro resume.",
+      toast.success("Resume saved", {
+        id: toastId,
+        description: "The editable resume draft is saved. Publish to rebuild the public Astro resume.",
       });
     } catch (saveError) {
-      setNotice({
-        tone: "error",
-        title: "Resume save failed",
-        message: saveError instanceof Error ? saveError.message : "Resume draft could not be saved.",
+      toast.error("Resume save failed", {
+        id: toastId,
+        description: saveError instanceof Error ? saveError.message : "Resume draft could not be saved.",
       });
     } finally {
       setIsSaving(false);
@@ -146,10 +133,8 @@ export function ResumeScreen() {
     }
 
     setIsPublishing(true);
-    setNotice({
-      tone: "info",
-      title: "Publishing resume",
-      message: "Saving the current editor state and queuing the release train.",
+    const toastId = toast.loading("Publishing resume", {
+      description: "Saving the current editor state and queuing the release train.",
     });
 
     try {
@@ -159,18 +144,19 @@ export function ResumeScreen() {
       });
       const result = await publishContent({ scope: "resume", locale: selectedLocale });
       await refresh();
-      setNotice({
-        tone: result.workflow.status === "queued" ? "success" : "info",
-        title: result.workflow.status === "queued" ? "Resume publish queued" : "Resume marked published",
-        message: result.workflow.status === "queued"
-          ? `GitHub Actions is rebuilding ${result.workflow.ref ?? "develop"} with the ${selectedLocale.toUpperCase()} resume.`
-          : result.workflow.reason ?? "The publish workflow token is not configured.",
-      });
+      const description = result.workflow.status === "queued"
+        ? `GitHub Actions is rebuilding ${result.workflow.ref ?? "develop"} with the ${selectedLocale.toUpperCase()} resume.`
+        : result.workflow.reason ?? "The publish workflow token is not configured.";
+
+      if (result.workflow.status === "queued") {
+        toast.success("Resume publish queued", { id: toastId, description });
+      } else {
+        toast.message("Resume marked published", { id: toastId, description });
+      }
     } catch (publishError) {
-      setNotice({
-        tone: "error",
-        title: "Resume publish failed",
-        message: publishError instanceof Error ? publishError.message : "Resume publish could not be queued.",
+      toast.error("Resume publish failed", {
+        id: toastId,
+        description: publishError instanceof Error ? publishError.message : "Resume publish could not be queued.",
       });
     } finally {
       setIsPublishing(false);
@@ -180,21 +166,20 @@ export function ResumeScreen() {
   async function handleVersionSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSaving(true);
+    const toastId = toast.loading("Saving PDF artifact");
 
     try {
       await saveResumeVersion(versionForm);
       setVersionForm((current) => ({ ...current, version: "" }));
       await refresh();
-      setNotice({
-        tone: "success",
-        title: "PDF artifact saved",
-        message: "The PDF artifact is registered. Resume copy is edited in the main editor above.",
+      toast.success("PDF artifact saved", {
+        id: toastId,
+        description: "The PDF artifact is registered. Resume copy is edited in the main editor above.",
       });
     } catch (saveError) {
-      setNotice({
-        tone: "error",
-        title: "PDF artifact failed",
-        message: saveError instanceof Error ? saveError.message : "Resume version could not be saved.",
+      toast.error("PDF artifact failed", {
+        id: toastId,
+        description: saveError instanceof Error ? saveError.message : "Resume version could not be saved.",
       });
     } finally {
       setIsSaving(false);
@@ -210,8 +195,6 @@ export function ResumeScreen() {
           <p>Edit the public resume content directly. Save stores the draft; Publish applies it to the next Astro build.</p>
         </div>
       </section>
-
-      <NoticeAlert notice={notice} />
 
       {error ? (
         <Alert variant="destructive">
@@ -759,20 +742,6 @@ function IconButton({ label, onClick }: { label: string; onClick: () => void }) 
     <Button type="button" variant="outline" size="icon" aria-label={label} onClick={onClick}>
       <Trash2Icon />
     </Button>
-  );
-}
-
-function NoticeAlert({ notice }: { notice: Notice | null }) {
-  if (!notice) {
-    return null;
-  }
-
-  return (
-    <Alert variant={notice.tone === "error" ? "destructive" : "default"} className="status-alert">
-      {notice.tone === "success" ? <CheckCircle2Icon data-icon="inline-start" /> : null}
-      <AlertTitle>{notice.title}</AlertTitle>
-      <AlertDescription>{notice.message}</AlertDescription>
-    </Alert>
   );
 }
 
