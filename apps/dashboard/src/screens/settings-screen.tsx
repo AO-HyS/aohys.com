@@ -14,6 +14,7 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/sonner";
+import { dashboardClass } from "@/lib/dashboard-classes";
 import type { DashboardSiteSetting } from "@/types";
 
 export function SettingsScreen() {
@@ -55,8 +56,8 @@ export function SettingsScreen() {
   }
 
   return (
-    <div className="dashboard-workspace">
-      <section className="dashboard-page-heading">
+    <div className={dashboardClass.workspace}>
+      <section className={dashboardClass.pageHeading}>
         <Badge className="w-fit" variant="secondary">Settings</Badge>
         <div>
           <h1>Site settings</h1>
@@ -95,7 +96,7 @@ function ContactSettingsCard({
   }, [currentValue]);
 
   return (
-    <Card id="contact-settings" className="settings-card">
+    <Card id="contact-settings" className={dashboardClass.cardShadow}>
       <CardHeader>
         <CardTitle>Public contact</CardTitle>
         <CardDescription>
@@ -109,7 +110,7 @@ function ContactSettingsCard({
             void onSave(value);
           }}
         >
-          <FieldGroup className="contact-setting-form">
+          <FieldGroup className={dashboardClass.contactSettingForm}>
             <Field>
               <FieldLabel htmlFor="public-whatsapp-url">PUBLIC_WHATSAPP_URL</FieldLabel>
               <Input

@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/sonner";
+import { dashboardClass } from "@/lib/dashboard-classes";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
@@ -171,8 +172,8 @@ export function ResumeScreen() {
   }
 
   return (
-    <div className="dashboard-workspace">
-      <section className="dashboard-page-heading">
+    <div className={dashboardClass.workspace}>
+      <section className={dashboardClass.pageHeading}>
         <Badge className="w-fit" variant="secondary">Resume</Badge>
         <div>
           <h1>Resume workspace</h1>
@@ -194,14 +195,14 @@ export function ResumeScreen() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="resume-toolbar">
+              <div className={dashboardClass.resumeToolbar}>
                 <Tabs value={selectedLocale} onValueChange={(value) => setSelectedLocale(value as DashboardLocale)}>
-                  <TabsList className="locale-tabs-list">
+                  <TabsList className={dashboardClass.localeTabsList}>
                     <TabsTrigger value="en">English</TabsTrigger>
                     <TabsTrigger value="es">Spanish</TabsTrigger>
                   </TabsList>
                 </Tabs>
-                <div className="form-action-row resume-actions">
+                <div className={`${dashboardClass.formActionRow} ${dashboardClass.resumeActions}`}>
                   <span aria-live="polite">
                     {hasChanges ? "Resume has unsaved changes." : "Resume editor is up to date."}
                   </span>
@@ -229,7 +230,7 @@ export function ResumeScreen() {
                 <CardDescription>Optional downloadable file used by the public resume CTA.</CardDescription>
               </CardHeader>
               <CardContent>
-                <form className="content-edit-form" onSubmit={handleVersionSubmit}>
+                <form className={dashboardClass.editForm} onSubmit={handleVersionSubmit}>
                   <FieldGroup>
                     <Field>
                       <FieldLabel>Locale</FieldLabel>
@@ -283,14 +284,14 @@ function ResumeEditor({
   }
 
   return (
-    <div className="resume-editor-grid">
+    <div className={dashboardClass.resumeEditorGrid}>
       <Card>
         <CardHeader>
           <CardTitle>Header</CardTitle>
           <CardDescription>Name, positioning, intro, and download CTA.</CardDescription>
         </CardHeader>
-        <CardContent className="content-edit-form">
-          <div className="form-grid-2">
+        <CardContent className={dashboardClass.editForm}>
+          <div className={dashboardClass.formGrid2}>
             <Field>
               <FieldLabel>Name</FieldLabel>
               <Input value={content.name} onChange={(event) => update("name", event.target.value)} />
@@ -308,7 +309,7 @@ function ResumeEditor({
             <FieldLabel>Intro</FieldLabel>
             <Textarea value={content.intro} rows={4} onChange={(event) => update("intro", event.target.value)} />
           </Field>
-          <div className="form-grid-2">
+          <div className={dashboardClass.formGrid2}>
             <Field>
               <FieldLabel>PDF label</FieldLabel>
               <Input value={content.pdf.label} onChange={(event) => update("pdf", { ...content.pdf, label: event.target.value })} />
@@ -326,7 +327,7 @@ function ResumeEditor({
           <CardTitle>Review panel</CardTitle>
           <CardDescription>The context panel beside the resume hero.</CardDescription>
         </CardHeader>
-        <CardContent className="content-edit-form">
+        <CardContent className={dashboardClass.editForm}>
           <Field>
             <FieldLabel>Proof label</FieldLabel>
             <Input value={content.proof.label} onChange={(event) => update("proof", { ...content.proof, label: event.target.value })} />
@@ -409,13 +410,13 @@ function TextArrayEditor({
         <CardTitle>{title}</CardTitle>
         <CardDescription>Edit one item per row.</CardDescription>
       </CardHeader>
-      <CardContent className="content-edit-form">
+      <CardContent className={dashboardClass.editForm}>
         <Field>
           <FieldLabel>{titleLabel}</FieldLabel>
           <Input value={title} onChange={(event) => onTitleChange(event.target.value)} />
         </Field>
         {values.map((value, index) => (
-          <div key={index} className="array-row">
+          <div key={index} className={dashboardClass.arrayRow}>
             <Textarea value={value} rows={3} onChange={(event) => onChange(replaceAt(values, index, event.target.value))} />
             <IconButton label="Remove" onClick={() => onChange(removeAt(values, index))} />
           </div>
@@ -446,14 +447,14 @@ function HighlightsEditor({
         <CardTitle>{title}</CardTitle>
         <CardDescription>Quantified impact blocks.</CardDescription>
       </CardHeader>
-      <CardContent className="content-edit-form">
+      <CardContent className={dashboardClass.editForm}>
         <Field>
           <FieldLabel>Section title</FieldLabel>
           <Input value={title} onChange={(event) => onTitleChange(event.target.value)} />
         </Field>
         {items.map((item, index) => (
-          <div key={index} className="nested-editor-row">
-            <div className="form-grid-2">
+          <div key={index} className={dashboardClass.nestedEditorRow}>
+            <div className={dashboardClass.formGrid2}>
               <Field>
                 <FieldLabel>Label</FieldLabel>
                 <Input value={item.label} onChange={(event) => onChange(replaceAt(items, index, { ...item, label: event.target.value }))} />
@@ -492,13 +493,13 @@ function ProjectsEditor({
         <CardTitle>{title}</CardTitle>
         <CardDescription>Resume projects and bullets.</CardDescription>
       </CardHeader>
-      <CardContent className="content-edit-form">
+      <CardContent className={dashboardClass.editForm}>
         <Field>
           <FieldLabel>Section title</FieldLabel>
           <Input value={title} onChange={(event) => onTitleChange(event.target.value)} />
         </Field>
         {items.map((item, index) => (
-          <div key={index} className="nested-editor-row">
+          <div key={index} className={dashboardClass.nestedEditorRow}>
             <Field>
               <FieldLabel>Project title</FieldLabel>
               <Input value={item.title} onChange={(event) => onChange(replaceAt(items, index, { ...item, title: event.target.value }))} />
@@ -540,14 +541,14 @@ function ExperienceEditor({
         <CardTitle>{title}</CardTitle>
         <CardDescription>Add and edit roles, periods, and impact bullets.</CardDescription>
       </CardHeader>
-      <CardContent className="content-edit-form">
+      <CardContent className={dashboardClass.editForm}>
         <Field>
           <FieldLabel>Section title</FieldLabel>
           <Input value={title} onChange={(event) => onTitleChange(event.target.value)} />
         </Field>
         {items.map((item, index) => (
-          <div key={index} className="nested-editor-row">
-            <div className="form-grid-3">
+          <div key={index} className={dashboardClass.nestedEditorRow}>
+            <div className={dashboardClass.formGrid3}>
               <Field>
                 <FieldLabel>Role</FieldLabel>
                 <Input value={item.role} onChange={(event) => onChange(replaceAt(items, index, { ...item, role: event.target.value }))} />
@@ -594,13 +595,13 @@ function SkillsEditor({
         <CardTitle>{title}</CardTitle>
         <CardDescription>Skill groups and comma-free item lists.</CardDescription>
       </CardHeader>
-      <CardContent className="content-edit-form">
+      <CardContent className={dashboardClass.editForm}>
         <Field>
           <FieldLabel>Section title</FieldLabel>
           <Input value={title} onChange={(event) => onTitleChange(event.target.value)} />
         </Field>
         {items.map((item, index) => (
-          <div key={index} className="nested-editor-row">
+          <div key={index} className={dashboardClass.nestedEditorRow}>
             <Field>
               <FieldLabel>Group label</FieldLabel>
               <Input value={item.label} onChange={(event) => onChange(replaceAt(items, index, { ...item, label: event.target.value }))} />
@@ -638,14 +639,14 @@ function EducationEditor({
         <CardTitle>{title}</CardTitle>
         <CardDescription>Education entries.</CardDescription>
       </CardHeader>
-      <CardContent className="content-edit-form">
+      <CardContent className={dashboardClass.editForm}>
         <Field>
           <FieldLabel>Section title</FieldLabel>
           <Input value={title} onChange={(event) => onTitleChange(event.target.value)} />
         </Field>
         {items.map((item, index) => (
-          <div key={index} className="nested-editor-row">
-            <div className="form-grid-3">
+          <div key={index} className={dashboardClass.nestedEditorRow}>
+            <div className={dashboardClass.formGrid3}>
               <Field>
                 <FieldLabel>Degree</FieldLabel>
                 <Input value={item.degree} onChange={(event) => onChange(replaceAt(items, index, { ...item, degree: event.target.value }))} />
