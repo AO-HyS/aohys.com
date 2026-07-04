@@ -1,4 +1,13 @@
-import type { DashboardEnvironment, DashboardMediaUploadPayload } from "./dashboard-content.js";
+export type DashboardEnvironment = "local" | "preview" | "production";
+
+export interface DashboardMediaUploadPayload {
+  storageKey: string;
+  altText: string;
+  contentId?: string;
+  usage: "case-study" | "resume" | "architecture" | "site";
+  locale?: "en" | "es";
+  selectedForPublic?: boolean;
+}
 
 export interface CloudflareImagesDirectUploadConfig {
   accountHash?: string;

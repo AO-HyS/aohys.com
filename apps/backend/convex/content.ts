@@ -1,5 +1,13 @@
-import { v } from "convex/values";
-import { internalMutation, internalQuery } from "./_generated/server.js";
+import { v, type ObjectType } from "convex/values";
+import {
+  internalMutation,
+  internalQuery,
+  mutation,
+  query,
+  type MutationCtx,
+  type QueryCtx,
+} from "./_generated/server.js";
+import { requireAdmin } from "./auth.js";
 
 const localeValidator = v.union(v.literal("en"), v.literal("es"));
 
@@ -48,140 +56,15 @@ const settingClassificationValidator = v.union(
   v.literal("policy-value"),
 );
 
-export const listForDashboard = internalQuery({
-  args: {},
-  returns: v.object({
-    caseStudies: v.array(v.object({
-      contentId: v.string(),
-      status: caseStudyStatusValidator,
-      evidenceStatus: evidenceStatusValidator,
-      updatedAt: v.number(),
-    })),
-    projectDrafts: v.array(v.object({
-      contentId: v.string(),
-      locale: localeValidator,
-      title: v.string(),
-      summary: v.string(),
-      seoDescription: v.string(),
-      projectUrl: v.optional(v.string()),
-      ctaLabel: v.string(),
-      ctaHref: v.string(),
-      achievements: v.string(),
-      structureNotes: v.string(),
-      updatedAt: v.number(),
-      publishedAt: v.optional(v.number()),
-    })),
-    resumeDrafts: v.array(v.object({
-      locale: localeValidator,
-      contentJson: v.string(),
-      updatedAt: v.number(),
-      publishedAt: v.optional(v.number()),
-    })),
-    media: v.array(v.object({
-      id: v.id("mediaMetadata"),
-      storageProvider: mediaStorageProviderValidator,
-      storageKey: v.string(),
-      publicUrl: v.optional(v.string()),
-      altText: v.string(),
-      contentId: v.optional(v.string()),
-      usage: mediaUsageValidator,
-      status: mediaStatusValidator,
-      locale: v.optional(localeValidator),
-      selectedForPublic: v.optional(v.boolean()),
-      updatedAt: v.number(),
-    })),
-    settings: v.array(v.object({
-      key: v.string(),
-      environment: environmentValidator,
-      value: v.string(),
-      classification: settingClassificationValidator,
-      updatedAt: v.number(),
-    })),
-    resumeVersions: v.array(v.object({
-      id: v.id("resumeVersions"),
-      locale: localeValidator,
-      version: v.string(),
-      pdfPath: v.string(),
-      isPublished: v.boolean(),
-      createdAt: v.number(),
-      publishedAt: v.optional(v.number()),
-    })),
-  }),
-  handler: async (ctx) => {
-    const [caseStudies, projectDrafts, resumeDrafts, media, settings, resumeVersions] = await Promise.all([
-      ctx.db.query("caseStudyMetadata").collect(),
-      ctx.db.query("projectDrafts").collect(),
-      ctx.db.query("resumeDrafts").collect(),
-      ctx.db.query("mediaMetadata").take(100),
-      ctx.db.query("siteSettings").take(100),
-      ctx.db.query("resumeVersions").take(50),
-    ]);
-
-    return {
-      caseStudies: caseStudies.map((caseStudy) => ({
-        contentId: caseStudy.contentId,
-        status: caseStudy.status,
-        evidenceStatus: caseStudy.evidenceStatus,
-        updatedAt: caseStudy.updatedAt,
-      })),
-      projectDrafts: projectDrafts.map((projectDraft) => ({
-        contentId: projectDraft.contentId,
-        locale: projectDraft.locale,
-        title: projectDraft.title,
-        summary: projectDraft.summary,
-        seoDescription: projectDraft.seoDescription,
-        projectUrl: projectDraft.projectUrl,
-        ctaLabel: projectDraft.ctaLabel,
-        ctaHref: projectDraft.ctaHref,
-        achievements: projectDraft.achievements,
-        structureNotes: projectDraft.structureNotes,
-        updatedAt: projectDraft.updatedAt,
-        publishedAt: projectDraft.publishedAt,
-      })),
-      resumeDrafts: resumeDrafts.map((resumeDraft) => ({
-        locale: resumeDraft.locale,
-        contentJson: resumeDraft.contentJson,
-        updatedAt: resumeDraft.updatedAt,
-        publishedAt: resumeDraft.publishedAt,
-      })),
-      media: media.map((item) => ({
-        id: item._id,
-        storageProvider: item.storageProvider,
-        storageKey: item.storageKey,
-        publicUrl: item.publicUrl,
-        altText: item.altText,
-        contentId: item.contentId,
-        usage: item.usage,
-        status: item.status,
-        locale: item.locale,
-        selectedForPublic: item.selectedForPublic,
-        updatedAt: item.updatedAt,
-      })),
-      settings: settings.map((setting) => ({
-        key: setting.key,
-        environment: setting.environment,
-        value: setting.value,
-        classification: setting.classification,
-        updatedAt: setting.updatedAt,
-      })),
-      resumeVersions: resumeVersions.map((resumeVersion) => ({
-        id: resumeVersion._id,
-        locale: resumeVersion.locale,
-        version: resumeVersion.version,
-        pdfPath: resumeVersion.pdfPath,
-        isPublished: resumeVersion.isPublished,
-        createdAt: resumeVersion.createdAt,
-        publishedAt: resumeVersion.publishedAt,
-      })),
-    };
-  },
-});
-
-export const upsertProjectDraftFromDashboard = internalMutation({
-  args: {
+const listForDashboardReturns = v.object({
+  caseStudies: v.array(v.object({
     contentId: v.string(),
     status: caseStudyStatusValidator,
     evidenceStatus: evidenceStatusValidator,
+    updatedAt: v.number(),
+  })),
+  projectDrafts: v.array(v.object({
+    contentId: v.string(),
     locale: localeValidator,
     title: v.string(),
     summary: v.string(),
@@ -191,70 +74,271 @@ export const upsertProjectDraftFromDashboard = internalMutation({
     ctaHref: v.string(),
     achievements: v.string(),
     structureNotes: v.string(),
-  },
-  returns: v.object({
-    contentId: v.string(),
-    locale: localeValidator,
     updatedAt: v.number(),
-  }),
-  handler: async (ctx, args) => {
-    const updatedAt = Date.now();
-    const existingCaseStudy = await ctx.db
-      .query("caseStudyMetadata")
-      .withIndex("by_content_id", (query) => query.eq("contentId", args.contentId))
-      .first();
+    publishedAt: v.optional(v.number()),
+  })),
+  resumeDrafts: v.array(v.object({
+    locale: localeValidator,
+    contentJson: v.string(),
+    updatedAt: v.number(),
+    publishedAt: v.optional(v.number()),
+  })),
+  media: v.array(v.object({
+    id: v.id("mediaMetadata"),
+    storageProvider: mediaStorageProviderValidator,
+    storageKey: v.string(),
+    publicUrl: v.optional(v.string()),
+    altText: v.string(),
+    contentId: v.optional(v.string()),
+    usage: mediaUsageValidator,
+    status: mediaStatusValidator,
+    locale: v.optional(localeValidator),
+    selectedForPublic: v.optional(v.boolean()),
+    updatedAt: v.number(),
+  })),
+  settings: v.array(v.object({
+    key: v.string(),
+    environment: environmentValidator,
+    value: v.string(),
+    classification: settingClassificationValidator,
+    updatedAt: v.number(),
+  })),
+  resumeVersions: v.array(v.object({
+    id: v.id("resumeVersions"),
+    locale: localeValidator,
+    version: v.string(),
+    pdfPath: v.string(),
+    isPublished: v.boolean(),
+    createdAt: v.number(),
+    publishedAt: v.optional(v.number()),
+  })),
+});
 
-    if (existingCaseStudy) {
-      await ctx.db.patch(existingCaseStudy._id, {
-        status: args.status,
-        evidenceStatus: args.evidenceStatus,
-        updatedAt,
-      });
-    } else {
-      await ctx.db.insert("caseStudyMetadata", {
-        contentId: args.contentId,
-        status: args.status,
-        evidenceStatus: args.evidenceStatus,
-        updatedAt,
-      });
-    }
+const upsertProjectDraftArgs = {
+  contentId: v.string(),
+  status: caseStudyStatusValidator,
+  evidenceStatus: evidenceStatusValidator,
+  locale: localeValidator,
+  title: v.string(),
+  summary: v.string(),
+  seoDescription: v.string(),
+  projectUrl: v.optional(v.string()),
+  ctaLabel: v.string(),
+  ctaHref: v.string(),
+  achievements: v.string(),
+  structureNotes: v.string(),
+};
 
-    const existingProjectDraft = await ctx.db
-      .query("projectDrafts")
-      .withIndex("by_content_id_and_locale", (query) =>
-        query.eq("contentId", args.contentId).eq("locale", args.locale),
-      )
-      .first();
-    const projectDraft = {
-      contentId: args.contentId,
-      locale: args.locale,
-      title: args.title,
-      summary: args.summary,
-      seoDescription: args.seoDescription,
-      projectUrl: args.projectUrl,
-      ctaLabel: args.ctaLabel,
-      ctaHref: args.ctaHref,
-      achievements: args.achievements,
-      structureNotes: args.structureNotes,
+const upsertProjectDraftReturns = v.object({
+  contentId: v.string(),
+  locale: localeValidator,
+  updatedAt: v.number(),
+});
+
+const upsertSiteSettingArgs = {
+  key: v.string(),
+  environment: environmentValidator,
+  value: v.string(),
+  classification: settingClassificationValidator,
+};
+
+const upsertSiteSettingReturns = v.object({
+  key: v.string(),
+  updatedAt: v.number(),
+});
+
+async function listForDashboardHandler(ctx: QueryCtx) {
+  const [caseStudies, projectDrafts, resumeDrafts, media, settings, resumeVersions] = await Promise.all([
+    ctx.db.query("caseStudyMetadata").collect(),
+    ctx.db.query("projectDrafts").collect(),
+    ctx.db.query("resumeDrafts").collect(),
+    ctx.db.query("mediaMetadata").take(100),
+    ctx.db.query("siteSettings").take(100),
+    ctx.db.query("resumeVersions").take(50),
+  ]);
+
+  return {
+    caseStudies: caseStudies.map((caseStudy) => ({
+      contentId: caseStudy.contentId,
+      status: caseStudy.status,
+      evidenceStatus: caseStudy.evidenceStatus,
+      updatedAt: caseStudy.updatedAt,
+    })),
+    projectDrafts: projectDrafts.map((projectDraft) => ({
+      contentId: projectDraft.contentId,
+      locale: projectDraft.locale,
+      title: projectDraft.title,
+      summary: projectDraft.summary,
+      seoDescription: projectDraft.seoDescription,
+      projectUrl: projectDraft.projectUrl,
+      ctaLabel: projectDraft.ctaLabel,
+      ctaHref: projectDraft.ctaHref,
+      achievements: projectDraft.achievements,
+      structureNotes: projectDraft.structureNotes,
+      updatedAt: projectDraft.updatedAt,
+      publishedAt: projectDraft.publishedAt,
+    })),
+    resumeDrafts: resumeDrafts.map((resumeDraft) => ({
+      locale: resumeDraft.locale,
+      contentJson: resumeDraft.contentJson,
+      updatedAt: resumeDraft.updatedAt,
+      publishedAt: resumeDraft.publishedAt,
+    })),
+    media: media.map((item) => ({
+      id: item._id,
+      storageProvider: item.storageProvider,
+      storageKey: item.storageKey,
+      publicUrl: item.publicUrl,
+      altText: item.altText,
+      contentId: item.contentId,
+      usage: item.usage,
+      status: item.status,
+      locale: item.locale,
+      selectedForPublic: item.selectedForPublic,
+      updatedAt: item.updatedAt,
+    })),
+    settings: settings.map((setting) => ({
+      key: setting.key,
+      environment: setting.environment,
+      value: setting.value,
+      classification: setting.classification,
+      updatedAt: setting.updatedAt,
+    })),
+    resumeVersions: resumeVersions.map((resumeVersion) => ({
+      id: resumeVersion._id,
+      locale: resumeVersion.locale,
+      version: resumeVersion.version,
+      pdfPath: resumeVersion.pdfPath,
+      isPublished: resumeVersion.isPublished,
+      createdAt: resumeVersion.createdAt,
+      publishedAt: resumeVersion.publishedAt,
+    })),
+  };
+}
+
+async function upsertProjectDraftHandler(
+  ctx: MutationCtx,
+  args: ObjectType<typeof upsertProjectDraftArgs>,
+) {
+  const updatedAt = Date.now();
+  const existingCaseStudy = await ctx.db
+    .query("caseStudyMetadata")
+    .withIndex("by_content_id", (query) => query.eq("contentId", args.contentId))
+    .first();
+
+  if (existingCaseStudy) {
+    await ctx.db.patch(existingCaseStudy._id, {
+      status: args.status,
+      evidenceStatus: args.evidenceStatus,
       updatedAt,
-      publishedAt: undefined,
-    };
-
-    if (existingProjectDraft) {
-      await ctx.db.patch(existingProjectDraft._id, projectDraft);
-    } else {
-      await ctx.db.insert("projectDrafts", projectDraft);
-    }
-
-    return {
+    });
+  } else {
+    await ctx.db.insert("caseStudyMetadata", {
       contentId: args.contentId,
-      locale: args.locale,
+      status: args.status,
+      evidenceStatus: args.evidenceStatus,
       updatedAt,
-    };
+    });
+  }
+
+  const existingProjectDraft = await ctx.db
+    .query("projectDrafts")
+    .withIndex("by_content_id_and_locale", (query) =>
+      query.eq("contentId", args.contentId).eq("locale", args.locale),
+    )
+    .first();
+  const projectDraft = {
+    contentId: args.contentId,
+    locale: args.locale,
+    title: args.title,
+    summary: args.summary,
+    seoDescription: args.seoDescription,
+    projectUrl: args.projectUrl,
+    ctaLabel: args.ctaLabel,
+    ctaHref: args.ctaHref,
+    achievements: args.achievements,
+    structureNotes: args.structureNotes,
+    updatedAt,
+    publishedAt: undefined,
+  };
+
+  if (existingProjectDraft) {
+    await ctx.db.patch(existingProjectDraft._id, projectDraft);
+  } else {
+    await ctx.db.insert("projectDrafts", projectDraft);
+  }
+
+  return {
+    contentId: args.contentId,
+    locale: args.locale,
+    updatedAt,
+  };
+}
+
+async function upsertSiteSettingHandler(
+  ctx: MutationCtx,
+  args: ObjectType<typeof upsertSiteSettingArgs>,
+) {
+  const updatedAt = Date.now();
+  const existing = await ctx.db
+    .query("siteSettings")
+    .withIndex("by_environment_and_key", (query) =>
+      query.eq("environment", args.environment).eq("key", args.key),
+    )
+    .first();
+
+  if (existing) {
+    await ctx.db.patch(existing._id, {
+      value: args.value,
+      classification: args.classification,
+      updatedAt,
+    });
+  } else {
+    await ctx.db.insert("siteSettings", {
+      ...args,
+      updatedAt,
+    });
+  }
+
+  return {
+    key: args.key,
+    updatedAt,
+  };
+}
+
+export const listForDashboard = query({
+  args: {},
+  returns: listForDashboardReturns,
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+
+    return listForDashboardHandler(ctx);
   },
 });
 
-export const upsertResumeDraftFromDashboard = internalMutation({
+export const listForDashboardInternal = internalQuery({
+  args: {},
+  returns: listForDashboardReturns,
+  handler: async (ctx) => listForDashboardHandler(ctx),
+});
+
+export const upsertProjectDraft = mutation({
+  args: upsertProjectDraftArgs,
+  returns: upsertProjectDraftReturns,
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+
+    return upsertProjectDraftHandler(ctx, args);
+  },
+});
+
+export const upsertProjectDraftFromDashboard = internalMutation({
+  args: upsertProjectDraftArgs,
+  returns: upsertProjectDraftReturns,
+  handler: async (ctx, args) => upsertProjectDraftHandler(ctx, args),
+});
+
+export const upsertResumeDraft = mutation({
   args: {
     locale: localeValidator,
     contentJson: v.string(),
@@ -264,6 +348,8 @@ export const upsertResumeDraftFromDashboard = internalMutation({
     updatedAt: v.number(),
   }),
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+
     const updatedAt = Date.now();
     const existingResumeDraft = await ctx.db
       .query("resumeDrafts")
@@ -409,7 +495,7 @@ export const publishContentFromDashboard = internalMutation({
   },
 });
 
-export const upsertCaseStudyMetadataFromDashboard = internalMutation({
+export const upsertCaseStudyMetadata = mutation({
   args: {
     contentId: v.string(),
     status: caseStudyStatusValidator,
@@ -420,6 +506,8 @@ export const upsertCaseStudyMetadataFromDashboard = internalMutation({
     updatedAt: v.number(),
   }),
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+
     const updatedAt = Date.now();
     const existing = await ctx.db
       .query("caseStudyMetadata")
@@ -446,7 +534,7 @@ export const upsertCaseStudyMetadataFromDashboard = internalMutation({
   },
 });
 
-export const createMediaMetadataFromDashboard = internalMutation({
+export const createMediaMetadata = mutation({
   args: {
     storageProvider: mediaStorageProviderValidator,
     storageKey: v.string(),
@@ -463,6 +551,8 @@ export const createMediaMetadataFromDashboard = internalMutation({
     updatedAt: v.number(),
   }),
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+
     const now = Date.now();
     if (args.selectedForPublic && args.contentId) {
       const siblingMedia = await ctx.db
@@ -491,7 +581,7 @@ export const createMediaMetadataFromDashboard = internalMutation({
   },
 });
 
-export const selectMediaForPublicFromDashboard = internalMutation({
+export const selectMediaForPublic = mutation({
   args: {
     mediaId: v.id("mediaMetadata"),
     contentId: v.string(),
@@ -501,6 +591,8 @@ export const selectMediaForPublicFromDashboard = internalMutation({
     updatedAt: v.number(),
   }),
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+
     const now = Date.now();
     const selectedMedia = await ctx.db.get(args.mediaId);
 
@@ -533,7 +625,7 @@ export const selectMediaForPublicFromDashboard = internalMutation({
   },
 });
 
-export const archiveMediaFromDashboard = internalMutation({
+export const archiveMedia = mutation({
   args: {
     mediaId: v.id("mediaMetadata"),
     contentId: v.string(),
@@ -543,6 +635,8 @@ export const archiveMediaFromDashboard = internalMutation({
     updatedAt: v.number(),
   }),
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+
     const now = Date.now();
     const media = await ctx.db.get(args.mediaId);
 
@@ -563,47 +657,23 @@ export const archiveMediaFromDashboard = internalMutation({
   },
 });
 
-export const upsertSiteSettingFromDashboard = internalMutation({
-  args: {
-    key: v.string(),
-    environment: environmentValidator,
-    value: v.string(),
-    classification: settingClassificationValidator,
-  },
-  returns: v.object({
-    key: v.string(),
-    updatedAt: v.number(),
-  }),
+export const upsertSiteSetting = mutation({
+  args: upsertSiteSettingArgs,
+  returns: upsertSiteSettingReturns,
   handler: async (ctx, args) => {
-    const updatedAt = Date.now();
-    const existing = await ctx.db
-      .query("siteSettings")
-      .withIndex("by_environment_and_key", (query) =>
-        query.eq("environment", args.environment).eq("key", args.key),
-      )
-      .first();
+    await requireAdmin(ctx);
 
-    if (existing) {
-      await ctx.db.patch(existing._id, {
-        value: args.value,
-        classification: args.classification,
-        updatedAt,
-      });
-    } else {
-      await ctx.db.insert("siteSettings", {
-        ...args,
-        updatedAt,
-      });
-    }
-
-    return {
-      key: args.key,
-      updatedAt,
-    };
+    return upsertSiteSettingHandler(ctx, args);
   },
 });
 
-export const createResumeVersionFromDashboard = internalMutation({
+export const upsertSiteSettingFromDashboard = internalMutation({
+  args: upsertSiteSettingArgs,
+  returns: upsertSiteSettingReturns,
+  handler: async (ctx, args) => upsertSiteSettingHandler(ctx, args),
+});
+
+export const createResumeVersion = mutation({
   args: {
     locale: localeValidator,
     version: v.string(),
@@ -615,6 +685,8 @@ export const createResumeVersionFromDashboard = internalMutation({
     publishedAt: v.optional(v.number()),
   }),
   handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+
     const now = Date.now();
     const publishedAt = args.isPublished ? now : undefined;
 
