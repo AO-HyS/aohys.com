@@ -15,8 +15,8 @@ import {
   LogOutIcon,
   SettingsIcon,
 } from "lucide-react";
-import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DashboardHome } from "@/screens/dashboard-home";
 import { LeadsScreen } from "@/screens/leads-screen";
@@ -88,7 +88,7 @@ function AppLayout() {
           </main>
         </div>
       </div>
-      <Toaster richColors closeButton position="top-right" />
+      <Toaster />
     </TooltipProvider>
   );
 }

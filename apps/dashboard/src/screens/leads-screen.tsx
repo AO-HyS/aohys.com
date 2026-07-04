@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/sonner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { DashboardLead, DashboardLeadStatus } from "@/types";
 
@@ -39,7 +40,6 @@ export function LeadsScreen() {
   const [leads, setLeads] = useState<DashboardLead[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savingLeadId, setSavingLeadId] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
   const [sorting, setSorting] = useState<SortingState>([
     { id: "createdAt", desc: true },
   ]);
@@ -60,13 +60,22 @@ export function LeadsScreen() {
 
   async function updateStatus(leadId: string, status: DashboardLeadStatus) {
     setSavingLeadId(leadId);
-    setNotice(null);
+    const toastId = toast.loading("Saving lead status", {
+      description: `Moving this lead to ${formatLeadStatus(status)}.`,
+    });
+
     try {
       await saveLeadStatus(leadId, status);
-      setNotice("Lead status saved.");
       await refresh();
+      toast.success("Lead status saved", {
+        id: toastId,
+        description: "The inbox is up to date.",
+      });
     } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : "Lead status could not be saved.");
+      toast.error("Lead status failed", {
+        id: toastId,
+        description: saveError instanceof Error ? saveError.message : "Lead status could not be saved.",
+      });
     } finally {
       setSavingLeadId(null);
     }
@@ -87,12 +96,6 @@ export function LeadsScreen() {
         <Alert variant="destructive">
           <AlertTitle>Lead data problem</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      ) : null}
-      {notice ? (
-        <Alert>
-          <AlertTitle>Saved</AlertTitle>
-          <AlertDescription>{notice}</AlertDescription>
         </Alert>
       ) : null}
       <Card>
@@ -324,4 +327,14 @@ function formatDate(timestamp: number): string {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(timestamp));
+}
+
+function formatLeadStatus(value: DashboardLeadStatus): string {
+  const labels: Record<DashboardLeadStatus, string> = {
+    new: "New",
+    reviewing: "Reviewing",
+    closed: "Closed",
+  };
+
+  return labels[value];
 }

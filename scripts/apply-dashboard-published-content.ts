@@ -24,7 +24,7 @@ interface DashboardResumeDraft {
   publishedAt?: number;
 }
 
-interface DashboardMediaMetadata {
+export interface DashboardMediaMetadata {
   storageKey: string;
   publicUrl?: string;
   altText: string;
@@ -32,6 +32,7 @@ interface DashboardMediaMetadata {
   usage: "case-study" | "resume" | "architecture" | "site";
   status: "draft" | "published" | "archived";
   locale?: Locale;
+  selectedForPublic?: boolean;
   updatedAt: number;
 }
 
@@ -410,7 +411,7 @@ function generatedMediaKind(item: DashboardMediaMetadata): string {
   return "site";
 }
 
-function writeGeneratedPublicMedia(mediaItems: DashboardMediaMetadata[]): number {
+export function publicMediaItemsByContentId(mediaItems: DashboardMediaMetadata[]): Map<string, DashboardMediaMetadata> {
   const mediaByContentId = new Map<string, DashboardMediaMetadata>();
 
   for (const item of mediaItems) {
@@ -424,11 +425,23 @@ function writeGeneratedPublicMedia(mediaItems: DashboardMediaMetadata[]): number
     }
 
     const existing = mediaByContentId.get(item.contentId);
+    const itemIsSelected = item.selectedForPublic === true;
+    const existingIsSelected = existing?.selectedForPublic === true;
 
-    if (!existing || item.updatedAt > existing.updatedAt) {
+    if (
+      !existing ||
+      (itemIsSelected && !existingIsSelected) ||
+      (itemIsSelected === existingIsSelected && item.updatedAt > existing.updatedAt)
+    ) {
       mediaByContentId.set(item.contentId, item);
     }
   }
+
+  return mediaByContentId;
+}
+
+function writeGeneratedPublicMedia(mediaItems: DashboardMediaMetadata[]): number {
+  const mediaByContentId = publicMediaItemsByContentId(mediaItems);
 
   const entries = [...mediaByContentId.entries()].sort(([left], [right]) => left.localeCompare(right));
   const mediaLiteral = Object.fromEntries(entries.map(([contentId, item]) => [

@@ -118,6 +118,18 @@ function evidenceImageForContent(contentId: string) {
 }
 
 function evidenceImageForPath(path: string) {
+  const normalizedPath = path.replace(/\/$/, "");
+  const dynamicSlug = normalizedPath.match(/^\/case-studies\/([a-z0-9]+(?:-[a-z0-9]+)*)$/)?.[1]
+    ?? normalizedPath.match(/^\/es\/casos\/([a-z0-9]+(?:-[a-z0-9]+)*)$/)?.[1];
+
+  if (dynamicSlug) {
+    const dynamicImage = evidenceImageForContent(`case-study:${dynamicSlug}`);
+
+    if (dynamicImage) {
+      return dynamicImage;
+    }
+  }
+
   if (path.includes("casa-roca")) {
     return evidenceImageForContent("case-study:casa-roca");
   }

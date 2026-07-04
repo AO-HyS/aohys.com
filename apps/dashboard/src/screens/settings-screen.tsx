@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { LoaderCircleIcon, SaveIcon } from "lucide-react";
-import { toast } from "sonner";
 import { loadDashboardContent, saveSiteSetting } from "@/api";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -12,9 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/sonner";
 import type { DashboardContentPayload, DashboardSiteSetting } from "@/types";
 
 export function SettingsScreen() {
@@ -126,25 +126,26 @@ function ContactSettingsCard({
       </CardHeader>
       <CardContent>
         <form
-          className="contact-setting-form"
           onSubmit={(event) => {
             event.preventDefault();
             void onSave(value);
           }}
         >
-          <Field>
-            <FieldLabel htmlFor="public-whatsapp-url">PUBLIC_WHATSAPP_URL</FieldLabel>
-            <Input
-              id="public-whatsapp-url"
-              value={value}
-              onChange={(event) => setValue(event.target.value)}
-            />
-            <FieldDescription>Use a public https://wa.me/... URL.</FieldDescription>
-          </Field>
-          <Button className="self-end" type="submit" disabled={isSaving || value === currentValue}>
-            {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <SaveIcon data-icon="inline-start" />}
-            Save setting
-          </Button>
+          <FieldGroup className="contact-setting-form">
+            <Field>
+              <FieldLabel htmlFor="public-whatsapp-url">PUBLIC_WHATSAPP_URL</FieldLabel>
+              <Input
+                id="public-whatsapp-url"
+                value={value}
+                onChange={(event) => setValue(event.target.value)}
+              />
+              <FieldDescription>Use a public https://wa.me/... URL.</FieldDescription>
+            </Field>
+            <Button className="self-end" type="submit" disabled={isSaving || value === currentValue}>
+              {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <SaveIcon data-icon="inline-start" />}
+              Save setting
+            </Button>
+          </FieldGroup>
         </form>
       </CardContent>
     </Card>

@@ -10,7 +10,6 @@ import {
   SaveIcon,
   UploadCloudIcon,
 } from "lucide-react";
-import { toast } from "sonner";
 import {
   archiveProjectMedia,
   createMediaUpload,
@@ -45,6 +44,7 @@ import {
   FieldLegend,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/sonner";
 import {
   Select,
   SelectContent,
@@ -444,7 +444,6 @@ function NewProjectCard({
       {isOpen ? (
         <CardContent>
           <form
-            className="new-project-form"
             onSubmit={(event) => {
               event.preventDefault();
               if (!canCreate) {
@@ -458,57 +457,59 @@ function NewProjectCard({
               });
             }}
           >
-            <Field>
-              <FieldLabel htmlFor="new-project-title">English title</FieldLabel>
-              <Input
-                id="new-project-title"
-                value={form.title}
-                onChange={(event) => update("title", event.target.value)}
-                placeholder="Project name"
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="new-project-spanish-title">Spanish title</FieldLabel>
-              <Input
-                id="new-project-spanish-title"
-                value={form.spanishTitle}
-                onChange={(event) => update("spanishTitle", event.target.value)}
-                placeholder="Nombre del proyecto"
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="new-project-slug">Slug</FieldLabel>
-              <Input
-                id="new-project-slug"
-                value={form.slug}
-                onChange={(event) => update("slug", slugifyProjectTitle(event.target.value))}
-                placeholder="project-slug"
-              />
-              <FieldDescription>
-                {slugExists
-                  ? "This project slug already exists."
-                  : `Creates case-study:${normalizedSlug || "project-slug"}.`}
-              </FieldDescription>
-            </Field>
-            <Field>
-              <FieldLabel>Status</FieldLabel>
-              <Select value={form.status} onValueChange={(value) => update("status", value as DashboardCaseStudyStatus)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {caseStudyStatuses.map((status) => (
-                      <SelectItem key={status} value={status}>{formatProjectStatus(status)}</SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </Field>
-            <Button type="submit" disabled={isSaving || !canCreate}>
-              {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <PlusIcon data-icon="inline-start" />}
-              Create draft
-            </Button>
+            <FieldGroup className="new-project-form">
+              <Field>
+                <FieldLabel htmlFor="new-project-title">English title</FieldLabel>
+                <Input
+                  id="new-project-title"
+                  value={form.title}
+                  onChange={(event) => update("title", event.target.value)}
+                  placeholder="Project name"
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="new-project-spanish-title">Spanish title</FieldLabel>
+                <Input
+                  id="new-project-spanish-title"
+                  value={form.spanishTitle}
+                  onChange={(event) => update("spanishTitle", event.target.value)}
+                  placeholder="Nombre del proyecto"
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="new-project-slug">Slug</FieldLabel>
+                <Input
+                  id="new-project-slug"
+                  value={form.slug}
+                  onChange={(event) => update("slug", slugifyProjectTitle(event.target.value))}
+                  placeholder="project-slug"
+                />
+                <FieldDescription>
+                  {slugExists
+                    ? "This project slug already exists."
+                    : `Creates case-study:${normalizedSlug || "project-slug"}.`}
+                </FieldDescription>
+              </Field>
+              <Field>
+                <FieldLabel>Status</FieldLabel>
+                <Select value={form.status} onValueChange={(value) => update("status", value as DashboardCaseStudyStatus)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {caseStudyStatuses.map((status) => (
+                        <SelectItem key={status} value={status}>{formatProjectStatus(status)}</SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Button type="submit" disabled={isSaving || !canCreate}>
+                {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <PlusIcon data-icon="inline-start" />}
+                Create draft
+              </Button>
+            </FieldGroup>
           </form>
         </CardContent>
       ) : null}

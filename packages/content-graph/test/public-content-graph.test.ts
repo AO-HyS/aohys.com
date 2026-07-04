@@ -252,6 +252,37 @@ describe("Public Content Graph", () => {
     ])).toEqual([contentId]);
   });
 
+  it("prefers dashboard-selected public media over the latest fallback", async () => {
+    const {
+      publicMediaItemsByContentId,
+    } = await import("../../../scripts/apply-dashboard-published-content.js");
+    const mediaByContentId = publicMediaItemsByContentId([
+      {
+        storageKey: "media/dashboard-alpha/newer",
+        publicUrl: "https://example.com/newer.png",
+        altText: "Newer but not selected image.",
+        contentId: "case-study:dashboard-alpha",
+        usage: "case-study",
+        status: "published",
+        updatedAt: 200,
+      },
+      {
+        storageKey: "media/dashboard-alpha/selected",
+        publicUrl: "https://example.com/selected.png",
+        altText: "Selected dashboard image.",
+        contentId: "case-study:dashboard-alpha",
+        usage: "case-study",
+        status: "published",
+        selectedForPublic: true,
+        updatedAt: 100,
+      },
+    ]);
+
+    expect(mediaByContentId.get("case-study:dashboard-alpha")?.publicUrl).toBe(
+      "https://example.com/selected.png",
+    );
+  });
+
   it("includes generated dashboard case studies in routes, sitemap, index, and home outcomes", async () => {
     const contentId = "case-study:dashboard-alpha";
 
