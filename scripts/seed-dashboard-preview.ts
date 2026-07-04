@@ -5,12 +5,38 @@ import {
   type ContentId,
   type Locale,
 } from "../packages/content-graph/src/index.ts";
-import type {
-  DashboardCaseStudyStatus,
-  DashboardEvidenceStatus,
-  DashboardProjectDraftPayload,
-  DashboardSiteSettingPayload,
-} from "../apps/backend/src/dashboard-content.ts";
+import { hasConvexDeploymentAccess, runConvexFunction } from "./convex-run.js";
+
+type DashboardCaseStudyStatus =
+  | "production-proof"
+  | "active-build"
+  | "private-build"
+  | "enterprise-confidential"
+  | "engineering-practice";
+
+type DashboardEvidenceStatus = "missing" | "sanitized" | "published";
+
+interface DashboardProjectDraftPayload {
+  contentId: string;
+  status: DashboardCaseStudyStatus;
+  evidenceStatus: DashboardEvidenceStatus;
+  locale: Locale;
+  title: string;
+  summary: string;
+  seoDescription: string;
+  projectUrl?: string;
+  ctaLabel: string;
+  ctaHref: string;
+  achievements: string;
+  structureNotes: string;
+}
+
+interface DashboardSiteSettingPayload {
+  key: string;
+  environment: "local" | "preview" | "production";
+  value: string;
+  classification: "public-build-value" | "provider-output" | "policy-value";
+}
 
 const PROJECT_IDS = [
   "case-study:casa-roca",
@@ -258,69 +284,6 @@ function isDryRun(): boolean {
   return process.argv.includes(DRY_RUN_FLAG);
 }
 
-function requireEnvironmentValue(name: string): string {
-  const value = process.env[name]?.trim();
-
-  if (!value) {
-    throw new Error(`${name} is required to seed the preview dashboard.`);
-  }
-
-  return value;
-}
-
-function normalizeBaseUrl(value: string): string {
-  return value.endsWith("/") ? value.slice(0, -1) : value;
-}
-
-function endpointFor(baseUrl: string, pathname: string): string {
-  return `${normalizeBaseUrl(baseUrl)}${pathname}`;
-}
-
-async function postJson(
-  url: string,
-  token: string,
-  payload: DashboardProjectDraftPayload | DashboardSiteSettingPayload,
-): Promise<void> {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${token}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (response.ok) {
-    return;
-  }
-
-  let message = response.statusText;
-
-  try {
-    const responsePayload = await response.json() as { error?: string };
-    message = responsePayload.error ?? message;
-  } catch {
-    // Keep the HTTP status text when the endpoint does not return JSON.
-  }
-
-  throw new Error(`Dashboard preview seed failed for ${url}: ${response.status} ${message}`);
-}
-
-async function getDashboardSeedState(url: string, token: string): Promise<DashboardSeedState> {
-  const response = await fetch(url, {
-    headers: {
-      accept: "application/json",
-      authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Dashboard preview seed failed to read existing content: ${response.status} ${response.statusText}`);
-  }
-
-  return await response.json() as DashboardSeedState;
-}
-
 function projectPayloads(): DashboardProjectDraftPayload[] {
   return PROJECT_IDS.flatMap((contentId) => {
     const definition = projectSeedDefinitions[contentId];
@@ -377,12 +340,11 @@ async function main(): Promise<void> {
     return;
   }
 
-  const convexSiteUrl = requireEnvironmentValue("CONVEX_SITE_URL");
-  const dashboardApiToken = requireEnvironmentValue("DASHBOARD_API_TOKEN");
-  const contentEndpoint = endpointFor(convexSiteUrl, "/dashboard/content");
-  const projectEndpoint = endpointFor(convexSiteUrl, "/dashboard/content/project");
-  const settingEndpoint = endpointFor(convexSiteUrl, "/dashboard/content/setting");
-  const existingContent = await getDashboardSeedState(contentEndpoint, dashboardApiToken);
+  if (!hasConvexDeploymentAccess()) {
+    throw new Error("CONVEX_DEPLOY_KEY or CONVEX_DEPLOYMENT is required to seed the preview dashboard.");
+  }
+
+  const existingContent = runConvexFunction<DashboardSeedState>("content:listForDashboardInternal", {});
   const existingProjectsByKey = new Map(
     (existingContent.projectDrafts ?? []).map((project) => [`${project.contentId}:${project.locale}`, project]),
   );
@@ -399,11 +361,11 @@ async function main(): Promise<void> {
   );
 
   for (const project of missingProjects) {
-    await postJson(projectEndpoint, dashboardApiToken, project);
+    runConvexFunction("content:upsertProjectDraftFromDashboard", project);
   }
 
   for (const setting of missingSettings) {
-    await postJson(settingEndpoint, dashboardApiToken, setting);
+    runConvexFunction("content:upsertSiteSettingFromDashboard", setting);
   }
 
   console.log(`Seeded dashboard preview content: ${missingProjects.length} missing project drafts, ${missingSettings.length} missing settings. Preserved existing dashboard edits.`);

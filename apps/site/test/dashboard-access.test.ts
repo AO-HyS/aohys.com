@@ -9,11 +9,11 @@ import { CONTENT_SECURITY_POLICY } from "../src/security-headers.js";
 const validEnvironment: DashboardAccessEnvironment = {
   AOHYS_ENV: "preview",
   PUBLIC_SITE_URL: "https://preview.aohys.com",
+  CONVEX_URL: "https://effervescent-minnow-483.convex.cloud",
   CONVEX_SITE_URL: "https://effervescent-minnow-483.convex.site",
   BETTER_AUTH_URL: "https://preview.aohys.com",
   BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
   ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
-  DASHBOARD_API_TOKEN: "dashboard-api-token",
   CLOUDFLARE_ACCOUNT_ID: "cloudflare-account-id",
   CLOUDFLARE_IMAGES_ACCOUNT_HASH: "cloudflare-images-hash",
   CLOUDFLARE_IMAGES_API_TOKEN: "cloudflare-images-token",
@@ -70,8 +70,34 @@ describe("dashboard access guard", () => {
     expect(html).toContain('<div id="root"></div>');
     expect(html).toContain("/dashboard-app/assets/dashboard.css");
     expect(html).toContain("/dashboard-app/assets/dashboard.js");
-    expect(html).toContain("alejandro.ortiz@aohys.com");
+    expect(html).toContain("window.__AOHYS_DASHBOARD__");
+    expect(html).toContain('"adminEmail":"alejandro.ortiz@aohys.com"');
     expect(html).toContain('"environment":"preview"');
+    expect(html).toContain('"convexUrl":"https://effervescent-minnow-483.convex.cloud"');
+    expect(html).toContain('"betterAuthUrl":"https://effervescent-minnow-483.convex.site"');
+    expect(html).toContain('"imagesAccountHash":"cloudflare-images-hash"');
+  });
+
+  it("omits the images account hash from the shell config when it is not configured", async () => {
+    const response = await handleDashboardRequest(
+      new Request("https://preview.aohys.com/dashboard", {
+        headers: {
+          cookie: "better-auth.session_token=valid",
+        },
+      }),
+      {
+        ...validEnvironment,
+        CLOUDFLARE_IMAGES_ACCOUNT_HASH: undefined,
+      },
+      vi.fn(async () => new Response(JSON.stringify({
+        user: { email: "alejandro.ortiz@aohys.com" },
+      }))),
+    );
+    const html = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(html).toContain('"convexUrl":"https://effervescent-minnow-483.convex.cloud"');
+    expect(html).not.toContain("imagesAccountHash");
   });
 
   it("signs out by clearing Better Auth cookies and returning to sign-in", async () => {
@@ -134,10 +160,11 @@ describe("dashboard access guard", () => {
 
     expect(response.status).toBe(403);
     expect(html).toContain("Dashboard access is restricted");
+    expect(html).not.toContain("window.__AOHYS_DASHBOARD__");
     expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
   });
 
-  it("blocks non-admin users from lead data before calling the private leads endpoint", async () => {
+  it("blocks non-admin users from dashboard routes with a single session check", async () => {
     const fetchDashboard = vi.fn(async (input: RequestInfo | URL) => {
       const url = String(input);
 
@@ -184,6 +211,21 @@ describe("dashboard access guard", () => {
     expect(html).not.toContain("https://effervescent-minnow-483.convex.site");
   });
 
+  it("renders a configuration error when CONVEX_URL is missing from the dashboard runtime", async () => {
+    const response = await handleDashboardRequest(
+      new Request("https://preview.aohys.com/dashboard"),
+      {
+        ...validEnvironment,
+        CONVEX_URL: undefined,
+      },
+      vi.fn(),
+    );
+    const html = await response.text();
+
+    expect(response.status).toBe(503);
+    expect(html).toContain("Dashboard configuration needs attention");
+  });
+
   it("returns a private configuration state instead of throwing when Pages env bindings are absent", async () => {
     const response = await safeHandleDashboardRequest(
       new Request("https://develop.aohys-com.pages.dev/dashboard"),
@@ -220,25 +262,13 @@ describe("dashboard access guard", () => {
 
   it("returns a private unavailable state and reports unexpected dashboard runtime failures", async () => {
     const capture = vi.fn(async () => undefined);
-    const fetchDashboard = vi.fn(async (input: RequestInfo | URL) => {
-      const url = String(input);
-
-      if (url.endsWith("/api/auth/get-session")) {
-        return new Response(JSON.stringify({
-          user: { email: "alejandro.ortiz@aohys.com" },
-        }));
-      }
-
-      throw new Error("Private lead provider failed with private details.");
+    const fetchAuth = vi.fn(async () => {
+      throw new Error("Private auth provider failed with private details.");
     });
     const response = await safeHandleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/api/leads", {
-        headers: {
-          cookie: "better-auth.session_token=valid",
-        },
-      }),
+      new Request("https://preview.aohys.com/dashboard/sign-in/google?callbackURL=%2Fdashboard"),
       validEnvironment,
-      fetchDashboard,
+      fetchAuth,
       { capture },
     );
     const html = await response.text();
@@ -254,7 +284,7 @@ describe("dashboard access guard", () => {
       properties: {
         environment: "preview",
         source: "cloudflare_pages_dashboard",
-        path: "/dashboard/api/leads",
+        path: "/dashboard/sign-in/google",
         errorType: "Error",
       },
     });
@@ -387,374 +417,21 @@ describe("dashboard access guard", () => {
       throw new Error(`Unexpected private endpoint call: ${url}`);
     });
 
-    const response = await handleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/leads", {
-        headers: { cookie: "better-auth.session_token=valid" },
-      }),
-      validEnvironment,
-      fetchDashboard,
-    );
-    const html = await response.text();
-
-    expect(response.status).toBe(200);
-    expect(html).toContain("/dashboard-app/assets/dashboard.js");
-    expect(fetchDashboard).toHaveBeenCalledTimes(1);
-  });
-
-  it("returns project-centered dashboard content through the private JSON API", async () => {
-    const fetchDashboard = vi.fn(async (input: RequestInfo | URL) => {
-      const url = String(input);
-
-      if (url.endsWith("/api/auth/get-session")) {
-        return new Response(JSON.stringify({
-          user: { email: "alejandro.ortiz@aohys.com" },
-        }));
-      }
-
-      expect(url).toBe("https://effervescent-minnow-483.convex.site/dashboard/content");
-
-      return new Response(JSON.stringify({
-        caseStudies: [
-          {
-            contentId: "case-study:casa-roca",
-            status: "production-proof",
-            evidenceStatus: "sanitized",
-            updatedAt: 1_720_000_000_000,
-          },
-        ],
-        media: [
-          {
-            id: "media_123",
-            storageProvider: "external",
-            storageKey: "screenshots/casa-roca-home",
-            publicUrl: "https://aohys.com/case-studies/casa-roca",
-            altText: "Casa Roca public landing page screenshot.",
-            contentId: "case-study:casa-roca",
-            usage: "case-study",
-            status: "draft",
-            locale: "en",
-            updatedAt: 1_720_000_000_000,
-          },
-        ],
-        settings: [],
-        resumeVersions: [],
-      }));
-    });
-
-    const response = await handleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/api/content", {
-        headers: { cookie: "better-auth.session_token=valid" },
-      }),
-      validEnvironment,
-      fetchDashboard,
-    );
-    const payload = await response.json() as {
-      projects: Array<{
-        contentId: string;
-        title: string;
-        englishPath: string;
-        spanishPath: string;
-        images: Array<{ source: string; storageKey?: string }>;
-      }>;
-    };
-
-    expect(response.status).toBe(200);
-    expect(payload.projects[0]).toMatchObject({
-      contentId: "case-study:casa-roca",
-      title: "Casa Roca",
-      englishPath: "/case-studies/casa-roca",
-      spanishPath: "/es/casos/casa-roca",
-    });
-    expect(payload.projects[0]?.images).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          source: "media-metadata",
-          storageKey: "screenshots/casa-roca-home",
+    for (const path of ["/dashboard/leads", "/dashboard/projects", "/dashboard/settings"]) {
+      const response = await handleDashboardRequest(
+        new Request(`https://preview.aohys.com${path}`, {
+          headers: { cookie: "better-auth.session_token=valid" },
         }),
-      ]),
-    );
-    expect(fetchDashboard).toHaveBeenCalledWith(
-      "https://effervescent-minnow-483.convex.site/dashboard/content",
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          authorization: "Bearer dashboard-api-token",
-        }),
-      }),
-    );
-  });
+        validEnvironment,
+        fetchDashboard,
+      );
+      const html = await response.text();
 
-  it("returns dashboard leads through the private JSON API", async () => {
-    const fetchDashboard = vi.fn(async (input: RequestInfo | URL) => {
-      const url = String(input);
+      expect(response.status).toBe(200);
+      expect(html).toContain("/dashboard-app/assets/dashboard.js");
+      expect(html).toContain('"convexUrl":"https://effervescent-minnow-483.convex.cloud"');
+    }
 
-      if (url.endsWith("/api/auth/get-session")) {
-        return new Response(JSON.stringify({
-          user: { email: "alejandro.ortiz@aohys.com" },
-        }));
-      }
-
-      expect(url).toBe("https://effervescent-minnow-483.convex.site/dashboard/leads");
-
-      return new Response(JSON.stringify({
-        leads: [
-          {
-            id: "lead_123",
-            name: "Casa Roca",
-            email: "ops@casaroca.mx",
-            intent: "website",
-            message: "We need a booking workflow.",
-            sourcePath: "/contact",
-            locale: "en",
-            status: "new",
-            createdAt: 1_720_000_000_000,
-            updatedAt: 1_720_000_000_000,
-          },
-        ],
-      }));
-    });
-
-    const response = await handleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/api/leads", {
-        headers: { cookie: "better-auth.session_token=valid" },
-      }),
-      validEnvironment,
-      fetchDashboard,
-    );
-    const payload = await response.json() as { leads: Array<{ name: string; message: string }> };
-
-    expect(response.status).toBe(200);
-    expect(payload.leads[0]).toMatchObject({
-      name: "Casa Roca",
-      message: "We need a booking workflow.",
-    });
-  });
-
-  it("saves case-study metadata through the private content endpoint", async () => {
-    const fetchDashboard = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      const url = String(input);
-
-      if (url.endsWith("/api/auth/get-session")) {
-        return new Response(JSON.stringify({
-          user: { email: "alejandro.ortiz@aohys.com" },
-        }));
-      }
-
-      expect(url).toBe("https://effervescent-minnow-483.convex.site/dashboard/content/case-study");
-      expect(init).toMatchObject({
-        method: "POST",
-        headers: expect.objectContaining({
-          authorization: "Bearer dashboard-api-token",
-          "content-type": "application/json",
-        }),
-        body: JSON.stringify({
-          contentId: "case-study:casa-roca",
-          status: "production-proof",
-          evidenceStatus: "sanitized",
-        }),
-      });
-
-      return new Response(JSON.stringify({
-        ok: true,
-        contentId: "case-study:casa-roca",
-        updatedAt: 1_720_000_010_000,
-      }));
-    });
-
-    const response = await handleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/content/case-study", {
-        method: "POST",
-        headers: {
-          cookie: "better-auth.session_token=valid",
-          "content-type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          contentId: "case-study:casa-roca",
-          status: "production-proof",
-          evidenceStatus: "sanitized",
-        }),
-      }),
-      validEnvironment,
-      fetchDashboard,
-    );
-
-    expect(response.status).toBe(302);
-    expect(response.headers.get("location")).toBe("/dashboard/projects?saved=1");
-  });
-
-  it("saves project drafts through the private dashboard JSON API", async () => {
-    const fetchDashboard = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      const url = String(input);
-
-      if (url.endsWith("/api/auth/get-session")) {
-        return new Response(JSON.stringify({
-          user: { email: "alejandro.ortiz@aohys.com" },
-        }));
-      }
-
-      expect(url).toBe("https://effervescent-minnow-483.convex.site/dashboard/content/project");
-      expect(init).toMatchObject({
-        method: "POST",
-        headers: expect.objectContaining({
-          authorization: "Bearer dashboard-api-token",
-          "content-type": "application/json",
-        }),
-        body: JSON.stringify({
-          contentId: "case-study:casa-roca",
-          locale: "en",
-          status: "production-proof",
-          evidenceStatus: "published",
-          title: "Casa Roca",
-          summary: "Production hospitality site.",
-          seoDescription: "Casa Roca production site proof.",
-          projectUrl: "https://casa-roca.mx",
-          ctaLabel: "Start a similar build",
-          ctaHref: "/contact",
-          achievements: "Clear public presence.",
-          structureNotes: "Static public page, private workflows protected.",
-        }),
-      });
-
-      return new Response(JSON.stringify({ ok: true }));
-    });
-
-    const response = await handleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/api/content/project", {
-        method: "POST",
-        headers: {
-          cookie: "better-auth.session_token=valid",
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          contentId: "case-study:casa-roca",
-          locale: "en",
-          status: "production-proof",
-          evidenceStatus: "published",
-          title: "Casa Roca",
-          summary: "Production hospitality site.",
-          seoDescription: "Casa Roca production site proof.",
-          projectUrl: "https://casa-roca.mx",
-          ctaLabel: "Start a similar build",
-          ctaHref: "/contact",
-          achievements: "Clear public presence.",
-          structureNotes: "Static public page, private workflows protected.",
-        }),
-      }),
-      validEnvironment,
-      fetchDashboard,
-    );
-
-    expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ ok: true });
-  });
-
-  it("updates a lead status through the private Convex endpoint and redirects back to the selected lead", async () => {
-    const fetchDashboard = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      const url = String(input);
-
-      if (url.endsWith("/api/auth/get-session")) {
-        return new Response(JSON.stringify({
-          user: { email: "alejandro.ortiz@aohys.com" },
-        }));
-      }
-
-      if (url.endsWith("/dashboard/leads/status")) {
-        expect(init).toMatchObject({
-          method: "POST",
-          headers: expect.objectContaining({
-            authorization: "Bearer dashboard-api-token",
-            "content-type": "application/json",
-          }),
-          body: JSON.stringify({
-            leadId: "lead_123",
-            status: "reviewing",
-          }),
-        });
-
-        return new Response(JSON.stringify({
-          ok: true,
-          leadId: "lead_123",
-          status: "reviewing",
-          updatedAt: 1_720_000_010_000,
-        }));
-      }
-
-      return new Response(JSON.stringify({ leads: [] }));
-    });
-
-    const response = await handleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/leads/status", {
-        method: "POST",
-        headers: {
-          cookie: "better-auth.session_token=valid",
-          "content-type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          leadId: "lead_123",
-          status: "reviewing",
-        }),
-      }),
-      validEnvironment,
-      fetchDashboard,
-    );
-
-    expect(response.status).toBe(302);
-    expect(response.headers.get("location")).toBe("/dashboard/leads?lead=lead_123&saved=1");
-  });
-
-  it("rejects non-POST lead status routes", async () => {
-    const response = await handleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/leads/status", {
-        headers: {
-          cookie: "better-auth.session_token=valid",
-        },
-      }),
-      validEnvironment,
-      vi.fn(async () => new Response(JSON.stringify({
-        user: { email: "alejandro.ortiz@aohys.com" },
-      }))),
-    );
-
-    expect(response.status).toBe(405);
-    expect(response.headers.get("allow")).toBe("POST");
-    expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
-  });
-
-  it("renders a validation error without calling the status endpoint for unsupported status values", async () => {
-    const fetchDashboard = vi.fn(async (input: RequestInfo | URL) => {
-      const url = String(input);
-
-      if (url.endsWith("/api/auth/get-session")) {
-        return new Response(JSON.stringify({
-          user: { email: "alejandro.ortiz@aohys.com" },
-        }));
-      }
-
-      return new Response(JSON.stringify({ leads: [] }));
-    });
-
-    const response = await handleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/leads/status", {
-        method: "POST",
-        headers: {
-          cookie: "better-auth.session_token=valid",
-          "content-type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          leadId: "lead_123",
-          status: "done",
-        }),
-      }),
-      validEnvironment,
-      fetchDashboard,
-    );
-    const html = await response.text();
-
-    expect(response.status).toBe(200);
-    expect(html).toContain('data-workflow-state="validation-error"');
-    expect(html).toContain("Choose a valid lead status before saving.");
-    expect(fetchDashboard).not.toHaveBeenCalledWith(
-      "https://effervescent-minnow-483.convex.site/dashboard/leads/status",
-      expect.anything(),
-    );
+    expect(fetchDashboard).toHaveBeenCalledTimes(3);
   });
 });
