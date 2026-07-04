@@ -14,6 +14,7 @@ import {
 import { DASHBOARD_PUBLIC_MEDIA_BY_CONTENT_ID } from "../generated/dashboard-public-media";
 import { DASHBOARD_PUBLIC_SETTINGS } from "../generated/dashboard-public-settings";
 import { getUiCopy } from "../i18n";
+import { cx, proofImageClass, screenshotImageClass, ui } from "../styles/classes";
 
 interface Props {
   route: PublicRoute;
@@ -158,38 +159,38 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
 {
   isHome && homeContent ? (
     <>
-      <section class="hero-section home-proof-hero" aria-labelledby="home-title" data-home-content-id={id}>
-        <div class="hero-copy">
-          <p class="signal-line">{copy.signal}</p>
-          <h1 id="home-title" class="home-headline" aria-label={homeContent.headline}>
+      <section class={ui.homeProofHero} aria-labelledby="home-title" data-home-content-id={id}>
+        <div class={ui.homeHeroCopy}>
+          <p class={cx(ui.signalLine, ui.homeSignalLine)}>{copy.signal}</p>
+          <h1 id="home-title" class={ui.homeHeadline} aria-label={homeContent.headline}>
             {homeHeadlineParts.map((part) => <span aria-hidden="true">{part}</span>)}
           </h1>
-          <p class="hero-lead">
+          <p class={cx(ui.heroLead, ui.homeHeroLead)}>
             {homeContent.deck}
           </p>
-          <div class="hero-actions" aria-label={copy.actions}>
-            {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
-            {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          <div class={ui.heroActions} aria-label={copy.actions}>
+            {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class={cx(ui.button, ui.buttonSecondaryOnLightHero)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
           </div>
         </div>
 
-        <figure class="proof-board home-proof-board" aria-label={homeContent.proofBoardLabel}>
+        <figure class={cx(ui.proofBoard, ui.homeProofBoard)} aria-label={homeContent.proofBoardLabel}>
           <img
-            class="hero-artifact-asset"
+            class={ui.heroArtifactAsset}
             src="/images/generated/aohys-architecture-proof-surface.png"
             alt={locale === "es" ? "Mapa visual del sistema público, privado y observable de AOHYS" : "Visual map of the AOHYS public, private, and observable system"}
             loading="eager"
             decoding="async"
           />
-          <div class="hero-proof-shots" aria-hidden="true">
+          <div class={ui.heroProofShots} aria-hidden="true">
             {homeContent.selectedOutcomes.slice(0, 3).map((outcome) => {
               const evidenceImage = evidenceImageForPath(outcome.path);
               const imageSrc = evidenceImage?.thumbSrc ?? outcome.evidence.src;
 
               return imageSrc ? (
-                <span class={`hero-proof-frame hero-proof-frame-${evidenceImage?.kind ?? "site"}`}>
+                <span class={ui.heroProofFrame}>
                   <img
-                    class={`proof-image proof-image-${evidenceImage?.kind ?? "site"}`}
+                    class={proofImageClass(evidenceImage?.kind ?? "site")}
                     src={imageSrc}
                     alt=""
                     loading="eager"
@@ -199,14 +200,14 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
               ) : null;
             })}
           </div>
-          <figcaption class="proof-board-caption">
+          <figcaption class={ui.proofBoardCaption}>
             <span>{copy.publicSample}</span>
             <strong>{homeContent.proofBoardTitle}</strong>
             <p>{homeContent.proofBoardBody}</p>
           </figcaption>
-          <div class="hero-proof-ribbon" aria-label={homeContent.selectedOutcomesHeading}>
+          <div class={ui.heroProofRibbon} aria-label={homeContent.selectedOutcomesHeading}>
             {homeContent.selectedOutcomes.slice(0, 3).map((outcome) => (
-              <a class="hero-proof-ribbon-item" href={outcome.path}>
+              <a class={ui.heroProofRibbonItem} href={outcome.path}>
                 <span>{outcome.label}</span>
                 <strong>{outcome.title}</strong>
               </a>
@@ -215,16 +216,16 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </figure>
       </section>
 
-      <section class="ledger-section selected-outcomes" aria-labelledby="ledger-title" data-home-section="selected-outcomes">
-        <div class="section-heading">
-          <p class="signal-line">{copy.proofHeadingSignal}</p>
+      <section class={ui.selectedOutcomes} aria-labelledby="ledger-title" data-home-section="selected-outcomes">
+        <div class={ui.sectionHeading}>
+          <p class={ui.signalLine}>{copy.proofHeadingSignal}</p>
           <h2 id="ledger-title">{homeContent.selectedOutcomesHeading}</h2>
-          <p class="section-intro">{homeContent.selectedOutcomesIntro}</p>
+          <p class={ui.sectionIntro}>{homeContent.selectedOutcomesIntro}</p>
         </div>
-        <div class="outcome-ledger">
+        <div class={ui.outcomeLedger}>
           {homeContent.selectedOutcomes.map((outcome, index) => (
-            <a class="outcome-row" href={outcome.path}>
-              <span class="outcome-index">{String(index + 1).padStart(2, "0")}</span>
+            <a class={ui.outcomeRow} href={outcome.path}>
+              <span class={ui.outcomeIndex}>{String(index + 1).padStart(2, "0")}</span>
               {(() => {
                 const evidenceImage = evidenceImageForPath(outcome.path);
                 const imageSrc = evidenceImage?.thumbSrc ?? outcome.evidence.src;
@@ -233,44 +234,45 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
                   : evidenceImage?.alt ?? outcome.evidence.altText;
 
                 return (
-                  <figure class={`outcome-shot outcome-shot-${evidenceImage?.kind ?? "site"}`} aria-label={imageAlt}>
+                  <figure class={ui.outcomeShot} aria-label={imageAlt}>
                     {imageSrc ? (
-                      <img src={imageSrc} alt={imageAlt} loading="eager" decoding="async" />
+                      <img class={screenshotImageClass(evidenceImage?.kind ?? "site")} src={imageSrc} alt={imageAlt} loading="eager" decoding="async" />
                     ) : (
-                      <span class="evidence-fallback">{outcome.evidence.label}</span>
+                      <span class={ui.evidenceFallback}>{outcome.evidence.label}</span>
                     )}
                   </figure>
                 );
               })()}
-              <div class="outcome-summary">
-                <span class="outcome-label">{outcome.label}</span>
-                <strong>{outcome.title}</strong>
-                <p>{outcome.outcome}</p>
+              <div class={ui.outcomeSummary}>
+                <span class={ui.eyebrow}>{outcome.label}</span>
+                <strong class={ui.outcomeTitle}>{outcome.title}</strong>
+                <p class={ui.bodyMutedPretty}>{outcome.outcome}</p>
               </div>
-              <p class="outcome-scope">{outcome.role}</p>
-              <span class="outcome-arrow" aria-hidden="true">→</span>
+              <p class={ui.bodyMutedPretty}>{outcome.role}</p>
+              <span class={ui.outcomeArrow} aria-hidden="true">→</span>
             </a>
           ))}
         </div>
       </section>
 
-      <section class="architecture-stage" aria-labelledby="home-architecture-title" data-home-section="architecture">
-        <div class="architecture-copy">
+      <section class={ui.architectureStage} aria-labelledby="home-architecture-title" data-home-section="architecture">
+        <div class="min-w-0">
           <h2 id="home-architecture-title">{homeContent.architectureHeading}</h2>
-          <p>{homeContent.architectureBody}</p>
+          <p class={ui.architectureLead}>{homeContent.architectureBody}</p>
         </div>
-        <div class="architecture-proof-stack">
-          <figure class="architecture-proof-visual">
+        <div class={ui.architectureProofStack}>
+          <figure class={cx(ui.framedImage, "rounded-lg")}>
             <img
+              class="w-full aspect-[16/10] object-cover object-center"
               src="/images/generated/aohys-architecture-proof-surface.png"
               alt={locale === "es" ? "Mapa del sistema público y privado de AOHYS" : "AOHYS public and private system map"}
               loading="lazy"
               decoding="async"
             />
           </figure>
-          <div class="architecture-track" aria-label={homeContent.architectureHeading}>
+          <div class={ui.architectureTrack} aria-label={homeContent.architectureHeading}>
             {homeContent.architectureStages.map((stage) => (
-              <div class="architecture-step">
+              <div class={ui.architectureStep}>
                 <span>{stage.label}</span>
                 <p>{stage.text}</p>
               </div>
@@ -279,14 +281,14 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </div>
       </section>
 
-      <section class="practice-section" aria-labelledby="practice-title" data-home-section="practice">
-        <div class="section-heading">
+      <section class={ui.practiceSection} aria-labelledby="practice-title" data-home-section="practice">
+        <div class={ui.sectionHeading}>
           <h2 id="practice-title">{homeContent.practiceHeading}</h2>
-          <p class="section-intro">{homeContent.practiceBody}</p>
+          <p class={ui.sectionIntro}>{homeContent.practiceBody}</p>
         </div>
-        <div class="practice-list">
+        <div class={ui.practiceList}>
           {homeContent.practicePoints.map((point) => (
-            <div class="practice-item">
+            <div class={ui.practiceItem}>
               <span>{point.label}</span>
               <p>{point.text}</p>
             </div>
@@ -294,42 +296,43 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </div>
       </section>
 
-      <section class="contact-band" aria-labelledby="home-contact-title" data-home-section="contact">
+      <section class={ui.contactBand} aria-labelledby="home-contact-title" data-home-section="contact">
         <div>
           <h2 id="home-contact-title">{homeContent.contactHeading}</h2>
           <p>{homeContent.contactBody}</p>
         </div>
-        <div class="contact-actions" aria-label={copy.actions}>
-          <a class="button button-primary" href={homeContent.emailHref}>{homeContent.emailLabel}</a>
-          <a class="button button-whatsapp" href={homeContent.whatsappHref} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="home_contact_band">{homeContent.whatsappLabel}</a>
+        <div class={ui.contactActions} aria-label={copy.actions}>
+          <a class={cx(ui.button, ui.buttonPrimary)} href={homeContent.emailHref}>{homeContent.emailLabel}</a>
+          <a class={cx(ui.button, ui.buttonWhatsapp)} href={homeContent.whatsappHref} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="home_contact_band">{homeContent.whatsappLabel}</a>
         </div>
       </section>
     </>
   ) : isArchitecture && architectureContent ? (
     <>
-      <section class="architecture-page-hero" aria-labelledby="architecture-title" data-architecture-content-id={id}>
-        <div class="architecture-page-copy">
-          <p class="signal-line">{routeSignal}</p>
+      <section class={ui.architecturePageHero} aria-labelledby="architecture-title" data-architecture-content-id={id}>
+        <div class={ui.architecturePageCopy}>
+          <p class={cx(ui.signalLine, "!text-[color:var(--color-dark-muted)]")}>{routeSignal}</p>
           <h1 id="architecture-title">{architectureContent.heading}</h1>
-          <p class="hero-lead">{architectureContent.deck}</p>
-          <div class="hero-actions" aria-label={copy.actions}>
-            {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
-            {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          <p class={cx(ui.heroLead, "!text-[color:var(--color-dark-muted)]")}>{architectureContent.deck}</p>
+          <div class={ui.heroActions} aria-label={copy.actions}>
+            {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class={cx(ui.button, ui.buttonSecondaryOnDark)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
           </div>
         </div>
 
-        <div class="architecture-hero-aside">
-          <figure class="architecture-hero-map">
+        <div class={ui.architectureHeroAside}>
+          <figure class={ui.darkPanelFigure}>
             <img
+              class="w-full aspect-video object-cover object-center"
               src="/images/proof/aohys-system-map.svg"
               alt={locale === "es" ? "Mapa de arquitectura de la muestra pública AOHYS" : "Architecture map for the AOHYS public sample"}
               loading="eager"
               decoding="async"
             />
           </figure>
-          <aside class="source-index" aria-label={architectureContent.sourceLabel}>
+          <aside class={cx(ui.sourceIndex, ui.sourceIndexDark)} aria-label={architectureContent.sourceLabel}>
             <strong>{architectureContent.sourceLabel}</strong>
-            <div class="source-links">
+            <div class={cx(ui.sourceLinks, ui.sourceLinksDark)}>
               {architectureContent.sourceLinks.map((link) => (
                 <a href={link.href}>{link.label}</a>
               ))}
@@ -338,18 +341,18 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </div>
       </section>
 
-      <section class="architecture-map" aria-labelledby="architecture-map-title">
-        <div class="section-heading">
+      <section class={ui.architectureMap} aria-labelledby="architecture-map-title">
+        <div class={ui.sectionHeading}>
           <h2 id="architecture-map-title">{variant.title}</h2>
-          <p class="section-intro">{variant.summary}</p>
+          <p class={ui.sectionIntro}>{variant.summary}</p>
         </div>
-        <div class="architecture-rows">
+        <div class={ui.rowList}>
           {architectureContent.sections.map((section) => (
-            <article class="architecture-row">
+            <article class={ui.architectureRow}>
               <h3>{section.title}</h3>
               <p>{section.body}</p>
               {section.links && (
-                <div class="source-links inline">
+                <div class={cx(ui.sourceLinks, ui.sourceLinksInline)}>
                   {section.links.map((link) => (
                     <a href={link.href}>{link.label}</a>
                   ))}
@@ -360,49 +363,50 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </div>
       </section>
 
-      <section class="boundary-note" aria-label={architectureContent.heading}>
+      <section class={ui.boundaryNote} aria-label={architectureContent.heading}>
         <p>{architectureContent.boundaryNote}</p>
       </section>
     </>
   ) : isCaseStudyIndex && caseStudyIndexContent ? (
     <>
-      <section class="case-study-index-hero" aria-labelledby="case-study-index-title" data-case-study-index-content-id={id}>
-        <div class="case-study-hero-copy">
-          <p class="signal-line">{routeSignal}</p>
+      <section class={ui.caseStudyIndexHero} aria-labelledby="case-study-index-title" data-case-study-index-content-id={id}>
+        <div class={ui.caseStudyHeroCopy}>
+          <p class={ui.signalLine}>{routeSignal}</p>
           <h1 id="case-study-index-title">{caseStudyIndexContent.heading}</h1>
-          <p class="hero-lead">{caseStudyIndexContent.intro}</p>
-          <div class="hero-actions" aria-label={copy.actions}>
-            {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
-            {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          <p class={ui.heroLead}>{caseStudyIndexContent.intro}</p>
+          <div class={ui.heroActions} aria-label={copy.actions}>
+            {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class={cx(ui.button, ui.buttonSecondaryOnLightHero)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
           </div>
         </div>
-        <figure class="case-index-proof-wall" aria-label={locale === "es" ? "Capturas públicas de proyectos seleccionados" : "Public screenshots from selected work"}>
-          <span class="case-index-proof-frame case-index-proof-frame-site">
-            <img src="/images/proof/casa-roca-production.png" alt={locale === "es" ? "Captura pública de Casa Roca" : "Public Casa Roca screenshot"} loading="eager" decoding="async" />
+        <figure class={ui.caseIndexProofWall} aria-label={locale === "es" ? "Capturas públicas de proyectos seleccionados" : "Public screenshots from selected work"}>
+          <span class={ui.caseIndexProofFrame}>
+            <img class={screenshotImageClass("site")} src="/images/proof/casa-roca-production.png" alt={locale === "es" ? "Captura pública de Casa Roca" : "Public Casa Roca screenshot"} loading="eager" decoding="async" />
           </span>
-          <span class="case-index-proof-frame case-index-proof-frame-landing">
-            <img src="/images/proof/barber-central-proof-thumb.png" alt={locale === "es" ? "Landing page de The Barber Central" : "The Barber Central landing page"} loading="eager" decoding="async" />
+          <span class={ui.caseIndexProofFrame}>
+            <img class={screenshotImageClass("landing")} src="/images/proof/barber-central-proof-thumb.png" alt={locale === "es" ? "Landing page de The Barber Central" : "The Barber Central landing page"} loading="eager" decoding="async" />
           </span>
-          <span class="case-index-proof-frame case-index-proof-frame-dashboard">
-            <img src="/images/proof/nutri-plan-proof-thumb.png" alt={locale === "es" ? "Dashboard administrativo de Nutri Plan" : "Nutri Plan administrative dashboard"} loading="eager" decoding="async" />
+          <span class={ui.caseIndexProofFrame}>
+            <img class={screenshotImageClass("dashboard")} src="/images/proof/nutri-plan-proof-thumb.png" alt={locale === "es" ? "Dashboard administrativo de Nutri Plan" : "Nutri Plan administrative dashboard"} loading="eager" decoding="async" />
           </span>
         </figure>
       </section>
 
-      <section class="selected-work-index" aria-labelledby="selected-work-title">
-        <div class="section-heading">
+      <section class={ui.contentSection} aria-labelledby="selected-work-title">
+        <div class={ui.sectionHeading}>
           <h2 id="selected-work-title">{caseStudyIndexContent.heading}</h2>
-          <p class="section-intro">{caseStudyIndexContent.intro}</p>
+          <p class={ui.sectionIntro}>{caseStudyIndexContent.intro}</p>
         </div>
-        <div class="selected-work-rows">
+        <div class={ui.rowList}>
           {caseStudyIndexContent.entries.map((entry) => (
-            <a class="selected-work-row" href={entry.path}>
+            <a class={ui.selectedWorkRow} href={entry.path}>
               <span>{entry.statusLabel}</span>
-              <figure class={`selected-work-shot selected-work-shot-${evidenceImageForPath(entry.path)?.kind ?? "site"}`}>
+              <figure class={ui.selectedWorkShot}>
                 {(() => {
                   const evidenceImage = evidenceImageForPath(entry.path);
                   return evidenceImage ? (
                     <img
+                      class={screenshotImageClass(evidenceImage.kind, "compact")}
                       src={evidenceImage.thumbSrc ?? evidenceImage.src}
                       alt={evidenceImage.alt}
                       loading="lazy"
@@ -413,7 +417,7 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
                   );
                 })()}
               </figure>
-              <strong>{entry.title}</strong>
+              <strong class={ui.selectedWorkTitle}>{entry.title}</strong>
               <p>{entry.summary}</p>
               <em>{entry.evidenceLabel}</em>
             </a>
@@ -423,18 +427,18 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
     </>
   ) : isCaseStudy && caseStudyContent ? (
     <>
-      <section class="case-study-hero" aria-labelledby="case-study-title" data-case-study-content-id={id}>
-        <div class="case-study-hero-copy">
-          <p class="signal-line">{caseStudyContent.statusLabel}</p>
+      <section class={ui.caseStudyHero} aria-labelledby="case-study-title" data-case-study-content-id={id}>
+        <div class={ui.caseStudyHeroCopy}>
+          <p class={ui.signalLine}>{caseStudyContent.statusLabel}</p>
           <h1 id="case-study-title">{variant.title}</h1>
-          <p class="hero-lead">{caseStudyContent.overview}</p>
-          <div class="hero-actions" aria-label={copy.actions}>
-            {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
-            {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          <p class={ui.heroLead}>{caseStudyContent.overview}</p>
+          <div class={ui.heroActions} aria-label={copy.actions}>
+            {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class={cx(ui.button, ui.buttonSecondaryOnLightHero)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
           </div>
         </div>
 
-        <aside class="case-study-status" aria-label={caseStudyContent.statusLabel}>
+        <aside class={ui.caseStudyStatus} aria-label={caseStudyContent.statusLabel}>
           {caseStudyEvidenceImage && (
             <img
               src={caseStudyEvidenceImage.src}
@@ -448,14 +452,14 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </aside>
       </section>
 
-      <section class="case-study-detail" aria-labelledby="case-study-detail-title">
-        <div class="section-heading">
+      <section class={ui.contentSection} aria-labelledby="case-study-detail-title">
+        <div class={ui.sectionHeading}>
           <h2 id="case-study-detail-title">{variant.title}</h2>
-          <p class="section-intro">{variant.summary}</p>
+          <p class={ui.sectionIntro}>{variant.summary}</p>
         </div>
-        <div class="case-study-rows">
+        <div class={ui.rowList}>
           {caseStudySections.map((section) => (
-            <article class="case-study-row">
+            <article class={ui.studyRow}>
               <h3>{section.title}</h3>
               <p>{section.body}</p>
             </article>
@@ -463,14 +467,14 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </div>
       </section>
 
-      <section class="case-study-evidence" aria-labelledby="case-study-evidence-title">
-        <div class="section-heading">
+      <section class={ui.contentSection} aria-labelledby="case-study-evidence-title">
+        <div class={ui.sectionHeading}>
           <h2 id="case-study-evidence-title">{caseStudyContent.publicEvidenceTitle}</h2>
         </div>
-        <div class="evidence-list">
+        <div class={ui.rowList}>
           {caseStudyContent.publicEvidence.map((evidence) => (
             <a
-              class="evidence-link"
+              class={ui.evidenceLink}
               href={evidence.href}
               aria-label={evidence.altText}
               target={evidence.href.startsWith("http") ? "_blank" : undefined}
@@ -483,42 +487,43 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </div>
       </section>
 
-      <section class="case-study-confidentiality" aria-labelledby="case-study-confidentiality-title">
+      <section class={ui.confidentiality} aria-labelledby="case-study-confidentiality-title">
         <h2 id="case-study-confidentiality-title">{caseStudyContent.confidentialityNote.title}</h2>
         <p>{caseStudyContent.confidentialityNote.body}</p>
       </section>
     </>
   ) : isResume && resumeContent ? (
     <>
-      <section class="resume-hero" aria-labelledby="resume-title" data-resume-content-id={id}>
-        <div class="resume-identity">
-          <p class="signal-line">{routeSignal}</p>
+      <section class={ui.resumeHero} aria-labelledby="resume-title" data-resume-content-id={id}>
+        <div class={ui.resumeIdentity}>
+          <p class={cx(ui.signalLine, "!text-[color:var(--color-dark-honey)]")}>{routeSignal}</p>
           <h1 id="resume-title">{resumeContent.name}</h1>
-          <p class="resume-role">{resumeContent.role}</p>
-          <p class="hero-lead">{resumeContent.intro}</p>
-          <div class="hero-actions" aria-label={copy.actions}>
-            <a class="button button-primary" href={resumeContent.pdf.href} download={resumeContent.pdf.fileName}>
+          <p class={ui.resumeRole}>{resumeContent.role}</p>
+          <p class={cx(ui.heroLead, "max-w-[52ch] !text-[color:var(--color-dark-muted)]")}>{resumeContent.intro}</p>
+          <div class={ui.heroActions} aria-label={copy.actions}>
+            <a class={cx(ui.button, ui.buttonPrimary)} href={resumeContent.pdf.href} download={resumeContent.pdf.fileName}>
               {resumeContent.pdf.label}
             </a>
-            {primaryHref && <a class="button button-secondary" href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {primaryHref && <a class={cx(ui.button, ui.buttonSecondaryOnDark)} href={primaryHref}>{variant.primaryActionLabel}</a>}
           </div>
         </div>
 
-        <aside class="resume-proof-panel" aria-label={resumeContent.proof.label}>
-          <figure class="resume-proof-visual">
+        <aside class={ui.resumeProofPanel} aria-label={resumeContent.proof.label}>
+          <figure class={ui.darkPanelFigure}>
             <img
+              class="w-full aspect-[16/10] object-cover object-center"
               src="/images/generated/aohys-delivery-artifact.png"
               alt={locale === "es" ? "Artefacto visual de entrega, QA y release de AOHYS" : "Visual artifact of AOHYS delivery, QA, and release practice"}
               loading="eager"
               decoding="async"
             />
           </figure>
-          <div class="resume-proof-copy">
+          <div class={ui.resumeProofCopy}>
             <span>{resumeContent.proof.label}</span>
             <strong>{resumeContent.proof.title}</strong>
             <p>{resumeContent.proof.body}</p>
           </div>
-          <div class="resume-contact" aria-label={resumeContent.name}>
+          <div class={ui.resumeContact} aria-label={resumeContent.name}>
             <span>{resumeContent.location}</span>
             {resumeContent.contactLinks.map((link) => (
               <a href={link.href}>
@@ -530,22 +535,22 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </aside>
       </section>
 
-      <section class="resume-section resume-summary" aria-labelledby="resume-summary-title">
-        <div class="section-heading">
+      <section class={ui.contentSection} aria-labelledby="resume-summary-title">
+        <div class={ui.sectionHeading}>
           <h2 id="resume-summary-title">{resumeContent.summaryTitle}</h2>
         </div>
-        <div class="resume-copy">
+        <div class={ui.resumeCopy}>
           {resumeContent.summary.map((paragraph) => <p>{paragraph}</p>)}
         </div>
       </section>
 
-      <section class="resume-section" aria-labelledby="resume-highlights-title">
-        <div class="section-heading">
+      <section class={ui.contentSection} aria-labelledby="resume-highlights-title">
+        <div class={ui.sectionHeading}>
           <h2 id="resume-highlights-title">{resumeContent.highlightsTitle}</h2>
         </div>
-        <div class="resume-ledger">
+        <div class={ui.rowList}>
           {resumeContent.highlights.map((highlight) => (
-            <article class="resume-row">
+            <article class={ui.resumeRow}>
               <span>{highlight.label}</span>
               <p>{highlight.text}</p>
             </article>
@@ -553,13 +558,13 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </div>
       </section>
 
-      <section class="resume-section" aria-labelledby="resume-projects-title">
-        <div class="section-heading">
+      <section class={ui.contentSection} aria-labelledby="resume-projects-title">
+        <div class={ui.sectionHeading}>
           <h2 id="resume-projects-title">{resumeContent.projectsTitle}</h2>
         </div>
-        <div class="resume-long-list">
+        <div class={ui.rowList}>
           {resumeContent.projects.map((project) => (
-            <article class="resume-entry">
+            <article class={ui.resumeEntry}>
               <h3>{project.title}</h3>
               <p>{project.summary}</p>
               <ul>
@@ -570,14 +575,14 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </div>
       </section>
 
-      <section class="resume-section" aria-labelledby="resume-experience-title">
-        <div class="section-heading">
+      <section class={ui.contentSection} aria-labelledby="resume-experience-title">
+        <div class={ui.sectionHeading}>
           <h2 id="resume-experience-title">{resumeContent.experienceTitle}</h2>
         </div>
-        <div class="resume-long-list">
+        <div class={ui.rowList}>
           {resumeContent.experience.map((job) => (
-            <article class="resume-entry">
-              <div class="resume-entry-heading">
+            <article class={ui.resumeEntry}>
+              <div class={ui.resumeEntryHeading}>
                 <h3>{job.role}</h3>
                 <span>{job.period}</span>
               </div>
@@ -590,13 +595,13 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </div>
       </section>
 
-      <section class="resume-section" aria-labelledby="resume-skills-title">
-        <div class="section-heading">
+      <section class={ui.contentSection} aria-labelledby="resume-skills-title">
+        <div class={ui.sectionHeading}>
           <h2 id="resume-skills-title">{resumeContent.skillsTitle}</h2>
         </div>
-        <div class="resume-ledger">
+        <div class={ui.rowList}>
           {resumeContent.skills.map((skillGroup) => (
-            <article class="resume-row">
+            <article class={ui.resumeRow}>
               <span>{skillGroup.label}</span>
               <p>{skillGroup.items.join(", ")}</p>
             </article>
@@ -604,32 +609,32 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </div>
       </section>
 
-      <section class="resume-section" aria-labelledby="resume-education-title">
-        <div class="section-heading">
+      <section class={ui.contentSection} aria-labelledby="resume-education-title">
+        <div class={ui.sectionHeading}>
           <h2 id="resume-education-title">{resumeContent.educationTitle}</h2>
         </div>
-        <div class="resume-ledger">
+        <div class={ui.rowList}>
           {resumeContent.education.map((education) => (
-            <article class="resume-row">
+            <article class={ui.resumeRow}>
               <span>{education.period}</span>
               <p><strong>{education.degree}</strong> · {education.institution}</p>
             </article>
           ))}
-          <article class="resume-row">
+          <article class={ui.resumeRow}>
             <span>{resumeContent.languagesTitle}</span>
             <p>{resumeContent.languages.join(", ")}</p>
           </article>
         </div>
       </section>
 
-      <section class="resume-context" aria-labelledby="resume-context-title">
-        <div class="section-heading">
+      <section class={ui.contentSection} aria-labelledby="resume-context-title">
+        <div class={ui.sectionHeading}>
           <h2 id="resume-context-title">{resumeContent.contextTitle}</h2>
-          <p class="section-intro">{resumeContent.pdf.description}</p>
+          <p class={ui.sectionIntro}>{resumeContent.pdf.description}</p>
         </div>
-        <div class="resume-context-links">
+        <div class={ui.rowList}>
           {resumeContent.contextLinks.map((link) => (
-            <a class="evidence-link" href={link.href}>
+            <a class={ui.evidenceLink} href={link.href}>
               <span>{link.label}</span>
               <strong>{link.text}</strong>
             </a>
@@ -639,17 +644,18 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
     </>
   ) : isContact ? (
     <>
-      <section class="contact-form-section" aria-labelledby="contact-title" data-contact-content-id={id}>
-        <div class="contact-form-copy">
-          <p class="signal-line">{routeSignal}</p>
+      <section class={ui.contactFormSection} aria-labelledby="contact-title" data-contact-content-id={id}>
+        <div class={ui.contactFormCopy}>
+          <p class={cx(ui.signalLine, "!text-[color:var(--color-dark-honey)]")}>{routeSignal}</p>
           <h1 id="contact-title">{variant.title}</h1>
-          <p class="hero-lead">{variant.summary}</p>
-          <div class="contact-direct-actions" aria-label={copy.actions}>
-            <a class="button button-whatsapp" href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_hero">{contactCopy.whatsappLabel}</a>
-            <a class="button button-secondary" href={directEmailHref} data-analytics-event="email_cta_clicked" data-analytics-target="contact_hero">{contactCopy.emailLabel}</a>
+          <p class={cx(ui.heroLead, "max-w-[50ch] !text-[color:var(--color-dark-muted)]")}>{variant.summary}</p>
+          <div class={ui.contactDirectActions} aria-label={copy.actions}>
+            <a class={cx(ui.button, ui.buttonWhatsapp)} href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_hero">{contactCopy.whatsappLabel}</a>
+            <a class={cx(ui.button, ui.buttonSecondaryOnDark)} href={directEmailHref} data-analytics-event="email_cta_clicked" data-analytics-target="contact_hero">{contactCopy.emailLabel}</a>
           </div>
-          <figure class="contact-architecture-card">
+          <figure class={ui.contactArchitectureCard}>
             <img
+              class="w-full aspect-video object-cover object-center"
               src="/images/generated/aohys-hero-system-map.png"
               alt={locale === "es" ? "Mapa visual del flujo de contacto y operación de AOHYS" : "Visual map of the AOHYS contact and operations flow"}
               loading="lazy"
@@ -659,7 +665,7 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </div>
 
         <form
-          class="contact-form"
+          class={ui.contactForm}
           method="post"
           action={contactEndpoint || directEmailHref}
           data-contact-form
@@ -676,34 +682,34 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           data-analytics-submit="contact_form_submit_attempted"
           data-analytics-target="contact_form"
         >
-          <div class="contact-form-heading">
+          <div class={ui.contactFormHeading}>
             <h2>{contactCopy.formTitle}</h2>
             <p>{contactCopy.formIntro}</p>
           </div>
 
-          <label class="field-label">
+          <label class={ui.fieldLabel}>
             <span>{contactCopy.nameLabel}</span>
             <input name="name" type="text" autocomplete="name" required />
           </label>
 
-          <div class="field-grid">
-            <label class="field-label">
+          <div class={ui.fieldGrid}>
+            <label class={ui.fieldLabel}>
               <span>{contactCopy.emailLabel}</span>
               <input name="email" type="email" autocomplete="email" required />
             </label>
-            <label class="field-label">
+            <label class={ui.fieldLabel}>
               <span>{contactCopy.phoneLabel}</span>
               <input name="phone" type="tel" autocomplete="tel" />
             </label>
           </div>
 
-          <label class="field-label">
+          <label class={ui.fieldLabel}>
             <span>{contactCopy.companyLabel}</span>
             <input name="company" type="text" autocomplete="organization" />
           </label>
 
-          <div class="field-grid">
-            <label class="field-label">
+          <div class={ui.fieldGrid}>
+            <label class={ui.fieldLabel}>
               <span>{contactCopy.intentLabel}</span>
               <select name="intent" required>
                 <option value="project">{contactCopy.intentProject}</option>
@@ -714,7 +720,7 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
               </select>
             </label>
 
-            <fieldset class="contact-choice">
+            <fieldset class={ui.contactChoice}>
               <legend>{contactCopy.preferredContactLabel}</legend>
               <label>
                 <input name="preferredContactPath" type="radio" value="email" required checked />
@@ -727,17 +733,17 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
             </fieldset>
           </div>
 
-          <label class="field-label">
+          <label class={ui.fieldLabel}>
             <span>{contactCopy.messageLabel}</span>
             <textarea name="message" rows="6" required></textarea>
           </label>
 
-          <label class="consent-row">
+          <label class={ui.consentRow}>
             <input name="consentToContact" type="checkbox" value="true" required />
             <span>{contactCopy.consentLabel}</span>
           </label>
 
-          <label class="contact-honeypot" aria-hidden="true">
+          <label class={ui.contactHoneypot} aria-hidden="true">
             <span>Website</span>
             <input name="website" type="text" autocomplete="off" tabindex="-1" />
           </label>
@@ -746,13 +752,13 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           <input name="locale" type="hidden" value={locale} />
           <input name="referrer" type="hidden" value="" />
 
-          <div class="contact-submit-row">
-            <button class="button button-primary" type="submit" data-submit-label={contactCopy.submitLabel} data-sending-label={contactCopy.sendingLabel}>
+          <div class={ui.contactSubmitRow}>
+            <button class={cx(ui.button, ui.buttonPrimary)} type="submit" data-submit-label={contactCopy.submitLabel} data-sending-label={contactCopy.sendingLabel}>
               {contactCopy.submitLabel}
             </button>
             <p>{contactCopy.fallbackText} <a href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_form_fallback">{contactCopy.whatsappLabel}</a></p>
           </div>
-          <p class="contact-status" role="status" data-contact-status></p>
+          <p class={ui.contactStatus} role="status" data-contact-status></p>
         </form>
       </section>
 
@@ -955,17 +961,17 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
     </>
   ) : isPrivacy && privacyContent ? (
     <>
-      <section class="route-hero" aria-labelledby="privacy-title" data-privacy-content-id={id}>
-        <div class="route-hero-copy">
-          <p class="signal-line">{routeSignal}</p>
+      <section class={ui.routeHero} aria-labelledby="privacy-title" data-privacy-content-id={id}>
+        <div class={ui.routeHeroCopy}>
+          <p class={ui.signalLine}>{routeSignal}</p>
           <h1 id="privacy-title">{privacyContent.heading}</h1>
-          <p class="hero-lead">{privacyContent.intro}</p>
-          <div class="hero-actions" aria-label={copy.actions}>
-            {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
-            {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          <p class={ui.heroLead}>{privacyContent.intro}</p>
+          <div class={ui.heroActions} aria-label={copy.actions}>
+            {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class={cx(ui.button, ui.buttonSecondary)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
           </div>
         </div>
-        <aside class="route-panel" aria-label={copy.routeMetadataAria}>
+        <aside class={ui.routePanel} aria-label={copy.routeMetadataAria}>
           <span>{copy.canonical}</span>
           <strong>{route.path}</strong>
           <span>{copy.contentType}</span>
@@ -973,34 +979,34 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </aside>
       </section>
 
-      <section class="route-proof-section" aria-labelledby="privacy-sections-title">
-        <div class="section-heading">
+      <section class={ui.routeProofSection} aria-labelledby="privacy-sections-title">
+        <div class={ui.sectionHeading}>
           <h2 id="privacy-sections-title">{variant.summary}</h2>
         </div>
-        <div class="route-proof-list">
+        <div class={ui.rowList}>
           {privacyContent.sections.map((section) => (
-            <div class="route-proof-item">
+            <div class={ui.routeProofItem}>
               <span>{section.title}</span>
               <p>{section.body}</p>
             </div>
           ))}
         </div>
-        <p class="privacy-boundary-note">{privacyContent.boundaryNote}</p>
+        <p class={ui.privacyBoundaryNote}>{privacyContent.boundaryNote}</p>
       </section>
     </>
   ) : (
     <>
-      <section class="route-hero" aria-labelledby="route-title" data-content-type={node.type}>
-        <div class="route-hero-copy">
-          <p class="signal-line">{routeSignal}</p>
+      <section class={ui.routeHero} aria-labelledby="route-title" data-content-type={node.type}>
+        <div class={ui.routeHeroCopy}>
+          <p class={ui.signalLine}>{routeSignal}</p>
           <h1 id="route-title">{variant.title}</h1>
-          <p class="hero-lead">{variant.summary}</p>
-          <div class="hero-actions" aria-label={copy.actions}>
-            {primaryHref && <a class="button button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
-            {secondaryHref && <a class="button button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          <p class={ui.heroLead}>{variant.summary}</p>
+          <div class={ui.heroActions} aria-label={copy.actions}>
+            {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class={cx(ui.button, ui.buttonSecondary)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
           </div>
         </div>
-        <aside class="route-panel" aria-label={copy.routeMetadataAria}>
+        <aside class={ui.routePanel} aria-label={copy.routeMetadataAria}>
           <span>{copy.canonical}</span>
           <strong>{route.path}</strong>
           <span>{copy.contentType}</span>
@@ -1008,13 +1014,13 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         </aside>
       </section>
 
-      <section class="route-proof-section" aria-labelledby="route-proof-title">
-        <div class="section-heading">
+      <section class={ui.routeProofSection} aria-labelledby="route-proof-title">
+        <div class={ui.sectionHeading}>
           <h2 id="route-proof-title">{copy.routeProofTitle}</h2>
         </div>
-        <div class="route-proof-list">
+        <div class={ui.rowList}>
           {copy.routeProof.map((item) => (
-            <div class="route-proof-item">
+            <div class={ui.routeProofItem}>
               <span>{item.label}</span>
               <p>{item.text}</p>
             </div>

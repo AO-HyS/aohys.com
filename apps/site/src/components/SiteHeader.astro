@@ -1,6 +1,7 @@
 ---
 import { getLocalizedPath, type ContentId, type Locale } from "@aohys/content-graph";
 import { getUiCopy } from "../i18n";
+import { ui } from "../styles/classes";
 
 interface Props {
   locale?: Locale;
@@ -19,25 +20,25 @@ const navItems = [
 const languageHref = getLocalizedPath(currentId, alternateLocale);
 ---
 
-<header class="site-header">
-  <a class="skip-link" href="#main-content">{copy.skip}</a>
-  <nav class="site-nav" aria-label={copy.aria}>
-    <a class="brand-lockup" href={getLocalizedPath("home", locale)}>
-      <span class="brand-symbol" aria-hidden="true">
-        <img class="brand-mark" src="/images/brand/aohys-logo.png" alt="" width="44" height="44" decoding="async" />
+<header class={ui.siteHeader}>
+  <a class={ui.skipLink} href="#main-content">{copy.skip}</a>
+  <nav class={ui.siteNav} aria-label={copy.aria}>
+    <a class={ui.brandLockup} href={getLocalizedPath("home", locale)}>
+      <span class={ui.brandSymbol} aria-hidden="true">
+        <img class={ui.brandMark} src="/images/brand/aohys-logo.png" alt="" width="44" height="44" decoding="async" />
       </span>
-      <span class="brand-text">
+      <span class={ui.brandText}>
         <span>AOH&amp;S</span>
         <small>{copy.small}</small>
       </span>
     </a>
-    <div class="nav-links">
+    <div class={ui.navLinks}>
       {
         navItems.map((item) => (
           <a href={getLocalizedPath(item.id, locale)}>{item.label}</a>
         ))
       }
-      <a class="language-link" href={languageHref} hreflang={alternateLocale}>{copy.language}</a>
+      <a href={languageHref} hreflang={alternateLocale}>{copy.language}</a>
     </div>
   </nav>
 </header>

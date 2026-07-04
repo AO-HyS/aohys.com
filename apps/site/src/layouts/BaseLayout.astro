@@ -2,7 +2,10 @@
 import PostHogAnalytics from "../components/PostHogAnalytics.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
+import "@fontsource-variable/mona-sans/index.css";
+import "@fontsource-variable/atkinson-hyperlegible-next/index.css";
 import "../styles/global.css";
+import { bodyClass, ui } from "../styles/classes";
 import type { ContentId, Locale } from "@aohys/content-graph";
 
 interface Props {
@@ -36,7 +39,7 @@ const analyticsPath = (() => {
 ---
 
 <!doctype html>
-<html lang={locale}>
+<html lang={locale} class="scroll-smooth motion-reduce:scroll-auto">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -55,8 +58,8 @@ const analyticsPath = (() => {
     }
     <title>{title}</title>
   </head>
-  <body>
-    <div class="site-shell" data-site-shell="public" data-content-id={contentId}>
+  <body class={bodyClass}>
+    <div class={ui.siteShell} data-site-shell="public" data-content-id={contentId}>
       <SiteHeader locale={locale} currentId={contentId} />
       <main id="main-content">
         <slot />

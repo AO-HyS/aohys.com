@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { authClient } from "@/lib/auth-client";
+import { dashboardClass } from "@/lib/dashboard-classes";
 import { dashboardRuntimeConfig } from "@/runtime-config";
 import { DashboardHome } from "@/screens/dashboard-home";
 import { LeadsScreen } from "@/screens/leads-screen";
@@ -37,7 +38,7 @@ const convex = new ConvexReactClient(runtimeConfig.convexUrl, {
 function AppLayout() {
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-background text-foreground">
+      <div className={dashboardClass.appRoot}>
         <aside className="fixed inset-y-0 left-0 hidden w-64 border-r bg-sidebar px-4 py-5 text-sidebar-foreground lg:flex lg:flex-col">
           <a className="flex items-center gap-3 text-sm font-semibold" href="/dashboard">
             <span className="grid size-9 place-items-center rounded-lg bg-primary text-primary-foreground">

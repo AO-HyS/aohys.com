@@ -31,6 +31,7 @@ describe("built public shell", () => {
       .map((filePath) => readFileSync(filePath, "utf8"))
       .join("\n");
     const sourceCss = read("src/styles/global.css");
+    const styleClasses = read("src/styles/classes.ts");
 
     expect(html).toContain('<html lang="en"');
     expect(html).toMatch(/<title>(Alejandro Ortiz Corro|AOHYS)/);
@@ -51,11 +52,12 @@ describe("built public shell", () => {
     expect(html).not.toMatch(/lorem|\btodo\b|placeholder/i);
     expect(css).toContain("--color-primary");
     expect(css).toContain("--color-mint");
-    expect(css).toContain("--font-display");
-    expect(css).toContain("--font-body");
+    expect(css).toMatch(/Mona Sans Variable|Mona_Sans_Variable/);
+    expect(css).toMatch(/Atkinson Hyperlegible Next Variable|Atkinson_Hyperlegible_Next_Variable/);
     expect(css).toContain("prefers-reduced-motion");
-    expect(sourceCss).toContain("oklch(");
-    expect(sourceCss).toMatch(/@fontsource-variable\/mona-sans|Mona Sans/);
-    expect(sourceCss).toMatch(/@fontsource-variable\/atkinson-hyperlegible-next|Atkinson Hyperlegible Next/);
+    expect(sourceCss.trim()).toBe('@import "tailwindcss";');
+    expect(styleClasses).toContain("oklch(");
+    expect(styleClasses).toMatch(/Mona_Sans_Variable|Mona Sans/);
+    expect(styleClasses).toMatch(/Atkinson_Hyperlegible_Next|Atkinson Hyperlegible Next/);
   });
 });

@@ -26,7 +26,8 @@ describe("Dashboard UI Kit shell", () => {
     expect(html).toContain("Sign out");
     expect(html).toContain("/dashboard/sign-out");
     expect(html).toContain('data-dashboard-surface="overview"');
-    expect(html).toContain('min-height: 44px');
+    expect(html).toContain('/dashboard-app/assets/dashboard.css');
+    expect(html).not.toMatch(/<style/i);
     expect(html).not.toMatch(/<script/i);
   });
 
@@ -47,6 +48,8 @@ describe("Dashboard UI Kit shell", () => {
     expect(html).toContain("Sign in to continue");
     expect(html).toContain("/dashboard/sign-in/google");
     expect(html).toContain("callbackURL=%2Fdashboard");
+    expect(html).toContain('/dashboard-app/assets/dashboard.css');
+    expect(html).not.toMatch(/<style/i);
   });
 
   it("renders the lead workflow with list, detail, status states, and compact responsive rules", () => {
@@ -80,10 +83,11 @@ describe("Dashboard UI Kit shell", () => {
     expect(html).toContain("Casa Roca");
     expect(html).toContain("Save status");
     expect(html).toContain("Lead status saved.");
-    expect(html).toContain("@media (max-width: 720px)");
-    expect(html).toContain(".lead-status-controls");
+    expect(html).toContain('/dashboard-app/assets/dashboard.css');
+    expect(html).not.toContain('class="lead-status-controls"');
     expect(html).not.toMatch(/background:\\s*#[0-9a-f]/i);
     expect(html).not.toMatch(/color:\\s*#[0-9a-f]/i);
+    expect(html).not.toMatch(/<style/i);
     expect(html).not.toMatch(/<script/i);
   });
 
@@ -160,8 +164,9 @@ describe("Dashboard UI Kit shell", () => {
     expect(html).toContain("/es/casos/casa-roca");
     expect(html).toContain("Project media status");
     expect(html).toContain("Content metadata saved.");
-    expect(html).toContain("@media (max-width: 720px)");
-    expect(html).toContain(".content-workflow");
+    expect(html).toContain('/dashboard-app/assets/dashboard.css');
+    expect(html).not.toContain('class="content-workflow"');
+    expect(html).not.toMatch(/<style/i);
     expect(html).not.toMatch(/<script/i);
   });
 

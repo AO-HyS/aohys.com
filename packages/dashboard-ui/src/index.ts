@@ -165,19 +165,19 @@ export function renderDashboardShell(input: DashboardShellInput): string {
   return renderDashboardChrome({
     ...input,
     body: `
-      <section class="dashboard-overview" data-dashboard-surface="overview" aria-labelledby="dashboard-overview-title">
-        <div class="dashboard-overview-copy">
-          <p class="dashboard-kicker">Today</p>
+      <section class="${DASHBOARD_LEGACY_CLASS.overview}" data-dashboard-surface="overview" aria-labelledby="dashboard-overview-title">
+        <div class="min-w-0">
+          <p class="${DASHBOARD_LEGACY_CLASS.kicker}">Today</p>
           <h2 id="dashboard-overview-title">Publishing room</h2>
           <p>Use this dashboard to keep the public site honest: review leads, connect project media to case studies, and check the public contact value that affects the Astro pages.</p>
         </div>
-        <div class="dashboard-release-card" aria-label="Dashboard operating boundary">
+        <div class="${DASHBOARD_LEGACY_CLASS.releaseCard}" aria-label="Dashboard operating boundary">
           <span>Private surface</span>
           <strong>noindex · authenticated · preview aware</strong>
           <p>Public pages carry SEO. This dashboard carries operations.</p>
         </div>
       </section>
-      <section class="dashboard-workflow-grid" aria-label="Dashboard workflows">
+      <section class="${DASHBOARD_LEGACY_CLASS.workflowGrid}" aria-label="Dashboard workflows">
         ${renderWorkflowCard("/dashboard/leads", "Lead inbox", "Reply while the context is fresh.")}
         ${renderWorkflowCard("/dashboard/case-studies", "Project pages", "Check each public page has a link, status, and safe media.")}
         ${renderWorkflowCard("/dashboard/media", "Media queue", "Track screenshots, alt text, Cloudflare keys, and where each asset appears.")}
@@ -194,17 +194,17 @@ export function renderDashboardLeadWorkflow(input: DashboardLeadWorkflowInput): 
   return renderDashboardChrome({
     ...input,
     body: `
-      <section class="lead-workflow" data-dashboard-surface="lead-workflow" data-workflow-state="${workflowState}" aria-labelledby="lead-workflow-title">
-        <div class="lead-list-panel">
-          <div class="dashboard-section-heading">
-            <p class="dashboard-kicker">Lead review</p>
+      <section class="${DASHBOARD_LEGACY_CLASS.leadWorkflow}" data-dashboard-surface="lead-workflow" data-workflow-state="${workflowState}" aria-labelledby="lead-workflow-title">
+        <div class="${DASHBOARD_LEGACY_CLASS.leadPanel}">
+          <div class="${DASHBOARD_LEGACY_CLASS.sectionHeading}">
+            <p class="${DASHBOARD_LEGACY_CLASS.kicker}">Lead review</p>
             <h2 id="lead-workflow-title">Incoming leads</h2>
             <p>${input.leads.length} lead${input.leads.length === 1 ? "" : "s"} ready for review.</p>
           </div>
           ${renderLeadWorkflowNotice(workflowState, input.validationMessage)}
           ${input.leads.length > 0 ? renderLeadList(input.leads, selectedLead?.id) : renderLeadEmptyState()}
         </div>
-        <div class="lead-detail-panel">
+        <div class="${DASHBOARD_LEGACY_CLASS.leadDetailPanel}">
           ${selectedLead ? renderLeadDetail(selectedLead) : renderLeadPlaceholder()}
         </div>
       </section>
@@ -220,9 +220,9 @@ export function renderDashboardContentWorkflow(input: DashboardContentWorkflowIn
   return renderDashboardChrome({
     ...input,
     body: `
-      <section class="content-workflow" data-dashboard-surface="content-workflow" data-content-surface="${surface.id}" data-workflow-state="${workflowState}" aria-labelledby="content-workflow-title">
-        <div class="dashboard-section-heading">
-          <p class="dashboard-kicker">${escapeHtml(surface.kicker)}</p>
+      <section class="${DASHBOARD_LEGACY_CLASS.contentWorkflow}" data-dashboard-surface="content-workflow" data-content-surface="${surface.id}" data-workflow-state="${workflowState}" aria-labelledby="content-workflow-title">
+        <div class="${DASHBOARD_LEGACY_CLASS.sectionHeading}">
+          <p class="${DASHBOARD_LEGACY_CLASS.kicker}">${escapeHtml(surface.kicker)}</p>
           <h2 id="content-workflow-title">${escapeHtml(surface.title)}</h2>
           <p>${escapeHtml(surface.body)}</p>
         </div>
@@ -287,28 +287,28 @@ function renderContentSurface(
   switch (surfaceId) {
     case "media":
       return `
-        <div class="content-workspace">
+        <div class="${DASHBOARD_LEGACY_CLASS.contentWorkspace}">
           ${renderMediaPanel(input.media, input.caseStudies)}
           ${renderCaseStudyReferencePanel(input.caseStudies)}
         </div>
       `;
     case "settings":
       return `
-        <div class="content-workspace">
+        <div class="${DASHBOARD_LEGACY_CLASS.contentWorkspace}">
           ${renderSettingsPanel(input.settings)}
           ${renderSiteBoundaryPanel()}
         </div>
       `;
     case "resume":
       return `
-        <div class="content-workspace">
+        <div class="${DASHBOARD_LEGACY_CLASS.contentWorkspace}">
           ${renderResumePanel(input.resumeVersions)}
           ${renderResumeContextPanel()}
         </div>
       `;
     default:
       return `
-        <div class="content-workspace content-workspace-case-studies">
+        <div class="${DASHBOARD_LEGACY_CLASS.contentWorkspace} ${DASHBOARD_LEGACY_CLASS.contentWorkspaceCaseStudies}">
           ${renderCaseStudyPanel(input.caseStudies)}
           ${renderMediaReferencePanel(input.media)}
         </div>
@@ -322,21 +322,21 @@ function renderContentWorkflowNotice(
 ): string {
   switch (state) {
     case "save-success":
-      return `<p class="dashboard-notice" role="status">Content metadata saved. Public pages still render through the Public Content Graph.</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice}" role="status">Content metadata saved. Public pages still render through the Public Content Graph.</p>`;
     case "validation-error":
-      return `<p class="dashboard-notice dashboard-notice-warning" role="alert">${escapeHtml(validationMessage ?? "Content metadata could not be saved.")}</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice} ${DASHBOARD_LEGACY_CLASS.noticeWarning}" role="alert">${escapeHtml(validationMessage ?? "Content metadata could not be saved.")}</p>`;
     case "loading":
-      return `<p class="dashboard-notice" role="status">Loading content workflow...</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice}" role="status">Loading content workflow...</p>`;
     case "save-pending":
-      return `<p class="dashboard-notice" role="status">Saving content metadata...</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice}" role="status">Saving content metadata...</p>`;
     case "unauthorized":
-      return `<p class="dashboard-notice dashboard-notice-warning" role="alert">Content workflows are restricted to allowlisted admins.</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice} ${DASHBOARD_LEGACY_CLASS.noticeWarning}" role="alert">Content workflows are restricted to allowlisted admins.</p>`;
     case "environment-unavailable":
-      return `<p class="dashboard-notice dashboard-notice-warning" role="alert">Content workflows are unavailable until the Environment Contract is complete.</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice} ${DASHBOARD_LEGACY_CLASS.noticeWarning}" role="alert">Content workflows are unavailable until the Environment Contract is complete.</p>`;
     case "configuration-error":
-      return `<p class="dashboard-notice dashboard-notice-warning" role="alert">Content workflow provider configuration needs attention.</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice} ${DASHBOARD_LEGACY_CLASS.noticeWarning}" role="alert">Content workflow provider configuration needs attention.</p>`;
     case "empty":
-      return `<p class="dashboard-notice" role="status">No content metadata exists yet. Public graph nodes still define the published surface.</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice}" role="status">No content metadata exists yet. Public graph nodes still define the published surface.</p>`;
     default:
       return "";
   }
@@ -344,12 +344,12 @@ function renderContentWorkflowNotice(
 
 function renderCaseStudyPanel(caseStudies: DashboardCaseStudyMetadata[]): string {
   return `
-    <article class="content-panel" aria-labelledby="content-case-studies-title">
+    <article class="${DASHBOARD_LEGACY_CLASS.contentPanel}" aria-labelledby="content-case-studies-title">
       <div>
-        <p class="dashboard-kicker">Case studies</p>
+        <p class="${DASHBOARD_LEGACY_CLASS.kicker}">Case studies</p>
         <h3 id="content-case-studies-title">Public graph metadata</h3>
       </div>
-      <div class="content-list">
+      <div class="${DASHBOARD_LEGACY_CLASS.contentList}">
         ${caseStudies.length > 0 ? caseStudies.map(renderCaseStudyRow).join("") : renderContentEmptyState("No case-study metadata yet.")}
       </div>
     </article>
@@ -358,14 +358,14 @@ function renderCaseStudyPanel(caseStudies: DashboardCaseStudyMetadata[]): string
 
 function renderCaseStudyRow(caseStudy: DashboardCaseStudyMetadata): string {
   return `
-    <section class="content-row">
+    <section class="${DASHBOARD_LEGACY_CLASS.contentRow}">
       <div>
         <strong>${escapeHtml(caseStudy.title)}</strong>
         <span>${escapeHtml(caseStudy.contentId)}</span>
         <span>${escapeHtml(caseStudy.englishPath)} · ${escapeHtml(caseStudy.spanishPath)}</span>
         <span>${caseStudy.sitemapIncluded ? "Sitemap eligible" : "Noindex protected"}</span>
       </div>
-      <form class="content-form" method="post" action="/dashboard/content/case-study">
+      <form class="${DASHBOARD_LEGACY_CLASS.contentForm}" method="post" action="/dashboard/content/case-study">
         <input type="hidden" name="contentId" value="${escapeHtml(caseStudy.contentId)}" />
         <label>
           <span>Status</span>
@@ -385,7 +385,7 @@ function renderCaseStudyRow(caseStudy: DashboardCaseStudyMetadata): string {
             ${renderEvidenceStatusOption("published", caseStudy.evidenceStatus)}
           </select>
         </label>
-        <button class="dashboard-action" type="submit">Save metadata</button>
+        <button class="${DASHBOARD_LEGACY_CLASS.action}" type="submit">Save metadata</button>
       </form>
     </section>
   `;
@@ -393,13 +393,13 @@ function renderCaseStudyRow(caseStudy: DashboardCaseStudyMetadata): string {
 
 function renderCaseStudyReferencePanel(caseStudies: DashboardCaseStudyMetadata[]): string {
   return `
-    <aside class="content-side-panel" aria-labelledby="media-case-map-title">
-      <p class="dashboard-kicker">Where media lands</p>
+    <aside class="${DASHBOARD_LEGACY_CLASS.contentSidePanel}" aria-labelledby="media-case-map-title">
+      <p class="${DASHBOARD_LEGACY_CLASS.kicker}">Where media lands</p>
       <h3 id="media-case-map-title">Case-study map</h3>
       <p>Attach every screenshot or generated asset to one public content ID. Assets without a content ID should stay draft.</p>
-      <div class="content-list">
+      <div class="${DASHBOARD_LEGACY_CLASS.contentList}">
         ${caseStudies.length > 0 ? caseStudies.map((caseStudy) => `
-          <a class="content-reference-link" href="${escapeHtml(caseStudy.englishPath)}">
+          <a class="${DASHBOARD_LEGACY_CLASS.contentReferenceLink}" href="${escapeHtml(caseStudy.englishPath)}">
             <strong>${escapeHtml(caseStudy.title)}</strong>
             <span>${escapeHtml(caseStudy.contentId)} · ${formatLabel(caseStudy.evidenceStatus)}</span>
           </a>
@@ -414,12 +414,12 @@ function renderMediaPanel(
   caseStudies: DashboardCaseStudyMetadata[],
 ): string {
   return `
-    <article class="content-panel" aria-labelledby="content-media-title">
+    <article class="${DASHBOARD_LEGACY_CLASS.contentPanel}" aria-labelledby="content-media-title">
       <div>
-        <p class="dashboard-kicker">Media</p>
+        <p class="${DASHBOARD_LEGACY_CLASS.kicker}">Media</p>
         <h3 id="content-media-title">Metadata and safety</h3>
       </div>
-      <form class="content-form content-create-form" method="post" action="/dashboard/content/media">
+      <form class="${DASHBOARD_LEGACY_CLASS.contentForm} ${DASHBOARD_LEGACY_CLASS.contentCreateForm}" method="post" action="/dashboard/content/media">
         <label>
           <span>Storage key</span>
           <input name="storageKey" placeholder="screenshots/casa-roca-home" />
@@ -444,9 +444,9 @@ function renderMediaPanel(
             ${caseStudies.map((caseStudy) => `<option value="${escapeHtml(caseStudy.contentId)}">${escapeHtml(caseStudy.title)}</option>`).join("")}
           </select>
         </label>
-        <button class="dashboard-action" type="submit">Add media metadata</button>
+        <button class="${DASHBOARD_LEGACY_CLASS.action}" type="submit">Add media metadata</button>
       </form>
-      <div class="content-list">
+      <div class="${DASHBOARD_LEGACY_CLASS.contentList}">
         ${mediaItems.length > 0 ? mediaItems.map(renderMediaRow).join("") : renderContentEmptyState("No media metadata yet.")}
       </div>
     </article>
@@ -458,11 +458,11 @@ function renderMediaReferencePanel(mediaItems: DashboardMediaMetadata[]): string
   const draftMedia = mediaItems.filter((media) => media.status === "draft").length;
 
   return `
-    <aside class="content-side-panel" aria-labelledby="case-media-status-title">
-      <p class="dashboard-kicker">Asset health</p>
+    <aside class="${DASHBOARD_LEGACY_CLASS.contentSidePanel}" aria-labelledby="case-media-status-title">
+      <p class="${DASHBOARD_LEGACY_CLASS.kicker}">Asset health</p>
       <h3 id="case-media-status-title">Project media status</h3>
       <p>Case-study pages should not reuse the same weak screenshot. Prefer one strong asset per case, with clear alt text and a content ID.</p>
-      <div class="dashboard-mini-ledger">
+      <div class="${DASHBOARD_LEGACY_CLASS.miniLedger}">
         <div><span>Published</span><strong>${publishedMedia}</strong></div>
         <div><span>Draft</span><strong>${draftMedia}</strong></div>
         <div><span>Total</span><strong>${mediaItems.length}</strong></div>
@@ -473,7 +473,7 @@ function renderMediaReferencePanel(mediaItems: DashboardMediaMetadata[]): string
 
 function renderMediaRow(media: DashboardMediaMetadata): string {
   return `
-    <section class="content-row">
+    <section class="${DASHBOARD_LEGACY_CLASS.contentRow}">
       <div>
         <strong>${escapeHtml(media.storageKey)}</strong>
         <span>${formatLabel(media.storageProvider)} · ${formatLabel(media.usage)} · ${formatLabel(media.status)}</span>
@@ -486,11 +486,11 @@ function renderMediaRow(media: DashboardMediaMetadata): string {
 
 function renderSiteBoundaryPanel(): string {
   return `
-    <aside class="content-side-panel" aria-labelledby="settings-boundary-title">
-      <p class="dashboard-kicker">Boundary</p>
+    <aside class="${DASHBOARD_LEGACY_CLASS.contentSidePanel}" aria-labelledby="settings-boundary-title">
+      <p class="${DASHBOARD_LEGACY_CLASS.kicker}">Boundary</p>
       <h3 id="settings-boundary-title">What belongs here</h3>
       <p>Use settings for values the public site needs to render correctly. Secrets and provider credentials belong in the Environment Contract, not in content settings.</p>
-      <div class="dashboard-check-list">
+      <div class="${DASHBOARD_LEGACY_CLASS.checkList}">
         <span>Contact URLs are public build values.</span>
         <span>Provider outputs are safe summaries only.</span>
         <span>Policy values affect visible public copy.</span>
@@ -501,12 +501,12 @@ function renderSiteBoundaryPanel(): string {
 
 function renderSettingsPanel(settings: DashboardSiteSetting[]): string {
   return `
-    <article class="content-panel" aria-labelledby="content-settings-title">
+    <article class="${DASHBOARD_LEGACY_CLASS.contentPanel}" aria-labelledby="content-settings-title">
       <div>
-        <p class="dashboard-kicker">Settings</p>
+        <p class="${DASHBOARD_LEGACY_CLASS.kicker}">Settings</p>
         <h3 id="content-settings-title">Public-safe values</h3>
       </div>
-      <form class="content-form content-create-form" method="post" action="/dashboard/content/setting">
+      <form class="${DASHBOARD_LEGACY_CLASS.contentForm} ${DASHBOARD_LEGACY_CLASS.contentCreateForm}" method="post" action="/dashboard/content/setting">
         <label>
           <span>Key</span>
           <input name="key" placeholder="PUBLIC_WHATSAPP_URL" />
@@ -523,9 +523,9 @@ function renderSettingsPanel(settings: DashboardSiteSetting[]): string {
             <option value="policy-value">Policy value</option>
           </select>
         </label>
-        <button class="dashboard-action" type="submit">Save setting</button>
+        <button class="${DASHBOARD_LEGACY_CLASS.action}" type="submit">Save setting</button>
       </form>
-      <div class="content-list">
+      <div class="${DASHBOARD_LEGACY_CLASS.contentList}">
         ${settings.length > 0 ? settings.map(renderSettingRow).join("") : renderContentEmptyState("No dashboard-managed settings yet.")}
       </div>
     </article>
@@ -534,7 +534,7 @@ function renderSettingsPanel(settings: DashboardSiteSetting[]): string {
 
 function renderSettingRow(setting: DashboardSiteSetting): string {
   return `
-    <section class="content-row">
+    <section class="${DASHBOARD_LEGACY_CLASS.contentRow}">
       <div>
         <strong>${escapeHtml(setting.key)}</strong>
         <span>${escapeHtml(setting.environment)} · ${formatLabel(setting.classification)}</span>
@@ -546,11 +546,11 @@ function renderSettingRow(setting: DashboardSiteSetting): string {
 
 function renderResumeContextPanel(): string {
   return `
-    <aside class="content-side-panel" aria-labelledby="resume-boundary-title">
-      <p class="dashboard-kicker">Publishing rule</p>
+    <aside class="${DASHBOARD_LEGACY_CLASS.contentSidePanel}" aria-labelledby="resume-boundary-title">
+      <p class="${DASHBOARD_LEGACY_CLASS.kicker}">Publishing rule</p>
       <h3 id="resume-boundary-title">Resume stays readable</h3>
       <p>The dynamic resume can show context and links. The PDF should stay compact, plain, parseable, and easy for a hiring manager to scan.</p>
-      <div class="dashboard-check-list">
+      <div class="${DASHBOARD_LEGACY_CLASS.checkList}">
         <span>One current English PDF artifact.</span>
         <span>Spanish route remains a readable public page.</span>
         <span>Private project details stay out of both.</span>
@@ -561,12 +561,12 @@ function renderResumeContextPanel(): string {
 
 function renderResumePanel(resumeVersions: DashboardResumeVersion[]): string {
   return `
-    <article class="content-panel" aria-labelledby="content-resume-title">
+    <article class="${DASHBOARD_LEGACY_CLASS.contentPanel}" aria-labelledby="content-resume-title">
       <div>
-        <p class="dashboard-kicker">Resume</p>
+        <p class="${DASHBOARD_LEGACY_CLASS.kicker}">Resume</p>
         <h3 id="content-resume-title">Version alignment</h3>
       </div>
-      <form class="content-form content-create-form" method="post" action="/dashboard/content/resume">
+      <form class="${DASHBOARD_LEGACY_CLASS.contentForm} ${DASHBOARD_LEGACY_CLASS.contentCreateForm}" method="post" action="/dashboard/content/resume">
         <label>
           <span>Locale</span>
           <select name="locale">
@@ -582,9 +582,9 @@ function renderResumePanel(resumeVersions: DashboardResumeVersion[]): string {
           <span>PDF path</span>
           <input name="pdfPath" placeholder="/downloads/alejandro-ortiz-corro-resume.pdf" />
         </label>
-        <button class="dashboard-action" type="submit">Add resume version</button>
+        <button class="${DASHBOARD_LEGACY_CLASS.action}" type="submit">Add resume version</button>
       </form>
-      <div class="content-list">
+      <div class="${DASHBOARD_LEGACY_CLASS.contentList}">
         ${resumeVersions.length > 0 ? resumeVersions.map(renderResumeVersionRow).join("") : renderContentEmptyState("No resume versions yet.")}
       </div>
     </article>
@@ -593,7 +593,7 @@ function renderResumePanel(resumeVersions: DashboardResumeVersion[]): string {
 
 function renderResumeVersionRow(resumeVersion: DashboardResumeVersion): string {
   return `
-    <section class="content-row">
+    <section class="${DASHBOARD_LEGACY_CLASS.contentRow}">
       <div>
         <strong>${escapeHtml(resumeVersion.version)}</strong>
         <span>${escapeHtml(resumeVersion.locale)} · ${resumeVersion.isPublished ? "Published" : "Draft"}</span>
@@ -604,7 +604,7 @@ function renderResumeVersionRow(resumeVersion: DashboardResumeVersion): string {
 }
 
 function renderContentEmptyState(message: string): string {
-  return `<p class="content-empty-state">${escapeHtml(message)}</p>`;
+  return `<p class="${DASHBOARD_LEGACY_CLASS.contentEmptyState}">${escapeHtml(message)}</p>`;
 }
 
 function renderCaseStudyStatusOption(
@@ -632,31 +632,31 @@ function renderDashboardChrome(input: DashboardShellInput & { body: string }): s
   const activePath = normalizePath(input.activePath);
   const nav = NAV_ITEMS.map((item) => {
     const isActive = item.href === activePath;
-    return `<a class="dashboard-nav-link" href="${item.href}"${isActive ? ' aria-current="page"' : ""}>${escapeHtml(item.label)}</a>`;
+    return `<a class="${DASHBOARD_LEGACY_CLASS.navLink}" href="${item.href}"${isActive ? ' aria-current="page"' : ""}>${escapeHtml(item.label)}</a>`;
   }).join("");
 
   return renderDashboardDocument({
     title: input.title,
     shellState: "authenticated",
     body: `
-      <aside class="dashboard-sidebar">
-        <a class="dashboard-brand" href="/dashboard" aria-label="AOHYS dashboard home">
-          <span class="dashboard-brand-mark">AO</span>
+      <aside class="${DASHBOARD_LEGACY_CLASS.sidebar}">
+        <a class="${DASHBOARD_LEGACY_CLASS.brand}" href="/dashboard" aria-label="AOHYS dashboard home">
+          <span class="${DASHBOARD_LEGACY_CLASS.brandMark}">AO</span>
           <span>AOHYS Ops</span>
         </a>
-        <nav class="dashboard-nav" aria-label="Dashboard navigation">${nav}</nav>
+        <nav class="${DASHBOARD_LEGACY_CLASS.nav}" aria-label="Dashboard navigation">${nav}</nav>
       </aside>
-      <main class="dashboard-main">
-        <header class="dashboard-topbar">
+      <main class="${DASHBOARD_LEGACY_CLASS.main}">
+        <header class="${DASHBOARD_LEGACY_CLASS.topbar}">
           <div>
-            <p class="dashboard-kicker">Private dashboard</p>
+            <p class="${DASHBOARD_LEGACY_CLASS.kicker}">Private dashboard</p>
             <h1>${escapeHtml(input.title)}</h1>
           </div>
-          <div class="dashboard-topbar-actions" aria-label="Dashboard actions">
-            <p class="dashboard-admin">${escapeHtml(input.adminEmail)}</p>
-            <a class="dashboard-link-action" href="/">View site</a>
-            <a class="dashboard-link-action" href="/case-studies">Public work</a>
-            <a class="dashboard-action dashboard-action-secondary" href="/dashboard/sign-out">Sign out</a>
+          <div class="${DASHBOARD_LEGACY_CLASS.topbarActions}" aria-label="Dashboard actions">
+            <p class="${DASHBOARD_LEGACY_CLASS.admin}">${escapeHtml(input.adminEmail)}</p>
+            <a class="${DASHBOARD_LEGACY_CLASS.linkAction}" href="/">View site</a>
+            <a class="${DASHBOARD_LEGACY_CLASS.linkAction}" href="/case-studies">Public work</a>
+            <a class="${DASHBOARD_LEGACY_CLASS.action} ${DASHBOARD_LEGACY_CLASS.actionSecondary}" href="/dashboard/sign-out">Sign out</a>
           </div>
         </header>
         ${input.body}
@@ -665,6 +665,73 @@ function renderDashboardChrome(input: DashboardShellInput & { body: string }): s
   });
 }
 
+const DASHBOARD_STYLESHEET_PATH = "/dashboard-app/assets/dashboard.css";
+const DASHBOARD_THEME_CLASS = [
+  "[--background:oklch(0.978_0.006_235)] [--foreground:oklch(0.17_0.035_242)]",
+  "[--card:oklch(1_0_0)] [--card-foreground:oklch(0.17_0.035_242)]",
+  "[--primary:oklch(0.44_0.13_170)] [--primary-foreground:oklch(0.99_0.01_170)]",
+  "[--secondary:oklch(0.93_0.025_205)] [--secondary-foreground:oklch(0.22_0.055_232)]",
+  "[--muted:oklch(0.94_0.01_232)] [--muted-foreground:oklch(0.38_0.038_238)]",
+  "[--accent:oklch(0.78_0.14_78)] [--accent-foreground:oklch(0.19_0.045_68)]",
+  "[--destructive:oklch(0.58_0.2_28)] [--border:oklch(0.84_0.012_235)]",
+  "[--input:oklch(0.84_0.012_235)] [--ring:oklch(0.48_0.12_170)] [--radius:0.625rem]",
+].join(" ");
+const DASHBOARD_DOCUMENT_CLASS = `${DASHBOARD_THEME_CLASS} min-h-screen min-w-80 bg-background text-foreground font-sans [color-scheme:light]`;
+const DASHBOARD_STATE_CLASS = "mx-auto mt-[10vh] w-[min(560px,calc(100vw-32px))] rounded-lg border border-border bg-card p-6 text-card-foreground";
+const DASHBOARD_KICKER_CLASS = "mb-1.5 text-[0.78rem] font-[750] uppercase tracking-normal text-muted-foreground";
+const DASHBOARD_HEADING_CLASS = "mb-0 text-[2.5rem] leading-[1.04] text-foreground max-[720px]:text-3xl";
+const DASHBOARD_BODY_CLASS = "mt-4 text-muted-foreground";
+const DASHBOARD_ACTION_CLASS = "mt-5 inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2.5 font-[750] text-primary-foreground no-underline";
+const DASHBOARD_LEGACY_CLASS = {
+  authenticatedShell: "min-h-screen grid grid-cols-[240px_minmax(0,1fr)] max-[720px]:block",
+  sidebar: "border-r border-border bg-muted p-5 max-[720px]:border-r-0 max-[720px]:border-b",
+  brand: "flex min-h-11 items-center gap-2.5 font-[760] no-underline",
+  brandMark: "grid size-9 place-items-center rounded-lg bg-primary/10 text-primary",
+  nav: "mt-7 grid gap-1.5 max-[720px]:grid-cols-2",
+  navLink: "flex min-h-11 items-center rounded-lg px-3 py-2.5 text-muted-foreground no-underline aria-[current=page]:bg-primary/10 aria-[current=page]:font-bold aria-[current=page]:text-primary",
+  main: "mx-auto w-[min(100%,1240px)] min-w-0 p-6 max-[720px]:p-[18px]",
+  topbar: "mb-6 flex min-w-0 items-start justify-between gap-4 max-[720px]:block",
+  kicker: DASHBOARD_KICKER_CLASS,
+  admin: "[overflow-wrap:anywhere] text-[0.92rem] text-muted-foreground",
+  topbarActions: "flex flex-wrap items-center justify-end gap-2 max-[720px]:mt-3 max-[720px]:justify-start",
+  linkAction: "inline-flex min-h-11 items-center rounded-lg border border-border bg-card px-3 py-2 font-bold no-underline hover:border-primary",
+  action: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2.5 font-[750] text-primary-foreground no-underline",
+  actionSecondary: "border border-border !bg-card !text-foreground",
+  overview: "grid grid-cols-[minmax(0,1.4fr)_minmax(260px,0.8fr)] gap-5 rounded-lg border border-border bg-card p-5 max-[720px]:block",
+  releaseCard: "rounded-lg border border-border bg-muted p-3.5 [&_p]:mt-2 [&_p]:mb-0 [&_p]:text-muted-foreground [&_span]:block [&_span]:text-[0.78rem] [&_span]:font-[750] [&_span]:text-muted-foreground",
+  workflowGrid: "mt-3.5 grid grid-cols-4 gap-3.5 max-[720px]:block",
+  workflowCard: "rounded-lg border border-border bg-muted p-3.5 no-underline hover:border-primary max-[720px]:mt-3",
+  sectionHeading: "mb-4 [&_p]:text-muted-foreground",
+  notice: "rounded-lg border border-border bg-primary/10 px-3 py-2.5 text-primary",
+  noticeWarning: "bg-accent/20 text-accent-foreground",
+  leadWorkflow: "grid grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)] gap-[18px] max-[720px]:block",
+  leadPanel: "min-w-0",
+  leadDetailPanel: "min-w-0 max-[720px]:mt-3.5",
+  leadList: "grid gap-2.5",
+  leadListItem: "flex min-h-16 items-center justify-between gap-3 rounded-lg border border-border bg-card p-3 no-underline aria-[current=page]:border-primary aria-[current=page]:bg-primary/10 [&>span]:grid [&>span]:min-w-0 [&_span_span]:text-muted-foreground",
+  leadStatus: "w-max rounded-full bg-muted px-[9px] py-1 text-[0.78rem] font-[750] text-muted-foreground data-[status=closed]:bg-primary/10 data-[status=closed]:text-primary data-[status=new]:bg-[oklch(0.94_0.04_230)] data-[status=new]:text-[oklch(0.46_0.11_235)] data-[status=reviewing]:bg-[oklch(0.95_0.05_72)] data-[status=reviewing]:text-[oklch(0.48_0.115_55)]",
+  leadDetail: "rounded-lg border border-border bg-card p-[18px] [&_p]:text-muted-foreground",
+  leadEmptyState: "rounded-lg border border-border bg-card p-[18px] [&_p]:text-muted-foreground",
+  leadMetadata: "mb-[18px] grid grid-cols-2 gap-3 max-[720px]:block [&_div]:rounded-lg [&_div]:border [&_div]:border-border [&_div]:bg-muted [&_div]:p-2.5 max-[720px]:[&_div]:mt-2.5 [&_dt]:text-[0.78rem] [&_dt]:text-muted-foreground [&_dd]:mt-0.5 [&_dd]:mb-0 [&_dd]:[overflow-wrap:anywhere] [&_dd]:font-bold",
+  leadMessage: "border-t border-border pt-4 [&_p]:text-muted-foreground",
+  leadStatusForm: "mt-[18px] grid gap-2 [&_label]:text-[0.88rem] [&_label]:font-bold [&_label]:text-muted-foreground",
+  leadStatusControls: "flex gap-2.5 max-[720px]:block [&_select]:min-h-11 [&_select]:min-w-40 [&_select]:rounded-lg [&_select]:border [&_select]:border-border [&_select]:bg-card [&_select]:px-2.5 [&_select]:font-[inherit] max-[720px]:[&_select]:w-full max-[720px]:[&_button]:mt-2.5",
+  contentWorkflow: "grid gap-4",
+  contentWorkspace: "grid grid-cols-[minmax(0,1fr)_minmax(260px,0.34fr)] items-start gap-4 max-[720px]:block",
+  contentWorkspaceCaseStudies: "grid-cols-[minmax(0,1.12fr)_minmax(260px,0.32fr)]",
+  contentPanelGrid: "grid grid-cols-2 gap-4 max-[720px]:block",
+  contentPanel: "min-w-0 rounded-lg border border-border bg-card p-4 max-[720px]:mt-3",
+  contentSidePanel: "sticky top-[18px] min-w-0 rounded-lg border border-border bg-card p-4 max-[720px]:static max-[720px]:mt-3",
+  contentList: "mt-3 grid gap-2.5",
+  contentRow: "grid gap-3 rounded-lg border border-border bg-muted p-3 [&_strong]:block [&_strong]:[overflow-wrap:anywhere] [&_span]:block [&_span]:[overflow-wrap:anywhere] [&_span]:text-muted-foreground",
+  contentEmptyState: "rounded-lg border border-border bg-muted p-3 text-muted-foreground",
+  contentReferenceLink: "grid gap-1 rounded-lg border border-border bg-muted p-3 no-underline [&_span]:text-[0.86rem] [&_span]:text-muted-foreground",
+  miniLedger: "mt-3 grid grid-cols-3 gap-2 [&_div]:rounded-lg [&_div]:border [&_div]:border-border [&_div]:bg-muted [&_div]:p-2.5 [&_span]:block [&_span]:text-[0.78rem] [&_span]:font-[750] [&_span]:text-muted-foreground [&_strong]:mt-0.5 [&_strong]:block [&_strong]:text-[1.4rem]",
+  checkList: "mt-3 grid gap-2 text-muted-foreground [&_span]:rounded-lg [&_span]:border [&_span]:border-border [&_span]:bg-muted [&_span]:p-2.5",
+  contentForm: "grid gap-2.5 [&_label]:grid [&_label]:gap-1.5 [&_label]:text-[0.88rem] [&_label]:font-bold [&_label]:text-muted-foreground [&_input]:min-h-11 [&_input]:w-full [&_input]:rounded-lg [&_input]:border [&_input]:border-border [&_input]:bg-card [&_input]:px-2.5 [&_input]:py-[9px] [&_input]:font-[inherit] [&_select]:min-h-11 [&_select]:w-full [&_select]:rounded-lg [&_select]:border [&_select]:border-border [&_select]:bg-card [&_select]:px-2.5 [&_select]:py-[9px] [&_select]:font-[inherit] [&_textarea]:min-h-11 [&_textarea]:w-full [&_textarea]:resize-y [&_textarea]:rounded-lg [&_textarea]:border [&_textarea]:border-border [&_textarea]:bg-card [&_textarea]:px-2.5 [&_textarea]:py-[9px] [&_textarea]:font-[inherit]",
+  contentCreateForm: "mt-3 border-t border-border pt-3",
+};
+
 export function renderDashboardState(state: DashboardState): string {
   const copy = STATE_COPY[state];
 
@@ -672,11 +739,11 @@ export function renderDashboardState(state: DashboardState): string {
     title: copy.title,
     shellState: state,
     body: `
-      <main class="dashboard-state" data-dashboard-state="${state}">
-        <p class="dashboard-kicker">${escapeHtml(copy.status)}</p>
-        <h1>${escapeHtml(copy.title)}</h1>
-        <p>${escapeHtml(copy.body)}</p>
-        <a class="dashboard-action" href="/dashboard/sign-in">Return to sign in</a>
+      <main class="${DASHBOARD_STATE_CLASS}" data-dashboard-state="${state}">
+        <p class="${DASHBOARD_KICKER_CLASS}">${escapeHtml(copy.status)}</p>
+        <h1 class="${DASHBOARD_HEADING_CLASS}">${escapeHtml(copy.title)}</h1>
+        <p class="${DASHBOARD_BODY_CLASS}">${escapeHtml(copy.body)}</p>
+        <a class="${DASHBOARD_ACTION_CLASS}" href="/dashboard/sign-in">Return to sign in</a>
       </main>
     `,
   });
@@ -687,11 +754,11 @@ export function renderDashboardSignIn(input: DashboardSignInInput): string {
     title: "Sign in to AOHYS dashboard",
     shellState: "sign-in",
     body: `
-      <main class="dashboard-state" data-dashboard-surface="sign-in">
-        <p class="dashboard-kicker">Private dashboard</p>
-        <h1>Sign in to continue</h1>
-        <p>Use the allowlisted AOHYS admin account to access private operations.</p>
-        <a class="dashboard-action" href="${escapeHtml(input.signInUrl)}">Sign in with Google</a>
+      <main class="${DASHBOARD_STATE_CLASS}" data-dashboard-surface="sign-in">
+        <p class="${DASHBOARD_KICKER_CLASS}">Private dashboard</p>
+        <h1 class="${DASHBOARD_HEADING_CLASS}">Sign in to continue</h1>
+        <p class="${DASHBOARD_BODY_CLASS}">Use the allowlisted AOHYS admin account to access private operations.</p>
+        <a class="${DASHBOARD_ACTION_CLASS}" href="${escapeHtml(input.signInUrl)}">Sign in with Google</a>
       </main>
     `,
   });
@@ -699,7 +766,7 @@ export function renderDashboardSignIn(input: DashboardSignInInput): string {
 
 function renderWorkflowCard(href: string, title: string, body: string): string {
   return `
-    <a class="dashboard-workflow-card" href="${escapeHtml(href)}">
+    <a class="${DASHBOARD_LEGACY_CLASS.workflowCard}" href="${escapeHtml(href)}">
       <h3>${escapeHtml(title)}</h3>
       <p>${escapeHtml(body)}</p>
     </a>
@@ -712,17 +779,17 @@ function renderLeadWorkflowNotice(
 ): string {
   switch (state) {
     case "save-success":
-      return `<p class="dashboard-notice" role="status">Lead status saved. Refresh keeps the updated Convex state.</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice}" role="status">Lead status saved. Refresh keeps the updated Convex state.</p>`;
     case "validation-error":
-      return `<p class="dashboard-notice dashboard-notice-warning" role="alert">${escapeHtml(validationMessage ?? "Lead status could not be saved.")}</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice} ${DASHBOARD_LEGACY_CLASS.noticeWarning}" role="alert">${escapeHtml(validationMessage ?? "Lead status could not be saved.")}</p>`;
     case "loading":
-      return `<p class="dashboard-notice" role="status">Loading lead workflow...</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice}" role="status">Loading lead workflow...</p>`;
     case "save-pending":
-      return `<p class="dashboard-notice" role="status">Saving lead status...</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice}" role="status">Saving lead status...</p>`;
     case "unauthorized":
-      return `<p class="dashboard-notice dashboard-notice-warning" role="alert">Lead data is restricted to allowlisted admins.</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice} ${DASHBOARD_LEGACY_CLASS.noticeWarning}" role="alert">Lead data is restricted to allowlisted admins.</p>`;
     case "configuration-error":
-      return `<p class="dashboard-notice dashboard-notice-warning" role="alert">Lead workflow provider configuration needs attention.</p>`;
+      return `<p class="${DASHBOARD_LEGACY_CLASS.notice} ${DASHBOARD_LEGACY_CLASS.noticeWarning}" role="alert">Lead workflow provider configuration needs attention.</p>`;
     default:
       return "";
   }
@@ -730,16 +797,16 @@ function renderLeadWorkflowNotice(
 
 function renderLeadList(leads: DashboardLead[], selectedLeadId?: string): string {
   return `
-    <div class="lead-list" aria-label="Incoming leads">
+    <div class="${DASHBOARD_LEGACY_CLASS.leadList}" aria-label="Incoming leads">
       ${leads.map((lead) => {
         const isSelected = lead.id === selectedLeadId;
         return `
-          <a class="lead-list-item" href="/dashboard/leads?lead=${encodeURIComponent(lead.id)}"${isSelected ? ' aria-current="page"' : ""}>
+          <a class="${DASHBOARD_LEGACY_CLASS.leadListItem}" href="/dashboard/leads?lead=${encodeURIComponent(lead.id)}"${isSelected ? ' aria-current="page"' : ""}>
             <span>
               <strong>${escapeHtml(lead.name)}</strong>
               <span>${escapeHtml(lead.email)}</span>
             </span>
-            <span class="lead-status" data-status="${lead.status}">${formatLeadStatus(lead.status)}</span>
+            <span class="${DASHBOARD_LEGACY_CLASS.leadStatus}" data-status="${lead.status}">${formatLeadStatus(lead.status)}</span>
           </a>
         `;
       }).join("")}
@@ -749,13 +816,13 @@ function renderLeadList(leads: DashboardLead[], selectedLeadId?: string): string
 
 function renderLeadDetail(lead: DashboardLead): string {
   return `
-    <article class="lead-detail" aria-labelledby="lead-detail-title">
-      <div class="dashboard-section-heading">
-        <p class="dashboard-kicker">Lead detail</p>
+    <article class="${DASHBOARD_LEGACY_CLASS.leadDetail}" aria-labelledby="lead-detail-title">
+      <div class="${DASHBOARD_LEGACY_CLASS.sectionHeading}">
+        <p class="${DASHBOARD_LEGACY_CLASS.kicker}">Lead detail</p>
         <h2 id="lead-detail-title">${escapeHtml(lead.name)}</h2>
         <p>${escapeHtml(lead.intent)} from ${escapeHtml(lead.sourcePath)}</p>
       </div>
-      <dl class="lead-metadata">
+      <dl class="${DASHBOARD_LEGACY_CLASS.leadMetadata}">
         ${renderLeadMeta("Email", lead.email)}
         ${renderLeadMeta("Company", lead.company)}
         ${renderLeadMeta("Phone", lead.phone)}
@@ -763,20 +830,20 @@ function renderLeadDetail(lead: DashboardLead): string {
         ${renderLeadMeta("Locale", lead.locale)}
         ${renderLeadMeta("Current status", formatLeadStatus(lead.status))}
       </dl>
-      <section class="lead-message" aria-label="Lead message">
+      <section class="${DASHBOARD_LEGACY_CLASS.leadMessage}" aria-label="Lead message">
         <h3>Message</h3>
         <p>${escapeHtml(lead.message)}</p>
       </section>
-      <form class="lead-status-form" method="post" action="/dashboard/leads/status">
+      <form class="${DASHBOARD_LEGACY_CLASS.leadStatusForm}" method="post" action="/dashboard/leads/status">
         <input type="hidden" name="leadId" value="${escapeHtml(lead.id)}" />
         <label for="lead-status-${escapeHtml(lead.id)}">Review status</label>
-        <div class="lead-status-controls">
+        <div class="${DASHBOARD_LEGACY_CLASS.leadStatusControls}">
           <select id="lead-status-${escapeHtml(lead.id)}" name="status">
             ${renderStatusOption("new", lead.status)}
             ${renderStatusOption("reviewing", lead.status)}
             ${renderStatusOption("closed", lead.status)}
           </select>
-          <button class="dashboard-action" type="submit">Save status</button>
+          <button class="${DASHBOARD_LEGACY_CLASS.action}" type="submit">Save status</button>
         </div>
       </form>
     </article>
@@ -785,7 +852,7 @@ function renderLeadDetail(lead: DashboardLead): string {
 
 function renderLeadEmptyState(): string {
   return `
-    <div class="lead-empty-state" data-workflow-state="empty">
+    <div class="${DASHBOARD_LEGACY_CLASS.leadEmptyState}" data-workflow-state="empty">
       <h3>No leads yet</h3>
       <p>New contact submissions will appear here after Convex stores them.</p>
     </div>
@@ -794,7 +861,7 @@ function renderLeadEmptyState(): string {
 
 function renderLeadPlaceholder(): string {
   return `
-    <div class="lead-empty-state" data-workflow-state="empty">
+    <div class="${DASHBOARD_LEGACY_CLASS.leadEmptyState}" data-workflow-state="empty">
       <h3>Select a lead</h3>
       <p>Choose a lead from the list to review contact details and status.</p>
     </div>
@@ -836,10 +903,10 @@ function renderDashboardDocument(input: {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
     <title>${escapeHtml(input.title)} | AOHYS</title>
-    <style>${DASHBOARD_CSS}</style>
+    <link rel="stylesheet" href="${DASHBOARD_STYLESHEET_PATH}" />
   </head>
-  <body>
-    <div class="dashboard-shell" data-dashboard-shell="${input.shellState}">
+  <body class="${DASHBOARD_DOCUMENT_CLASS}">
+    <div class="${input.shellState === "authenticated" ? DASHBOARD_LEGACY_CLASS.authenticatedShell : ""}" data-dashboard-shell="${input.shellState}">
       ${input.body}
     </div>
   </body>
@@ -859,513 +926,3 @@ function escapeHtml(value: string): string {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 }
-
-const DASHBOARD_CSS = `
-:root {
-  color-scheme: light;
-  --dashboard-bg: oklch(0.975 0.006 165);
-  --dashboard-panel: oklch(1 0 0);
-  --dashboard-panel-subtle: oklch(0.962 0.005 180);
-  --dashboard-ink: oklch(0.18 0.015 205);
-  --dashboard-muted: oklch(0.44 0.022 190);
-  --dashboard-line: oklch(0.88 0.012 185);
-  --dashboard-accent: oklch(0.47 0.1 170);
-  --dashboard-on-accent: oklch(1 0 0);
-  --dashboard-accent-soft: oklch(0.92 0.05 165);
-  --dashboard-warning: oklch(0.48 0.115 55);
-  --dashboard-warning-soft: oklch(0.95 0.05 72);
-  --dashboard-info: oklch(0.46 0.11 235);
-  --dashboard-info-soft: oklch(0.94 0.04 230);
-  --dashboard-focus: oklch(0.5 0.16 255);
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  min-width: 320px;
-  background: var(--dashboard-bg);
-  color: var(--dashboard-ink);
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  line-height: 1.5;
-}
-a { color: inherit; }
-.dashboard-shell[data-dashboard-shell="authenticated"] {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
-}
-.dashboard-sidebar {
-  border-inline-end: 1px solid var(--dashboard-line);
-  background: var(--dashboard-panel-subtle);
-  padding: 20px;
-}
-.dashboard-brand,
-.dashboard-nav-link,
-.dashboard-action {
-  min-height: 44px;
-}
-.dashboard-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 760;
-  text-decoration: none;
-}
-.dashboard-brand-mark {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: var(--dashboard-accent-soft);
-  color: var(--dashboard-accent);
-}
-.dashboard-nav {
-  display: grid;
-  gap: 6px;
-  margin-block-start: 28px;
-}
-.dashboard-nav-link {
-  display: flex;
-  align-items: center;
-  border-radius: 8px;
-  padding: 10px 12px;
-  color: var(--dashboard-muted);
-  text-decoration: none;
-}
-.dashboard-nav-link[aria-current="page"] {
-  background: var(--dashboard-accent-soft);
-  color: var(--dashboard-accent);
-  font-weight: 700;
-}
-.dashboard-main {
-  min-width: 0;
-  width: min(100%, 1240px);
-  margin-inline: auto;
-  padding: 24px;
-}
-.dashboard-topbar {
-  display: flex;
-  min-width: 0;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-block-end: 24px;
-}
-.dashboard-kicker {
-  margin: 0 0 6px;
-  color: var(--dashboard-muted);
-  font-size: 0.78rem;
-  font-weight: 750;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-h1, h2, h3, p { margin-block-start: 0; }
-h1 { margin-block-end: 0; font-size: 2.5rem; line-height: 1.04; }
-h2 { margin-block-end: 8px; font-size: 1.25rem; }
-h3 { margin-block-end: 8px; font-size: 1rem; }
-.dashboard-admin {
-  overflow-wrap: anywhere;
-  color: var(--dashboard-muted);
-  font-size: 0.92rem;
-}
-.dashboard-topbar-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 8px;
-  align-items: center;
-}
-.dashboard-link-action {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-panel);
-  padding: 8px 12px;
-  color: var(--dashboard-ink);
-  font-weight: 700;
-  text-decoration: none;
-}
-.dashboard-overview {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.8fr);
-  gap: 20px;
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-panel);
-  padding: 20px;
-}
-.dashboard-release-card,
-.dashboard-workflow-card {
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-panel-subtle);
-  padding: 14px;
-}
-.dashboard-release-card span,
-.dashboard-mini-ledger span {
-  display: block;
-  color: var(--dashboard-muted);
-  font-size: 0.78rem;
-  font-weight: 750;
-}
-.dashboard-release-card p {
-  margin-block: 8px 0;
-  color: var(--dashboard-muted);
-}
-.dashboard-workflow-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-  margin-block-start: 14px;
-}
-.dashboard-workflow-card {
-  color: inherit;
-  text-decoration: none;
-}
-.dashboard-workflow-card:hover,
-.dashboard-link-action:hover {
-  border-color: var(--dashboard-accent);
-}
-.dashboard-state {
-  width: min(560px, calc(100vw - 32px));
-  margin: 10vh auto;
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-panel);
-  padding: 24px;
-}
-.dashboard-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  border-radius: 8px;
-  background: var(--dashboard-accent);
-  color: var(--dashboard-on-accent);
-  padding: 10px 16px;
-  font: inherit;
-  font-weight: 750;
-  text-decoration: none;
-}
-.dashboard-action-secondary {
-  border: 1px solid var(--dashboard-line);
-  background: var(--dashboard-panel);
-  color: var(--dashboard-ink);
-}
-.dashboard-section-heading {
-  margin-block-end: 16px;
-}
-.dashboard-section-heading p {
-  color: var(--dashboard-muted);
-}
-.dashboard-notice {
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-accent-soft);
-  color: var(--dashboard-accent);
-  padding: 10px 12px;
-}
-.dashboard-notice-warning {
-  background: var(--dashboard-warning-soft);
-  color: var(--dashboard-warning);
-}
-.lead-workflow {
-  display: grid;
-  grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
-  gap: 18px;
-}
-.lead-list-panel,
-.lead-detail-panel {
-  min-width: 0;
-}
-.lead-list {
-  display: grid;
-  gap: 10px;
-}
-.lead-list-item {
-  display: flex;
-  min-height: 64px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-panel);
-  padding: 12px;
-  text-decoration: none;
-}
-.lead-list-item span {
-  display: grid;
-  min-width: 0;
-}
-.lead-list-item span span,
-.lead-detail p,
-.lead-empty-state p,
-.lead-message p {
-  color: var(--dashboard-muted);
-}
-.lead-list-item[aria-current="page"] {
-  border-color: var(--dashboard-accent);
-  background: var(--dashboard-accent-soft);
-}
-.lead-status {
-  width: max-content;
-  border-radius: 999px;
-  background: var(--dashboard-panel-subtle);
-  color: var(--dashboard-muted);
-  padding: 4px 9px;
-  font-size: 0.78rem;
-  font-weight: 750;
-}
-.lead-status[data-status="new"] {
-  background: var(--dashboard-info-soft);
-  color: var(--dashboard-info);
-}
-.lead-status[data-status="reviewing"] {
-  background: var(--dashboard-warning-soft);
-  color: var(--dashboard-warning);
-}
-.lead-status[data-status="closed"] {
-  background: var(--dashboard-accent-soft);
-  color: var(--dashboard-accent);
-}
-.lead-detail,
-.lead-empty-state {
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-panel);
-  padding: 18px;
-}
-.lead-metadata {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin: 0 0 18px;
-}
-.lead-metadata div {
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-panel-subtle);
-  padding: 10px;
-}
-.lead-metadata dt {
-  color: var(--dashboard-muted);
-  font-size: 0.78rem;
-}
-.lead-metadata dd {
-  margin: 2px 0 0;
-  overflow-wrap: anywhere;
-  font-weight: 700;
-}
-.lead-message {
-  border-block-start: 1px solid var(--dashboard-line);
-  padding-block-start: 16px;
-}
-.lead-status-form {
-  display: grid;
-  gap: 8px;
-  margin-block-start: 18px;
-}
-.lead-status-form label {
-  color: var(--dashboard-muted);
-  font-size: 0.88rem;
-  font-weight: 700;
-}
-.lead-status-controls {
-  display: flex;
-  gap: 10px;
-}
-.lead-status-controls select {
-  min-height: 44px;
-  min-width: 160px;
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-panel);
-  color: var(--dashboard-ink);
-  padding: 0 10px;
-  font: inherit;
-}
-.content-workflow {
-  display: grid;
-  gap: 16px;
-}
-.content-workspace {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.34fr);
-  gap: 16px;
-  align-items: start;
-}
-.content-workspace-case-studies {
-  grid-template-columns: minmax(0, 1.12fr) minmax(260px, 0.32fr);
-}
-.content-panel-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-.content-panel,
-.content-side-panel {
-  min-width: 0;
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-panel);
-  padding: 16px;
-}
-.content-side-panel {
-  position: sticky;
-  inset-block-start: 18px;
-}
-.content-list {
-  display: grid;
-  gap: 10px;
-  margin-block-start: 12px;
-}
-.content-row,
-.content-empty-state {
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-panel-subtle);
-  padding: 12px;
-}
-.content-row {
-  display: grid;
-  gap: 12px;
-}
-.content-reference-link {
-  display: grid;
-  gap: 4px;
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-panel-subtle);
-  padding: 12px;
-  color: inherit;
-  text-decoration: none;
-}
-.content-reference-link span {
-  color: var(--dashboard-muted);
-  font-size: 0.86rem;
-}
-.dashboard-mini-ledger {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin-block-start: 12px;
-}
-.dashboard-mini-ledger div,
-.dashboard-check-list span {
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-panel-subtle);
-  padding: 10px;
-}
-.dashboard-mini-ledger strong {
-  display: block;
-  margin-block-start: 2px;
-  font-size: 1.4rem;
-}
-.dashboard-check-list {
-  display: grid;
-  gap: 8px;
-  margin-block-start: 12px;
-  color: var(--dashboard-muted);
-}
-.content-row strong,
-.content-row span {
-  display: block;
-  overflow-wrap: anywhere;
-}
-.content-row span,
-.content-empty-state {
-  color: var(--dashboard-muted);
-}
-.content-form {
-  display: grid;
-  gap: 10px;
-}
-.content-create-form {
-  border-block-start: 1px solid var(--dashboard-line);
-  margin-block-start: 12px;
-  padding-block-start: 12px;
-}
-.content-form label {
-  display: grid;
-  gap: 5px;
-  color: var(--dashboard-muted);
-  font-size: 0.88rem;
-  font-weight: 700;
-}
-.content-form input,
-.content-form select,
-.content-form textarea {
-  min-height: 44px;
-  width: 100%;
-  border: 1px solid var(--dashboard-line);
-  border-radius: 8px;
-  background: var(--dashboard-panel);
-  color: var(--dashboard-ink);
-  padding: 9px 10px;
-  font: inherit;
-}
-.content-form textarea {
-  resize: vertical;
-}
-:focus-visible {
-  outline: 3px solid var(--dashboard-focus);
-  outline-offset: 3px;
-}
-@media (max-width: 720px) {
-  .dashboard-shell[data-dashboard-shell="authenticated"] {
-    display: block;
-  }
-  .dashboard-sidebar {
-    border-inline-end: 0;
-    border-block-end: 1px solid var(--dashboard-line);
-  }
-  .dashboard-nav {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .dashboard-main {
-    padding: 18px;
-  }
-  h1 {
-    font-size: 2rem;
-  }
-  .dashboard-topbar,
-  .dashboard-overview,
-  .dashboard-workflow-grid {
-    display: block;
-  }
-  .dashboard-topbar-actions {
-    justify-content: flex-start;
-    margin-block-start: 12px;
-  }
-  .dashboard-workflow-card {
-    margin-block-start: 12px;
-  }
-  .lead-workflow,
-  .lead-metadata,
-  .lead-status-controls,
-  .content-panel-grid,
-  .content-workspace {
-    display: block;
-  }
-  .lead-detail-panel {
-    margin-block-start: 14px;
-  }
-  .content-panel,
-  .content-side-panel {
-    position: static;
-    margin-block-start: 12px;
-  }
-  .lead-metadata div,
-  .lead-status-controls .dashboard-action {
-    margin-block-start: 10px;
-  }
-  .lead-status-controls select,
-  .lead-status-controls .dashboard-action {
-    width: 100%;
-  }
-}
-`;

@@ -1,6 +1,7 @@
 ---
 import { getLocalizedPath, type Locale } from "@aohys/content-graph";
 import { getUiCopy } from "../i18n";
+import { ui } from "../styles/classes";
 
 interface Props {
   locale?: Locale;
@@ -11,18 +12,18 @@ const { locale = "en" } = Astro.props;
 const copy = getUiCopy(locale).footer;
 ---
 
-<footer class="site-footer">
+<footer class={ui.siteFooter}>
   <div>
-    <p class="footer-kicker">{copy.kicker}</p>
+    <p class={ui.footerKicker}>{copy.kicker}</p>
     <p>
       {copy.body}
     </p>
   </div>
-  <div class="footer-links" aria-label={copy.linksAria}>
+  <div class={ui.footerLinks} aria-label={copy.linksAria}>
     <a href={getLocalizedPath("privacy", locale)}>{copy.privacy}</a>
     <a href={getLocalizedPath("architecture", locale)}>{copy.architecture}</a>
-    <a class="footer-dashboard-link" href="/dashboard">{copy.dashboard}</a>
+    <a class={ui.footerDashboardLink} href="/dashboard">{copy.dashboard}</a>
     <a href="mailto:alejandro.ortiz@aohys.com">alejandro.ortiz@aohys.com</a>
   </div>
-  <p class="copyright">© {year} AOH&amp;S. {copy.copyright}</p>
+  <p class={ui.copyright}>© {year} AOH&amp;S. {copy.copyright}</p>
 </footer>

@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/sonner";
+import { cn, dashboardClass } from "@/lib/dashboard-classes";
 import {
   Select,
   SelectContent,
@@ -335,7 +336,7 @@ export function ProjectsScreen() {
   }
 
   return (
-    <div className="dashboard-workspace">
+    <div className={dashboardClass.workspace}>
       <PageHeading
         eyebrow="Projects"
         title="Project workspace"
@@ -369,7 +370,7 @@ export function ProjectsScreen() {
             value={selectedProjectId ?? content.projects[0]?.contentId}
             onValueChange={setSelectedProjectId}
             orientation="vertical"
-            className="project-shell"
+            className={dashboardClass.projectShell}
           >
             <ProjectTabs projects={content.projects} />
             <div className="min-w-0">
@@ -399,17 +400,17 @@ export function ProjectsScreen() {
 
 function ProjectTabs({ projects }: { projects: DashboardProject[] }) {
   return (
-    <aside className="project-nav-panel">
-      <div className="project-nav-header">
-        <div className="project-nav-label">Projects</div>
+    <aside className={dashboardClass.projectNavPanel}>
+      <div className={dashboardClass.projectNavHeader}>
+        <div className={dashboardClass.projectNavLabel}>Projects</div>
         <Badge variant="outline">{projects.length}</Badge>
       </div>
-      <TabsList className="project-tabs-list">
+      <TabsList className={dashboardClass.projectTabsList}>
         {projects.map((project) => (
-          <TabsTrigger key={project.contentId} value={project.contentId} className="project-tab-trigger">
-            <span className="project-tab-copy">
-              <span className="project-tab-title">{project.title}</span>
-              <small>{formatProjectStatus(project.status)}</small>
+          <TabsTrigger key={project.contentId} value={project.contentId} className={dashboardClass.projectTabTrigger}>
+            <span className={dashboardClass.projectTabCopy}>
+              <span className={dashboardClass.projectTabTitle}>{project.title}</span>
+              <small className={dashboardClass.projectTabMeta}>{formatProjectStatus(project.status)}</small>
             </span>
           </TabsTrigger>
         ))}
@@ -453,8 +454,8 @@ function NewProjectCard({
   );
 
   return (
-    <Card className="new-project-card">
-      <CardHeader className="new-project-header">
+    <Card className={dashboardClass.cardShadow}>
+      <CardHeader className={dashboardClass.cardHeaderRule}>
         <div>
           <CardTitle>Create project</CardTitle>
           <CardDescription>Add a new public case-study draft. It appears in the dashboard immediately and in Astro after publish/build.</CardDescription>
@@ -475,7 +476,7 @@ function NewProjectCard({
               });
             }}
           >
-            <FieldGroup className="new-project-form">
+            <FieldGroup className={dashboardClass.newProjectForm}>
               <Field>
                 <FieldLabel htmlFor="new-project-title">English title</FieldLabel>
                 <Input
@@ -558,18 +559,18 @@ function ProjectEditor({
   onDeleteMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
 }) {
   return (
-    <div className="project-editor-grid">
-      <div className="project-main-column">
+    <div className={dashboardClass.projectEditorGrid}>
+      <div className={dashboardClass.projectColumn}>
         <ProjectSummaryCard project={project} isPublishing={isPublishing} onPublish={onPublish} />
-        <Card className="locale-editor-card">
-          <Tabs defaultValue="en" className="locale-editor-tabs">
-            <CardHeader className="locale-editor-header">
+        <Card className={dashboardClass.localeEditor}>
+          <Tabs defaultValue="en" className={dashboardClass.localeEditor}>
+            <CardHeader className={dashboardClass.localeHeader}>
               <div>
                 <CardTitle>Localized content</CardTitle>
                 <CardDescription>Choose the language, edit the draft, then save before publishing.</CardDescription>
               </div>
               <CardAction>
-                <TabsList className="locale-tabs-list">
+                <TabsList className={dashboardClass.localeTabsList}>
                   {project.locales.map((localeContent) => (
                     <TabsTrigger key={localeContent.locale} value={localeContent.locale}>
                       {localeContent.locale === "en" ? "English" : "Spanish"}
@@ -593,7 +594,7 @@ function ProjectEditor({
           </Tabs>
         </Card>
       </div>
-      <aside className="project-side-column">
+      <aside className={dashboardClass.projectColumn}>
         <ProjectImagesCard
           project={project}
           savingKey={savingKey}
@@ -631,15 +632,15 @@ function ProjectSummaryCard({
     .sort((a, b) => b - a)[0];
 
   return (
-    <Card className="project-summary-card">
-      <CardHeader className="project-summary-header">
+    <Card className={dashboardClass.projectSummaryCard}>
+      <CardHeader className={dashboardClass.projectSummaryHeader}>
         <div className="min-w-0">
-          <CardTitle className="project-summary-title">{project.title}</CardTitle>
-          <CardDescription className="project-summary-paths">
+          <CardTitle className={dashboardClass.projectSummaryTitle}>{project.title}</CardTitle>
+          <CardDescription className={dashboardClass.projectSummaryPaths}>
             {project.englishPath} · {project.spanishPath}
           </CardDescription>
         </div>
-        <CardAction className="project-summary-badges">
+        <CardAction className={dashboardClass.projectSummaryBadges}>
           <Badge variant="secondary">{formatProjectStatus(project.status)}</Badge>
           <Badge variant={project.evidenceStatus === "published" ? "default" : "outline"}>
             {formatReferenceState(project.evidenceStatus)}
@@ -647,17 +648,17 @@ function ProjectSummaryCard({
           <Badge variant="outline">{project.sitemapIncluded ? "In sitemap" : "Noindex"}</Badge>
         </CardAction>
       </CardHeader>
-      <CardContent className="project-summary-content">
+      <CardContent className={dashboardClass.projectSummaryContent}>
         {project.projectUrl ? (
-          <a className="project-summary-url" href={project.projectUrl} target="_blank" rel="noreferrer">
+          <a className={dashboardClass.projectSummaryUrl} href={project.projectUrl} target="_blank" rel="noreferrer">
             {project.projectUrl}
             <ExternalLinkIcon data-icon="inline-end" />
           </a>
         ) : (
-          <span className="project-summary-url is-empty">No public URL yet</span>
+          <span className={cn(dashboardClass.projectSummaryUrl, dashboardClass.projectSummaryUrlEmpty)}>No public URL yet</span>
         )}
-        <div className="publish-bar">
-          <div className="publish-meta">
+        <div className={dashboardClass.publishBar}>
+          <div className={dashboardClass.publishMeta}>
             <span>Saved {latestDraft ? formatDate(latestDraft.updatedAt) : "never"}</span>
             <span>Published {latestPublished ? formatDate(latestPublished) : "never"}</span>
           </div>
@@ -710,13 +711,13 @@ function ProjectLocaleForm({
 
   return (
     <form
-      className="content-edit-form"
+      className={dashboardClass.editForm}
       onSubmit={(event) => {
         event.preventDefault();
         void onSave(form);
       }}
     >
-      <div className="project-form-header">
+      <div className={dashboardClass.projectFormHeader}>
         <div>
           <h2>{localeContent.locale === "en" ? "English content" : "Spanish content"}</h2>
           <p>
@@ -730,7 +731,7 @@ function ProjectLocaleForm({
           <FieldSet>
             <FieldLegend>Identity</FieldLegend>
             <FieldGroup>
-              <div className="form-grid-3">
+              <div className={dashboardClass.formGrid3}>
                 <Field>
                   <FieldLabel>Status</FieldLabel>
                   <Select
@@ -803,7 +804,7 @@ function ProjectLocaleForm({
           <FieldSet>
             <FieldLegend>Outcome and structure</FieldLegend>
             <FieldGroup>
-              <div className="form-grid-2">
+              <div className={dashboardClass.formGrid2}>
                 <Field>
                   <FieldLabel>CTA label</FieldLabel>
                   <Input value={form.ctaLabel} onChange={(event) => update("ctaLabel", event.target.value)} />
@@ -832,7 +833,7 @@ function ProjectLocaleForm({
             </FieldGroup>
           </FieldSet>
 
-          <div className="form-action-row">
+          <div className={dashboardClass.formActionRow}>
             <span aria-live="polite">
               {isSaving ? "Saving..." : hasChanges ? "Draft has local changes." : "No unsaved changes."}
             </span>
@@ -869,21 +870,21 @@ function ProjectImagesCard({
   const selectedImageMissingPreview = selectedImage?.previewStatus === "missing-url";
 
   return (
-    <Card className="media-card">
-      <CardHeader className="media-card-header">
+    <Card className={dashboardClass.cardShadow}>
+      <CardHeader className={dashboardClass.mediaCardHeader}>
         <CardTitle>Project media</CardTitle>
         <CardDescription>Choose the exact image that the Astro landing and case-study pages should use.</CardDescription>
       </CardHeader>
-      <CardContent className="media-list">
-        <div className="media-selected-preview">
+      <CardContent className={dashboardClass.mediaList}>
+        <div className={dashboardClass.mediaSelectedPreview}>
           <MediaImage
             src={previewImage?.src}
             alt={previewImage?.altText ?? "No project image"}
-            className="media-preview-frame"
+            className={dashboardClass.mediaPreviewFrame}
             missingLabel={selectedImageMissingPreview ? "Preview URL missing" : undefined}
           />
-          <div className="media-preview-copy">
-            <span className={selectedImage ? "is-selected" : undefined}>
+          <div className={dashboardClass.mediaPreviewCopy}>
+            <span className={selectedImage ? dashboardClass.mediaSelectedLabel : undefined}>
               {selectedImage ? "Selected for Astro" : "No dashboard image selected"}
             </span>
             {previewImage ? <strong>{previewImage.label}</strong> : null}
@@ -900,24 +901,24 @@ function ProjectImagesCard({
         {project.images.length > 0 ? project.images.map((image) => (
           <div
             key={`${image.source}:${image.label}:${image.storageKey ?? image.href ?? image.src ?? ""}`}
-            className={`media-row ${image.selectedForPublic ? "media-row-selected" : ""}`}
+            className={cn(dashboardClass.mediaRow, image.selectedForPublic && dashboardClass.mediaRowSelected)}
           >
             <MediaImage
               src={image.src}
               alt={image.altText}
-              className="media-thumb"
+              className={dashboardClass.mediaThumb}
               missingLabel={image.previewStatus === "missing-url" ? "Preview URL missing" : undefined}
             />
-            <div className="media-row-body">
-              <div className="media-row-title">{image.label}</div>
-              <p>{image.altText}</p>
-              <div className="media-row-tags">
+            <div className={dashboardClass.mediaRowBody}>
+              <div className={dashboardClass.mediaRowTitle}>{image.label}</div>
+              <p className={dashboardClass.mediaRowText}>{image.altText}</p>
+              <div className={dashboardClass.mediaRowTags}>
                 <Badge variant="secondary">{image.source === "media-metadata" ? "Dashboard media" : "Content graph"}</Badge>
                 {image.status ? <Badge variant="outline">{image.status}</Badge> : null}
                 {image.previewStatus === "missing-url" ? <Badge variant="outline">Preview URL missing</Badge> : null}
                 {image.selectedForPublic ? <Badge>Astro image</Badge> : null}
               </div>
-              <div className="media-row-actions">
+              <div className={dashboardClass.mediaRowActions}>
                 {image.id && image.status !== "archived" ? (
                   <Button
                     type="button"
@@ -967,7 +968,7 @@ function ProjectImagesCard({
             </div>
           </div>
         )) : (
-          <p className="media-empty-note">No project media has been attached yet. Add an image below to give this case study a public visual.</p>
+          <p className={dashboardClass.mediaEmptyNote}>No project media has been attached yet. Add an image below to give this case study a public visual.</p>
         )}
       </CardContent>
     </Card>
@@ -989,7 +990,7 @@ function MediaImage({
 
   if (!src || failedSrc === src) {
     return (
-      <div className={`media-image-empty ${className ?? ""}`} role="img" aria-label={alt}>
+      <div className={cn(dashboardClass.mediaImageEmpty, className)} role="img" aria-label={alt}>
         <ImageIcon aria-hidden="true" />
         <small>{failedSrc === src && src ? "Image not reachable" : missingLabel}</small>
       </div>
@@ -1049,14 +1050,14 @@ function ImageUploadForm({
   }, [previewUrl]);
 
   return (
-    <Card className="upload-card">
-      <CardHeader className="media-card-header">
+    <Card className={dashboardClass.cardShadow}>
+      <CardHeader className={dashboardClass.mediaCardHeader}>
         <CardTitle>Add image</CardTitle>
         <CardDescription>Preview the selected file, or register an already public image URL when Cloudflare Images is not configured.</CardDescription>
       </CardHeader>
       <CardContent>
         <form
-          className="content-edit-form"
+          className={dashboardClass.editForm}
           onSubmit={(event) => {
             event.preventDefault();
             const trimmedPublicUrl = publicUrl.trim();
@@ -1100,7 +1101,7 @@ function ImageUploadForm({
               />
             </Field>
             {previewUrl ? (
-              <figure className="upload-preview">
+              <figure className={dashboardClass.uploadPreview}>
                 <img src={previewUrl} alt={form.altText || "Selected image preview"} />
                 <figcaption>{file?.name}</figcaption>
               </figure>
@@ -1125,7 +1126,7 @@ function ImageUploadForm({
                 placeholder="Describe what the image shows for screen readers and SEO."
               />
             </Field>
-            <div className="form-grid-2">
+            <div className={dashboardClass.formGrid2}>
               <Field>
                 <FieldLabel>Locale</FieldLabel>
                 <Select
@@ -1176,15 +1177,15 @@ function PageHeading({
   action?: React.ReactNode;
 }) {
   return (
-    <section className={`dashboard-page-heading ${action ? "with-action" : ""}`}>
-      <div className="dashboard-page-heading-main">
+    <section className={cn(dashboardClass.pageHeading, action && dashboardClass.pageHeadingWithAction)}>
+      <div className={dashboardClass.pageHeadingMain}>
         <Badge className="w-fit" variant="secondary">{eyebrow}</Badge>
         <div>
           <h1>{title}</h1>
           <p>{description}</p>
         </div>
       </div>
-      {action ? <div className="dashboard-page-heading-action">{action}</div> : null}
+      {action ? <div className={dashboardClass.pageHeadingAction}>{action}</div> : null}
     </section>
   );
 }
