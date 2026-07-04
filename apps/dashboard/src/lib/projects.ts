@@ -62,10 +62,11 @@ function buildDashboardProjectRows(
   );
   const staticCaseStudyNodes = PUBLIC_CONTENT_NODES.filter((node) => node.type === "case-study");
   const staticContentIds = staticCaseStudyNodes.map((node) => node.id);
+  const activeMediaRows = mediaRows.filter((item) => item.status !== "archived");
   const dynamicContentIds = [
     ...(content.caseStudies ?? []).map((row) => row.contentId),
     ...(content.projectDrafts ?? []).map((draft) => draft.contentId),
-    ...mediaRows.map((item) => item.contentId).filter((contentId): contentId is string => Boolean(contentId)),
+    ...activeMediaRows.map((item) => item.contentId).filter((contentId): contentId is string => Boolean(contentId)),
   ].filter((contentId) => isCaseStudyContentId(contentId));
   const projectContentIds = unique([...staticContentIds, ...dynamicContentIds]);
 
@@ -82,7 +83,7 @@ function buildDashboardProjectRows(
       : fallbackProjectVariant(contentId, "es", spanishDraft ?? englishDraft);
     const publicEvidence = node ? getCaseStudyPageContent(node.id, "en")?.publicEvidence ?? [] : [];
     const staticEvidenceImage = STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID[contentId];
-    const media = mediaRows.filter((item) => item.contentId === contentId);
+    const media = activeMediaRows.filter((item) => item.contentId === contentId);
     const firstProjectUrl = publicEvidence.find((item) => isHttpUrl(item.href))?.href;
     const firstDraftUrl = (content.projectDrafts ?? [])
       .find((draft) => draft.contentId === contentId && draft.projectUrl)?.projectUrl;
@@ -140,7 +141,7 @@ function buildDashboardProjectRows(
               : undefined,
         })),
         ...media.map((item) => {
-          const deliveryUrl = item.publicUrl ?? cloudflareImagesDeliveryUrl(item, imagesAccountHash);
+          const deliveryUrl = dashboardMediaPreviewUrl(item, imagesAccountHash);
 
           return {
             id: item.id,
@@ -149,6 +150,7 @@ function buildDashboardProjectRows(
             source: "media-metadata" as const,
             href: deliveryUrl,
             src: deliveryUrl,
+            previewStatus: deliveryUrl ? "ready" as const : "missing-url" as const,
             storageKey: item.storageKey,
             status: item.status,
             usage: item.usage,
@@ -243,6 +245,29 @@ function isHttpUrl(value: string): boolean {
 
 function isImageHref(value: string): boolean {
   return /\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(value);
+}
+
+function dashboardMediaPreviewUrl(
+  media: Pick<DashboardMediaMetadata, "publicUrl" | "storageProvider" | "storageKey">,
+  imagesAccountHash?: string,
+): string | undefined {
+  if (media.publicUrl) {
+    return media.publicUrl;
+  }
+
+  if (isHttpUrl(media.storageKey)) {
+    return media.storageKey;
+  }
+
+  if (isPublicAssetPath(media.storageKey)) {
+    return media.storageKey.startsWith("/") ? media.storageKey : `/${media.storageKey}`;
+  }
+
+  return cloudflareImagesDeliveryUrl(media, imagesAccountHash);
+}
+
+function isPublicAssetPath(value: string): boolean {
+  return /^(?:\/)?images\/.+\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(value);
 }
 
 function cloudflareImagesDeliveryUrl(

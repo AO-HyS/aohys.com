@@ -8,12 +8,14 @@ import {
   PlusIcon,
   RocketIcon,
   SaveIcon,
+  Trash2Icon,
   UploadCloudIcon,
 } from "lucide-react";
 import {
   useArchiveProjectMedia,
   useCreateMediaUpload,
   useDashboardContent,
+  useDeleteProjectMedia,
   usePublishContent,
   useSaveMediaMetadata,
   useSaveProjectDraft,
@@ -86,6 +88,7 @@ export function ProjectsScreen() {
   const content = useDashboardContent();
   const archiveProjectMedia = useArchiveProjectMedia();
   const createMediaUpload = useCreateMediaUpload();
+  const deleteProjectMedia = useDeleteProjectMedia();
   const publishContent = usePublishContent();
   const saveMediaMetadata = useSaveMediaMetadata();
   const saveProjectDraft = useSaveProjectDraft();
@@ -237,6 +240,35 @@ export function ProjectsScreen() {
     }
   }
 
+  async function handleDeleteMedia(payload: MediaSelectionRequest) {
+    const confirmed = window.confirm(
+      "Delete this dashboard media record? This removes it from the dashboard. Publish afterwards if the public Astro image should change.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const key = `${payload.mediaId}:delete`;
+    const toastId = toast.loading("Deleting image");
+    setSavingKey(key);
+
+    try {
+      await deleteProjectMedia(payload);
+      toast.success("Image deleted", {
+        id: toastId,
+        description: "The media record was removed from the dashboard.",
+      });
+    } catch (error) {
+      toast.error("Image could not be deleted", {
+        id: toastId,
+        description: error instanceof Error ? error.message : "The media record could not be deleted.",
+      });
+    } finally {
+      setSavingKey(null);
+    }
+  }
+
   async function handleCreateProject(input: NewProjectInput) {
     const contentId = `case-study:${input.slug}`;
 
@@ -349,6 +381,7 @@ export function ProjectsScreen() {
                     savingKey={savingKey}
                     onPublish={() => handlePublishProject(project)}
                     onArchiveMedia={handleArchiveMedia}
+                    onDeleteMedia={handleDeleteMedia}
                     onSelectMedia={handleSelectMedia}
                     onSaveExternalMedia={handleSaveExternalMedia}
                     onSaveMedia={handleUploadMedia}
@@ -511,6 +544,7 @@ function ProjectEditor({
   onSaveExternalMedia,
   onSelectMedia,
   onArchiveMedia,
+  onDeleteMedia,
 }: {
   project: DashboardProject;
   isPublishing: boolean;
@@ -521,6 +555,7 @@ function ProjectEditor({
   onSaveExternalMedia: (payload: MediaMetadataRequest) => void | Promise<void>;
   onSelectMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
   onArchiveMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
+  onDeleteMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
 }) {
   return (
     <div className="project-editor-grid">
@@ -564,6 +599,7 @@ function ProjectEditor({
           savingKey={savingKey}
           onSelectMedia={onSelectMedia}
           onArchiveMedia={onArchiveMedia}
+          onDeleteMedia={onDeleteMedia}
         />
         <ImageUploadForm
           project={project}
@@ -814,11 +850,13 @@ function ProjectImagesCard({
   savingKey,
   onSelectMedia,
   onArchiveMedia,
+  onDeleteMedia,
 }: {
   project: DashboardProject;
   savingKey: string | null;
   onSelectMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
   onArchiveMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
+  onDeleteMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
 }) {
   const mediaImages = project.images.filter((image) => image.source === "media-metadata");
   const selectedImage = mediaImages.find((image) => image.selectedForPublic && image.status !== "archived");
@@ -828,6 +866,7 @@ function ProjectImagesCard({
       ?? mediaImages.find((image) => image.status !== "archived")
       ?? project.images.find((image) => image.source === "content-graph");
   const previewImage = selectedImage ?? fallbackImage;
+  const selectedImageMissingPreview = selectedImage?.previewStatus === "missing-url";
 
   return (
     <Card className="media-card">
@@ -841,6 +880,7 @@ function ProjectImagesCard({
             src={previewImage?.src}
             alt={previewImage?.altText ?? "No project image"}
             className="media-preview-frame"
+            missingLabel={selectedImageMissingPreview ? "Preview URL missing" : undefined}
           />
           <div className="media-preview-copy">
             <span className={selectedImage ? "is-selected" : undefined}>
@@ -848,7 +888,9 @@ function ProjectImagesCard({
             </span>
             {previewImage ? <strong>{previewImage.label}</strong> : null}
             <p>
-              {selectedImage
+              {selectedImageMissingPreview
+                ? "This selected media record is missing a public image URL, so Astro will keep using another available project image until this is deleted or re-uploaded."
+                : selectedImage
                 ? previewImage?.altText
                 : "Choose Use in Astro on one media row to make the public image explicit."}
             </p>
@@ -860,13 +902,19 @@ function ProjectImagesCard({
             key={`${image.source}:${image.label}:${image.storageKey ?? image.href ?? image.src ?? ""}`}
             className={`media-row ${image.selectedForPublic ? "media-row-selected" : ""}`}
           >
-            <MediaImage src={image.src} alt={image.altText} className="media-thumb" />
+            <MediaImage
+              src={image.src}
+              alt={image.altText}
+              className="media-thumb"
+              missingLabel={image.previewStatus === "missing-url" ? "Preview URL missing" : undefined}
+            />
             <div className="media-row-body">
               <div className="media-row-title">{image.label}</div>
               <p>{image.altText}</p>
               <div className="media-row-tags">
                 <Badge variant="secondary">{image.source === "media-metadata" ? "Dashboard media" : "Content graph"}</Badge>
                 {image.status ? <Badge variant="outline">{image.status}</Badge> : null}
+                {image.previewStatus === "missing-url" ? <Badge variant="outline">Preview URL missing</Badge> : null}
                 {image.selectedForPublic ? <Badge>Astro image</Badge> : null}
               </div>
               <div className="media-row-actions">
@@ -875,7 +923,8 @@ function ProjectImagesCard({
                     type="button"
                     variant={image.selectedForPublic ? "secondary" : "outline"}
                     size="sm"
-                    disabled={savingKey === `${image.id}:select`}
+                    disabled={savingKey === `${image.id}:select` || !image.src}
+                    title={!image.src ? "This media record is missing a public image URL." : undefined}
                     onClick={() => void onSelectMedia({ mediaId: image.id!, contentId: project.contentId })}
                   >
                     {savingKey === `${image.id}:select` ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <EyeIcon data-icon="inline-start" />}
@@ -892,6 +941,18 @@ function ProjectImagesCard({
                   >
                     {savingKey === `${image.id}:archive` ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <EyeOffIcon data-icon="inline-start" />}
                     Hide
+                  </Button>
+                ) : null}
+                {image.id ? (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    disabled={savingKey === `${image.id}:delete`}
+                    onClick={() => void onDeleteMedia({ mediaId: image.id!, contentId: project.contentId })}
+                  >
+                    {savingKey === `${image.id}:delete` ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <Trash2Icon data-icon="inline-start" />}
+                    Delete
                   </Button>
                 ) : null}
                 {image.href ? (
@@ -913,14 +974,24 @@ function ProjectImagesCard({
   );
 }
 
-function MediaImage({ src, alt, className }: { src?: string; alt: string; className?: string }) {
+function MediaImage({
+  src,
+  alt,
+  className,
+  missingLabel = "Preview URL missing",
+}: {
+  src?: string;
+  alt: string;
+  className?: string;
+  missingLabel?: string;
+}) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
   if (!src || failedSrc === src) {
     return (
       <div className={`media-image-empty ${className ?? ""}`} role="img" aria-label={alt}>
         <ImageIcon aria-hidden="true" />
-        {failedSrc === src && src ? <small>Image not reachable</small> : null}
+        <small>{failedSrc === src && src ? "Image not reachable" : missingLabel}</small>
       </div>
     );
   }

@@ -374,6 +374,28 @@ describe("Public Content Graph", () => {
     }
   });
 
+  it("uses published external media URLs stored as storage keys", async () => {
+    const {
+      publicMediaItemsByContentId,
+    } = await import("../../../scripts/apply-dashboard-published-content.js");
+    const mediaByContentId = publicMediaItemsByContentId([
+      {
+        storageProvider: "external",
+        storageKey: "https://cdn.example.com/dashboard-alpha/alternate.png",
+        altText: "Alternate dashboard image.",
+        contentId: "case-study:dashboard-alpha",
+        usage: "case-study",
+        status: "published",
+        selectedForPublic: true,
+        updatedAt: 100,
+      },
+    ]);
+
+    expect(mediaByContentId.get("case-study:dashboard-alpha")?.publicUrl).toBe(
+      "https://cdn.example.com/dashboard-alpha/alternate.png",
+    );
+  });
+
   it("includes generated dashboard case studies in routes, sitemap, index, and home outcomes", async () => {
     const contentId = "case-study:dashboard-alpha";
 

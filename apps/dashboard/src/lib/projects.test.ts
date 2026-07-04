@@ -46,7 +46,84 @@ describe("buildDashboardContentPayload", () => {
     expect(selectedMedia).toMatchObject({
       src: "https://imagedelivery.net/cloudflare-hash/media/casa-roca/selected/public",
       href: "https://imagedelivery.net/cloudflare-hash/media/casa-roca/selected/public",
+      previewStatus: "ready",
       selectedForPublic: true,
     });
+  });
+
+  it("uses a URL stored as the storage key for old external media rows", () => {
+    const legacyUrl = "https://cdn.example.com/casa-roca/alternate.png";
+    const payload = buildDashboardContentPayload({
+      ...emptyDashboardContent,
+      media: [
+        {
+          id: "legacy-external-media-id",
+          storageProvider: "external",
+          storageKey: legacyUrl,
+          altText: "Alternate Casa Roca image.",
+          contentId: "case-study:casa-roca",
+          usage: "case-study",
+          status: "draft",
+          updatedAt: 456,
+        },
+      ],
+    } as unknown as DashboardConvexContentPayload);
+    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
+    const legacyMedia = casaRoca?.images.find((image) => image.id === "legacy-external-media-id");
+
+    expect(legacyMedia).toMatchObject({
+      src: legacyUrl,
+      href: legacyUrl,
+      previewStatus: "ready",
+    });
+  });
+
+  it("marks media without a resolvable public image URL as missing a preview", () => {
+    const payload = buildDashboardContentPayload({
+      ...emptyDashboardContent,
+      media: [
+        {
+          id: "legacy-cloudflare-media-id",
+          storageProvider: "cloudflare-images",
+          storageKey: "captura-de-pantalla-2026-03-27.png",
+          altText: "Legacy upload without a delivery URL.",
+          contentId: "case-study:casa-roca",
+          usage: "case-study",
+          status: "published",
+          selectedForPublic: true,
+          updatedAt: 789,
+        },
+      ],
+    } as unknown as DashboardConvexContentPayload);
+    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
+    const legacyMedia = casaRoca?.images.find((image) => image.id === "legacy-cloudflare-media-id");
+
+    expect(legacyMedia).toMatchObject({
+      src: undefined,
+      href: undefined,
+      previewStatus: "missing-url",
+      selectedForPublic: true,
+    });
+  });
+
+  it("omits archived media rows from project image lists", () => {
+    const payload = buildDashboardContentPayload({
+      ...emptyDashboardContent,
+      media: [
+        {
+          id: "archived-media-id",
+          storageProvider: "external",
+          storageKey: "https://cdn.example.com/archived.png",
+          altText: "Archived image.",
+          contentId: "case-study:casa-roca",
+          usage: "case-study",
+          status: "archived",
+          updatedAt: 111,
+        },
+      ],
+    } as unknown as DashboardConvexContentPayload);
+    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
+
+    expect(casaRoca?.images.some((image) => image.id === "archived-media-id")).toBe(false);
   });
 });
