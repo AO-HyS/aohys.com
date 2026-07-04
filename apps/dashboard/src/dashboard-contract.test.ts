@@ -40,7 +40,7 @@ describe("dashboard app contract", () => {
     expect(api).toContain("useAction(convexApi.contentActions.publishContent");
     expect(api).not.toContain("/dashboard/api");
     expect(authClient).toContain("convexClient()");
-    expect(authClient).toContain("crossDomainClient()");
+    expect(authClient).not.toContain("crossDomainClient()");
     expect(projectProjection).toContain("buildDashboardContentPayload");
     expect(projectProjection).toContain("@aohys/content-graph");
     expect(viteConfig).toContain('base: "/dashboard-app/"');
