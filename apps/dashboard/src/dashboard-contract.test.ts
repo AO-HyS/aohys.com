@@ -12,6 +12,7 @@ describe("dashboard app contract", () => {
   it("keeps projects as the primary routed workspace", () => {
     const main = read("src/main.tsx");
     const projects = read("src/screens/projects-screen.tsx");
+    const alertDialog = read("src/components/ui/alert-dialog.tsx");
     const settings = read("src/screens/settings-screen.tsx");
     const api = read("src/api.ts");
     const authClient = read("src/lib/auth-client.ts");
@@ -38,6 +39,10 @@ describe("dashboard app contract", () => {
     expect(projects).toContain("selectProjectMedia");
     expect(projects).toContain("deleteProjectMedia");
     expect(projects).toContain("Trash2Icon");
+    expect(projects).toContain("MediaUploadIssueDialog");
+    expect(projects).toContain("Cloudflare Images upload is not configured");
+    expect(projects).not.toContain("window.confirm");
+    expect(alertDialog).toContain("AlertDialogPrimitive");
     expect(api).toContain("useQuery(convexApi.content.listForDashboard");
     expect(api).toContain("useMutation(convexApi.content.upsertProjectDraft");
     expect(api).toContain("useMutation(convexApi.content.selectMediaForPublic");
