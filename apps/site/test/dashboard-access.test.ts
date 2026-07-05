@@ -78,7 +78,7 @@ describe("dashboard access guard", () => {
     expect(html).toContain('"imagesAccountHash":"cloudflare-images-hash"');
   });
 
-  it("omits the images account hash from the shell config when it is not configured", async () => {
+  it("rejects preview dashboard runtime when the Images account hash is not configured", async () => {
     const response = await handleDashboardRequest(
       new Request("https://preview.aohys.com/dashboard", {
         headers: {
@@ -95,9 +95,8 @@ describe("dashboard access guard", () => {
     );
     const html = await response.text();
 
-    expect(response.status).toBe(200);
-    expect(html).toContain('"convexUrl":"https://effervescent-minnow-483.convex.cloud"');
-    expect(html).toContain('"betterAuthUrl":"https://preview.aohys.com"');
+    expect(response.status).toBe(503);
+    expect(html).toContain("Dashboard configuration needs attention");
     expect(html).not.toContain("imagesAccountHash");
   });
 

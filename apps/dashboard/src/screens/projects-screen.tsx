@@ -522,9 +522,9 @@ function mediaUploadIssueFromError(error: unknown): MediaUploadIssue {
   if (detail.toLowerCase().includes("cloudflare images upload is not configured")) {
     return {
       title: "Cloudflare Images upload is not configured",
-      description: "This environment cannot create a direct upload slot yet. The dashboard can still use an image that is already hosted publicly.",
-      detail: "Paste the hosted image in Public image URL, keep the alt text, and save it as the selected Astro image.",
-      actionLabel: "Use Public image URL",
+      description: "This environment is missing the Cloudflare Images runtime configuration required to create direct upload slots.",
+      detail: "Configure the Images account hash and narrow API token in the release environment, sync them to Convex, then retry the upload.",
+      actionLabel: "Got it",
     };
   }
 
@@ -1191,7 +1191,7 @@ function ImageUploadForm({
     <Card className={dashboardClass.cardShadow}>
       <CardHeader className={dashboardClass.mediaCardHeader}>
         <CardTitle>Add image</CardTitle>
-        <CardDescription>Preview the selected file, or register an already public image URL when Cloudflare Images is not configured.</CardDescription>
+        <CardDescription>Preview the selected file, or register an image that is already hosted publicly.</CardDescription>
       </CardHeader>
       <CardContent>
         <form

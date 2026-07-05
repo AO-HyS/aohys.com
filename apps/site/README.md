@@ -45,7 +45,7 @@ UI copy that belongs to the shell lives in locale JSON files under `src/i18n`. P
 Private behavior is implemented outside the Astro route graph:
 
 - `/dashboard/*` is handled by Cloudflare Pages functions and serves the `@aohys/dashboard` React app after session/admin checks.
-- Dashboard data is read and written directly by the React app through admin-gated Convex functions. The shell injects `CONVEX_URL`, the active request origin for Better Auth, and the optional Cloudflare Images delivery hash as browser runtime config.
+- Dashboard data is read and written directly by the React app through admin-gated Convex functions. The shell injects `CONVEX_URL`, the active request origin for Better Auth, and the required Cloudflare Images delivery hash as browser runtime config.
 - `/dashboard/sign-in/google` starts Google OAuth server-side, sets the Better Auth state cookie, and redirects to Google without client-side script.
 - `/dashboard/projects` combines Public Content Graph nodes with Convex project drafts, image metadata, site contact values, and resume artifacts.
 - `/api/auth/*` is proxied by Cloudflare Pages functions to Convex Better Auth routes.

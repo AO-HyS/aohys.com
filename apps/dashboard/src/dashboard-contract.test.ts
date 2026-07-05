@@ -41,6 +41,8 @@ describe("dashboard app contract", () => {
     expect(projects).toContain("Trash2Icon");
     expect(projects).toContain("MediaUploadIssueDialog");
     expect(projects).toContain("Cloudflare Images upload is not configured");
+    expect(projects).toContain("Configure the Images account hash and narrow API token");
+    expect(projects).not.toContain("Use Public image URL");
     expect(projects).not.toContain("window.confirm");
     expect(alertDialog).toContain("AlertDialogPrimitive");
     expect(api).toContain("useQuery(convexApi.content.listForDashboard");
