@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  CircleAlertIcon,
   ExternalLinkIcon,
   EyeIcon,
   EyeOffIcon,
@@ -26,6 +27,16 @@ import {
   type MediaUploadRequest,
   type ProjectDraftRequest,
 } from "@/api";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -75,6 +86,13 @@ interface NewProjectInput {
   status: DashboardCaseStudyStatus;
 }
 
+interface MediaUploadIssue {
+  title: string;
+  description: string;
+  detail: string;
+  actionLabel: string;
+}
+
 const caseStudyStatuses: DashboardCaseStudyStatus[] = [
   "production-proof",
   "active-build",
@@ -98,6 +116,8 @@ export function ProjectsScreen() {
   const [publishingKey, setPublishingKey] = useState<string | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | undefined>();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [uploadIssue, setUploadIssue] = useState<MediaUploadIssue | null>(null);
+  const [deleteRequest, setDeleteRequest] = useState<MediaSelectionRequest | null>(null);
 
   useEffect(() => {
     if (!content?.projects.length) {
@@ -167,9 +187,12 @@ export function ProjectsScreen() {
         description: "It is selected for the public Astro build. Publish when ready.",
       });
     } catch (error) {
+      const issue = mediaUploadIssueFromError(error);
+
+      setUploadIssue(issue);
       toast.error("Media upload failed", {
         id: toastId,
-        description: error instanceof Error ? error.message : "Image upload could not be completed.",
+        description: issue.detail,
       });
     } finally {
       setSavingKey(null);
@@ -241,15 +264,16 @@ export function ProjectsScreen() {
     }
   }
 
-  async function handleDeleteMedia(payload: MediaSelectionRequest) {
-    const confirmed = window.confirm(
-      "Delete this dashboard media record? This removes it from the dashboard. Publish afterwards if the public Astro image should change.",
-    );
+  function handleDeleteMedia(payload: MediaSelectionRequest) {
+    setDeleteRequest(payload);
+  }
 
-    if (!confirmed) {
+  async function handleConfirmDeleteMedia() {
+    if (!deleteRequest) {
       return;
     }
 
+    const payload = deleteRequest;
     const key = `${payload.mediaId}:delete`;
     const toastId = toast.loading("Deleting image");
     setSavingKey(key);
@@ -267,6 +291,7 @@ export function ProjectsScreen() {
       });
     } finally {
       setSavingKey(null);
+      setDeleteRequest(null);
     }
   }
 
@@ -331,6 +356,8 @@ export function ProjectsScreen() {
     }
   }
 
+  const activeDeleteKey = deleteRequest ? `${deleteRequest.mediaId}:delete` : null;
+
   if (!content) {
     return <ProjectsSkeleton />;
   }
@@ -394,8 +421,121 @@ export function ProjectsScreen() {
           </Tabs>
         </>
       ) : null}
+      <MediaUploadIssueDialog
+        issue={uploadIssue}
+        onOpenChange={(open) => {
+          if (!open) {
+            setUploadIssue(null);
+          }
+        }}
+      />
+      <DeleteMediaDialog
+        open={Boolean(deleteRequest)}
+        isDeleting={activeDeleteKey !== null && savingKey === activeDeleteKey}
+        onOpenChange={(open) => {
+          if (!open && savingKey !== activeDeleteKey) {
+            setDeleteRequest(null);
+          }
+        }}
+        onConfirm={handleConfirmDeleteMedia}
+      />
     </div>
   );
+}
+
+function MediaUploadIssueDialog({
+  issue,
+  onOpenChange,
+}: {
+  issue: MediaUploadIssue | null;
+  onOpenChange: (open: boolean) => void;
+}) {
+  return (
+    <AlertDialog open={Boolean(issue)} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <div className="mb-1 flex size-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+            <CircleAlertIcon aria-hidden="true" />
+          </div>
+          <AlertDialogTitle>{issue?.title ?? "Image upload failed"}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {issue?.description ?? "The selected image could not be uploaded."}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        {issue?.detail ? (
+          <div className="rounded-lg border bg-muted/40 px-3 py-2 text-sm leading-6 text-muted-foreground">
+            {issue.detail}
+          </div>
+        ) : null}
+        <AlertDialogFooter>
+          <AlertDialogCancel>Close</AlertDialogCancel>
+          <AlertDialogAction>{issue?.actionLabel ?? "Got it"}</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+function DeleteMediaDialog({
+  open,
+  isDeleting,
+  onOpenChange,
+  onConfirm,
+}: {
+  open: boolean;
+  isDeleting: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void | Promise<void>;
+}) {
+  return (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <div className="mb-1 flex size-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+            <Trash2Icon aria-hidden="true" />
+          </div>
+          <AlertDialogTitle>Delete dashboard media?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This removes the media record from the dashboard. Publish afterwards if the public Astro image should change.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            className="bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20"
+            disabled={isDeleting}
+            onClick={(event) => {
+              event.preventDefault();
+              void onConfirm();
+            }}
+          >
+            {isDeleting ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <Trash2Icon data-icon="inline-start" />}
+            Delete image
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+function mediaUploadIssueFromError(error: unknown): MediaUploadIssue {
+  const detail = error instanceof Error ? error.message : "Image upload could not be completed.";
+
+  if (detail.toLowerCase().includes("cloudflare images upload is not configured")) {
+    return {
+      title: "Cloudflare Images upload is not configured",
+      description: "This environment is missing the Cloudflare Images runtime configuration required to create direct upload slots.",
+      detail: "Configure the Images account hash and narrow API token in the release environment, sync them to Convex, then retry the upload.",
+      actionLabel: "Got it",
+    };
+  }
+
+  return {
+    title: "Image upload failed",
+    description: "The direct upload did not complete. The selected file was not saved to the dashboard.",
+    detail,
+    actionLabel: "Got it",
+  };
 }
 
 function ProjectTabs({ projects }: { projects: DashboardProject[] }) {
@@ -1053,7 +1193,7 @@ function ImageUploadForm({
     <Card className={dashboardClass.cardShadow}>
       <CardHeader className={dashboardClass.mediaCardHeader}>
         <CardTitle>Add image</CardTitle>
-        <CardDescription>Preview the selected file, or register an already public image URL when Cloudflare Images is not configured.</CardDescription>
+        <CardDescription>Preview the selected file, or register an image that is already hosted publicly.</CardDescription>
       </CardHeader>
       <CardContent>
         <form

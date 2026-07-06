@@ -57,14 +57,14 @@ Preview and production values belong in separate GitHub Environments and should 
 
 ## Cloudflare Coverage
 
-Cloudflare release variables are release-only unless a runtime feature needs them. Dashboard media upload is a runtime feature: Convex needs the account ID, Images delivery hash, and a narrow Images API token to create one-time upload URLs when Cloudflare Images is activated. The browser never receives those values.
+Cloudflare release variables are release-only unless a runtime feature needs them. Dashboard media upload is a runtime feature: Convex needs the account ID, Images delivery hash, and a narrow Images API token to create one-time upload URLs. The browser receives only the Images delivery hash so existing media records can derive public delivery URLs; it never receives Cloudflare API credentials.
 
 | Variable | Class | Exposure |
 | --- | --- | --- |
 | `CLOUDFLARE_ACCOUNT_ID` | Provider output | Server-only |
 | `CLOUDFLARE_API_TOKEN` | Server secret | Server-only |
 | `CLOUDFLARE_PROJECT_NAME` | Provider output | Server-only |
-| `CLOUDFLARE_IMAGES_ACCOUNT_HASH` | Provider output | Server-only |
+| `CLOUDFLARE_IMAGES_ACCOUNT_HASH` | Provider output | Public browser |
 | `CLOUDFLARE_IMAGES_API_TOKEN` | Server secret | Server-only |
 
-The deploy path uses the broad `CLOUDFLARE_API_TOKEN` through GitHub Environment secrets. The dashboard upload path uses `CLOUDFLARE_IMAGES_API_TOKEN` in Convex only. `CLOUDFLARE_IMAGES_ACCOUNT_HASH` and `CLOUDFLARE_IMAGES_API_TOKEN` are optional until the Images product is activated for the account; if present, `scripts/sync-convex-env.ts` syncs them to Convex runtime automatically.
+The deploy path uses the broad `CLOUDFLARE_API_TOKEN` through GitHub Environment secrets. The dashboard upload path uses `CLOUDFLARE_IMAGES_API_TOKEN` in Convex only. `CLOUDFLARE_IMAGES_ACCOUNT_HASH` is required for the dashboard shell and release validation; `CLOUDFLARE_IMAGES_API_TOKEN` is required for release validation and is synced to Convex so `contentActions.createMediaUploadUrl` can create direct upload slots.

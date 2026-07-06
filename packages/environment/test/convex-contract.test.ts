@@ -66,6 +66,24 @@ describe("Convex Environment Contract", () => {
         exposure: "public-browser",
       }),
     );
+    expect(getEnvironmentVariableDefinitions()).toContainEqual(
+      expect.objectContaining({
+        name: "CLOUDFLARE_IMAGES_ACCOUNT_HASH",
+        classification: "provider-output",
+        exposure: "public-browser",
+        requiredIn: ["preview", "production"],
+        requiredTargets: ["release", "dashboard-runtime"],
+      }),
+    );
+    expect(getEnvironmentVariableDefinitions()).toContainEqual(
+      expect.objectContaining({
+        name: "CLOUDFLARE_IMAGES_API_TOKEN",
+        classification: "server-secret",
+        exposure: "server-only",
+        requiredIn: ["preview", "production"],
+        requiredTargets: ["release"],
+      }),
+    );
 
     const missingPreview = validateEnvironmentContract("preview", {
       ...validPreviewValues,
@@ -234,7 +252,7 @@ describe("Convex Environment Contract", () => {
 
     expect(dashboardRuntime).toEqual({ ok: true, errors: [] });
 
-    const dashboardRuntimeWithoutImages = validateEnvironmentContract(
+    const dashboardRuntimeWithoutImagesHash = validateEnvironmentContract(
       "preview",
       {
         AOHYS_ENV: "preview",
@@ -248,7 +266,53 @@ describe("Convex Environment Contract", () => {
       { target: "dashboard-runtime" },
     );
 
-    expect(dashboardRuntimeWithoutImages).toEqual({ ok: true, errors: [] });
+    expect(dashboardRuntimeWithoutImagesHash.ok).toBe(false);
+    expect(dashboardRuntimeWithoutImagesHash.errors).toContain(
+      "CLOUDFLARE_IMAGES_ACCOUNT_HASH is required for preview dashboard-runtime.",
+    );
+
+    const dashboardRuntimeWithoutImagesToken = validateEnvironmentContract(
+      "preview",
+      {
+        AOHYS_ENV: "preview",
+        PUBLIC_SITE_URL: "https://preview.aohys.com",
+        CONVEX_URL: "https://aohys-preview.convex.cloud",
+        CONVEX_SITE_URL: "https://aohys-preview.convex.site",
+        BETTER_AUTH_URL: "https://preview.aohys.com",
+        BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+        ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+        CLOUDFLARE_IMAGES_ACCOUNT_HASH: "images-hash",
+      },
+      { target: "dashboard-runtime" },
+    );
+
+    expect(dashboardRuntimeWithoutImagesToken).toEqual({ ok: true, errors: [] });
+
+    const releaseWithoutImagesToken = validateEnvironmentContract(
+      "preview",
+      {
+        ...validPreviewValues,
+        CLOUDFLARE_IMAGES_API_TOKEN: undefined,
+      },
+    );
+
+    expect(releaseWithoutImagesToken.ok).toBe(false);
+    expect(releaseWithoutImagesToken.errors).toContain(
+      "CLOUDFLARE_IMAGES_API_TOKEN is required for preview release.",
+    );
+
+    const releaseWithoutImagesHash = validateEnvironmentContract(
+      "preview",
+      {
+        ...validPreviewValues,
+        CLOUDFLARE_IMAGES_ACCOUNT_HASH: undefined,
+      },
+    );
+
+    expect(releaseWithoutImagesHash.ok).toBe(false);
+    expect(releaseWithoutImagesHash.errors).toContain(
+      "CLOUDFLARE_IMAGES_ACCOUNT_HASH is required for preview release.",
+    );
 
     const missingDashboardAuthTarget = validateEnvironmentContract(
       "preview",

@@ -77,7 +77,7 @@ The launch-readiness checklist is maintained in [Launch Hardening Checklist](lau
 
 Husky owns the local pre-commit hook through `.husky/pre-commit`. The hook runs `pnpm run verify:precommit`, which intentionally skips the build step to keep local iteration practical while still catching foundation, lint, type, and behavior-test failures before a commit. Pre-push stays manual; run `pnpm verify` before opening or merging meaningful PRs.
 
-The workflow expects GitHub Environment secrets for `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CONVEX_DEPLOY_KEY`, `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, and `GOOGLE_CLIENT_SECRET`. Public or policy values such as `PUBLIC_SITE_URL`, `PUBLIC_POSTHOG_HOST`, `RESEND_FROM`, `BETTER_AUTH_TRUSTED_ORIGINS`, `GOOGLE_CLIENT_ID`, `CLOUDFLARE_PROJECT_NAME`, `CONVEX_URL`, and `CONVEX_SITE_URL` are read from GitHub Environment variables.
+The workflow expects GitHub Environment secrets for `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_IMAGES_API_TOKEN`, `CONVEX_DEPLOY_KEY`, `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, and `GOOGLE_CLIENT_SECRET`. Public or policy values such as `PUBLIC_SITE_URL`, `PUBLIC_POSTHOG_HOST`, `RESEND_FROM`, `BETTER_AUTH_TRUSTED_ORIGINS`, `GOOGLE_CLIENT_ID`, `CLOUDFLARE_PROJECT_NAME`, `CLOUDFLARE_IMAGES_ACCOUNT_HASH`, `CONVEX_URL`, and `CONVEX_SITE_URL` are read from GitHub Environment variables.
 
 Branch protection currently requires reviews before merging to protected branches. In a one-owner account setup, the durable fix is to add a second reviewer or use an explicit owner action for merges that cannot satisfy last-pusher approval.
 
@@ -90,7 +90,7 @@ pnpm run sync:convex-env:preview
 pnpm run sync:convex-env:production
 ```
 
-The sync script reads the already-validated GitHub Environment values, writes a temporary `.env` file with `0600` permissions, runs `convex env set --from-file --force --deployment "$CONVEX_DEPLOYMENT"`, and deletes the temporary file. It excludes deploy-only provider credentials such as the broad Wrangler Cloudflare API token and Convex deploy keys, but it does sync dashboard-runtime credentials such as the narrow Cloudflare Images token and GitHub publish token.
+The sync script reads the already-validated GitHub Environment values, writes a temporary `.env` file with `0600` permissions, runs `convex env set --from-file --force --deployment "$CONVEX_DEPLOYMENT"`, and deletes the temporary file. It excludes deploy-only provider credentials such as the broad Wrangler Cloudflare API token and Convex deploy keys, but it does sync runtime values that Convex needs, including the Cloudflare Images delivery hash, the narrow Cloudflare Images token, and the GitHub publish token.
 
 Convex deploys then run before Cloudflare Pages deploys through:
 

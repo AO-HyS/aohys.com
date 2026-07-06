@@ -30,6 +30,8 @@ const validPreviewReleaseValues = {
   CLOUDFLARE_ACCOUNT_ID: "cloudflare-account",
   CLOUDFLARE_API_TOKEN: "cloudflare-api-token",
   CLOUDFLARE_PROJECT_NAME: "aohys-com",
+  CLOUDFLARE_IMAGES_ACCOUNT_HASH: "cloudflare-images-hash",
+  CLOUDFLARE_IMAGES_API_TOKEN: "cloudflare-images-token",
   PUBLISH_GITHUB_TOKEN: "github-publish-token",
   PUBLIC_CONTACT_EMAIL: "alejandro.ortiz@aohys.com",
   PUBLIC_WHATSAPP_URL: "https://wa.me/522299020825",
@@ -92,6 +94,20 @@ describe("Cloudflare Pages release plan", () => {
     expect(missingCloudflareToken.ok).toBe(false);
     expect(missingCloudflareToken.errors).toContain(
       "CLOUDFLARE_API_TOKEN is required for preview release.",
+    );
+
+    const missingImagesConfig = validateReleaseEnvironment("preview", {
+      ...validPreviewReleaseValues,
+      CLOUDFLARE_IMAGES_ACCOUNT_HASH: undefined,
+      CLOUDFLARE_IMAGES_API_TOKEN: undefined,
+    });
+
+    expect(missingImagesConfig.ok).toBe(false);
+    expect(missingImagesConfig.errors).toContain(
+      "CLOUDFLARE_IMAGES_ACCOUNT_HASH is required for preview release.",
+    );
+    expect(missingImagesConfig.errors).toContain(
+      "CLOUDFLARE_IMAGES_API_TOKEN is required for preview release.",
     );
 
     const productionWithPreviewTargets = validateReleaseEnvironment("production", {
@@ -173,6 +189,8 @@ describe("Cloudflare Pages release plan", () => {
     expect(workflow).toContain("scripts/extract-cloudflare-pages-deployment-url.ts");
     expect(workflow).toContain("SMOKE_BASE_URL: ${{ steps.deploy-preview.outputs.smoke_base_url }}");
     expect(workflow).toContain("CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}");
+    expect(workflow).toContain("CLOUDFLARE_IMAGES_ACCOUNT_HASH: ${{ vars.CLOUDFLARE_IMAGES_ACCOUNT_HASH }}");
+    expect(workflow).toContain("CLOUDFLARE_IMAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_IMAGES_API_TOKEN }}");
     expect(workflow).toContain("CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}");
     expect(workflow).toContain("BETTER_AUTH_TRUSTED_ORIGINS: ${{ vars.BETTER_AUTH_TRUSTED_ORIGINS }}");
     expect(workflow).not.toContain("DASHBOARD_API_TOKEN");

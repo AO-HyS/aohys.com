@@ -121,7 +121,7 @@ Copy `.env.example` to `.env.local` for local development. Real local secrets st
 | `preview` | `develop` branch verification | GitHub Environment `preview` | Non-production Cloudflare, Convex, PostHog, Resend, Better Auth, and Google OAuth values |
 | `production` | `main` branch and `aohys.com` | GitHub Environment `production` | Production Cloudflare, Convex, PostHog, Resend, Better Auth, and Google OAuth values |
 
-The repository distinguishes browser-safe public values from server-only secrets. Public values use explicit `PUBLIC_` names when they can enter the browser. Secret values such as `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_SECRET`, `CONVEX_DEPLOY_KEY`, and `CLOUDFLARE_API_TOKEN` must never be committed or exposed through the public site bundle.
+The repository distinguishes browser-safe values from server-only secrets. Public build values use explicit `PUBLIC_` names, while a small set of provider outputs such as Convex client URL and Cloudflare Images delivery hash may enter the dashboard shell when they are not credentials. Secret values such as `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_SECRET`, `CONVEX_DEPLOY_KEY`, `CLOUDFLARE_API_TOKEN`, and `CLOUDFLARE_IMAGES_API_TOKEN` must never be committed or exposed through the public site bundle.
 
 Release validation commands:
 
