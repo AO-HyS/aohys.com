@@ -50,6 +50,7 @@ import {
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSet,
@@ -58,6 +59,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/sonner";
 import { cn, dashboardClass } from "@/lib/dashboard-classes";
+import {
+  cloudflareImagesStorageKeyForFile,
+  defaultProjectMediaStorageKey,
+  validateCloudflareImagesCustomId,
+} from "@/lib/media-upload";
 import {
   Select,
   SelectContent,
@@ -155,6 +161,18 @@ export function ProjectsScreen() {
   }
 
   async function handleUploadMedia(payload: MediaUploadRequest, file: File) {
+    const storageKey = validateCloudflareImagesCustomId(payload.storageKey);
+
+    if (!storageKey.isValid) {
+      const issue = mediaUploadCustomIdIssue(storageKey.message);
+
+      setUploadIssue(issue);
+      toast.error(issue.title, {
+        description: issue.detail,
+      });
+      return;
+    }
+
     const key = `${payload.contentId}:media`;
     const toastId = toast.loading("Preparing media upload", {
       description: "Requesting a Cloudflare Images direct upload URL.",
@@ -162,7 +180,11 @@ export function ProjectsScreen() {
     setSavingKey(key);
 
     try {
-      const upload = await createMediaUpload(payload);
+      const upload = await createMediaUpload({
+        ...payload,
+        storageKey: storageKey.value,
+        altText: payload.altText.trim(),
+      });
       toast.loading("Uploading image", {
         id: toastId,
         description: "Cloudflare accepted the upload slot. Sending the selected file now.",
@@ -452,7 +474,7 @@ function MediaUploadIssueDialog({
 }) {
   return (
     <AlertDialog open={Boolean(issue)} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="sm:max-w-md">
         <AlertDialogHeader>
           <div className="mb-1 flex size-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
             <CircleAlertIcon aria-hidden="true" />
@@ -463,12 +485,11 @@ function MediaUploadIssueDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         {issue?.detail ? (
-          <div className="rounded-lg border bg-muted/40 px-3 py-2 text-sm leading-6 text-muted-foreground">
+          <div className="break-words rounded-lg border bg-muted/40 px-3 py-2 text-left text-sm leading-6 text-muted-foreground">
             {issue.detail}
           </div>
         ) : null}
         <AlertDialogFooter>
-          <AlertDialogCancel>Close</AlertDialogCancel>
           <AlertDialogAction>{issue?.actionLabel ?? "Got it"}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -518,10 +539,24 @@ function DeleteMediaDialog({
   );
 }
 
-function mediaUploadIssueFromError(error: unknown): MediaUploadIssue {
-  const detail = error instanceof Error ? error.message : "Image upload could not be completed.";
+function mediaUploadCustomIdIssue(detail?: string): MediaUploadIssue {
+  return {
+    title: "Storage key format needs attention",
+    description: "Cloudflare Images needs a valid custom ID before it can create a direct upload slot.",
+    detail: detail ?? "Use a relative key like media/casa-roca-hero. Avoid URLs, dot-prefixed folders, .., or repeated slashes.",
+    actionLabel: "Review storage key",
+  };
+}
 
-  if (detail.toLowerCase().includes("cloudflare images upload is not configured")) {
+function mediaUploadIssueFromError(error: unknown): MediaUploadIssue {
+  const detail = readableUploadErrorMessage(error);
+  const lowerDetail = detail.toLowerCase();
+
+  if (lowerDetail.includes("custom id is invalid")) {
+    return mediaUploadCustomIdIssue();
+  }
+
+  if (lowerDetail.includes("cloudflare images upload is not configured")) {
     return {
       title: "Cloudflare Images upload is not configured",
       description: "This environment is missing the Cloudflare Images runtime configuration required to create direct upload slots.",
@@ -536,6 +571,22 @@ function mediaUploadIssueFromError(error: unknown): MediaUploadIssue {
     detail,
     actionLabel: "Got it",
   };
+}
+
+function readableUploadErrorMessage(error: unknown): string {
+  const rawMessage = error instanceof Error ? error.message : "Image upload could not be completed.";
+  const withoutConvexPrefix = rawMessage
+    .replace(/\[CONVEX[^\]]+\]\s*/g, "")
+    .replace(/\[Request ID:[^\]]+\]\s*/g, "")
+    .replace(/^Server Error\s*/i, "")
+    .replace(/^Uncaught Error:\s*/i, "")
+    .trim();
+  const stackStart = withoutConvexPrefix.search(/\n\s*(?:at\s+|Called by client)/i);
+  const readableMessage = stackStart >= 0
+    ? withoutConvexPrefix.slice(0, stackStart).trim()
+    : withoutConvexPrefix;
+
+  return readableMessage || "Image upload could not be completed.";
 }
 
 function ProjectTabs({ projects }: { projects: DashboardProject[] }) {
@@ -1159,16 +1210,26 @@ function ImageUploadForm({
   onSave: (payload: MediaUploadRequest, file: File) => void | Promise<void>;
   onSaveExternal: (payload: MediaMetadataRequest) => void | Promise<void>;
 }) {
+  const projectDefaultStorageKey = defaultProjectMediaStorageKey(project.contentId);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [publicUrl, setPublicUrl] = useState("");
   const [form, setForm] = useState<MediaUploadRequest>({
     contentId: project.contentId,
-    storageKey: `media/${project.contentId.replace("case-study:", "")}`,
+    storageKey: projectDefaultStorageKey,
     altText: "",
     usage: "case-study",
     locale: "en",
   });
+  const trimmedPublicUrl = publicUrl.trim();
+  const trimmedAltText = form.altText.trim();
+  const storageKeyValidation = validateCloudflareImagesCustomId(form.storageKey);
+  const storageKeyWillNormalize = Boolean(
+    storageKeyValidation.isValid &&
+      storageKeyValidation.value &&
+      storageKeyValidation.value !== form.storageKey.trim(),
+  );
+  const showStorageKeyError = !trimmedPublicUrl && !storageKeyValidation.isValid;
 
   useEffect(() => {
     setFile(null);
@@ -1176,12 +1237,12 @@ function ImageUploadForm({
     setPublicUrl("");
     setForm({
       contentId: project.contentId,
-      storageKey: `media/${project.contentId.replace("case-study:", "")}`,
+      storageKey: projectDefaultStorageKey,
       altText: "",
       usage: "case-study",
       locale: "en",
     });
-  }, [project.contentId]);
+  }, [project.contentId, projectDefaultStorageKey]);
 
   useEffect(() => () => {
     if (previewUrl) {
@@ -1200,11 +1261,12 @@ function ImageUploadForm({
           className={dashboardClass.editForm}
           onSubmit={(event) => {
             event.preventDefault();
-            const trimmedPublicUrl = publicUrl.trim();
 
             if (trimmedPublicUrl) {
               void onSaveExternal({
                 ...form,
+                storageKey: storageKeyValidation.isValid ? storageKeyValidation.value : projectDefaultStorageKey,
+                altText: trimmedAltText,
                 publicUrl: trimmedPublicUrl,
                 selectedForPublic: true,
               });
@@ -1213,7 +1275,15 @@ function ImageUploadForm({
             if (!file) {
               return;
             }
-            void onSave({ ...form, selectedForPublic: true }, file);
+            if (!storageKeyValidation.isValid) {
+              return;
+            }
+            void onSave({
+              ...form,
+              storageKey: storageKeyValidation.value,
+              altText: trimmedAltText,
+              selectedForPublic: true,
+            }, file);
           }}
         >
           <FieldGroup>
@@ -1234,7 +1304,7 @@ function ImageUploadForm({
                   if (selectedFile) {
                     setForm((current) => ({
                       ...current,
-                      storageKey: `${current.storageKey}/${selectedFile.name.replace(/\.[^.]+$/, "").replace(/\s+/g, "-").toLowerCase()}`,
+                      storageKey: cloudflareImagesStorageKeyForFile(projectDefaultStorageKey, selectedFile.name),
                     }));
                   }
                 }}
@@ -1284,18 +1354,30 @@ function ImageUploadForm({
                   </SelectContent>
                 </Select>
               </Field>
-              <Field>
+              <Field data-invalid={showStorageKeyError}>
                 <FieldLabel htmlFor={`upload-key-${project.contentId}`}>Storage key</FieldLabel>
                 <Input
                   id={`upload-key-${project.contentId}`}
                   value={form.storageKey}
                   onChange={(event) => setForm((current) => ({ ...current, storageKey: event.target.value }))}
+                  aria-invalid={showStorageKeyError}
                 />
-                <FieldDescription>Cloudflare Images custom ID.</FieldDescription>
+                {showStorageKeyError ? (
+                  <FieldError>{storageKeyValidation.message}</FieldError>
+                ) : (
+                  <FieldDescription>
+                    {storageKeyWillNormalize
+                      ? `Upload will use ${storageKeyValidation.value}.`
+                      : "Cloudflare Images custom ID."}
+                  </FieldDescription>
+                )}
               </Field>
             </div>
           </FieldGroup>
-          <Button type="submit" disabled={isSaving || (!file && !publicUrl.trim()) || !form.altText.trim()}>
+          <Button
+            type="submit"
+            disabled={isSaving || (!file && !trimmedPublicUrl) || !trimmedAltText || (!trimmedPublicUrl && !storageKeyValidation.isValid)}
+          >
             {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <UploadCloudIcon data-icon="inline-start" />}
             {publicUrl.trim() ? "Save image URL" : "Upload image"}
           </Button>
