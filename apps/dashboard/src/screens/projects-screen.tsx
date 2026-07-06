@@ -356,6 +356,8 @@ export function ProjectsScreen() {
     }
   }
 
+  const activeDeleteKey = deleteRequest ? `${deleteRequest.mediaId}:delete` : null;
+
   if (!content) {
     return <ProjectsSkeleton />;
   }
@@ -429,9 +431,9 @@ export function ProjectsScreen() {
       />
       <DeleteMediaDialog
         open={Boolean(deleteRequest)}
-        isDeleting={deleteRequest ? savingKey === `${deleteRequest.mediaId}:delete` : false}
+        isDeleting={activeDeleteKey !== null && savingKey === activeDeleteKey}
         onOpenChange={(open) => {
-          if (!open && !savingKey?.endsWith(":delete")) {
+          if (!open && savingKey !== activeDeleteKey) {
             setDeleteRequest(null);
           }
         }}
