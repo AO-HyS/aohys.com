@@ -78,6 +78,8 @@ describe("public site source quality", () => {
     expect(footer).toContain("getUiCopy");
     expect(publicContentPage).toContain("getUiCopy");
     expect(publicContentPage).toContain("STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID");
+    expect(publicContentPage).toContain("evidenceImage?.thumbSrc ?? evidenceImage?.src ?? outcome.evidence.src");
+    expect(publicContentPage).toContain("const imageAlt = imageSrc === outcome.evidence.src");
     expect(contentGraph).toContain("/images/proof/casa-roca-production.png");
     expect(contentGraph).toContain("/images/proof/barber-central-landing.png");
     expect(contentGraph).toContain("/images/proof/barber-central-proof-thumb.png");
