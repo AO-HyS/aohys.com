@@ -31,4 +31,14 @@ describe("dashboard media upload helpers", () => {
     expect(validateCloudflareImagesCustomId("media/.draft/hero").isValid).toBe(false);
     expect(validateCloudflareImagesCustomId("https://example.com/hero.png").isValid).toBe(false);
   });
+
+  it("allows non-traversal dot pairs inside a segment", () => {
+    expect(validateCloudflareImagesCustomId("media/foo..bar/hero").isValid).toBe(true);
+  });
+
+  it("falls back to a safe base key when the provided base is invalid", () => {
+    expect(cloudflareImagesStorageKeyForFile("https://example.com/hero.png", "Hero Image.png")).toBe(
+      "media/project/hero-image",
+    );
+  });
 });

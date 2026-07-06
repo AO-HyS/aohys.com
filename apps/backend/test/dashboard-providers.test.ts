@@ -70,6 +70,35 @@ describe("dashboard provider adapters", () => {
     expect((request?.body as FormData).get("id")).toBe("media/casa-roca/hero-image");
   });
 
+  it("allows non-traversal dot pairs inside Cloudflare Images custom ID segments", async () => {
+    let request: RequestInit | undefined;
+    const providerFetch = vi.fn(async (_input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
+      request = init;
+      return new Response(JSON.stringify({
+        success: true,
+        result: {
+          id: "media/foo..bar/hero",
+          uploadURL: "https://upload.imagedelivery.net/direct",
+        },
+      }));
+    });
+
+    await createCloudflareImagesDirectUpload({
+      storageKey: "media/foo..bar/hero",
+      altText: "Casa Roca homepage.",
+      contentId: "case-study:casa-roca",
+      usage: "case-study",
+      locale: "en",
+    }, {
+      accountHash: "hash",
+      accountId: "account-id",
+      apiToken: "images-token",
+    }, providerFetch);
+
+    expect(request).toBeDefined();
+    expect((request?.body as FormData).get("id")).toBe("media/foo..bar/hero");
+  });
+
   it("rejects invalid Cloudflare Images custom IDs before calling the provider", async () => {
     const providerFetch = vi.fn();
 

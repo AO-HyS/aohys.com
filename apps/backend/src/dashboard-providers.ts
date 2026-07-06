@@ -83,7 +83,7 @@ export function validateCloudflareImagesCustomId(value: string): CloudflareImage
 
   const invalidSegment = normalizedValue
     .split("/")
-    .find((segment) => segment.startsWith(".") || segment.includes(".."));
+    .find((segment) => segment.startsWith(".") || segment === "..");
 
   if (invalidSegment) {
     return {

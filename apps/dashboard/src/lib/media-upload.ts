@@ -49,7 +49,7 @@ export function validateCloudflareImagesCustomId(value: string): CloudflareImage
 
   const invalidSegment = normalizedValue
     .split("/")
-    .find((segment) => segment.startsWith(".") || segment.includes(".."));
+    .find((segment) => segment.startsWith(".") || segment === "..");
 
   if (invalidSegment) {
     return {
@@ -85,6 +85,8 @@ export function cloudflareImagesStorageKeySegment(fileName: string): string {
 }
 
 export function cloudflareImagesStorageKeyForFile(baseKey: string, fileName: string): string {
-  const normalizedBase = validateCloudflareImagesCustomId(baseKey).value || "media/project";
-  return validateCloudflareImagesCustomId(`${normalizedBase}/${cloudflareImagesStorageKeySegment(fileName)}`).value;
+  const baseValidation = validateCloudflareImagesCustomId(baseKey);
+  const normalizedBase = baseValidation.isValid ? baseValidation.value : "media/project";
+  const candidate = validateCloudflareImagesCustomId(`${normalizedBase}/${cloudflareImagesStorageKeySegment(fileName)}`);
+  return candidate.isValid ? candidate.value : `media/project/${cloudflareImagesStorageKeySegment(fileName)}`;
 }

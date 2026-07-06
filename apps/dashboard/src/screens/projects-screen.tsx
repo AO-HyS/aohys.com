@@ -581,7 +581,7 @@ function readableUploadErrorMessage(error: unknown): string {
     .replace(/^Server Error\s*/i, "")
     .replace(/^Uncaught Error:\s*/i, "")
     .trim();
-  const stackStart = withoutConvexPrefix.search(/\s+at\s+|\s+Called by client/i);
+  const stackStart = withoutConvexPrefix.search(/\n\s*(?:at\s+|Called by client)/i);
   const readableMessage = stackStart >= 0
     ? withoutConvexPrefix.slice(0, stackStart).trim()
     : withoutConvexPrefix;
@@ -1265,7 +1265,7 @@ function ImageUploadForm({
             if (trimmedPublicUrl) {
               void onSaveExternal({
                 ...form,
-                storageKey: storageKeyValidation.value || projectDefaultStorageKey,
+                storageKey: storageKeyValidation.isValid ? storageKeyValidation.value : projectDefaultStorageKey,
                 altText: trimmedAltText,
                 publicUrl: trimmedPublicUrl,
                 selectedForPublic: true,
