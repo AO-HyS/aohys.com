@@ -6,7 +6,7 @@ import {
 
 describe("dashboard provider adapters", () => {
   it("creates Cloudflare Images direct upload URLs with server-side credentials", async () => {
-    const providerFetch = vi.fn(async () => new Response(JSON.stringify({
+    const providerFetch = vi.fn<typeof fetch>(async () => new Response(JSON.stringify({
       success: true,
       result: {
         id: "media/casa-roca/home",
@@ -39,6 +39,53 @@ describe("dashboard provider adapters", () => {
         }),
       }),
     );
+  });
+
+  it("normalizes Cloudflare Images custom IDs before creating upload URLs", async () => {
+    let request: RequestInit | undefined;
+    const providerFetch = vi.fn(async (_input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
+      request = init;
+      return new Response(JSON.stringify({
+        success: true,
+        result: {
+          id: "media/casa-roca/hero-image",
+          uploadURL: "https://upload.imagedelivery.net/direct",
+        },
+      }));
+    });
+
+    await createCloudflareImagesDirectUpload({
+      storageKey: " /media//casa-roca//hero image ",
+      altText: "Casa Roca homepage.",
+      contentId: "case-study:casa-roca",
+      usage: "case-study",
+      locale: "en",
+    }, {
+      accountHash: "hash",
+      accountId: "account-id",
+      apiToken: "images-token",
+    }, providerFetch);
+
+    expect(request).toBeDefined();
+    expect((request?.body as FormData).get("id")).toBe("media/casa-roca/hero-image");
+  });
+
+  it("rejects invalid Cloudflare Images custom IDs before calling the provider", async () => {
+    const providerFetch = vi.fn();
+
+    await expect(createCloudflareImagesDirectUpload({
+      storageKey: "media/../hero",
+      altText: "Casa Roca homepage.",
+      contentId: "case-study:casa-roca",
+      usage: "case-study",
+      locale: "en",
+    }, {
+      accountHash: "hash",
+      accountId: "account-id",
+      apiToken: "images-token",
+    }, providerFetch)).rejects.toThrow("Cloudflare Images custom ID is invalid");
+
+    expect(providerFetch).not.toHaveBeenCalled();
   });
 
   it("dispatches the GitHub release workflow for preview publishes", async () => {

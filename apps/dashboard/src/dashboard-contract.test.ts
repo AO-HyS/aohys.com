@@ -42,6 +42,9 @@ describe("dashboard app contract", () => {
     expect(projects).toContain("MediaUploadIssueDialog");
     expect(projects).toContain("Cloudflare Images upload is not configured");
     expect(projects).toContain("Configure the Images account hash and narrow API token");
+    expect(projects).toContain("Storage key format needs attention");
+    expect(projects).toContain("Review storage key");
+    expect(projects).toContain("Cloudflare Images custom ID.");
     expect(projects).not.toContain("Use Public image URL");
     expect(projects).not.toContain("window.confirm");
     expect(alertDialog).toContain("AlertDialogPrimitive");
