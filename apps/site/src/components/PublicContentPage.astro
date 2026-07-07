@@ -185,7 +185,7 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
           <div class={ui.heroProofShots} aria-hidden="true">
             {homeContent.selectedOutcomes.slice(0, 3).map((outcome) => {
               const evidenceImage = evidenceImageForPath(outcome.path);
-              const imageSrc = evidenceImage?.thumbSrc ?? outcome.evidence.src;
+              const imageSrc = evidenceImage?.thumbSrc ?? evidenceImage?.src ?? outcome.evidence.src;
 
               return imageSrc ? (
                 <span class={ui.heroProofFrame}>
@@ -228,8 +228,8 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
               <span class={ui.outcomeIndex}>{String(index + 1).padStart(2, "0")}</span>
               {(() => {
                 const evidenceImage = evidenceImageForPath(outcome.path);
-                const imageSrc = evidenceImage?.thumbSrc ?? outcome.evidence.src;
-                const imageAlt = outcome.evidence.src
+                const imageSrc = evidenceImage?.thumbSrc ?? evidenceImage?.src ?? outcome.evidence.src;
+                const imageAlt = imageSrc === outcome.evidence.src
                   ? outcome.evidence.altText
                   : evidenceImage?.alt ?? outcome.evidence.altText;
 
