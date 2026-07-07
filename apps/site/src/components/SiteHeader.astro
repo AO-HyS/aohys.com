@@ -14,21 +14,19 @@ const copy = getUiCopy(locale).header;
 const navItems = [
   { id: "case-studies", label: copy.nav.caseStudies },
   { id: "architecture", label: copy.nav.architecture },
+  { id: "practice", label: copy.nav.practice },
   { id: "resume", label: copy.nav.resume },
-  { id: "contact", label: copy.nav.contact },
 ] as const;
 const languageHref = getLocalizedPath(currentId, alternateLocale);
+const contactHref = getLocalizedPath("contact", locale);
 ---
 
 <header class={ui.siteHeader}>
   <a class={ui.skipLink} href="#main-content">{copy.skip}</a>
   <nav class={ui.siteNav} aria-label={copy.aria}>
     <a class={ui.brandLockup} href={getLocalizedPath("home", locale)}>
-      <span class={ui.brandSymbol} aria-hidden="true">
-        <img class={ui.brandMark} src="/images/brand/aohys-logo.png" alt="" width="44" height="44" decoding="async" />
-      </span>
       <span class={ui.brandText}>
-        <span>AOH&amp;S</span>
+        <span>AOHYS</span>
         <small>{copy.small}</small>
       </span>
     </a>
@@ -38,7 +36,10 @@ const languageHref = getLocalizedPath(currentId, alternateLocale);
           <a href={getLocalizedPath(item.id, locale)}>{item.label}</a>
         ))
       }
-      <a href={languageHref} hreflang={alternateLocale}>{copy.language}</a>
+    </div>
+    <div class={ui.navActions}>
+      <a class={ui.navLanguage} href={languageHref} hreflang={alternateLocale}>{copy.language}</a>
+      <a class={ui.navCta} href={contactHref}>{copy.nav.contact}</a>
     </div>
   </nav>
 </header>

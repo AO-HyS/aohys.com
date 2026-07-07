@@ -14,7 +14,7 @@ import {
 import { DASHBOARD_PUBLIC_MEDIA_BY_CONTENT_ID } from "../generated/dashboard-public-media";
 import { DASHBOARD_PUBLIC_SETTINGS } from "../generated/dashboard-public-settings";
 import { getUiCopy } from "../i18n";
-import { cx, proofImageClass, screenshotImageClass, ui } from "../styles/classes";
+import { cx, screenshotImageClass, ui } from "../styles/classes";
 
 interface Props {
   route: PublicRoute;
@@ -69,7 +69,21 @@ function splitHeadline(headline: string): string[] {
   });
 }
 
-const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : [];
+function splitHomeHeadline(headline: string) {
+  const separator = locale === "es" ? " con " : " with ";
+
+  if (headline.includes(separator)) {
+    const [first, ...rest] = headline.split(separator);
+    return [
+      { text: first, emphasized: false },
+      { text: `${separator.trim()} ${rest.join(separator)}`, emphasized: true },
+    ];
+  }
+
+  return splitHeadline(headline).map((text) => ({ text, emphasized: false }));
+}
+
+const homeHeadlineParts = homeContent ? splitHomeHeadline(homeContent.headline) : [];
 
 const routeSignalById: Partial<Record<ContentId | string, string>> = {
   "case-studies": locale === "es" ? "Trabajo que puedo mostrar" : "Work I can show",
@@ -154,6 +168,76 @@ function evidenceImageForPath(path: string) {
 }
 
 const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undefined;
+const homeFeaturedOutcome = homeContent?.selectedOutcomes[0];
+const homeFeaturedEvidenceImage = homeFeaturedOutcome ? evidenceImageForPath(homeFeaturedOutcome.path) : undefined;
+const homeFeaturedImageSrc = homeFeaturedOutcome
+  ? homeFeaturedEvidenceImage?.thumbSrc ?? homeFeaturedEvidenceImage?.src ?? homeFeaturedOutcome.evidence.src
+  : undefined;
+const homeFeaturedImageAlt = homeFeaturedOutcome
+  ? homeFeaturedImageSrc === homeFeaturedOutcome.evidence.src
+    ? homeFeaturedOutcome.evidence.altText
+    : homeFeaturedEvidenceImage?.alt ?? homeFeaturedOutcome.evidence.altText
+  : "";
+const homeSystemNodes = locale === "es" ? [
+  {
+    title: "Sitio publico",
+    detail: "SEO e i18n",
+    bullets: ["Paginas de contenido", "Activos estaticos"],
+  },
+  {
+    title: "Content Graph",
+    detail: "Convex",
+    bullets: ["Modelos de contenido", "Leads y contacto"],
+  },
+  {
+    title: "Dashboard",
+    detail: "Privado",
+    bullets: ["Herramientas operativas", "Editor de media"],
+  },
+] : [
+  {
+    title: "Public site",
+    detail: "SEO & i18n",
+    bullets: ["Content pages", "Static assets"],
+  },
+  {
+    title: "Content Graph",
+    detail: "Convex",
+    bullets: ["Content models", "Leads & contact"],
+  },
+  {
+    title: "Dashboard",
+    detail: "Private",
+    bullets: ["Operational tools", "Media manager"],
+  },
+];
+const homeArchitectureTools = [
+  { name: "Cloudflare", detail: locale === "es" ? "Media delivery" : "Media delivery" },
+  { name: "PostHog", detail: locale === "es" ? "Analitica y errores" : "Analytics & errors" },
+  { name: "Resend", detail: locale === "es" ? "Email y notificaciones" : "Email & notifications" },
+];
+const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string; action: string }> = {
+  "case-study:casa-roca": {
+    impact: locale === "es" ? "+20% reservas directas" : "+20% direct bookings",
+    role: locale === "es" ? "Lead Engineer" : "Lead Engineer",
+    action: locale === "es" ? "Ver caso completo" : "View full case",
+  },
+  "case-study:the-barber-central": {
+    impact: locale === "es" ? "+3.2k reservas" : "+3.2k bookings",
+    role: locale === "es" ? "Founder & Engineer" : "Founder & Engineer",
+    action: locale === "es" ? "Ver caso completo" : "View full case",
+  },
+  "case-study:nutri-plan": {
+    impact: locale === "es" ? "+40% retencion" : "+40% client retention",
+    role: locale === "es" ? "Product Engineer" : "Product Engineer",
+    action: locale === "es" ? "Ver caso completo" : "View full case",
+  },
+  "case-study:enterprise-systems": {
+    impact: locale === "es" ? "Escala operativa" : "Operational scale",
+    role: locale === "es" ? "Senior Engineer" : "Senior Engineer",
+    action: locale === "es" ? "Ver resume" : "View resume",
+  },
+};
 ---
 
 {
@@ -163,80 +247,106 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
         <div class={ui.homeHeroCopy}>
           <p class={cx(ui.signalLine, ui.homeSignalLine)}>{copy.signal}</p>
           <h1 id="home-title" class={ui.homeHeadline} aria-label={homeContent.headline}>
-            {homeHeadlineParts.map((part) => <span aria-hidden="true">{part}</span>)}
+            {homeHeadlineParts.map((part) => (
+              <span aria-hidden="true">{part.emphasized ? <em>{part.text}</em> : part.text}</span>
+            ))}
           </h1>
-          <p class={cx(ui.heroLead, ui.homeHeroLead)}>
-            {homeContent.deck}
-          </p>
-          <div class={ui.heroActions} aria-label={copy.actions}>
+          <p class={cx(ui.heroLead, ui.homeHeroLead)}>{homeContent.deck}</p>
+          <div class={cx(ui.heroActions, ui.homeHeroActions)} aria-label={copy.actions}>
             {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
             {secondaryHref && <a class={cx(ui.button, ui.buttonSecondaryOnLightHero)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
           </div>
+          <div class={ui.homeStackStrip} aria-label={locale === "es" ? "Stack operativo" : "Operating stack"}>
+            <span>{locale === "es" ? "Contenido dinamico" : "Dynamic content"} <strong>Convex</strong></span>
+            <span>{locale === "es" ? "Media delivery" : "Media delivery"} <strong>Cloudflare</strong></span>
+            <span>{locale === "es" ? "Analitica y errores" : "Analytics & errors"} <strong>PostHog</strong></span>
+            <span>{locale === "es" ? "Email y notificaciones" : "Email & notifications"} <strong>Resend</strong></span>
+          </div>
         </div>
 
-        <figure class={cx(ui.proofBoard, ui.homeProofBoard)} aria-label={homeContent.proofBoardLabel}>
-          <img
-            class={ui.heroArtifactAsset}
-            src="/images/generated/aohys-architecture-proof-surface.png"
-            alt={locale === "es" ? "Mapa visual del sistema público, privado y observable de AOHYS" : "Visual map of the AOHYS public, private, and observable system"}
-            loading="eager"
-            decoding="async"
-          />
-          <div class={ui.heroProofShots} aria-hidden="true">
-            {homeContent.selectedOutcomes.slice(0, 3).map((outcome) => {
-              const evidenceImage = evidenceImageForPath(outcome.path);
-              const imageSrc = evidenceImage?.thumbSrc ?? outcome.evidence.src;
-
-              return imageSrc ? (
-                <span class={ui.heroProofFrame}>
-                  <img
-                    class={proofImageClass(evidenceImage?.kind ?? "site")}
-                    src={imageSrc}
-                    alt=""
-                    loading="eager"
-                    decoding="async"
-                  />
-                </span>
-              ) : null;
-            })}
-          </div>
-          <figcaption class={ui.proofBoardCaption}>
-            <span>{copy.publicSample}</span>
-            <strong>{homeContent.proofBoardTitle}</strong>
-            <p>{homeContent.proofBoardBody}</p>
-          </figcaption>
-          <div class={ui.heroProofRibbon} aria-label={homeContent.selectedOutcomesHeading}>
-            {homeContent.selectedOutcomes.slice(0, 3).map((outcome) => (
-              <a class={ui.heroProofRibbonItem} href={outcome.path}>
-                <span>{outcome.label}</span>
-                <strong>{outcome.title}</strong>
-              </a>
+        <figure class={ui.homeSystemBoard} aria-label={homeContent.proofBoardLabel}>
+          <span class={ui.homeBoardLabel}>AOHYS System Map</span>
+          <div class={ui.homeSystemMap} aria-hidden="true">
+            <span class={ui.systemNodePrimary}>{homeSystemNodes[0].title}</span>
+            {homeSystemNodes.map((node) => (
+              <section class={ui.systemNode}>
+                <strong>{node.title}</strong>
+                <small>{node.detail}</small>
+                {node.bullets.map((bullet) => <span>{bullet}</span>)}
+              </section>
             ))}
+            <span class={ui.systemConnector}></span>
+            <span class={ui.systemConnectorSecondary}></span>
           </div>
+          {homeFeaturedImageSrc && (
+            <span class={ui.homeMiniScreenshot}>
+              <img
+                class={screenshotImageClass(homeFeaturedEvidenceImage?.kind ?? "site", "compact")}
+                src={homeFeaturedImageSrc}
+                alt={homeFeaturedImageAlt}
+                loading="eager"
+                decoding="async"
+              />
+            </span>
+          )}
+          <span class={ui.homeStickyNote}>
+            <strong>Casa Roca</strong>
+            <span>Live since 2022</span>
+          </span>
+          <span class={ui.homePen} aria-hidden="true"></span>
+          <span class={ui.homeChartCard} aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+          <span class={ui.homeCodeCard} aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+          <figcaption class={ui.homeBoardCaption}>
+            <strong>{homeContent.proofBoardTitle}</strong>
+            <span>{homeContent.proofBoardBody}</span>
+          </figcaption>
         </figure>
+      </section>
+
+      <section class={ui.proofMetricStrip} aria-label={locale === "es" ? "Métricas de prueba pública" : "Public proof metrics"}>
+        {homeContent.proofMetrics.map((metric) => (
+          <article class={ui.proofMetric}>
+            <strong>{metric.value}</strong>
+            <span>{metric.label}</span>
+            <p>{metric.detail}</p>
+          </article>
+        ))}
       </section>
 
       <section class={ui.selectedOutcomes} aria-labelledby="ledger-title" data-home-section="selected-outcomes">
         <div class={ui.sectionHeading}>
-          <p class={ui.signalLine}>{copy.proofHeadingSignal}</p>
-          <h2 id="ledger-title">{homeContent.selectedOutcomesHeading}</h2>
-          <p class={ui.sectionIntro}>{homeContent.selectedOutcomesIntro}</p>
+          <div>
+            <p class={ui.signalLine}>{copy.proofHeadingSignal}</p>
+            <h2 id="ledger-title">{homeContent.selectedOutcomesHeading}</h2>
+          </div>
+          <a class={ui.sectionTextLink} href={getLocalizedPath("case-studies", locale)}>
+            {locale === "es" ? "Ver todos los proyectos" : "View all projects"} <span aria-hidden="true">→</span>
+          </a>
         </div>
         <div class={ui.outcomeLedger}>
-          {homeContent.selectedOutcomes.map((outcome, index) => (
+          {homeContent.selectedOutcomes.map((outcome) => (
             <a class={ui.outcomeRow} href={outcome.path}>
-              <span class={ui.outcomeIndex}>{String(index + 1).padStart(2, "0")}</span>
               {(() => {
                 const evidenceImage = evidenceImageForPath(outcome.path);
-                const imageSrc = evidenceImage?.thumbSrc ?? outcome.evidence.src;
-                const imageAlt = outcome.evidence.src
+                const imageSrc = evidenceImage?.thumbSrc ?? evidenceImage?.src ?? outcome.evidence.src;
+                const imageAlt = imageSrc === outcome.evidence.src
                   ? outcome.evidence.altText
                   : evidenceImage?.alt ?? outcome.evidence.altText;
 
                 return (
                   <figure class={ui.outcomeShot} aria-label={imageAlt}>
                     {imageSrc ? (
-                      <img class={screenshotImageClass(evidenceImage?.kind ?? "site")} src={imageSrc} alt={imageAlt} loading="eager" decoding="async" />
+                      <img class={screenshotImageClass(evidenceImage?.kind ?? "site", "compact")} src={imageSrc} alt={imageAlt} loading="eager" decoding="async" />
                     ) : (
                       <span class={ui.evidenceFallback}>{outcome.evidence.label}</span>
                     )}
@@ -244,67 +354,190 @@ const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undef
                 );
               })()}
               <div class={ui.outcomeSummary}>
-                <span class={ui.eyebrow}>{outcome.label}</span>
-                <strong class={ui.outcomeTitle}>{outcome.title}</strong>
+                <span class={ui.outcomeStatus}>
+                  {outcome.title}
+                  <small>{outcome.label}</small>
+                </span>
                 <p class={ui.bodyMutedPretty}>{outcome.outcome}</p>
               </div>
-              <p class={ui.bodyMutedPretty}>{outcome.role}</p>
-              <span class={ui.outcomeArrow} aria-hidden="true">→</span>
+              <div class={ui.outcomeMeta}>
+                <span>{locale === "es" ? "Impacto de negocio" : "Business impact"}</span>
+                <strong>{homeOutcomeMetaByContentId[outcome.contentId]?.impact ?? outcome.role}</strong>
+              </div>
+              <div class={ui.outcomeMeta}>
+                <span>{locale === "es" ? "Rol" : "Role"}</span>
+                <strong>{homeOutcomeMetaByContentId[outcome.contentId]?.role ?? outcome.role}</strong>
+              </div>
+              <span class={ui.outcomeCta}>{homeOutcomeMetaByContentId[outcome.contentId]?.action ?? variant.secondaryActionLabel} <span aria-hidden="true">→</span></span>
             </a>
           ))}
         </div>
       </section>
 
       <section class={ui.architectureStage} aria-labelledby="home-architecture-title" data-home-section="architecture">
-        <div class="min-w-0">
+        <div class={ui.architectureStageCopy}>
+          <p class={cx(ui.signalLine, ui.darkSignalLine)}>{locale === "es" ? "Arquitectura de un vistazo" : "Architecture at a glance"}</p>
           <h2 id="home-architecture-title">{homeContent.architectureHeading}</h2>
           <p class={ui.architectureLead}>{homeContent.architectureBody}</p>
+          <div class={ui.heroActions} aria-label={copy.actions}>
+            <a class={cx(ui.button, ui.buttonPrimary)} href={getLocalizedPath("architecture", locale)}>
+              {locale === "es" ? "Ver arquitectura completa" : "View full architecture"}
+            </a>
+          </div>
         </div>
-        <div class={ui.architectureProofStack}>
-          <figure class={cx(ui.framedImage, "rounded-lg")}>
-            <img
-              class="w-full aspect-[16/10] object-cover object-center"
-              src="/images/generated/aohys-architecture-proof-surface.png"
-              alt={locale === "es" ? "Mapa del sistema público y privado de AOHYS" : "AOHYS public and private system map"}
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-          <div class={ui.architectureTrack} aria-label={homeContent.architectureHeading}>
-            {homeContent.architectureStages.map((stage) => (
-              <div class={ui.architectureStep}>
-                <span>{stage.label}</span>
-                <p>{stage.text}</p>
-              </div>
+        <div class={ui.architectureDiagram} aria-label={homeContent.architectureHeading}>
+          <div class={ui.architectureDiagramRow}>
+            {homeSystemNodes.map((node) => (
+              <section class={ui.architectureDiagramNode}>
+                <strong>{node.title}</strong>
+                <span>{node.detail}</span>
+                {node.bullets.map((bullet) => <small>{bullet}</small>)}
+              </section>
             ))}
           </div>
+          <div class={ui.architectureServiceRow}>
+            {homeArchitectureTools.map((tool) => (
+              <section class={ui.architectureServiceNode}>
+                <strong>{tool.name}</strong>
+                <span>{tool.detail}</span>
+              </section>
+            ))}
+          </div>
+        </div>
+        <div class={ui.architectureToolGrid} aria-label={locale === "es" ? "Responsabilidades del sistema" : "System responsibilities"}>
+          <span>Edge delivery <strong>Cloudflare Pages</strong></span>
+          <span>Auth & sessions <strong>Better Auth</strong></span>
+          <span>Observability <strong>PostHog</strong></span>
+          <span>Transactional email <strong>Resend</strong></span>
         </div>
       </section>
 
       <section class={ui.practiceSection} aria-labelledby="practice-title" data-home-section="practice">
-        <div class={ui.sectionHeading}>
-          <h2 id="practice-title">{homeContent.practiceHeading}</h2>
-          <p class={ui.sectionIntro}>{homeContent.practiceBody}</p>
+        <div>
+          <div class={ui.sectionHeading}>
+            <p class={ui.signalLine}>{locale === "es" ? "Como trabajo" : "How I work"}</p>
+            <h2 id="practice-title">{homeContent.practiceHeading}</h2>
+          </div>
+          <div class={ui.practiceList}>
+            {homeContent.practicePoints.map((point, index) => (
+              <div class={ui.practiceItem}>
+                <span class={ui.practiceIcon}>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <strong>{point.label}</strong>
+                  <p>{point.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <div class={ui.practiceList}>
-          {homeContent.practicePoints.map((point) => (
-            <div class={ui.practiceItem}>
-              <span>{point.label}</span>
-              <p>{point.text}</p>
+
+        <figure class={ui.practiceArtifact} aria-label={locale === "es" ? "Artefacto operativo de entrega AOHYS" : "AOHYS delivery operating artifact"}>
+          <div class={ui.practiceArtifactPanel} aria-hidden="true">
+            <div class={ui.practiceArtifactChrome}>
+              <span></span>
+              <span></span>
+              <span></span>
             </div>
+            <div class={ui.practiceArtifactShell}>
+              <aside>
+                <span>Overview</span>
+                <span>Leads</span>
+                <span>Projects</span>
+                <span>Media</span>
+                <span>Resume</span>
+                <span>Settings</span>
+              </aside>
+              <main>
+                <strong>Overview</strong>
+                <div class={ui.practiceArtifactStats}>
+                  {homeContent.proofMetrics.slice(0, 4).map((metric) => (
+                    <span>
+                      <small>{metric.label}</small>
+                      <strong>{metric.value}</strong>
+                    </span>
+                  ))}
+                </div>
+                <div class={ui.practiceArtifactRows}>
+                  {homeContent.practicePoints.map((point) => (
+                    <span>
+                      <strong>{point.label}</strong>
+                      {point.text}
+                    </span>
+                  ))}
+                </div>
+              </main>
+            </div>
+          </div>
+        </figure>
+      </section>
+
+      <section class={ui.engagementSection} aria-labelledby="engagement-title" data-home-section="engagement">
+        <div class={ui.sectionHeading}>
+          <div>
+            <p class={ui.signalLine}>{locale === "es" ? "Modelos de trabajo" : "Engagement models"}</p>
+            <h2 id="engagement-title">{homeContent.engagementHeading}</h2>
+          </div>
+          <p class={ui.sectionIntro}>{homeContent.engagementBody}</p>
+        </div>
+        <div class={ui.engagementGrid}>
+          {homeContent.engagementModels.map((model, index) => (
+            <article class={ui.engagementCard}>
+              <span class={ui.engagementIcon}>{String(index + 1).padStart(2, "0")}</span>
+              <h3>{model.title}</h3>
+              <p>{model.subtitle}</p>
+              <ul>
+                {model.bullets.map((bullet) => <li>{bullet}</li>)}
+              </ul>
+              <a href={getLocalizedPath("contact", locale)}>{variant.primaryActionLabel}</a>
+            </article>
           ))}
         </div>
       </section>
 
       <section class={ui.contactBand} aria-labelledby="home-contact-title" data-home-section="contact">
         <div>
-          <h2 id="home-contact-title">{homeContent.contactHeading}</h2>
-          <p>{homeContent.contactBody}</p>
+          <p class={ui.signalLine}>{locale === "es" ? "Hemos trabajado con" : "Proof before contact"}</p>
+          <h2>{homeContent.faqHeading}</h2>
+          <p>{homeContent.faqBody}</p>
+          <div class={ui.faqList}>
+            {homeContent.faqItems.map((item) => (
+              <details class={ui.faqItem}>
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
         </div>
-        <div class={ui.contactActions} aria-label={copy.actions}>
-          <a class={cx(ui.button, ui.buttonPrimary)} href={homeContent.emailHref}>{homeContent.emailLabel}</a>
-          <a class={cx(ui.button, ui.buttonWhatsapp)} href={homeContent.whatsappHref} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="home_contact_band">{homeContent.whatsappLabel}</a>
-        </div>
+        <aside class={ui.contactCard}>
+          <div class={ui.contactCardIntro}>
+            <p class={ui.signalLine}>{locale === "es" ? "Iniciar conversacion" : "Start a conversation"}</p>
+            <h2 id="home-contact-title">{homeContent.contactHeading}</h2>
+            <p>{homeContent.contactBody}</p>
+          </div>
+          <form class={ui.homeContactForm} method="post" action={contactEndpoint || directEmailHref}>
+            <div class={ui.fieldGrid}>
+              <label class={ui.fieldLabel}>
+                <span>{contactCopy.nameLabel}</span>
+                <input name="name" type="text" autocomplete="name" required />
+              </label>
+              <label class={ui.fieldLabel}>
+                <span>{contactCopy.emailLabel}</span>
+                <input name="email" type="email" autocomplete="email" required />
+              </label>
+            </div>
+            <label class={ui.fieldLabel}>
+              <span>{contactCopy.messageLabel}</span>
+              <textarea name="message" rows="5" required></textarea>
+            </label>
+            <button class={cx(ui.button, ui.buttonPrimary)} type="submit">
+              {contactCopy.submitLabel} <span aria-hidden="true">→</span>
+            </button>
+          </form>
+          <div class={ui.contactActions} aria-label={copy.actions}>
+            <a href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="home_contact_band">{contactCopy.whatsappLabel}</a>
+            <a href={directEmailHref} data-analytics-event="email_cta_clicked" data-analytics-target="home_contact_band">{publicContactEmail}</a>
+          </div>
+        </aside>
       </section>
     </>
   ) : isArchitecture && architectureContent ? (

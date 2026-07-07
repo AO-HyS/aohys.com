@@ -63,11 +63,11 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain('data-home-content-id="home"');
-    expect(homeHtml).toContain("I build software that helps businesses sell, operate, and ship.");
-    expect(homeHtml).toContain("Work I can show");
+    expect(homeHtml).toContain("Product systems");
+    expect(homeHtml).toContain("operational proof");
+    expect(homeHtml).toContain("Real systems. Real impact.");
     expect(homeHtml).toContain("Real work, visible proof, private details protected.");
     expect(homeHtml).toContain("/images/proof/enterprise-delivery-map.svg");
-    expect(homeHtml).toContain("/images/generated/aohys-architecture-proof-surface.png");
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
     expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
@@ -76,14 +76,15 @@ describe("built public routes", () => {
     expect(homeHtml).toContain("/images/proof/casa-roca-production.png");
     expect(homeHtml).toContain("/images/proof/barber-central-proof-thumb.png");
     expect(homeHtml).toContain("/images/proof/nutri-plan-proof-thumb.png");
-    expect(homeHtml).toContain("/images/brand/aohys-logo.png");
+    expect(homeHtml).toContain("AOHYS System Map");
     expect(homeHtml).toContain("WhatsApp");
     expect(homeHtml).not.toContain("Cloudflare · Convex · PostHog · Resend");
     expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Construyo software para vender, operar y lanzar sin fricción.");
-    expect(spanishHomeHtml).toContain("Trabajo que puedo mostrar");
+    expect(spanishHomeHtml).toContain("Sistemas de producto");
+    expect(spanishHomeHtml).toContain("prueba operacional");
+    expect(spanishHomeHtml).toContain("Sistemas reales. Impacto real.");
     expect(spanishHomeHtml).toContain("Trabajo real, pruebas visibles y detalles privados protegidos.");
     expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
     expect(spanishHomeHtml).toContain('aria-label="Hero del sitio Casa Roca en producción"');

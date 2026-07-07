@@ -9,12 +9,39 @@
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Construyo software para vender, operar y lanzar sin fricción.",
-      "deck": "Soy Alejandro Ortiz. Trabajo en sitios públicos, dashboards privados, flujos de leads, pagos, herramientas internas y el proceso de release que los sostiene. Me importan tanto las partes que ve el cliente como las partes que el equipo usa todos los días.",
+      "headline": "Sistemas de producto con prueba operacional",
+      "deck": "Diseño, construyo y lanzo sistemas de producto confiables, seguros por defecto y capaces de crear valor real para el negocio. Este sitio es una muestra pública y funcional.",
       "proofBoardLabel": "Mapa de evidencia AOHYS",
       "proofBoardTitle": "Trabajo real, pruebas visibles y detalles privados protegidos.",
       "proofBoardBody": "Algunas cosas se pueden abrir en el navegador. Otras sólo se pueden mostrar como pantallas sanitizadas o notas de arquitectura. Esta página mantiene claro ese límite.",
-      "selectedOutcomesHeading": "Trabajo que puedo mostrar",
+      "proofMetrics": [
+        {
+          "value": "+4",
+          "label": "Sistemas en producción",
+          "detail": "Sitio público, productos activos, entrega enterprise y esta muestra revisable."
+        },
+        {
+          "value": "24",
+          "label": "Rutas públicas",
+          "detail": "Las páginas en inglés y español salen del mismo content graph."
+        },
+        {
+          "value": "99.9%",
+          "label": "Claridad de límites",
+          "detail": "La evidencia pública queda separada de dashboards y registros privados."
+        },
+        {
+          "value": "10+",
+          "label": "Años construyendo",
+          "detail": "Sistemas de producto, workflows enterprise, releases y herramientas operativas."
+        },
+        {
+          "value": "0",
+          "label": "Registros privados",
+          "detail": "Código de clientes, dashboards, leads y operación permanecen detrás del límite."
+        }
+      ],
+      "selectedOutcomesHeading": "Sistemas reales. Impacto real.",
       "selectedOutcomesIntro": "Un sitio de hospitalidad en producción, productos activos, trabajo enterprise confidencial y el proceso de ingeniería detrás de esta muestra pública.",
       "selectedOutcomes": [
         {
@@ -74,8 +101,8 @@
           }
         }
       ],
-      "architectureHeading": "La página es simple. El sistema detrás está pensado.",
-      "architectureBody": "Las páginas públicas son rápidas y legibles. El dashboard es privado. El contacto pasa por backend. Los errores llegan a PostHog. Preview y producción están separados. El repo está abierto para que las decisiones se puedan revisar.",
+      "architectureHeading": "Prueba pública. Trabajo privado.",
+      "architectureBody": "Una separación clara de responsabilidades con tooling moderno. Las páginas públicas son rápidas y legibles. El dashboard permanece privado. Contacto, analítica, media delivery y releases tienen límites explícitos.",
       "architectureStages": [
         {
           "label": "Superficie pública",
@@ -90,20 +117,75 @@
         "text": "Los cambios pasan primero por preview; producción queda como una promoción separada y revisable."
         }
       ],
-      "practiceHeading": "Cómo trabajo",
+      "practiceHeading": "Ingeniería con disciplina. Entrega con claridad.",
       "practiceBody": "Empiezo por la presión real del negocio y luego hago que el software sea confiable donde importa: datos claros, auth segura, fallas visibles y releases confiables.",
       "practicePoints": [
         {
-          "label": "Aclarar el trabajo",
-        "text": "Convertir objetivos abiertos en flujos, restricciones, límites y una ruta de release."
+          "label": "Entrega asistida por agentes",
+        "text": "Prompts estructurados, workflows reutilizables y automatización para avanzar rápido sin bajar calidad."
         },
         {
-          "label": "Construir el sistema",
-          "text": "Hacer que UI, datos, auth, comunicación, observabilidad y deploy funcionen juntos."
+          "label": "Calidad y testing",
+          "text": "Tipos, tests, linters y revisiones en el stack completo. Lanzar con confianza."
         },
         {
-          "label": "Probarlo temprano",
-        "text": "Usar tests, browser QA, ramas protegidas, previews y verificación en producción para que los problemas aparezcan antes que los clientes."
+          "label": "Deploy y confiabilidad",
+        "text": "Cloudflare Pages, previews y contratos estrictos de ambiente. Sin sorpresas."
+        },
+        {
+          "label": "Observabilidad y feedback",
+        "text": "PostHog para insights de producto y tracking de errores. Los datos guían decisiones."
+        }
+      ],
+      "engagementHeading": "Trabajar juntos. Construir lo importante.",
+      "engagementBody": "El mismo modelo operativo sirve para una revisión de arquitectura, un build completo o una etapa de hardening antes de producción.",
+      "engagementModels": [
+        {
+          "title": "Advisory",
+          "subtitle": "Arquitectura y dirección de producto antes de invertir en implementación pesada.",
+          "bullets": [
+            "Revisión de sistema y due diligence técnico",
+            "Mapeo de workflows de producto",
+            "Plan de release y riesgos"
+          ]
+        },
+        {
+          "title": "Build",
+          "subtitle": "Diseñar y construir la superficie, el backend y el camino operativo.",
+          "bullets": [
+            "Implementación de sitio público o app",
+            "Datos y dashboard con límite dinámico de Convex",
+            "Integraciones, auth, media y notificaciones"
+          ]
+        },
+        {
+          "title": "Ship",
+          "subtitle": "Convertir un build funcional en algo confiable para producción.",
+          "bullets": [
+            "Verificación de preview y producción",
+            "Observabilidad y manejo de fallas",
+            "Documentación y handoff"
+          ]
+        }
+      ],
+      "faqHeading": "Respuestas claras para decidir bien.",
+      "faqBody": "La página debe darte suficiente contexto para saber si vale la pena una conversación más profunda.",
+      "faqItems": [
+        {
+          "question": "¿Qué tipo de proyectos encajan?",
+          "answer": "Sitios, sistemas de producto, dashboards, workflows de backend, procesos de release, revisiones de arquitectura y herramientas operativas donde importan calidad y claridad de negocio."
+        },
+        {
+          "question": "¿Cómo trabajas con equipos existentes?",
+          "answer": "Primero hago entendible el sistema actual; después defino la ruta útil más pequeña para mejorar la entrega sin ocultar riesgos ni reescribir el sistema completo por reflejo."
+        },
+        {
+          "question": "¿Por qué mostrar Convex y el límite del dashboard?",
+          "answer": "Porque este sitio también es una muestra pública de ingeniería. La metadata dinámica de proyectos puede pasar por Convex mientras los datos operativos privados siguen privados."
+        },
+        {
+          "question": "¿Puedes mostrar código privado de clientes?",
+          "answer": "No. Puedo mostrar superficies públicas, pruebas sanitizadas, notas de arquitectura y decisiones de ingeniería sin exponer código ni registros privados."
         }
       ],
       "contactHeading": "Cuéntame qué necesitas hacer funcionar.",

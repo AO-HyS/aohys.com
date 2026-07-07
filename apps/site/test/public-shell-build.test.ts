@@ -37,7 +37,7 @@ describe("built public shell", () => {
     expect(html).toMatch(/<title>(Alejandro Ortiz Corro|AOHYS)/);
     expect(html).toContain('name="description"');
     expect(html).toContain("business software");
-    expect(html).toContain("sell, operate, and ship");
+    expect(html).toContain("operational proof");
     expect(html).toContain('data-site-shell="public"');
     expect(html).toContain('href="/case-studies"');
     expect(html).toContain('href="/architecture"');
@@ -45,7 +45,7 @@ describe("built public shell", () => {
     expect(html).toContain('href="/contact"');
     expect(html).toContain("Start a conversation");
     expect(html).toContain("View selected work");
-    expect(html).toContain("/images/brand/aohys-logo.png");
+    expect(html).toContain("AOHYS");
     expect(html).toContain("Public code, private client work.");
     expect(html).toContain("Client code, product code");
     expect(html).not.toContain("Download ATS PDF");

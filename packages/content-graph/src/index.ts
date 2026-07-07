@@ -99,12 +99,30 @@ export interface HomeStage {
   text: string;
 }
 
+export interface HomeMetric {
+  value: string;
+  label: string;
+  detail: string;
+}
+
+export interface HomeEngagementModel {
+  title: string;
+  subtitle: string;
+  bullets: string[];
+}
+
+export interface HomeQuestion {
+  question: string;
+  answer: string;
+}
+
 export interface HomePageContent {
   headline: string;
   deck: string;
   proofBoardLabel: string;
   proofBoardTitle: string;
   proofBoardBody: string;
+  proofMetrics: HomeMetric[];
   selectedOutcomesHeading: string;
   selectedOutcomesIntro: string;
   selectedOutcomes: HomeOutcome[];
@@ -114,6 +132,12 @@ export interface HomePageContent {
   practiceHeading: string;
   practiceBody: string;
   practicePoints: HomeStage[];
+  engagementHeading: string;
+  engagementBody: string;
+  engagementModels: HomeEngagementModel[];
+  faqHeading: string;
+  faqBody: string;
+  faqItems: HomeQuestion[];
   contactHeading: string;
   contactBody: string;
   emailLabel: string;

@@ -173,8 +173,8 @@ describe("Public Content Graph", () => {
     const englishHome = getHomePageContent("en");
     const spanishHome = getHomePageContent("es");
 
-    expect(englishHome.headline).toContain("sell, operate, and ship");
-    expect(spanishHome.headline).toContain("vender, operar y lanzar");
+    expect(englishHome.headline).toContain("operational proof");
+    expect(spanishHome.headline).toContain("prueba operacional");
     expect(englishHome.selectedOutcomes).toHaveLength(4);
     expect(englishHome.selectedOutcomes.map((outcome) => outcome.path)).toEqual([
       "/case-studies/casa-roca",
