@@ -7,7 +7,7 @@
     "language": "ES",
     "nav": {
       "caseStudies": "Work",
-      "architecture": "System",
+      "architecture": "Architecture",
       "practice": "Practice",
       "resume": "Resume",
       "contact": "Contact"
@@ -17,7 +17,7 @@
     "kicker": "Public code, private client work.",
     "body": "This site is open for review as an engineering sample. Client code, product code, and operational data stay private.",
     "privacy": "Privacy",
-    "architecture": "System notes",
+    "architecture": "Architecture",
     "dashboard": "Open dashboard",
     "linksAria": "Footer links",
     "copyright": "Code MIT, content reserved."

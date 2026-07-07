@@ -7,7 +7,7 @@
     "language": "EN",
     "nav": {
       "caseStudies": "Casos",
-      "architecture": "Sistema",
+      "architecture": "Arquitectura",
       "practice": "Práctica",
       "resume": "CV",
       "contact": "Contacto"
@@ -17,7 +17,7 @@
     "kicker": "Código público, trabajo privado.",
     "body": "Este sitio queda abierto para revisión como muestra de ingeniería. El código de clientes, código de producto y datos operativos permanecen privados.",
     "privacy": "Privacidad",
-    "architecture": "Notas del sistema",
+    "architecture": "Arquitectura",
     "dashboard": "Abrir dashboard",
     "linksAria": "Enlaces de pie de página",
     "copyright": "Código MIT, contenido reservado."

@@ -24,6 +24,7 @@ const { route } = Astro.props;
 const { id, locale, node, variant } = route;
 const isHome = id === "home";
 const isArchitecture = id === "architecture";
+const isPractice = id === "practice";
 const isCaseStudyIndex = node.type === "case-study-index";
 const isCaseStudy = node.type === "case-study";
 const isResume = node.type === "resume";
@@ -31,10 +32,13 @@ const isContact = node.type === "contact";
 const isPrivacy = node.type === "privacy";
 const copy = getUiCopy(locale).publicPage;
 const contactCopy = getUiCopy(locale).contactForm;
-const homeContent = isHome ? getHomePageContent(locale) : undefined;
+const sharedHomeContent = getHomePageContent(locale);
+const homeContent = isHome ? sharedHomeContent : undefined;
+const practiceContent = isPractice ? sharedHomeContent : undefined;
 const architectureContent = isArchitecture ? getArchitecturePageContent(locale) : undefined;
 const caseStudyIndexContent = isCaseStudyIndex ? getCaseStudyIndexContent(locale) : undefined;
 const caseStudyContent = isCaseStudy ? getCaseStudyPageContent(id, locale) : undefined;
+const engineeringPracticeCaseContent = isPractice ? getCaseStudyPageContent("case-study:engineering-practice", locale) : undefined;
 const resumeContent = isResume ? getResumePageContent(locale) : undefined;
 const privacyContent = isPrivacy ? getPrivacyPageContent(locale) : undefined;
 const caseStudySections = caseStudyContent ? [
@@ -237,7 +241,168 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
     role: locale === "es" ? "Senior Engineer" : "Senior Engineer",
     action: locale === "es" ? "Ver resume" : "View resume",
   },
+  "case-study:engineering-practice": {
+    impact: locale === "es" ? "Ciclos mas claros" : "Faster cycles",
+    role: locale === "es" ? "Engineer" : "Engineer",
+    action: locale === "es" ? "Ver proceso" : "View process",
+  },
 };
+const caseStudyStackByContentId: Record<string, string> = {
+  "case-study:casa-roca": "Astro, Cloudflare, Convex",
+  "case-study:the-barber-central": "Next.js, Better Auth, Stripe",
+  "case-study:nutri-plan": "Next.js, Convex, PostHog",
+  "case-study:enterprise-systems": "React, Node.js, Provider APIs",
+  "case-study:engineering-practice": "Codex, Playwright, CI",
+};
+const caseStudyDetailMeta = isCaseStudy ? homeOutcomeMetaByContentId[id] : undefined;
+const caseStudyDetailMetricCells = caseStudyContent ? [
+  {
+    value: caseStudyDetailMeta?.impact ?? caseStudyContent.businessOutcome.title,
+    label: locale === "es" ? "Impacto de negocio" : "Business impact",
+    detail: caseStudyContent.businessOutcome.title,
+  },
+  {
+    value: caseStudyDetailMeta?.role ?? caseStudyContent.role.title,
+    label: locale === "es" ? "Rol" : "Role",
+    detail: locale === "es" ? "Responsabilidad principal" : "Primary responsibility",
+  },
+  {
+    value: caseStudyStackByContentId[id] ?? "Astro, Convex, Cloudflare",
+    label: "Stack",
+    detail: locale === "es" ? "Herramientas base" : "Primary tools",
+  },
+  {
+    value: caseStudyContent.statusLabel,
+    label: locale === "es" ? "Evidencia" : "Evidence",
+    detail: caseStudyContent.publicEvidence[0]?.label ?? caseStudyContent.publicEvidenceTitle,
+  },
+] : [];
+const caseStudyDetailSources = locale === "es" ? [
+  { label: "Fuente", detail: "Contexto de negocio y superficie publica" },
+  { label: "Prueba", detail: "Resultado visible y enlaces publicos" },
+  { label: "Scope", detail: "Responsabilidad de producto y entrega" },
+  { label: "Guardrails", detail: "Datos privados fuera del sitio" },
+  { label: "Rationale", detail: "Separacion entre publico y operativo" },
+  { label: "Artefactos", detail: "Preview, release, QA y captura" },
+  { label: "Validacion", detail: "Performance, seguridad y claridad" },
+] : [
+  { label: "Source", detail: "Business context and public surface" },
+  { label: "Proof", detail: "Visible outcome and public links" },
+  { label: "Scope", detail: "Product and delivery responsibility" },
+  { label: "Guardrails", detail: "Private data outside the site" },
+  { label: "Rationale", detail: "Public and operational separation" },
+  { label: "Artifacts", detail: "Preview, release, QA, and screenshot" },
+  { label: "Validation", detail: "Performance, security, and clarity" },
+];
+const caseStudyDetailEvidenceLinks = caseStudyContent ? [
+  ...caseStudyContent.publicEvidence.map((evidence) => ({
+    label: evidence.label,
+    description: evidence.description,
+    href: evidence.href,
+    altText: evidence.altText,
+  })),
+  {
+    label: locale === "es" ? "Mapa del sistema" : "System map",
+    description: locale === "es" ? "Ver como se separa la prueba publica del trabajo privado." : "See how public proof stays separated from private work.",
+    href: getLocalizedPath("architecture", locale),
+    altText: locale === "es" ? "Mapa de arquitectura AOHYS" : "AOHYS architecture map",
+  },
+  {
+    label: locale === "es" ? "Practica de entrega" : "Delivery practice",
+    description: locale === "es" ? "Ver los gates de calidad, QA y release que sostienen este tipo de entrega." : "See the quality, QA, and release gates behind this delivery style.",
+    href: getLocalizedPath("practice", locale),
+    altText: locale === "es" ? "Practica de entrega AOHYS" : "AOHYS delivery practice",
+  },
+] : [];
+const caseStudyIndexEntries = caseStudyIndexContent?.entries ?? [];
+const caseIndexArtifactPositions = [
+  "left-[5%] top-[8%] w-[37%] max-[640px]:static max-[640px]:w-full",
+  "left-[2%] top-[36%] w-[24%] rotate-[-2deg] max-[640px]:static max-[640px]:w-full max-[640px]:rotate-0",
+  "right-[7%] top-[27%] w-[44%] max-[640px]:static max-[640px]:w-full",
+  "right-[4%] bottom-[12%] w-[38%] rotate-[2deg] max-[640px]:static max-[640px]:w-full max-[640px]:rotate-0",
+];
+const caseStudyBoundaryNodes = locale === "es" ? [
+  { title: "Prueba publica", detail: "Sitios y capturas" },
+  { title: "Contexto seguro", detail: "Sin datos privados" },
+  { title: "Delivery", detail: "Preview, QA, release" },
+  { title: "Conversacion", detail: "Siguiente paso claro" },
+] : [
+  { title: "Public proof", detail: "Sites and screenshots" },
+  { title: "Safe context", detail: "No private data" },
+  { title: "Delivery", detail: "Preview, QA, release" },
+  { title: "Conversation", detail: "Clear next step" },
+];
+const architectureProviderList = [
+  { name: "Cloudflare", detail: locale === "es" ? "Pages / edge delivery" : "Pages / edge delivery" },
+  { name: "Convex", detail: locale === "es" ? "Data y auth" : "Data & auth" },
+  { name: "PostHog", detail: locale === "es" ? "Analytics y errores" : "Analytics & errors" },
+  { name: "Resend", detail: locale === "es" ? "Email y notificaciones" : "Email & notifications" },
+];
+const practiceEvidenceOutputs = locale === "es" ? [
+  ["Librerias de prompts", "Plantillas de workflow", "Automatizaciones"],
+  ["Unit e integracion", "Browser QA", "Code review"],
+  ["Preview deploys", "Contratos de entorno", "Rollback claro"],
+  ["Product analytics", "Error monitoring", "Feedback loops"],
+] : [
+  ["Prompt libraries", "Workflow templates", "Automations"],
+  ["Unit & integration tests", "Browser QA", "Code reviews"],
+  ["Preview deploys", "Environment contracts", "Rollback plan"],
+  ["Product analytics", "Error monitoring", "Feedback loops"],
+];
+const practiceSources = locale === "es" ? [
+  "Agentes y prompts",
+  "Quality gates",
+  "Preview deploy",
+  "Observabilidad",
+] : [
+  "Agents and prompts",
+  "Quality gates",
+  "Preview deploy",
+  "Observability",
+];
+const practiceFlow = locale === "es" ? [
+  { title: "Descubrir", body: "Aclarar objetivos, usuarios, restricciones y alcance.", artifact: "Brief y scope" },
+  { title: "Dar forma", body: "Definir arquitectura, modelos y contratos.", artifact: "Notas de arquitectura" },
+  { title: "Construir", body: "Implementar con IA asistida, tests y reviews.", artifact: "Pull requests" },
+  { title: "Browser QA", body: "Validar responsive y comportamiento visible.", artifact: "Checklist QA" },
+  { title: "Preview primero", body: "Desplegar a preview por cada rama.", artifact: "Preview URL" },
+  { title: "Release train", body: "Promover con smoke checks y notas.", artifact: "Release notes" },
+] : [
+  { title: "Discovery", body: "Clarify goals, users, constraints, and scope.", artifact: "Brief & scope" },
+  { title: "System shape", body: "Define architecture, models, and contracts.", artifact: "Architecture notes" },
+  { title: "Build", body: "Implement with AI-assisted coding, tests, and reviews.", artifact: "Pull requests" },
+  { title: "Browser QA", body: "Validate responsive behavior before release.", artifact: "QA checklist" },
+  { title: "Preview first", body: "Deploy every meaningful branch to preview.", artifact: "Preview URL" },
+  { title: "Release train", body: "Promote through smoke checks and notes.", artifact: "Release notes" },
+];
+const qualityGates = locale === "es" ? [
+  { title: "Source quality", bullets: ["TypeScript estricto", "ESLint y Prettier", "Pre-commit hooks"] },
+  { title: "Tests", bullets: ["Unit tests", "Integration tests", "Browser QA"] },
+  { title: "Build", bullets: ["CI pipeline", "Static analysis", "Bundle audit"] },
+  { title: "Smoke checks", bullets: ["Health endpoints", "Core flows", "Monitoring OK"] },
+] : [
+  { title: "Source quality", bullets: ["TypeScript strict", "ESLint & Prettier", "Pre-commit hooks"] },
+  { title: "Tests", bullets: ["Unit tests", "Integration tests", "Browser QA"] },
+  { title: "Build", bullets: ["CI pipeline", "Static analysis", "Bundle audit"] },
+  { title: "Smoke checks", bullets: ["Health endpoints", "Core flows", "Monitoring OK"] },
+];
+
+function sourceLinkByLabel(label: string) {
+  return architectureContent?.sourceLinks.find((link) => link.label === label) ?? architectureContent?.sourceLinks[0];
+}
+
+function architectureSourceForIndex(index: number) {
+  const labels = [
+    "Public Content Graph",
+    "Environment Contract",
+    "Release Train",
+    "Environment Contract",
+    "Public Content Graph",
+    "Repository",
+  ];
+
+  return sourceLinkByLabel(labels[index] ?? "Repository");
+}
 ---
 
 {
@@ -579,11 +744,28 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
           <h2 id="architecture-map-title">{variant.title}</h2>
           <p class={ui.sectionIntro}>{variant.summary}</p>
         </div>
-        <div class={ui.rowList}>
-          {architectureContent.sections.map((section) => (
-            <article class={ui.architectureRow}>
+        <div class={ui.architectureSystemMatrix}>
+          <div class={ui.architectureSystemMatrixHeader} aria-hidden="true">
+            <span>{locale === "es" ? "Diagrama" : "Diagram"}</span>
+            <span>{locale === "es" ? "Capa del sistema" : "System layer"}</span>
+            <span>{locale === "es" ? "Resumen" : "Overview"}</span>
+            <span>{locale === "es" ? "Fuente relacionada" : "Related source"}</span>
+          </div>
+          {architectureContent.sections.map((section, index) => {
+            const relatedSource = architectureSourceForIndex(index);
+
+            return (
+            <article class={ui.architectureMatrixRow}>
+              <span class={ui.architectureMiniDiagram} aria-hidden="true">
+                <i></i>
+                <i></i>
+                <i></i>
+              </span>
               <h3>{section.title}</h3>
               <p>{section.body}</p>
+              <div class={ui.architectureMatrixSource}>
+                {relatedSource && <a href={relatedSource.href}>{relatedSource.label} <span aria-hidden="true">→</span></a>}
+              </div>
               {section.links && (
                 <div class={cx(ui.sourceLinks, ui.sourceLinksInline)}>
                   {section.links.map((link) => (
@@ -592,18 +774,30 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
                 </div>
               )}
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
 
-      <section class={ui.boundaryNote} aria-label={architectureContent.heading}>
-        <p>{architectureContent.boundaryNote}</p>
+      <section class={ui.architectureBoundaryCard} aria-label={architectureContent.heading}>
+        <div>
+          <h2>{locale === "es" ? "Este repositorio es una muestra pública." : "This repository is a public working sample."}</h2>
+          <p>{architectureContent.boundaryNote}</p>
+        </div>
+        <div class={ui.architectureProviderStrip} aria-label={locale === "es" ? "Proveedores usados por AOHYS" : "Providers AOHYS works with"}>
+          {architectureProviderList.map((provider) => (
+            <span>
+              <strong>{provider.name}</strong>
+              {provider.detail}
+            </span>
+          ))}
+        </div>
       </section>
     </>
   ) : isCaseStudyIndex && caseStudyIndexContent ? (
     <>
       <section class={ui.caseStudyIndexHero} aria-labelledby="case-study-index-title" data-case-study-index-content-id={id}>
-        <div class={ui.caseStudyHeroCopy}>
+        <div class={ui.caseIndexHeroCopy}>
           <p class={ui.signalLine}>{routeSignal}</p>
           <h1 id="case-study-index-title">{caseStudyIndexContent.heading}</h1>
           <p class={ui.heroLead}>{caseStudyIndexContent.intro}</p>
@@ -611,57 +805,132 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
             {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
             {secondaryHref && <a class={cx(ui.button, ui.buttonSecondaryOnLightHero)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
           </div>
+          <div class={ui.caseIndexLegend} aria-label={locale === "es" ? "Tipos de evidencia" : "Evidence types"}>
+            {caseStudyIndexEntries.slice(0, 4).map((entry) => (
+              <span>{entry.evidenceLabel}</span>
+            ))}
+          </div>
         </div>
-        <figure class={ui.caseIndexProofWall} aria-label={locale === "es" ? "Capturas públicas de proyectos seleccionados" : "Public screenshots from selected work"}>
-          <span class={ui.caseIndexProofFrame}>
-            <img class={screenshotImageClass("site")} src="/images/proof/casa-roca-production.png" alt={locale === "es" ? "Captura pública de Casa Roca" : "Public Casa Roca screenshot"} loading="eager" decoding="async" />
+        <figure class={ui.caseIndexWorkbench} aria-label={locale === "es" ? "Mesa de evidencia pública de proyectos seleccionados" : "Public evidence workbench for selected work"}>
+          <span class={ui.caseIndexBoardLabel}>AOHYS proof board</span>
+          {caseStudyIndexEntries.slice(0, 4).map((entry, index) => {
+            const evidenceImage = evidenceImageForPath(entry.path);
+            const imageSrc = evidenceImage?.thumbSrc ?? evidenceImage?.src;
+
+            return (
+              <a class={cx(ui.caseIndexArtifact, caseIndexArtifactPositions[index])} href={entry.path}>
+                {imageSrc ? (
+                  <img
+                    class={screenshotImageClass(evidenceImage?.kind ?? "site", "compact")}
+                    src={imageSrc}
+                    alt={evidenceImage?.alt ?? entry.evidenceLabel}
+                    loading="eager"
+                    decoding="async"
+                  />
+                ) : (
+                  <span class={ui.evidenceFallback}>{entry.evidenceLabel}</span>
+                )}
+                <strong>{entry.title}</strong>
+              </a>
+            );
+          })}
+          <span class={ui.caseIndexStickyNote}>
+            <strong>{locale === "es" ? "Prueba publica" : "Public proof"}</strong>
+            <span>{locale === "es" ? "Limite privado claro." : "Private boundary clear."}</span>
           </span>
-          <span class={ui.caseIndexProofFrame}>
-            <img class={screenshotImageClass("landing")} src="/images/proof/barber-central-proof-thumb.png" alt={locale === "es" ? "Landing page de The Barber Central" : "The Barber Central landing page"} loading="eager" decoding="async" />
-          </span>
-          <span class={ui.caseIndexProofFrame}>
-            <img class={screenshotImageClass("dashboard")} src="/images/proof/nutri-plan-proof-thumb.png" alt={locale === "es" ? "Dashboard administrativo de Nutri Plan" : "Nutri Plan administrative dashboard"} loading="eager" decoding="async" />
-          </span>
+          <span class={ui.homePen} aria-hidden="true"></span>
         </figure>
       </section>
 
-      <section class={ui.contentSection} aria-labelledby="selected-work-title">
+      <section class={ui.caseStudyLedgerSection} aria-labelledby="selected-work-title">
         <div class={ui.sectionHeading}>
           <h2 id="selected-work-title">{caseStudyIndexContent.heading}</h2>
           <p class={ui.sectionIntro}>{caseStudyIndexContent.intro}</p>
         </div>
-        <div class={ui.rowList}>
-          {caseStudyIndexContent.entries.map((entry) => (
-            <a class={ui.selectedWorkRow} href={entry.path}>
-              <span>{entry.statusLabel}</span>
-              <figure class={ui.selectedWorkShot}>
-                {(() => {
-                  const evidenceImage = evidenceImageForPath(entry.path);
-                  return evidenceImage ? (
-                    <img
-                      class={screenshotImageClass(evidenceImage.kind, "compact")}
-                      src={evidenceImage.thumbSrc ?? evidenceImage.src}
-                      alt={evidenceImage.alt}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ) : (
-                    <span>{entry.evidenceLabel}</span>
-                  );
-                })()}
+        <div class={ui.caseStudyLedger}>
+          <div class={ui.caseStudyLedgerHeader} aria-hidden="true">
+            <span>{locale === "es" ? "Trabajo" : "Work"}</span>
+            <span>{locale === "es" ? "Estado" : "Status"}</span>
+            <span>{locale === "es" ? "Proyecto" : "Project"}</span>
+            <span>{locale === "es" ? "Impacto" : "Business outcome"}</span>
+            <span>{locale === "es" ? "Rol y limite" : "Role & boundary"}</span>
+            <span>{locale === "es" ? "Caso" : "View case"}</span>
+          </div>
+          {caseStudyIndexEntries.map((entry) => {
+            const evidenceImage = evidenceImageForPath(entry.path);
+            const imageSrc = evidenceImage?.thumbSrc ?? evidenceImage?.src;
+            const meta = homeOutcomeMetaByContentId[entry.contentId];
+
+            return (
+            <a class={ui.caseStudyLedgerRow} href={entry.path}>
+              <figure class={ui.caseStudyLedgerShot}>
+                {imageSrc ? (
+                  <img
+                    class={screenshotImageClass(evidenceImage?.kind ?? "site", "compact")}
+                    src={imageSrc}
+                    alt={evidenceImage?.alt ?? entry.evidenceLabel}
+                    loading="eager"
+                    decoding="async"
+                  />
+                ) : (
+                  <span>{entry.evidenceLabel}</span>
+                )}
               </figure>
-              <strong class={ui.selectedWorkTitle}>{entry.title}</strong>
-              <p>{entry.summary}</p>
-              <em>{entry.evidenceLabel}</em>
+              <span class={ui.caseStudyStatusPill}>{entry.statusLabel}</span>
+              <div class={ui.caseStudyLedgerProject}>
+                <strong>{entry.title}</strong>
+                <p>{entry.summary}</p>
+              </div>
+              <div class={ui.caseStudyLedgerMeta}>
+                <span>{locale === "es" ? "Impacto de negocio" : "Business impact"}</span>
+                <strong>{meta?.impact ?? entry.evidenceLabel}</strong>
+              </div>
+              <div class={ui.caseStudyLedgerMeta}>
+                <span>{entry.evidenceLabel}</span>
+                <strong>{meta?.role ?? entry.statusLabel}</strong>
+              </div>
+              <span class={ui.caseStudyLedgerCta}>{meta?.action ?? variant.primaryActionLabel} <span aria-hidden="true">→</span></span>
             </a>
+            );
+          })}
+        </div>
+      </section>
+
+      <section class={ui.caseStudyBoundaryBand} aria-labelledby="case-boundary-title">
+        <div class={ui.architectureStageCopy}>
+          <p class={cx(ui.signalLine, ui.darkSignalLine)}>{locale === "es" ? "Boundary operativo" : "Architecture at a glance"}</p>
+          <h2 id="case-boundary-title">{locale === "es" ? "Prueba publica, trabajo privado." : "Public proof, private boundary."}</h2>
+          <p class={ui.architectureLead}>
+            {locale === "es"
+              ? "La pagina muestra evidencia suficiente para evaluar criterio sin publicar codigo, datos, dashboards, credenciales ni operaciones privadas."
+              : "The page shows enough evidence to evaluate judgment without publishing private code, data, dashboards, credentials, or operations."}
+          </p>
+          <div class={ui.heroActions} aria-label={copy.actions}>
+            <a class={cx(ui.button, ui.buttonPrimary)} href={getLocalizedPath("architecture", locale)}>
+              {locale === "es" ? "Leer notas de arquitectura" : "Read architecture notes"}
+            </a>
+          </div>
+        </div>
+        <div class={ui.caseStudyBoundaryDiagram} aria-label={locale === "es" ? "Mapa de limite publico privado" : "Public-private boundary map"}>
+          {caseStudyBoundaryNodes.map((node) => (
+            <section>
+              <strong>{node.title}</strong>
+              <span>{node.detail}</span>
+            </section>
           ))}
+        </div>
+        <div class={ui.architectureToolGrid} aria-label={locale === "es" ? "Herramientas de soporte" : "Supporting tools"}>
+          <span>Edge delivery <strong>Cloudflare Pages</strong></span>
+          <span>Content graph <strong>Convex</strong></span>
+          <span>Observability <strong>PostHog</strong></span>
+          <span>Email <strong>Resend</strong></span>
         </div>
       </section>
     </>
   ) : isCaseStudy && caseStudyContent ? (
     <>
-      <section class={ui.caseStudyHero} aria-labelledby="case-study-title" data-case-study-content-id={id}>
-        <div class={ui.caseStudyHeroCopy}>
+      <section class={ui.caseStudyDetailHero} aria-labelledby="case-study-title" data-case-study-content-id={id}>
+        <div class={ui.caseStudyDetailHeroCopy}>
           <p class={ui.signalLine}>{caseStudyContent.statusLabel}</p>
           <h1 id="case-study-title">{variant.title}</h1>
           <p class={ui.heroLead}>{caseStudyContent.overview}</p>
@@ -671,43 +940,107 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
           </div>
         </div>
 
-        <aside class={ui.caseStudyStatus} aria-label={caseStudyContent.statusLabel}>
+        <figure class={ui.caseStudyDetailCollage} aria-label={caseStudyContent.statusLabel}>
           {caseStudyEvidenceImage && (
             <img
+              class={cx(ui.caseStudyDetailHeroShot, screenshotImageClass(caseStudyEvidenceImage.kind, "compact"))}
               src={caseStudyEvidenceImage.src}
               alt={caseStudyEvidenceImage.alt}
               loading="eager"
               decoding="async"
             />
           )}
-          <span>{caseStudyContent.statusLabel}</span>
-          <strong>{variant.summary}</strong>
-        </aside>
+          <span class={ui.caseStudyDetailMapCard}>
+            <strong>AOHYS System Map</strong>
+            <span>{locale === "es" ? "Prueba publica / trabajo privado" : "Public proof / private work"}</span>
+          </span>
+          <span class={ui.caseStudyDetailDashboardCard}>
+            <img
+              src="/images/generated/aohys-delivery-artifact.png"
+              alt={locale === "es" ? "Artefacto visual de entrega AOHYS" : "AOHYS delivery artifact"}
+              loading="eager"
+              decoding="async"
+            />
+          </span>
+          <span class={ui.caseStudyDetailSticky}>
+            <strong>{caseStudyDetailMeta?.impact ?? caseStudyContent.statusLabel}</strong>
+            <span>{locale === "es" ? "resultado visible" : "visible outcome"}</span>
+          </span>
+        </figure>
       </section>
 
-      <section class={ui.contentSection} aria-labelledby="case-study-detail-title">
+      <section class={ui.caseStudyDetailMetricStrip} aria-label={locale === "es" ? "Métricas del caso" : "Case metrics"}>
+        {caseStudyDetailMetricCells.map((metric) => (
+          <article>
+            <strong>{metric.value}</strong>
+            <span>{metric.label}</span>
+            <p>{metric.detail}</p>
+          </article>
+        ))}
+      </section>
+
+      <section class={ui.caseStudyDetailLedgerSection} aria-labelledby="case-study-detail-title">
         <div class={ui.sectionHeading}>
-          <h2 id="case-study-detail-title">{variant.title}</h2>
-          <p class={ui.sectionIntro}>{variant.summary}</p>
+          <p class={ui.signalLine}>{locale === "es" ? "Decisiones del sistema" : "System decisions"}</p>
+          <h2 id="case-study-detail-title">{locale === "es" ? "Decisiones reales. Resultados reales." : "System decisions. Real outcomes."}</h2>
         </div>
-        <div class={ui.rowList}>
-          {caseStudySections.map((section) => (
-            <article class={ui.studyRow}>
+        <div class={ui.caseStudyDetailLedger}>
+          <div class={ui.caseStudyDetailLedgerHeader} aria-hidden="true">
+            <span>{locale === "es" ? "Area" : "Area"}</span>
+            <span>{locale === "es" ? "Decision / resultado" : "Decision / outcome"}</span>
+            <span>{locale === "es" ? "Fuente" : "Source"}</span>
+          </div>
+          {caseStudySections.map((section, index) => (
+            <article class={ui.caseStudyDetailLedgerRow}>
               <h3>{section.title}</h3>
               <p>{section.body}</p>
+              <aside>
+                <span>{caseStudyDetailSources[index]?.label}</span>
+                <strong>{caseStudyDetailSources[index]?.detail}</strong>
+              </aside>
             </article>
           ))}
         </div>
       </section>
 
-      <section class={ui.contentSection} aria-labelledby="case-study-evidence-title">
+      <section class={ui.caseStudyDetailDarkBand} aria-labelledby="case-study-boundary-detail-title">
+        <div class={ui.architectureStageCopy}>
+          <p class={cx(ui.signalLine, ui.darkSignalLine)}>{locale === "es" ? "Arquitectura de un vistazo" : "Architecture at a glance"}</p>
+          <h2 id="case-study-boundary-detail-title">{locale === "es" ? "Prueba publica. Trabajo privado." : "Public proof. Private work."}</h2>
+          <p class={ui.architectureLead}>{caseStudyContent.confidentialityNote.body}</p>
+          <div class={ui.heroActions}>
+            <a class={cx(ui.button, ui.buttonPrimary)} href={getLocalizedPath("architecture", locale)}>
+              {locale === "es" ? "Ver arquitectura completa" : "View full architecture"} <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+
+        <div class={ui.caseStudyDetailSystemDiagram} aria-label={locale === "es" ? "Mapa del sistema" : "System map"}>
+          {homeSystemNodes.map((node) => (
+            <section>
+              <strong>{node.title}</strong>
+              <span>{node.detail}</span>
+              {node.bullets.map((bullet) => <small>{bullet}</small>)}
+            </section>
+          ))}
+          {homeArchitectureTools.map((tool) => (
+            <section>
+              <strong>{tool.name}</strong>
+              <span>{tool.detail}</span>
+            </section>
+          ))}
+        </div>
+      </section>
+
+      <section class={ui.caseStudyDetailEvidenceSection} aria-labelledby="case-study-evidence-title">
         <div class={ui.sectionHeading}>
+          <p class={ui.signalLine}>{locale === "es" ? "Evidencia" : "Evidence"}</p>
           <h2 id="case-study-evidence-title">{caseStudyContent.publicEvidenceTitle}</h2>
         </div>
-        <div class={ui.rowList}>
-          {caseStudyContent.publicEvidence.map((evidence) => (
+        <div class={ui.caseStudyDetailEvidenceGrid}>
+          {caseStudyDetailEvidenceLinks.map((evidence) => (
             <a
-              class={ui.evidenceLink}
+              class={ui.caseStudyDetailEvidenceCard}
               href={evidence.href}
               aria-label={evidence.altText}
               target={evidence.href.startsWith("http") ? "_blank" : undefined}
@@ -715,14 +1048,18 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
             >
               <span>{evidence.label}</span>
               <strong>{evidence.description}</strong>
+              <em>{locale === "es" ? "Abrir" : "Open"} <span aria-hidden="true">→</span></em>
             </a>
           ))}
         </div>
       </section>
 
-      <section class={ui.confidentiality} aria-labelledby="case-study-confidentiality-title">
-        <h2 id="case-study-confidentiality-title">{caseStudyContent.confidentialityNote.title}</h2>
-        <p>{caseStudyContent.confidentialityNote.body}</p>
+      <section class={ui.caseStudyDetailConfidentiality} aria-labelledby="case-study-confidentiality-title">
+        <span aria-hidden="true"></span>
+        <div>
+          <h2 id="case-study-confidentiality-title">{caseStudyContent.confidentialityNote.title}</h2>
+          <p>{caseStudyContent.confidentialityNote.body}</p>
+        </div>
       </section>
     </>
   ) : isResume && resumeContent ? (
@@ -742,15 +1079,36 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
         </div>
 
         <aside class={ui.resumeProofPanel} aria-label={resumeContent.proof.label}>
-          <figure class={ui.darkPanelFigure}>
-            <img
-              class="w-full aspect-[16/10] object-cover object-center"
-              src="/images/generated/aohys-delivery-artifact.png"
-              alt={locale === "es" ? "Artefacto visual de entrega, QA y release de AOHYS" : "Visual artifact of AOHYS delivery, QA, and release practice"}
-              loading="eager"
-              decoding="async"
-            />
-          </figure>
+          <div class={ui.resumeProofCollage}>
+            <figure class={ui.resumeProofMap}>
+              <img
+                class={screenshotImageClass("diagram", "compact")}
+                src="/images/generated/aohys-architecture-proof-surface.png"
+                alt={locale === "es" ? "Mapa visual de arquitectura pública y límite privado de AOHYS" : "Visual map of AOHYS public architecture and private boundary"}
+                loading="eager"
+                decoding="async"
+              />
+            </figure>
+            <figure class={ui.resumeProofDashboard}>
+              <img
+                class={screenshotImageClass("diagram", "compact")}
+                src="/images/generated/aohys-delivery-artifact.png"
+                alt={locale === "es" ? "Artefacto visual de entrega, QA y release de AOHYS" : "Visual artifact of AOHYS delivery, QA, and release practice"}
+                loading="eager"
+                decoding="async"
+              />
+            </figure>
+            <figure class={ui.resumeProofCasa}>
+              <img
+                class={screenshotImageClass("site", "compact")}
+                src="/images/proof/casa-roca-production.png"
+                alt={locale === "es" ? "Captura pública de Casa Roca como evidencia del resume" : "Casa Roca public screenshot as resume evidence"}
+                loading="eager"
+                decoding="async"
+              />
+            </figure>
+            <span class={ui.resumeStickyProof}>{locale === "es" ? "Prueba de trabajo." : "Proof of work."}</span>
+          </div>
           <div class={ui.resumeProofCopy}>
             <span>{resumeContent.proof.label}</span>
             <strong>{resumeContent.proof.title}</strong>
@@ -768,8 +1126,8 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
         </aside>
       </section>
 
-      <section class={ui.contentSection} aria-labelledby="resume-summary-title">
-        <div class={ui.sectionHeading}>
+      <section class={ui.resumeSummarySection} aria-labelledby="resume-summary-title">
+        <div class={ui.resumeSectionTitle}>
           <h2 id="resume-summary-title">{resumeContent.summaryTitle}</h2>
         </div>
         <div class={ui.resumeCopy}>
@@ -777,11 +1135,11 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
         </div>
       </section>
 
-      <section class={ui.contentSection} aria-labelledby="resume-highlights-title">
-        <div class={ui.sectionHeading}>
+      <section class={ui.resumeLedgerSection} aria-labelledby="resume-highlights-title">
+        <div class={ui.resumeSectionTitle}>
           <h2 id="resume-highlights-title">{resumeContent.highlightsTitle}</h2>
         </div>
-        <div class={ui.rowList}>
+        <div class={ui.resumeImpactLedger}>
           {resumeContent.highlights.map((highlight) => (
             <article class={ui.resumeRow}>
               <span>{highlight.label}</span>
@@ -791,11 +1149,11 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
         </div>
       </section>
 
-      <section class={ui.contentSection} aria-labelledby="resume-projects-title">
-        <div class={ui.sectionHeading}>
+      <section class={ui.resumeLedgerSection} aria-labelledby="resume-projects-title">
+        <div class={ui.resumeSectionTitle}>
           <h2 id="resume-projects-title">{resumeContent.projectsTitle}</h2>
         </div>
-        <div class={ui.rowList}>
+        <div class={ui.resumeProjectLedger}>
           {resumeContent.projects.map((project) => (
             <article class={ui.resumeEntry}>
               <h3>{project.title}</h3>
@@ -808,18 +1166,22 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
         </div>
       </section>
 
-      <section class={ui.contentSection} aria-labelledby="resume-experience-title">
-        <div class={ui.sectionHeading}>
+      <section class={ui.resumeLedgerSection} aria-labelledby="resume-experience-title">
+        <div class={ui.resumeSectionTitle}>
           <h2 id="resume-experience-title">{resumeContent.experienceTitle}</h2>
         </div>
-        <div class={ui.rowList}>
+        <div class={ui.resumeExperienceTable}>
+          <div class={ui.resumeExperienceHeader} aria-hidden="true">
+            <span>{locale === "es" ? "Rol" : "Role"}</span>
+            <span>{locale === "es" ? "Empresa" : "Company"}</span>
+            <span>{locale === "es" ? "Periodo" : "Period"}</span>
+            <span>{locale === "es" ? "Trabajo" : "What I did"}</span>
+          </div>
           {resumeContent.experience.map((job) => (
-            <article class={ui.resumeEntry}>
-              <div class={ui.resumeEntryHeading}>
-                <h3>{job.role}</h3>
-                <span>{job.period}</span>
-              </div>
-              <p>{job.company}</p>
+            <article class={ui.resumeExperienceRow}>
+              <h3>{job.role}</h3>
+              <span>{job.company}</span>
+              <time>{job.period}</time>
               <ul>
                 {job.bullets.map((bullet) => <li>{bullet}</li>)}
               </ul>
@@ -828,11 +1190,11 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
         </div>
       </section>
 
-      <section class={ui.contentSection} aria-labelledby="resume-skills-title">
-        <div class={ui.sectionHeading}>
+      <section class={ui.resumeLedgerSection} aria-labelledby="resume-skills-title">
+        <div class={ui.resumeSectionTitle}>
           <h2 id="resume-skills-title">{resumeContent.skillsTitle}</h2>
         </div>
-        <div class={ui.rowList}>
+        <div class={ui.resumeSimpleLedger}>
           {resumeContent.skills.map((skillGroup) => (
             <article class={ui.resumeRow}>
               <span>{skillGroup.label}</span>
@@ -842,11 +1204,11 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
         </div>
       </section>
 
-      <section class={ui.contentSection} aria-labelledby="resume-education-title">
-        <div class={ui.sectionHeading}>
+      <section class={ui.resumeLedgerSection} aria-labelledby="resume-education-title">
+        <div class={ui.resumeSectionTitle}>
           <h2 id="resume-education-title">{resumeContent.educationTitle}</h2>
         </div>
-        <div class={ui.rowList}>
+        <div class={ui.resumeSimpleLedger}>
           {resumeContent.education.map((education) => (
             <article class={ui.resumeRow}>
               <span>{education.period}</span>
@@ -860,18 +1222,132 @@ const homeOutcomeMetaByContentId: Record<string, { impact: string; role: string;
         </div>
       </section>
 
-      <section class={ui.contentSection} aria-labelledby="resume-context-title">
-        <div class={ui.sectionHeading}>
+      <section class={ui.resumeLedgerSection} aria-labelledby="resume-context-title">
+        <div class={ui.resumeSectionTitle}>
           <h2 id="resume-context-title">{resumeContent.contextTitle}</h2>
           <p class={ui.sectionIntro}>{resumeContent.pdf.description}</p>
         </div>
-        <div class={ui.rowList}>
+        <div class={ui.resumeSimpleLedger}>
           {resumeContent.contextLinks.map((link) => (
             <a class={ui.evidenceLink} href={link.href}>
               <span>{link.label}</span>
               <strong>{link.text}</strong>
             </a>
           ))}
+        </div>
+      </section>
+    </>
+  ) : isPractice && practiceContent ? (
+    <>
+      <section class={ui.practicePageHero} aria-labelledby="practice-page-title" data-practice-content-id={id}>
+        <div class={ui.practicePageCopy}>
+          <p class={cx(ui.signalLine, ui.homeSignalLine)}>{routeSignal}</p>
+          <h1 id="practice-page-title">{variant.title}</h1>
+          <p class={ui.practiceHeroSubhead}>{practiceContent.practiceHeading}</p>
+          <p class={cx(ui.heroLead, ui.homeHeroLead)}>{variant.summary}</p>
+          <div class={ui.heroActions} aria-label={copy.actions}>
+            {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class={cx(ui.button, ui.buttonSecondaryOnLightHero)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          </div>
+          <div class={ui.practicePillarStrip} aria-label={locale === "es" ? "Pilares de practica" : "Practice pillars"}>
+            {practiceContent.practicePoints.map((point) => <span>{point.label}</span>)}
+          </div>
+        </div>
+
+        <figure class={ui.practiceHeroArtifact} aria-label={locale === "es" ? "Artefacto operativo de practica AOHYS" : "AOHYS practice operating artifact"}>
+          <img
+            class={screenshotImageClass("diagram", "compact")}
+            src="/images/generated/aohys-delivery-artifact.png"
+            alt={locale === "es" ? "Artefacto visual de entrega, QA y release de AOHYS" : "Visual artifact of AOHYS delivery, QA, and release practice"}
+            loading="eager"
+            decoding="async"
+          />
+          <span>{locale === "es" ? "Tests: unit, integration, E2E" : "Tests: unit, integration, E2E"}</span>
+          <span>{locale === "es" ? "Preview deploy por rama" : "Preview deploy per branch"}</span>
+          <span>{locale === "es" ? "Browser QA antes de release" : "Browser QA before release"}</span>
+        </figure>
+      </section>
+
+      <section class={ui.practiceLedgerSection} aria-labelledby="practice-ledger-title">
+        <div class={ui.practiceLedger}>
+          <div class={ui.practiceLedgerHeader} aria-hidden="true">
+            <span>{locale === "es" ? "Pilar" : "Practice pillar"}</span>
+            <span>{locale === "es" ? "Que significa" : "What it means"}</span>
+            <span>{locale === "es" ? "Evidencia / salida" : "Evidence / output"}</span>
+            <span>{locale === "es" ? "Fuente primaria" : "Primary source"}</span>
+            <span>{locale === "es" ? "Prueba" : "How we prove it"}</span>
+          </div>
+          {practiceContent.practicePoints.map((point, index) => (
+            <article class={ui.practiceLedgerRow}>
+              <div class={ui.practiceLedgerPillar}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{point.label}</strong>
+              </div>
+              <p>{point.text}</p>
+              <ul>
+                {practiceEvidenceOutputs[index].map((output) => <li>{output}</li>)}
+              </ul>
+              <strong>{practiceSources[index]}</strong>
+              <a href={getLocalizedPath("case-study:engineering-practice", locale)}>
+                {locale === "es" ? "Ver detalle" : "View details"} <span aria-hidden="true">→</span>
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class={ui.practiceFlowSection} aria-labelledby="practice-flow-title">
+        <div>
+          <p class={ui.signalLine}>{locale === "es" ? "Como se mueve el trabajo" : "How work moves"}</p>
+          <h2 id="practice-flow-title">{locale === "es" ? "De ambiguo a enviado." : "From ambiguous to shipped."}</h2>
+          <p class={ui.sectionIntro}>
+            {locale === "es"
+              ? "Cada etapa deja un artefacto revisable: alcance, arquitectura, PR, QA, preview y notas de release."
+              : "Each step leaves a reviewable artifact: scope, architecture, PR, QA, preview, and release notes."}
+          </p>
+          <div class={ui.heroActions}>
+            <a class={cx(ui.button, ui.buttonSecondary)} href={getLocalizedPath("architecture", locale)}>
+              {locale === "es" ? "Ver arquitectura" : "See architecture"} <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+        <div class={ui.practiceFlowMap}>
+          {practiceFlow.map((step) => (
+            <article>
+              <strong>{step.title}</strong>
+              <p>{step.body}</p>
+              <span>{step.artifact}</span>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class={ui.practiceQualityBand} aria-labelledby="practice-quality-title">
+        <div class={ui.architectureStageCopy}>
+          <p class={cx(ui.signalLine, ui.darkSignalLine)}>{locale === "es" ? "Calidad integrada" : "Quality is built in"}</p>
+          <h2 id="practice-quality-title">{locale === "es" ? "Los gates de calidad son parte del producto." : "Quality gates are part of the product."}</h2>
+          <p class={ui.architectureLead}>
+            {engineeringPracticeCaseContent?.qualitySecurityPerformance.body ?? practiceContent.practiceBody}
+          </p>
+          <div class={ui.heroActions}>
+            <a class={cx(ui.button, ui.buttonPrimary)} href={getLocalizedPath("architecture", locale)}>
+              {locale === "es" ? "Ver todos los checks" : "View all checks"} <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+        <div class={ui.qualityGateGrid}>
+          {qualityGates.map((gate) => (
+            <article>
+              <strong>{gate.title}</strong>
+              <ul>
+                {gate.bullets.map((bullet) => <li>{bullet}</li>)}
+              </ul>
+            </article>
+          ))}
+          <aside>
+            <strong>{locale === "es" ? "Boundary privado" : "Private boundary"}</strong>
+            <p>{engineeringPracticeCaseContent?.confidentialityNote.body}</p>
+          </aside>
         </div>
       </section>
     </>
