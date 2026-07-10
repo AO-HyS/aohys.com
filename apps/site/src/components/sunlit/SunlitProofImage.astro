@@ -9,6 +9,7 @@ interface Props {
   loading?: "eager" | "lazy";
   decoding?: "async" | "auto" | "sync";
   stageImage?: boolean;
+  preferFull?: boolean;
   class?: string;
   width?: number;
   height?: number;
@@ -22,11 +23,12 @@ const {
   loading = "lazy",
   decoding = "async",
   stageImage = false,
+  preferFull = false,
   class: className,
   width = 1600,
   height = 1000,
 } = Astro.props;
-const media = resolveProofMedia(contentId, evidenceSrc, alt, evidenceKind);
+const media = resolveProofMedia(contentId, evidenceSrc, alt, evidenceKind, preferFull);
 ---
 
 <img

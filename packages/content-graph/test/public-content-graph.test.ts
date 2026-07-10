@@ -13,6 +13,7 @@ import {
   getLanguageAlternates,
   getLocaleVariant,
   getLocalizedPath,
+  getPracticePageContent,
   getPublicNavigation,
   getPublicRouteMap,
   getResumePageContent,
@@ -215,10 +216,10 @@ describe("Public Content Graph", () => {
     ]);
     expect(englishNavigation.items.map((item) => item.label)).toEqual([
       "Work",
-      "Practice",
+      "Services",
       "About",
       "Architecture",
-      "Talk",
+      "Start a conversation",
     ]);
     expect(englishNavigation.items.map((item) => item.href)).toEqual([
       "/case-studies",
@@ -279,7 +280,14 @@ describe("Public Content Graph", () => {
       title: "Dashboard Alpha",
       primaryActionLabel: "Open project",
       caseStudyContent: {
-        statusLabel: "Published dashboard project",
+        statusLabel: "Product system",
+        publicEvidenceTitle: "Project links",
+        constraints: {
+          body: "Project scope, data ownership, integration seams, and release constraints stay explicit as the system evolves.",
+        },
+        confidentialityNote: {
+          body: "Client details remain private.",
+        },
         publicEvidence: [
           {
             href: "https://example.com/dashboard-alpha",
@@ -556,7 +564,25 @@ describe("Public Content Graph", () => {
     const englishArchitecture = getArchitecturePageContent("en");
     const spanishArchitecture = getArchitecturePageContent("es");
 
-    expect(englishArchitecture.heading).toBe("Public code for systems that stay private.");
+    expect(englishArchitecture.heading).toBe("Architecture that stays operable after launch.");
+    expect(englishArchitecture.layers.map((layer) => layer.id)).toEqual([
+      "experience",
+      "edge",
+      "product-data",
+      "communication",
+      "observability",
+      "delivery",
+    ]);
+    expect(englishArchitecture.layers.flatMap((layer) => layer.technologies)).toEqual(expect.arrayContaining([
+      "React",
+      "Astro",
+      "Cloudflare Pages",
+      "Convex",
+      "Resend",
+      "PostHog",
+      "GitHub",
+    ]));
+    expect(englishArchitecture.tradeoffs).toHaveLength(3);
     expect(englishArchitecture.sourceLinks.map((link) => link.href)).toEqual([
       "https://github.com/AO-HyS/aohys.com",
       "https://github.com/AO-HyS/aohys.com/blob/develop/README.md",
@@ -568,7 +594,7 @@ describe("Public Content Graph", () => {
     expect(englishArchitecture.sections.map((section) => section.title)).toContain("Environment Contract");
     expect(englishArchitecture.sections.map((section) => section.title)).toContain("Public Content Graph");
     expect(englishArchitecture.sections.every((section) => section.body.length > 40)).toBe(true);
-    expect(spanishArchitecture.heading).toBe("Código público para sistemas que siguen privados.");
+    expect(spanishArchitecture.heading).toBe("Arquitectura que sigue siendo operable después del lanzamiento.");
     expect(spanishArchitecture.sourceLinks[0]?.href).toBe("https://github.com/AO-HyS/aohys.com");
   });
 
@@ -586,8 +612,8 @@ describe("Public Content Graph", () => {
     expect(englishIndex.entries.map((entry) => entry.statusLabel)).toEqual([
       "Live hospitality site",
       "Active build",
-      "Private build",
-      "Enterprise/confidential",
+      "Product system",
+      "Enterprise systems",
       "Engineering practice",
     ]);
     expect(spanishIndex.entries.map((entry) => entry.path)).toEqual([
@@ -610,7 +636,7 @@ describe("Public Content Graph", () => {
       href: "/downloads/alejandro-ortiz-corro-resume.pdf",
       fileName: "alejandro-ortiz-corro-resume.pdf",
     });
-    expect(englishResume.proof.title).toBe("The proof packet supports a serious review.");
+    expect(englishResume.proof.title).toBe("9+ years shipping product systems that stay reliable after launch.");
     expect(englishResume.summary.join(" ")).toMatch(/React|TypeScript|Next\.js|agents|observability/i);
     expect(englishResume.contextLinks.map((link) => link.href)).toEqual([
       "/case-studies",
@@ -640,22 +666,39 @@ describe("Public Content Graph", () => {
     expect(englishCaseStudy?.statusLabel).toBe("Live hospitality site");
     expect(englishCaseStudy?.problem.title).toBe("Problem");
     expect(englishCaseStudy?.businessOutcome.title).toBe("Business outcome");
-    expect(englishCaseStudy?.role.body).toMatch(/Public site delivery/i);
-    expect(englishCaseStudy?.constraints.body).toMatch(/private booking data/i);
+    expect(englishCaseStudy?.role.body).toMatch(/Product direction/i);
+    expect(englishCaseStudy?.constraints.body).toMatch(/two languages/i);
     expect(englishCaseStudy?.architectureDecisions.body).toMatch(/bilingual content/i);
     expect(englishCaseStudy?.executionHighlights.body).toMatch(/production deployment/i);
-    expect(englishCaseStudy?.qualitySecurityPerformance.body).toMatch(/sensitive operational data/i);
+    expect(englishCaseStudy?.qualitySecurityPerformance.body).toMatch(/optimized media/i);
     expect(englishCaseStudy?.publicEvidence).toHaveLength(1);
     expect(englishCaseStudy?.publicEvidence[0]).toMatchObject({
       href: "https://casa-roca.mx",
       publicSafe: true,
       altText: "Casa Roca production website",
     });
-    expect(englishCaseStudy?.confidentialityNote.body).toMatch(/operational data remain private/i);
+    expect(englishCaseStudy?.confidentialityNote.title).toBe("Scope note");
     expect(spanishCaseStudy?.statusLabel).toBe("Sitio de hospitalidad en vivo");
     expect(spanishCaseStudy?.publicEvidence[0]?.altText).toBe(
       "Sitio Casa Roca en producción",
     );
+  });
+
+  it("returns typed product engineering services in both locales", () => {
+    const englishPractice = getPracticePageContent("en");
+    const spanishPractice = getPracticePageContent("es");
+
+    expect(englishPractice.services.map((service) => service.id)).toEqual([
+      "product-systems",
+      "architecture-modernization",
+      "delivery-acceleration",
+    ]);
+    expect(englishPractice.services.every((service) => service.problem.length > 50)).toBe(true);
+    expect(englishPractice.services.every((service) => service.result.length > 50)).toBe(true);
+    expect(englishPractice.process).toHaveLength(4);
+    expect(englishPractice.relatedContentIds).toEqual(["architecture", "case-studies"]);
+    expect(spanishPractice.services).toHaveLength(3);
+    expect(spanishPractice.deliverables).toHaveLength(5);
   });
 
   it("fails explicitly when a locale variant is missing", () => {

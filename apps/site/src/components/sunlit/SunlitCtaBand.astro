@@ -18,8 +18,8 @@ const { heading, body, href, label, secondaryHref, secondaryLabel } = Astro.prop
     {body && <p>{body}</p>}
   </div>
   <div class="sunlit-cta-actions">
-    {secondaryHref && secondaryLabel && <a class="sunlit-cta-secondary" href={secondaryHref}>{secondaryLabel}</a>}
-    <a class="sunlit-cta-primary" href={href}>{label}<span aria-hidden="true">→</span></a>
+    {secondaryHref && secondaryLabel && <a class="sunlit-text-action" href={secondaryHref}>{secondaryLabel}</a>}
+    <a class="sunlit-ticket-button" href={href}>{label}<span aria-hidden="true">→</span></a>
   </div>
 </section>
 
@@ -57,13 +57,14 @@ const { heading, body, href, label, secondaryHref, secondaryLabel } = Astro.prop
   .sunlit-cta-band h2 { max-width: 18ch; margin: 0; font-size: clamp(2.2rem, 5vw, 4.75rem); font-weight: 780; letter-spacing: -.035em; line-height: 1; text-wrap: balance; }
   .sunlit-cta-band p { max-width: 56ch; margin: 1rem 0 0; }
   .sunlit-cta-actions { display: flex; align-items: center; gap: .75rem; }
-  .sunlit-cta-actions a { display: inline-flex; min-height: 3.5rem; align-items: center; gap: 2rem; padding: 0 1.25rem; border: 2px solid var(--color-ink); border-radius: .6rem; text-decoration: none; font-weight: 760; }
-  .sunlit-cta-primary { background: var(--color-primary); box-shadow: 0 4px 0 var(--color-ink); }
-  .sunlit-cta-secondary { background: var(--color-bg); }
+  .sunlit-cta-actions a { display: inline-flex; align-items: center; gap: 2rem; font-weight: 760; }
   .sunlit-cta-actions a:hover { transform: translateY(-2px); }
   @media (max-width: 760px) {
     .sunlit-cta-band { grid-template-columns: 1fr; align-items: start; }
+    .sunlit-cta-perf { left: 1.2rem; }
+    .sunlit-cta-band > div:first-of-type { padding-left: 1.2rem; }
     .sunlit-cta-actions { align-items: stretch; flex-direction: column; }
-    .sunlit-cta-actions a { justify-content: space-between; }
+    .sunlit-cta-actions { padding-left: 1.2rem; }
+    .sunlit-cta-actions a { max-width: 100%; justify-content: space-between; }
   }
 </style>

@@ -15,6 +15,15 @@ describe("contact HTTP error boundary", () => {
       },
     });
 
+    expect(buildPublicContactError(new Error("phone is required."))).toEqual({
+      status: 400,
+      body: {
+        ok: false,
+        code: "validation_error",
+        error: "Contact submission is invalid.",
+      },
+    });
+
     expect(buildPublicContactError(new Error("Resend notification failed with status 500."))).toEqual({
       status: 502,
       body: {

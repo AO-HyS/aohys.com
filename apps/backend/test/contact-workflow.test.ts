@@ -29,6 +29,33 @@ const validProviderValues = {
 };
 
 describe("contact lead workflow", () => {
+  it("requires a phone number when WhatsApp is the preferred contact path", async () => {
+    const persistLead = vi.fn();
+
+    await expect(submitContactLead(
+      {
+        name: "Alejandro Ortiz",
+        email: "alejandro.ortiz@aohys.com",
+        preferredContactPath: "whatsapp",
+        intent: "project",
+        message: "I need help shipping a product workflow.",
+        sourcePath: "/contact",
+        locale: "en",
+        consentToContact: true,
+      },
+      {
+        environment: "preview",
+        values: validProviderValues,
+        adapters: {
+          persistLead,
+          sendNotification: vi.fn(),
+          captureAnalyticsEvent: vi.fn(),
+        },
+      },
+    )).rejects.toThrow("phone is required.");
+    expect(persistLead).not.toHaveBeenCalled();
+  });
+
   it("stores a valid lead, sends a notification, and captures only safe analytics metadata", async () => {
     const persistedLeads: unknown[] = [];
     const notifications: unknown[] = [];

@@ -1,0 +1,489 @@
+---
+interface Props {
+  variant: "home" | "architecture" | "contact";
+  label: string;
+  class?: string;
+}
+
+const { variant, label, class: className } = Astro.props;
+---
+
+<div class:list={["sunlit-webgl", className]} data-sunlit-webgl data-scene-variant={variant} role="img" aria-label={label}>
+  <div class="sunlit-webgl-fallback" aria-hidden="true"><span></span><i></i><b></b><em></em></div>
+  <canvas aria-hidden="true"></canvas>
+</div>
+
+<script>
+  type SceneVariant = "home" | "architecture" | "contact";
+  type GLContext = WebGLRenderingContext | WebGL2RenderingContext;
+
+  const vertexBody = `
+    POSITION_QUALIFIER vec2 a_position;
+    VARYING_OUT vec2 v_uv;
+
+    void main() {
+      v_uv = a_position * 0.5 + 0.5;
+      gl_Position = vec4(a_position, 0.0, 1.0);
+    }
+  `;
+
+  const fragmentBody = `
+    precision highp float;
+
+    VARYING_IN vec2 v_uv;
+    FRAGMENT_OUTPUT
+
+    uniform vec2 u_resolution;
+    uniform vec2 u_pointer;
+    uniform float u_time;
+    uniform float u_variant;
+    uniform float u_tone;
+    uniform float u_transition;
+
+    const vec3 INK = vec3(0.2784, 0.2353, 0.2000);
+    const vec3 HONEY = vec3(0.9961, 0.7843, 0.4078);
+    const vec3 OLIVE = vec3(0.6706, 0.7608, 0.4392);
+    const vec3 APRICOT = vec3(0.9922, 0.6549, 0.4118);
+    const vec3 PAPER = vec3(1.0, 0.9922, 0.9490);
+
+    float hash21(vec2 p) {
+      p = fract(p * vec2(123.34, 456.21));
+      p += dot(p, p + 45.32);
+      return fract(p.x * p.y);
+    }
+
+    float valueNoise(vec2 p) {
+      vec2 cell = floor(p);
+      vec2 local = fract(p);
+      local = local * local * (3.0 - 2.0 * local);
+      return mix(
+        mix(hash21(cell), hash21(cell + vec2(1.0, 0.0)), local.x),
+        mix(hash21(cell + vec2(0.0, 1.0)), hash21(cell + vec2(1.0)), local.x),
+        local.y
+      );
+    }
+
+    float segmentDistance(vec2 p, vec2 a, vec2 b) {
+      vec2 pa = p - a;
+      vec2 ba = b - a;
+      float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+      return length(pa - ba * h);
+    }
+
+    vec3 toneColor(float tone) {
+      if (tone < 1.0) return mix(HONEY, OLIVE, smoothstep(0.08, 0.92, tone));
+      return mix(OLIVE, APRICOT, smoothstep(1.08, 1.92, tone));
+    }
+
+    vec3 homeField(vec2 uv) {
+      float aspect = u_resolution.x / max(u_resolution.y, 1.0);
+      vec2 p = uv - 0.5;
+      p.x *= aspect;
+      p += vec2(u_pointer.x, -u_pointer.y) * 0.022;
+
+      float drift = u_time * 0.12;
+      float depth = 1.0 + p.y * 0.26;
+      p.x /= depth;
+      p.x += sin(p.y * 5.0 + drift) * 0.012;
+      p.y += sin(p.x * 3.2 - drift * 0.8) * 0.008;
+
+      vec3 activeColor = toneColor(clamp(u_tone, 0.0, 2.0));
+      vec3 color = mix(PAPER, HONEY, 0.075);
+      float foldA = -0.20 + p.x * 0.12 + sin(p.x * 2.5 + drift) * 0.026;
+      float foldB = -0.01 - p.x * 0.08 + sin(p.x * 3.4 - drift * 0.7) * 0.022;
+      float foldC = 0.19 + p.x * 0.06 + sin(p.x * 2.0 + drift * 0.55) * 0.018;
+      float maskA = 1.0 - smoothstep(foldA - 0.045, foldA + 0.045, p.y);
+      float maskB = 1.0 - smoothstep(foldB - 0.04, foldB + 0.04, p.y);
+      float maskC = 1.0 - smoothstep(foldC - 0.035, foldC + 0.035, p.y);
+      color = mix(color, mix(APRICOT, PAPER, 0.30), maskC * 0.34);
+      color = mix(color, mix(activeColor, PAPER, 0.24), maskB * 0.44);
+      color = mix(color, mix(OLIVE, PAPER, 0.22), maskA * 0.52);
+
+      float sweepPosition = mix(-1.2, 1.2, 0.5 + 0.5 * sin(u_time * 0.16));
+      float sweep = exp(-10.0 * abs((p.x + p.y * 0.34) - sweepPosition));
+      float reveal = exp(-15.0 * abs(p.x + p.y * 0.18 - (u_transition - 0.5) * 1.7));
+      color = mix(color, PAPER, sweep * 0.11 + reveal * u_transition * 0.18);
+      color *= 0.988 + valueNoise((p + drift) * 18.0) * 0.024;
+      return color;
+    }
+
+    vec3 architectureField(vec2 uv) {
+      float aspect = u_resolution.x / max(u_resolution.y, 1.0);
+      vec2 p = uv - 0.5;
+      p.x *= aspect;
+      p += vec2(u_pointer.x, -u_pointer.y) * 0.018;
+      p.y += 0.04;
+
+      float perspective = 0.88 + (p.y + 0.5) * 0.42;
+      vec2 projected = vec2(p.x / perspective, p.y);
+      float verticals = abs(fract(projected.x * 5.0 + 0.5) - 0.5);
+      float horizontals = abs(fract((p.y + 0.48) * 6.0 + p.x * 0.12) - 0.5);
+      float grid = (1.0 - smoothstep(0.016, 0.034, min(verticals, horizontals))) * 0.12;
+
+      vec2 a = vec2(-0.66, 0.27);
+      vec2 b = vec2(-0.23, 0.06);
+      vec2 c = vec2(0.16, 0.20);
+      vec2 d = vec2(0.62, -0.04);
+      vec2 e = vec2(-0.05, -0.31);
+      float path = min(segmentDistance(projected, a, b), segmentDistance(projected, b, c));
+      path = min(path, segmentDistance(projected, c, d));
+      path = min(path, segmentDistance(projected, b, e));
+      path = min(path, segmentDistance(projected, e, d));
+      float topology = 1.0 - smoothstep(0.008, 0.023, path);
+
+      float phase = fract(u_time * 0.075);
+      vec2 signalA = mix(a, b, phase);
+      vec2 signalB = mix(b, c, fract(phase + 0.35));
+      vec2 signalC = mix(c, d, fract(phase + 0.68));
+      float signal = exp(-80.0 * dot(projected - signalA, projected - signalA));
+      signal += exp(-80.0 * dot(projected - signalB, projected - signalB));
+      signal += exp(-80.0 * dot(projected - signalC, projected - signalC));
+
+      float horizon = smoothstep(-0.42, 0.38, p.y);
+      vec3 color = mix(mix(PAPER, HONEY, 0.07), mix(PAPER, OLIVE, 0.16), horizon);
+      color = mix(color, INK, grid);
+      color = mix(color, OLIVE, topology * 0.33);
+      color = mix(color, HONEY, min(signal, 1.0) * topology * 0.50);
+      float maskedLight = exp(-7.0 * abs(projected.y + projected.x * 0.20 - sin(u_time * 0.14) * 0.28));
+      color = mix(color, APRICOT, maskedLight * topology * 0.18);
+      color *= 0.99 + valueNoise(projected * 20.0) * 0.018;
+      return color;
+    }
+
+    vec3 contactField(vec2 uv) {
+      float aspect = u_resolution.x / max(u_resolution.y, 1.0);
+      vec2 p = uv - 0.5;
+      p.x *= aspect;
+      p += vec2(u_pointer.x, -u_pointer.y) * 0.024;
+
+      vec2 centerA = vec2(-0.35, 0.08);
+      vec2 centerB = vec2(0.0, -0.04);
+      vec2 centerC = vec2(0.35, 0.07);
+      float fieldA = exp(-7.2 * dot(p - centerA, p - centerA));
+      float fieldB = exp(-7.8 * dot(p - centerB, p - centerB));
+      float fieldC = exp(-7.2 * dot(p - centerC, p - centerC));
+      float overlap = min(1.0, fieldA * fieldB + fieldB * fieldC);
+      float refraction = sin((p.x * 1.2 + p.y) * 13.0 - u_time * 0.42) * overlap;
+      vec2 warped = p + vec2(refraction, -refraction) * 0.011;
+      fieldA = exp(-7.2 * dot(warped - centerA, warped - centerA));
+      fieldB = exp(-7.8 * dot(warped - centerB, warped - centerB));
+      fieldC = exp(-7.2 * dot(warped - centerC, warped - centerC));
+
+      vec3 color = mix(PAPER, HONEY, 0.055);
+      color = mix(color, mix(OLIVE, PAPER, 0.28), fieldA * 0.54);
+      color = mix(color, mix(HONEY, PAPER, 0.20), fieldB * 0.58);
+      color = mix(color, mix(APRICOT, PAPER, 0.24), fieldC * 0.50);
+      float connectiveLight = pow(max(fieldA * fieldB, fieldB * fieldC), 0.72);
+      color = mix(color, PAPER, connectiveLight * (0.24 + refraction * 0.06));
+      float lowSweep = exp(-12.0 * abs(p.y + 0.26 + sin(p.x * 3.0 + u_time * 0.16) * 0.025));
+      color = mix(color, INK, lowSweep * 0.055);
+      color *= 0.99 + valueNoise((warped + u_time * 0.006) * 22.0) * 0.018;
+      return color;
+    }
+
+    void main() {
+      vec3 color = homeField(v_uv);
+      if (u_variant > 0.5) color = architectureField(v_uv);
+      if (u_variant > 1.5) color = contactField(v_uv);
+      WRITE_COLOR(vec4(color, 1.0));
+    }
+  `;
+
+  for (const root of document.querySelectorAll("[data-sunlit-webgl]")) {
+    if (!(root instanceof HTMLElement) || root.dataset.webglMounted === "true") continue;
+    const canvas = root.querySelector("canvas");
+    if (!(canvas instanceof HTMLCanvasElement)) continue;
+    const sceneRoot: HTMLElement = root;
+    const sceneCanvas: HTMLCanvasElement = canvas;
+    root.dataset.webglMounted = "true";
+
+    const variant = (root.dataset.sceneVariant ?? "home") as SceneVariant;
+    const variantIndex = { home: 0, architecture: 1, contact: 2 }[variant];
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const pointerSurface = root.parentElement ?? root;
+    let gl: GLContext | null = null;
+    let program: WebGLProgram | null = null;
+    let positionBuffer: WebGLBuffer | null = null;
+    let uniforms: Record<string, WebGLUniformLocation | null> = {};
+    let resizeObserver: ResizeObserver | null = null;
+    let intersectionObserver: IntersectionObserver | null = null;
+    let frame = 0;
+    let disposed = false;
+    let intersecting = false;
+    let contextLost = false;
+    let pointerX = 0;
+    let pointerY = 0;
+    let pointerTargetX = 0;
+    let pointerTargetY = 0;
+    let currentTone = 0;
+    let targetTone = 0;
+    let transitionEnergy = 0;
+
+    const canRender = () => !disposed && !contextLost && !reducedMotion.matches && intersecting && document.visibilityState === "visible";
+
+    const shaderSource = (isWebGL2: boolean, body: string, stage: "vertex" | "fragment") => {
+      const version = isWebGL2 ? "#version 300 es\n" : "";
+      return version + body
+        .replace("POSITION_QUALIFIER", isWebGL2 ? "in" : "attribute")
+        .replace("VARYING_OUT", isWebGL2 ? "out" : "varying")
+        .replace("VARYING_IN", isWebGL2 ? "in" : "varying")
+        .replace("FRAGMENT_OUTPUT", isWebGL2 && stage === "fragment" ? "out vec4 fragmentColor;" : "")
+        .replace("WRITE_COLOR", isWebGL2 ? "fragmentColor =" : "gl_FragColor =");
+    };
+
+    const compileShader = (context: GLContext, type: number, source: string) => {
+      const shader = context.createShader(type);
+      if (!shader) throw new Error("Unable to create shader");
+      context.shaderSource(shader, source);
+      context.compileShader(shader);
+      if (!context.getShaderParameter(shader, context.COMPILE_STATUS)) {
+        const reason = context.getShaderInfoLog(shader) ?? "Shader compilation failed";
+        context.deleteShader(shader);
+        throw new Error(reason);
+      }
+      return shader;
+    };
+
+    const releaseProgram = (loseContext = false) => {
+      stopLoop();
+      if (gl && positionBuffer) gl.deleteBuffer(positionBuffer);
+      if (gl && program) gl.deleteProgram(program);
+      if (loseContext && gl) gl.getExtension("WEBGL_lose_context")?.loseContext();
+      positionBuffer = null;
+      program = null;
+      uniforms = {};
+      gl = null;
+    };
+
+    const resize = (queueFrame = true) => {
+      if (!gl || !program) return;
+      const width = Math.max(root.clientWidth, 1);
+      const height = Math.max(root.clientHeight, 1);
+      const dpr = Math.min(window.devicePixelRatio || 1, width < 720 ? 1 : 1.5);
+      const pixelWidth = Math.max(Math.round(width * dpr), 1);
+      const pixelHeight = Math.max(Math.round(height * dpr), 1);
+      if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+        canvas.width = pixelWidth;
+        canvas.height = pixelHeight;
+      }
+      gl.viewport(0, 0, pixelWidth, pixelHeight);
+      if (queueFrame) schedule();
+    };
+
+    const renderFrame = (time: number) => {
+      frame = 0;
+      if (!gl || !program || !positionBuffer || !canRender()) return;
+      pointerX += (pointerTargetX - pointerX) * 0.065;
+      pointerY += (pointerTargetY - pointerY) * 0.065;
+      currentTone += (targetTone - currentTone) * 0.052;
+      transitionEnergy *= 0.94;
+
+      gl.useProgram(program);
+      gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
+      gl.uniform2f(uniforms.pointer, pointerX, pointerY);
+      gl.uniform1f(uniforms.time, time * 0.001);
+      gl.uniform1f(uniforms.variant, variantIndex);
+      gl.uniform1f(uniforms.tone, currentTone);
+      gl.uniform1f(uniforms.transition, transitionEnergy);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      schedule();
+    };
+
+    function schedule() {
+      if (canRender() && frame === 0) frame = window.requestAnimationFrame(renderFrame);
+    }
+
+    function stopLoop() {
+      window.cancelAnimationFrame(frame);
+      frame = 0;
+    }
+
+    function restartLoop() {
+      stopLoop();
+      if (!canRender()) return;
+      resize(false);
+      frame = window.requestAnimationFrame(renderFrame);
+    }
+
+    const initialize = () => {
+      if (disposed || reducedMotion.matches || contextLost || program) return;
+      try {
+        const options: WebGLContextAttributes = {
+          alpha: false,
+          antialias: false,
+          depth: false,
+          stencil: false,
+          powerPreference: "low-power",
+          premultipliedAlpha: false,
+        };
+        gl = canvas.getContext("webgl2", options) ?? canvas.getContext("webgl", options);
+        if (!gl) throw new Error("WebGL is unavailable");
+        const isWebGL2 = typeof WebGL2RenderingContext !== "undefined" && gl instanceof WebGL2RenderingContext;
+        const vertexShader = compileShader(gl, gl.VERTEX_SHADER, shaderSource(isWebGL2, vertexBody, "vertex"));
+        const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, shaderSource(isWebGL2, fragmentBody, "fragment"));
+        program = gl.createProgram();
+        if (!program) throw new Error("Unable to create WebGL program");
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        gl.linkProgram(program);
+        gl.deleteShader(vertexShader);
+        gl.deleteShader(fragmentShader);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program) ?? "Program link failed");
+
+        positionBuffer = gl.createBuffer();
+        if (!positionBuffer) throw new Error("Unable to create position buffer");
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+        const positionLocation = gl.getAttribLocation(program, "a_position");
+        gl.enableVertexAttribArray(positionLocation);
+        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+        uniforms = {
+          resolution: gl.getUniformLocation(program, "u_resolution"),
+          pointer: gl.getUniformLocation(program, "u_pointer"),
+          time: gl.getUniformLocation(program, "u_time"),
+          variant: gl.getUniformLocation(program, "u_variant"),
+          tone: gl.getUniformLocation(program, "u_tone"),
+          transition: gl.getUniformLocation(program, "u_transition"),
+        };
+        resize(false);
+        root.dataset.webglState = "ready";
+        delete root.dataset.webglFallbackReason;
+        delete root.dataset.webglFallbackDetail;
+        restartLoop();
+      } catch (error) {
+        root.dataset.webglState = "fallback";
+        root.dataset.webglFallbackReason = error instanceof Error ? "initialization" : "unknown";
+        root.dataset.webglFallbackDetail = error instanceof Error ? error.message.slice(0, 160) : "Unknown initialization error";
+        releaseProgram();
+      }
+    };
+
+    function onPointerMove(event: PointerEvent) {
+      const bounds = pointerSurface.getBoundingClientRect();
+      pointerTargetX = ((event.clientX - bounds.left) / Math.max(bounds.width, 1) - 0.5) * 2;
+      pointerTargetY = ((event.clientY - bounds.top) / Math.max(bounds.height, 1) - 0.5) * 2;
+      schedule();
+    }
+
+    function onPointerLeave() {
+      pointerTargetX = 0;
+      pointerTargetY = 0;
+    }
+
+    function onVisibilityChange() { schedule(); }
+
+    function onProjectChange(event: Event) {
+      const projectEvent = event as CustomEvent<{ index?: number }>;
+      targetTone = Math.abs(Number(projectEvent.detail?.index ?? 0)) % 3;
+      transitionEnergy = 1;
+      schedule();
+    }
+
+    function onReducedMotionChange() {
+      if (reducedMotion.matches) {
+        stopLoop();
+        sceneRoot.dataset.webglState = "fallback";
+        sceneRoot.dataset.webglFallbackReason = "reduced-motion";
+        return;
+      }
+      delete sceneRoot.dataset.webglFallbackReason;
+      delete sceneRoot.dataset.webglFallbackDetail;
+      if (!gl || !program || !positionBuffer) {
+        sceneRoot.dataset.webglState = "loading";
+        initialize();
+        return;
+      }
+      sceneRoot.dataset.webglState = "ready";
+      restartLoop();
+    }
+
+    function onContextLost(event: Event) {
+      event.preventDefault();
+      contextLost = true;
+      stopLoop();
+      positionBuffer = null;
+      program = null;
+      uniforms = {};
+      gl = null;
+      sceneRoot.dataset.webglState = "fallback";
+      sceneRoot.dataset.webglFallbackReason = "context-lost";
+    }
+
+    function onContextRestored() {
+      contextLost = false;
+      delete sceneRoot.dataset.webglFallbackReason;
+      delete sceneRoot.dataset.webglFallbackDetail;
+      initialize();
+    }
+
+    function cleanup() {
+      if (disposed) return;
+      disposed = true;
+      resizeObserver?.disconnect();
+      intersectionObserver?.disconnect();
+      pointerSurface.removeEventListener("pointermove", onPointerMove);
+      pointerSurface.removeEventListener("pointerleave", onPointerLeave);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("pagehide", cleanup);
+      window.removeEventListener("sunlit:project-change", onProjectChange);
+      reducedMotion.removeEventListener("change", onReducedMotionChange);
+      sceneCanvas.removeEventListener("webglcontextlost", onContextLost);
+      sceneCanvas.removeEventListener("webglcontextrestored", onContextRestored);
+      releaseProgram(true);
+    }
+
+    resizeObserver = new ResizeObserver(() => resize());
+    resizeObserver.observe(root);
+    intersectionObserver = new IntersectionObserver(([entry]) => {
+      intersecting = Boolean(entry?.isIntersecting);
+      if (!intersecting) {
+        stopLoop();
+      }
+      schedule();
+    }, { rootMargin: "160px" });
+    intersectionObserver.observe(root);
+    pointerSurface.addEventListener("pointermove", onPointerMove, { passive: true });
+    pointerSurface.addEventListener("pointerleave", onPointerLeave);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pagehide", cleanup);
+    window.addEventListener("sunlit:project-change", onProjectChange);
+    reducedMotion.addEventListener("change", onReducedMotionChange);
+    canvas.addEventListener("webglcontextlost", onContextLost);
+    canvas.addEventListener("webglcontextrestored", onContextRestored);
+
+    if (reducedMotion.matches) {
+      root.dataset.webglState = "fallback";
+      root.dataset.webglFallbackReason = "reduced-motion";
+    } else {
+      root.dataset.webglState = "loading";
+      initialize();
+    }
+  }
+</script>
+
+<style>
+  .sunlit-webgl { position: relative; min-height: 20rem; overflow: hidden; background: color-mix(in oklch, var(--color-primary), white 87%); isolation: isolate; }
+  .sunlit-webgl canvas, .sunlit-webgl-fallback { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .sunlit-webgl canvas { z-index: 1; opacity: 0; transition: opacity 260ms ease; }
+  .sunlit-webgl[data-webgl-state="ready"] canvas { opacity: .9; }
+  .sunlit-webgl-fallback { overflow: hidden; background: linear-gradient(155deg, color-mix(in oklch, var(--color-primary), white 82%), color-mix(in oklch, var(--color-secondary), white 82%)); transition: opacity 260ms ease; }
+  .sunlit-webgl[data-webgl-state="ready"] .sunlit-webgl-fallback { opacity: 0; }
+  .sunlit-webgl-fallback span, .sunlit-webgl-fallback i, .sunlit-webgl-fallback b, .sunlit-webgl-fallback em { position: absolute; display: block; width: 130%; height: 42%; left: -15%; border: 0; transform-origin: center; }
+  .sunlit-webgl-fallback span { bottom: -14%; transform: rotate(4deg); background: color-mix(in oklch, var(--color-secondary), white 24%); }
+  .sunlit-webgl-fallback i { bottom: 9%; transform: rotate(-3deg); background: color-mix(in oklch, var(--color-primary), white 20%); }
+  .sunlit-webgl-fallback b { bottom: 34%; transform: rotate(2deg); background: color-mix(in oklch, var(--color-accent), white 34%); }
+  .sunlit-webgl-fallback em { bottom: 58%; transform: rotate(-2deg); background: color-mix(in oklch, var(--color-primary), white 76%); }
+  [data-scene-variant="architecture"] .sunlit-webgl-fallback { background-color: color-mix(in oklch, var(--color-secondary), white 86%); background-image: linear-gradient(116deg, transparent 49.4%, color-mix(in oklch, var(--color-ink), transparent 83%) 50%, transparent 50.6%), linear-gradient(64deg, transparent 49.4%, color-mix(in oklch, var(--color-ink), transparent 83%) 50%, transparent 50.6%), linear-gradient(color-mix(in oklch, var(--color-ink), transparent 90%) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklch, var(--color-ink), transparent 90%) 1px, transparent 1px); background-size: auto, auto, 3.6rem 3.6rem, 3.6rem 3.6rem; }
+  [data-scene-variant="architecture"] .sunlit-webgl-fallback span, [data-scene-variant="architecture"] .sunlit-webgl-fallback i, [data-scene-variant="architecture"] .sunlit-webgl-fallback b, [data-scene-variant="architecture"] .sunlit-webgl-fallback em { height: 2px; width: 74%; left: 13%; bottom: auto; transform: none; background: color-mix(in oklch, var(--color-ink), transparent 48%); }
+  [data-scene-variant="architecture"] .sunlit-webgl-fallback span { top: 28%; transform: rotate(10deg); }
+  [data-scene-variant="architecture"] .sunlit-webgl-fallback i { top: 48%; transform: rotate(-14deg); background: var(--color-secondary); }
+  [data-scene-variant="architecture"] .sunlit-webgl-fallback b { top: 64%; transform: rotate(7deg); background: var(--color-primary); }
+  [data-scene-variant="architecture"] .sunlit-webgl-fallback em { top: 78%; width: 42%; left: 29%; transform: rotate(-9deg); background: var(--color-accent); }
+  [data-scene-variant="contact"] .sunlit-webgl-fallback { background: radial-gradient(ellipse at 27% 46%, color-mix(in oklch, var(--color-secondary), white 26%) 0 18%, transparent 52%), radial-gradient(ellipse at 50% 53%, color-mix(in oklch, var(--color-primary), white 20%) 0 20%, transparent 54%), radial-gradient(ellipse at 73% 46%, color-mix(in oklch, var(--color-accent), white 30%) 0 18%, transparent 52%), color-mix(in oklch, var(--color-primary), white 90%); }
+  [data-scene-variant="contact"] .sunlit-webgl-fallback span, [data-scene-variant="contact"] .sunlit-webgl-fallback i, [data-scene-variant="contact"] .sunlit-webgl-fallback b, [data-scene-variant="contact"] .sunlit-webgl-fallback em { display: none; }
+  @media (max-width: 700px) { .sunlit-webgl { min-height: 16rem; } }
+  @media (prefers-reduced-motion: reduce) {
+    .sunlit-webgl canvas { display: none; }
+    .sunlit-webgl .sunlit-webgl-fallback { opacity: 1; }
+  }
+</style>

@@ -160,6 +160,9 @@ function prepareContactLead(
   );
 
   const phone = trimToUndefined(input.phone);
+  if (input.preferredContactPath === "whatsapp" && !phone) {
+    throw new Error("phone is required.");
+  }
   if (phone && phone.length > 60) {
     throw new Error("phone must be 60 characters or less.");
   }

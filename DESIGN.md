@@ -1,6 +1,6 @@
 # Design
 
-This is a starter design context for the AOH&S site. It is not a final token system. Re-run or revise this document after the first real Astro pages, dashboard shell, and media assets exist.
+This is the implemented design contract for the AOHYS public site. The July 2026 direction is **Sunlit Systems Studio**: warm, vivid, product-minded, and playful without becoming childish or decorative for its own sake.
 
 ## Register
 
@@ -8,9 +8,11 @@ brand
 
 ## Design Intent
 
-The public site should feel like a senior engineering review translated into a memorable brand surface: precise, architectural, outcome-driven, and evidence-led. It should avoid the default "developer portfolio" and the default "SaaS landing page". The visitor should remember the judgment behind the work, not a list of tools.
+The public site should feel like a senior engineering review translated into a memorable brand surface: precise, architectural, outcome-driven, and system-led. It should avoid the default "developer portfolio" and the default "SaaS landing page". The visitor should remember the judgment behind the work, not a list of tools.
 
-Physical scene: a sunlit product stage in a small, beautifully made theatre. Real project evidence sits inside a fixed proscenium; olive doors close, the set changes behind them, and the doors reopen on the next project. Honey rails, apricot tickets, brown ink, screenshots, decisions, and release proof make the work feel tangible without turning it into a theme park.
+Physical scene: a sunlit product stage in a small, beautifully made studio. Real project media sits inside a fixed proscenium; olive doors close, the set changes behind them, and the doors reopen on the next project. Honey rails, apricot tickets, brown ink, screenshots, decisions, and system maps make the work feel tangible without turning it into a theme park.
+
+The home hero and project selector are one composition. The visitor never enters a second “work stage” on the same page. Changing a project keeps the URL and surrounding layout stable, coalesces rapid input so the last request wins, and remains operable by keyboard and touch.
 
 ## Color Strategy
 
@@ -110,13 +112,20 @@ Loading rules:
 - Use `font-display: swap` with metric-adjusted fallbacks, or Astro/Fontaine-style fallback metrics if the implementation stack supports it.
 - Keep total public font families to these two unless a later critique proves the system needs more contrast.
 
+## Action System
+
+- There is one primary action treatment: the honey ticket. It uses a brown 2px rule, a 4px hard shadow, apricot hover, and a pressed state that moves toward the shadow.
+- Secondary actions are text links with a firm underline. They are not outlined buttons.
+- One primary action is enough for a decision cluster. Do not place two ticket buttons next to each other.
+- Header, hero, forms, closing bands, and case studies all use the same action contract.
+
 ## Layout
 
 The home should read as a sequence of evidence, not a grid of cards.
 
 Use:
 
-- Large hero with outcome-focused copy and a strong evidence/art composition.
+- One integrated hero/project stage with outcome-focused copy and real product media.
 - Case study rows or editorial spreads, not identical cards.
 - Screenshots and generated assets staged as proof artifacts.
 - Dark or high-contrast architecture sections where the system view needs emphasis.
@@ -146,9 +155,18 @@ Screenshots should be sanitized, cropped, and staged as proof. They should never
 
 Media architecture: Cloudflare stores and optimizes images; Convex stores metadata and references only.
 
+Published dashboard/Cloudflare media always wins. Versioned repository assets are deterministic fallbacks and must never leave an empty frame:
+
+- Casa Roca: `casa-roca-value-v2.jpg` for compact stage/archive use and `casa-roca-gallery-v2.jpg` for the case hero.
+- The Barber Central: `barber-central-hero-v2.jpg` across the project stage and case hero.
+- Nutri Plan: `nutri-plan-dashboard-v2.png`, a sanitized dashboard without watermark.
+- Enterprise systems: `enterprise-systems-map-v2.svg`, using only the approved palette and white.
+
+Future capture contract: use versioned `.webm`/`.webp` media at `/media/projects/<slug>/stage-loop.webm`, `/media/projects/<slug>/stage-poster.webp`, and `/media/projects/<slug>/detail-01.webp`. Motion media is enhancement; a readable still image must remain available.
+
 ## Motion
 
-Motion should feel like a well-made product theatre: the stage stays put while the set changes. Project selection closes two olive doors over the current scene, swaps the real project content behind them, and reopens to reveal the next scene. The active ticket travels along a honey rail; proof stamps and annotations settle only after the reveal. Do not navigate away or replace the surrounding layout when switching projects. Do not gate content behind animation. Reduced motion must be supported.
+Motion should feel like a well-made product theatre: the stage stays put while the set changes. Project selection closes two olive doors over the current scene, swaps the real project content behind them, and reopens to reveal the next scene. The active ticket travels along a honey rail; result marks and system annotations settle only after the reveal. Do not navigate away or replace the surrounding layout when switching projects. Do not gate content behind animation. Reduced motion must be supported.
 
 Use motion sparingly:
 
@@ -156,8 +174,19 @@ Use motion sparingly:
 - Door transitions use transform and clip-path, never animated layout properties. Closing, content swap, and opening form one short sequence; rapid selections are safely serialized or coalesced.
 - Project selection remains keyboard- and touch-operable with correct tab semantics and announced state.
 - Reduced motion replaces the door travel with an immediate content swap and a short crossfade.
-- Small state transitions support navigation, language switching, proof tickets, and dashboard interactions.
+- Small state transitions support navigation, language switching, project markers, and dashboard interactions.
 - No bounce, elastic, or generic fade-on-scroll everywhere.
+
+### WebGL contract
+
+- Use a raw WebGL2 shader with a WebGL1 shader fallback. The canvas is an optional kinetic-depth layer, never the source of essential copy, controls, or project media.
+- Maximum one canvas per page. Current variants are `home`, `architecture`, and `contact`.
+- Render one fullscreen triangle with procedural color, masks, UV distortion, perspective, light, and pointer parallax. Do not use textures, model loaders, visible 3D primitives, boxes, rings, or toruses.
+- Home uses a layered sunlit paper field that changes palette and depth with the active project while the DOM doors close and reopen. Architecture uses perspective topology signals behind the accessible system map. Contact uses soft refractive overlap masks behind Goal / Context / Reply.
+- Cap DPR at `1.5` on desktop and `1` on mobile. Keep the shader quiet enough to protect copy contrast and sustain 60 fps on ordinary phones.
+- Pause rendering outside the viewport and while the document is hidden. Dispose buffers, programs, observers, listeners, and context on teardown.
+- On context loss, show the static fallback; on context restoration, reinitialize the scene.
+- `prefers-reduced-motion` and missing WebGL use a variant-specific CSS fallback immediately. React to live reduced-motion preference changes and never keep an animation frame running while reduced motion is active.
 
 ## Components And Surfaces
 
@@ -165,14 +194,16 @@ Public site:
 
 - Global shell: compact sticky header, neutral white canvas, brown rules, honey primary action, and page-specific stage treatment.
 - Home stage: data-driven project selector using published Content Graph entries and Cloudflare media; the doors close and reopen in place when selection changes.
-- Project archive and case studies: ticket/rail navigation and evidence-led editorial rows, not identical cards.
-- Architecture and practice: production-line sequencing that connects business pressure, decisions, implementation, verification, and release.
-- Resume, contact, privacy, and legal pages: quieter compositions using the same palette, typography, controls, and proof language rather than a separate visual theme.
-- Primary CTA: "Start a conversation" / "Hablemos".
+- Project archive and case studies: ticket/rail navigation with project media and result-led editorial rows, not identical cards.
+- Architecture: an accessible DOM topology for Experience, Edge delivery, Product data, Communication, Observability, and Delivery, paired with a decorative WebGL map and explicit tradeoffs.
+- Services (route remains `/practice` for compatibility): three typed offers—Product systems, Architecture & modernization, and Delivery acceleration—each with problem, result, engagement, process, deliverables, and related work.
+- Resume, contact, privacy, and legal pages: quieter compositions using the same palette, typography, controls, and system/result language rather than a separate visual theme.
+- Primary CTA: "Start a conversation" / "Iniciar conversación".
 - Secondary CTA: "View selected work" / equivalent Spanish copy.
 - WhatsApp CTA: large but discreet, integrated into contact.
-- Case study detail sections: problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance, public evidence, confidentiality note.
-- Architecture page: public code sample framing, not open-source community framing.
+- Case study detail sections: Challenge, Outcome, My role, System, Decisions, Delivery, Quality & operations, Live link, and Related work.
+- Only the Enterprise case ends with a client-boundary sentence: “Client details remain private.” / “Los detalles de clientes permanecen privados.”
+- Architecture page: responsibilities and tradeoffs first; source links come last.
 
 Dashboard:
 

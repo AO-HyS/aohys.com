@@ -18,7 +18,7 @@ describe("buildDashboardContentPayload", () => {
 
     expect(contentGraphImage).toMatchObject({
       href: "https://casa-roca.mx",
-      src: "/images/proof/casa-roca-production.png",
+      src: "/images/proof/casa-roca-value-v2.jpg",
       altText: "Casa Roca production website",
     });
   });

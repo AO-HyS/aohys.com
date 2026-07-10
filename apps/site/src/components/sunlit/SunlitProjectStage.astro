@@ -1,6 +1,7 @@
 ---
 import { type HomeOutcome, type Locale } from "@aohys/content-graph";
 import SunlitProofImage from "./SunlitProofImage.astro";
+import SunlitWebGLScene from "./SunlitWebGLScene.astro";
 import { resolveProofMedia } from "./proof-media";
 
 interface Props {
@@ -8,29 +9,32 @@ interface Props {
   locale: Locale;
   heading: string;
   intro: string;
+  hero?: boolean;
 }
 
-const { outcomes, locale, heading, intro } = Astro.props;
+const { outcomes, locale, heading, intro, hero = false } = Astro.props;
 const labels = locale === "es" ? {
   region: "Selector de proyectos",
   open: "Abrir caso",
   current: "Proyecto visible",
   loading: "Cambiando escenario",
   result: "Resultado",
-  evidence: "Prueba",
-  boundary: "Límite",
-  swipe: "Desliza para ver todos los proyectos →",
-  fallbackAlt: "Evidencia pública del proyecto AOHYS",
+  evidence: "Sistema",
+  boundary: "Mi rol",
+  swipe: "Elige un sistema",
+  fallbackAlt: "Sistema de producto AOHYS",
+  scene: "Escenario de sistemas de producto AOHYS",
 } : {
   region: "Project selector",
   open: "Open case",
   current: "Project in view",
   loading: "Changing the set",
   result: "Result",
-  evidence: "Evidence",
-  boundary: "Boundary",
-  swipe: "Swipe to see every project →",
-  fallbackAlt: "AOHYS project public evidence",
+  evidence: "System",
+  boundary: "My role",
+  swipe: "Choose a system",
+  fallbackAlt: "AOHYS product system",
+  scene: "AOHYS product systems stage",
 };
 const projects = outcomes.map((outcome) => ({
   outcome,
@@ -44,7 +48,7 @@ const projects = outcomes.map((outcome) => ({
 ---
 
 <section
-  class="sunlit-project-stage"
+  class:list={["sunlit-project-stage", hero && "sunlit-project-stage--hero"]}
   aria-labelledby="sunlit-stage-heading"
   data-project-stage
   data-stage-state="open"
@@ -62,9 +66,9 @@ const projects = outcomes.map((outcome) => ({
   </header>
 
   <div class="sunlit-stage-layout">
-    <div class="sunlit-ticket-column">
+      <div class="sunlit-ticket-column">
       <p class="sunlit-rail-hint">{labels.swipe}</p>
-      <div class="sunlit-ticket-rail" role="tablist" aria-label={labels.region} aria-orientation="vertical">
+      <div class="sunlit-ticket-rail" role="tablist" aria-label={labels.region} aria-orientation={hero ? undefined : "vertical"}>
         <span class="sunlit-rail-cable" aria-hidden="true"></span>
         {projects.map(({ outcome }, index) => {
           const panelId = `sunlit-project-panel-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
@@ -92,6 +96,7 @@ const projects = outcomes.map((outcome) => ({
     <div class="sunlit-stage-frame" aria-busy="false" data-stage-frame>
       <div class="sunlit-stage-canopy" aria-hidden="true"><span></span><i></i></div>
       <div class="sunlit-stage-scene">
+        <SunlitWebGLScene variant="home" label={labels.scene} class="sunlit-stage-webgl" />
         {projects.map(({ outcome, media }, index) => {
           const panelId = `sunlit-project-panel-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
           const tabId = `sunlit-project-tab-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
@@ -162,9 +167,24 @@ const projects = outcomes.map((outcome) => ({
     const frame = stage.querySelector("[data-stage-frame]");
     const announcement = stage.querySelector("[data-stage-announcement]");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let activeIndex = Math.max(0, tabs.findIndex((tab) => tab.getAttribute("aria-selected") === "true"));
-    let requestedIndex = activeIndex;
+    let activeIndex = 0;
+    let requestedIndex = 0;
     let running = false;
+
+    const projectIndexFromUrl = () => {
+      const projectId = new URL(window.location.href).searchParams.get("project");
+      if (!projectId) return 0;
+      return tabs.findIndex((tab) => tab.dataset.contentId === projectId);
+    };
+
+    const updateProjectUrl = (index: number, mode: "push" | "replace") => {
+      const contentId = tabs[index]?.dataset.contentId;
+      if (!contentId) return;
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("project") === contentId) return;
+      url.searchParams.set("project", contentId);
+      window.history[mode === "push" ? "pushState" : "replaceState"](window.history.state, "", url);
+    };
 
     const setActivePanel = (index: number) => {
       tabs.forEach((tab, tabIndex) => {
@@ -175,6 +195,7 @@ const projects = outcomes.map((outcome) => ({
       panels.forEach((panel, panelIndex) => { panel.hidden = panelIndex !== index; });
       ledgers.forEach((ledger, ledgerIndex) => { ledger.hidden = ledgerIndex !== index; });
       stage.dataset.activeTone = String(index % 3);
+      window.dispatchEvent(new CustomEvent("sunlit:project-change", { detail: { index, contentId: panels[index]?.dataset.contentId } }));
       activeIndex = index;
     };
 
@@ -234,9 +255,10 @@ const projects = outcomes.map((outcome) => ({
       if (requestedIndex !== activeIndex) void transitionToRequested();
     };
 
-    const requestProject = (index: number) => {
+    const requestProject = (index: number, historyMode: "push" | "replace" | "none" = "push") => {
       if (index < 0 || index >= panels.length) return;
       requestedIndex = index;
+      if (historyMode !== "none") updateProjectUrl(index, historyMode);
       if (announcement instanceof HTMLElement && index !== activeIndex) {
         announcement.textContent = stage.dataset.loadingLabel ?? "";
       }
@@ -244,7 +266,7 @@ const projects = outcomes.map((outcome) => ({
     };
 
     tabs.forEach((tab, index) => {
-      tab.addEventListener("click", () => requestProject(index));
+      tab.addEventListener("click", () => requestProject(index, "push"));
       tab.addEventListener("keydown", (event) => {
         let nextIndex = index;
         if (event.key === "ArrowDown" || event.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
@@ -254,9 +276,25 @@ const projects = outcomes.map((outcome) => ({
         else return;
         event.preventDefault();
         tabs[nextIndex]?.focus();
-        requestProject(nextIndex);
+        requestProject(nextIndex, "replace");
       });
     });
+
+    const initialUrl = new URL(window.location.href);
+    const requestedProjectId = initialUrl.searchParams.get("project");
+    const initialIndex = projectIndexFromUrl();
+    if (requestedProjectId && initialIndex < 0) {
+      initialUrl.searchParams.delete("project");
+      window.history.replaceState(window.history.state, "", initialUrl);
+    }
+    setActivePanel(Math.max(0, initialIndex));
+    requestedIndex = activeIndex;
+
+    const onPopState = () => {
+      const index = projectIndexFromUrl();
+      requestProject(index >= 0 ? index : 0, "none");
+    };
+    window.addEventListener("popstate", onPopState);
 
     for (const image of stage.querySelectorAll("[data-stage-image]")) {
       if (!(image instanceof HTMLImageElement)) continue;
@@ -301,6 +339,7 @@ const projects = outcomes.map((outcome) => ({
   .sunlit-stage-canopy i { position: absolute; top: 0; right: 10%; width: 2px; height: 2.8rem; background: var(--color-ink); }
   .sunlit-stage-canopy i::after { content: ""; position: absolute; top: 2.4rem; left: -.55rem; width: 1.1rem; height: 1.1rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
   .sunlit-stage-scene { position: relative; display: grid; overflow: hidden; border: 2px solid var(--color-ink); background: var(--color-accent); box-shadow: 0 6px 0 var(--color-ink); transition: background 220ms cubic-bezier(.22, 1, .36, 1); }
+  .sunlit-stage-scene > :global(.sunlit-stage-webgl) { position: absolute; inset: 0; z-index: 0; min-height: 0; opacity: .42; background: transparent; }
   .sunlit-stage-scene::before, .sunlit-stage-scene::after { content: ""; position: absolute; z-index: 0; pointer-events: none; transition: transform 280ms cubic-bezier(.22, 1, .36, 1), background 220ms ease; }
   .sunlit-stage-scene::before { right: -5rem; bottom: -7rem; width: 20rem; height: 20rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
   .sunlit-stage-scene::after { top: 10%; left: 4%; width: 5rem; height: 68%; border: 2px solid var(--color-ink); border-radius: 50% 50% 0 0; background: var(--color-secondary); }
@@ -354,6 +393,27 @@ const projects = outcomes.map((outcome) => ({
   .sunlit-proof-ledger span { grid-row: 1 / 3; display: grid; width: 2rem; height: 2rem; place-items: center; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
   .sunlit-proof-ledger strong { font-size: .82rem; }
   .sunlit-proof-ledger p { margin: 0; overflow: hidden; color: var(--color-muted); font-size: .78rem; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+  .sunlit-project-stage--hero { width: 100%; margin: 0; }
+  .sunlit-project-stage--hero .sunlit-stage-heading { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .sunlit-project-stage--hero .sunlit-stage-layout { grid-template-columns: 1fr; gap: .85rem; }
+  .sunlit-project-stage--hero .sunlit-ticket-column { order: 2; }
+  .sunlit-project-stage--hero .sunlit-rail-hint { display: block; margin: 0; font-size: .78rem; font-weight: 760; text-transform: uppercase; }
+  .sunlit-project-stage--hero .sunlit-ticket-rail { display: grid; overflow: visible; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; padding: 0; }
+  .sunlit-project-stage--hero .sunlit-rail-cable,
+  .sunlit-project-stage--hero .sunlit-ticket-rail button::before { display: none; }
+  .sunlit-project-stage--hero .sunlit-ticket-rail button { min-width: 0; min-height: 3.25rem; padding: .55rem .65rem; border: 2px solid var(--color-ink); background: var(--color-bg); box-shadow: 0 2px 0 var(--color-ink); }
+  .sunlit-project-stage--hero .sunlit-ticket-rail button[aria-selected="true"] { background: var(--color-primary); }
+  .sunlit-project-stage--hero .sunlit-stage-frame { padding-top: 1.75rem; }
+  .sunlit-project-stage--hero .sunlit-project-panel { min-height: 26rem; }
+  .sunlit-project-stage--hero .sunlit-project-panel:not([hidden]) { grid-template-columns: minmax(0, 1.05fr) minmax(12rem, .95fr); gap: 1rem; padding: clamp(1rem, 2.4vw, 1.8rem); }
+  .sunlit-project-stage--hero .sunlit-project-proof figure { height: clamp(14rem, 24vw, 19rem); border-width: 7px; }
+  .sunlit-project-stage--hero .sunlit-project-copy h3 { font-size: clamp(1.75rem, 3vw, 2.65rem); }
+  .sunlit-project-stage--hero .sunlit-project-copy p { font-size: .92rem; line-height: 1.4; }
+  .sunlit-project-stage--hero .sunlit-project-copy a { min-height: 2.75rem; padding: 0; border: 0; border-bottom: 2px solid var(--color-ink); border-radius: 0; background: transparent; box-shadow: none; }
+  .sunlit-project-stage--hero .sunlit-ledger-stack { margin: .9rem 0 0; }
+  .sunlit-project-stage--hero .sunlit-proof-ledger > div { grid-template-columns: 1.8rem 1fr; padding: .7rem; }
+  .sunlit-project-stage--hero .sunlit-proof-ledger span { width: 1.55rem; height: 1.55rem; }
+  .sunlit-project-stage--hero .sunlit-proof-ledger p { display: -webkit-box; white-space: normal; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
   @media (max-width: 850px) {
     .sunlit-stage-heading { grid-template-columns: 1fr; }
     .sunlit-stage-layout { grid-template-columns: 1fr; }
@@ -376,6 +436,10 @@ const projects = outcomes.map((outcome) => ({
     .sunlit-proof-ledger { grid-template-columns: 1fr; }
     .sunlit-proof-ledger > div { border-right: 0; border-bottom: 1px solid var(--color-rule); }
     .sunlit-proof-ledger > div:last-child { border-bottom: 0; }
+    .sunlit-project-stage--hero .sunlit-project-panel { min-height: 0; }
+    .sunlit-project-stage--hero .sunlit-project-panel:not([hidden]) { grid-template-columns: 1fr; padding: .9rem; }
+    .sunlit-project-stage--hero .sunlit-project-proof figure { height: 11.5rem; }
+    .sunlit-project-stage--hero .sunlit-proof-ledger { grid-template-columns: 1fr; }
   }
   @media (max-width: 360px) {
     .sunlit-project-stage { margin-block: 3.5rem; }

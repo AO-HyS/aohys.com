@@ -2,9 +2,9 @@
   "home": {
     "path": "/es/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Ingeniero de producto que construye sitios, dashboards, workflows y herramientas privadas para vender, operar y lanzar software con menos fricción.",
-    "seoDescription": "Alejandro Ortiz Corro es ingeniero de producto y construye software de negocio confiable: sitios públicos, dashboards privados, flujos de backend, pagos, leads, prácticas de entrega con IA y procesos de release para equipos que necesitan calidad y escala.",
-    "primaryActionLabel": "Hablemos",
+    "summary": "Ingeniero de producto que crea sitios vívidos, sistemas confiables y maneras más tranquilas de operar y lanzar software.",
+    "seoDescription": "Alejandro Ortiz Corro diseña y construye sistemas de producto: experiencias expresivas para clientes, workflows confiables, datos y prácticas de release para equipos que quieren mover el trabajo real.",
+    "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
@@ -15,21 +15,21 @@
         "el trabajo real."
       ],
       "headlineEmphasisWords": ["trabajo", "real"],
-      "deck": "Diseño y construyo sitios, dashboards y flujos que tu equipo puede operar, revisar y lanzar con confianza.",
-      "proofBoardLabel": "Mapa de evidencia AOHYS",
-      "proofBoardTitle": "Múltiples productos, un sistema.",
-      "proofBoardBody": "La prueba pública se mantiene visible. El código de clientes, los datos operativos y detalles no publicados quedan protegidos.",
-      "selectedOutcomesHeading": "Prueba pública que tu equipo puede revisar.",
-      "selectedOutcomesIntro": "Un sitio de hospitalidad en producción, productos activos, trabajo enterprise confidencial y el proceso de ingeniería detrás de esta muestra pública.",
+      "deck": "Diseño y construyo sistemas de producto que hacen más claras las operaciones, más simples los caminos del cliente y más seguros los releases.",
+      "proofBoardLabel": "Mapa de sistemas AOHYS",
+      "proofBoardTitle": "Sistemas de producto que siguen siendo operables.",
+      "proofBoardBody": "Interfaces, datos, workflows, observabilidad y releases convertidos en un modelo operativo confiable.",
+      "selectedOutcomesHeading": "Sistemas seleccionados en acción.",
+      "selectedOutcomesIntro": "Sitios en producción, productos operativos, workflows enterprise y el sistema de ingeniería detrás de cada release.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:casa-roca",
-          "label": "Sitio público",
+          "label": "Sitio de hospitalidad",
           "title": "Casa Roca",
         "outcome": "Un sitio de hospitalidad en producción que da una primera impresión clara y un camino directo para contactar.",
-          "role": "Confianza pública, búsqueda, conversión",
+          "role": "Confianza del huésped, búsqueda, conversión",
           "evidence": {
-            "label": "Sitio público",
+            "label": "Sitio en vivo",
             "altText": "Hero del sitio Casa Roca en producción",
             "kind": "public-site",
             "publicSafe": true,
@@ -52,12 +52,12 @@
         },
         {
           "contentId": "case-study:nutri-plan",
-          "label": "Sistema privado",
+          "label": "Operación de clientes",
           "title": "Nutri Plan",
-        "outcome": "Un sistema privado para planes, dashboards, flujos de clientes y contenido educativo.",
-          "role": "Herramientas privadas, workflows, entrega a clientes",
+        "outcome": "Un sistema operativo para planes, dashboards, flujos de clientes y contenido educativo.",
+          "role": "Planes, dashboards, workflows de clientes",
           "evidence": {
-            "label": "Preview sanitizado",
+            "label": "Preview de producto",
             "altText": "Dashboard administrativo de Nutri Plan",
             "kind": "development-preview",
             "publicSafe": true,
@@ -69,46 +69,46 @@
           "label": "Entrega enterprise",
           "title": "Sistemas enterprise",
         "outcome": "Trabajo complejo de producto y backend en escalations, payment plans, cashback, customs workflows y soporte de releases.",
-          "role": "Confiabilidad, backend, confidencialidad",
+          "role": "Workflows backend, confiabilidad operativa, soporte de releases",
           "evidence": {
-            "label": "Resumen confidencial",
-            "altText": "Mapa público seguro de entrega enterprise",
+            "label": "Mapa de sistemas",
+            "altText": "Mapa de sistemas enterprise enfocado en escala operativa y entrega confiable",
             "kind": "private-system",
             "publicSafe": true,
-            "src": "/images/proof/enterprise-delivery-map.svg"
+            "src": "/images/proof/enterprise-systems-map-v2.svg"
           }
         }
       ],
-      "architectureHeading": "Límites del sistema en los que puedes confiar.",
-      "architectureBody": "Las páginas públicas se mantienen rápidas. Los dashboards privados quedan protegidos. Contacto, analítica, previews y releases tienen un límite explícito.",
+      "architectureHeading": "La arquitectura es parte del producto.",
+      "architectureBody": "Experiencia, datos, edge delivery, comunicación, observabilidad y releases tienen una responsabilidad clara para que el sistema siga siendo entendible después del lanzamiento.",
       "architectureStages": [
         {
-          "label": "Superficie pública",
-        "text": "Las páginas públicas usan IDs estables, slugs localizados, canonical URLs y reglas de sitemap."
+          "label": "Experiencia",
+        "text": "React, React Native, Astro y WebGL llegan al usuario donde ocurre el trabajo."
         },
         {
-          "label": "Superficie privada",
-        "text": "Las rutas del dashboard se mantienen autenticadas, noindex y separadas de lo que deben ver los motores de búsqueda."
+          "label": "Datos de producto",
+        "text": "Convex mantiene queries, mutations, auth y workflows operativos reactivos y explícitos."
         },
         {
-          "label": "Ruta de release",
-        "text": "Los cambios pasan primero por preview; producción queda como una promoción separada y revisable."
+          "label": "Entrega",
+        "text": "Cloudflare, ramas protegidas, previews y smoke checks hacen que los releases sean visibles y reversibles."
         }
       ],
-      "practiceHeading": "La ruta de release queda visible de idea a producción.",
-      "practiceBody": "Empiezo por la presión real del negocio y luego hago que el software sea confiable donde importa: datos claros, auth segura, fallas visibles y releases confiables.",
+      "practiceHeading": "Servicios construidos alrededor de la presión que siente tu equipo.",
+      "practiceBody": "Desde sistemas de producto hasta modernización y aceleración de delivery: cada colaboración empieza por el problema, hace legible el sistema y deja una ruta más segura.",
       "practicePoints": [
         {
-          "label": "Aclarar el trabajo",
-        "text": "Convertir objetivos abiertos en flujos, restricciones, límites y una ruta de release."
+          "label": "Sistemas de producto",
+        "text": "Diseñar y construir las interfaces, workflows, datos y modelo operativo detrás del producto."
         },
         {
-          "label": "Construir el sistema",
-          "text": "Hacer que UI, datos, auth, comunicación, observabilidad y deploy funcionen juntos."
+          "label": "Arquitectura y modernización",
+          "text": "Reducir la fricción legacy sin romper los flujos de los que dependen clientes y operadores."
         },
         {
-          "label": "Probarlo temprano",
-        "text": "Usar tests, browser QA, ramas protegidas, previews y verificación en producción para que los problemas aparezcan antes que los clientes."
+          "label": "Aceleración de delivery",
+        "text": "Convertir previews, quality gates, observabilidad y ownership de releases en parte del trabajo diario."
         }
       ],
       "contactHeading": "¿Qué necesita dejar de improvisar tu equipo?",
@@ -121,8 +121,8 @@
     "publicNavigation": {
       "brand": {
         "homeLabel": "Inicio AOHYS",
-        "wordmarkSrc": "/images/brand/aohys-wordmark.svg",
-        "fallbackSrc": "/images/brand/aohys-logo.png"
+        "wordmarkSrc": "/images/brand/aohys-portal-wordmark-v2.svg",
+        "fallbackSrc": "/images/brand/aohys-portal-mark-v2.svg"
       },
       "items": [
         {
@@ -133,7 +133,7 @@
         },
         {
           "slotId": "agents",
-          "label": "Práctica",
+          "label": "Servicios",
           "contentId": "practice"
         },
         {
@@ -148,7 +148,7 @@
         },
         {
           "slotId": "blog",
-          "label": "Hablemos",
+          "label": "Iniciar conversación",
           "contentId": "contact"
         }
       ],
@@ -161,7 +161,7 @@
         },
         {
           "slotId": "signup",
-          "label": "Hablemos",
+          "label": "Iniciar conversación",
           "contentId": "contact",
           "style": "primary"
         }
@@ -172,8 +172,8 @@
           {
             "id": "sitio-publico",
             "contentId": "case-study:casa-roca",
-            "label": "Sitio Público",
-            "text": "Casa Roca en producción y camino público de conversión.",
+            "label": "Sitio en vivo",
+            "text": "Casa Roca en producción y camino directo de conversión.",
             "icon": "site",
             "tone": 0
           },
@@ -189,15 +189,15 @@
             "id": "sistema",
             "contentId": "architecture",
             "label": "Sistema",
-            "text": "Límites público/privado, rutas, releases y evidencia.",
+            "text": "Responsabilidades de experiencia, datos, edge, observabilidad y release.",
             "icon": "system",
             "tone": 2
           },
           {
             "id": "entrega",
             "contentId": "practice",
-            "label": "Entrega",
-            "text": "Aclarar, construir, verificar y lanzar trabajo confiable.",
+            "label": "Servicios",
+            "text": "Sistemas de producto, modernización y aceleración de delivery.",
             "icon": "practice",
             "tone": 3
           }
@@ -218,52 +218,52 @@
   "case-studies": {
     "path": "/es/casos",
     "title": "Trabajo seleccionado",
-    "summary": "Sitios en vivo, productos activos, contexto enterprise y la práctica de ingeniería detrás de esta muestra pública.",
-    "seoDescription": "Lee notas públicas de trabajo de Alejandro Ortiz Corro en sitios en producción, productos activos, sistemas privados de negocio, entrega enterprise confidencial y práctica moderna de ingeniería.",
-    "primaryActionLabel": "Platicar un proyecto",
+    "summary": "Sitios en vivo, productos activos, sistemas enterprise y las decisiones de ingeniería detrás de cada resultado.",
+    "seoDescription": "Trabajo seleccionado de Alejandro Ortiz Corro en sitios en producción, productos activos, sistemas de negocio, entrega enterprise e ingeniería moderna de producto.",
+    "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
     "secondaryActionContentId": "architecture"
   },
   "case-study:casa-roca": {
     "path": "/es/casos/casa-roca",
-    "title": "Casa Roca: sitio público y contacto directo",
-    "summary": "Un sitio de hospitalidad en vivo con historia pública clara, contacto directo y disciplina de producción.",
+    "title": "Casa Roca: experiencia de huéspedes y contacto directo",
+    "summary": "Un sitio de hospitalidad en vivo con una historia clara, contacto directo y disciplina de producción.",
     "seoDescription": "Casa Roca es un sitio de hospitalidad en vivo para una estancia boutique en Veracruz, con historia clara del lugar, contacto directo, páginas listas para búsqueda y disciplina de release.",
-    "primaryActionLabel": "Crear algo similar",
+    "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
       "statusLabel": "Sitio de hospitalidad en vivo",
-      "overview": "Casa Roca es el sitio público de una estancia boutique en Roca Partida, Veracruz. Ayuda a que los huéspedes entiendan rápido el lugar, decidan si encaja con su viaje y contacten al negocio sin exponer reservaciones ni operación interna.",
+      "overview": "Casa Roca es el punto de llegada digital de una estancia boutique en Roca Partida, Veracruz. Ayuda a que los huéspedes entiendan rápido el lugar, decidan si encaja con su viaje y contacten al negocio directamente.",
       "problem": {
         "title": "Problema",
-        "body": "El negocio necesitaba una presencia pública capaz de comunicar lugar, experiencia y credibilidad sin exponer detalles de reservaciones, trabajo interno de media ni administración privada."
+        "body": "El negocio necesitaba comunicar lugar, experiencia y credibilidad mientras daba a los futuros huéspedes un siguiente paso directo."
       },
       "businessOutcome": {
         "title": "Resultado de negocio",
-        "body": "El sitio en producción le da a Casa Roca un destino público para huéspedes, tráfico de búsqueda, confianza de marca y contacto directo sin mezclarlo con el back office."
+        "body": "El sitio en producción le da a Casa Roca un destino claro para huéspedes, tráfico de búsqueda, confianza de marca y contacto directo."
       },
       "role": {
         "title": "Rol",
-        "body": "Entrega de sitio público, planeación de superficie bilingüe, metadata SEO, verificación de release, cuidado de rendimiento y un límite claro entre páginas públicas y workflows operativos privados."
+        "body": "Dirección de producto, planeación de experiencia bilingüe, metadata SEO, verificación de release, rendimiento y entrega completa del camino del huésped."
       },
       "constraints": {
         "title": "Restricciones",
-        "body": "El caso puede mostrar el sitio público en vivo y decisiones de arquitectura, pero debe evitar datos privados de reservaciones, detalles del dashboard, credenciales, código interno y registros operativos."
+        "body": "La experiencia tenía que ser rápida en conexiones irregulares, funcionar en dos idiomas, volver tangible el lugar y mantener clarísimo el camino a contacto."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
-        "body": "Mantener las páginas para huéspedes rápidas e inspeccionables, tratar contenido bilingüe y metadata SEO como parte central, y dejar reservaciones y administración fuera del sitio público."
+        "body": "Mantener rápidas las páginas para huéspedes, tratar contenido bilingüe y metadata SEO como decisiones de producto, y usar contacto directo como conversión principal."
       },
       "executionHighlights": {
         "title": "Ejecución",
-        "body": "El trabajo priorizó posicionamiento claro de hospitalidad, rutas localizadas, disciplina de despliegue, seguridad de contenido y un sitio en vivo que cualquiera puede abrir sin acceso privilegiado."
+        "body": "El trabajo cubrió posicionamiento de hospitalidad, rutas localizadas, dirección visual responsive, despliegue en producción y verificación en el dominio real."
       },
       "qualitySecurityPerformance": {
         "title": "Calidad, seguridad y rendimiento",
-        "body": "La superficie pública está en vivo, evita datos operativos sensibles, usa metadata explícita y está planteada alrededor de páginas rápidas, estables y legibles para búsqueda."
+        "body": "El sitio en vivo usa metadata explícita, layouts resilientes, media optimizada y páginas estables para huéspedes y motores de búsqueda."
       },
       "publicEvidenceTitle": "Enlaces públicos",
       "publicEvidence": [
@@ -277,8 +277,8 @@
         }
       ],
       "confidentialityNote": {
-        "title": "Nota de confidencialidad",
-        "body": "Aquí sólo se muestra el sitio público y contexto de entrega seguro. Código privado del cliente, registros de reservaciones, workflows administrativos, credenciales, analíticas y datos operativos permanecen privados."
+        "title": "Nota de alcance",
+        "body": "Este caso se enfoca en la experiencia del huésped y la entrega en producción."
       }
     }
   },
@@ -287,7 +287,7 @@
     "title": "The Barber Central: reservas y operación",
     "summary": "Producto activo de reservaciones y operaciones diseñado alrededor del día a día de negocios de servicios.",
     "seoDescription": "The Barber Central muestra arquitectura de producto activo para reservaciones, operaciones, preparación de pagos y comunicación con clientes.",
-    "primaryActionLabel": "Hablar de software operativo",
+    "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
     "secondaryActionContentId": "case-studies",
@@ -308,11 +308,11 @@
       },
       "constraints": {
         "title": "Restricciones",
-        "body": "El producto sigue en desarrollo, por lo que la prueba pública debe evitar datos privados, detalles internos del dashboard, secretos y registros de clientes sin ocultar el criterio de producto."
+        "body": "La lógica de reservas, disponibilidad del equipo, recordatorios, pagos y comunicación deben evolucionar juntas sin complicar el workflow diario."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
-        "body": "Mantener la página pública clara, hacer que el dashboard operativo sea task-first y tratar las integraciones de proveedores como límites de negocio explícitos, no como pegamento escondido."
+        "body": "Simplificar el camino de booking, hacer que el dashboard operativo sea task-first y tratar las integraciones como límites de negocio explícitos."
       },
       "executionHighlights": {
         "title": "Ejecución",
@@ -320,7 +320,7 @@
       },
       "qualitySecurityPerformance": {
         "title": "Calidad, seguridad y rendimiento",
-        "body": "El proyecto enfatiza entornos protegidos, comandos de verificación explícitos, browser QA, source checks y manejo cuidadoso de auth/configuración de proveedores antes del lanzamiento público."
+        "body": "El proyecto enfatiza entornos protegidos, comandos de verificación explícitos, browser QA, source checks y manejo cuidadoso de auth e integraciones antes de cada release."
       },
       "publicEvidenceTitle": "Enlaces públicos",
       "publicEvidence": [
@@ -334,23 +334,23 @@
         }
       ],
       "confidentialityNote": {
-        "title": "Nota de confidencialidad",
-        "body": "Sólo se muestra la dirección de producto y la página pública de desarrollo. Detalles privados de implementación, secretos, datos de prueba, registros de clientes, dashboards de proveedores e información no publicada permanecen privados."
+        "title": "Nota de alcance",
+        "body": "Este caso sigue la dirección activa del producto y su ruta de release."
       }
     }
   },
   "case-study:nutri-plan": {
     "path": "/es/casos/nutri-plan",
-    "title": "Nutri Plan: sistema privado de workflows",
-    "summary": "Sistema privado de producto para flujos de clientes, planes, dashboards y contenido educativo.",
+    "title": "Nutri Plan: sistema de workflows de clientes",
+    "summary": "Sistema de producto para flujos de clientes, planes, dashboards y contenido educativo.",
     "seoDescription": "Nutri Plan muestra trabajo de producto activo alrededor de flujos de clientes, planes estructurados, dashboards operativos, contenido educativo y calidad de entrega.",
-    "primaryActionLabel": "Planear un flujo de producto",
+    "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
-      "statusLabel": "Build privado",
-      "overview": "Nutri Plan es un sistema privado de producto para workflows de nutrición, dashboards, acceso móvil, contenido educativo y claridad operativa entre varias superficies.",
+      "statusLabel": "Sistema de producto",
+      "overview": "Nutri Plan conecta workflows de nutrición, dashboards, acceso móvil, contenido educativo y claridad operativa entre varias superficies de producto.",
       "problem": {
         "title": "Problema",
         "body": "Las operaciones de nutrición necesitan expedientes, planes, dashboards y experiencias móviles conectadas, pero el dominio se vuelve frágil cuando el estado vive en herramientas separadas."
@@ -361,15 +361,15 @@
       },
       "role": {
         "title": "Rol",
-        "body": "Arquitectura de workflows de producto, planeación de dashboards, modelado de estado backend, coordinación de superficie móvil, práctica de calidad y disciplina de release para un build privado."
+        "body": "Arquitectura de workflows de producto, planeación de dashboards, modelado de estado backend, coordinación móvil, práctica de calidad y disciplina de release."
       },
       "constraints": {
         "title": "Restricciones",
-        "body": "El producto es privado; el caso público sólo puede hablar de arquitectura y resultados a un nivel seguro sin exponer registros tipo paciente, datos de negocio, código privado o workflows internos."
+        "body": "Los registros relacionados con salud requieren límites de acceso cuidadosos, estado consistente, roles claros y releases que no interrumpan el trabajo con clientes."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
-        "body": "Mantener el backend como fuente compartida de verdad, separar landing pública de workflows privados de dashboard/mobile, e incluir ambiente y QA gates como parte de release readiness."
+        "body": "Mantener el backend como fuente compartida de verdad, dar responsabilidades explícitas a dashboard y móvil, e incluir ambientes y QA gates en release readiness."
       },
       "executionHighlights": {
         "title": "Ejecución",
@@ -382,8 +382,8 @@
       "publicEvidenceTitle": "Enlaces públicos",
       "publicEvidence": [
         {
-          "label": "Preview sanitizado",
-          "description": "Revisar una pantalla sanitizada y las notas de workflow de un build privado activo.",
+          "label": "Preview de producto",
+          "description": "Revisar la pantalla de producto y sus notas de workflow.",
           "href": "/es/casos/nutri-plan",
           "altText": "Preview sanitizado de producto Nutri Plan",
           "kind": "development-preview",
@@ -391,38 +391,38 @@
         }
       ],
       "confidentialityNote": {
-        "title": "Nota de confidencialidad",
-        "body": "Este caso no publica código privado del producto, registros de clientes, datos relacionados con salud, credenciales, pantallas privadas de dashboard ni detalles operativos de proveedores."
+        "title": "Nota de alcance",
+        "body": "Este caso se enfoca en responsabilidades del sistema y resultados de entrega."
       }
     }
   },
   "case-study:enterprise-systems": {
     "path": "/es/casos/sistemas-enterprise",
-    "title": "Sistemas enterprise bajo límites confidenciales",
-    "summary": "Trabajo enterprise confidencial resumido por resultados, criterio de arquitectura, liderazgo en escalations y soporte de releases.",
-    "seoDescription": "Sistemas enterprise resume trabajo confidencial de software por resultados de negocio, criterio de arquitectura, liderazgo en escalations, backend delivery y práctica de calidad.",
-    "primaryActionLabel": "Hablar de sistemas complejos",
+    "title": "Sistemas enterprise a escala operativa",
+    "summary": "Workflows complejos de producto, integraciones, backend delivery y soporte de releases en ambientes operativos de alto riesgo.",
+    "seoDescription": "Sistemas enterprise cubre resultados de negocio, criterio de arquitectura, liderazgo en escalations, backend delivery y práctica confiable de release.",
+    "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
     "secondaryActionContentId": "architecture",
     "caseStudyContent": {
-      "statusLabel": "Enterprise/confidencial",
-      "overview": "El trabajo enterprise no se puede mostrar con screenshots ni código fuente. Lo que sí se puede mostrar es el tipo de responsabilidad: escalations, payment plans, cashback, customs workflows, backend delivery y confiabilidad en ambientes complejos.",
+      "statusLabel": "Sistemas enterprise",
+      "overview": "Trabajo complejo de producto y backend en escalations, payment plans, cashback, customs workflows, integraciones y confiabilidad dentro de ambientes operativos grandes.",
       "problem": {
         "title": "Problema",
         "body": "Los sistemas grandes acumulan edge cases operativos, presión de integraciones y escalations de soporte donde la falta de ownership claro cuesta caro."
       },
       "businessOutcome": {
         "title": "Resultado de negocio",
-        "body": "El valor está en entregar con confiabilidad bajo restricciones: destrabar escalations, construir workflows backend y mejorar caminos operativos sin exponer material confidencial."
+        "body": "Entrega confiable bajo presión: destrabar escalations, construir workflows backend y mejorar caminos operativos sin crear nuevos puntos de falla."
       },
       "role": {
         "title": "Rol",
         "body": "Backend delivery, liderazgo en escalations, trabajo en payment plans y cashback, implementación de customs workflows, coordinación entre equipos y resolución con mentalidad de producción."
       },
       "constraints": {
-        "title": "Restricciones",
-        "body": "Código específico, incidentes, datos de clientes, sistemas internos y métricas son confidenciales. El caso debe quedarse en patrones, responsabilidades y resultados."
+        "title": "Restricciones operativas",
+        "body": "Escala, riesgo de integración, sensibilidad de datos, ownership entre equipos y continuidad de producción dieron forma a cada decisión."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
@@ -430,7 +430,7 @@
       },
       "executionHighlights": {
         "title": "Ejecución",
-        "body": "Ejemplos públicos seguros incluyen payment plan workflows, implementación de cashback, manejo de customs, ownership de escalations y backend delivery en contextos organizacionales complejos."
+        "body": "El trabajo seleccionado incluye payment plan workflows, implementación de cashback, manejo de customs, ownership de escalations y backend delivery en contextos organizacionales complejos."
       },
       "qualitySecurityPerformance": {
         "title": "Calidad, seguridad y rendimiento",
@@ -439,35 +439,35 @@
       "publicEvidenceTitle": "Enlaces públicos",
       "publicEvidence": [
         {
-          "label": "Resumen confidencial",
-          "description": "Leer el resumen enterprise sin detalles privados de empleadores, clientes, incidentes ni código fuente.",
+          "label": "Vista del sistema",
+          "description": "Revisar el sistema de entrega enterprise mediante responsabilidades, tradeoffs y resultados operativos.",
           "href": "/es/casos/sistemas-enterprise",
-          "altText": "Resumen confidencial de entrega enterprise",
+          "altText": "Vista general de sistemas enterprise",
           "kind": "private-system",
           "publicSafe": true
         }
       ],
       "confidentialityNote": {
-        "title": "Nota de confidencialidad",
-        "body": "No se publica código privado de empleadores, datos de clientes, incidentes, métricas internas, credenciales ni detalles propietarios de arquitectura."
+        "title": "Detalles de clientes",
+        "body": "Los detalles de clientes permanecen privados."
       }
     }
   },
   "case-study:engineering-practice": {
     "path": "/es/casos/practica-de-ingenieria",
-    "title": "Práctica de ingeniería para releases revisables",
+    "title": "Práctica de ingeniería para releases confiables",
     "summary": "Ingeniería moderna asistida por agentes explicada con planeación, QA, arquitectura, observabilidad, deploys y documentación.",
     "seoDescription": "Práctica de ingeniería explica el proceso moderno de Alejandro Ortiz Corro con agentes, QA, arquitectura, observabilidad, despliegue y documentación.",
-    "primaryActionLabel": "Revisar la muestra pública",
+    "primaryActionLabel": "Revisar la arquitectura",
     "primaryActionContentId": "architecture",
-    "secondaryActionLabel": "Hablemos",
+    "secondaryActionLabel": "Iniciar conversación",
     "secondaryActionContentId": "contact",
     "caseStudyContent": {
       "statusLabel": "Práctica de ingeniería",
       "overview": "La práctica de ingeniería es el sistema operativo detrás del trabajo: discovery estructurado, TDD, implementación con agentes, browser QA, release discipline, observabilidad y documentación.",
       "problem": {
         "title": "Problema",
-        "body": "El software moderno se mueve rápido, pero velocidad sin arquitectura, pruebas, revisión y checks de producción produce sistemas frágiles y evidencia débil."
+        "body": "El software moderno se mueve rápido, pero velocidad sin arquitectura, pruebas, revisión y checks de producción produce sistemas frágiles y sorpresas costosas."
       },
       "businessOutcome": {
         "title": "Resultado de negocio",
@@ -479,59 +479,116 @@
       },
       "constraints": {
         "title": "Restricciones",
-        "body": "El proceso debe demostrar trabajo moderno con IA sin fingir que cada proyecto privado es público ni reducir la calidad de entrega a elección de herramientas."
+        "body": "La automatización debe aumentar el feedback útil sin esconder ownership, debilitar la revisión ni reducir la calidad a elección de herramientas."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
-        "body": "Usar seams claros, contenido público desde el grafo, environment contracts explícitos, ramas protegidas, pruebas enfocadas y verificación manual de navegador para comportamiento visible."
+        "body": "Usar seams claros, contenido tipado desde el grafo, environment contracts explícitos, ramas protegidas, pruebas enfocadas y verificación manual de navegador."
       },
       "executionHighlights": {
         "title": "Ejecución",
-        "body": "Este sitio público es la evidencia del proceso: PR review, TDD tracers, checks visuales de Impeccable, flujo de issues, documentación de release y browser QA."
+        "body": "El sistema de delivery incluye PR review, TDD tracers, checks visuales, flujo de issues, documentación de release y browser QA."
       },
       "qualitySecurityPerformance": {
         "title": "Calidad, seguridad y rendimiento",
-        "body": "Calidad incluye source checks, type checks, pruebas de comportamiento, build verification, visual QA, cero datos privados en rutas públicas y deploy paths auditables."
+        "body": "Calidad incluye source checks, type checks, pruebas de comportamiento, build verification, visual QA y deploy paths auditables."
       },
       "publicEvidenceTitle": "Enlaces públicos",
       "publicEvidence": [
         {
-          "label": "Proceso de ingeniería",
-          "description": "Source público, pruebas, documentación e historial de PRs muestran el workflow de ingeniería detrás del sitio.",
+          "label": "Source y proceso",
+          "description": "Source, pruebas, documentación e historial de PRs muestran el workflow de ingeniería detrás del sitio.",
           "href": "https://github.com/AO-HyS/aohys.com",
-          "altText": "Proceso público de ingeniería de AOHYS",
+          "altText": "Proceso de ingeniería y releases de AOHYS",
           "kind": "architecture-note",
           "publicSafe": true
         }
       ],
       "confidentialityNote": {
-        "title": "Nota de confidencialidad",
-        "body": "El proceso es público donde este repositorio es público. Código privado de clientes, código privado de producto, credenciales, screenshots y datos operativos quedan fuera de esta muestra."
+        "title": "Nota de alcance",
+        "body": "Este caso se enfoca en el sistema de delivery detrás de releases confiables."
       }
     }
   },
   "practice": {
     "path": "/es/practica",
-    "title": "La entrega se mantiene visible del brief al release.",
-    "summary": "Planeación, QA, ciclos de revisión y disciplina de release convertidos en una ruta clara desde la solicitud hasta software confiable.",
-    "seoDescription": "La práctica AOHYS muestra ingeniería moderna asistida por IA, pruebas, ciclos de revisión, gates de calidad y hábitos de release.",
-    "primaryActionLabel": "Revisar el repo",
-    "primaryActionContentId": "architecture",
-    "secondaryActionLabel": "Hablemos",
-    "secondaryActionContentId": "contact"
+    "title": "Servicios para sistemas de producto que tienen que funcionar.",
+    "summary": "Sistemas de producto, modernización de arquitectura y aceleración de delivery alrededor de la presión que tu equipo necesita resolver.",
+    "seoDescription": "Los servicios AOHYS cubren sistemas de producto, modernización de arquitectura y aceleración de delivery para equipos que construyen software confiable.",
+    "primaryActionLabel": "Iniciar conversación",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Ver la arquitectura",
+    "secondaryActionContentId": "architecture",
+    "practiceContent": {
+      "heading": "Servicios de ingeniería para sistemas de producto que tienen que funcionar.",
+      "deck": "Trae el workflow que se rompe, el producto que ya superó su estructura o la ruta de release que se siente más riesgosa de lo necesario. Convertimos esa presión en un sistema que tu equipo puede entender y operar.",
+      "services": [
+        {
+          "id": "product-systems",
+          "title": "Sistemas de producto",
+          "problem": "El trabajo del cliente y la operación está disperso entre pantallas, hojas de cálculo, handoffs manuales y ownership poco claro.",
+          "result": "Un sistema de producto coherente, con un camino claro para el cliente, workflows confiables y datos que el equipo puede usar.",
+          "engagement": "Un build enfocado o una colaboración por etapas, desde el mapa del sistema hasta la entrega en producción.",
+          "deliverables": ["Mapa de producto y workflows", "Interfaz y flujos de datos en producción", "Handoff operativo y plan de release"]
+        },
+        {
+          "id": "architecture-modernization",
+          "title": "Arquitectura y modernización",
+          "problem": "Decisiones legacy, cuellos de rendimiento o integraciones frágiles hacen que cada cambio sea más lento y peligroso.",
+          "result": "Una ruta modernizada que protege el comportamiento crítico y vuelve el sistema más fácil de entender, cambiar y escalar.",
+          "engagement": "Revisión de arquitectura, plan de modernización o migración práctica alrededor del límite con mayor impacto.",
+          "deliverables": ["Mapa de estado actual y riesgos", "Arquitectura objetivo con tradeoffs", "Migración incremental y verificación"]
+        },
+        {
+          "id": "delivery-acceleration",
+          "title": "Aceleración de delivery",
+          "problem": "El equipo puede construir features, pero previews, QA, observabilidad y releases todavía dependen de heroísmo.",
+          "result": "Un sistema de entrega visible, con feedback temprano, releases más seguros y ownership claro cuando algo falla.",
+          "engagement": "Un diagnóstico de delivery seguido de implementación enfocada en quality gates, ambientes y operación de releases.",
+          "deliverables": ["Mapa de cuellos de delivery", "Implementación de previews y quality gates", "Observabilidad y runbook de release"]
+        }
+      ],
+      "processHeading": "Una ruta pequeña y visible de la presión al progreso.",
+      "process": [
+        {"label": "Enmarcar", "text": "Nombrar la presión de negocio, las personas afectadas y el resultado que vale la pena cambiar."},
+        {"label": "Mapear", "text": "Hacer visibles flujos, datos, límites, riesgos y tradeoffs antes de que se conviertan en retrabajo."},
+        {"label": "Construir", "text": "Lanzar la porción completa más pequeña, con estados reales, instrumentación y checks de release."},
+        {"label": "Transferir", "text": "Dejar un sistema operable, decisiones que el equipo puede explicar y un siguiente paso seguro."}
+      ],
+      "deliverablesHeading": "Lo que queda al terminar la colaboración.",
+      "deliverables": ["Un mapa compartido del sistema", "Incrementos de producto funcionando", "Registros de arquitectura y decisiones", "Checks de calidad, observabilidad y release", "Un handoff operativo y práctico"],
+      "relatedHeading": "Ve los sistemas detrás del servicio.",
+      "relatedContentIds": ["architecture", "case-studies"]
+    }
   },
   "architecture": {
     "path": "/es/arquitectura",
     "title": "Arquitectura",
-    "summary": "Las decisiones de ingeniería detrás de este sitio: páginas públicas, dashboard privado, contacto, observabilidad y checks de release.",
-    "seoDescription": "Notas de arquitectura de la muestra pública de Alejandro Ortiz Corro: páginas SEO con Astro, límites de dashboard privado, deploys con Cloudflare, workflows en Convex, observabilidad con PostHog y release de preview a producción.",
+    "summary": "Las decisiones de ingeniería detrás de experiencia, datos, edge delivery, comunicación, observabilidad y releases.",
+    "seoDescription": "Notas de arquitectura de los sistemas de producto de Alejandro Ortiz Corro: experiencias con Astro y React, Cloudflare, workflows en Convex, comunicación con Resend, observabilidad con PostHog y checks de release.",
     "primaryActionLabel": "Revisar trabajo",
     "primaryActionContentId": "case-studies",
-    "secondaryActionLabel": "Contactar a Alejandro",
+    "secondaryActionLabel": "Iniciar conversación",
     "secondaryActionContentId": "contact",
     "architectureContent": {
-      "heading": "Código público para sistemas que siguen privados.",
-      "deck": "El código de clientes se queda privado. Este repo muestra cómo pienso las piezas alrededor de un producto: contenido, límites de auth, releases, errores, proveedores y la superficie del dashboard.",
+      "heading": "Arquitectura que sigue siendo operable después del lanzamiento.",
+      "deck": "Un producto se mantiene confiable cuando experiencia, datos, edge delivery, comunicación, observabilidad y controles de release tienen responsabilidades claras.",
+      "systemHeading": "Un sistema, seis responsabilidades.",
+      "systemBody": "Cada capa tiene un trabajo, un owner y una conexión visible con la siguiente. La meta no es sumar tecnología: es reducir supuestos ocultos.",
+      "layers": [
+        {"id": "experience", "label": "Experiencia", "body": "Interfaces que encuentran a clientes y operadores donde ocurre el trabajo.", "technologies": ["React", "React Native", "Astro", "WebGL"]},
+        {"id": "edge", "label": "Edge delivery", "body": "Entrega pública rápida, manejo de media y límites del servidor cerca del usuario.", "technologies": ["Cloudflare Pages", "Workers", "Images", "R2"]},
+        {"id": "product-data", "label": "Datos de producto", "body": "Estado reactivo con auth, queries, mutations y workflows explícitos.", "technologies": ["Convex", "Auth", "Queries", "Mutations", "Workflows"]},
+        {"id": "communication", "label": "Comunicación", "body": "Mensajes transaccionales e integraciones con proveedores que fallan de forma visible.", "technologies": ["Resend", "Integraciones con proveedores"]},
+        {"id": "observability", "label": "Observabilidad", "body": "Señales que explican el comportamiento antes de que el cliente tenga que reportarlo.", "technologies": ["PostHog", "Captura de errores", "Reportes CSP", "Logs estructurados", "Health checks"]},
+        {"id": "delivery", "label": "Delivery", "body": "Una ruta de release que separa revisión, preview, promoción y verificación.", "technologies": ["GitHub", "Ambientes preview", "Ramas protegidas", "Smoke verification"]}
+      ],
+      "tradeoffsHeading": "La arquitectura es una secuencia de tradeoffs.",
+      "tradeoffs": [
+        {"title": "Progressive enhancement antes que espectáculo", "reason": "El movimiento y WebGL pueden sumar significado, pero la página debe comunicar y convertir sin ellos.", "result": "El contenido semántico en DOM sigue siendo principal; el canvas es una capa responsiva y opcional."},
+        {"title": "Datos reactivos sin ownership oculto", "reason": "Las actualizaciones rápidas de UI sirven solo cuando mutations, auth y workflows operativos siguen explícitos.", "result": "Convex controla el estado del producto; el content graph tipado mantiene contenido y rutas públicas."},
+        {"title": "Preview antes que producción", "reason": "Un build verde no demuestra que un release funciona en su ambiente real.", "result": "Ramas protegidas, checks de preview y smoke verification vuelven la promoción una decisión separada."}
+      ],
       "sourceLabel": "Revisar el source",
       "sourceLinks": [
         {
@@ -557,12 +614,12 @@
       ],
       "sections": [
         {
-          "title": "Superficie pública",
-        "body": "Astro controla las páginas públicas. El mapa de rutas viene de IDs estables, slugs localizados, metadata canónica, alternates de idioma, sitemap y robots en vez de constantes duplicadas por página."
+          "title": "Sistema de rutas Astro",
+        "body": "Astro controla las rutas localizadas de marketing. IDs estables definen slugs, metadata canónica, alternates de idioma, sitemap y robots en vez de constantes duplicadas."
         },
         {
-          "title": "Límite privado",
-        "body": "El dashboard vive en el mismo dominio, pero es otra superficie: autenticada, fuera del sitemap y noindex. La página pública puede mostrar el límite sin volver público el trabajo privado."
+          "title": "Límite del dashboard",
+        "body": "El dashboard vive en el mismo dominio con otra responsabilidad: autenticado, fuera del sitemap, noindex y aislado de las rutas de marketing."
         },
         {
           "title": "Release Train",
@@ -574,11 +631,11 @@
         },
         {
           "title": "Public Content Graph",
-          "body": "El grafo es el seam entre contenido y rutas. Controla variantes de idioma, rutas públicas, metadata SEO, sitemap, labels de evidencia segura e invariantes futuros de publicación desde dashboard."
+          "body": "El grafo es el seam entre contenido y rutas. Controla variantes de idioma, paths, metadata SEO, sitemap, referencias de media e invariantes futuros de publicación desde dashboard."
         },
         {
           "title": "Responsabilidades de proveedores",
-          "body": "Cloudflare maneja hosting y media delivery, Convex el estado de aplicación y workflows del dashboard, PostHog analíticas y errores, y Resend notificaciones de leads. La tecnología aparece como evidencia, no como pitch."
+          "body": "Cloudflare maneja hosting y media delivery, Convex el estado de aplicación y workflows del dashboard, PostHog analíticas y errores, y Resend notificaciones de leads."
         }
       ],
     "boundaryNote": "Este repositorio es una muestra pública funcional. No vuelve públicos código de clientes, código de producto, credenciales, capturas privadas ni datos operativos."
@@ -587,10 +644,10 @@
   "resume": {
     "path": "/es/curriculum",
     "title": "Sobre Alejandro",
-    "summary": "Experiencia senior en ingeniería de producto, criterio de entrega, proyectos seleccionados y la prueba práctica detrás del trabajo.",
+    "summary": "Experiencia senior en ingeniería de producto, criterio de entrega, proyectos seleccionados y los sistemas detrás del trabajo.",
     "seoTitle": "Sobre Alejandro Ortiz Corro | AOHYS",
     "seoDescription": "Conoce a Alejandro Ortiz Corro y revisa experiencia senior en ingeniería de producto, proyectos seleccionados, práctica de entrega, criterio de arquitectura y CV descargable.",
-    "primaryActionLabel": "Contactar a Alejandro",
+    "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
     "secondaryActionContentId": "architecture",
@@ -600,15 +657,15 @@
       "location": "México",
       "intro": "Construyo software que tiene que sostenerse después del lanzamiento: criterio de producto, calidad de interfaz, workflows backend, disciplina de release y delivery asistido por IA.",
       "pdf": {
-        "label": "Revisar PDF de prueba",
+        "label": "Abrir CV en PDF",
         "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
         "fileName": "alejandro-ortiz-corro-resume.pdf",
-        "description": "Un paquete compacto de prueba para revisión de hiring y entrega. El sitio suma la superficie profunda: trabajo público, notas de arquitectura, estructura del repo y práctica de release."
+        "description": "Un CV compacto para hiring y revisión de delivery. El sitio suma trabajo seleccionado, decisiones de arquitectura y la práctica de release detrás de ellos."
       },
       "proof": {
-        "label": "Trabajo revisable",
-        "title": "El paquete de prueba respalda una revisión seria.",
-        "body": "El perfil está respaldado por el mismo sitio público que muestra trabajo seleccionado, límites de arquitectura, i18n, quality gates, observabilidad y práctica de release."
+        "label": "Resultados seleccionados",
+        "title": "Más de 9 años lanzando sistemas de producto confiables después del release.",
+        "body": "El trabajo abarca e-commerce de alto tráfico, productos operativos, modernización, rendimiento, sitios públicos y los sistemas de release que los mantienen confiables."
       },
       "contactLinks": [
         {
@@ -642,12 +699,12 @@
         {
           "label": "Trabajo seleccionado",
           "href": "/es/casos",
-          "text": "Prueba en producción, builds activos, productos privados y delivery enterprise."
+          "text": "Sitios en producción, builds activos, sistemas de producto y delivery enterprise."
         },
         {
           "label": "Arquitectura",
           "href": "/es/arquitectura",
-          "text": "Código público, release train, environment contract y límites público/privado."
+          "text": "Capas de experiencia, release train, environment contract y límites operativos."
         },
         {
           "label": "Contacto",
@@ -662,7 +719,7 @@
         "Mi trabajo reciente va más allá de pantallas: Next.js como superficie backend, delivery de workflows backend, manejo de escalations, payment plans, cashback, customs workflows y ejecución cross-functional.",
         "Trabajo con agentes, TDD, browser QA, release discipline, observabilidad y documentación para convertir objetivos ambiguos en software que los equipos pueden operar y mejorar."
       ],
-      "highlightsTitle": "Prueba incluida",
+      "highlightsTitle": "Resultados seleccionados",
       "highlights": [
         {
           "label": "30.5M+ usuarios mensuales",
@@ -677,7 +734,7 @@
           "text": "Implementé workflows de keyboard dispatch para una plataforma de respuesta a emergencias en Estados Unidos con tolerancia cero a errores."
         },
         {
-          "label": "Muestra pública funcional",
+          "label": "Muestra de sistema funcional",
           "text": "Construí este sitio para que evaluadores técnicos puedan revisar SEO, i18n, content graph, QA, branch protection y release practice."
         }
       ],
@@ -703,10 +760,10 @@
         },
         {
           "title": "AOHYS Product Systems",
-          "summary": "Trabajo público y privado de producto para workflows de negocios de servicios, nutrición, sitios públicos y esta muestra de source.",
+          "summary": "Trabajo de producto para negocios de servicios, operaciones de nutrición, hospitalidad y este sistema de delivery.",
           "bullets": [
-            "Construí case studies públicos seguros para Casa Roca, The Barber Central, Nutri Plan, enterprise systems y engineering practice.",
-            "Diseñé límites público/privado para mostrar evidencia de portafolio sin exponer trabajo privado de clientes o productos.",
+            "Construí case studies orientados a resultados para Casa Roca, The Barber Central, Nutri Plan, enterprise systems y engineering practice.",
+            "Diseñé límites claros entre rutas de marketing, workflows autenticados, datos y media delivery.",
             "Usa delivery moderno asistido por agentes, TDD, browser QA, quality gates y documentación de release."
           ]
         }
@@ -836,7 +893,7 @@
     "title": "Empecemos una conversación concreta",
     "summary": "Mándame el objetivo, restricciones y mejor forma de responder. En México WhatsApp suele ser lo más rápido; el correo funciona mejor para contexto largo.",
     "seoDescription": "Contacta a Alejandro Ortiz Corro y AOHYS por correo o WhatsApp para proyectos de software, revisión de arquitectura, sistemas de producto o conversaciones laborales.",
-    "primaryActionLabel": "Enviar correo",
+    "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Revisar trabajo",
     "secondaryActionContentId": "case-studies"
@@ -846,7 +903,7 @@
     "title": "Privacidad",
     "summary": "Cómo AOHYS maneja datos de contacto, analíticas, errores e información privada de proyectos.",
     "seoDescription": "Ruta de privacidad de AOHYS sobre datos de contacto, analíticas, errores, límites de proyectos privados y alcance del código público.",
-    "primaryActionLabel": "Contactar a Alejandro",
+    "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver al inicio",
     "secondaryActionContentId": "home",

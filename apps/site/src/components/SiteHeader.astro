@@ -29,7 +29,7 @@ function isCurrent(contentId?: string) {
   <a class="sunlit-skip" href="#main-content">{copy.skip}</a>
   <nav class="sunlit-nav" aria-label={copy.aria}>
     <a class="sunlit-brand" href={getLocalizedPath("home", locale)} aria-label={navigation.brand.homeLabel}>
-      <span>AOHYS</span><i aria-hidden="true"></i>
+      <img src={navigation.brand.wordmarkSrc} alt="AOHYS" width="174" height="48" />
     </a>
 
     <div class="sunlit-desktop-links">
@@ -40,7 +40,7 @@ function isCurrent(contentId?: string) {
 
     <div class="sunlit-nav-actions">
       <a class="sunlit-language" href={languageHref} hreflang={alternateLocale}>{copy.language}</a>
-      {contactAction && <a class="sunlit-talk" href={contactAction.href} aria-current={currentId === "contact" ? "page" : undefined}>{contactAction.label}</a>}
+      {contactAction && <a class="sunlit-talk sunlit-ticket-button" href={contactAction.href} aria-current={currentId === "contact" ? "page" : undefined}>{contactAction.label}</a>}
       <button
         class="sunlit-menu-button"
         type="button"
@@ -134,15 +134,7 @@ function isCurrent(contentId?: string) {
     font-weight: 820;
     letter-spacing: -.035em;
   }
-  .sunlit-brand i {
-    position: relative;
-    display: inline-block;
-    width: .78rem;
-    height: .78rem;
-    border-radius: 50%;
-    background: var(--color-primary);
-    box-shadow: .8rem 0 0 -.28rem var(--color-primary), -.8rem 0 0 -.28rem var(--color-primary), 0 .8rem 0 -.28rem var(--color-primary), 0 -.8rem 0 -.28rem var(--color-primary);
-  }
+  .sunlit-brand img { display: block; width: clamp(7.5rem, 12vw, 9.6rem); height: auto; }
   .sunlit-desktop-links, .sunlit-nav-actions { display: flex; align-items: center; }
   .sunlit-desktop-links { justify-content: center; gap: clamp(.25rem, 1.5vw, 1.4rem); }
   .sunlit-desktop-links a, .sunlit-language {
@@ -176,12 +168,8 @@ function isCurrent(contentId?: string) {
     min-height: 2.75rem;
     align-items: center;
     padding: 0 1.15rem;
-    border: 2px solid var(--color-ink);
-    border-radius: .65rem;
-    background: var(--color-primary);
     text-decoration: none;
     font-weight: 760;
-    box-shadow: 0 3px 0 var(--color-ink);
     transition: transform 160ms cubic-bezier(.22, 1, .36, 1), background 160ms ease;
   }
   .sunlit-talk:hover { transform: translateY(-2px); background: var(--color-accent); }
