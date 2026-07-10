@@ -1,36 +1,23 @@
-# AOHYS Agent Execution
+# AOHYS Agent Instructions
 
-This repo uses an execution-only orchestration workflow. Visual planning and visual recap are separate artifacts; do not run them as part of normal execution unless the user asks for them.
+Read this file before changing the repository.
 
-Merge gate: agents may push branches, open pull requests, and resolve or close review threads as part of normal execution. Do not merge any PR or branch into `develop`, `main`, or production release branches unless the user explicitly approves that merge after reviewing the result. General instructions like "avanza", "haz todo", or "continua" are not merge approval.
+## Coding orchestration
 
-For any non-trivial implementation, verification, PR-review, release-readiness, Browser QA, Computer Use, Convex, auth, env, or dashboard task:
+For every non-trivial coding task, load the global `coding-orchestration` skill and use the global Codex agents from `${CODEX_HOME:-$HOME/.codex}/agents`. Their TOML files are the single source of truth for GPT-5.6 model, reasoning, and sandbox selection; do not add repo-local model maps, routers, or custom-agent copies.
 
-1. Start by generating a repo-local execution run:
+Keep trivial direct answers, one-line read-only checks, and tiny localized edits on the parent agent. For delegated work, prefer parallel read-only discovery and verification, keep one writer by default, and preserve the dependency gates defined by the global skill.
 
-   ```sh
-   pnpm run agent:start -- --goal "<user task>"
-   ```
+Visual planning and visual recap are separate artifacts. Do not run them as part of normal execution unless the user asks for them.
 
-   Add `--file <path>` for known files, `--browser` when visible browser behavior or VAR evidence is required, `--computer` when local Mac UI operation is required, and `--repo-search-only` for discovery-only work.
+## Merge gate
 
-2. Follow the generated waves in `agent-runs/<timestamp>-<slug>/execution-run.md`.
+Agents may push branches, open pull requests, and resolve or close review threads as part of normal execution. Do not merge any PR or branch into `develop`, `main`, or production release branches unless the user explicitly approves that merge after reviewing the result. General instructions like "avanza", "haz todo", or "continua" are not merge approval.
 
-3. Launch workers in the same wave in parallel when the host supports subagents. If subagent tooling is unavailable, execute the same wave order locally and preserve the dependency gates.
+## Tool routing
 
-4. Keep the orchestrator as the owner of sequencing, heartbeats, escalation, and final gates. The orchestrator should use `gpt-5.5` with `xhigh` reasoning.
-
-5. Use the repo model policy in `docs/agent-execution.md`:
-   - `scout`: `gpt-5.4-nano`, `reasoningEffort: none`, shell-only repo search and maps.
-   - `implementer`: `gpt-5.5`, `reasoningEffort: low`, normal scoped implementation after discovery.
-   - `convex-specialist`: `gpt-5.5`, `reasoningEffort: high`, Convex/auth/env/schema/release/data contracts.
-   - `browser-qa`: `gpt-5.4-mini`, `reasoningEffort: low`, bundled Browser plugin only.
-   - `computer-operator`: `gpt-5.4-mini`, `reasoningEffort: low`, bundled Computer Use plugin only.
-   - `reviewer`: `gpt-5.5`, `reasoningEffort: high`, behavioral and release-risk review.
-   - `release-manager`: `gpt-5.5`, `reasoningEffort: xhigh`, release train and smoke readiness.
-
-6. Do not replace Browser work with ad hoc Playwright in this workflow. Do not replace Computer Use with Browser or shell when local Mac app UI operation is the task.
-
-7. Do not use GitHub Actions for this workflow. It is local to the repo and the current PR/branch.
-
-Skip `agent:start` only for tiny direct answers, one-line read-only shell checks, or when the user explicitly asks not to orchestrate.
+- Use the bundled Browser plugin for browser and visual QA.
+- Use Computer Use for local Mac app UI work that Browser or shell cannot perform.
+- Do not replace Browser verification with ad hoc Playwright.
+- Do not replace Computer Use with Browser or shell when local Mac app UI operation is the task.
+- Do not use GitHub Actions to orchestrate local subagents.
