@@ -145,25 +145,25 @@ describe("built public routes", () => {
     const spanishServicesHtml = readDist("es/practica/index.html");
 
     expect(servicesHtml).toContain('data-practice-content-id="practice"');
-    expect(servicesHtml).toContain("Product systems");
-    expect(servicesHtml).toContain("Architecture &amp; modernization");
-    expect(servicesHtml).toContain("Delivery acceleration");
-    expect(servicesHtml).toContain("Opportunity");
-    expect(servicesHtml).toContain("Result");
-    expect(servicesHtml).toContain("Engagement");
-    expect(servicesHtml).toContain("A clear path from intention to momentum.");
-    expect(servicesHtml).toContain("What the engagement leaves behind.");
-    expect(servicesHtml).toContain('data-service-pattern="flow"');
-    expect(servicesHtml).toContain('data-service-pattern="topology"');
-    expect(servicesHtml).toContain('data-service-pattern="release"');
+    expect(servicesHtml).toContain("Build a complete product from zero");
+    expect(servicesHtml).toContain("Add a senior collaborator to your team");
+    expect(servicesHtml).toContain("Modernize what is already in motion");
+    expect(servicesHtml).toContain("When it fits");
+    expect(servicesHtml).toContain("What changes");
+    expect(servicesHtml).toContain("How we work");
+    expect(servicesHtml).toContain("Clear from the first working session.");
+    expect(servicesHtml).toContain("Work you can keep using after the engagement.");
+    expect(servicesHtml).toContain('data-service-pattern="new"');
+    expect(servicesHtml).toContain('data-service-pattern="team"');
+    expect(servicesHtml).toContain('data-service-pattern="modernize"');
 
     expect(spanishServicesHtml).toContain('data-practice-content-id="practice"');
-    expect(spanishServicesHtml).toContain("Sistemas de producto");
-    expect(spanishServicesHtml).toContain("Arquitectura y modernización");
-    expect(spanishServicesHtml).toContain("Aceleración de delivery");
-    expect(spanishServicesHtml).toContain("Oportunidad");
-    expect(spanishServicesHtml).toContain("Resultado");
-    expect(spanishServicesHtml).toContain("Colaboración");
+    expect(spanishServicesHtml).toContain("Construir un producto completo desde cero");
+    expect(spanishServicesHtml).toContain("Sumar un colaborador senior a tu equipo");
+    expect(spanishServicesHtml).toContain("Modernizar lo que ya está en movimiento");
+    expect(spanishServicesHtml).toContain("Cuándo encaja");
+    expect(spanishServicesHtml).toContain("Lo que cambia");
+    expect(spanishServicesHtml).toContain("Cómo colaboramos");
   });
 
   it("renders the Casa Roca complete case-study structure in both languages", () => {
@@ -294,10 +294,10 @@ describe("built public routes", () => {
     const spanishContactHtml = readDist("es/contacto/index.html");
 
     expect(contactHtml).toContain('data-contact-content-id="contact"');
-    expect(contactHtml).toContain('class="sunlit-contact-path"');
-    expect(contactHtml).toContain("Goal");
-    expect(contactHtml).toContain("Context");
-    expect(contactHtml).toContain("Reply");
+    expect(contactHtml).toContain('class="sunlit-project-brief"');
+    expect(contactHtml).toContain("What you want to make possible");
+    expect(contactHtml).toContain("Who it should serve");
+    expect(contactHtml).toContain("What matters now");
     expect(contactHtml).toContain('data-contact-form');
     expect(contactHtml).toContain('name="preferredContactPath"');
     expect(contactHtml).toContain('data-contact-phone');
@@ -328,10 +328,10 @@ describe("built public routes", () => {
     expect(contactHtml).toMatch(/failure_reason:[`"]backend_unavailable/);
 
     expect(spanishContactHtml).toContain('data-contact-content-id="contact"');
-    expect(spanishContactHtml).toContain('class="sunlit-contact-path"');
-    expect(spanishContactHtml).toContain("Objetivo");
-    expect(spanishContactHtml).toContain("Contexto");
-    expect(spanishContactHtml).toContain("Respuesta");
+    expect(spanishContactHtml).toContain('class="sunlit-project-brief"');
+    expect(spanishContactHtml).toContain("Qué quieres hacer posible");
+    expect(spanishContactHtml).toContain("A quién debe servir");
+    expect(spanishContactHtml).toContain("Qué importa ahora");
     expect(spanishContactHtml).toContain('data-contact-form');
     expect(spanishContactHtml).toContain('name="preferredContactPath"');
     expect(spanishContactHtml).toContain("Opcional, excepto al elegir WhatsApp");

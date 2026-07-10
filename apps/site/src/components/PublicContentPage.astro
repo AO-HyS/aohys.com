@@ -84,7 +84,16 @@ const labels = locale === "es" ? {
   architectureNotes: "Notas de operación",
   architectureNotesIntro: "Los seams que mantienen conectada la topología.",
   caseBeats: ["Oportunidad y resultado", "Rol y sistema", "Decisiones", "Entrega"],
-  contactSteps: ["Objetivo", "Contexto", "Respuesta"],
+  serviceMode: "Formas de colaborar",
+  serviceFit: "Cuándo encaja",
+  serviceResult: "Lo que cambia",
+  serviceCollaboration: "Cómo colaboramos",
+  serviceOutputs: "Lo que recibes",
+  architectureLiveSystem: "Sistema AOHYS en producción",
+  architectureFlow: "Una señal entra. El sistema conserva el contexto y llega a producción con un release visible.",
+  contactBriefTitle: "Un buen primer mensaje puede ser breve.",
+  contactBriefReply: "Yo respondo con preguntas útiles y un siguiente paso concreto.",
+  contactBriefLabel: "Tu brief de proyecto",
 } : {
   available: "Available for selected projects",
   work: "Work",
@@ -124,8 +133,51 @@ const labels = locale === "es" ? {
   architectureNotes: "Operating notes",
   architectureNotesIntro: "The seams that keep the topology connected.",
   caseBeats: ["Opportunity & outcome", "Role & system", "Decisions", "Delivery"],
-  contactSteps: ["Goal", "Context", "Reply"],
+  serviceMode: "Ways to collaborate",
+  serviceFit: "When it fits",
+  serviceResult: "What changes",
+  serviceCollaboration: "How we work",
+  serviceOutputs: "What you get",
+  architectureLiveSystem: "AOHYS production system",
+  architectureFlow: "A signal enters. The system keeps its context and reaches production with a visible release record.",
+  contactBriefTitle: "A useful first note can be short.",
+  contactBriefReply: "I reply with useful questions and a concrete next step.",
+  contactBriefLabel: "Your project brief",
 };
+
+const serviceModes = locale === "es" ? [
+  { kicker: "Producto nuevo", note: "Sitio · web app · app móvil", symbol: "↗" },
+  { kicker: "Proyecto definido", note: "Producto · ingeniería · release", symbol: "+" },
+  { kicker: "Sistema existente", note: "IA · datos · cloud · delivery", symbol: "→" },
+] : [
+  { kicker: "New product", note: "Website · web app · mobile app", symbol: "↗" },
+  { kicker: "Defined project", note: "Product · engineering · release", symbol: "+" },
+  { kicker: "Existing system", note: "AI · data · cloud · delivery", symbol: "→" },
+];
+
+const architectureHeroNodes = locale === "es" ? [
+  { id: "public", title: "Experiencia pública", detail: "Sitio bilingüe, casos, servicios y accesibilidad", meta: "Astro · EN / ES" },
+  { id: "content", title: "Contenido, dashboard y datos", detail: "Publicación, ownership y contratos compartidos", meta: "Content Graph · Convex" },
+  { id: "media", title: "Media y edge", detail: "Imágenes publicadas, fallbacks versionados y entrega rápida", meta: "Cloudflare" },
+  { id: "signals", title: "Señales y contacto", detail: "Solicitudes, analíticas y errores con límites explícitos", meta: "Formulario · PostHog" },
+  { id: "release", title: "Tren de release", detail: "Preview, checks, promoción y smoke de producción", meta: "develop → main" },
+] : [
+  { id: "public", title: "Public experience", detail: "Bilingual site, cases, services, and accessible interaction", meta: "Astro · EN / ES" },
+  { id: "content", title: "Content, dashboard, and data", detail: "Publishing, ownership, and shared content contracts", meta: "Content Graph · Convex" },
+  { id: "media", title: "Media and edge", detail: "Published images, versioned fallbacks, and fast delivery", meta: "Cloudflare" },
+  { id: "signals", title: "Signals and contact", detail: "Requests, analytics, and errors with explicit boundaries", meta: "Form · PostHog" },
+  { id: "release", title: "Release train", detail: "Preview, checks, promotion, and production smoke", meta: "develop → main" },
+];
+
+const contactBriefPrompts = locale === "es" ? [
+  ["Qué quieres hacer posible", "Crear, evolucionar o lanzar"],
+  ["A quién debe servir", "Personas, equipo o negocio"],
+  ["Qué importa ahora", "Plazo, restricción o señal de éxito"],
+] : [
+  ["What you want to make possible", "Create, evolve, or launch"],
+  ["Who it should serve", "People, team, or business"],
+  ["What matters now", "Timing, constraint, or success signal"],
+];
 
 function localizedHref(contentId?: ContentId) {
   return contentId ? getLocalizedPath(contentId, locale) : undefined;
@@ -285,24 +337,35 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
           {secondaryRouteActions.map((action) => <a class="sunlit-text-action" href={action.href}>{action.label}</a>)}
         </div>
       </div>
-      <div class="sunlit-service-tickets" aria-label={labels.practice}>
+      <nav class="sunlit-service-menu" aria-label={labels.serviceMode}>
+        <p>{labels.serviceMode}</p>
         {practiceContent.services.map((service, index) => (
-          <a href={`#${service.id}`}><span>{String(index + 1).padStart(2, "0")}</span><strong>{service.title}</strong><i aria-hidden="true">↓</i></a>
+          <a href={`#${service.id}`}>
+            <span aria-hidden="true">{serviceModes[index]?.symbol}</span>
+            <span><small>{serviceModes[index]?.kicker}</small><strong>{service.title}</strong><em>{serviceModes[index]?.note}</em></span>
+            <i aria-hidden="true">↓</i>
+          </a>
         ))}
-      </div>
+      </nav>
     </section>
 
     <section class="sunlit-service-list" aria-label={labels.practice}>
       {practiceContent.services.map((service, index) => (
-        <article id={service.id} class="sunlit-service-offer" data-service-pattern={["flow", "topology", "release"][index]}>
-          <header><span aria-hidden="true">{["↗", "◎", "→"][index]}</span><h2>{service.title}</h2></header>
-          <div class="sunlit-service-motif" aria-hidden="true"><span></span><i></i><b></b><em></em></div>
-          <div class="sunlit-service-story">
-            <div><strong>{locale === "es" ? "Oportunidad" : "Opportunity"}</strong><p>{service.problem}</p></div>
-            <div><strong>{locale === "es" ? "Resultado" : "Result"}</strong><p>{service.result}</p></div>
-            <div><strong>{locale === "es" ? "Colaboración" : "Engagement"}</strong><p>{service.engagement}</p></div>
+        <article id={service.id} class="sunlit-service-offer" data-service-pattern={["new", "team", "modernize"][index]}>
+          <header>
+            <span aria-hidden="true">{serviceModes[index]?.symbol}</span>
+            <div><p>{serviceModes[index]?.kicker}</p><h2>{service.title}</h2></div>
+          </header>
+          <div class="sunlit-service-signal" aria-hidden="true">
+            {index === 0 ? <><span>www</span><span>app</span><span>mobile</span></> : index === 1 ? <><span>PM</span><span>DES</span><strong>AOHYS</strong><span>ENG</span><span>QA</span></> : <><span>now</span><strong>AI · DATA · CLOUD</strong><span>next</span></>}
           </div>
-          <ul>{service.deliverables.map((deliverable) => <li>{deliverable}</li>)}</ul>
+          <div class="sunlit-service-fit"><strong>{labels.serviceFit}</strong><p>{service.problem}</p></div>
+          <div class="sunlit-service-result"><strong>{labels.serviceResult}</strong><p>{service.result}</p></div>
+          <div class="sunlit-service-collaboration"><strong>{labels.serviceCollaboration}</strong><p>{service.engagement}</p></div>
+          <div class="sunlit-service-outputs">
+            <strong>{labels.serviceOutputs}</strong>
+            <ul>{service.deliverables.map((deliverable) => <li>{deliverable}</li>)}</ul>
+          </div>
         </article>
       ))}
     </section>
@@ -315,7 +378,7 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
     </section>
 
     <section class="sunlit-service-deliverables" aria-labelledby="service-deliverables-title">
-      <div><span>{labels.verified}</span><h2 id="service-deliverables-title">{practiceContent.deliverablesHeading}</h2></div>
+      <div><h2 id="service-deliverables-title">{practiceContent.deliverablesHeading}</h2></div>
       <ul>{practiceContent.deliverables.map((deliverable) => <li>{deliverable}</li>)}</ul>
       <nav aria-label={practiceContent.relatedHeading}>
         <strong>{practiceContent.relatedHeading}</strong>
@@ -339,7 +402,23 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
           {secondaryRouteActions.map((action) => <a class="sunlit-text-action" href={action.href}>{action.label}</a>)}
         </div>
       </div>
-      <SunlitWebGLScene variant="architecture" label={locale === "es" ? "Mapa topológico de la arquitectura AOHYS" : "Topological map of the AOHYS architecture"} />
+      <div class="sunlit-architecture-hero-map" aria-labelledby="architecture-hero-map-title">
+        <SunlitWebGLScene variant="architecture" label={locale === "es" ? "Profundidad cinética detrás del mapa del sistema" : "Kinetic depth behind the system map"} />
+        <div class="sunlit-architecture-topology">
+          <header>
+            <span>{labels.architectureLiveSystem}</span>
+            <strong id="architecture-hero-map-title">{labels.architectureFlow}</strong>
+          </header>
+          <ol>
+            {architectureHeroNodes.map((node, index) => (
+              <li data-system-node={node.id}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div><strong>{node.title}</strong><p>{node.detail}</p><small>{node.meta}</small></div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
     </section>
 
     <section class="sunlit-system-map" aria-labelledby="system-map-title">
@@ -507,8 +586,14 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
         </div>
       </div>
       <div class="sunlit-contact-visual">
-        <SunlitWebGLScene variant="contact" label={locale === "es" ? "Objetivo, contexto y respuesta conectados" : "Goal, context, and reply connected"} />
-        <div class="sunlit-contact-path" aria-label={labels.contactRail}>{labels.contactSteps.map((step, index) => <strong><span>{String(index + 1).padStart(2, "0")}</span>{step}</strong>)}</div>
+        <SunlitWebGLScene variant="contact" label={locale === "es" ? "Profundidad suave detrás del brief de proyecto" : "Soft depth behind the project brief"} />
+        <article class="sunlit-project-brief" aria-labelledby="contact-brief-title">
+          <header><span>{labels.contactBriefLabel}</span><h2 id="contact-brief-title">{labels.contactBriefTitle}</h2></header>
+          <dl>
+            {contactBriefPrompts.map(([term, description]) => <div><dt>{term}</dt><dd>{description}</dd></div>)}
+          </dl>
+          <p><span aria-hidden="true">↗</span>{labels.contactBriefReply}</p>
+        </article>
       </div>
     </section>
 
@@ -704,18 +789,21 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
   .sunlit-work-program > div { position: relative; z-index: 1; display: grid; }
   .sunlit-work-program i { padding: .35rem 0; border-top: 1px solid color-mix(in oklch, var(--color-ink), transparent 45%); font-style: normal; font-weight: 650; }
   .sunlit-work-archive, .sunlit-profile-summary, .sunlit-experience, .sunlit-capabilities, .sunlit-profile-projects, .sunlit-education, .sunlit-related { width: var(--container); margin: clamp(5rem, 10vw, 9rem) auto; }
-  .sunlit-work-archive > header, .sunlit-profile-summary > header, .sunlit-experience > header, .sunlit-capabilities > header, .sunlit-profile-projects > header, .sunlit-education > header { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: 2rem; margin-bottom: 2rem; }
+  .sunlit-work-archive > header, .sunlit-profile-summary > header, .sunlit-experience > header, .sunlit-capabilities > header, .sunlit-profile-projects > header, .sunlit-education > header { display: grid; grid-template-columns: minmax(16rem, .72fr) minmax(0, 1.28fr); align-items: end; gap: clamp(2rem, 6vw, 6rem); margin-bottom: clamp(2rem, 5vw, 4rem); }
   .sunlit-work-archive > header h2, .sunlit-profile-summary > header h2, .sunlit-experience > header h2, .sunlit-capabilities > header h2, .sunlit-profile-projects > header h2, .sunlit-education > header h2, .sunlit-related h2 { margin: 0; font-size: var(--text-h2); font-weight: 760; letter-spacing: -.035em; line-height: 1; }
   .sunlit-work-archive > header p { max-width: 52ch; margin: 0; color: var(--color-muted); }
   .sunlit-archive-list { border-top: 2px solid var(--color-ink); }
-  .sunlit-archive-list article { display: grid; min-height: 24rem; grid-template-columns: minmax(16rem, .8fr) minmax(0, 1.2fr); gap: clamp(1.2rem, 5vw, 5rem); align-items: center; padding: 2rem 0; border-bottom: 2px solid var(--color-ink); }
-  .sunlit-archive-list figure { display: grid; height: 20rem; margin: 0; overflow: hidden; place-items: center; border: 8px solid var(--color-bg); outline: 2px solid var(--color-ink); background: color-mix(in oklch, var(--color-secondary), white 72%); box-shadow: 0 5px 0 var(--color-ink); }
+  .sunlit-archive-list article { display: grid; min-height: 28rem; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: clamp(1.5rem, 4vw, 4rem); align-items: center; padding: clamp(2.5rem, 6vw, 5rem) 0; border-bottom: 2px solid var(--color-ink); }
+  .sunlit-archive-list figure { grid-column: 1 / span 6; display: grid; height: clamp(18rem, 30vw, 23rem); margin: 0; overflow: hidden; place-items: center; border: 8px solid var(--color-bg); outline: 2px solid var(--color-ink); background: color-mix(in oklch, var(--color-secondary), white 72%); box-shadow: 0 5px 0 var(--color-ink); }
+  .sunlit-archive-list article > div:last-child { grid-column: 7 / -1; min-width: 0; }
+  .sunlit-archive-list article:nth-child(even) figure { grid-row: 1; grid-column: 7 / -1; }
+  .sunlit-archive-list article:nth-child(even) > div:last-child { grid-row: 1; grid-column: 1 / span 6; }
   .sunlit-archive-list img { width: 100%; height: 100%; object-fit: contain; object-position: center top; }
   .sunlit-archive-list figure[data-media-kind="site"] img,
   .sunlit-archive-list figure[data-media-kind="public-site"] img { object-fit: cover; }
   .sunlit-archive-list article > div:last-child > p:first-child { width: fit-content; margin: 0 0 1rem; padding: .3rem .55rem; background: var(--color-accent); font-size: .76rem; font-weight: 760; }
-  .sunlit-archive-list h3 { margin: 0; font-size: clamp(2rem, 4.6vw, 4rem); font-weight: 770; letter-spacing: -.035em; line-height: 1; }
-  .sunlit-archive-list article > div:last-child > p:nth-of-type(2) { max-width: 58ch; color: var(--color-muted); }
+  .sunlit-archive-list h3 { max-width: 14ch; margin: 0; font-size: clamp(2rem, 4vw, 3.75rem); font-weight: 770; letter-spacing: -.035em; line-height: 1; text-wrap: balance; }
+  .sunlit-archive-list article > div:last-child > p:nth-of-type(2) { max-width: 54ch; margin-block: 1.25rem 0; color: var(--color-muted); font-size: 1.05rem; line-height: 1.6; }
   .sunlit-archive-list article strong { display: block; font-size: .82rem; }
   .sunlit-archive-list article a { display: inline-flex; min-height: 3rem; align-items: center; gap: 2rem; margin-top: 1.2rem; padding: 0 1rem; border: 2px solid var(--color-ink); background: var(--color-primary); text-decoration: none; font-weight: 760; box-shadow: 0 3px 0 var(--color-ink); }
   .sunlit-practice-artifact, .sunlit-case-hero figure { position: relative; margin: 0; transform: rotate(1deg); border: 9px solid var(--color-bg); outline: 2px solid var(--color-ink); background: var(--color-bg); box-shadow: 0 6px 0 var(--color-ink); }
@@ -736,10 +824,9 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
   .sunlit-practice-proof a span { font-size: .76rem; font-weight: 760; }
   .sunlit-practice-proof a p { grid-column: 2; margin: 0; color: var(--color-muted); }
   .sunlit-practice-proof a i { position: absolute; top: 50%; right: 0; transform: translateY(-50%); }
-  .sunlit-architecture-hero { position: relative; width: 100%; overflow: clip; padding-inline: max(1rem, calc((100vw - 72rem) / 2)); background: var(--color-secondary); }
+  .sunlit-architecture-hero { position: relative; width: 100%; min-height: 46rem; overflow: clip; grid-template-columns: minmax(20rem, .78fr) minmax(34rem, 1.22fr); padding-inline: max(1rem, calc((100vw - 72rem) / 2)); background: var(--color-secondary); }
+  .sunlit-architecture-hero h1 { max-width: 12ch; font-size: clamp(3.2rem, 4vw, 4.25rem); overflow-wrap: normal; word-break: normal; }
   .sunlit-architecture-hero > div > p:last-of-type { color: var(--color-ink); }
-  .sunlit-architecture-hero::before { content: ""; position: absolute; top: -11rem; left: 42%; width: 30rem; height: 30rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
-  .sunlit-architecture-hero::after { content: ""; position: absolute; right: 0; bottom: 3rem; left: 46%; height: 3px; background: var(--color-ink); }
   .sunlit-architecture-hero > * { position: relative; z-index: 1; }
   .sunlit-source-reel { position: relative; padding: 2rem; border: 2px solid var(--color-ink); background: var(--color-bg); box-shadow: 0 6px 0 var(--color-ink); }
   .sunlit-source-reel > span { position: absolute; top: -1.4rem; right: 2rem; width: 2.8rem; height: 2.8rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-secondary); }
@@ -754,27 +841,29 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
   .sunlit-architecture-ledger footer, .sunlit-case-evidence footer, .sunlit-legal footer { display: grid; grid-template-columns: .7fr 1.3fr; gap: 2rem; padding: 2rem; background: var(--color-secondary); }
   .sunlit-architecture-ledger footer p, .sunlit-case-evidence footer p, .sunlit-legal footer p { margin: 0; }
   .sunlit-case { width: 100%; }
-  .sunlit-case-hero { display: grid; width: var(--container); min-height: 38rem; margin: 0 auto; grid-template-columns: 1fr 1fr; align-items: center; gap: clamp(2rem, 6vw, 6rem); padding: clamp(4rem, 8vw, 7rem) 0; }
+  .sunlit-case-hero { display: grid; width: var(--container); min-height: 42rem; margin: 0 auto; grid-template-columns: minmax(0, .92fr) minmax(24rem, 1.08fr); align-items: center; gap: clamp(3rem, 8vw, 8rem); padding: clamp(5rem, 9vw, 8rem) 0; }
+  .sunlit-case-hero > div { min-width: 0; }
+  .sunlit-case-hero h1 { max-width: 11ch; font-size: clamp(3.25rem, 6vw, 5.65rem); }
   .sunlit-case-hero figure figcaption { padding: .55rem; font-size: .75rem; font-weight: 760; }
-  .sunlit-case-rail { width: var(--container); margin: 2rem auto clamp(5rem, 10vw, 9rem); }
-  .sunlit-case-rail > section { display: grid; gap: clamp(1.5rem, 4vw, 4rem); padding: clamp(2.5rem, 6vw, 5rem); }
-  .sunlit-case-rail > section > header { display: flex; align-items: flex-start; gap: 1rem; }
+  .sunlit-case-rail { width: var(--container); margin: 3rem auto clamp(6rem, 11vw, 10rem); }
+  .sunlit-case-rail > section { display: grid; gap: clamp(2.5rem, 6vw, 6rem); padding: clamp(3rem, 7vw, 6rem); }
+  .sunlit-case-rail > section > header { display: flex; min-width: 0; align-items: flex-start; gap: 1rem; }
   .sunlit-case-rail > section > header span { display: grid; flex: 0 0 2.8rem; width: 2.8rem; height: 2.8rem; place-items: center; border: 2px solid currentColor; border-radius: 50%; font-weight: 760; }
-  .sunlit-case-rail h2 { max-width: 12ch; margin: 0; font-size: clamp(2.2rem, 4.5vw, 4.5rem); letter-spacing: -.035em; line-height: .98; }
-  .sunlit-case-rail section > div { display: grid; gap: 1.5rem; }
-  .sunlit-case-rail section article { max-width: 68ch; }
-  .sunlit-case-rail h3 { margin: 0 0 .55rem; font-size: 1rem; }
+  .sunlit-case-rail h2 { max-width: 10ch; margin: 0; font-size: clamp(2.35rem, 4.2vw, 4rem); letter-spacing: -.035em; line-height: 1; overflow-wrap: normal; text-wrap: balance; }
+  .sunlit-case-rail section > div { display: grid; min-width: 0; gap: clamp(1.75rem, 4vw, 3.5rem); }
+  .sunlit-case-rail section article { min-width: 0; max-width: 62ch; }
+  .sunlit-case-rail h3 { margin: 0 0 .65rem; font-size: 1rem; }
   .sunlit-case-rail p { margin: 0; color: var(--color-muted); font-size: 1.08rem; line-height: 1.62; }
-  .sunlit-case-rail [data-case-beat="outcome"] { grid-template-columns: minmax(15rem, .7fr) minmax(0, 1.3fr); border: 2px solid var(--color-ink); background: var(--color-primary); box-shadow: 0 6px 0 var(--color-ink); }
+  .sunlit-case-rail [data-case-beat="outcome"] { grid-template-columns: minmax(16rem, .78fr) minmax(0, 1.22fr); border: 2px solid var(--color-ink); background: var(--color-primary); box-shadow: 0 6px 0 var(--color-ink); }
   .sunlit-case-rail [data-case-beat="outcome"] > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sunlit-case-rail [data-case-beat="outcome"] p { color: var(--color-ink); }
-  .sunlit-case-rail [data-case-beat="role-system"] { grid-template-columns: minmax(0, 1.25fr) minmax(15rem, .75fr); margin-block: clamp(2rem, 5vw, 4rem); background: color-mix(in oklch, var(--color-secondary), white 64%); }
+  .sunlit-case-rail [data-case-beat="role-system"] { grid-template-columns: minmax(0, 1.2fr) minmax(16rem, .8fr); margin-block: clamp(3rem, 7vw, 6rem); background: color-mix(in oklch, var(--color-secondary), white 64%); }
   .sunlit-case-rail [data-case-beat="role-system"] > header { grid-column: 2; grid-row: 1; }
   .sunlit-case-rail [data-case-beat="role-system"] > div { grid-column: 1; grid-row: 1; padding-top: .4rem; }
-  .sunlit-case-rail [data-case-beat="decisions"] { width: min(100%, 62rem); margin-inline: auto; grid-template-columns: minmax(18rem, .7fr) minmax(0, 1.3fr); border-top: 2px solid var(--color-ink); border-bottom: 2px solid var(--color-ink); }
+  .sunlit-case-rail [data-case-beat="decisions"] { width: min(100%, 66rem); margin-inline: auto; grid-template-columns: minmax(16rem, .72fr) minmax(0, 1.28fr); border-top: 2px solid var(--color-ink); border-bottom: 2px solid var(--color-ink); }
   .sunlit-case-rail [data-case-beat="decisions"] h2 { font-size: clamp(2.2rem, 4vw, 3.6rem); }
   .sunlit-case-rail [data-case-beat="decisions"] > header span { background: var(--color-accent); }
-  .sunlit-case-rail [data-case-beat="delivery"] { grid-template-columns: minmax(14rem, .65fr) minmax(0, 1.35fr); margin-top: clamp(2rem, 5vw, 4rem); background: var(--color-ink); color: var(--color-bg); }
+  .sunlit-case-rail [data-case-beat="delivery"] { grid-template-columns: minmax(16rem, .72fr) minmax(0, 1.28fr); margin-top: clamp(3rem, 7vw, 6rem); background: var(--color-ink); color: var(--color-bg); }
   .sunlit-case-rail [data-case-beat="delivery"] > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sunlit-case-rail [data-case-beat="delivery"] p { color: color-mix(in oklch, var(--color-bg), transparent 15%); }
   .sunlit-case-evidence { width: var(--container); margin: clamp(5rem, 10vw, 9rem) auto; border: 2px solid var(--color-ink); }
@@ -786,14 +875,12 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
   .sunlit-case-evidence > div a > span { grid-row: 1 / 4; display: grid; width: 2rem; height: 2rem; place-items: center; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-secondary); }
   .sunlit-case-evidence a p { margin: 0; color: var(--color-muted); }
   .sunlit-case-evidence a i { margin-top: 1rem; font-style: normal; font-weight: 700; }
-  .sunlit-related > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 1.5rem 0 .6rem; }
-  .sunlit-related a { display: grid; min-width: 0; min-height: 10rem; padding: 1.2rem; border: 2px solid var(--color-ink); background: var(--color-bg); text-decoration: none; box-shadow: 0 4px 0 var(--color-ink); }
-  .sunlit-related a:nth-child(4n + 2) { background: color-mix(in oklch, var(--color-primary), white 62%); }
-  .sunlit-related a:nth-child(4n + 3) { background: color-mix(in oklch, var(--color-secondary), white 70%); }
-  .sunlit-related a:nth-child(4n + 4) { background: color-mix(in oklch, var(--color-accent), white 72%); }
-  .sunlit-related a span { font-size: .72rem; font-weight: 760; }
-  .sunlit-related a strong { align-self: end; font-size: 1.4rem; }
-  .sunlit-related a i { justify-self: end; }
+  .sunlit-related > div { display: grid; padding-top: 1.5rem; border-top: 2px solid var(--color-ink); }
+  .sunlit-related a { display: grid; min-width: 0; min-height: 5.5rem; grid-template-columns: minmax(10rem, .35fr) minmax(0, 1fr) auto; align-items: center; gap: 1.5rem; padding: 1rem 0; border-bottom: 1px solid var(--color-ink); color: var(--color-ink); text-decoration: none; transition: padding 180ms cubic-bezier(.22, 1, .36, 1), background 180ms ease; }
+  .sunlit-related a:hover, .sunlit-related a:focus-visible { padding-inline: 1rem; background: color-mix(in oklch, var(--color-primary), white 68%); }
+  .sunlit-related a span { font-size: .76rem; font-weight: 760; }
+  .sunlit-related a strong { font-size: 1.25rem; }
+  .sunlit-related a i { justify-self: end; font-style: normal; }
   .sunlit-about-role { font-weight: 720; color: var(--color-ink) !important; }
   .sunlit-profile-ticket span { display: block; margin-bottom: 2rem; font-size: .76rem; font-weight: 760; }
   .sunlit-profile-ticket h2 { margin: 0; font-size: clamp(1.8rem, 3.5vw, 3rem); line-height: 1.05; }
@@ -824,9 +911,6 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
   .sunlit-contact-ticket { background: var(--color-secondary); }
   .sunlit-contact-ticket > span { display: block; color: var(--color-primary); font-size: 2rem; }
   .sunlit-contact-ticket h2 { margin: 1.5rem 0 .8rem; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; }
-  .sunlit-contact-path { display: flex; align-items: center; gap: .55rem; margin-top: 2rem; }
-  .sunlit-contact-path strong { display: flex; min-height: 2.75rem; flex: 1; align-items: center; justify-content: center; border-top: 2px solid var(--color-ink); border-bottom: 2px solid var(--color-ink); font-size: .82rem; }
-  .sunlit-contact-path strong + strong::before { content: "→"; margin-right: .55rem; color: var(--color-accent-ink); }
   .sunlit-contact-direct { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.4rem; }
   .sunlit-contact-direct a { font-weight: 700; }
   .sunlit-contact-layout { display: grid; width: var(--container); margin: clamp(4rem, 8vw, 7rem) auto; grid-template-columns: minmax(17rem, .65fr) minmax(0, 1.35fr); border: 2px solid var(--color-ink); box-shadow: 0 7px 0 var(--color-ink); }
@@ -863,6 +947,7 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
     .sunlit-hero { min-height: auto; grid-template-columns: 1fr; }
     .sunlit-hero-stage { min-height: 34rem; }
     .sunlit-page-hero, .sunlit-case-hero { grid-template-columns: 1fr; }
+    .sunlit-architecture-hero { min-height: auto; grid-template-columns: 1fr; }
     .sunlit-home-split { grid-template-columns: 1fr; }
     .sunlit-archive-list article { grid-template-columns: minmax(13rem, .8fr) minmax(0, 1.2fr); }
     .sunlit-practice-proof { grid-template-columns: 1fr; }
@@ -875,6 +960,8 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
     .sunlit-archive-list article { grid-template-columns: 1fr; }
     .sunlit-archive-list figure { grid-column: 1; height: 17rem; }
     .sunlit-archive-list article > div:last-child { grid-column: 1; }
+    .sunlit-archive-list article:nth-child(even) figure,
+    .sunlit-archive-list article:nth-child(even) > div:last-child { grid-row: auto; grid-column: 1; }
     .sunlit-architecture-ledger article { grid-template-columns: 1fr; gap: 1rem; }
     .sunlit-architecture-ledger article p, .sunlit-architecture-ledger article div { grid-column: 1; }
     .sunlit-architecture-ledger footer, .sunlit-case-evidence footer, .sunlit-legal footer { grid-template-columns: 1fr; }
@@ -886,6 +973,8 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
     .sunlit-field-grid { grid-template-columns: 1fr; }
     .sunlit-submit { align-items: stretch; flex-direction: column; }
     .sunlit-related > div { grid-template-columns: 1fr; }
+    .sunlit-related a { grid-template-columns: 1fr auto; gap: .35rem 1rem; }
+    .sunlit-related a span { grid-column: 1 / -1; }
   }
   @media (max-width: 420px) {
     .sunlit-hero-stage { min-height: 27rem; }
@@ -928,74 +1017,94 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
   .sunlit-split-copy > span { color: var(--color-ink); }
   .sunlit-split-copy p { color: var(--color-muted); }
   .sunlit-split-copy .sunlit-text-action { padding-inline: 0; border: 0; border-bottom: 2px solid currentColor; background: transparent; color: inherit; }
-  .sunlit-work-hero { min-height: 26rem; grid-template-columns: minmax(0, 48rem); }
+  .sunlit-work-hero { min-height: 22rem; grid-template-columns: minmax(0, 48rem); padding-block: clamp(3rem, 6vw, 5rem); }
   .sunlit-work-hero h1 { max-width: 11ch; }
+  .sunlit-work-archive { margin-block: clamp(3.5rem, 7vw, 6rem); }
 
-  .sunlit-service-tickets { display: grid; grid-template-columns: 1fr; gap: .65rem; }
-  .sunlit-service-tickets a { display: grid; min-height: 4.2rem; grid-template-columns: 2.2rem 1fr auto; align-items: center; gap: .8rem; padding: .7rem 1rem; border: 2px solid var(--color-ink); background: var(--color-primary); text-decoration: none; box-shadow: 0 3px 0 var(--color-ink); }
-  .sunlit-service-tickets a:nth-child(2) { background: var(--color-secondary); }
-  .sunlit-service-tickets a:nth-child(3) { background: var(--color-accent); }
-  .sunlit-service-tickets span { font-size: .75rem; }
-  .sunlit-service-list { display: grid; gap: clamp(2rem, 5vw, 4.5rem); }
-  .sunlit-service-offer { position: relative; display: grid; min-height: 34rem; scroll-margin-top: 6rem; grid-template-columns: minmax(15rem, .7fr) minmax(0, 1.3fr); align-items: center; gap: clamp(1.5rem, 5vw, 5rem); padding: clamp(2rem, 6vw, 5rem); overflow: hidden; border-top: 2px solid var(--color-ink); border-bottom: 2px solid var(--color-ink); }
-  .sunlit-service-offer > header { position: relative; z-index: 1; display: flex; align-items: flex-start; gap: 1rem; }
-  .sunlit-service-offer > header span { display: grid; flex: 0 0 2.7rem; width: 2.7rem; height: 2.7rem; place-items: center; border: 2px solid currentColor; border-radius: 50%; font-weight: 780; }
-  .sunlit-service-list h2 { max-width: 13ch; margin: 0; font-size: clamp(2.35rem, 5vw, 4.8rem); letter-spacing: -.035em; line-height: .98; }
-  .sunlit-service-story { position: relative; z-index: 1; display: grid; gap: 0; }
-  .sunlit-service-story > div { padding: 1rem 0; border-top: 1px solid currentColor; }
-  .sunlit-service-story p { max-width: 58ch; margin: .45rem 0 0; color: var(--color-muted); }
-  .sunlit-service-offer > ul { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: .45rem 1rem; margin: 0; padding: 0; list-style: none; }
-  .sunlit-service-offer > ul li { padding: .3rem 0; border-bottom: 2px solid currentColor; font-size: .86rem; font-weight: 700; }
-  .sunlit-service-motif { position: relative; min-height: 10rem; }
-  .sunlit-service-motif > * { position: absolute; display: block; border: 2px solid currentColor; }
-  .sunlit-service-offer[data-service-pattern="flow"] > header { grid-row: 1; }
-  .sunlit-service-offer[data-service-pattern="flow"] .sunlit-service-motif { grid-row: 2; }
-  .sunlit-service-offer[data-service-pattern="flow"] .sunlit-service-story { grid-row: 1 / 3; grid-column: 2; }
-  .sunlit-service-offer[data-service-pattern="flow"] > ul { grid-column: 2; }
-  .sunlit-service-offer[data-service-pattern="flow"] .sunlit-service-motif::before { content: ""; position: absolute; top: 50%; right: 10%; left: 10%; height: 3px; background: var(--color-ink); }
-  .sunlit-service-offer[data-service-pattern="flow"] .sunlit-service-motif > * { top: 50%; width: 2.7rem; height: 2.7rem; transform: translateY(-50%); border-radius: 50%; background: var(--color-bg); }
-  .sunlit-service-offer[data-service-pattern="flow"] .sunlit-service-motif span { left: 5%; background: var(--color-primary); }
-  .sunlit-service-offer[data-service-pattern="flow"] .sunlit-service-motif i { left: 34%; background: var(--color-secondary); }
-  .sunlit-service-offer[data-service-pattern="flow"] .sunlit-service-motif b { left: 63%; background: var(--color-accent); }
-  .sunlit-service-offer[data-service-pattern="flow"] .sunlit-service-motif em { right: 0; width: 1.2rem; height: 1.2rem; background: var(--color-ink); }
-  .sunlit-service-offer[data-service-pattern="topology"] { grid-template-columns: minmax(0, 1.15fr) minmax(16rem, .85fr); background: color-mix(in oklch, var(--color-secondary), white 58%); }
-  .sunlit-service-offer[data-service-pattern="topology"] h2 { max-width: none; font-size: clamp(2.3rem, 4vw, 3.6rem); }
-  .sunlit-service-offer[data-service-pattern="topology"] > header, .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-story, .sunlit-service-offer[data-service-pattern="topology"] > ul { grid-column: 2; }
-  .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-motif { grid-row: 1 / 4; grid-column: 1; min-height: 24rem; }
-  .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-motif::before, .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-motif::after { content: ""; position: absolute; background: var(--color-ink); }
-  .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-motif::before { top: 24%; bottom: 18%; left: 50%; width: 3px; }
-  .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-motif::after { top: 52%; right: 16%; left: 16%; height: 3px; }
-  .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-motif > * { width: 7rem; height: 4.5rem; background: var(--color-bg); }
-  .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-motif span { top: 6%; left: calc(50% - 3.5rem); background: var(--color-primary); }
-  .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-motif i { top: 42%; left: 5%; background: var(--color-accent); }
-  .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-motif b { top: 42%; right: 5%; background: var(--color-bg); }
-  .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-motif em { right: calc(50% - 3.5rem); bottom: 2%; background: var(--color-secondary); }
-  .sunlit-service-offer[data-service-pattern="release"] { background: var(--color-ink); color: var(--color-bg); }
-  .sunlit-service-offer[data-service-pattern="release"] > header { align-self: end; }
-  .sunlit-service-offer[data-service-pattern="release"] .sunlit-service-motif { grid-column: 2; min-height: 11rem; }
-  .sunlit-service-offer[data-service-pattern="release"] .sunlit-service-motif::before { content: ""; position: absolute; top: 50%; right: 0; left: 0; height: 3px; background: var(--color-primary); }
-  .sunlit-service-offer[data-service-pattern="release"] .sunlit-service-motif > * { top: 50%; width: 2.5rem; height: 4.5rem; transform: translateY(-50%); background: var(--color-ink); }
-  .sunlit-service-offer[data-service-pattern="release"] .sunlit-service-motif span { left: 0; border-color: var(--color-primary); }
-  .sunlit-service-offer[data-service-pattern="release"] .sunlit-service-motif i { left: 31%; border-color: var(--color-secondary); }
-  .sunlit-service-offer[data-service-pattern="release"] .sunlit-service-motif b { left: 62%; border-color: var(--color-accent); }
-  .sunlit-service-offer[data-service-pattern="release"] .sunlit-service-motif em { right: 0; border-color: var(--color-bg); }
-  .sunlit-service-offer[data-service-pattern="release"] .sunlit-service-story { grid-column: 1 / -1; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-  .sunlit-service-offer[data-service-pattern="release"] .sunlit-service-story p { color: color-mix(in oklch, var(--color-bg), transparent 18%); }
-  .sunlit-service-offer[data-service-pattern="release"] > ul { grid-column: 1 / -1; }
+  .sunlit-practice-hero { min-height: 40rem; }
+  .sunlit-service-menu { border-top: 2px solid var(--color-ink); border-bottom: 2px solid var(--color-ink); }
+  .sunlit-service-menu > p { margin: 0; padding: .7rem 0; color: var(--color-muted); font-size: .8rem; font-weight: 720; }
+  .sunlit-service-menu a { display: grid; min-height: 6.5rem; grid-template-columns: 2.75rem minmax(0, 1fr) auto; align-items: center; gap: 1rem; padding: .8rem 0; border-top: 1px solid var(--color-rule); color: var(--color-ink); text-decoration: none; transition: background 180ms ease, padding 180ms cubic-bezier(.22, 1, .36, 1); }
+  .sunlit-service-menu a:hover, .sunlit-service-menu a:focus-visible { padding-inline: .8rem; background: color-mix(in oklch, var(--color-primary), white 64%); }
+  .sunlit-service-menu a > span:first-child { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); font-weight: 780; }
+  .sunlit-service-menu a:nth-of-type(2) > span:first-child { background: var(--color-secondary); }
+  .sunlit-service-menu a:nth-of-type(3) > span:first-child { background: var(--color-accent); }
+  .sunlit-service-menu a > span:nth-child(2) { display: grid; gap: .15rem; min-width: 0; }
+  .sunlit-service-menu small, .sunlit-service-menu em { color: var(--color-muted); font-size: .72rem; font-style: normal; }
+  .sunlit-service-menu strong { font-size: 1.08rem; line-height: 1.15; }
+  .sunlit-service-menu i { font-style: normal; }
+  .sunlit-service-list { display: grid; gap: clamp(3rem, 7vw, 7rem); }
+  .sunlit-service-offer { display: grid; scroll-margin-top: 6rem; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: clamp(1.5rem, 3vw, 3rem); padding: clamp(2rem, 5vw, 4.5rem); border-top: 2px solid var(--color-ink); border-bottom: 2px solid var(--color-ink); }
+  .sunlit-service-offer > header { grid-column: 1 / span 7; display: flex; align-items: flex-start; gap: 1rem; }
+  .sunlit-service-offer > header > span { display: grid; flex: 0 0 3rem; width: 3rem; height: 3rem; place-items: center; border: 2px solid currentColor; border-radius: 50%; font-weight: 780; }
+  .sunlit-service-offer > header p { margin: 0 0 .6rem; font-size: .82rem; font-weight: 720; }
+  .sunlit-service-list h2 { max-width: 14ch; margin: 0; font-size: clamp(2.5rem, 5vw, 4.75rem); letter-spacing: -.035em; line-height: .98; text-wrap: balance; }
+  .sunlit-service-signal { grid-column: 8 / -1; display: flex; min-height: 9rem; align-items: center; justify-content: center; gap: .55rem; padding: 1rem; border: 2px solid currentColor; }
+  .sunlit-service-signal > * { display: grid; min-width: 3.7rem; min-height: 3.7rem; place-items: center; padding: .35rem; border: 2px solid currentColor; background: var(--color-bg); font-size: .72rem; font-style: normal; font-weight: 780; text-align: center; }
+  .sunlit-service-signal > * + * { position: relative; }
+  .sunlit-service-signal > * + *::before { content: ""; position: absolute; top: 50%; right: 100%; width: .65rem; height: 2px; background: currentColor; }
+  .sunlit-service-fit, .sunlit-service-result, .sunlit-service-collaboration { padding-top: 1rem; border-top: 1px solid currentColor; }
+  .sunlit-service-fit { grid-column: 1 / span 4; }
+  .sunlit-service-result { grid-column: 5 / span 4; }
+  .sunlit-service-collaboration { grid-column: 9 / -1; }
+  .sunlit-service-offer p { max-width: 58ch; margin: .55rem 0 0; color: var(--color-muted); }
+  .sunlit-service-outputs { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(12rem, .35fr) minmax(0, 1.65fr); gap: 1.5rem; padding-top: 1.2rem; border-top: 2px solid currentColor; }
+  .sunlit-service-outputs ul { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin: 0; padding: 0; list-style: none; }
+  .sunlit-service-outputs li { padding-bottom: .3rem; border-bottom: 2px solid currentColor; font-size: .88rem; font-weight: 700; }
+  .sunlit-service-offer[data-service-pattern="new"] { background: color-mix(in oklch, var(--color-primary), white 50%); }
+  .sunlit-service-offer[data-service-pattern="new"] .sunlit-service-signal > *:nth-child(1) { background: var(--color-primary); }
+  .sunlit-service-offer[data-service-pattern="new"] .sunlit-service-signal > *:nth-child(2) { background: var(--color-secondary); }
+  .sunlit-service-offer[data-service-pattern="new"] .sunlit-service-signal > *:nth-child(3) { background: var(--color-accent); }
+  .sunlit-service-offer[data-service-pattern="team"] { padding-inline: clamp(1rem, 3vw, 2.5rem); background: var(--color-bg); }
+  .sunlit-service-offer[data-service-pattern="team"] > header { grid-column: 6 / -1; }
+  .sunlit-service-offer[data-service-pattern="team"] .sunlit-service-signal { grid-row: 1; grid-column: 1 / span 5; align-self: stretch; background: color-mix(in oklch, var(--color-secondary), white 58%); }
+  .sunlit-service-offer[data-service-pattern="team"] .sunlit-service-signal strong { background: var(--color-primary); }
+  .sunlit-service-offer[data-service-pattern="team"] .sunlit-service-fit { grid-column: 6 / span 3; }
+  .sunlit-service-offer[data-service-pattern="team"] .sunlit-service-result { grid-column: 9 / -1; }
+  .sunlit-service-offer[data-service-pattern="team"] .sunlit-service-collaboration { grid-column: 6 / -1; }
+  .sunlit-service-offer[data-service-pattern="modernize"] { background: var(--color-ink); color: var(--color-bg); }
+  .sunlit-service-offer[data-service-pattern="modernize"] p { color: color-mix(in oklch, var(--color-bg), transparent 14%); }
+  .sunlit-service-offer[data-service-pattern="modernize"] .sunlit-service-signal { border-color: var(--color-primary); }
+  .sunlit-service-offer[data-service-pattern="modernize"] .sunlit-service-signal > * { border-color: var(--color-primary); background: var(--color-ink); }
+  .sunlit-service-offer[data-service-pattern="modernize"] .sunlit-service-signal strong { min-width: min(12rem, 50%); background: var(--color-secondary); color: var(--color-secondary-ink); }
   .sunlit-service-process { margin-block: clamp(5rem, 9vw, 8rem); }
-  .sunlit-service-process > header { display: grid; grid-template-columns: .6fr 1.4fr; gap: 2rem; align-items: end; }
+  .sunlit-service-process > header { display: grid; grid-template-columns: .55fr 1.45fr; gap: 2rem; align-items: end; }
   .sunlit-service-process h2 { max-width: 15ch; margin: 0; font-size: var(--text-h2); line-height: 1; }
-  .sunlit-service-process > div { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 2rem; border: 2px solid var(--color-ink); }
-  .sunlit-service-process article { min-height: 13rem; padding: 1.1rem; border-right: 1px solid var(--color-rule); }
-  .sunlit-service-process article:nth-child(even) { background: color-mix(in oklch, var(--color-primary), white 70%); }
-  .sunlit-service-process h3 { margin: 2.6rem 0 .5rem; }
+  .sunlit-service-process > div { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 2rem; border-top: 2px solid var(--color-ink); border-bottom: 2px solid var(--color-ink); }
+  .sunlit-service-process article { position: relative; min-height: 14rem; padding: 1.25rem; border-right: 1px solid var(--color-rule); }
+  .sunlit-service-process article::before { content: ""; position: absolute; top: -.45rem; left: 1.2rem; width: .8rem; height: .8rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
+  .sunlit-service-process article:nth-child(2)::before { background: var(--color-secondary); }
+  .sunlit-service-process article:nth-child(3)::before { background: var(--color-accent); }
+  .sunlit-service-process article:nth-child(4)::before { background: var(--color-bg); }
+  .sunlit-service-process h3 { margin: 2.8rem 0 .5rem; }
   .sunlit-service-process p { margin: 0; color: var(--color-muted); }
   .sunlit-service-deliverables { display: grid; grid-template-columns: .8fr 1.2fr; gap: 2rem 4rem; margin-block: clamp(5rem, 9vw, 8rem); padding: clamp(1.5rem, 4vw, 3rem); border: 2px solid var(--color-ink); background: var(--color-secondary); box-shadow: 0 6px 0 var(--color-ink); }
   .sunlit-service-deliverables h2 { margin: .5rem 0 0; font-size: clamp(2rem, 4vw, 3.6rem); line-height: 1; }
   .sunlit-service-deliverables ul { margin: 0; padding-left: 1.2rem; }
   .sunlit-service-deliverables nav { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 2rem; padding-top: 1rem; border-top: 1px solid var(--color-ink); }
 
-  .sunlit-architecture-hero > :global(.sunlit-webgl) { min-height: 24rem; border: 2px solid var(--color-ink); box-shadow: 0 6px 0 var(--color-ink); }
+  .sunlit-architecture-hero-map { position: relative; min-height: 34rem; overflow: hidden; border: 2px solid var(--color-ink); background: color-mix(in oklch, var(--color-bg), transparent 4%); box-shadow: 0 6px 0 var(--color-ink); }
+  .sunlit-architecture-hero-map > :global(.sunlit-webgl) { position: absolute; inset: 0; min-height: 0; opacity: .32; }
+  .sunlit-architecture-topology { position: relative; z-index: 1; display: grid; min-height: 34rem; grid-template-rows: auto 1fr; padding: clamp(1rem, 2.5vw, 1.75rem); }
+  .sunlit-architecture-topology > header { display: grid; grid-template-columns: .75fr 1.25fr; gap: 1rem; padding-bottom: 1rem; border-bottom: 2px solid var(--color-ink); }
+  .sunlit-architecture-topology > header span { font-size: .74rem; font-weight: 760; }
+  .sunlit-architecture-topology > header strong { font-size: 1rem; line-height: 1.35; }
+  .sunlit-architecture-topology > ol { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(8.5rem, auto)); align-content: center; gap: 2.5rem 1rem; margin: 0; padding: 2rem 0 0; list-style: none; }
+  .sunlit-architecture-topology > ol::before { content: ""; position: absolute; top: 50%; right: 7%; left: 7%; height: 3px; background: var(--color-ink); }
+  .sunlit-architecture-topology li { position: relative; z-index: 1; display: grid; min-width: 0; grid-template-columns: 1.7rem minmax(0, 1fr); gap: .65rem; padding: .8rem; border: 2px solid var(--color-ink); background: var(--color-bg); }
+  .sunlit-architecture-topology li::after { content: ""; position: absolute; left: 50%; width: 3px; height: 2.7rem; background: var(--color-ink); }
+  .sunlit-architecture-topology li:nth-child(-n + 3)::after { top: 100%; }
+  .sunlit-architecture-topology li:nth-child(n + 4)::after { bottom: 100%; }
+  .sunlit-architecture-topology li[data-system-node="public"] { grid-column: 1 / span 2; }
+  .sunlit-architecture-topology li[data-system-node="content"] { grid-column: 3 / span 2; background: color-mix(in oklch, var(--color-primary), white 66%); }
+  .sunlit-architecture-topology li[data-system-node="media"] { grid-column: 5 / span 2; }
+  .sunlit-architecture-topology li[data-system-node="signals"] { grid-row: 2; grid-column: 2 / span 2; background: color-mix(in oklch, var(--color-accent), white 72%); }
+  .sunlit-architecture-topology li[data-system-node="release"] { grid-row: 2; grid-column: 4 / span 2; background: color-mix(in oklch, var(--color-secondary), white 62%); }
+  .sunlit-architecture-topology li > span { font-size: .7rem; font-weight: 780; }
+  .sunlit-architecture-topology li div { min-width: 0; }
+  .sunlit-architecture-topology li strong { display: block; font-size: .92rem; line-height: 1.12; }
+  .sunlit-architecture-topology li p { margin: .35rem 0 .55rem; font-size: .75rem; line-height: 1.3; }
+  .sunlit-architecture-topology li small { display: block; font-size: .66rem; font-weight: 720; }
   .sunlit-system-map { margin-block: clamp(4rem, 8vw, 7rem); }
   .sunlit-system-map > header { display: grid; grid-template-columns: .7fr 1.3fr; gap: .5rem 3rem; align-items: end; margin-bottom: 2rem; }
   .sunlit-system-map > header span { grid-column: 1; font-size: .78rem; font-weight: 780; text-transform: uppercase; }
@@ -1043,12 +1152,18 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
   .sunlit-client-note { box-sizing: border-box; margin-block: 1.5rem 4rem; padding: 1.1rem 1.25rem; border: 2px solid var(--color-ink); background: var(--color-bg); font-weight: 700; }
   .sunlit-contact-hero-direct { display: flex; flex-wrap: wrap; gap: .55rem 1.2rem; margin-top: 1.25rem; }
   .sunlit-contact-hero-direct .sunlit-text-action { min-height: 2rem; padding-inline: 0; }
-  .sunlit-contact-visual { position: relative; border: 2px solid var(--color-ink); box-shadow: 0 6px 0 var(--color-ink); }
-  .sunlit-contact-visual > :global(.sunlit-webgl) { min-height: 24rem; }
-  .sunlit-contact-visual .sunlit-contact-path { position: absolute; right: 1rem; bottom: 1rem; left: 1rem; z-index: 3; margin: 0; }
-  .sunlit-contact-visual .sunlit-contact-path strong { gap: .45rem; border: 2px solid var(--color-ink); background: color-mix(in oklch, var(--color-bg), transparent 6%); }
-  .sunlit-contact-visual .sunlit-contact-path strong + strong::before { display: none; }
-  .sunlit-contact-visual .sunlit-contact-path span { font-size: .68rem; opacity: .7; }
+  .sunlit-contact-visual { position: relative; display: grid; min-height: 38rem; overflow: hidden; place-items: center; padding: clamp(1.5rem, 4vw, 2.75rem); border: 2px solid var(--color-ink); background: var(--color-secondary); box-shadow: 0 6px 0 var(--color-ink); }
+  .sunlit-contact-visual > :global(.sunlit-webgl) { position: absolute; inset: 0; min-height: 0; opacity: .38; }
+  .sunlit-project-brief { position: relative; z-index: 2; display: grid; width: 100%; align-content: start; margin: 0; padding: clamp(1.2rem, 3vw, 2rem); border: 2px solid var(--color-ink); background: color-mix(in oklch, var(--color-bg), transparent 3%); box-shadow: 6px 6px 0 var(--color-ink); }
+  .sunlit-project-brief header { display: grid; grid-template-columns: 1fr; gap: .4rem; padding-bottom: 1rem; border-bottom: 2px solid var(--color-ink); }
+  .sunlit-project-brief header span { font-size: .75rem; font-weight: 760; }
+  .sunlit-project-brief h2 { max-width: 17ch; margin: 0; font-size: clamp(1.65rem, 2.4vw, 2.25rem); letter-spacing: -.025em; line-height: 1.02; }
+  .sunlit-project-brief dl { margin: 0; }
+  .sunlit-project-brief dl > div { display: grid; grid-template-columns: minmax(9rem, .7fr) minmax(0, 1.3fr); gap: 1rem; padding: .9rem 0; border-bottom: 1px solid var(--color-rule); }
+  .sunlit-project-brief dt { font-weight: 720; }
+  .sunlit-project-brief dd { margin: 0; color: var(--color-muted); }
+  .sunlit-project-brief > p { display: flex; align-items: flex-start; gap: .75rem; margin: 1.2rem 0 0; font-weight: 720; line-height: 1.4; }
+  .sunlit-project-brief > p span { display: grid; flex: 0 0 2rem; width: 2rem; height: 2rem; place-items: center; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
   .sunlit-contact-layout label small { display: block; margin-top: .2rem; color: var(--color-muted); font-size: .78rem; font-weight: 520; }
   .sunlit-contact-layout fieldset p { margin: .7rem 0 0; color: var(--color-muted); font-size: .8rem; line-height: 1.35; }
 
@@ -1063,25 +1178,31 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
     .sunlit-service-process > div { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 700px) {
-    .sunlit-studio-hero { padding-top: 2.5rem; }
+    .sunlit-studio-hero { padding-top: 2rem; }
     .sunlit-home-services > header, .sunlit-system-map > header, .sunlit-service-process > header, .sunlit-service-deliverables { grid-template-columns: 1fr; }
     .sunlit-home-services > header p, .sunlit-system-map > header p { grid-row: auto; grid-column: 1; }
     .sunlit-home-services > div, .sunlit-system-layers, .sunlit-service-process > div { grid-template-columns: 1fr; }
-    .sunlit-service-offer, .sunlit-service-offer[data-service-pattern="topology"] { min-height: 0; grid-template-columns: 1fr; padding: 2rem 1.1rem; }
-    .sunlit-service-offer[data-service-pattern="flow"] > header,
-    .sunlit-service-offer[data-service-pattern="flow"] .sunlit-service-motif,
-    .sunlit-service-offer[data-service-pattern="flow"] .sunlit-service-story,
-    .sunlit-service-offer[data-service-pattern="flow"] > ul,
-    .sunlit-service-offer[data-service-pattern="topology"] > header,
-    .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-motif,
-    .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-story,
-    .sunlit-service-offer[data-service-pattern="topology"] > ul,
-    .sunlit-service-offer[data-service-pattern="release"] > header,
-    .sunlit-service-offer[data-service-pattern="release"] .sunlit-service-motif,
-    .sunlit-service-offer[data-service-pattern="release"] .sunlit-service-story,
-    .sunlit-service-offer[data-service-pattern="release"] > ul { grid-row: auto; grid-column: 1; }
-    .sunlit-service-offer[data-service-pattern="topology"] .sunlit-service-motif { min-height: 18rem; }
-    .sunlit-service-offer[data-service-pattern="release"] .sunlit-service-story { grid-template-columns: 1fr; gap: 0; }
+    .sunlit-service-offer { grid-template-columns: 1fr; padding: 2rem 1.1rem; }
+    .sunlit-service-offer > header,
+    .sunlit-service-offer .sunlit-service-signal,
+    .sunlit-service-offer .sunlit-service-fit,
+    .sunlit-service-offer .sunlit-service-result,
+    .sunlit-service-offer .sunlit-service-collaboration,
+    .sunlit-service-offer .sunlit-service-outputs,
+    .sunlit-service-offer[data-service-pattern="team"] > header,
+    .sunlit-service-offer[data-service-pattern="team"] .sunlit-service-signal,
+    .sunlit-service-offer[data-service-pattern="team"] .sunlit-service-fit,
+    .sunlit-service-offer[data-service-pattern="team"] .sunlit-service-result,
+    .sunlit-service-offer[data-service-pattern="team"] .sunlit-service-collaboration { grid-row: auto; grid-column: 1; }
+    .sunlit-service-outputs { grid-template-columns: 1fr; }
+    .sunlit-service-signal { min-height: 7rem; overflow: hidden; }
+    .sunlit-service-signal > * { min-width: 3rem; }
+    .sunlit-architecture-topology > header { grid-template-columns: 1fr; }
+    .sunlit-architecture-topology > ol { grid-template-columns: 1fr; grid-template-rows: none; gap: 1rem; }
+    .sunlit-architecture-topology > ol::before { top: 2rem; bottom: 2rem; left: 1.45rem; width: 3px; height: auto; }
+    .sunlit-architecture-topology li,
+    .sunlit-architecture-topology li[data-system-node] { grid-row: auto; grid-column: 1; margin-left: 1rem; }
+    .sunlit-architecture-topology li::after { display: none; }
     .sunlit-architecture-tradeoffs > ol > li { grid-template-columns: 3rem minmax(0, 1fr); }
     .sunlit-architecture-tradeoffs > ol > li > strong { grid-column: 2; }
     .sunlit-architecture-notes { grid-template-columns: 1fr; }
@@ -1095,9 +1216,9 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
     .sunlit-case-rail [data-case-beat="outcome"] > div, .sunlit-case-rail [data-case-beat="delivery"] > div { grid-template-columns: 1fr; }
     .sunlit-service-deliverables nav { grid-column: 1; }
     .sunlit-source-links { align-items: flex-start; flex-direction: column; gap: .75rem; }
-    .sunlit-contact-visual > :global(.sunlit-webgl) { min-height: 13rem; }
-    .sunlit-contact-visual .sunlit-contact-path { position: relative; right: auto; bottom: auto; left: auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; padding: .45rem; background: var(--color-secondary); }
-    .sunlit-contact-visual .sunlit-contact-path strong { min-height: 2.35rem; padding: .25rem; font-size: .72rem; }
+    .sunlit-contact-visual { min-height: 0; padding: 1rem; }
+    .sunlit-contact-visual > :global(.sunlit-webgl) { min-height: 0; }
+    .sunlit-project-brief header, .sunlit-project-brief dl > div { grid-template-columns: 1fr; gap: .35rem; }
   }
   @media (max-width: 390px) {
     .sunlit-studio-hero { width: min(calc(100% - 1rem), 72rem); }

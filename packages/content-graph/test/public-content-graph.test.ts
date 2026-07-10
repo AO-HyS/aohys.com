@@ -694,6 +694,13 @@ describe("Public Content Graph", () => {
     ]);
     expect(englishPractice.services.every((service) => service.problem.length > 50)).toBe(true);
     expect(englishPractice.services.every((service) => service.result.length > 50)).toBe(true);
+    expect(englishPractice.services.map((service) => service.title)).toEqual([
+      "Build a complete product from zero",
+      "Add a senior collaborator to your team",
+      "Modernize what is already in motion",
+    ]);
+    expect(englishPractice.services[0]?.result).toMatch(/website, web application, or mobile application/i);
+    expect(englishPractice.services[2]?.result).toMatch(/AI, data, cloud/i);
     expect(englishPractice.process).toHaveLength(4);
     expect(englishPractice.relatedContentIds).toEqual(["architecture", "case-studies"]);
     expect(spanishPractice.services).toHaveLength(3);

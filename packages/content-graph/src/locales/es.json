@@ -125,8 +125,8 @@
     "publicNavigation": {
       "brand": {
         "homeLabel": "Inicio AOHYS",
-        "wordmarkSrc": "/images/brand/aohys-portal-wordmark-v2.svg",
-        "fallbackSrc": "/images/brand/aohys-portal-mark-v2.svg"
+        "wordmarkSrc": "/images/brand/aohys-connections-wordmark-v3.svg",
+        "fallbackSrc": "/images/brand/aohys-connections-mark-v3.svg"
       },
       "items": [
         {
@@ -516,52 +516,52 @@
   },
   "practice": {
     "path": "/es/practica",
-    "title": "Servicios para sistemas de producto listos para crecer.",
-    "summary": "Sistemas de producto, evolución de arquitectura y delivery aumentado con IA alrededor de lo que tu equipo quiere lograr después.",
-    "seoDescription": "Los servicios AOHYS cubren sistemas de producto, evolución de arquitectura, datos, operación cloud y delivery aumentado con IA para equipos que construyen software ambicioso.",
+    "title": "Tres formas de hacer avanzar un producto.",
+    "summary": "Construye un producto completo, suma capacidad senior a un proyecto definido o moderniza el sistema que ya sostiene al negocio.",
+    "seoDescription": "Trabaja con AOHYS para construir desde cero un sitio, aplicación web o app móvil; sumar un ingeniero de producto senior a tu equipo; o modernizar un producto con IA, datos, cloud y mejores capacidades de delivery.",
     "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver la arquitectura",
     "secondaryActionContentId": "architecture",
     "practiceContent": {
-      "heading": "Ingeniería de producto para ideas listas para hacerse realidad.",
-      "deck": "Trae un nuevo objetivo de producto, una experiencia lista para evolucionar o una práctica de delivery que quieres amplificar. Le damos forma como un sistema que tu equipo puede entender, operar y seguir mejorando.",
+      "heading": "Trae la ambición de producto. Elige cómo trabajamos.",
+      "deck": "Desde un primer boceto hasta un producto listo para su siguiente etapa, me sumo donde el criterio senior de producto e ingeniería puede crear impulso. Cada colaboración tiene un ritmo claro, entregables concretos y un sistema que tu equipo puede seguir mejorando.",
       "services": [
         {
           "id": "product-systems",
-          "title": "Sistemas de producto",
-          "problem": "Quieres que la experiencia del cliente, la operación, los datos y los objetivos de negocio se sientan como un solo producto.",
-          "result": "Un sistema coherente con un camino cuidado para el cliente, workflows capaces y datos que el equipo puede usar.",
-          "engagement": "Un build enfocado o una colaboración por etapas, desde el mapa del sistema hasta la entrega en producción.",
-          "deliverables": ["Mapa de producto y workflows", "Interfaz y flujos de datos en producción", "Handoff operativo y plan de release"]
+          "title": "Construir un producto completo desde cero",
+          "problem": "Tienes una audiencia real y una idea valiosa, pero todavía hace falta definir el camino de producto entre experiencia, operación, datos, arquitectura y release.",
+          "result": "Un sitio, aplicación web o app móvil listo para producción, con un recorrido coherente, workflows confiables, comportamiento medible y espacio para crecer.",
+          "engagement": "Lidero la ruta de producto e ingeniería desde el encuadre y diseño del sistema hasta la implementación, lanzamiento y handoff operativo que tu equipo puede tomar.",
+          "deliverables": ["Brief de producto y mapa de recorrido", "Sitio, web app o app móvil funcionando", "Backend, datos y workflows operativos", "Lanzamiento a producción y handoff de ownership"]
         },
         {
           "id": "architecture-modernization",
-          "title": "Arquitectura y modernización",
-          "problem": "Quieres que un producto existente gane capacidades modernas, límites más claros, mejor performance y espacio para expandirse.",
-          "result": "Una arquitectura evolucionada que conserva el valor existente y vuelve el sistema más fácil de entender, cambiar y escalar.",
-          "engagement": "Revisión de arquitectura, plan de modernización o migración práctica alrededor del límite con mayor impacto.",
-          "deliverables": ["Mapa de estado actual y oportunidades", "Arquitectura objetivo con tradeoffs", "Evolución incremental y verificación"]
+          "title": "Sumar un colaborador senior a tu equipo",
+          "problem": "El proyecto y el destino ya están definidos, y el equipo quiere experiencia práctica para acelerar decisiones de producto y arquitectura y convertir el plan en software confiable.",
+          "result": "Más capacidad sin una larga curva de entrada: decisiones claras, implementación más fuerte, menos puntos ciegos y un colaborador senior que mejora el trabajo alrededor del código.",
+          "engagement": "Me integro a tu equipo de producto e ingeniería durante una fase enfocada, con ownership de un frente relevante y participación en su ritmo de planeación, revisión, QA y release.",
+          "deliverables": ["Un frente de delivery con ownership claro", "Código de producción y decisiones de producto", "Revisiones de arquitectura e implementación", "Pruebas, evidencia de release y handoff al equipo"]
         },
         {
           "id": "delivery-acceleration",
-          "title": "Aceleración de delivery",
-          "problem": "Quieres que la IA avanzada, previews, QA, observabilidad y operación cloud amplíen lo que el equipo puede entregar con confianza.",
-          "result": "Un sistema de delivery visible y aumentado con IA, con feedback más rápido, releases confiables y más espacio para el trabajo creativo de producto.",
-          "engagement": "Una revisión de capacidades seguida de implementación enfocada en agentes, quality gates, ambientes y operación de releases.",
-          "deliverables": ["Mapa de capacidades de delivery", "Implementación de workflows con IA, previews y quality gates", "Observabilidad y playbook de release"]
+          "title": "Modernizar lo que ya está en movimiento",
+          "problem": "Un producto o proceso existente ya genera valor, y el negocio está listo para ampliarlo con límites más claros, datos conectados, workflows modernos y una mejor práctica de delivery.",
+          "result": "Un sistema más seguro y capaz que conserva el comportamiento útil mientras integra las capacidades correctas de IA, datos, cloud, observabilidad y delivery.",
+          "engagement": "Mapeamos el sistema actual, elegimos el límite con mayor impacto y entregamos la modernización en incrementos verificados para que el negocio siga avanzando mientras mejora la base.",
+          "deliverables": ["Mapa de estado actual y oportunidades", "Arquitectura objetivo con tradeoffs explícitos", "Integración de IA, datos, cloud o workflows", "Rollout incremental, verificación y playbook operativo"]
         }
       ],
-      "processHeading": "Una ruta clara de la intención al impulso.",
+      "processHeading": "Claridad desde la primera sesión de trabajo.",
       "process": [
-        {"label": "Enmarcar", "text": "Nombrar el objetivo, las personas a quienes debe servir y el cambio que vale la pena crear."},
-        {"label": "Mapear", "text": "Hacer visibles flujos, datos, límites, oportunidades y tradeoffs antes de construir."},
-        {"label": "Construir", "text": "Lanzar la porción completa más pequeña, con estados reales, instrumentación y checks de release."},
-        {"label": "Crecer", "text": "Dejar un sistema operable, decisiones que el equipo puede explicar y un siguiente paso con confianza."}
+        {"label": "Alinear", "text": "Confirmar el resultado, la audiencia, restricciones, responsables de decisión y evidencia que definirá el avance."},
+        {"label": "Hacer visible el sistema", "text": "Mapear experiencia, workflows, datos, límites, riesgos y tradeoffs antes de que el esfuerzo desaparezca en la implementación."},
+        {"label": "Entregar porciones útiles", "text": "Lanzar incrementos completos y revisables con estados reales, instrumentación, QA y checks de producción."},
+        {"label": "Dejar claridad operativa", "text": "Entregar software funcionando, decisiones explícitas, evidencia de release y un plan práctico para lo siguiente."}
       ],
-      "deliverablesHeading": "Lo que queda al terminar la colaboración.",
-      "deliverables": ["Un mapa compartido del sistema", "Incrementos de producto funcionando", "Registros de arquitectura y decisiones", "Checks de calidad, observabilidad y release", "Un handoff operativo y práctico"],
-      "relatedHeading": "Ve los sistemas detrás del servicio.",
+      "deliverablesHeading": "Trabajo que puedes seguir usando después de la colaboración.",
+      "deliverables": ["Un mapa compartido de producto y sistema", "Incrementos de software listos para producción", "Registros de arquitectura y decisiones", "Evidencia de calidad, observabilidad y release", "Un handoff operativo y práctico"],
+      "relatedHeading": "Revisa el trabajo y el sistema detrás.",
       "relatedContentIds": ["architecture", "case-studies"]
     }
   },
@@ -898,8 +898,8 @@
   },
   "contact": {
     "path": "/es/contacto",
-    "title": "Empecemos una conversación concreta",
-    "summary": "Mándame el objetivo, restricciones y mejor forma de responder. En México WhatsApp suele ser lo más rápido; el correo funciona mejor para contexto largo.",
+    "title": "Hagamos claro el siguiente movimiento.",
+    "summary": "Comparte lo que quieres crear, mejorar o hacer realidad. Leeré el contexto personalmente y responderé con preguntas útiles y un siguiente paso práctico. En México WhatsApp suele ser lo más rápido; el correo es ideal para un brief más largo.",
     "seoDescription": "Contacta a Alejandro Ortiz Corro y AOHYS por correo o WhatsApp para proyectos de software, revisión de arquitectura, sistemas de producto o conversaciones laborales.",
     "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",

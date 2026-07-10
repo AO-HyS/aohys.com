@@ -244,8 +244,8 @@
     ]
   },
   "contactForm": {
-    "formTitle": "Tell me what you would like to create.",
-    "formIntro": "Share the goal, context, and best way to reach you. I will reply directly.",
+    "formTitle": "Give me the useful context.",
+    "formIntro": "A polished brief is not required. Share the goal, who it should serve, what you want to make possible, and the best way to reach you. I will reply personally with a practical next step.",
     "nameLabel": "Name",
     "emailLabel": "Email",
     "companyLabel": "Company",
@@ -263,7 +263,7 @@
     "phoneOptionalHint": "Optional unless WhatsApp is selected",
     "phoneRequiredHint": "Required for a WhatsApp reply",
     "messageLabel": "Message",
-    "messagePlaceholder": "What would you like to create, improve, or launch?",
+    "messagePlaceholder": "What would you like to create, improve, or launch? Who should it help, and what matters most right now?",
     "consentLabel": "I understand AOHYS will use this information to respond to my request.",
     "submitLabel": "Send request",
     "sendingLabel": "Sending...",

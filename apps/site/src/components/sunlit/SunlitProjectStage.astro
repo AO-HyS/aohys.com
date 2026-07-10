@@ -25,6 +25,11 @@ const labels = locale === "es" ? {
   previous: "Proyecto anterior",
   next: "Proyecto siguiente",
   position: "Proyecto",
+  browse: "Ver todos los proyectos",
+  choose: "Elige el siguiente proyecto",
+  chooseIntro: "La escena cambia en el mismo lugar; la URL conserva el proyecto activo.",
+  close: "Cerrar selector",
+  controlHint: "Usa anterior, siguiente o abre el índice completo.",
   fallbackAlt: "Sistema de producto AOHYS",
   scene: "Escenario de sistemas de producto AOHYS",
 } : {
@@ -39,6 +44,11 @@ const labels = locale === "es" ? {
   previous: "Previous project",
   next: "Next project",
   position: "Project",
+  browse: "View all projects",
+  choose: "Choose the next project",
+  chooseIntro: "The scene changes in place; the URL keeps the active project.",
+  close: "Close selector",
+  controlHint: "Use previous, next, or open the complete index.",
   fallbackAlt: "AOHYS product system",
   scene: "AOHYS product systems stage",
 };
@@ -91,6 +101,7 @@ const projects = outcomes.map((outcome) => ({
               data-project-index={index}
               data-content-id={outcome.contentId}
               data-project-title={outcome.title}
+              data-project-label={outcome.label}
               data-set-tone={index % 3}
             >
               <div class="sunlit-project-proof">
@@ -124,49 +135,27 @@ const projects = outcomes.map((outcome) => ({
       <div class="sunlit-stage-status sr-only" aria-live="polite" aria-atomic="true" data-stage-announcement></div>
     </div>
 
-    <div class="sunlit-project-dock">
-      <div class="sunlit-rail-meta" aria-hidden="true">
-        <span data-current-number>01</span>
-        <i></i>
-        <span>{String(projects.length).padStart(2, "0")}</span>
+    <div class="sunlit-project-switchboard">
+      <div class="sunlit-current-project">
+        <span>{labels.current}</span>
+        <strong data-current-title>{projects[0]?.outcome.title}</strong>
+        <small data-current-label>{projects[0]?.outcome.label}</small>
       </div>
-      <div class="sunlit-rail-viewport" data-project-rail-scroll>
-        <div class="sunlit-ticket-rail" role="tablist" aria-label={labels.region} aria-orientation="horizontal">
-          {projects.map(({ outcome }, index) => {
-            const panelId = `sunlit-project-panel-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
-            const tabId = `sunlit-project-tab-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
-            return (
-              <button
-                id={tabId}
-                type="button"
-                role="tab"
-                aria-controls={panelId}
-                aria-selected={index === 0 ? "true" : "false"}
-                tabindex={index === 0 ? 0 : -1}
-                data-project-tab
-                data-project-index={index}
-                data-content-id={outcome.contentId}
-              >
-                <span class="sunlit-ticket-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-                <span class="sunlit-ticket-label">
-                  <strong>{outcome.title}</strong>
-                  <small>{outcome.label}</small>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      <div class="sunlit-rail-controls">
+      <div class="sunlit-switchboard-controls">
         <button type="button" data-project-previous aria-label={labels.previous}>
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12.5 4.5-5.5 5.5 5.5 5.5" /></svg>
+          <span>{labels.previous}</span>
         </button>
-        <div class="sunlit-rail-progress" aria-hidden="true"><span data-rail-progress></span></div>
+        <button type="button" data-project-menu-trigger aria-haspopup="dialog" aria-controls="sunlit-project-index" aria-expanded="false">
+          <span>{labels.browse}</span>
+          <strong><span data-current-number>01</span> / {String(projects.length).padStart(2, "0")}</strong>
+        </button>
         <button type="button" data-project-next aria-label={labels.next}>
+          <span>{labels.next}</span>
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5" /></svg>
         </button>
       </div>
-      <p class="sunlit-rail-hint">{labels.swipe}</p>
+      <p>{labels.controlHint}</p>
     </div>
   </div>
 
@@ -179,6 +168,38 @@ const projects = outcomes.map((outcome) => ({
       </dl>
     ))}
   </div>
+
+  <dialog class="sunlit-project-index" id="sunlit-project-index" data-project-dialog aria-labelledby="sunlit-project-index-title">
+    <div class="sunlit-project-index-shell">
+      <header>
+        <div><h2 id="sunlit-project-index-title">{labels.choose}</h2><p>{labels.chooseIntro}</p></div>
+        <button type="button" data-project-dialog-close aria-label={labels.close}>×</button>
+      </header>
+      <div class="sunlit-project-index-list" role="tablist" aria-label={labels.region} aria-orientation="vertical">
+        {projects.map(({ outcome }, index) => {
+          const panelId = `sunlit-project-panel-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
+          const tabId = `sunlit-project-tab-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
+          return (
+            <button
+              id={tabId}
+              type="button"
+              role="tab"
+              aria-controls={panelId}
+              aria-selected={index === 0 ? "true" : "false"}
+              tabindex={index === 0 ? 0 : -1}
+              data-project-tab
+              data-project-index={index}
+              data-content-id={outcome.contentId}
+            >
+              <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+              <span><strong>{outcome.title}</strong><small>{outcome.label}</small></span>
+              <i aria-hidden="true">→</i>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  </dialog>
 </section>
 
 <script>
@@ -191,11 +212,14 @@ const projects = outcomes.map((outcome) => ({
     const ledgers = Array.from(stage.querySelectorAll("[data-ledger-panel]")).filter((panel): panel is HTMLElement => panel instanceof HTMLElement);
     const frame = stage.querySelector("[data-stage-frame]");
     const announcement = stage.querySelector("[data-stage-announcement]");
-    const railViewport = stage.querySelector("[data-project-rail-scroll]");
     const currentNumber = stage.querySelector("[data-current-number]");
-    const progress = stage.querySelector("[data-rail-progress]");
+    const currentTitle = stage.querySelector("[data-current-title]");
+    const currentLabel = stage.querySelector("[data-current-label]");
     const previous = stage.querySelector("[data-project-previous]");
     const next = stage.querySelector("[data-project-next]");
+    const menuTrigger = stage.querySelector("[data-project-menu-trigger]");
+    const projectDialog = stage.querySelector("[data-project-dialog]");
+    const dialogClose = stage.querySelector("[data-project-dialog-close]");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let activeIndex = 0;
     let requestedIndex = 0;
@@ -225,12 +249,8 @@ const projects = outcomes.map((outcome) => ({
       panels.forEach((panel, panelIndex) => { panel.hidden = panelIndex !== index; });
       ledgers.forEach((ledger, ledgerIndex) => { ledger.hidden = ledgerIndex !== index; });
       if (currentNumber instanceof HTMLElement) currentNumber.textContent = String(index + 1).padStart(2, "0");
-      if (progress instanceof HTMLElement) progress.style.setProperty("--project-progress", String((index + 1) / Math.max(1, tabs.length)));
-      const selectedTab = tabs[index];
-      if (selectedTab && railViewport instanceof HTMLElement) {
-        const targetLeft = selectedTab.offsetLeft - (railViewport.clientWidth - selectedTab.clientWidth) / 2;
-        railViewport.scrollTo({ left: Math.max(0, targetLeft), behavior: reducedMotion.matches ? "auto" : "smooth" });
-      }
+      if (currentTitle instanceof HTMLElement) currentTitle.textContent = panels[index]?.dataset.projectTitle ?? "";
+      if (currentLabel instanceof HTMLElement) currentLabel.textContent = panels[index]?.dataset.projectLabel ?? "";
       stage.dataset.activeTone = String(index % 3);
       window.dispatchEvent(new CustomEvent("sunlit:project-change", { detail: { index, contentId: panels[index]?.dataset.contentId } }));
       activeIndex = index;
@@ -303,7 +323,11 @@ const projects = outcomes.map((outcome) => ({
     };
 
     tabs.forEach((tab, index) => {
-      tab.addEventListener("click", () => requestProject(index, "push"));
+      tab.addEventListener("click", () => {
+        requestProject(index, "push");
+        if (projectDialog instanceof HTMLDialogElement) projectDialog.close();
+        if (menuTrigger instanceof HTMLButtonElement) menuTrigger.focus();
+      });
       tab.addEventListener("keydown", (event) => {
         let nextIndex = index;
         if (event.key === "ArrowDown" || event.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
@@ -316,15 +340,25 @@ const projects = outcomes.map((outcome) => ({
         requestProject(nextIndex, "replace");
       });
     });
-    if (railViewport instanceof HTMLElement) {
-      railViewport.addEventListener("wheel", (event) => {
-        if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-        railViewport.scrollLeft += event.deltaY;
-        event.preventDefault();
-      }, { passive: false });
-    }
     if (previous instanceof HTMLButtonElement) previous.addEventListener("click", () => requestProject((activeIndex - 1 + tabs.length) % tabs.length, "push"));
     if (next instanceof HTMLButtonElement) next.addEventListener("click", () => requestProject((activeIndex + 1) % tabs.length, "push"));
+    if (menuTrigger instanceof HTMLButtonElement && projectDialog instanceof HTMLDialogElement) {
+      menuTrigger.addEventListener("click", () => {
+        menuTrigger.setAttribute("aria-expanded", "true");
+        projectDialog.showModal();
+        tabs[activeIndex]?.focus();
+      });
+      projectDialog.addEventListener("close", () => menuTrigger.setAttribute("aria-expanded", "false"));
+      projectDialog.addEventListener("click", (event) => {
+        if (event.target === projectDialog) projectDialog.close();
+      });
+    }
+    if (dialogClose instanceof HTMLButtonElement && projectDialog instanceof HTMLDialogElement) {
+      dialogClose.addEventListener("click", () => {
+        projectDialog.close();
+        if (menuTrigger instanceof HTMLButtonElement) menuTrigger.focus();
+      });
+    }
 
     const initialUrl = new URL(window.location.href);
     const requestedProjectId = initialUrl.searchParams.get("project");
@@ -420,28 +454,34 @@ const projects = outcomes.map((outcome) => ({
   [data-stage-state="opening"] .sunlit-door-right, [data-stage-state="open"] .sunlit-door-right { transform: translateX(102%); }
   .sunlit-stage-platform { position: relative; height: 2.6rem; margin: 0 2%; border: 2px solid var(--color-ink); border-top: 0; border-radius: 0 0 50% 50%; background: var(--color-primary); box-shadow: 0 5px 0 var(--color-ink); transition: transform 560ms cubic-bezier(.22, 1, .36, 1); }
   [data-assembled="false"] .sunlit-stage-platform { transform: translateY(.7rem); }
-  .sunlit-project-dock { display: grid; min-width: 0; grid-template-columns: 5.2rem minmax(0, 1fr) 7.5rem; grid-template-areas: "meta rail controls" "hint hint hint"; align-items: stretch; border: 2px solid var(--color-ink); background: var(--color-bg); }
-  .sunlit-rail-meta { grid-area: meta; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .35rem; padding: .75rem; border-right: 1px solid var(--color-rule); font-variant-numeric: tabular-nums; font-size: .72rem; font-weight: 780; }
-  .sunlit-rail-meta i { height: 2px; background: var(--color-ink); }
-  .sunlit-rail-viewport { grid-area: rail; min-width: 0; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; }
-  .sunlit-rail-viewport::-webkit-scrollbar { display: none; }
-  .sunlit-ticket-rail { display: flex; min-width: max-content; height: 100%; }
-  .sunlit-ticket-rail button { position: relative; display: grid; min-width: clamp(10rem, 16vw, 13rem); min-height: 4.7rem; grid-template-columns: 2rem 1fr; align-items: center; gap: .65rem; padding: .65rem .8rem; border: 0; border-right: 1px solid var(--color-rule); background: var(--color-bg); color: var(--color-ink); text-align: left; cursor: pointer; scroll-snap-align: center; }
-  .sunlit-ticket-rail button::after { content: ""; position: absolute; right: 0; bottom: 0; left: 0; height: .35rem; transform: scaleX(0); transform-origin: left; background: var(--color-primary); transition: transform 180ms cubic-bezier(.22, 1, .36, 1); }
-  .sunlit-ticket-rail button:hover { background: color-mix(in oklch, var(--color-primary), white 76%); }
-  .sunlit-ticket-rail button[aria-selected="true"] { background: var(--color-primary); }
-  .sunlit-ticket-rail button[aria-selected="true"]::after { transform: scaleX(1); background: var(--color-accent); }
-  .sunlit-ticket-index { font-variant-numeric: tabular-nums; font-size: .72rem; font-weight: 780; }
-  .sunlit-ticket-label { display: grid; gap: .2rem; min-width: 0; }
-  .sunlit-ticket-label strong { overflow: hidden; font-size: .92rem; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
-  .sunlit-ticket-label small { overflow: hidden; color: var(--color-muted); font-size: .7rem; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
-  .sunlit-rail-controls { grid-area: controls; display: grid; grid-template-columns: 2.75rem 1fr 2.75rem; align-items: center; border-left: 1px solid var(--color-rule); }
-  .sunlit-rail-controls button { display: grid; width: 2.75rem; height: 100%; min-height: 3rem; place-items: center; border: 0; background: var(--color-bg); color: var(--color-ink); cursor: pointer; }
-  .sunlit-rail-controls button:hover { background: var(--color-accent); }
-  .sunlit-rail-controls svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; }
-  .sunlit-rail-progress { height: 3px; overflow: hidden; background: var(--color-rule); }
-  .sunlit-rail-progress span { display: block; width: 100%; height: 100%; transform: scaleX(var(--project-progress, .25)); transform-origin: left; background: var(--color-ink); transition: transform 220ms cubic-bezier(.22, 1, .36, 1); }
-  .sunlit-rail-hint { grid-area: hint; margin: 0; padding: .45rem .75rem; border-top: 1px solid var(--color-rule); color: var(--color-muted); font-size: .72rem; font-weight: 720; }
+  .sunlit-project-switchboard { display: grid; min-width: 0; grid-template-columns: minmax(14rem, .8fr) minmax(0, 1.2fr); border: 2px solid var(--color-ink); background: var(--color-bg); }
+  .sunlit-current-project { display: grid; min-width: 0; align-content: center; gap: .2rem; padding: .8rem 1rem; border-right: 1px solid var(--color-rule); }
+  .sunlit-current-project > span, .sunlit-current-project small { color: var(--color-muted); font-size: .7rem; }
+  .sunlit-current-project strong { overflow: hidden; font-size: 1rem; line-height: 1.15; text-overflow: ellipsis; white-space: nowrap; }
+  .sunlit-switchboard-controls { display: grid; min-width: 0; grid-template-columns: minmax(7.5rem, .75fr) minmax(10rem, 1.5fr) minmax(7.5rem, .75fr); }
+  .sunlit-switchboard-controls button { display: flex; min-width: 0; min-height: 4.9rem; align-items: center; justify-content: center; gap: .55rem; padding: .65rem .8rem; border: 0; border-right: 1px solid var(--color-rule); background: var(--color-bg); color: var(--color-ink); font: inherit; font-size: .78rem; font-weight: 720; cursor: pointer; }
+  .sunlit-switchboard-controls button:last-child { border-right: 0; }
+  .sunlit-switchboard-controls button:hover { background: color-mix(in oklch, var(--color-accent), white 62%); }
+  .sunlit-switchboard-controls [data-project-menu-trigger] { justify-content: space-between; background: var(--color-primary); }
+  .sunlit-switchboard-controls [data-project-menu-trigger] strong { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sunlit-switchboard-controls svg { flex: 0 0 1.1rem; width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; }
+  .sunlit-project-switchboard > p { grid-column: 1 / -1; margin: 0; padding: .45rem .75rem; border-top: 1px solid var(--color-rule); color: var(--color-muted); font-size: .72rem; font-weight: 650; }
+  .sunlit-project-index { width: min(52rem, calc(100vw - 2rem)); max-height: min(44rem, calc(100svh - 2rem)); margin: auto; padding: 0; overflow: auto; border: 2px solid var(--color-ink); background: var(--color-bg); color: var(--color-ink); box-shadow: 8px 8px 0 var(--color-ink); }
+  .sunlit-project-index::backdrop { background: color-mix(in oklch, var(--color-ink), transparent 22%); }
+  .sunlit-project-index-shell { padding: clamp(1rem, 3vw, 2rem); }
+  .sunlit-project-index header { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; padding-bottom: 1.2rem; border-bottom: 2px solid var(--color-ink); }
+  .sunlit-project-index h2 { max-width: 14ch; margin: 0; font-size: clamp(2rem, 5vw, 3.7rem); letter-spacing: -.035em; line-height: 1; text-wrap: balance; }
+  .sunlit-project-index header p { max-width: 48ch; margin: .7rem 0 0; color: var(--color-muted); }
+  .sunlit-project-index header button { display: grid; flex: 0 0 2.75rem; width: 2.75rem; height: 2.75rem; place-items: center; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-accent); color: var(--color-ink); font: inherit; font-size: 1.5rem; cursor: pointer; }
+  .sunlit-project-index-list { display: grid; }
+  .sunlit-project-index-list > button { display: grid; min-height: 5.6rem; grid-template-columns: 2.5rem minmax(0, 1fr) auto; align-items: center; gap: 1rem; padding: .8rem 0; border: 0; border-bottom: 1px solid var(--color-ink); background: var(--color-bg); color: var(--color-ink); font: inherit; text-align: left; cursor: pointer; }
+  .sunlit-project-index-list > button:hover, .sunlit-project-index-list > button:focus-visible { padding-inline: .8rem; background: color-mix(in oklch, var(--color-primary), white 64%); }
+  .sunlit-project-index-list > button[aria-selected="true"] { background: var(--color-primary); }
+  .sunlit-project-index-list > button > span:first-child { font-variant-numeric: tabular-nums; font-size: .75rem; font-weight: 780; }
+  .sunlit-project-index-list > button > span:nth-child(2) { display: grid; gap: .2rem; min-width: 0; }
+  .sunlit-project-index-list strong { font-size: 1.15rem; line-height: 1.15; }
+  .sunlit-project-index-list small { color: var(--color-muted); font-size: .76rem; }
+  .sunlit-project-index-list i { font-style: normal; }
   .sunlit-ledger-stack { margin-top: .85rem; }
   .sunlit-proof-ledger { display: grid; grid-template-columns: 1.35fr .7fr 1fr; margin: 0; border-block: 2px solid var(--color-ink); background: var(--color-bg); }
   .sunlit-proof-ledger[hidden] { display: none; }
@@ -462,11 +502,12 @@ const projects = outcomes.map((outcome) => ({
   .sunlit-project-stage--hero .sunlit-project-copy p { font-size: .9rem; line-height: 1.42; }
   @media (max-width: 850px) {
     .sunlit-stage-heading { grid-template-columns: 1fr; }
-    .sunlit-project-dock { grid-template-columns: 4.7rem minmax(0, 1fr) 6.25rem; }
-    .sunlit-rail-controls { grid-template-columns: 2.45rem 1fr 2.45rem; }
-    .sunlit-rail-controls button { width: 2.45rem; }
+    .sunlit-project-switchboard { grid-template-columns: 1fr; }
+    .sunlit-current-project { border-right: 0; border-bottom: 1px solid var(--color-rule); }
   }
   @media (max-width: 650px) {
+    .sunlit-project-stage--hero .sunlit-stage-layout { gap: .8rem; }
+    .sunlit-project-stage--hero .sunlit-project-switchboard { order: -1; }
     .sunlit-stage-frame { padding-top: 1.35rem; }
     .sunlit-stage-canopy { right: 4%; left: 4%; height: 3.5rem; }
     .sunlit-stage-canopy i { display: none; }
@@ -476,9 +517,11 @@ const projects = outcomes.map((outcome) => ({
     .sunlit-project-proof figure, .sunlit-project-stage--hero .sunlit-project-proof figure { height: 12rem; border-width: 6px; }
     .sunlit-project-copy { align-content: start; gap: .55rem; padding: .9rem; box-shadow: 4px 4px 0 var(--color-ink); }
     .sunlit-project-copy h3 { font-size: clamp(1.75rem, 10vw, 2.55rem); }
-    .sunlit-project-dock { grid-template-columns: minmax(0, 1fr) 6.25rem; grid-template-areas: "rail controls" "hint hint"; }
-    .sunlit-rail-meta { display: none; }
-    .sunlit-ticket-rail button { min-width: 9.5rem; min-height: 4.25rem; }
+    .sunlit-switchboard-controls { grid-template-columns: 3.25rem minmax(0, 1fr) 3.25rem; }
+    .sunlit-switchboard-controls button { min-height: 3.8rem; padding: .5rem; }
+    .sunlit-switchboard-controls [data-project-previous] span, .sunlit-switchboard-controls [data-project-next] span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .sunlit-project-index h2 { font-size: clamp(2rem, 10vw, 3rem); }
+    .sunlit-project-index-list > button { min-height: 5rem; }
     .sunlit-proof-ledger { grid-template-columns: 1fr; }
     .sunlit-proof-ledger > div { border-right: 0; border-bottom: 1px solid var(--color-rule); }
     .sunlit-proof-ledger > div:last-child { border-bottom: 0; }
@@ -488,7 +531,7 @@ const projects = outcomes.map((outcome) => ({
     .sunlit-project-proof figure { height: 10.8rem; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .sunlit-door, .sunlit-stage-platform, .sunlit-stage-scene, .sunlit-stage-scene::before, .sunlit-stage-scene::after, .sunlit-ticket-rail button::after, .sunlit-rail-progress span { transition: none; }
+    .sunlit-door, .sunlit-stage-platform, .sunlit-stage-scene, .sunlit-stage-scene::before, .sunlit-stage-scene::after, .sunlit-switchboard-controls button, .sunlit-project-index-list > button { transition: none; }
     [data-stage-state] .sunlit-door-left { transform: translateX(-102%); }
     [data-stage-state] .sunlit-door-right { transform: translateX(102%); }
   }

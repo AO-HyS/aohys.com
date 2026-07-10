@@ -286,6 +286,7 @@ const { variant, label, class: className } = Astro.props;
       gl.uniform1f(uniforms.tone, currentTone);
       gl.uniform1f(uniforms.transition, transitionEnergy);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
+      if (sceneRoot.dataset.webglState !== "ready") sceneRoot.dataset.webglState = "ready";
       schedule();
     };
 
@@ -346,7 +347,7 @@ const { variant, label, class: className } = Astro.props;
           transition: gl.getUniformLocation(program, "u_transition"),
         };
         resize(false);
-        root.dataset.webglState = "ready";
+        root.dataset.webglState = "loading";
         delete root.dataset.webglFallbackReason;
         delete root.dataset.webglFallbackDetail;
         restartLoop();
@@ -393,7 +394,7 @@ const { variant, label, class: className } = Astro.props;
         initialize();
         return;
       }
-      sceneRoot.dataset.webglState = "ready";
+      sceneRoot.dataset.webglState = "loading";
       restartLoop();
     }
 
@@ -456,7 +457,9 @@ const { variant, label, class: className } = Astro.props;
       root.dataset.webglFallbackReason = "reduced-motion";
     } else {
       root.dataset.webglState = "loading";
-      initialize();
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(initialize);
+      });
     }
   }
 </script>

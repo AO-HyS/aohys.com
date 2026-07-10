@@ -95,7 +95,7 @@ describe("public site source quality", () => {
     expect(proofMedia).toContain("dashboardMedia?.thumbSrc");
     expect(proofMedia).toContain("staticMedia?.src");
     expect(proofMedia).toContain("evidenceSrc");
-    expect(proofMedia).toContain("aohys-portal-mark-v2.svg");
+    expect(proofMedia).toContain("aohys-connections-mark-v3.svg");
     expect(proofMedia).toContain("dashboardMedia?.alt ?? evidenceAlt ?? staticMedia?.alt");
     expect(proofImage).toContain('candidate.addEventListener("error"');
     expect(stage).toContain("grid-area: 1 / 1");
@@ -116,7 +116,9 @@ describe("public site source quality", () => {
     expect(publicContentPage).not.toContain('class="sunlit-case-links"');
     expect(publicContentPage).toContain("syncPreferredContactRequirements");
     expect(publicContentPage).toContain("phoneInput.required = whatsappSelected");
-    expect(publicContentPage).toContain('data-service-pattern={["flow", "topology", "release"][index]}');
+    expect(publicContentPage).toContain('data-service-pattern={["new", "team", "modernize"][index]}');
+    expect(publicContentPage).toContain("sunlit-architecture-topology");
+    expect(publicContentPage).toContain("sunlit-project-brief");
     expect(publicContentPage).not.toContain("border-left: 4px solid");
     expect(webglScene).toContain("IntersectionObserver");
     expect(webglScene).toContain("ResizeObserver");
@@ -153,10 +155,10 @@ describe("public site source quality", () => {
       "public/images/proof/casa-roca-value-v2.jpg",
       "public/images/proof/barber-central-hero-v2.jpg",
       "public/images/proof/nutri-plan-dashboard-v2.png",
-      "public/images/brand/aohys-portal-wordmark-v2.svg",
-      "public/images/brand/aohys-portal-mark-v2.svg",
-      "public/images/brand/aohys-portal-mono-v2.svg",
-      "public/images/brand/aohys-portal-negative-v2.svg",
+      "public/images/brand/aohys-connections-wordmark-v3.svg",
+      "public/images/brand/aohys-connections-mark-v3.svg",
+      "public/images/brand/aohys-connections-mono-v3.svg",
+      "public/images/brand/aohys-connections-negative-v3.svg",
     ]) expect(existsSync(path.join(siteRoot, asset)), `${asset} is missing`).toBe(true);
     expect(engineeringPracticeDiagram).toContain("Reviewable release cycle");
     expect(

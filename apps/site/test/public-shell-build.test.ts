@@ -47,7 +47,10 @@ describe("built public shell", () => {
     expect(html).toContain(">Start a conversation<");
     expect(html).toContain('data-project-stage');
     expect(html).toContain('role="tablist"');
-    expect(html).not.toContain('aria-orientation="vertical"');
+    expect(html).toContain('aria-orientation="vertical"');
+    expect(html).not.toContain('aria-orientation="horizontal"');
+    expect(html).toContain('data-project-menu-trigger');
+    expect(html).toContain('<dialog');
     expect(html).toContain('role="tabpanel"');
     expect(html).toContain('data-stage-door="left"');
     expect(html).toContain('data-stage-door="right"');
@@ -90,7 +93,9 @@ describe("built public shell", () => {
     expect(stageSource).not.toContain(".sunlit-project-panel { position: absolute");
     expect(stageSource).not.toContain(".sunlit-stage-scene { min-height: 34rem");
     expect(stageSource).toContain('figure[data-media-kind="site"]');
-    expect(stageSource).toContain("sunlit-rail-hint");
+    expect(stageSource).toContain("sunlit-project-switchboard");
+    expect(stageSource).toContain("sunlit-project-index");
+    expect(stageSource).not.toContain("overflow-x: auto");
     expect(stageSource).toContain("aria-selected");
     expect(stageSource).toContain("ArrowRight");
     expect(stageSource).toContain("Home");
@@ -99,6 +104,6 @@ describe("built public shell", () => {
     expect(stageSource).toContain('searchParams.set("project", contentId)');
     expect(stageSource).toContain('"pushState" : "replaceState"');
     expect(stageSource).toContain('window.addEventListener("popstate"');
-    expect(stageSource).toContain('aria-orientation="horizontal"');
+    expect(stageSource).toContain('aria-orientation="vertical"');
   });
 });

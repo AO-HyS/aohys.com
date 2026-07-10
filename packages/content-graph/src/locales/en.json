@@ -125,8 +125,8 @@
     "publicNavigation": {
       "brand": {
         "homeLabel": "AOHYS home",
-        "wordmarkSrc": "/images/brand/aohys-portal-wordmark-v2.svg",
-        "fallbackSrc": "/images/brand/aohys-portal-mark-v2.svg"
+        "wordmarkSrc": "/images/brand/aohys-connections-wordmark-v3.svg",
+        "fallbackSrc": "/images/brand/aohys-connections-mark-v3.svg"
       },
       "items": [
         {
@@ -516,52 +516,52 @@
   },
   "practice": {
     "path": "/practice",
-    "title": "Services for product systems ready to grow.",
-    "summary": "Product systems, architecture evolution, and AI-augmented delivery shaped around what your team wants to achieve next.",
-    "seoDescription": "AOHYS services cover product systems, architecture evolution, data, cloud operations, and AI-augmented delivery for teams building ambitious software.",
+    "title": "Three ways to move a product forward.",
+    "summary": "Build a complete product, add senior product-engineering capacity to a defined project, or modernize the system already carrying the business.",
+    "seoDescription": "Work with AOHYS to build a website, web app, or mobile app from zero; add a senior product engineer to a delivery team; or modernize an existing product with AI, data, cloud, and delivery capabilities.",
     "primaryActionLabel": "Start a conversation",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "See the architecture",
     "secondaryActionContentId": "architecture",
     "practiceContent": {
-      "heading": "Product engineering for ideas ready to become real.",
-      "deck": "Bring a new product goal, an experience ready to evolve, or a delivery practice you want to amplify. We shape it into a system your team can understand, operate, and keep improving.",
+      "heading": "Bring the product ambition. Choose how we work.",
+      "deck": "From a first sketch to a product ready for its next chapter, I join where senior product and engineering judgment can create momentum. Every engagement has a clear working rhythm, tangible outputs, and a system your team can keep improving.",
       "services": [
         {
           "id": "product-systems",
-          "title": "Product systems",
-          "problem": "You want customer experience, operations, data, and business goals to feel like one product instead of separate initiatives.",
-          "result": "A coherent product system with a thoughtful customer path, capable workflows, and data the team can act on.",
-          "engagement": "A focused build or a staged product engagement, from system mapping through production delivery.",
-          "deliverables": ["Product and workflow map", "Production interface and data flows", "Operational handoff and release plan"]
+          "title": "Build a complete product from zero",
+          "problem": "You have a real audience and a valuable idea, but the product path still needs to be shaped across experience, operations, data, architecture, and release.",
+          "result": "A production-ready website, web application, or mobile application with a coherent customer journey, dependable workflows, measurable behavior, and room to grow.",
+          "engagement": "I lead the product and engineering path from framing and system design through implementation, production launch, and an operating handoff your team can own.",
+          "deliverables": ["Product brief and journey map", "Working website, web app, or mobile app", "Backend, data, and operational workflows", "Production launch and ownership handoff"]
         },
         {
           "id": "architecture-modernization",
-          "title": "Architecture & modernization",
-          "problem": "You want an existing product to gain modern capabilities, clearer boundaries, stronger performance, and room to expand.",
-          "result": "An evolved architecture that preserves valuable behavior while making the system easier to understand, change, and scale.",
-          "engagement": "Architecture review, modernization plan, or hands-on migration around the highest-leverage boundary.",
-          "deliverables": ["Current-state and opportunity map", "Target architecture with tradeoffs", "Incremental evolution and verification"]
+          "title": "Add a senior collaborator to your team",
+          "problem": "The project and destination are defined, and the team wants experienced hands to accelerate product and architecture decisions and turn the plan into dependable software.",
+          "result": "More delivery capacity without a long ramp-up: clearer decisions, stronger implementation, fewer blind spots, and a senior collaborator who improves the work around the code.",
+          "engagement": "I embed with your existing product and engineering team for a focused phase, owning a meaningful workstream while collaborating in your planning, review, QA, and release rhythm.",
+          "deliverables": ["A clearly owned delivery workstream", "Production code and product decisions", "Architecture and implementation reviews", "Tests, release evidence, and team handoff"]
         },
         {
           "id": "delivery-acceleration",
-          "title": "Delivery acceleration",
-          "problem": "You want advanced AI, previews, QA, observability, and cloud operations to expand what the team can deliver with confidence.",
-          "result": "A visible, AI-augmented delivery system with faster feedback, reliable releases, and more space for creative product work.",
-          "engagement": "A delivery capability review followed by targeted implementation across agent workflows, quality gates, environments, and release operations.",
-          "deliverables": ["Delivery capability map", "AI workflow, preview, and quality-gate implementation", "Observability and release playbook"]
+          "title": "Modernize what is already in motion",
+          "problem": "An existing product or process already creates value, and the business is ready to expand it with clearer boundaries, connected data, modern workflows, and a stronger delivery path.",
+          "result": "A safer, more capable system that preserves useful behavior while adding the right AI, data, cloud, observability, and delivery capabilities around it.",
+          "engagement": "We map the current system, choose the highest-leverage boundary, and ship modernization in verified increments so the business keeps moving while the foundation improves.",
+          "deliverables": ["Current-state and opportunity map", "Target architecture with explicit tradeoffs", "AI, data, cloud, or workflow integration", "Incremental rollout, verification, and operating playbook"]
         }
       ],
-      "processHeading": "A clear path from intention to momentum.",
+      "processHeading": "Clear from the first working session.",
       "process": [
-        {"label": "Frame", "text": "Name the goal, the people it should serve, and the change worth creating."},
-        {"label": "Map", "text": "Make flows, data, boundaries, opportunities, and tradeoffs visible before building."},
-        {"label": "Build", "text": "Ship the smallest complete system slice with real states, instrumentation, and release checks."},
-        {"label": "Grow", "text": "Leave the team with an operable system, decisions they can explain, and a confident next step."}
+        {"label": "Align", "text": "Confirm the outcome, audience, constraints, decision owners, and the evidence that will define progress."},
+        {"label": "Make the system visible", "text": "Map the experience, workflows, data, boundaries, risks, and tradeoffs before effort disappears into implementation."},
+        {"label": "Ship useful slices", "text": "Deliver complete, reviewable increments with real states, instrumentation, QA, and production checks."},
+        {"label": "Leave operating clarity", "text": "Hand over working software, explicit decisions, release evidence, and a practical next-step plan."}
       ],
-      "deliverablesHeading": "What the engagement leaves behind.",
-      "deliverables": ["A shared system map", "Working product increments", "Architecture and decision records", "Quality, observability, and release checks", "A practical operating handoff"],
-      "relatedHeading": "See the systems behind the service.",
+      "deliverablesHeading": "Work you can keep using after the engagement.",
+      "deliverables": ["A shared product and system map", "Production-ready software increments", "Architecture and decision records", "Quality, observability, and release evidence", "A practical operating handoff"],
+      "relatedHeading": "Inspect the work and the system behind it.",
       "relatedContentIds": ["architecture", "case-studies"]
     }
   },
@@ -898,8 +898,8 @@
   },
   "contact": {
     "path": "/contact",
-    "title": "Start a focused conversation",
-    "summary": "Send the goal, constraints, and best path to reply. WhatsApp is fastest in Mexico; email works better for longer context.",
+    "title": "Let’s make the next move clear.",
+    "summary": "Share what you want to create, improve, or bring to life. I will read the context myself and reply with useful questions and a practical next step. WhatsApp is fastest in Mexico; email is ideal for a longer brief.",
     "seoDescription": "Contact Alejandro Ortiz Corro and AOHYS by email or WhatsApp for software projects, architecture review, product systems, or hiring conversations.",
     "primaryActionLabel": "Start a conversation",
     "primaryActionContentId": "contact",

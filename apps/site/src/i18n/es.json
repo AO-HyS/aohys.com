@@ -244,8 +244,8 @@
     ]
   },
   "contactForm": {
-    "formTitle": "Cuéntame qué te gustaría crear.",
-    "formIntro": "Comparte el objetivo, contexto y la mejor forma de contactarte. Responderé directamente.",
+    "formTitle": "Dame el contexto útil.",
+    "formIntro": "No necesitas un brief perfecto. Comparte el objetivo, a quién debe servir, qué quieres hacer posible y la mejor forma de contactarte. Responderé personalmente con un siguiente paso práctico.",
     "nameLabel": "Nombre",
     "emailLabel": "Correo",
     "companyLabel": "Empresa",
@@ -263,7 +263,7 @@
     "phoneOptionalHint": "Opcional, excepto al elegir WhatsApp",
     "phoneRequiredHint": "Necesario para responder por WhatsApp",
     "messageLabel": "Mensaje",
-    "messagePlaceholder": "¿Qué te gustaría crear, mejorar o lanzar?",
+    "messagePlaceholder": "¿Qué te gustaría crear, mejorar o lanzar? ¿A quién debe ayudar y qué importa más en este momento?",
     "consentLabel": "Entiendo que AOHYS usará esta información para responder mi solicitud.",
     "submitLabel": "Enviar solicitud",
     "sendingLabel": "Enviando...",

@@ -1,7 +1,7 @@
 import { STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID } from "@aohys/content-graph";
 import { DASHBOARD_PUBLIC_MEDIA_BY_CONTENT_ID } from "../../generated/dashboard-public-media";
 
-export const BRAND_FALLBACK_SRC = "/images/brand/aohys-portal-mark-v2.svg";
+export const BRAND_FALLBACK_SRC = "/images/brand/aohys-connections-mark-v3.svg";
 
 export function resolveProofMedia(
   contentId: string,
