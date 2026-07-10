@@ -41,7 +41,8 @@ describe("built public routes", () => {
       expect(includesAlternate(html, "es", seo.alternates.es)).toBe(true);
       expect(includesAlternate(html, "x-default", seo.alternates["x-default"])).toBe(true);
       expect(html).toContain(`<title>${seo.title}</title>`);
-      expect(html).not.toMatch(/lorem|\btodo\b/i);
+      expect(html).not.toMatch(/lorem ipsum/i);
+      expect(html).not.toMatch(/\bTODO(?:\s|:|$)/);
     }
   });
 
@@ -65,16 +66,16 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain('data-home-content-id="home"');
-    expect(homeHtml).toContain("Software that moves real work.");
+    expect(homeHtml).toContain("Software for what you want to make real.");
     expect(homeHtml).toContain('class="sunlit-studio-hero"');
-    expect(homeHtml).toContain("Services built around the pressure your team feels.");
-    expect(homeHtml).toContain("Architecture is part of the product.");
+    expect(homeHtml).toContain("Services for the next thing your team wants to achieve.");
+    expect(homeHtml).toContain("Craft across the whole product system.");
     expect(homeHtml).toContain("/images/proof/enterprise-systems-map-v2.svg");
     expect(homeHtml).toContain('data-project-stage');
     expect(homeHtml).toContain('data-stage-door="left"');
     expect(homeHtml).toContain('data-stage-door="right"');
     expect(homeHtml).toContain("Choose a project. The doors close, the system behind them changes");
-    expect(homeHtml).toContain("What does your team need to stop improvising?");
+    expect(homeHtml).toContain("What would you like your team to create next?");
     expect(homeHtml).toContain("Independent product engineering by Alejandro Ortiz Corro.");
     expect(homeHtml).not.toContain("Public code can be reviewed here");
     expect(homeHtml).not.toContain("Still deciding?");
@@ -90,12 +91,12 @@ describe("built public routes", () => {
     expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Software que mueve el trabajo real.");
+    expect(spanishHomeHtml).toContain("Software para hacer realidad lo que imaginas.");
     expect(spanishHomeHtml).toContain('class="sunlit-studio-hero"');
-    expect(spanishHomeHtml).toContain("Servicios construidos alrededor de la presión que siente tu equipo.");
-    expect(spanishHomeHtml).toContain("La arquitectura es parte del producto.");
+    expect(spanishHomeHtml).toContain("Servicios para lo siguiente que tu equipo quiere lograr.");
+    expect(spanishHomeHtml).toContain("Cuidado en todo el sistema de producto.");
     expect(spanishHomeHtml).toContain("Elige un proyecto. Las puertas se cierran, cambia el sistema detrás");
-    expect(spanishHomeHtml).toContain("¿Qué necesita dejar de improvisar tu equipo?");
+    expect(spanishHomeHtml).toContain("¿Qué te gustaría que tu equipo creara después?");
     expect(spanishHomeHtml).toContain("Ingeniería de producto independiente por Alejandro Ortiz Corro.");
     expect(spanishHomeHtml).not.toContain("El código público se puede revisar aquí");
     expect(spanishHomeHtml).not.toContain("¿Todavía evaluando?");
@@ -111,14 +112,12 @@ describe("built public routes", () => {
     const spanishArchitectureHtml = readDist("es/arquitectura/index.html");
 
     expect(architectureHtml).toContain('data-architecture-content-id="architecture"');
-    expect(architectureHtml).toContain("Architecture that stays operable after launch.");
+    expect(architectureHtml).toContain("Architecture that gives ideas room to grow.");
     expect(architectureHtml).toContain("One system, six responsibilities.");
-    expect(architectureHtml).toContain("React Native");
-    expect(architectureHtml).toContain("Cloudflare Pages");
-    expect(architectureHtml).toContain("Convex");
-    expect(architectureHtml).toContain("Resend");
-    expect(architectureHtml).toContain("PostHog");
-    expect(architectureHtml).toContain("Protected branches");
+    expect(architectureHtml).toContain("Front-end systems");
+    expect(architectureHtml).toContain("PostgreSQL");
+    expect(architectureHtml).toContain("AI engineering");
+    expect(architectureHtml).toContain("Cloud operations");
     expect(architectureHtml).toContain("Architecture is a sequence of tradeoffs.");
     expect(architectureHtml.match(/<canvas/g)).toHaveLength(1);
     expect(architectureHtml).toContain("Release Train");
@@ -132,7 +131,7 @@ describe("built public routes", () => {
     expect(architectureHtml).not.toMatch(/public proof|evidence|confidential/i);
 
     expect(spanishArchitectureHtml).toContain('data-architecture-content-id="architecture"');
-    expect(spanishArchitectureHtml).toContain("Arquitectura que sigue siendo operable después del lanzamiento.");
+    expect(spanishArchitectureHtml).toContain("Arquitectura que da espacio para crecer.");
     expect(spanishArchitectureHtml).toContain("Un sistema, seis responsabilidades.");
     expect(spanishArchitectureHtml).toContain("La arquitectura es una secuencia de tradeoffs.");
     expect(spanishArchitectureHtml).toContain("Release Train");
@@ -149,10 +148,10 @@ describe("built public routes", () => {
     expect(servicesHtml).toContain("Product systems");
     expect(servicesHtml).toContain("Architecture &amp; modernization");
     expect(servicesHtml).toContain("Delivery acceleration");
-    expect(servicesHtml).toContain("Problem");
+    expect(servicesHtml).toContain("Opportunity");
     expect(servicesHtml).toContain("Result");
     expect(servicesHtml).toContain("Engagement");
-    expect(servicesHtml).toContain("A small, visible path from pressure to progress.");
+    expect(servicesHtml).toContain("A clear path from intention to momentum.");
     expect(servicesHtml).toContain("What the engagement leaves behind.");
     expect(servicesHtml).toContain('data-service-pattern="flow"');
     expect(servicesHtml).toContain('data-service-pattern="topology"');
@@ -162,7 +161,7 @@ describe("built public routes", () => {
     expect(spanishServicesHtml).toContain("Sistemas de producto");
     expect(spanishServicesHtml).toContain("Arquitectura y modernización");
     expect(spanishServicesHtml).toContain("Aceleración de delivery");
-    expect(spanishServicesHtml).toContain("Problema");
+    expect(spanishServicesHtml).toContain("Oportunidad");
     expect(spanishServicesHtml).toContain("Resultado");
     expect(spanishServicesHtml).toContain("Colaboración");
   });
@@ -174,8 +173,8 @@ describe("built public routes", () => {
     expect(casaRocaHtml).toContain('data-case-study-content-id="case-study:casa-roca"');
     expect(casaRocaHtml).toContain("Casa Roca");
     expect(casaRocaHtml).toContain("Live hospitality site");
-    expect(casaRocaHtml).toContain("Problem");
-    expect(casaRocaHtml).toContain("Outcome");
+    expect(casaRocaHtml).toContain("Opportunity");
+    expect(casaRocaHtml).toContain("Opportunity &amp; outcome");
     expect(casaRocaHtml).toContain("Role &amp; system");
     expect(casaRocaHtml).toContain("Decisions");
     expect(casaRocaHtml).toContain("Delivery");
@@ -191,7 +190,7 @@ describe("built public routes", () => {
 
     expect(spanishCasaRocaHtml).toContain('data-case-study-content-id="case-study:casa-roca"');
     expect(spanishCasaRocaHtml).toContain("Sitio de hospitalidad en vivo");
-    expect(spanishCasaRocaHtml).toContain("Problema");
+    expect(spanishCasaRocaHtml).toContain("Oportunidad");
     expect(spanishCasaRocaHtml).toContain("Resultado");
     expect(spanishCasaRocaHtml).toContain("Rol y sistema");
     expect(spanishCasaRocaHtml).toContain("Decisiones");
@@ -267,7 +266,7 @@ describe("built public routes", () => {
     expect(resumeHtml).toContain("Senior Product Engineer / Frontend Systems");
     expect(resumeHtml).toContain("Delivery profile");
     expect(resumeHtml).toContain("Professional experience");
-    expect(resumeHtml).toContain("Technical skills");
+    expect(resumeHtml).toContain("Core technologies &amp; capabilities");
     expect(resumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
     expect(resumeHtml).toContain("Open resume PDF");
     expect(resumeHtml).not.toContain("Download ATS PDF");
@@ -279,7 +278,7 @@ describe("built public routes", () => {
     expect(spanishResumeHtml).toContain("Senior Product Engineer / Sistemas Frontend");
     expect(spanishResumeHtml).toContain("Perfil de entrega");
     expect(spanishResumeHtml).toContain("Experiencia profesional");
-    expect(spanishResumeHtml).toContain("Habilidades técnicas");
+    expect(spanishResumeHtml).toContain("Tecnologías centrales y capacidades");
     expect(spanishResumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
     expect(spanishResumeHtml).toContain("Abrir CV en PDF");
     expect(spanishResumeHtml).not.toContain("Descargar PDF ATS");

@@ -82,7 +82,7 @@
     "reviewPathText": "feature → develop → main",
     "homeLead": "I design and build software that connects product intent, backend reliability, operational clarity, and modern delivery.",
     "proofHeadingSignal": "Selected work",
-    "proofHeading": "The system starts with real work, not decoration.",
+    "proofHeading": "Good systems start with real work and a clear point of view.",
     "announcementBadge": "New",
     "announcementText": "Work and releases.",
     "homePrompt": "Map the public site, dashboard, release path, and proof a reviewer can inspect.",
@@ -148,7 +148,7 @@
     },
     "pricingPage": {
       "scaleLabel": "Experience scale",
-      "scaleQuestion": "How much delivery pressure has this work handled?",
+      "scaleQuestion": "What can this work help your team create next?",
       "planLabel": "Plan",
       "recommended": "Recommended",
       "planNames": [
@@ -244,7 +244,7 @@
     ]
   },
   "contactForm": {
-    "formTitle": "Tell me what you need to ship.",
+    "formTitle": "Tell me what you would like to create.",
     "formIntro": "Share the goal, context, and best way to reach you. I will reply directly.",
     "nameLabel": "Name",
     "emailLabel": "Email",
@@ -263,7 +263,7 @@
     "phoneOptionalHint": "Optional unless WhatsApp is selected",
     "phoneRequiredHint": "Required for a WhatsApp reply",
     "messageLabel": "Message",
-    "messagePlaceholder": "What needs to exist, improve, launch, or become reliable?",
+    "messagePlaceholder": "What would you like to create, improve, or launch?",
     "consentLabel": "I understand AOHYS will use this information to respond to my request.",
     "submitLabel": "Send request",
     "sendingLabel": "Sending...",

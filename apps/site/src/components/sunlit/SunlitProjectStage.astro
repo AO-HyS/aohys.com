@@ -21,7 +21,10 @@ const labels = locale === "es" ? {
   result: "Resultado",
   evidence: "Sistema",
   boundary: "Mi rol",
-  swipe: "Elige un sistema",
+  swipe: "Proyectos en escena",
+  previous: "Proyecto anterior",
+  next: "Proyecto siguiente",
+  position: "Proyecto",
   fallbackAlt: "Sistema de producto AOHYS",
   scene: "Escenario de sistemas de producto AOHYS",
 } : {
@@ -32,7 +35,10 @@ const labels = locale === "es" ? {
   result: "Result",
   evidence: "System",
   boundary: "My role",
-  swipe: "Choose a system",
+  swipe: "Projects on stage",
+  previous: "Previous project",
+  next: "Next project",
+  position: "Project",
   fallbackAlt: "AOHYS product system",
   scene: "AOHYS product systems stage",
 };
@@ -56,6 +62,7 @@ const projects = outcomes.map((outcome) => ({
   data-assembled="false"
   data-current-label={labels.current}
   data-loading-label={labels.loading}
+  data-position-label={labels.position}
 >
   <header class="sunlit-stage-heading">
     <div>
@@ -66,33 +73,6 @@ const projects = outcomes.map((outcome) => ({
   </header>
 
   <div class="sunlit-stage-layout">
-      <div class="sunlit-ticket-column">
-      <p class="sunlit-rail-hint">{labels.swipe}</p>
-      <div class="sunlit-ticket-rail" role="tablist" aria-label={labels.region} aria-orientation={hero ? undefined : "vertical"}>
-        <span class="sunlit-rail-cable" aria-hidden="true"></span>
-        {projects.map(({ outcome }, index) => {
-          const panelId = `sunlit-project-panel-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
-          const tabId = `sunlit-project-tab-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
-          return (
-            <button
-              id={tabId}
-              type="button"
-              role="tab"
-              aria-controls={panelId}
-              aria-selected={index === 0 ? "true" : "false"}
-              tabindex={index === 0 ? 0 : -1}
-              data-project-tab
-              data-project-index={index}
-              data-content-id={outcome.contentId}
-            >
-              <span aria-hidden="true"></span>
-              <strong>{outcome.title}</strong>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-
     <div class="sunlit-stage-frame" aria-busy="false" data-stage-frame>
       <div class="sunlit-stage-canopy" aria-hidden="true"><span></span><i></i></div>
       <div class="sunlit-stage-scene">
@@ -143,15 +123,60 @@ const projects = outcomes.map((outcome) => ({
       <div class="sunlit-stage-platform" aria-hidden="true"><span></span><i></i></div>
       <div class="sunlit-stage-status sr-only" aria-live="polite" aria-atomic="true" data-stage-announcement></div>
     </div>
+
+    <div class="sunlit-project-dock">
+      <div class="sunlit-rail-meta" aria-hidden="true">
+        <span data-current-number>01</span>
+        <i></i>
+        <span>{String(projects.length).padStart(2, "0")}</span>
+      </div>
+      <div class="sunlit-rail-viewport" data-project-rail-scroll>
+        <div class="sunlit-ticket-rail" role="tablist" aria-label={labels.region} aria-orientation="horizontal">
+          {projects.map(({ outcome }, index) => {
+            const panelId = `sunlit-project-panel-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
+            const tabId = `sunlit-project-tab-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
+            return (
+              <button
+                id={tabId}
+                type="button"
+                role="tab"
+                aria-controls={panelId}
+                aria-selected={index === 0 ? "true" : "false"}
+                tabindex={index === 0 ? 0 : -1}
+                data-project-tab
+                data-project-index={index}
+                data-content-id={outcome.contentId}
+              >
+                <span class="sunlit-ticket-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                <span class="sunlit-ticket-label">
+                  <strong>{outcome.title}</strong>
+                  <small>{outcome.label}</small>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div class="sunlit-rail-controls">
+        <button type="button" data-project-previous aria-label={labels.previous}>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12.5 4.5-5.5 5.5 5.5 5.5" /></svg>
+        </button>
+        <div class="sunlit-rail-progress" aria-hidden="true"><span data-rail-progress></span></div>
+        <button type="button" data-project-next aria-label={labels.next}>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5" /></svg>
+        </button>
+      </div>
+      <p class="sunlit-rail-hint">{labels.swipe}</p>
+    </div>
   </div>
 
   <div class="sunlit-ledger-stack">
     {projects.map(({ outcome }, index) => (
-      <div class="sunlit-proof-ledger" hidden={index !== 0} data-ledger-panel data-project-index={index}>
-        <div><span aria-hidden="true">→</span><strong>{labels.result}</strong><p>{outcome.outcome}</p></div>
-        <div><span aria-hidden="true">◉</span><strong>{labels.evidence}</strong><p>{outcome.evidence.label}</p></div>
-        <div><span aria-hidden="true">◇</span><strong>{labels.boundary}</strong><p>{outcome.role}</p></div>
-      </div>
+      <dl class="sunlit-proof-ledger" hidden={index !== 0} data-ledger-panel data-project-index={index}>
+        <div><dt>{labels.result}</dt><dd>{outcome.outcome}</dd></div>
+        <div><dt>{labels.evidence}</dt><dd>{outcome.evidence.label}</dd></div>
+        <div><dt>{labels.boundary}</dt><dd>{outcome.role}</dd></div>
+      </dl>
     ))}
   </div>
 </section>
@@ -166,6 +191,11 @@ const projects = outcomes.map((outcome) => ({
     const ledgers = Array.from(stage.querySelectorAll("[data-ledger-panel]")).filter((panel): panel is HTMLElement => panel instanceof HTMLElement);
     const frame = stage.querySelector("[data-stage-frame]");
     const announcement = stage.querySelector("[data-stage-announcement]");
+    const railViewport = stage.querySelector("[data-project-rail-scroll]");
+    const currentNumber = stage.querySelector("[data-current-number]");
+    const progress = stage.querySelector("[data-rail-progress]");
+    const previous = stage.querySelector("[data-project-previous]");
+    const next = stage.querySelector("[data-project-next]");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let activeIndex = 0;
     let requestedIndex = 0;
@@ -194,6 +224,13 @@ const projects = outcomes.map((outcome) => ({
       });
       panels.forEach((panel, panelIndex) => { panel.hidden = panelIndex !== index; });
       ledgers.forEach((ledger, ledgerIndex) => { ledger.hidden = ledgerIndex !== index; });
+      if (currentNumber instanceof HTMLElement) currentNumber.textContent = String(index + 1).padStart(2, "0");
+      if (progress instanceof HTMLElement) progress.style.setProperty("--project-progress", String((index + 1) / Math.max(1, tabs.length)));
+      const selectedTab = tabs[index];
+      if (selectedTab && railViewport instanceof HTMLElement) {
+        const targetLeft = selectedTab.offsetLeft - (railViewport.clientWidth - selectedTab.clientWidth) / 2;
+        railViewport.scrollTo({ left: Math.max(0, targetLeft), behavior: reducedMotion.matches ? "auto" : "smooth" });
+      }
       stage.dataset.activeTone = String(index % 3);
       window.dispatchEvent(new CustomEvent("sunlit:project-change", { detail: { index, contentId: panels[index]?.dataset.contentId } }));
       activeIndex = index;
@@ -279,6 +316,15 @@ const projects = outcomes.map((outcome) => ({
         requestProject(nextIndex, "replace");
       });
     });
+    if (railViewport instanceof HTMLElement) {
+      railViewport.addEventListener("wheel", (event) => {
+        if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+        railViewport.scrollLeft += event.deltaY;
+        event.preventDefault();
+      }, { passive: false });
+    }
+    if (previous instanceof HTMLButtonElement) previous.addEventListener("click", () => requestProject((activeIndex - 1 + tabs.length) % tabs.length, "push"));
+    if (next instanceof HTMLButtonElement) next.addEventListener("click", () => requestProject((activeIndex + 1) % tabs.length, "push"));
 
     const initialUrl = new URL(window.location.href);
     const requestedProjectId = initialUrl.searchParams.get("project");
@@ -318,18 +364,7 @@ const projects = outcomes.map((outcome) => ({
   .sunlit-stage-heading span { color: var(--color-accent); font-size: 2rem; line-height: 1; }
   .sunlit-stage-heading h2 { max-width: 15ch; margin: 0; font-size: var(--text-h2); font-weight: 760; letter-spacing: -.035em; line-height: 1.02; text-wrap: balance; }
   .sunlit-stage-heading p { max-width: 54ch; margin: 0; color: var(--color-muted); font-size: 1.1rem; }
-  .sunlit-stage-layout { display: grid; grid-template-columns: minmax(11rem, 15rem) minmax(0, 1fr); align-items: stretch; gap: 1.5rem; }
-  .sunlit-ticket-column { display: grid; align-content: center; min-width: 0; }
-  .sunlit-rail-hint { display: none; }
-  .sunlit-ticket-rail { position: relative; display: flex; flex-direction: column; justify-content: center; gap: .65rem; padding: 1.5rem 0 1.5rem 1.1rem; }
-  .sunlit-rail-cable { position: absolute; top: 1.5rem; bottom: 1.5rem; left: .48rem; width: 3px; background: var(--color-ink); }
-  .sunlit-ticket-rail button { position: relative; display: grid; min-height: 3.75rem; grid-template-columns: 1rem 1fr; align-items: center; gap: .7rem; padding: .5rem .75rem; border: 0; border-radius: .3rem; background: transparent; color: var(--color-ink); text-align: left; cursor: pointer; }
-  .sunlit-ticket-rail button::before { content: ""; position: absolute; left: -1.02rem; width: .78rem; height: .78rem; border: 3px solid var(--color-ink); border-radius: 50%; background: var(--color-bg); }
-  .sunlit-ticket-rail button[aria-selected="true"] { background: var(--color-accent); box-shadow: 0 3px 0 var(--color-ink); }
-  .sunlit-ticket-rail button[aria-selected="true"]::before { background: var(--color-primary); }
-  .sunlit-ticket-rail button span { width: .7rem; height: .7rem; transform: rotate(45deg); border: 2px solid var(--color-ink); background: var(--color-bg); }
-  .sunlit-ticket-rail button[aria-selected="true"] span { background: var(--color-primary); }
-  .sunlit-ticket-rail button strong { font-size: .92rem; line-height: 1.15; }
+  .sunlit-stage-layout { display: grid; gap: 1rem; }
   .sunlit-stage-frame { position: relative; min-width: 0; padding-top: 2.5rem; }
   .sunlit-stage-canopy { position: absolute; top: 0; right: 7%; left: 7%; height: 5.4rem; overflow: hidden; pointer-events: none; }
   .sunlit-stage-canopy::before, .sunlit-stage-canopy::after, .sunlit-stage-canopy span { content: ""; position: absolute; bottom: 0; width: 44%; height: 100%; border-radius: 50% 50% 0 0; }
@@ -338,17 +373,17 @@ const projects = outcomes.map((outcome) => ({
   .sunlit-stage-canopy span { left: 30%; background: var(--color-accent); }
   .sunlit-stage-canopy i { position: absolute; top: 0; right: 10%; width: 2px; height: 2.8rem; background: var(--color-ink); }
   .sunlit-stage-canopy i::after { content: ""; position: absolute; top: 2.4rem; left: -.55rem; width: 1.1rem; height: 1.1rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
-  .sunlit-stage-scene { position: relative; display: grid; overflow: hidden; border: 2px solid var(--color-ink); background: var(--color-accent); box-shadow: 0 6px 0 var(--color-ink); transition: background 220ms cubic-bezier(.22, 1, .36, 1); }
-  .sunlit-stage-scene > :global(.sunlit-stage-webgl) { position: absolute; inset: 0; z-index: 0; min-height: 0; opacity: .42; background: transparent; }
+  .sunlit-stage-scene { position: relative; display: grid; overflow: hidden; border: 2px solid var(--color-ink); background: color-mix(in oklch, var(--color-accent), white 18%); box-shadow: 0 6px 0 var(--color-ink); transition: background 220ms cubic-bezier(.22, 1, .36, 1); }
+  .sunlit-stage-scene > :global(.sunlit-stage-webgl) { position: absolute; inset: 0; z-index: 0; min-height: 0; opacity: .24; background: transparent; }
   .sunlit-stage-scene::before, .sunlit-stage-scene::after { content: ""; position: absolute; z-index: 0; pointer-events: none; transition: transform 280ms cubic-bezier(.22, 1, .36, 1), background 220ms ease; }
-  .sunlit-stage-scene::before { right: -5rem; bottom: -7rem; width: 20rem; height: 20rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
-  .sunlit-stage-scene::after { top: 10%; left: 4%; width: 5rem; height: 68%; border: 2px solid var(--color-ink); border-radius: 50% 50% 0 0; background: var(--color-secondary); }
-  [data-active-tone="1"] .sunlit-stage-scene { background: var(--color-secondary); }
-  [data-active-tone="1"] .sunlit-stage-scene::before { transform: translate(-16rem, -2rem); background: var(--color-accent); }
-  [data-active-tone="1"] .sunlit-stage-scene::after { transform: translateX(34rem); background: var(--color-primary); }
-  [data-active-tone="2"] .sunlit-stage-scene { background: var(--color-primary); }
-  [data-active-tone="2"] .sunlit-stage-scene::before { transform: translate(-7rem, -13rem) scale(.75); background: var(--color-secondary); }
-  [data-active-tone="2"] .sunlit-stage-scene::after { transform: translate(17rem, 7rem) rotate(90deg); background: var(--color-accent); }
+  .sunlit-stage-scene::before { left: -4rem; bottom: -8rem; width: 22rem; height: 22rem; border: 2px solid color-mix(in oklch, var(--color-ink), transparent 25%); border-radius: 50%; background: color-mix(in oklch, var(--color-primary), transparent 8%); }
+  .sunlit-stage-scene::after { top: 3.5rem; left: 4%; width: 4.5rem; height: 13rem; border: 2px solid color-mix(in oklch, var(--color-ink), transparent 25%); border-radius: 50% 50% .2rem .2rem; background: var(--color-secondary); }
+  [data-active-tone="1"] .sunlit-stage-scene { background: color-mix(in oklch, var(--color-secondary), white 22%); }
+  [data-active-tone="1"] .sunlit-stage-scene::before { transform: translate(8rem, -1rem); background: var(--color-accent); }
+  [data-active-tone="1"] .sunlit-stage-scene::after { transform: translateX(7rem); background: var(--color-primary); }
+  [data-active-tone="2"] .sunlit-stage-scene { background: color-mix(in oklch, var(--color-primary), white 18%); }
+  [data-active-tone="2"] .sunlit-stage-scene::before { transform: translate(3rem, -5rem) scale(.78); background: var(--color-secondary); }
+  [data-active-tone="2"] .sunlit-stage-scene::after { transform: translate(11rem, 5rem) rotate(90deg); background: var(--color-accent); }
   [data-active-tone="1"] .sunlit-stage-canopy::before { background: var(--color-primary); }
   [data-active-tone="1"] .sunlit-stage-canopy::after { background: var(--color-accent); }
   [data-active-tone="1"] .sunlit-stage-canopy span { background: var(--color-secondary); }
@@ -356,7 +391,7 @@ const projects = outcomes.map((outcome) => ({
   [data-active-tone="2"] .sunlit-stage-canopy::after { background: var(--color-secondary); }
   [data-active-tone="2"] .sunlit-stage-canopy span { background: var(--color-primary); }
   .sunlit-project-panel { position: relative; z-index: 1; grid-area: 1 / 1; min-height: 33rem; }
-  .sunlit-project-panel:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(15rem, .75fr); align-items: center; gap: clamp(1rem, 3vw, 2.5rem); padding: clamp(1.25rem, 4vw, 3.5rem); }
+  .sunlit-project-panel:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(17rem, .82fr); align-items: center; gap: clamp(1rem, 3vw, 2.5rem); padding: clamp(1.25rem, 4vw, 3.5rem); }
   .sunlit-project-proof { position: relative; min-width: 0; transform: rotate(-1deg); }
   .sunlit-project-proof figure { position: relative; display: grid; height: clamp(18rem, 34vw, 27rem); margin: 0; overflow: hidden; place-items: center; border: 10px solid var(--color-bg); box-shadow: 0 6px 0 var(--color-ink); background: color-mix(in oklch, var(--color-secondary), white 72%); }
   .sunlit-project-proof img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center top; }
@@ -366,11 +401,11 @@ const projects = outcomes.map((outcome) => ({
   .sunlit-project-proof figure[data-media-kind="private-system"] { background: var(--color-bg); }
   .sunlit-proof-pin { position: absolute; top: -.45rem; left: 50%; z-index: 2; width: .9rem; height: .9rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); box-shadow: 0 2px 0 var(--color-ink); }
   .sunlit-proof-stamp { position: absolute; right: -1rem; bottom: -1rem; padding: .5rem .75rem; transform: rotate(-3deg); border: 3px double var(--color-secondary-ink); background: var(--color-bg); color: var(--color-secondary-ink); font-size: .75rem; font-weight: 780; text-transform: uppercase; }
-  .sunlit-project-copy { display: grid; align-content: center; gap: .8rem; }
-  .sunlit-project-copy > p:first-child { margin: 0; font-size: .86rem; font-weight: 720; }
-  .sunlit-project-copy h3 { margin: 0; font-size: clamp(2rem, 4vw, 3.8rem); font-weight: 780; letter-spacing: -.035em; line-height: 1; }
-  .sunlit-project-copy p { margin: 0; font-size: 1.05rem; line-height: 1.55; }
-  .sunlit-project-copy a { display: inline-flex; min-height: 3rem; width: fit-content; align-items: center; gap: 1.5rem; margin-top: .5rem; padding: 0 1rem; border: 2px solid var(--color-ink); border-radius: .55rem; background: var(--color-primary); text-decoration: none; font-weight: 760; box-shadow: 0 3px 0 var(--color-ink); }
+  .sunlit-project-copy { position: relative; display: grid; align-content: center; gap: .75rem; padding: clamp(1rem, 2vw, 1.4rem); border: 2px solid var(--color-ink); border-radius: .25rem; background: var(--color-bg); box-shadow: 5px 5px 0 color-mix(in oklch, var(--color-ink), transparent 8%); }
+  .sunlit-project-copy > p:first-child { margin: 0; color: var(--color-muted); font-size: .82rem; font-weight: 720; }
+  .sunlit-project-copy h3 { margin: 0; font-size: clamp(2rem, 4vw, 3.6rem); font-weight: 780; letter-spacing: -.035em; line-height: 1; }
+  .sunlit-project-copy p { margin: 0; font-size: 1rem; line-height: 1.5; }
+  .sunlit-project-copy a { display: inline-flex; min-height: 2.75rem; width: fit-content; align-items: center; gap: 1.5rem; margin-top: .35rem; border-bottom: 2px solid var(--color-ink); text-decoration: none; font-weight: 760; }
   .sunlit-door { position: absolute; top: 0; bottom: 0; z-index: 8; width: 50.5%; border: 2px solid var(--color-secondary-ink); background: var(--color-secondary); transition: transform 300ms cubic-bezier(.22, 1, .36, 1); }
   .sunlit-door::before, .sunlit-door::after { content: ""; position: absolute; border: 2px solid color-mix(in oklch, var(--color-secondary-ink), transparent 42%); border-radius: 45% 45% .5rem .5rem; }
   .sunlit-door::before { inset: 8% 12% 54%; }
@@ -383,71 +418,77 @@ const projects = outcomes.map((outcome) => ({
   [data-stage-state="closing"] .sunlit-door, [data-stage-state="swapping"] .sunlit-door { transform: translateX(0); }
   [data-stage-state="opening"] .sunlit-door-left, [data-stage-state="open"] .sunlit-door-left { transform: translateX(-102%); }
   [data-stage-state="opening"] .sunlit-door-right, [data-stage-state="open"] .sunlit-door-right { transform: translateX(102%); }
-  .sunlit-stage-platform { position: relative; height: 3rem; margin: 0 2%; border: 2px solid var(--color-ink); border-top: 0; border-radius: 0 0 50% 50%; background: var(--color-primary); box-shadow: 0 5px 0 var(--color-ink); transition: transform 560ms cubic-bezier(.22, 1, .36, 1); }
+  .sunlit-stage-platform { position: relative; height: 2.6rem; margin: 0 2%; border: 2px solid var(--color-ink); border-top: 0; border-radius: 0 0 50% 50%; background: var(--color-primary); box-shadow: 0 5px 0 var(--color-ink); transition: transform 560ms cubic-bezier(.22, 1, .36, 1); }
   [data-assembled="false"] .sunlit-stage-platform { transform: translateY(.7rem); }
-  .sunlit-ledger-stack { margin: 1.5rem 0 0 calc(15rem + 1.5rem); }
-  .sunlit-proof-ledger { display: grid; grid-template-columns: repeat(3, 1fr); border: 2px solid var(--color-ink); background: var(--color-bg); }
+  .sunlit-project-dock { display: grid; min-width: 0; grid-template-columns: 5.2rem minmax(0, 1fr) 7.5rem; grid-template-areas: "meta rail controls" "hint hint hint"; align-items: stretch; border: 2px solid var(--color-ink); background: var(--color-bg); }
+  .sunlit-rail-meta { grid-area: meta; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .35rem; padding: .75rem; border-right: 1px solid var(--color-rule); font-variant-numeric: tabular-nums; font-size: .72rem; font-weight: 780; }
+  .sunlit-rail-meta i { height: 2px; background: var(--color-ink); }
+  .sunlit-rail-viewport { grid-area: rail; min-width: 0; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; }
+  .sunlit-rail-viewport::-webkit-scrollbar { display: none; }
+  .sunlit-ticket-rail { display: flex; min-width: max-content; height: 100%; }
+  .sunlit-ticket-rail button { position: relative; display: grid; min-width: clamp(10rem, 16vw, 13rem); min-height: 4.7rem; grid-template-columns: 2rem 1fr; align-items: center; gap: .65rem; padding: .65rem .8rem; border: 0; border-right: 1px solid var(--color-rule); background: var(--color-bg); color: var(--color-ink); text-align: left; cursor: pointer; scroll-snap-align: center; }
+  .sunlit-ticket-rail button::after { content: ""; position: absolute; right: 0; bottom: 0; left: 0; height: .35rem; transform: scaleX(0); transform-origin: left; background: var(--color-primary); transition: transform 180ms cubic-bezier(.22, 1, .36, 1); }
+  .sunlit-ticket-rail button:hover { background: color-mix(in oklch, var(--color-primary), white 76%); }
+  .sunlit-ticket-rail button[aria-selected="true"] { background: var(--color-primary); }
+  .sunlit-ticket-rail button[aria-selected="true"]::after { transform: scaleX(1); background: var(--color-accent); }
+  .sunlit-ticket-index { font-variant-numeric: tabular-nums; font-size: .72rem; font-weight: 780; }
+  .sunlit-ticket-label { display: grid; gap: .2rem; min-width: 0; }
+  .sunlit-ticket-label strong { overflow: hidden; font-size: .92rem; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
+  .sunlit-ticket-label small { overflow: hidden; color: var(--color-muted); font-size: .7rem; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
+  .sunlit-rail-controls { grid-area: controls; display: grid; grid-template-columns: 2.75rem 1fr 2.75rem; align-items: center; border-left: 1px solid var(--color-rule); }
+  .sunlit-rail-controls button { display: grid; width: 2.75rem; height: 100%; min-height: 3rem; place-items: center; border: 0; background: var(--color-bg); color: var(--color-ink); cursor: pointer; }
+  .sunlit-rail-controls button:hover { background: var(--color-accent); }
+  .sunlit-rail-controls svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; }
+  .sunlit-rail-progress { height: 3px; overflow: hidden; background: var(--color-rule); }
+  .sunlit-rail-progress span { display: block; width: 100%; height: 100%; transform: scaleX(var(--project-progress, .25)); transform-origin: left; background: var(--color-ink); transition: transform 220ms cubic-bezier(.22, 1, .36, 1); }
+  .sunlit-rail-hint { grid-area: hint; margin: 0; padding: .45rem .75rem; border-top: 1px solid var(--color-rule); color: var(--color-muted); font-size: .72rem; font-weight: 720; }
+  .sunlit-ledger-stack { margin-top: .85rem; }
+  .sunlit-proof-ledger { display: grid; grid-template-columns: 1.35fr .7fr 1fr; margin: 0; border-block: 2px solid var(--color-ink); background: var(--color-bg); }
   .sunlit-proof-ledger[hidden] { display: none; }
-  .sunlit-proof-ledger > div { display: grid; min-width: 0; grid-template-columns: 2.3rem 1fr; gap: .15rem .6rem; padding: 1rem; border-right: 1px solid var(--color-rule); }
+  .sunlit-proof-ledger > div { position: relative; min-width: 0; padding: .85rem 1rem 1rem; border-right: 1px solid var(--color-rule); }
+  .sunlit-proof-ledger > div::before { content: ""; position: absolute; top: -.1rem; left: 1rem; width: 2.25rem; height: .28rem; background: var(--color-primary); }
+  .sunlit-proof-ledger > div:nth-child(2)::before { background: var(--color-secondary); }
+  .sunlit-proof-ledger > div:nth-child(3)::before { background: var(--color-accent); }
   .sunlit-proof-ledger > div:last-child { border-right: 0; }
-  .sunlit-proof-ledger span { grid-row: 1 / 3; display: grid; width: 2rem; height: 2rem; place-items: center; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
-  .sunlit-proof-ledger strong { font-size: .82rem; }
-  .sunlit-proof-ledger p { margin: 0; overflow: hidden; color: var(--color-muted); font-size: .78rem; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+  .sunlit-proof-ledger dt { margin: 0 0 .35rem; font-size: .72rem; font-weight: 780; }
+  .sunlit-proof-ledger dd { margin: 0; color: var(--color-muted); font-size: .8rem; line-height: 1.35; }
   .sunlit-project-stage--hero { width: 100%; margin: 0; }
   .sunlit-project-stage--hero .sunlit-stage-heading { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .sunlit-project-stage--hero .sunlit-stage-layout { grid-template-columns: 1fr; gap: .85rem; }
-  .sunlit-project-stage--hero .sunlit-ticket-column { order: 2; }
-  .sunlit-project-stage--hero .sunlit-rail-hint { display: block; margin: 0; font-size: .78rem; font-weight: 760; text-transform: uppercase; }
-  .sunlit-project-stage--hero .sunlit-ticket-rail { display: grid; overflow: visible; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; padding: 0; }
-  .sunlit-project-stage--hero .sunlit-rail-cable,
-  .sunlit-project-stage--hero .sunlit-ticket-rail button::before { display: none; }
-  .sunlit-project-stage--hero .sunlit-ticket-rail button { min-width: 0; min-height: 3.25rem; padding: .55rem .65rem; border: 2px solid var(--color-ink); background: var(--color-bg); box-shadow: 0 2px 0 var(--color-ink); }
-  .sunlit-project-stage--hero .sunlit-ticket-rail button[aria-selected="true"] { background: var(--color-primary); }
   .sunlit-project-stage--hero .sunlit-stage-frame { padding-top: 1.75rem; }
   .sunlit-project-stage--hero .sunlit-project-panel { min-height: 26rem; }
-  .sunlit-project-stage--hero .sunlit-project-panel:not([hidden]) { grid-template-columns: minmax(0, 1.05fr) minmax(12rem, .95fr); gap: 1rem; padding: clamp(1rem, 2.4vw, 1.8rem); }
+  .sunlit-project-stage--hero .sunlit-project-panel:not([hidden]) { grid-template-columns: minmax(0, 1.08fr) minmax(15rem, .92fr); gap: clamp(1rem, 2vw, 1.5rem); padding: clamp(1rem, 2.4vw, 1.8rem); }
   .sunlit-project-stage--hero .sunlit-project-proof figure { height: clamp(14rem, 24vw, 19rem); border-width: 7px; }
   .sunlit-project-stage--hero .sunlit-project-copy h3 { font-size: clamp(1.75rem, 3vw, 2.65rem); }
-  .sunlit-project-stage--hero .sunlit-project-copy p { font-size: .92rem; line-height: 1.4; }
-  .sunlit-project-stage--hero .sunlit-project-copy a { min-height: 2.75rem; padding: 0; border: 0; border-bottom: 2px solid var(--color-ink); border-radius: 0; background: transparent; box-shadow: none; }
-  .sunlit-project-stage--hero .sunlit-ledger-stack { margin: .9rem 0 0; }
-  .sunlit-project-stage--hero .sunlit-proof-ledger > div { grid-template-columns: 1.8rem 1fr; padding: .7rem; }
-  .sunlit-project-stage--hero .sunlit-proof-ledger span { width: 1.55rem; height: 1.55rem; }
-  .sunlit-project-stage--hero .sunlit-proof-ledger p { display: -webkit-box; white-space: normal; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .sunlit-project-stage--hero .sunlit-project-copy p { font-size: .9rem; line-height: 1.42; }
   @media (max-width: 850px) {
     .sunlit-stage-heading { grid-template-columns: 1fr; }
-    .sunlit-stage-layout { grid-template-columns: 1fr; }
-    .sunlit-rail-hint { display: block; margin: 0 0 .4rem; color: var(--color-secondary-ink); font-size: .88rem; font-weight: 700; }
-    .sunlit-ticket-rail { overflow-x: auto; flex-direction: row; justify-content: flex-start; padding: .25rem .15rem .8rem; scroll-snap-type: x proximity; scrollbar-color: var(--color-secondary) transparent; }
-    .sunlit-rail-cable { display: none; }
-    .sunlit-ticket-rail button { min-width: 10rem; scroll-snap-align: start; }
-    .sunlit-ticket-rail button::before { display: none; }
-    .sunlit-ledger-stack { margin-left: 0; }
+    .sunlit-project-dock { grid-template-columns: 4.7rem minmax(0, 1fr) 6.25rem; }
+    .sunlit-rail-controls { grid-template-columns: 2.45rem 1fr 2.45rem; }
+    .sunlit-rail-controls button { width: 2.45rem; }
   }
   @media (max-width: 650px) {
-    .sunlit-stage-frame { padding-top: 1.6rem; }
+    .sunlit-stage-frame { padding-top: 1.35rem; }
+    .sunlit-stage-canopy { right: 4%; left: 4%; height: 3.5rem; }
+    .sunlit-stage-canopy i { display: none; }
+    .sunlit-stage-scene::before, .sunlit-stage-scene::after { display: none; }
     .sunlit-project-panel { min-height: 0; }
-    .sunlit-project-panel:not([hidden]) { grid-template-columns: 1fr; align-content: start; }
-    .sunlit-project-proof figure { height: 13rem; border-width: 7px; }
-    .sunlit-project-copy { align-content: start; gap: .55rem; }
-    .sunlit-project-copy h3 { font-size: clamp(1.8rem, 10vw, 2.7rem); }
-    .sunlit-project-copy p { font-size: .98rem; line-height: 1.42; }
-    .sunlit-project-copy a { min-height: 2.8rem; margin-top: .15rem; }
+    .sunlit-project-panel:not([hidden]), .sunlit-project-stage--hero .sunlit-project-panel:not([hidden]) { grid-template-columns: 1fr; align-content: start; padding: .85rem; }
+    .sunlit-project-proof figure, .sunlit-project-stage--hero .sunlit-project-proof figure { height: 12rem; border-width: 6px; }
+    .sunlit-project-copy { align-content: start; gap: .55rem; padding: .9rem; box-shadow: 4px 4px 0 var(--color-ink); }
+    .sunlit-project-copy h3 { font-size: clamp(1.75rem, 10vw, 2.55rem); }
+    .sunlit-project-dock { grid-template-columns: minmax(0, 1fr) 6.25rem; grid-template-areas: "rail controls" "hint hint"; }
+    .sunlit-rail-meta { display: none; }
+    .sunlit-ticket-rail button { min-width: 9.5rem; min-height: 4.25rem; }
     .sunlit-proof-ledger { grid-template-columns: 1fr; }
     .sunlit-proof-ledger > div { border-right: 0; border-bottom: 1px solid var(--color-rule); }
     .sunlit-proof-ledger > div:last-child { border-bottom: 0; }
-    .sunlit-project-stage--hero .sunlit-project-panel { min-height: 0; }
-    .sunlit-project-stage--hero .sunlit-project-panel:not([hidden]) { grid-template-columns: 1fr; padding: .9rem; }
-    .sunlit-project-stage--hero .sunlit-project-proof figure { height: 11.5rem; }
-    .sunlit-project-stage--hero .sunlit-proof-ledger { grid-template-columns: 1fr; }
   }
   @media (max-width: 360px) {
     .sunlit-project-stage { margin-block: 3.5rem; }
-    .sunlit-project-panel:not([hidden]) { padding: 1rem; }
-    .sunlit-project-proof figure { height: 11.5rem; }
+    .sunlit-project-proof figure { height: 10.8rem; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .sunlit-door, .sunlit-stage-platform, .sunlit-stage-scene, .sunlit-stage-scene::before, .sunlit-stage-scene::after { transition: none; }
+    .sunlit-door, .sunlit-stage-platform, .sunlit-stage-scene, .sunlit-stage-scene::before, .sunlit-stage-scene::after, .sunlit-ticket-rail button::after, .sunlit-rail-progress span { transition: none; }
     [data-stage-state] .sunlit-door-left { transform: translateX(-102%); }
     [data-stage-state] .sunlit-door-right { transform: translateX(102%); }
   }

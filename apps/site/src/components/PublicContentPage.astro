@@ -55,9 +55,9 @@ const labels = locale === "es" ? {
   viewWork: "Ver trabajo",
   viewProject: "Abrir caso",
   publicProof: "Sistema seleccionado",
-  selectedStage: "Software que mueve el trabajo real.",
+  selectedStage: "Software para hacer realidad lo que imaginas.",
   selectedStageIntro: "Elige un proyecto. Las puertas se cierran, cambia el sistema detrás y el mismo escenario vuelve a abrirse.",
-  process: "El resultado se ve. El criterio también.",
+  process: "Los buenos resultados nacen de sistemas claros.",
   workArchive: "Archivo de trabajo",
   workArchiveBody: "Sistemas en producción, productos activos y experiencia enterprise contados por el resultado y las decisiones detrás.",
   evidence: "Enlaces del proyecto",
@@ -65,6 +65,8 @@ const labels = locale === "es" ? {
   source: "Fuente pública",
   role: "Rol",
   constraints: "Restricciones",
+  opportunity: "Oportunidad",
+  considerations: "Consideraciones de diseño",
   related: "Trabajo relacionado",
   profile: "Perfil de entrega",
   experience: "Experiencia",
@@ -74,14 +76,14 @@ const labels = locale === "es" ? {
   download: "Abrir CV en PDF",
   contactRail: "Una conversación concreta empieza con contexto útil.",
   privacyRail: "Datos claros. Límites visibles.",
-  formAside: "Cuéntame qué debe existir, mejorar o volverse confiable.",
+  formAside: "Cuéntame qué te gustaría crear y hacer posible.",
   direct: "Contacto directo",
   verified: "Sistema verificado",
   openLink: "Enlace en vivo",
   casePath: "Ruta del caso",
   architectureNotes: "Notas de operación",
   architectureNotesIntro: "Los seams que mantienen conectada la topología.",
-  caseBeats: ["Resultado", "Rol y sistema", "Decisiones", "Entrega"],
+  caseBeats: ["Oportunidad y resultado", "Rol y sistema", "Decisiones", "Entrega"],
   contactSteps: ["Objetivo", "Contexto", "Respuesta"],
 } : {
   available: "Available for selected projects",
@@ -93,9 +95,9 @@ const labels = locale === "es" ? {
   viewWork: "View work",
   viewProject: "Open case",
   publicProof: "Selected system",
-  selectedStage: "Software that moves real work.",
+  selectedStage: "Software for what you want to make real.",
   selectedStageIntro: "Choose a project. The doors close, the system behind them changes, and the same stage reopens.",
-  process: "The outcome is visible. So is the judgment.",
+  process: "Great outcomes start with clear systems.",
   workArchive: "Work archive",
   workArchiveBody: "Live systems, active products, and enterprise work told through results and the decisions behind them.",
   evidence: "Project links",
@@ -103,6 +105,8 @@ const labels = locale === "es" ? {
   source: "Public source",
   role: "Role",
   constraints: "Constraints",
+  opportunity: "Opportunity",
+  considerations: "Design considerations",
   related: "Related work",
   profile: "Delivery profile",
   experience: "Experience",
@@ -112,14 +116,14 @@ const labels = locale === "es" ? {
   download: "Open resume PDF",
   contactRail: "A useful conversation starts with concrete context.",
   privacyRail: "Clear data. Visible boundaries.",
-  formAside: "Tell me what needs to exist, improve, or become reliable.",
+  formAside: "Tell me what you would like to create and make possible.",
   direct: "Direct contact",
   verified: "Verified system",
   openLink: "Live link",
   casePath: "Case path",
   architectureNotes: "Operating notes",
   architectureNotesIntro: "The seams that keep the topology connected.",
-  caseBeats: ["Outcome", "Role & system", "Decisions", "Delivery"],
+  caseBeats: ["Opportunity & outcome", "Role & system", "Decisions", "Delivery"],
   contactSteps: ["Goal", "Context", "Reply"],
 };
 
@@ -142,9 +146,15 @@ function mediaForContentId(contentId: string, evidenceSrc?: string, evidenceAlt?
 const caseMedia = isCaseStudy && caseStudyContent
   ? mediaForContentId(String(id), caseStudyContent.publicEvidence[0]?.src, caseStudyContent.publicEvidence[0]?.altText)
   : undefined;
+const publicCaseSection = (section: { title: string; body: string }) => {
+  const normalizedTitle = section.title.trim().toLowerCase();
+  if (normalizedTitle === "problem" || normalizedTitle === "problema") return { ...section, title: labels.opportunity };
+  if (normalizedTitle === "constraints" || normalizedTitle === "restricciones") return { ...section, title: labels.considerations };
+  return section;
+};
 const caseNarrativeBeats = caseStudyContent ? [
-  { id: "outcome", title: labels.caseBeats[0], sections: [caseStudyContent.problem, caseStudyContent.businessOutcome] },
-  { id: "role-system", title: labels.caseBeats[1], sections: [caseStudyContent.role, caseStudyContent.constraints] },
+  { id: "outcome", title: labels.caseBeats[0], sections: [publicCaseSection(caseStudyContent.problem), publicCaseSection(caseStudyContent.businessOutcome)] },
+  { id: "role-system", title: labels.caseBeats[1], sections: [publicCaseSection(caseStudyContent.role), publicCaseSection(caseStudyContent.constraints)] },
   { id: "decisions", title: labels.caseBeats[2], sections: [caseStudyContent.architectureDecisions] },
   { id: "delivery", title: labels.caseBeats[3], sections: [caseStudyContent.executionHighlights, caseStudyContent.qualitySecurityPerformance] },
 ] : [];
@@ -288,7 +298,7 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
           <header><span aria-hidden="true">{["↗", "◎", "→"][index]}</span><h2>{service.title}</h2></header>
           <div class="sunlit-service-motif" aria-hidden="true"><span></span><i></i><b></b><em></em></div>
           <div class="sunlit-service-story">
-            <div><strong>{locale === "es" ? "Problema" : "Problem"}</strong><p>{service.problem}</p></div>
+            <div><strong>{locale === "es" ? "Oportunidad" : "Opportunity"}</strong><p>{service.problem}</p></div>
             <div><strong>{locale === "es" ? "Resultado" : "Result"}</strong><p>{service.result}</p></div>
             <div><strong>{locale === "es" ? "Colaboración" : "Engagement"}</strong><p>{service.engagement}</p></div>
           </div>

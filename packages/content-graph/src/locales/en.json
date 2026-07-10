@@ -2,23 +2,23 @@
   "home": {
     "path": "/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Product engineer shaping vivid websites, dependable product systems, and calmer ways for teams to operate and ship.",
-    "seoDescription": "Alejandro Ortiz Corro designs and builds product systems—from expressive customer experiences to dependable workflows, data, and release practices—for teams ready to move real work forward.",
+    "summary": "Product engineer creating vivid websites, ambitious product systems, and modern ways for teams to design, build, and grow.",
+    "seoDescription": "Alejandro Ortiz Corro designs and builds expressive experiences, product systems, data workflows, and AI-augmented engineering practices for teams ready to create what comes next.",
     "primaryActionLabel": "Start a conversation",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "View selected work",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Software that moves real work.",
+      "headline": "Software for what you want to make real.",
       "headlineLines": [
-        "Software that moves",
-        "real work."
+        "Software for what you",
+        "want to make real."
       ],
-      "headlineEmphasisWords": ["real", "work"],
-      "deck": "I design and build product systems that make operations clearer, customer paths simpler, and releases safer.",
+      "headlineEmphasisWords": ["make", "real"],
+      "deck": "I turn ambitious goals into thoughtful interfaces, capable product systems, and an engineering practice amplified by advanced AI.",
       "proofBoardLabel": "AOHYS systems map",
-      "proofBoardTitle": "Product systems that stay operable.",
-      "proofBoardBody": "Interfaces, data, workflows, observability, and releases shaped into one dependable operating model.",
+      "proofBoardTitle": "Ideas shaped into complete product systems.",
+      "proofBoardBody": "Design principles, interfaces, data, cloud operations, AI-assisted development, and releases working as one clear system.",
       "selectedOutcomesHeading": "Selected systems at work.",
       "selectedOutcomesIntro": "Live sites, operational products, enterprise workflows, and the engineering system behind each release.",
       "selectedOutcomes": [
@@ -79,40 +79,44 @@
           }
         }
       ],
-      "architectureHeading": "Architecture is part of the product.",
-      "architectureBody": "Experience, data, edge delivery, communication, observability, and releases each get a clear responsibility—so the system stays understandable after launch.",
+      "architectureHeading": "Craft across the whole product system.",
+      "architectureBody": "From design principles and expressive front ends to backend workflows, SQL data, cloud operations, and advanced AI development, every layer supports the same product goal.",
       "architectureStages": [
         {
-          "label": "Experience",
-        "text": "React, React Native, Astro, and WebGL meet the user where the work happens."
+          "label": "Product design",
+        "text": "Interaction principles, information architecture, accessibility, and visual systems turn an idea into an experience people understand."
         },
         {
-          "label": "Product data",
-        "text": "Convex keeps queries, mutations, auth, and operational workflows reactive and explicit."
+          "label": "Front-end craft",
+        "text": "Responsive interfaces, design systems, performance, motion, and cutting-edge browser capabilities make the experience feel considered."
         },
         {
-          "label": "Delivery",
-        "text": "Cloudflare, protected branches, previews, and smoke checks make releases observable and reversible."
+          "label": "Backend & data",
+        "text": "APIs, auth, business workflows, SQL and PostgreSQL models, and operational dashboards give the product a capable foundation."
+        },
+        {
+          "label": "AI & delivery",
+        "text": "Advanced agent workflows support research, architecture, implementation, testing, cloud operations, and release verification."
         }
       ],
-      "practiceHeading": "Services built around the pressure your team feels.",
-      "practiceBody": "From product systems to modernization and delivery acceleration, each engagement starts with the problem, makes the system legible, and leaves a safer path forward.",
+      "practiceHeading": "Services for the next thing your team wants to achieve.",
+      "practiceBody": "From a new product experience to a stronger architecture or a more capable delivery practice, each collaboration turns a clear objective into software your team can keep improving.",
       "practicePoints": [
         {
           "label": "Product systems",
-        "text": "Design and build the interfaces, workflows, data, and operating model behind the product."
+        "text": "Shape the product idea, interface, workflows, data, and operating model into one coherent experience."
         },
         {
           "label": "Architecture & modernization",
-        "text": "Reduce legacy drag while protecting the flows customers and operators already depend on."
+        "text": "Evolve an existing system with clearer boundaries, modern capabilities, and room for the product to grow."
         },
         {
           "label": "Delivery acceleration",
-        "text": "Make previews, quality gates, observability, and release ownership part of everyday delivery."
+        "text": "Combine advanced AI workflows, previews, quality gates, observability, and cloud operations into everyday delivery."
         }
       ],
-      "contactHeading": "What does your team need to stop improvising?",
-      "contactBody": "Bring the operational pressure, broken workflow, or release that needs a clearer path. We will turn it into the next right system and a practical way to ship it.",
+      "contactHeading": "What would you like your team to create next?",
+      "contactBody": "Share the goal, the people it should serve, and the change you want to make possible. Together we can shape a beautiful product system and a practical path to bring it to life.",
       "emailLabel": "Email Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",
       "whatsappLabel": "WhatsApp",
@@ -238,8 +242,8 @@
       "statusLabel": "Live hospitality site",
       "overview": "Casa Roca is the digital arrival point for a boutique stay in Roca Partida, Veracruz. It helps guests understand the place quickly, decide whether it fits their trip, and contact the business directly.",
       "problem": {
-        "title": "Problem",
-        "body": "The business needed to communicate place, experience, and credibility while giving prospective guests a direct next step."
+        "title": "Opportunity",
+        "body": "Casa Roca had the opportunity to turn its place, experience, and credibility into a clear digital arrival with a direct next step for guests."
       },
       "businessOutcome": {
         "title": "Business outcome",
@@ -250,8 +254,8 @@
         "body": "Product direction, bilingual experience planning, SEO metadata, release verification, performance care, and the complete guest-facing delivery."
       },
       "constraints": {
-        "title": "Constraints",
-        "body": "The experience had to stay fast on uneven travel connections, support two languages, make the location tangible, and keep the path to inquiry unmistakable."
+        "title": "Design considerations",
+        "body": "The experience brings speed, two languages, a tangible sense of place, and an unmistakable path to inquiry together for every guest."
       },
       "architectureDecisions": {
         "title": "Architecture decisions",
@@ -295,8 +299,8 @@
       "statusLabel": "Active build",
       "overview": "The Barber Central is an active product build for service businesses that need booking, availability, customer communication, and payments to feel like one system instead of a pile of tools.",
       "problem": {
-        "title": "Problem",
-        "body": "Local service businesses often run bookings, reminders, staff operations, and payments across disconnected tools, which makes growth harder and creates avoidable manual work."
+        "title": "Opportunity",
+        "body": "Service businesses can bring bookings, reminders, staff operations, and payments into one generous daily workflow that gives growth more room."
       },
       "businessOutcome": {
         "title": "Business outcome",
@@ -307,8 +311,8 @@
         "body": "Product architecture, workflow modeling, full-stack implementation planning, booking flow decisions, payments readiness, customer communication, and quality gates for an active build."
       },
       "constraints": {
-        "title": "Constraints",
-        "body": "Booking logic, staff availability, reminders, payments, and customer communication need to evolve together without making the daily workflow harder to operate."
+        "title": "Design considerations",
+        "body": "Booking logic, staff availability, reminders, payments, and customer communication evolve together around the rhythm of the day."
       },
       "architectureDecisions": {
         "title": "Architecture decisions",
@@ -352,8 +356,8 @@
       "statusLabel": "Product system",
       "overview": "Nutri Plan connects nutrition workflows, dashboards, mobile access, educational content, and operational clarity across several product surfaces.",
       "problem": {
-        "title": "Problem",
-        "body": "Nutrition operations need connected client records, plans, dashboards, and mobile experiences, but the domain becomes fragile when workflow state is split across unrelated tools."
+        "title": "Opportunity",
+        "body": "Nutrition teams can connect client records, plans, dashboards, and mobile experiences through one shared product model."
       },
       "businessOutcome": {
         "title": "Business outcome",
@@ -364,8 +368,8 @@
         "body": "Product workflow architecture, dashboard planning, backend state modeling, mobile coordination, quality practice, and release discipline."
       },
       "constraints": {
-        "title": "Constraints",
-        "body": "Health-related records require careful access boundaries, consistent workflow state, clear roles, and releases that do not interrupt ongoing client work."
+        "title": "Design considerations",
+        "body": "Health-related records call for thoughtful access boundaries, consistent workflow state, clear roles, and releases that respect ongoing client work."
       },
       "architectureDecisions": {
         "title": "Architecture decisions",
@@ -409,8 +413,8 @@
       "statusLabel": "Enterprise systems",
       "overview": "Complex product and backend work across escalations, payment plans, cashback, customs workflows, integrations, and reliability inside large operational environments.",
       "problem": {
-        "title": "Problem",
-        "body": "Large systems accumulate operational edge cases, integration pressure, and support escalations where the cost of unclear ownership is high."
+        "title": "Opportunity",
+        "body": "Large systems create meaningful opportunities when ownership, integrations, operational workflows, and support paths are made visible."
       },
       "businessOutcome": {
         "title": "Business outcome",
@@ -421,8 +425,8 @@
         "body": "Backend delivery, escalation leadership, payment-plan and cashback work, customs workflow implementation, cross-team coordination, and production-minded problem solving."
       },
       "constraints": {
-        "title": "Operating constraints",
-        "body": "Scale, integration risk, data sensitivity, cross-team ownership, and production continuity shaped every decision."
+        "title": "Operating considerations",
+        "body": "Scale, integration design, data sensitivity, cross-team ownership, and production continuity shaped every decision."
       },
       "architectureDecisions": {
         "title": "Architecture decisions",
@@ -466,8 +470,8 @@
       "statusLabel": "Engineering practice",
       "overview": "Engineering Practice is the operating system behind the work: structured discovery, TDD, agent-assisted implementation, browser QA, release discipline, observability, and documentation.",
       "problem": {
-        "title": "Problem",
-        "body": "Modern software work moves quickly, but speed without architecture, tests, review, and production checks produces fragile systems and expensive surprises."
+        "title": "Opportunity",
+        "body": "Modern software work moves quickly; strong architecture, tests, review, and production checks turn that energy into confident momentum."
       },
       "businessOutcome": {
         "title": "Business outcome",
@@ -478,8 +482,8 @@
         "body": "Technical planning, architecture review, TDD flow, agent orchestration, browser QA, release train discipline, source-quality checks, and documentation as part of delivery."
       },
       "constraints": {
-        "title": "Constraints",
-        "body": "Automation should increase useful feedback without hiding ownership, weakening review, or reducing delivery quality to tool choice."
+        "title": "Design considerations",
+        "body": "Automation should expand useful feedback while keeping ownership visible, review thoughtful, and delivery quality grounded in judgment."
       },
       "architectureDecisions": {
         "title": "Architecture decisions",
@@ -512,48 +516,48 @@
   },
   "practice": {
     "path": "/practice",
-    "title": "Services for product systems that need to work.",
-    "summary": "Product systems, architecture modernization, and delivery acceleration shaped around the pressure your team needs to resolve.",
-    "seoDescription": "AOHYS services cover product systems, architecture modernization, and delivery acceleration for teams building dependable software.",
+    "title": "Services for product systems ready to grow.",
+    "summary": "Product systems, architecture evolution, and AI-augmented delivery shaped around what your team wants to achieve next.",
+    "seoDescription": "AOHYS services cover product systems, architecture evolution, data, cloud operations, and AI-augmented delivery for teams building ambitious software.",
     "primaryActionLabel": "Start a conversation",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "See the architecture",
     "secondaryActionContentId": "architecture",
     "practiceContent": {
-      "heading": "Product engineering services for systems that need to work.",
-      "deck": "Bring the workflow that keeps breaking, the product that has outgrown its structure, or the release path that feels riskier than it should. We turn that pressure into a system your team can understand and operate.",
+      "heading": "Product engineering for ideas ready to become real.",
+      "deck": "Bring a new product goal, an experience ready to evolve, or a delivery practice you want to amplify. We shape it into a system your team can understand, operate, and keep improving.",
       "services": [
         {
           "id": "product-systems",
           "title": "Product systems",
-          "problem": "Customer and operational work is scattered across screens, spreadsheets, manual handoffs, and unclear ownership.",
-          "result": "A coherent product system with a clear customer path, dependable workflows, and data the team can act on.",
+          "problem": "You want customer experience, operations, data, and business goals to feel like one product instead of separate initiatives.",
+          "result": "A coherent product system with a thoughtful customer path, capable workflows, and data the team can act on.",
           "engagement": "A focused build or a staged product engagement, from system mapping through production delivery.",
           "deliverables": ["Product and workflow map", "Production interface and data flows", "Operational handoff and release plan"]
         },
         {
           "id": "architecture-modernization",
           "title": "Architecture & modernization",
-          "problem": "Legacy decisions, performance bottlenecks, or fragile integrations make each change slower and more dangerous.",
-          "result": "A modernized path that protects critical behavior while making the system faster to understand, change, and scale.",
+          "problem": "You want an existing product to gain modern capabilities, clearer boundaries, stronger performance, and room to expand.",
+          "result": "An evolved architecture that preserves valuable behavior while making the system easier to understand, change, and scale.",
           "engagement": "Architecture review, modernization plan, or hands-on migration around the highest-leverage boundary.",
-          "deliverables": ["Current-state and risk map", "Target architecture with tradeoffs", "Incremental migration and verification"]
+          "deliverables": ["Current-state and opportunity map", "Target architecture with tradeoffs", "Incremental evolution and verification"]
         },
         {
           "id": "delivery-acceleration",
           "title": "Delivery acceleration",
-          "problem": "The team can build features, but previews, QA, observability, and production releases still depend on heroics.",
-          "result": "A visible delivery system with earlier feedback, safer releases, and clearer ownership when something fails.",
-          "engagement": "A delivery diagnostic followed by targeted implementation across quality gates, environments, and release operations.",
-          "deliverables": ["Delivery bottleneck map", "Preview and quality-gate implementation", "Observability and release runbook"]
+          "problem": "You want advanced AI, previews, QA, observability, and cloud operations to expand what the team can deliver with confidence.",
+          "result": "A visible, AI-augmented delivery system with faster feedback, reliable releases, and more space for creative product work.",
+          "engagement": "A delivery capability review followed by targeted implementation across agent workflows, quality gates, environments, and release operations.",
+          "deliverables": ["Delivery capability map", "AI workflow, preview, and quality-gate implementation", "Observability and release playbook"]
         }
       ],
-      "processHeading": "A small, visible path from pressure to progress.",
+      "processHeading": "A clear path from intention to momentum.",
       "process": [
-        {"label": "Frame", "text": "Name the business pressure, the people affected, and the outcome worth changing."},
-        {"label": "Map", "text": "Make flows, data, boundaries, risks, and tradeoffs visible before they become rework."},
+        {"label": "Frame", "text": "Name the goal, the people it should serve, and the change worth creating."},
+        {"label": "Map", "text": "Make flows, data, boundaries, opportunities, and tradeoffs visible before building."},
         {"label": "Build", "text": "Ship the smallest complete system slice with real states, instrumentation, and release checks."},
-        {"label": "Transfer", "text": "Leave the team with an operable system, decisions they can explain, and a next safe step."}
+        {"label": "Grow", "text": "Leave the team with an operable system, decisions they can explain, and a confident next step."}
       ],
       "deliverablesHeading": "What the engagement leaves behind.",
       "deliverables": ["A shared system map", "Working product increments", "Architecture and decision records", "Quality, observability, and release checks", "A practical operating handoff"],
@@ -564,24 +568,24 @@
   "architecture": {
     "path": "/architecture",
     "title": "Architecture",
-    "summary": "The engineering decisions behind experience, data, edge delivery, communication, observability, and releases.",
-    "seoDescription": "Architecture notes for Alejandro Ortiz Corro's product systems: Astro and React experiences, Cloudflare delivery, Convex workflows, Resend communication, PostHog observability, and release checks.",
+    "summary": "The engineering craft behind product design, front ends, backend and SQL data, AI workflows, cloud operations, and delivery.",
+    "seoDescription": "Architecture notes for Alejandro Ortiz Corro's product systems: design principles, modern front ends, backend and PostgreSQL data, AI-augmented engineering, cloud operations, observability, and releases.",
     "primaryActionLabel": "Review selected work",
     "primaryActionContentId": "case-studies",
     "secondaryActionLabel": "Start a conversation",
     "secondaryActionContentId": "contact",
     "architectureContent": {
-      "heading": "Architecture that stays operable after launch.",
-      "deck": "A product stays dependable when experience, data, edge delivery, communication, observability, and release controls have clear responsibilities.",
+      "heading": "Architecture that gives ideas room to grow.",
+      "deck": "A complete product connects design principles, front-end craft, backend and SQL data, AI-assisted development, cloud operations, and delivery into one understandable system.",
       "systemHeading": "One system, six responsibilities.",
-      "systemBody": "Each layer has a job, an owner, and a visible connection to the next. The goal is not more technology; it is fewer hidden assumptions.",
+      "systemBody": "Each layer has a purpose, an owner, and a visible connection to the next. The goal is not more brand names; it is more capability working toward the product vision.",
       "layers": [
-        {"id": "experience", "label": "Experience", "body": "Interfaces that meet customers and operators where the work happens.", "technologies": ["React", "React Native", "Astro", "WebGL"]},
-        {"id": "edge", "label": "Edge delivery", "body": "Fast public delivery, media handling, and server-side boundaries close to the user.", "technologies": ["Cloudflare Pages", "Workers", "Images", "R2"]},
-        {"id": "product-data", "label": "Product data", "body": "Reactive application state with explicit auth, queries, mutations, and workflows.", "technologies": ["Convex", "Auth", "Queries", "Mutations", "Workflows"]},
-        {"id": "communication", "label": "Communication", "body": "Transactional messages and provider integrations that fail visibly.", "technologies": ["Resend", "Provider integrations"]},
-        {"id": "observability", "label": "Observability", "body": "Signals that explain behavior before a customer has to report it.", "technologies": ["PostHog", "Error capture", "CSP reports", "Structured logs", "Health checks"]},
-        {"id": "delivery", "label": "Delivery", "body": "A release path that separates review, preview, promotion, and verification.", "technologies": ["GitHub", "Preview environments", "Protected branches", "Smoke verification"]}
+        {"id": "experience", "label": "Product design", "body": "Principles, information architecture, interaction, accessibility, and visual systems that make the product feel intentional.", "technologies": ["Design principles", "Interaction", "Accessibility", "Design systems"]},
+        {"id": "edge", "label": "Front-end systems", "body": "Responsive interfaces with strong performance, motion, browser capabilities, and maintainable component architecture.", "technologies": ["Semantic web", "Component architecture", "WebGL", "Performance"]},
+        {"id": "product-data", "label": "Backend & data", "body": "Business workflows, APIs, auth, SQL and PostgreSQL models, and operational dashboards built around clear data ownership.", "technologies": ["APIs", "SQL & PostgreSQL", "Data modeling", "Database dashboards", "Auth"]},
+        {"id": "communication", "label": "AI engineering", "body": "Advanced agent workflows that support research, architecture, implementation, code review, testing, and documentation.", "technologies": ["Agent orchestration", "Context engineering", "AI-assisted architecture", "AI code review"]},
+        {"id": "observability", "label": "Quality & insight", "body": "Tests, analytics, logs, error signals, and health checks that make product behavior visible and improvable.", "technologies": ["TDD", "Browser QA", "Analytics", "Structured logs", "Health checks"]},
+        {"id": "delivery", "label": "Cloud delivery", "body": "Cloud dashboards, edge deployment, media pipelines, previews, promotion, and verification working as one release practice.", "technologies": ["Cloud operations", "Edge delivery", "Preview environments", "Media pipelines", "Release verification"]}
       ],
       "tradeoffsHeading": "Architecture is a sequence of tradeoffs.",
       "tradeoffs": [
@@ -655,7 +659,7 @@
       "name": "Alejandro Ortiz Corro",
       "role": "Senior Product Engineer / Frontend Systems",
       "location": "Mexico",
-      "intro": "I build software that has to hold together after launch: product judgment, interface quality, backend workflows, release discipline, and AI-assisted delivery.",
+      "intro": "I turn product intent into beautiful interfaces, capable backend systems, thoughtful data models, and delivery practices amplified by advanced AI.",
       "pdf": {
         "label": "Open resume PDF",
         "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
@@ -664,8 +668,8 @@
       },
       "proof": {
         "label": "Selected results",
-        "title": "9+ years shipping product systems that stay reliable after launch.",
-        "body": "The work spans high-traffic commerce, operational products, modernization, performance, public sites, and the release systems that keep them dependable."
+        "title": "9+ years building product systems that keep creating value after launch.",
+        "body": "The work spans high-traffic commerce, operational products, modern interfaces, public sites, and the delivery systems that help teams keep improving."
       },
       "contactLinks": [
         {
@@ -848,27 +852,31 @@
           ]
         }
       ],
-      "skillsTitle": "Technical skills",
+      "skillsTitle": "Core technologies & capabilities",
       "skills": [
         {
-          "label": "Frontend",
-          "items": ["React", "TypeScript", "JavaScript", "Redux", "Redux Saga", "HTML5", "CSS3", "Accessibility"]
+          "label": "Product design principles",
+          "items": ["Information architecture", "Interaction systems", "Accessibility", "Visual systems", "Content structure"]
         },
         {
-          "label": "Full-stack and backend",
-          "items": ["Next.js", "Node.js", "Java working knowledge", "API workflows", "Operational backends"]
+          "label": "Front-end systems",
+          "items": ["Responsive interfaces", "React & TypeScript", "Component architecture", "Performance", "Motion & WebGL"]
         },
         {
-          "label": "Testing and quality",
-          "items": ["TDD", "Cypress", "Jest", "React Testing Library", "Vitest", "Browser QA", "CI/CD"]
+          "label": "Back-end, SQL & data",
+          "items": ["API design", "Domain workflows", "SQL & PostgreSQL", "Data modeling", "Database dashboards"]
         },
         {
-          "label": "Product and delivery",
-          "items": ["Performance optimization", "SEO", "Server-side rendering", "Agile/Scrum", "Release discipline", "Observability"]
+          "label": "Cloud & operations",
+          "items": ["AWS dashboards", "Edge delivery", "Cloudflare & Vercel operations", "Media pipelines", "Observability"]
         },
         {
-          "label": "Modern AI practice",
-          "items": ["Agent-assisted development", "LLM workflows", "Prompted implementation review", "AI-assisted QA"]
+          "label": "Quality & delivery",
+          "items": ["TDD", "Browser QA", "CI/CD", "Release verification", "Documentation"]
+        },
+        {
+          "label": "AI-augmented engineering",
+          "items": ["Agent orchestration", "Context engineering", "AI-assisted architecture", "Implementation review", "AI-assisted QA"]
         }
       ],
       "educationTitle": "Education",

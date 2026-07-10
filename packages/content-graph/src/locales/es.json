@@ -2,23 +2,23 @@
   "home": {
     "path": "/es/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Ingeniero de producto que crea sitios vívidos, sistemas confiables y maneras más tranquilas de operar y lanzar software.",
-    "seoDescription": "Alejandro Ortiz Corro diseña y construye sistemas de producto: experiencias expresivas para clientes, workflows confiables, datos y prácticas de release para equipos que quieren mover el trabajo real.",
+    "summary": "Ingeniero de producto que crea sitios vivos, sistemas ambiciosos y formas modernas de diseñar, construir y crecer.",
+    "seoDescription": "Alejandro Ortiz Corro diseña y construye experiencias expresivas, sistemas de producto, flujos de datos y prácticas de ingeniería aumentadas con IA para equipos que quieren crear lo que sigue.",
     "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Software que mueve el trabajo real.",
+      "headline": "Software para hacer realidad lo que imaginas.",
       "headlineLines": [
-        "Software que mueve",
-        "el trabajo real."
+        "Software para hacer realidad",
+        "lo que imaginas."
       ],
-      "headlineEmphasisWords": ["trabajo", "real"],
-      "deck": "Diseño y construyo sistemas de producto que hacen más claras las operaciones, más simples los caminos del cliente y más seguros los releases.",
+      "headlineEmphasisWords": ["realidad", "imaginas"],
+      "deck": "Convierto objetivos ambiciosos en interfaces cuidadas, sistemas de producto capaces y una práctica de ingeniería amplificada por IA avanzada.",
       "proofBoardLabel": "Mapa de sistemas AOHYS",
-      "proofBoardTitle": "Sistemas de producto que siguen siendo operables.",
-      "proofBoardBody": "Interfaces, datos, workflows, observabilidad y releases convertidos en un modelo operativo confiable.",
+      "proofBoardTitle": "Ideas convertidas en sistemas de producto completos.",
+      "proofBoardBody": "Principios de diseño, interfaces, datos, operaciones cloud, desarrollo asistido por IA y releases trabajando como un sistema claro.",
       "selectedOutcomesHeading": "Sistemas seleccionados en acción.",
       "selectedOutcomesIntro": "Sitios en producción, productos operativos, workflows enterprise y el sistema de ingeniería detrás de cada release.",
       "selectedOutcomes": [
@@ -79,40 +79,44 @@
           }
         }
       ],
-      "architectureHeading": "La arquitectura es parte del producto.",
-      "architectureBody": "Experiencia, datos, edge delivery, comunicación, observabilidad y releases tienen una responsabilidad clara para que el sistema siga siendo entendible después del lanzamiento.",
+      "architectureHeading": "Cuidado en todo el sistema de producto.",
+      "architectureBody": "Desde principios de diseño y front ends expresivos hasta workflows backend, datos SQL, operación cloud y desarrollo avanzado con IA, cada capa impulsa el mismo objetivo de producto.",
       "architectureStages": [
         {
-          "label": "Experiencia",
-        "text": "React, React Native, Astro y WebGL llegan al usuario donde ocurre el trabajo."
+          "label": "Diseño de producto",
+        "text": "Principios de interacción, arquitectura de información, accesibilidad y sistemas visuales convierten una idea en una experiencia que se entiende."
         },
         {
-          "label": "Datos de producto",
-        "text": "Convex mantiene queries, mutations, auth y workflows operativos reactivos y explícitos."
+          "label": "Calidad front-end",
+        "text": "Interfaces responsivas, sistemas de diseño, performance, movimiento y capacidades modernas del navegador hacen que la experiencia se sienta cuidada."
         },
         {
-          "label": "Entrega",
-        "text": "Cloudflare, ramas protegidas, previews y smoke checks hacen que los releases sean visibles y reversibles."
+          "label": "Backend y datos",
+        "text": "APIs, auth, workflows de negocio, modelos SQL y PostgreSQL, y dashboards operativos dan al producto una base capaz."
+        },
+        {
+          "label": "IA y delivery",
+        "text": "Workflows avanzados con agentes apoyan investigación, arquitectura, implementación, pruebas, operación cloud y verificación de releases."
         }
       ],
-      "practiceHeading": "Servicios construidos alrededor de la presión que siente tu equipo.",
-      "practiceBody": "Desde sistemas de producto hasta modernización y aceleración de delivery: cada colaboración empieza por el problema, hace legible el sistema y deja una ruta más segura.",
+      "practiceHeading": "Servicios para lo siguiente que tu equipo quiere lograr.",
+      "practiceBody": "Desde una nueva experiencia de producto hasta una arquitectura más capaz o una mejor práctica de delivery, cada colaboración convierte un objetivo claro en software que tu equipo puede seguir mejorando.",
       "practicePoints": [
         {
           "label": "Sistemas de producto",
-        "text": "Diseñar y construir las interfaces, workflows, datos y modelo operativo detrás del producto."
+        "text": "Dar forma a la idea, interfaz, workflows, datos y modelo operativo como una experiencia coherente."
         },
         {
           "label": "Arquitectura y modernización",
-          "text": "Reducir la fricción legacy sin romper los flujos de los que dependen clientes y operadores."
+        "text": "Evolucionar un sistema existente con límites más claros, capacidades modernas y espacio para crecer."
         },
         {
           "label": "Aceleración de delivery",
-        "text": "Convertir previews, quality gates, observabilidad y ownership de releases en parte del trabajo diario."
+        "text": "Integrar IA avanzada, previews, quality gates, observabilidad y operación cloud al trabajo diario."
         }
       ],
-      "contactHeading": "¿Qué necesita dejar de improvisar tu equipo?",
-      "contactBody": "Trae la presión operativa, el workflow roto o el release que necesita una ruta más clara. Lo convertiremos en el sistema correcto y una forma práctica de lanzarlo.",
+      "contactHeading": "¿Qué te gustaría que tu equipo creara después?",
+      "contactBody": "Comparte el objetivo, las personas a quienes debe servir y el cambio que quieres hacer posible. Juntos podemos darle forma a un sistema de producto hermoso y a una ruta práctica para hacerlo realidad.",
       "emailLabel": "Escribir a Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",
       "whatsappLabel": "WhatsApp",
@@ -238,8 +242,8 @@
       "statusLabel": "Sitio de hospitalidad en vivo",
       "overview": "Casa Roca es el punto de llegada digital de una estancia boutique en Roca Partida, Veracruz. Ayuda a que los huéspedes entiendan rápido el lugar, decidan si encaja con su viaje y contacten al negocio directamente.",
       "problem": {
-        "title": "Problema",
-        "body": "El negocio necesitaba comunicar lugar, experiencia y credibilidad mientras daba a los futuros huéspedes un siguiente paso directo."
+        "title": "Oportunidad",
+        "body": "Casa Roca tenía la oportunidad de convertir su lugar, experiencia y credibilidad en una llegada digital clara, con un siguiente paso directo para sus huéspedes."
       },
       "businessOutcome": {
         "title": "Resultado de negocio",
@@ -250,8 +254,8 @@
         "body": "Dirección de producto, planeación de experiencia bilingüe, metadata SEO, verificación de release, rendimiento y entrega completa del camino del huésped."
       },
       "constraints": {
-        "title": "Restricciones",
-        "body": "La experiencia tenía que ser rápida en conexiones irregulares, funcionar en dos idiomas, volver tangible el lugar y mantener clarísimo el camino a contacto."
+        "title": "Consideraciones de diseño",
+        "body": "La experiencia reúne velocidad, dos idiomas, una sensación tangible del lugar y un camino claro al contacto para cada huésped."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
@@ -295,8 +299,8 @@
       "statusLabel": "Build activo",
       "overview": "The Barber Central es un producto activo para negocios de servicios que necesitan reservas, disponibilidad, comunicación con clientes y pagos sintiéndose como un solo sistema, no como herramientas pegadas.",
       "problem": {
-        "title": "Problema",
-        "body": "Los negocios locales de servicios suelen manejar reservas, recordatorios, personal y pagos en herramientas desconectadas, lo que complica crecer y crea trabajo manual evitable."
+        "title": "Oportunidad",
+        "body": "Los negocios de servicios pueden reunir reservas, recordatorios, personal y pagos en un solo workflow diario que dé más espacio al crecimiento."
       },
       "businessOutcome": {
         "title": "Resultado de negocio",
@@ -307,8 +311,8 @@
         "body": "Arquitectura de producto, modelado de workflows, planeación full-stack, decisiones de booking, preparación para pagos, comunicación con clientes y quality gates para un build activo."
       },
       "constraints": {
-        "title": "Restricciones",
-        "body": "La lógica de reservas, disponibilidad del equipo, recordatorios, pagos y comunicación deben evolucionar juntas sin complicar el workflow diario."
+        "title": "Consideraciones de diseño",
+        "body": "La lógica de reservas, disponibilidad del equipo, recordatorios, pagos y comunicación evolucionan juntas alrededor del ritmo del día."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
@@ -352,8 +356,8 @@
       "statusLabel": "Sistema de producto",
       "overview": "Nutri Plan conecta workflows de nutrición, dashboards, acceso móvil, contenido educativo y claridad operativa entre varias superficies de producto.",
       "problem": {
-        "title": "Problema",
-        "body": "Las operaciones de nutrición necesitan expedientes, planes, dashboards y experiencias móviles conectadas, pero el dominio se vuelve frágil cuando el estado vive en herramientas separadas."
+        "title": "Oportunidad",
+        "body": "Los equipos de nutrición pueden conectar expedientes, planes, dashboards y experiencias móviles mediante un modelo compartido de producto."
       },
       "businessOutcome": {
         "title": "Resultado de negocio",
@@ -364,8 +368,8 @@
         "body": "Arquitectura de workflows de producto, planeación de dashboards, modelado de estado backend, coordinación móvil, práctica de calidad y disciplina de release."
       },
       "constraints": {
-        "title": "Restricciones",
-        "body": "Los registros relacionados con salud requieren límites de acceso cuidadosos, estado consistente, roles claros y releases que no interrumpan el trabajo con clientes."
+        "title": "Consideraciones de diseño",
+        "body": "Los registros relacionados con salud piden límites de acceso cuidadosos, estado consistente, roles claros y releases que respeten el trabajo con clientes."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
@@ -409,8 +413,8 @@
       "statusLabel": "Sistemas enterprise",
       "overview": "Trabajo complejo de producto y backend en escalations, payment plans, cashback, customs workflows, integraciones y confiabilidad dentro de ambientes operativos grandes.",
       "problem": {
-        "title": "Problema",
-        "body": "Los sistemas grandes acumulan edge cases operativos, presión de integraciones y escalations de soporte donde la falta de ownership claro cuesta caro."
+        "title": "Oportunidad",
+        "body": "Los sistemas grandes abren oportunidades valiosas cuando ownership, integraciones, workflows operativos y caminos de soporte se vuelven visibles."
       },
       "businessOutcome": {
         "title": "Resultado de negocio",
@@ -421,8 +425,8 @@
         "body": "Backend delivery, liderazgo en escalations, trabajo en payment plans y cashback, implementación de customs workflows, coordinación entre equipos y resolución con mentalidad de producción."
       },
       "constraints": {
-        "title": "Restricciones operativas",
-        "body": "Escala, riesgo de integración, sensibilidad de datos, ownership entre equipos y continuidad de producción dieron forma a cada decisión."
+        "title": "Consideraciones operativas",
+        "body": "Escala, diseño de integraciones, sensibilidad de datos, ownership entre equipos y continuidad de producción dieron forma a cada decisión."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
@@ -466,8 +470,8 @@
       "statusLabel": "Práctica de ingeniería",
       "overview": "La práctica de ingeniería es el sistema operativo detrás del trabajo: discovery estructurado, TDD, implementación con agentes, browser QA, release discipline, observabilidad y documentación.",
       "problem": {
-        "title": "Problema",
-        "body": "El software moderno se mueve rápido, pero velocidad sin arquitectura, pruebas, revisión y checks de producción produce sistemas frágiles y sorpresas costosas."
+        "title": "Oportunidad",
+        "body": "El software moderno se mueve rápido; arquitectura, pruebas, revisión y checks de producción convierten esa energía en impulso con confianza."
       },
       "businessOutcome": {
         "title": "Resultado de negocio",
@@ -478,8 +482,8 @@
         "body": "Planeación técnica, revisión de arquitectura, flujo TDD, orquestación de agentes, browser QA, disciplina de release train, source-quality checks y documentación como parte del delivery."
       },
       "constraints": {
-        "title": "Restricciones",
-        "body": "La automatización debe aumentar el feedback útil sin esconder ownership, debilitar la revisión ni reducir la calidad a elección de herramientas."
+        "title": "Consideraciones de diseño",
+        "body": "La automatización debe ampliar el feedback útil, mantener visible el ownership y cuidar la revisión y el criterio de entrega."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
@@ -512,48 +516,48 @@
   },
   "practice": {
     "path": "/es/practica",
-    "title": "Servicios para sistemas de producto que tienen que funcionar.",
-    "summary": "Sistemas de producto, modernización de arquitectura y aceleración de delivery alrededor de la presión que tu equipo necesita resolver.",
-    "seoDescription": "Los servicios AOHYS cubren sistemas de producto, modernización de arquitectura y aceleración de delivery para equipos que construyen software confiable.",
+    "title": "Servicios para sistemas de producto listos para crecer.",
+    "summary": "Sistemas de producto, evolución de arquitectura y delivery aumentado con IA alrededor de lo que tu equipo quiere lograr después.",
+    "seoDescription": "Los servicios AOHYS cubren sistemas de producto, evolución de arquitectura, datos, operación cloud y delivery aumentado con IA para equipos que construyen software ambicioso.",
     "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver la arquitectura",
     "secondaryActionContentId": "architecture",
     "practiceContent": {
-      "heading": "Servicios de ingeniería para sistemas de producto que tienen que funcionar.",
-      "deck": "Trae el workflow que se rompe, el producto que ya superó su estructura o la ruta de release que se siente más riesgosa de lo necesario. Convertimos esa presión en un sistema que tu equipo puede entender y operar.",
+      "heading": "Ingeniería de producto para ideas listas para hacerse realidad.",
+      "deck": "Trae un nuevo objetivo de producto, una experiencia lista para evolucionar o una práctica de delivery que quieres amplificar. Le damos forma como un sistema que tu equipo puede entender, operar y seguir mejorando.",
       "services": [
         {
           "id": "product-systems",
           "title": "Sistemas de producto",
-          "problem": "El trabajo del cliente y la operación está disperso entre pantallas, hojas de cálculo, handoffs manuales y ownership poco claro.",
-          "result": "Un sistema de producto coherente, con un camino claro para el cliente, workflows confiables y datos que el equipo puede usar.",
+          "problem": "Quieres que la experiencia del cliente, la operación, los datos y los objetivos de negocio se sientan como un solo producto.",
+          "result": "Un sistema coherente con un camino cuidado para el cliente, workflows capaces y datos que el equipo puede usar.",
           "engagement": "Un build enfocado o una colaboración por etapas, desde el mapa del sistema hasta la entrega en producción.",
           "deliverables": ["Mapa de producto y workflows", "Interfaz y flujos de datos en producción", "Handoff operativo y plan de release"]
         },
         {
           "id": "architecture-modernization",
           "title": "Arquitectura y modernización",
-          "problem": "Decisiones legacy, cuellos de rendimiento o integraciones frágiles hacen que cada cambio sea más lento y peligroso.",
-          "result": "Una ruta modernizada que protege el comportamiento crítico y vuelve el sistema más fácil de entender, cambiar y escalar.",
+          "problem": "Quieres que un producto existente gane capacidades modernas, límites más claros, mejor performance y espacio para expandirse.",
+          "result": "Una arquitectura evolucionada que conserva el valor existente y vuelve el sistema más fácil de entender, cambiar y escalar.",
           "engagement": "Revisión de arquitectura, plan de modernización o migración práctica alrededor del límite con mayor impacto.",
-          "deliverables": ["Mapa de estado actual y riesgos", "Arquitectura objetivo con tradeoffs", "Migración incremental y verificación"]
+          "deliverables": ["Mapa de estado actual y oportunidades", "Arquitectura objetivo con tradeoffs", "Evolución incremental y verificación"]
         },
         {
           "id": "delivery-acceleration",
           "title": "Aceleración de delivery",
-          "problem": "El equipo puede construir features, pero previews, QA, observabilidad y releases todavía dependen de heroísmo.",
-          "result": "Un sistema de entrega visible, con feedback temprano, releases más seguros y ownership claro cuando algo falla.",
-          "engagement": "Un diagnóstico de delivery seguido de implementación enfocada en quality gates, ambientes y operación de releases.",
-          "deliverables": ["Mapa de cuellos de delivery", "Implementación de previews y quality gates", "Observabilidad y runbook de release"]
+          "problem": "Quieres que la IA avanzada, previews, QA, observabilidad y operación cloud amplíen lo que el equipo puede entregar con confianza.",
+          "result": "Un sistema de delivery visible y aumentado con IA, con feedback más rápido, releases confiables y más espacio para el trabajo creativo de producto.",
+          "engagement": "Una revisión de capacidades seguida de implementación enfocada en agentes, quality gates, ambientes y operación de releases.",
+          "deliverables": ["Mapa de capacidades de delivery", "Implementación de workflows con IA, previews y quality gates", "Observabilidad y playbook de release"]
         }
       ],
-      "processHeading": "Una ruta pequeña y visible de la presión al progreso.",
+      "processHeading": "Una ruta clara de la intención al impulso.",
       "process": [
-        {"label": "Enmarcar", "text": "Nombrar la presión de negocio, las personas afectadas y el resultado que vale la pena cambiar."},
-        {"label": "Mapear", "text": "Hacer visibles flujos, datos, límites, riesgos y tradeoffs antes de que se conviertan en retrabajo."},
+        {"label": "Enmarcar", "text": "Nombrar el objetivo, las personas a quienes debe servir y el cambio que vale la pena crear."},
+        {"label": "Mapear", "text": "Hacer visibles flujos, datos, límites, oportunidades y tradeoffs antes de construir."},
         {"label": "Construir", "text": "Lanzar la porción completa más pequeña, con estados reales, instrumentación y checks de release."},
-        {"label": "Transferir", "text": "Dejar un sistema operable, decisiones que el equipo puede explicar y un siguiente paso seguro."}
+        {"label": "Crecer", "text": "Dejar un sistema operable, decisiones que el equipo puede explicar y un siguiente paso con confianza."}
       ],
       "deliverablesHeading": "Lo que queda al terminar la colaboración.",
       "deliverables": ["Un mapa compartido del sistema", "Incrementos de producto funcionando", "Registros de arquitectura y decisiones", "Checks de calidad, observabilidad y release", "Un handoff operativo y práctico"],
@@ -564,24 +568,24 @@
   "architecture": {
     "path": "/es/arquitectura",
     "title": "Arquitectura",
-    "summary": "Las decisiones de ingeniería detrás de experiencia, datos, edge delivery, comunicación, observabilidad y releases.",
-    "seoDescription": "Notas de arquitectura de los sistemas de producto de Alejandro Ortiz Corro: experiencias con Astro y React, Cloudflare, workflows en Convex, comunicación con Resend, observabilidad con PostHog y checks de release.",
+    "summary": "El oficio de ingeniería detrás de diseño de producto, front end, backend y datos SQL, workflows de IA, operación cloud y delivery.",
+    "seoDescription": "Notas de arquitectura de Alejandro Ortiz Corro: principios de diseño, front ends modernos, backend y PostgreSQL, ingeniería aumentada con IA, operación cloud, observabilidad y releases.",
     "primaryActionLabel": "Revisar trabajo",
     "primaryActionContentId": "case-studies",
     "secondaryActionLabel": "Iniciar conversación",
     "secondaryActionContentId": "contact",
     "architectureContent": {
-      "heading": "Arquitectura que sigue siendo operable después del lanzamiento.",
-      "deck": "Un producto se mantiene confiable cuando experiencia, datos, edge delivery, comunicación, observabilidad y controles de release tienen responsabilidades claras.",
+      "heading": "Arquitectura que da espacio para crecer.",
+      "deck": "Un producto completo conecta principios de diseño, calidad front-end, backend y datos SQL, desarrollo asistido por IA, operación cloud y delivery como un sistema entendible.",
       "systemHeading": "Un sistema, seis responsabilidades.",
-      "systemBody": "Cada capa tiene un trabajo, un owner y una conexión visible con la siguiente. La meta no es sumar tecnología: es reducir supuestos ocultos.",
+      "systemBody": "Cada capa tiene un propósito, un owner y una conexión visible con la siguiente. La meta no es sumar marcas: es sumar capacidades trabajando hacia la visión del producto.",
       "layers": [
-        {"id": "experience", "label": "Experiencia", "body": "Interfaces que encuentran a clientes y operadores donde ocurre el trabajo.", "technologies": ["React", "React Native", "Astro", "WebGL"]},
-        {"id": "edge", "label": "Edge delivery", "body": "Entrega pública rápida, manejo de media y límites del servidor cerca del usuario.", "technologies": ["Cloudflare Pages", "Workers", "Images", "R2"]},
-        {"id": "product-data", "label": "Datos de producto", "body": "Estado reactivo con auth, queries, mutations y workflows explícitos.", "technologies": ["Convex", "Auth", "Queries", "Mutations", "Workflows"]},
-        {"id": "communication", "label": "Comunicación", "body": "Mensajes transaccionales e integraciones con proveedores que fallan de forma visible.", "technologies": ["Resend", "Integraciones con proveedores"]},
-        {"id": "observability", "label": "Observabilidad", "body": "Señales que explican el comportamiento antes de que el cliente tenga que reportarlo.", "technologies": ["PostHog", "Captura de errores", "Reportes CSP", "Logs estructurados", "Health checks"]},
-        {"id": "delivery", "label": "Delivery", "body": "Una ruta de release que separa revisión, preview, promoción y verificación.", "technologies": ["GitHub", "Ambientes preview", "Ramas protegidas", "Smoke verification"]}
+        {"id": "experience", "label": "Diseño de producto", "body": "Principios, arquitectura de información, interacción, accesibilidad y sistemas visuales que hacen intencional al producto.", "technologies": ["Principios de diseño", "Interacción", "Accesibilidad", "Sistemas de diseño"]},
+        {"id": "edge", "label": "Sistemas front-end", "body": "Interfaces responsivas con performance, movimiento, capacidades del navegador y arquitectura de componentes mantenible.", "technologies": ["Web semántica", "Arquitectura de componentes", "WebGL", "Performance"]},
+        {"id": "product-data", "label": "Backend y datos", "body": "Workflows de negocio, APIs, auth, modelos SQL y PostgreSQL, y dashboards operativos con ownership claro de los datos.", "technologies": ["APIs", "SQL y PostgreSQL", "Modelado de datos", "Dashboards de base de datos", "Auth"]},
+        {"id": "communication", "label": "Ingeniería con IA", "body": "Workflows avanzados con agentes para investigación, arquitectura, implementación, code review, pruebas y documentación.", "technologies": ["Orquestación de agentes", "Ingeniería de contexto", "Arquitectura asistida por IA", "Code review con IA"]},
+        {"id": "observability", "label": "Calidad e insights", "body": "Pruebas, analíticas, logs, señales de error y health checks que vuelven visible y mejorable el comportamiento del producto.", "technologies": ["TDD", "Browser QA", "Analíticas", "Logs estructurados", "Health checks"]},
+        {"id": "delivery", "label": "Delivery cloud", "body": "Dashboards cloud, despliegue edge, pipelines de media, previews, promoción y verificación como una sola práctica de release.", "technologies": ["Operación cloud", "Edge delivery", "Ambientes preview", "Pipelines de media", "Verificación de releases"]}
       ],
       "tradeoffsHeading": "La arquitectura es una secuencia de tradeoffs.",
       "tradeoffs": [
@@ -655,7 +659,7 @@
       "name": "Alejandro Ortiz Corro",
       "role": "Senior Product Engineer / Sistemas Frontend",
       "location": "México",
-      "intro": "Construyo software que tiene que sostenerse después del lanzamiento: criterio de producto, calidad de interfaz, workflows backend, disciplina de release y delivery asistido por IA.",
+      "intro": "Convierto la intención de producto en interfaces hermosas, sistemas backend capaces, modelos de datos claros y prácticas de delivery amplificadas por IA avanzada.",
       "pdf": {
         "label": "Abrir CV en PDF",
         "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
@@ -664,8 +668,8 @@
       },
       "proof": {
         "label": "Resultados seleccionados",
-        "title": "Más de 9 años lanzando sistemas de producto confiables después del release.",
-        "body": "El trabajo abarca e-commerce de alto tráfico, productos operativos, modernización, rendimiento, sitios públicos y los sistemas de release que los mantienen confiables."
+        "title": "Más de 9 años construyendo sistemas que siguen creando valor después del release.",
+        "body": "El trabajo abarca e-commerce de alto tráfico, productos operativos, interfaces modernas, sitios públicos y sistemas de delivery que ayudan a los equipos a seguir mejorando."
       },
       "contactLinks": [
         {
@@ -848,27 +852,31 @@
           ]
         }
       ],
-      "skillsTitle": "Habilidades técnicas",
+      "skillsTitle": "Tecnologías centrales y capacidades",
       "skills": [
         {
-          "label": "Frontend",
-          "items": ["React", "TypeScript", "JavaScript", "Redux", "Redux Saga", "HTML5", "CSS3", "Accesibilidad"]
+          "label": "Principios de diseño de producto",
+          "items": ["Arquitectura de información", "Sistemas de interacción", "Accesibilidad", "Sistemas visuales", "Estructura de contenido"]
         },
         {
-          "label": "Full-stack y backend",
-          "items": ["Next.js", "Node.js", "Java working knowledge", "API workflows", "Backends operativos"]
+          "label": "Sistemas front-end",
+          "items": ["Interfaces responsivas", "React y TypeScript", "Arquitectura de componentes", "Performance", "Movimiento y WebGL"]
         },
         {
-          "label": "Testing y calidad",
-          "items": ["TDD", "Cypress", "Jest", "React Testing Library", "Vitest", "Browser QA", "CI/CD"]
+          "label": "Back-end, SQL y datos",
+          "items": ["Diseño de APIs", "Workflows de dominio", "SQL y PostgreSQL", "Modelado de datos", "Dashboards de bases de datos"]
         },
         {
-          "label": "Producto y delivery",
-          "items": ["Performance optimization", "SEO", "Server-side rendering", "Agile/Scrum", "Release discipline", "Observabilidad"]
+          "label": "Cloud y operación",
+          "items": ["Dashboards de AWS", "Entrega edge", "Operación Cloudflare y Vercel", "Pipelines de media", "Observabilidad"]
         },
         {
-          "label": "Práctica moderna con IA",
-          "items": ["Desarrollo asistido por agentes", "LLM workflows", "Revisión de implementación con prompts", "QA asistido por IA"]
+          "label": "Calidad y delivery",
+          "items": ["TDD", "Browser QA", "CI/CD", "Verificación de releases", "Documentación"]
+        },
+        {
+          "label": "Ingeniería aumentada con IA",
+          "items": ["Orquestación de agentes", "Ingeniería de contexto", "Arquitectura asistida por IA", "Revisión de implementación", "QA asistido por IA"]
         }
       ],
       "educationTitle": "Educación",

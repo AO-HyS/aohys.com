@@ -82,7 +82,7 @@
     "reviewPathText": "feature → develop → main",
     "homeLead": "Diseño y construyo software que conecta intención de producto, confiabilidad de backend, claridad operativa y delivery moderno.",
     "proofHeadingSignal": "Trabajo seleccionado",
-    "proofHeading": "El sistema empieza con trabajo real, no con decoración.",
+    "proofHeading": "Los buenos sistemas empiezan con trabajo real y una mirada clara.",
     "announcementBadge": "Nuevo",
     "announcementText": "Trabajo y releases.",
     "homePrompt": "Mapear el sitio público, dashboard, ruta de release y prueba que un evaluador puede revisar.",
@@ -148,7 +148,7 @@
     },
     "pricingPage": {
       "scaleLabel": "Escala de experiencia",
-      "scaleQuestion": "¿Cuánta presión de entrega ha soportado este trabajo?",
+      "scaleQuestion": "¿Qué puede ayudar a crear después este trabajo?",
       "planLabel": "Plan",
       "recommended": "Recomendado",
       "planNames": [
@@ -244,7 +244,7 @@
     ]
   },
   "contactForm": {
-    "formTitle": "Cuéntame qué necesitas construir.",
+    "formTitle": "Cuéntame qué te gustaría crear.",
     "formIntro": "Comparte el objetivo, contexto y la mejor forma de contactarte. Responderé directamente.",
     "nameLabel": "Nombre",
     "emailLabel": "Correo",
@@ -263,7 +263,7 @@
     "phoneOptionalHint": "Opcional, excepto al elegir WhatsApp",
     "phoneRequiredHint": "Necesario para responder por WhatsApp",
     "messageLabel": "Mensaje",
-    "messagePlaceholder": "¿Qué necesita existir, mejorar, lanzarse o volverse confiable?",
+    "messagePlaceholder": "¿Qué te gustaría crear, mejorar o lanzar?",
     "consentLabel": "Entiendo que AOHYS usará esta información para responder mi solicitud.",
     "submitLabel": "Enviar solicitud",
     "sendingLabel": "Enviando...",

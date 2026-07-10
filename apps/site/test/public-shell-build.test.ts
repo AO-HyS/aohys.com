@@ -99,6 +99,6 @@ describe("built public shell", () => {
     expect(stageSource).toContain('searchParams.set("project", contentId)');
     expect(stageSource).toContain('"pushState" : "replaceState"');
     expect(stageSource).toContain('window.addEventListener("popstate"');
-    expect(stageSource).toContain('aria-orientation={hero ? undefined : "vertical"}');
+    expect(stageSource).toContain('aria-orientation="horizontal"');
   });
 });

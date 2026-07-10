@@ -49,8 +49,8 @@ function dynamicCaseStudyEntry(locale: "en" | "es") {
         ? "El dashboard publico este caso con las secciones necesarias."
         : "The dashboard published this case with the required sections.",
       problem: {
-        title: isSpanish ? "Problema" : "Problem",
-        body: isSpanish ? "Necesitaba una pagina publica." : "It needed a public page.",
+        title: isSpanish ? "Oportunidad" : "Opportunity",
+        body: isSpanish ? "Podía convertirse en una página pública." : "It could become a public page.",
       },
       businessOutcome: {
         title: isSpanish ? "Resultado" : "Business outcome",
@@ -61,8 +61,8 @@ function dynamicCaseStudyEntry(locale: "en" | "es") {
         body: isSpanish ? "Publicacion segura desde dashboard." : "Safe dashboard publication.",
       },
       constraints: {
-        title: isSpanish ? "Restricciones" : "Constraints",
-        body: isSpanish ? "Sin datos privados." : "No private data.",
+        title: isSpanish ? "Consideraciones de diseño" : "Design considerations",
+        body: isSpanish ? "Contenido público y claro." : "Clear public content.",
       },
       architectureDecisions: {
         title: isSpanish ? "Arquitectura" : "Architecture decisions",
@@ -186,8 +186,8 @@ describe("Public Content Graph", () => {
     const englishHome = getHomePageContent("en");
     const spanishHome = getHomePageContent("es");
 
-    expect(englishHome.headline).toContain("moves real work");
-    expect(spanishHome.headline).toContain("mueve el trabajo real");
+    expect(englishHome.headline).toContain("make real");
+    expect(spanishHome.headline).toContain("hacer realidad");
     expect(englishHome.selectedOutcomes).toHaveLength(4);
     expect(englishHome.selectedOutcomes.map((outcome) => outcome.path)).toEqual([
       "/case-studies/casa-roca",
@@ -564,7 +564,7 @@ describe("Public Content Graph", () => {
     const englishArchitecture = getArchitecturePageContent("en");
     const spanishArchitecture = getArchitecturePageContent("es");
 
-    expect(englishArchitecture.heading).toBe("Architecture that stays operable after launch.");
+    expect(englishArchitecture.heading).toBe("Architecture that gives ideas room to grow.");
     expect(englishArchitecture.layers.map((layer) => layer.id)).toEqual([
       "experience",
       "edge",
@@ -574,13 +574,12 @@ describe("Public Content Graph", () => {
       "delivery",
     ]);
     expect(englishArchitecture.layers.flatMap((layer) => layer.technologies)).toEqual(expect.arrayContaining([
-      "React",
-      "Astro",
-      "Cloudflare Pages",
-      "Convex",
-      "Resend",
-      "PostHog",
-      "GitHub",
+      "Design principles",
+      "Semantic web",
+      "SQL & PostgreSQL",
+      "Database dashboards",
+      "Agent orchestration",
+      "Cloud operations",
     ]));
     expect(englishArchitecture.tradeoffs).toHaveLength(3);
     expect(englishArchitecture.sourceLinks.map((link) => link.href)).toEqual([
@@ -594,7 +593,7 @@ describe("Public Content Graph", () => {
     expect(englishArchitecture.sections.map((section) => section.title)).toContain("Environment Contract");
     expect(englishArchitecture.sections.map((section) => section.title)).toContain("Public Content Graph");
     expect(englishArchitecture.sections.every((section) => section.body.length > 40)).toBe(true);
-    expect(spanishArchitecture.heading).toBe("Arquitectura que sigue siendo operable después del lanzamiento.");
+    expect(spanishArchitecture.heading).toBe("Arquitectura que da espacio para crecer.");
     expect(spanishArchitecture.sourceLinks[0]?.href).toBe("https://github.com/AO-HyS/aohys.com");
   });
 
@@ -636,7 +635,7 @@ describe("Public Content Graph", () => {
       href: "/downloads/alejandro-ortiz-corro-resume.pdf",
       fileName: "alejandro-ortiz-corro-resume.pdf",
     });
-    expect(englishResume.proof.title).toBe("9+ years shipping product systems that stay reliable after launch.");
+    expect(englishResume.proof.title).toBe("9+ years building product systems that keep creating value after launch.");
     expect(englishResume.summary.join(" ")).toMatch(/React|TypeScript|Next\.js|agents|observability/i);
     expect(englishResume.contextLinks.map((link) => link.href)).toEqual([
       "/case-studies",
@@ -664,7 +663,7 @@ describe("Public Content Graph", () => {
     const spanishCaseStudy = getCaseStudyPageContent("case-study:casa-roca", "es");
 
     expect(englishCaseStudy?.statusLabel).toBe("Live hospitality site");
-    expect(englishCaseStudy?.problem.title).toBe("Problem");
+    expect(englishCaseStudy?.problem.title).toBe("Opportunity");
     expect(englishCaseStudy?.businessOutcome.title).toBe("Business outcome");
     expect(englishCaseStudy?.role.body).toMatch(/Product direction/i);
     expect(englishCaseStudy?.constraints.body).toMatch(/two languages/i);
