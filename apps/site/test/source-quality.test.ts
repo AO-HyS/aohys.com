@@ -28,6 +28,7 @@ describe("public site source quality", () => {
     const analytics = read("src/analytics.ts");
     const posthogClient = read("src/posthog-client.ts");
     const publicContentPage = read("src/components/PublicContentPage.astro");
+    const engineeringPracticeDiagram = read("public/images/proof/engineering-practice-release-cycle.svg");
     const proofMedia = read("src/components/sunlit/proof-media.ts");
     const proofImage = read("src/components/sunlit/SunlitProofImage.astro");
     const stage = read("src/components/sunlit/SunlitProjectStage.astro");
@@ -84,6 +85,9 @@ describe("public site source quality", () => {
     expect(header).not.toContain("const navDropdownItems = [");
     expect(header).toContain("getUiCopy");
     expect(footer).toContain("getUiCopy");
+    expect(footer).not.toContain("min-height: 18rem");
+    expect(enDictionary).toContain("Independent product engineering by Alejandro Ortiz Corro.");
+    expect(esDictionary).toContain("Ingeniería de producto independiente por Alejandro Ortiz Corro.");
     expect(publicContentPage).toContain("getUiCopy");
     expect(publicContentPage).toContain("SunlitProofImage");
     expect(proofMedia).toContain("STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID");
@@ -97,19 +101,26 @@ describe("public site source quality", () => {
     expect(publicContentPage).toContain("SunlitProjectStage");
     expect(publicContentPage).toContain("SunlitProcessRail");
     expect(publicContentPage).toContain("SunlitCtaBand");
+    expect(publicContentPage).toContain(".sunlit-related > div { display: grid;");
+    expect(publicContentPage).not.toContain(".sunlit-related > div { display: flex; overflow-x: auto;");
     expect(contentGraph).toContain("/images/proof/casa-roca-production.png");
     expect(contentGraph).toContain("/images/proof/barber-central-landing.png");
     expect(contentGraph).toContain("/images/proof/barber-central-proof-thumb.png");
     expect(contentGraph).toContain("/images/proof/nutri-plan-dashboard.png");
     expect(contentGraph).toContain("/images/proof/nutri-plan-proof-thumb.png");
     expect(contentGraph).toContain("/images/proof/enterprise-delivery-map.svg");
+    expect(contentGraph).toContain("/images/proof/engineering-practice-release-cycle.svg");
+    expect(engineeringPracticeDiagram).toContain("Reviewable release cycle");
+    expect(
+      [...new Set(engineeringPracticeDiagram.match(/#[0-9a-fA-F]{6}/g)?.map((color) => color.toUpperCase()))].sort(),
+    ).toEqual(["#473C33", "#ABC270", "#FDA769", "#FEC868", "#FFFFFF"].sort());
     expect(contentGraph).not.toMatch(/aohys-pixel|pixel-product-landscape|pixel-hills|pixel-lake/);
     expect(posthogAnalytics).toContain("buildAnalyticsBootstrapPayload");
     expect(posthogClient).toContain("capture_pageview");
     expect(posthogClient).toContain("captureException");
     expect(source).toContain("contact_form_submit_failed");
     expect(source).not.toContain("autocapture: true");
-    expect(enDictionary).toContain("Client code and operational data stay private");
+    expect(enDictionary).toContain("Client work and operational data stay private");
     expect(esDictionary).toContain("Los límites público/privado");
     expect(routePage).toContain("getPublicRouteMap");
     expect(layout).toContain('rel="alternate"');

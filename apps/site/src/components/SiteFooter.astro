@@ -15,8 +15,8 @@ const publicRepositoryUrl = import.meta.env.PUBLIC_REPOSITORY_URL ?? "https://gi
 
 <footer class="sunlit-footer">
   <div class="sunlit-footer-stage">
-    <div>
-      <span class="sunlit-footer-mark" aria-hidden="true">✦</span>
+    <span class="sunlit-footer-mark" aria-hidden="true">✦</span>
+    <div class="sunlit-footer-identity">
       <p>{copy.kicker}</p>
       <h2>{copy.body}</h2>
       <small>{copy.boundary}</small>
@@ -51,38 +51,33 @@ const publicRepositoryUrl = import.meta.env.PUBLIC_REPOSITORY_URL ?? "https://gi
   }
   .sunlit-footer-stage {
     display: grid;
-    min-height: 18rem;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-    gap: 2rem;
-    padding: clamp(1.5rem, 5vw, 4rem);
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    padding: clamp(1rem, 2.5vw, 1.75rem);
     background: var(--color-secondary);
   }
-  .sunlit-footer-stage > div { max-width: 49rem; }
-  .sunlit-footer-stage p { margin: 0 0 .55rem; font-weight: 720; }
+  .sunlit-footer-identity { display: grid; min-width: 0; grid-template-columns: minmax(15rem, .85fr) minmax(15rem, 1fr); align-items: center; gap: 1rem clamp(1.5rem, 4vw, 4rem); }
+  .sunlit-footer-stage p { grid-column: 1; margin: 0 0 .25rem; font-size: .78rem; font-weight: 720; }
   .sunlit-footer-stage h2 {
-    max-width: 19ch;
+    grid-column: 1;
     margin: 0;
-    font-size: clamp(2rem, 4.8vw, 4.25rem);
-    font-weight: 760;
-    letter-spacing: -.035em;
-    line-height: 1.02;
-    text-wrap: balance;
+    font-size: clamp(1.25rem, 1.6vw, 1.65rem);
+    font-weight: 720;
+    line-height: 1.15;
   }
-  .sunlit-footer-stage small { display: block; max-width: 58ch; margin-top: 1.2rem; color: var(--color-secondary-ink); font-family: var(--font-body, inherit); font-size: .92rem; line-height: 1.45; }
-  .sunlit-footer-mark { display: block; margin-bottom: 1rem; color: var(--color-primary); font-size: 2.3rem; }
+  .sunlit-footer-stage small { grid-row: 1 / 3; grid-column: 2; display: block; max-width: 52ch; color: var(--color-secondary-ink); font-family: var(--font-body, inherit); font-size: .88rem; line-height: 1.45; }
+  .sunlit-footer-mark { display: grid; width: 3rem; height: 3rem; place-items: center; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); color: var(--color-ink); font-size: 1.2rem; }
   .sunlit-footer-stage > a {
     display: inline-flex;
-    min-height: 3.5rem;
     align-items: center;
-    gap: 2rem;
-    padding: 0 1.4rem;
-    border: 2px solid var(--color-ink);
-    border-radius: .65rem;
-    background: var(--color-primary);
+    gap: .65rem;
+    padding: .6rem 0 .45rem;
+    border-bottom: 2px solid var(--color-ink);
     text-decoration: none;
-    font-weight: 760;
-    box-shadow: 0 4px 0 var(--color-ink);
+    font-size: .9rem;
+    font-weight: 720;
+    white-space: nowrap;
   }
   .sunlit-footer-links {
     display: grid;
@@ -113,12 +108,11 @@ const publicRepositoryUrl = import.meta.env.PUBLIC_REPOSITORY_URL ?? "https://gi
   .sunlit-footer-base p { margin: 0; }
   .sunlit-footer-base a { color: var(--color-muted); }
   @media (max-width: 720px) {
-    .sunlit-footer-stage { grid-template-columns: 1fr; align-items: start; }
-    .sunlit-footer-stage > a { justify-content: space-between; }
+    .sunlit-footer-stage { grid-template-columns: auto minmax(0, 1fr); align-items: start; }
+    .sunlit-footer-identity { grid-template-columns: 1fr; gap: .25rem; }
+    .sunlit-footer-stage small { grid-row: auto; grid-column: 1; margin-top: .35rem; }
+    .sunlit-footer-stage > a { grid-column: 2; justify-self: start; }
     .sunlit-footer-links { grid-template-columns: repeat(2, 1fr); }
     .sunlit-footer-base { align-items: flex-start; flex-direction: column; }
-  }
-  @media (max-width: 360px) {
-    .sunlit-footer-links { grid-template-columns: 1fr; }
   }
 </style>

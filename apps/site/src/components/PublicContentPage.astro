@@ -719,8 +719,11 @@ const caseStudySections = caseStudyContent ? [
   .sunlit-case-evidence > div a > span { grid-row: 1 / 4; display: grid; width: 2rem; height: 2rem; place-items: center; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-secondary); }
   .sunlit-case-evidence a p { margin: 0; color: var(--color-muted); }
   .sunlit-case-evidence a i { margin-top: 1rem; font-style: normal; font-weight: 700; }
-  .sunlit-related > div { display: flex; overflow-x: auto; gap: 1rem; padding: 1.5rem 0 .6rem; }
-  .sunlit-related a { display: grid; min-width: min(20rem, 82vw); min-height: 10rem; padding: 1.2rem; border: 2px solid var(--color-ink); background: var(--color-bg); text-decoration: none; box-shadow: 0 4px 0 var(--color-ink); }
+  .sunlit-related > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 1.5rem 0 .6rem; }
+  .sunlit-related a { display: grid; min-width: 0; min-height: 10rem; padding: 1.2rem; border: 2px solid var(--color-ink); background: var(--color-bg); text-decoration: none; box-shadow: 0 4px 0 var(--color-ink); }
+  .sunlit-related a:nth-child(4n + 2) { background: color-mix(in oklch, var(--color-primary), white 62%); }
+  .sunlit-related a:nth-child(4n + 3) { background: color-mix(in oklch, var(--color-secondary), white 70%); }
+  .sunlit-related a:nth-child(4n + 4) { background: color-mix(in oklch, var(--color-accent), white 72%); }
   .sunlit-related a span { font-size: .72rem; font-weight: 760; }
   .sunlit-related a strong { align-self: end; font-size: 1.4rem; }
   .sunlit-related a i { justify-self: end; }
@@ -816,6 +819,7 @@ const caseStudySections = caseStudyContent ? [
     .sunlit-contact-layout { grid-template-columns: 1fr; }
     .sunlit-field-grid { grid-template-columns: 1fr; }
     .sunlit-submit { align-items: stretch; flex-direction: column; }
+    .sunlit-related > div { grid-template-columns: 1fr; }
   }
   @media (max-width: 420px) {
     .sunlit-hero-stage { min-height: 27rem; }

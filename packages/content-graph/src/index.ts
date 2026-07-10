@@ -95,7 +95,7 @@ export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceI
     kind: "diagram",
   },
   "case-study:engineering-practice": {
-    src: "/images/proof/enterprise-delivery-map.svg",
+    src: "/images/proof/engineering-practice-release-cycle.svg",
     kind: "diagram",
   },
   practice: {

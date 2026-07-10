@@ -74,8 +74,8 @@ describe("built public routes", () => {
     expect(homeHtml).toContain('data-stage-door="right"');
     expect(homeHtml).toContain("Every project changes the set. The proof stays in view.");
     expect(homeHtml).toContain("What does your team need to stop improvising?");
-    expect(homeHtml).toContain("Bring the product pressure, broken workflow, or release that needs a clearer path.");
-    expect(homeHtml).toContain("Public code is reviewable here. Client code and operational data stay private.");
+    expect(homeHtml).toContain("Independent product engineering by Alejandro Ortiz Corro.");
+    expect(homeHtml).toContain("Public code can be reviewed here. Client work and operational data stay private.");
     expect(homeHtml).not.toContain("Still deciding?");
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
@@ -94,7 +94,8 @@ describe("built public routes", () => {
     expect(spanishHomeHtml).toContain("Múltiples productos, un sistema.");
     expect(spanishHomeHtml).toContain("Cada proyecto cambia de escenario. La prueba queda a la vista.");
     expect(spanishHomeHtml).toContain("¿Qué necesita dejar de improvisar tu equipo?");
-    expect(spanishHomeHtml).toContain("Trae la presión de producto, el workflow roto o el release que necesita una ruta más clara.");
+    expect(spanishHomeHtml).toContain("Ingeniería de producto independiente por Alejandro Ortiz Corro.");
+    expect(spanishHomeHtml).toContain("El código público se puede revisar aquí. El trabajo de clientes y los datos operativos permanecen privados.");
     expect(spanishHomeHtml).not.toContain("¿Todavía evaluando?");
     expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
     expect(spanishHomeHtml).toContain("/images/proof/casa-roca-production.png");

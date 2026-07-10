@@ -5,6 +5,7 @@ import {
   DEFAULT_LOCALE,
   LOCALES,
   MissingLocaleVariantError,
+  STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID,
   getArchitecturePageContent,
   getCaseStudyIndexContent,
   getCaseStudyPageContent,
@@ -97,6 +98,16 @@ describe("Public Content Graph", () => {
   it("uses English as the default locale and Spanish as the secondary locale", () => {
     expect(DEFAULT_LOCALE).toBe("en");
     expect(LOCALES).toEqual(["en", "es"]);
+  });
+
+  it("uses dedicated static evidence for the engineering practice case study", () => {
+    expect(STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:engineering-practice"]).toEqual({
+      src: "/images/proof/engineering-practice-release-cycle.svg",
+      kind: "diagram",
+    });
+    expect(STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:engineering-practice"]?.src).not.toBe(
+      STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:enterprise-systems"]?.src,
+    );
   });
 
   it("resolves stable content IDs to localized public routes", () => {
@@ -606,6 +617,9 @@ describe("Public Content Graph", () => {
       "/architecture",
       "/contact",
     ]);
+    expect(englishResume.experience.find((job) => job.company === "NEORIS/CEMEX")?.role).toBe(
+      "Senior Software Engineer",
+    );
 
     expect(spanishResume.role).toBe("Senior Product Engineer / Sistemas Frontend");
     expect(spanishResume.contextTitle).toBe("Más contexto en línea");
@@ -614,6 +628,9 @@ describe("Public Content Graph", () => {
       "/es/arquitectura",
       "/es/contacto",
     ]);
+    expect(spanishResume.experience.find((job) => job.company === "NEORIS/CEMEX")?.role).toBe(
+      "Ingeniero de software sénior",
+    );
   });
 
   it("returns Casa Roca case-study content with public-safe evidence", () => {
