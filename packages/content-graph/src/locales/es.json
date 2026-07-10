@@ -9,12 +9,17 @@
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Construyo software para vender, operar y lanzar sin fricción.",
-      "deck": "Soy Alejandro Ortiz. Trabajo en sitios públicos, dashboards privados, flujos de leads, pagos, herramientas internas y el proceso de release que los sostiene. Me importan tanto las partes que ve el cliente como las partes que el equipo usa todos los días.",
+      "headline": "Software que mueve el trabajo real.",
+      "headlineLines": [
+        "Software que mueve",
+        "el trabajo real."
+      ],
+      "headlineEmphasisWords": ["trabajo", "real"],
+      "deck": "Diseño y construyo sitios, dashboards y flujos que tu equipo puede operar, revisar y lanzar con confianza.",
       "proofBoardLabel": "Mapa de evidencia AOHYS",
-      "proofBoardTitle": "Trabajo real, pruebas visibles y detalles privados protegidos.",
-      "proofBoardBody": "Algunas cosas se pueden abrir en el navegador. Otras sólo se pueden mostrar como pantallas sanitizadas o notas de arquitectura. Esta página mantiene claro ese límite.",
-      "selectedOutcomesHeading": "Trabajo que puedo mostrar",
+      "proofBoardTitle": "Múltiples productos, un sistema.",
+      "proofBoardBody": "La prueba pública se mantiene visible. El código de clientes, los datos operativos y detalles no publicados quedan protegidos.",
+      "selectedOutcomesHeading": "Prueba pública que tu equipo puede revisar.",
       "selectedOutcomesIntro": "Un sitio de hospitalidad en producción, productos activos, trabajo enterprise confidencial y el proceso de ingeniería detrás de esta muestra pública.",
       "selectedOutcomes": [
         {
@@ -63,7 +68,7 @@
           "contentId": "case-study:enterprise-systems",
           "label": "Entrega enterprise",
           "title": "Sistemas enterprise",
-        "outcome": "Tres años dentro de producto y backend complejo: escalations, payment plans, cashback, customs workflows y soporte de releases en muchos proyectos.",
+        "outcome": "Trabajo complejo de producto y backend en escalations, payment plans, cashback, customs workflows y soporte de releases.",
           "role": "Confiabilidad, backend, confidencialidad",
           "evidence": {
             "label": "Resumen confidencial",
@@ -74,8 +79,8 @@
           }
         }
       ],
-      "architectureHeading": "La página es simple. El sistema detrás está pensado.",
-      "architectureBody": "Las páginas públicas son rápidas y legibles. El dashboard es privado. El contacto pasa por backend. Los errores llegan a PostHog. Preview y producción están separados. El repo está abierto para que las decisiones se puedan revisar.",
+      "architectureHeading": "Límites del sistema en los que puedes confiar.",
+      "architectureBody": "Las páginas públicas se mantienen rápidas. Los dashboards privados quedan protegidos. Contacto, analítica, previews y releases tienen un límite explícito.",
       "architectureStages": [
         {
           "label": "Superficie pública",
@@ -90,7 +95,7 @@
         "text": "Los cambios pasan primero por preview; producción queda como una promoción separada y revisable."
         }
       ],
-      "practiceHeading": "Cómo trabajo",
+      "practiceHeading": "La ruta de release queda visible de idea a producción.",
       "practiceBody": "Empiezo por la presión real del negocio y luego hago que el software sea confiable donde importa: datos claros, auth segura, fallas visibles y releases confiables.",
       "practicePoints": [
         {
@@ -106,19 +111,115 @@
         "text": "Usar tests, browser QA, ramas protegidas, previews y verificación en producción para que los problemas aparezcan antes que los clientes."
         }
       ],
-      "contactHeading": "Cuéntame qué necesitas hacer funcionar.",
-      "contactBody": "Un rol, una idea de producto, un workflow roto, un problema de arquitectura o una página que necesita convertir. Mándame el contexto y te respondo con un siguiente paso práctico.",
+      "contactHeading": "¿Qué necesita dejar de improvisar tu equipo?",
+      "contactBody": "Trae la presión operativa, el workflow roto o el release que necesita una ruta más clara. Lo convertiremos en el sistema correcto y una forma práctica de lanzarlo.",
       "emailLabel": "Escribir a Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",
       "whatsappLabel": "WhatsApp",
       "whatsappHref": "https://wa.me/522299020825"
+    },
+    "publicNavigation": {
+      "brand": {
+        "homeLabel": "Inicio AOHYS",
+        "wordmarkSrc": "/images/brand/aohys-wordmark.svg",
+        "fallbackSrc": "/images/brand/aohys-logo.png"
+      },
+      "items": [
+        {
+          "slotId": "solutions",
+          "label": "Trabajo",
+          "contentId": "case-studies",
+          "dropdown": true
+        },
+        {
+          "slotId": "agents",
+          "label": "Práctica",
+          "contentId": "practice"
+        },
+        {
+          "slotId": "pricing",
+          "label": "Sobre mí",
+          "contentId": "resume"
+        },
+        {
+          "slotId": "docs",
+          "label": "Arquitectura",
+          "contentId": "architecture"
+        },
+        {
+          "slotId": "blog",
+          "label": "Hablemos",
+          "contentId": "contact"
+        }
+      ],
+      "actions": [
+        {
+          "slotId": "login",
+          "label": "Dashboard",
+          "href": "/dashboard",
+          "style": "secondary"
+        },
+        {
+          "slotId": "signup",
+          "label": "Hablemos",
+          "contentId": "contact",
+          "style": "primary"
+        }
+      ],
+      "dropdown": {
+        "label": "Trabajo",
+        "items": [
+          {
+            "id": "sitio-publico",
+            "contentId": "case-study:casa-roca",
+            "label": "Sitio Público",
+            "text": "Casa Roca en producción y camino público de conversión.",
+            "icon": "site",
+            "tone": 0
+          },
+          {
+            "id": "operaciones",
+            "contentId": "case-study:the-barber-central",
+            "label": "Operaciones",
+            "text": "Reservas, pagos, disponibilidad y flujos con clientes.",
+            "icon": "operations",
+            "tone": 1
+          },
+          {
+            "id": "sistema",
+            "contentId": "architecture",
+            "label": "Sistema",
+            "text": "Límites público/privado, rutas, releases y evidencia.",
+            "icon": "system",
+            "tone": 2
+          },
+          {
+            "id": "entrega",
+            "contentId": "practice",
+            "label": "Entrega",
+            "text": "Aclarar, construir, verificar y lanzar trabajo confiable.",
+            "icon": "practice",
+            "tone": 3
+          }
+        ],
+        "preview": {
+          "tabs": ["cURL", "NodeJS", "Rust", "Go", "PHP", "C#", "Java", "Python"],
+          "codeLines": [
+            "const system = await aohys.publish({",
+            "  publicSite: \"Casa Roca\",",
+            "  dashboard: \"Múltiples productos, un sistema.\",",
+            "  releasePath: \"preview -> producción\"",
+            "});"
+          ]
+        }
+      }
     }
   },
   "case-studies": {
     "path": "/es/casos",
-    "title": "Trabajo que puedo mostrar",
-    "summary": "Una muestra pequeña de trabajo que puedes revisar sin exponer sistemas privados: un sitio en vivo, productos activos, contexto enterprise y la práctica de ingeniería detrás de esta página.",
-    "seoDescription": "Revisa trabajo seleccionado de Alejandro Ortiz Corro en sitios en producción, productos activos, sistemas privados de negocio, entrega enterprise confidencial y práctica moderna de ingeniería.",
+    "title": "Trabajo seleccionado",
+    "summary": "Sitios en vivo, productos activos, contexto enterprise y la práctica de ingeniería detrás de esta muestra pública.",
+    "seoDescription": "Lee notas públicas de trabajo de Alejandro Ortiz Corro en sitios en producción, productos activos, sistemas privados de negocio, entrega enterprise confidencial y práctica moderna de ingeniería.",
     "primaryActionLabel": "Platicar un proyecto",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
@@ -126,7 +227,7 @@
   },
   "case-study:casa-roca": {
     "path": "/es/casos/casa-roca",
-    "title": "Casa Roca",
+    "title": "Casa Roca: sitio público y contacto directo",
     "summary": "Un sitio de hospitalidad en vivo con historia pública clara, contacto directo y disciplina de producción.",
     "seoDescription": "Casa Roca es un sitio de hospitalidad en vivo para una estancia boutique en Veracruz, con historia clara del lugar, contacto directo, páginas listas para búsqueda y disciplina de release.",
     "primaryActionLabel": "Crear algo similar",
@@ -183,7 +284,7 @@
   },
   "case-study:the-barber-central": {
     "path": "/es/casos/the-barber-central",
-    "title": "The Barber Central",
+    "title": "The Barber Central: reservas y operación",
     "summary": "Producto activo de reservaciones y operaciones diseñado alrededor del día a día de negocios de servicios.",
     "seoDescription": "The Barber Central muestra arquitectura de producto activo para reservaciones, operaciones, preparación de pagos y comunicación con clientes.",
     "primaryActionLabel": "Hablar de software operativo",
@@ -240,7 +341,7 @@
   },
   "case-study:nutri-plan": {
     "path": "/es/casos/nutri-plan",
-    "title": "Nutri Plan",
+    "title": "Nutri Plan: sistema privado de workflows",
     "summary": "Sistema privado de producto para flujos de clientes, planes, dashboards y contenido educativo.",
     "seoDescription": "Nutri Plan muestra trabajo de producto activo alrededor de flujos de clientes, planes estructurados, dashboards operativos, contenido educativo y calidad de entrega.",
     "primaryActionLabel": "Planear un flujo de producto",
@@ -297,7 +398,7 @@
   },
   "case-study:enterprise-systems": {
     "path": "/es/casos/sistemas-enterprise",
-    "title": "Sistemas enterprise",
+    "title": "Sistemas enterprise bajo límites confidenciales",
     "summary": "Trabajo enterprise confidencial resumido por resultados, criterio de arquitectura, liderazgo en escalations y soporte de releases.",
     "seoDescription": "Sistemas enterprise resume trabajo confidencial de software por resultados de negocio, criterio de arquitectura, liderazgo en escalations, backend delivery y práctica de calidad.",
     "primaryActionLabel": "Hablar de sistemas complejos",
@@ -354,7 +455,7 @@
   },
   "case-study:engineering-practice": {
     "path": "/es/casos/practica-de-ingenieria",
-    "title": "Práctica de ingeniería",
+    "title": "Práctica de ingeniería para releases revisables",
     "summary": "Ingeniería moderna asistida por agentes explicada con planeación, QA, arquitectura, observabilidad, deploys y documentación.",
     "seoDescription": "Práctica de ingeniería explica el proceso moderno de Alejandro Ortiz Corro con agentes, QA, arquitectura, observabilidad, despliegue y documentación.",
     "primaryActionLabel": "Revisar la muestra pública",
@@ -411,9 +512,9 @@
   },
   "practice": {
     "path": "/es/practica",
-    "title": "Práctica",
-    "summary": "Cómo la ingeniería moderna con IA, calidad y disciplina de release dan forma al trabajo.",
-    "seoDescription": "La práctica AOHYS explica ingeniería moderna asistida por IA, pruebas, ciclos de revisión, gates de calidad y hábitos de release.",
+    "title": "La entrega se mantiene visible del brief al release.",
+    "summary": "Planeación, QA, ciclos de revisión y disciplina de release convertidos en una ruta clara desde la solicitud hasta software confiable.",
+    "seoDescription": "La práctica AOHYS muestra ingeniería moderna asistida por IA, pruebas, ciclos de revisión, gates de calidad y hábitos de release.",
     "primaryActionLabel": "Revisar el repo",
     "primaryActionContentId": "architecture",
     "secondaryActionLabel": "Hablemos",
@@ -429,7 +530,7 @@
     "secondaryActionLabel": "Contactar a Alejandro",
     "secondaryActionContentId": "contact",
     "architectureContent": {
-      "heading": "El código público muestra el trabajo alrededor del trabajo.",
+      "heading": "Código público para sistemas que siguen privados.",
       "deck": "El código de clientes se queda privado. Este repo muestra cómo pienso las piezas alrededor de un producto: contenido, límites de auth, releases, errores, proveedores y la superficie del dashboard.",
       "sourceLabel": "Revisar el source",
       "sourceLinks": [
@@ -484,10 +585,11 @@
     }
   },
   "resume": {
-    "path": "/es/cv",
-    "title": "CV",
-    "summary": "Ruta práctica hacia la experiencia de Alejandro Ortiz Corro en ingeniería de producto, arquitectura y delivery.",
-    "seoDescription": "CV de Alejandro Ortiz Corro para hiring managers y líderes técnicos que revisan experiencia en ingeniería de producto, arquitectura frontend, workflows backend y delivery asistido por IA.",
+    "path": "/es/curriculum",
+    "title": "Sobre Alejandro",
+    "summary": "Experiencia senior en ingeniería de producto, criterio de entrega, proyectos seleccionados y la prueba práctica detrás del trabajo.",
+    "seoTitle": "Sobre Alejandro Ortiz Corro | AOHYS",
+    "seoDescription": "Conoce a Alejandro Ortiz Corro y revisa experiencia senior en ingeniería de producto, proyectos seleccionados, práctica de entrega, criterio de arquitectura y CV descargable.",
     "primaryActionLabel": "Contactar a Alejandro",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
@@ -498,15 +600,15 @@
       "location": "México",
       "intro": "Construyo software que tiene que sostenerse después del lanzamiento: criterio de producto, calidad de interfaz, workflows backend, disciplina de release y delivery asistido por IA.",
       "pdf": {
-        "label": "Descargar CV en PDF",
+        "label": "Revisar PDF de prueba",
         "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
         "fileName": "alejandro-ortiz-corro-resume.pdf",
-        "description": "Un PDF compacto para revisión de hiring. Este sitio suma la superficie de evidencia: trabajo público, notas de arquitectura, estructura del repo y práctica de delivery."
+        "description": "Un paquete compacto de prueba para revisión de hiring y entrega. El sitio suma la superficie profunda: trabajo público, notas de arquitectura, estructura del repo y práctica de release."
       },
       "proof": {
         "label": "Trabajo revisable",
-        "title": "El sitio respalda el CV.",
-        "body": "El CV está respaldado por el mismo sitio público que muestra casos, límites de arquitectura, i18n, quality gates, observabilidad y práctica de release."
+        "title": "El paquete de prueba respalda una revisión seria.",
+        "body": "El perfil está respaldado por el mismo sitio público que muestra trabajo seleccionado, límites de arquitectura, i18n, quality gates, observabilidad y práctica de release."
       },
       "contactLinks": [
         {
@@ -553,14 +655,14 @@
           "text": "Hiring, revisión de arquitectura, sistemas de producto y conversaciones de software."
         }
       ],
-      "summaryTitle": "Resumen profesional",
+      "summaryTitle": "Perfil de entrega",
       "summary": [
         "Senior product engineer con más de 9 años de experiencia en React, TypeScript, Next.js, arquitectura de producto, performance, SEO y sistemas UI mantenibles.",
         "He entregado en sistemas enterprise, productos startup, workflows de salud, plataformas e-commerce, sitios públicos y sistemas con más de 30.5M usuarios mensuales.",
         "Mi trabajo reciente va más allá de pantallas: Next.js como superficie backend, delivery de workflows backend, manejo de escalations, payment plans, cashback, customs workflows y ejecución cross-functional.",
         "Trabajo con agentes, TDD, browser QA, release discipline, observabilidad y documentación para convertir objetivos ambiguos en software que los equipos pueden operar y mejorar."
       ],
-      "highlightsTitle": "Impacto seleccionado",
+      "highlightsTitle": "Prueba incluida",
       "highlights": [
         {
           "label": "30.5M+ usuarios mensuales",

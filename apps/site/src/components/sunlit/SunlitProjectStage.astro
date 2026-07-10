@@ -1,0 +1,390 @@
+---
+import { type HomeOutcome, type Locale } from "@aohys/content-graph";
+import SunlitProofImage from "./SunlitProofImage.astro";
+import { resolveProofMedia } from "./proof-media";
+
+interface Props {
+  outcomes: HomeOutcome[];
+  locale: Locale;
+  heading: string;
+  intro: string;
+}
+
+const { outcomes, locale, heading, intro } = Astro.props;
+const labels = locale === "es" ? {
+  region: "Selector de proyectos",
+  open: "Abrir caso",
+  current: "Proyecto visible",
+  loading: "Cambiando escenario",
+  result: "Resultado",
+  evidence: "Prueba",
+  boundary: "Límite",
+  swipe: "Desliza para ver todos los proyectos →",
+  fallbackAlt: "Evidencia pública del proyecto AOHYS",
+} : {
+  region: "Project selector",
+  open: "Open case",
+  current: "Project in view",
+  loading: "Changing the set",
+  result: "Result",
+  evidence: "Evidence",
+  boundary: "Boundary",
+  swipe: "Swipe to see every project →",
+  fallbackAlt: "AOHYS project public evidence",
+};
+const projects = outcomes.map((outcome) => ({
+  outcome,
+  media: resolveProofMedia(
+    String(outcome.contentId),
+    outcome.evidence.src,
+    outcome.evidence.altText ?? labels.fallbackAlt,
+    outcome.evidence.kind,
+  ),
+}));
+---
+
+<section
+  class="sunlit-project-stage"
+  aria-labelledby="sunlit-stage-heading"
+  data-project-stage
+  data-stage-state="open"
+  data-active-tone="0"
+  data-assembled="false"
+  data-current-label={labels.current}
+  data-loading-label={labels.loading}
+>
+  <header class="sunlit-stage-heading">
+    <div>
+      <span aria-hidden="true">✦</span>
+      <h2 id="sunlit-stage-heading">{heading}</h2>
+    </div>
+    <p>{intro}</p>
+  </header>
+
+  <div class="sunlit-stage-layout">
+    <div class="sunlit-ticket-column">
+      <p class="sunlit-rail-hint">{labels.swipe}</p>
+      <div class="sunlit-ticket-rail" role="tablist" aria-label={labels.region} aria-orientation="vertical">
+        <span class="sunlit-rail-cable" aria-hidden="true"></span>
+        {projects.map(({ outcome }, index) => {
+          const panelId = `sunlit-project-panel-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
+          const tabId = `sunlit-project-tab-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
+          return (
+            <button
+              id={tabId}
+              type="button"
+              role="tab"
+              aria-controls={panelId}
+              aria-selected={index === 0 ? "true" : "false"}
+              tabindex={index === 0 ? 0 : -1}
+              data-project-tab
+              data-project-index={index}
+              data-content-id={outcome.contentId}
+            >
+              <span aria-hidden="true"></span>
+              <strong>{outcome.title}</strong>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+
+    <div class="sunlit-stage-frame" aria-busy="false" data-stage-frame>
+      <div class="sunlit-stage-canopy" aria-hidden="true"><span></span><i></i></div>
+      <div class="sunlit-stage-scene">
+        {projects.map(({ outcome, media }, index) => {
+          const panelId = `sunlit-project-panel-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
+          const tabId = `sunlit-project-tab-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
+          return (
+            <article
+              id={panelId}
+              class="sunlit-project-panel"
+              role="tabpanel"
+              aria-labelledby={tabId}
+              hidden={index !== 0}
+              data-project-panel
+              data-project-index={index}
+              data-content-id={outcome.contentId}
+              data-project-title={outcome.title}
+              data-set-tone={index % 3}
+            >
+              <div class="sunlit-project-proof">
+                <span class="sunlit-proof-pin" aria-hidden="true"></span>
+                <figure data-media-kind={media.kind}>
+                  <SunlitProofImage
+                    contentId={String(outcome.contentId)}
+                    evidenceSrc={outcome.evidence.src}
+                    alt={outcome.evidence.altText ?? labels.fallbackAlt}
+                    evidenceKind={outcome.evidence.kind}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    stageImage
+                  />
+                </figure>
+                <span class="sunlit-proof-stamp">{outcome.label}</span>
+              </div>
+              <div class="sunlit-project-copy">
+                <p>{outcome.role}</p>
+                <h3>{outcome.title}</h3>
+                <p>{outcome.outcome}</p>
+                <a href={outcome.path}>{labels.open}<span aria-hidden="true">↗</span></a>
+              </div>
+            </article>
+          );
+        })}
+
+        <div class="sunlit-door sunlit-door-left" data-stage-door="left" aria-hidden="true"><span></span></div>
+        <div class="sunlit-door sunlit-door-right" data-stage-door="right" aria-hidden="true"><span></span></div>
+      </div>
+      <div class="sunlit-stage-platform" aria-hidden="true"><span></span><i></i></div>
+      <div class="sunlit-stage-status sr-only" aria-live="polite" aria-atomic="true" data-stage-announcement></div>
+    </div>
+  </div>
+
+  <div class="sunlit-ledger-stack">
+    {projects.map(({ outcome }, index) => (
+      <div class="sunlit-proof-ledger" hidden={index !== 0} data-ledger-panel data-project-index={index}>
+        <div><span aria-hidden="true">→</span><strong>{labels.result}</strong><p>{outcome.outcome}</p></div>
+        <div><span aria-hidden="true">◉</span><strong>{labels.evidence}</strong><p>{outcome.evidence.label}</p></div>
+        <div><span aria-hidden="true">◇</span><strong>{labels.boundary}</strong><p>{outcome.role}</p></div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<script>
+  const wait = (milliseconds: number) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+
+  for (const stage of document.querySelectorAll("[data-project-stage]")) {
+    if (!(stage instanceof HTMLElement)) continue;
+    const tabs = Array.from(stage.querySelectorAll("[data-project-tab]")).filter((tab): tab is HTMLButtonElement => tab instanceof HTMLButtonElement);
+    const panels = Array.from(stage.querySelectorAll("[data-project-panel]")).filter((panel): panel is HTMLElement => panel instanceof HTMLElement);
+    const ledgers = Array.from(stage.querySelectorAll("[data-ledger-panel]")).filter((panel): panel is HTMLElement => panel instanceof HTMLElement);
+    const frame = stage.querySelector("[data-stage-frame]");
+    const announcement = stage.querySelector("[data-stage-announcement]");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let activeIndex = Math.max(0, tabs.findIndex((tab) => tab.getAttribute("aria-selected") === "true"));
+    let requestedIndex = activeIndex;
+    let running = false;
+
+    const setActivePanel = (index: number) => {
+      tabs.forEach((tab, tabIndex) => {
+        const selected = tabIndex === index;
+        tab.setAttribute("aria-selected", String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+      });
+      panels.forEach((panel, panelIndex) => { panel.hidden = panelIndex !== index; });
+      ledgers.forEach((ledger, ledgerIndex) => { ledger.hidden = ledgerIndex !== index; });
+      stage.dataset.activeTone = String(index % 3);
+      activeIndex = index;
+    };
+
+    const loadCandidate = (src: string) => new Promise<string | null>((resolve) => {
+      const image = new Image();
+      const timeout = window.setTimeout(() => resolve(null), 900);
+      image.onload = () => { window.clearTimeout(timeout); resolve(src); };
+      image.onerror = () => { window.clearTimeout(timeout); resolve(null); };
+      image.src = src;
+    });
+
+    const prepareImage = async (panel: HTMLElement) => {
+      const image = panel.querySelector("[data-stage-image]");
+      if (!(image instanceof HTMLImageElement)) return;
+      let candidates: string[] = [];
+      try { candidates = JSON.parse(image.dataset.imageCandidates ?? "[]"); } catch { candidates = [image.src]; }
+      for (const [candidateIndex, candidate] of candidates.entries()) {
+        const loaded = await loadCandidate(candidate);
+        if (loaded) {
+          image.dataset.candidateIndex = String(candidateIndex);
+          image.src = loaded;
+          return;
+        }
+      }
+    };
+
+    const transitionToRequested = async () => {
+      if (running || requestedIndex === activeIndex) return;
+      running = true;
+      if (frame instanceof HTMLElement) frame.setAttribute("aria-busy", "true");
+
+      while (requestedIndex !== activeIndex) {
+        if (reducedMotion.matches) {
+          const targetIndex = requestedIndex;
+          await prepareImage(panels[targetIndex]);
+          setActivePanel(targetIndex);
+          break;
+        }
+
+        stage.dataset.stageState = "closing";
+        await wait(320);
+        stage.dataset.stageState = "swapping";
+        const targetIndex = requestedIndex;
+        setActivePanel(targetIndex);
+        await Promise.race([prepareImage(panels[targetIndex]), wait(1600)]);
+        stage.dataset.stageState = "opening";
+        await wait(340);
+        stage.dataset.stageState = "open";
+      }
+
+      if (frame instanceof HTMLElement) frame.setAttribute("aria-busy", "false");
+      if (announcement instanceof HTMLElement) {
+        const title = panels[activeIndex]?.dataset.projectTitle ?? "";
+        announcement.textContent = title ? `${stage.dataset.currentLabel ?? ""}: ${title}` : "";
+      }
+      running = false;
+      if (requestedIndex !== activeIndex) void transitionToRequested();
+    };
+
+    const requestProject = (index: number) => {
+      if (index < 0 || index >= panels.length) return;
+      requestedIndex = index;
+      if (announcement instanceof HTMLElement && index !== activeIndex) {
+        announcement.textContent = stage.dataset.loadingLabel ?? "";
+      }
+      void transitionToRequested();
+    };
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => requestProject(index));
+      tab.addEventListener("keydown", (event) => {
+        let nextIndex = index;
+        if (event.key === "ArrowDown" || event.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
+        else if (event.key === "ArrowUp" || event.key === "ArrowLeft") nextIndex = (index - 1 + tabs.length) % tabs.length;
+        else if (event.key === "Home") nextIndex = 0;
+        else if (event.key === "End") nextIndex = tabs.length - 1;
+        else return;
+        event.preventDefault();
+        tabs[nextIndex]?.focus();
+        requestProject(nextIndex);
+      });
+    });
+
+    for (const image of stage.querySelectorAll("[data-stage-image]")) {
+      if (!(image instanceof HTMLImageElement)) continue;
+      image.addEventListener("error", async () => {
+        const panel = image.closest("[data-project-panel]");
+        if (panel instanceof HTMLElement) await prepareImage(panel);
+      }, { once: true });
+      if (image.complete && image.naturalWidth === 0) {
+        const panel = image.closest("[data-project-panel]");
+        if (panel instanceof HTMLElement) void prepareImage(panel);
+      }
+    }
+    window.requestAnimationFrame(() => { stage.dataset.assembled = "true"; });
+  }
+</script>
+
+<style>
+  .sunlit-project-stage { width: var(--container); margin: clamp(5rem, 10vw, 9rem) auto; }
+  .sunlit-stage-heading { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(16rem, .8fr); align-items: end; gap: 2rem; margin-bottom: 2rem; }
+  .sunlit-stage-heading > div { display: flex; align-items: flex-start; gap: 1rem; }
+  .sunlit-stage-heading span { color: var(--color-accent); font-size: 2rem; line-height: 1; }
+  .sunlit-stage-heading h2 { max-width: 15ch; margin: 0; font-size: var(--text-h2); font-weight: 760; letter-spacing: -.035em; line-height: 1.02; text-wrap: balance; }
+  .sunlit-stage-heading p { max-width: 54ch; margin: 0; color: var(--color-muted); font-size: 1.1rem; }
+  .sunlit-stage-layout { display: grid; grid-template-columns: minmax(11rem, 15rem) minmax(0, 1fr); align-items: stretch; gap: 1.5rem; }
+  .sunlit-ticket-column { display: grid; align-content: center; min-width: 0; }
+  .sunlit-rail-hint { display: none; }
+  .sunlit-ticket-rail { position: relative; display: flex; flex-direction: column; justify-content: center; gap: .65rem; padding: 1.5rem 0 1.5rem 1.1rem; }
+  .sunlit-rail-cable { position: absolute; top: 1.5rem; bottom: 1.5rem; left: .48rem; width: 3px; background: var(--color-ink); }
+  .sunlit-ticket-rail button { position: relative; display: grid; min-height: 3.75rem; grid-template-columns: 1rem 1fr; align-items: center; gap: .7rem; padding: .5rem .75rem; border: 0; border-radius: .3rem; background: transparent; color: var(--color-ink); text-align: left; cursor: pointer; }
+  .sunlit-ticket-rail button::before { content: ""; position: absolute; left: -1.02rem; width: .78rem; height: .78rem; border: 3px solid var(--color-ink); border-radius: 50%; background: var(--color-bg); }
+  .sunlit-ticket-rail button[aria-selected="true"] { background: var(--color-accent); box-shadow: 0 3px 0 var(--color-ink); }
+  .sunlit-ticket-rail button[aria-selected="true"]::before { background: var(--color-primary); }
+  .sunlit-ticket-rail button span { width: .7rem; height: .7rem; transform: rotate(45deg); border: 2px solid var(--color-ink); background: var(--color-bg); }
+  .sunlit-ticket-rail button[aria-selected="true"] span { background: var(--color-primary); }
+  .sunlit-ticket-rail button strong { font-size: .92rem; line-height: 1.15; }
+  .sunlit-stage-frame { position: relative; min-width: 0; padding-top: 2.5rem; }
+  .sunlit-stage-canopy { position: absolute; top: 0; right: 7%; left: 7%; height: 5.4rem; overflow: hidden; pointer-events: none; }
+  .sunlit-stage-canopy::before, .sunlit-stage-canopy::after, .sunlit-stage-canopy span { content: ""; position: absolute; bottom: 0; width: 44%; height: 100%; border-radius: 50% 50% 0 0; }
+  .sunlit-stage-canopy::before { left: 0; background: var(--color-secondary); }
+  .sunlit-stage-canopy::after { right: 0; background: var(--color-primary); }
+  .sunlit-stage-canopy span { left: 30%; background: var(--color-accent); }
+  .sunlit-stage-canopy i { position: absolute; top: 0; right: 10%; width: 2px; height: 2.8rem; background: var(--color-ink); }
+  .sunlit-stage-canopy i::after { content: ""; position: absolute; top: 2.4rem; left: -.55rem; width: 1.1rem; height: 1.1rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
+  .sunlit-stage-scene { position: relative; display: grid; overflow: hidden; border: 2px solid var(--color-ink); background: var(--color-accent); box-shadow: 0 6px 0 var(--color-ink); transition: background 220ms cubic-bezier(.22, 1, .36, 1); }
+  .sunlit-stage-scene::before, .sunlit-stage-scene::after { content: ""; position: absolute; z-index: 0; pointer-events: none; transition: transform 280ms cubic-bezier(.22, 1, .36, 1), background 220ms ease; }
+  .sunlit-stage-scene::before { right: -5rem; bottom: -7rem; width: 20rem; height: 20rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
+  .sunlit-stage-scene::after { top: 10%; left: 4%; width: 5rem; height: 68%; border: 2px solid var(--color-ink); border-radius: 50% 50% 0 0; background: var(--color-secondary); }
+  [data-active-tone="1"] .sunlit-stage-scene { background: var(--color-secondary); }
+  [data-active-tone="1"] .sunlit-stage-scene::before { transform: translate(-16rem, -2rem); background: var(--color-accent); }
+  [data-active-tone="1"] .sunlit-stage-scene::after { transform: translateX(34rem); background: var(--color-primary); }
+  [data-active-tone="2"] .sunlit-stage-scene { background: var(--color-primary); }
+  [data-active-tone="2"] .sunlit-stage-scene::before { transform: translate(-7rem, -13rem) scale(.75); background: var(--color-secondary); }
+  [data-active-tone="2"] .sunlit-stage-scene::after { transform: translate(17rem, 7rem) rotate(90deg); background: var(--color-accent); }
+  [data-active-tone="1"] .sunlit-stage-canopy::before { background: var(--color-primary); }
+  [data-active-tone="1"] .sunlit-stage-canopy::after { background: var(--color-accent); }
+  [data-active-tone="1"] .sunlit-stage-canopy span { background: var(--color-secondary); }
+  [data-active-tone="2"] .sunlit-stage-canopy::before { background: var(--color-accent); }
+  [data-active-tone="2"] .sunlit-stage-canopy::after { background: var(--color-secondary); }
+  [data-active-tone="2"] .sunlit-stage-canopy span { background: var(--color-primary); }
+  .sunlit-project-panel { position: relative; z-index: 1; grid-area: 1 / 1; min-height: 33rem; }
+  .sunlit-project-panel:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(15rem, .75fr); align-items: center; gap: clamp(1rem, 3vw, 2.5rem); padding: clamp(1.25rem, 4vw, 3.5rem); }
+  .sunlit-project-proof { position: relative; min-width: 0; transform: rotate(-1deg); }
+  .sunlit-project-proof figure { position: relative; display: grid; height: clamp(18rem, 34vw, 27rem); margin: 0; overflow: hidden; place-items: center; border: 10px solid var(--color-bg); box-shadow: 0 6px 0 var(--color-ink); background: color-mix(in oklch, var(--color-secondary), white 72%); }
+  .sunlit-project-proof img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center top; }
+  .sunlit-project-proof figure[data-media-kind="site"] img,
+  .sunlit-project-proof figure[data-media-kind="public-site"] img { object-fit: cover; }
+  .sunlit-project-proof figure[data-media-kind="diagram"],
+  .sunlit-project-proof figure[data-media-kind="private-system"] { background: var(--color-bg); }
+  .sunlit-proof-pin { position: absolute; top: -.45rem; left: 50%; z-index: 2; width: .9rem; height: .9rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); box-shadow: 0 2px 0 var(--color-ink); }
+  .sunlit-proof-stamp { position: absolute; right: -1rem; bottom: -1rem; padding: .5rem .75rem; transform: rotate(-3deg); border: 3px double var(--color-secondary-ink); background: var(--color-bg); color: var(--color-secondary-ink); font-size: .75rem; font-weight: 780; text-transform: uppercase; }
+  .sunlit-project-copy { display: grid; align-content: center; gap: .8rem; }
+  .sunlit-project-copy > p:first-child { margin: 0; font-size: .86rem; font-weight: 720; }
+  .sunlit-project-copy h3 { margin: 0; font-size: clamp(2rem, 4vw, 3.8rem); font-weight: 780; letter-spacing: -.035em; line-height: 1; }
+  .sunlit-project-copy p { margin: 0; font-size: 1.05rem; line-height: 1.55; }
+  .sunlit-project-copy a { display: inline-flex; min-height: 3rem; width: fit-content; align-items: center; gap: 1.5rem; margin-top: .5rem; padding: 0 1rem; border: 2px solid var(--color-ink); border-radius: .55rem; background: var(--color-primary); text-decoration: none; font-weight: 760; box-shadow: 0 3px 0 var(--color-ink); }
+  .sunlit-door { position: absolute; top: 0; bottom: 0; z-index: 8; width: 50.5%; border: 2px solid var(--color-secondary-ink); background: var(--color-secondary); transition: transform 300ms cubic-bezier(.22, 1, .36, 1); }
+  .sunlit-door::before, .sunlit-door::after { content: ""; position: absolute; border: 2px solid color-mix(in oklch, var(--color-secondary-ink), transparent 42%); border-radius: 45% 45% .5rem .5rem; }
+  .sunlit-door::before { inset: 8% 12% 54%; }
+  .sunlit-door::after { inset: 52% 12% 8%; }
+  .sunlit-door span { position: absolute; top: 50%; width: .72rem; height: .72rem; border: 2px solid var(--color-secondary-ink); border-radius: 50%; background: var(--color-primary); }
+  .sunlit-door-left { left: 0; transform: translateX(-102%); }
+  .sunlit-door-right { right: 0; transform: translateX(102%); }
+  .sunlit-door-left span { right: .7rem; }
+  .sunlit-door-right span { left: .7rem; }
+  [data-stage-state="closing"] .sunlit-door, [data-stage-state="swapping"] .sunlit-door { transform: translateX(0); }
+  [data-stage-state="opening"] .sunlit-door-left, [data-stage-state="open"] .sunlit-door-left { transform: translateX(-102%); }
+  [data-stage-state="opening"] .sunlit-door-right, [data-stage-state="open"] .sunlit-door-right { transform: translateX(102%); }
+  .sunlit-stage-platform { position: relative; height: 3rem; margin: 0 2%; border: 2px solid var(--color-ink); border-top: 0; border-radius: 0 0 50% 50%; background: var(--color-primary); box-shadow: 0 5px 0 var(--color-ink); transition: transform 560ms cubic-bezier(.22, 1, .36, 1); }
+  [data-assembled="false"] .sunlit-stage-platform { transform: translateY(.7rem); }
+  .sunlit-ledger-stack { margin: 1.5rem 0 0 calc(15rem + 1.5rem); }
+  .sunlit-proof-ledger { display: grid; grid-template-columns: repeat(3, 1fr); border: 2px solid var(--color-ink); background: var(--color-bg); }
+  .sunlit-proof-ledger[hidden] { display: none; }
+  .sunlit-proof-ledger > div { display: grid; min-width: 0; grid-template-columns: 2.3rem 1fr; gap: .15rem .6rem; padding: 1rem; border-right: 1px solid var(--color-rule); }
+  .sunlit-proof-ledger > div:last-child { border-right: 0; }
+  .sunlit-proof-ledger span { grid-row: 1 / 3; display: grid; width: 2rem; height: 2rem; place-items: center; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
+  .sunlit-proof-ledger strong { font-size: .82rem; }
+  .sunlit-proof-ledger p { margin: 0; overflow: hidden; color: var(--color-muted); font-size: .78rem; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+  @media (max-width: 850px) {
+    .sunlit-stage-heading { grid-template-columns: 1fr; }
+    .sunlit-stage-layout { grid-template-columns: 1fr; }
+    .sunlit-rail-hint { display: block; margin: 0 0 .4rem; color: var(--color-secondary-ink); font-size: .88rem; font-weight: 700; }
+    .sunlit-ticket-rail { overflow-x: auto; flex-direction: row; justify-content: flex-start; padding: .25rem .15rem .8rem; scroll-snap-type: x proximity; scrollbar-color: var(--color-secondary) transparent; }
+    .sunlit-rail-cable { display: none; }
+    .sunlit-ticket-rail button { min-width: 10rem; scroll-snap-align: start; }
+    .sunlit-ticket-rail button::before { display: none; }
+    .sunlit-ledger-stack { margin-left: 0; }
+  }
+  @media (max-width: 650px) {
+    .sunlit-stage-frame { padding-top: 1.6rem; }
+    .sunlit-project-panel { min-height: 0; }
+    .sunlit-project-panel:not([hidden]) { grid-template-columns: 1fr; align-content: start; }
+    .sunlit-project-proof figure { height: 13rem; border-width: 7px; }
+    .sunlit-project-copy { align-content: start; gap: .55rem; }
+    .sunlit-project-copy h3 { font-size: clamp(1.8rem, 10vw, 2.7rem); }
+    .sunlit-project-copy p { font-size: .98rem; line-height: 1.42; }
+    .sunlit-project-copy a { min-height: 2.8rem; margin-top: .15rem; }
+    .sunlit-proof-ledger { grid-template-columns: 1fr; }
+    .sunlit-proof-ledger > div { border-right: 0; border-bottom: 1px solid var(--color-rule); }
+    .sunlit-proof-ledger > div:last-child { border-bottom: 0; }
+  }
+  @media (max-width: 360px) {
+    .sunlit-project-stage { margin-block: 3.5rem; }
+    .sunlit-project-panel:not([hidden]) { padding: 1rem; }
+    .sunlit-project-proof figure { height: 11.5rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sunlit-door, .sunlit-stage-platform, .sunlit-stage-scene, .sunlit-stage-scene::before, .sunlit-stage-scene::after { transition: none; }
+    [data-stage-state] .sunlit-door-left { transform: translateX(-102%); }
+    [data-stage-state] .sunlit-door-right { transform: translateX(102%); }
+  }
+</style>

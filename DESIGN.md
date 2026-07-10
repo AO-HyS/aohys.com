@@ -10,37 +10,45 @@ brand
 
 The public site should feel like a senior engineering review translated into a memorable brand surface: precise, architectural, outcome-driven, and evidence-led. It should avoid the default "developer portfolio" and the default "SaaS landing page". The visitor should remember the judgment behind the work, not a list of tools.
 
-Physical scene: a product architecture review on a clean white drafting table, with redline decisions, screenshots, system maps, and deployment proof arranged like evidence.
+Physical scene: a sunlit product stage in a small, beautifully made theatre. Real project evidence sits inside a fixed proscenium; olive doors close, the set changes behind them, and the doors reopen on the next project. Honey rails, apricot tickets, brown ink, screenshots, decisions, and release proof make the work feel tangible without turning it into a theme park.
 
 ## Color Strategy
 
 Use a full-palette brand system with restrained application. The surface stays clean and high-contrast, but the brand should feel optimistic, precise, and human instead of black-white-red or monochrome. Color appears as proof marks, CTA fills, system paths, section signals, focus states, and small architectural annotations. Do not create a warm cream or beige editorial page.
 
-Primary direction: honey + mint on white for the public site, with dark ink + pastel signal for architecture sections.
+Primary direction: honey + olive + apricot on neutral white, with brown ink for text, structure, and dark surfaces. The palette is warm, optimistic, slightly retro-modern, and playful without becoming childish. Honey carries primary actions and active rails. Olive carries stage doors, supportive fields, and positive states. Apricot carries hover, proof, and human energy. Brown ink replaces black, navy, and cold technical blue.
 
 Starter OKLCH palette:
 
 ```css
 :root {
   --color-bg: oklch(1 0 0);
-  --color-surface: oklch(0.965 0.002 260);
-  --color-ink: oklch(0.18 0.012 260);
-  --color-muted: oklch(0.42 0.018 250);
-  --color-rule: oklch(0.88 0.006 260);
-  --color-primary: oklch(0.70 0.145 78);
-  --color-primary-ink: oklch(0.15 0.015 80);
-  --color-mint: oklch(0.78 0.105 160);
-  --color-mint-ink: oklch(0.18 0.04 165);
-  --color-sky: oklch(0.74 0.09 240);
-  --color-sky-ink: oklch(0.18 0.04 245);
-  --color-coral: oklch(0.68 0.15 35);
-  --color-coral-ink: oklch(1 0 0);
-  --color-dark: oklch(0.09 0.006 260);
-  --color-dark-surface: oklch(0.14 0.01 260);
+  --color-surface: oklch(0.975 0.008 122);
+  --color-ink: oklch(0.3649 0.0215 61.4); /* #473C33 */
+  --color-muted: oklch(0.50 0.025 61.4);
+  --color-rule: oklch(0.86 0.025 80);
+  --color-primary: oklch(0.8623 0.1290 80); /* #FEC868 */
+  --color-primary-ink: oklch(0.3649 0.0215 61.4);
+  --color-secondary: oklch(0.7779 0.1104 121.8); /* #ABC270 */
+  --color-secondary-ink: oklch(0.30 0.025 61.4);
+  --color-accent: oklch(0.8008 0.1283 55.5); /* #FDA769 */
+  --color-accent-ink: oklch(0.30 0.025 61.4);
+  --color-dark: oklch(0.3649 0.0215 61.4);
+  --color-dark-surface: oklch(0.31 0.022 61.4);
+  --color-dark-ink: oklch(0.98 0.006 80);
 }
 ```
 
-The updated seed color came from Impeccable seed `seed-149`: `oklch(0.600 0.124 70.0)`. Keep the primary hue in the honey/amber family, but tune lightness/chroma so it reads as optimistic and professional rather than warning-orange. Mint is for architecture/system flow, sky is for links and informational states, coral is for rare emphasis, and dark ink is for high-contrast technical sections.
+The approved source colors came from the user's July 2026 palette reference. Preserve their relationships and recognizable hex equivalents: olive `#ABC270`, honey `#FEC868`, apricot `#FDA769`, and brown ink `#473C33`. Use neutral white for breathing room; occasional pale fields may be tinted subtly toward olive, but the page must not become cream, sand, or beige.
+
+Approved palette contract (July 2026):
+
+- Honey is the unmistakable primary brand color.
+- Olive is the structural and motion color: doors, rails, selection, and supportive surfaces.
+- Apricot is an accent for proof, hover, tickets, and human warmth.
+- Brown ink carries body text, rules, diagrams, and dark sections.
+- Blue, navy, cyan, purple, violet, and mint are not brand colors.
+- Near-white stays neutral; warmth comes from the palette, not a cream page background.
 
 ## Typography
 
@@ -128,7 +136,7 @@ Avoid:
 
 The visual system should use generated editorial assets and sanitized screenshots together.
 
-Generated assets should show:
+Generated assets, when they are genuinely needed, should show:
 
 - Business goals becoming product systems.
 - Architecture, workflows, deploy paths, and decision maps.
@@ -140,18 +148,26 @@ Media architecture: Cloudflare stores and optimizes images; Convex stores metada
 
 ## Motion
 
-Motion should feel like review, assembly, and reveal: annotations settle, screenshots align, proof artifacts enter with purpose. Do not gate content behind animation. Reduced motion must be supported.
+Motion should feel like a well-made product theatre: the stage stays put while the set changes. Project selection closes two olive doors over the current scene, swaps the real project content behind them, and reopens to reveal the next scene. The active ticket travels along a honey rail; proof stamps and annotations settle only after the reveal. Do not navigate away or replace the surrounding layout when switching projects. Do not gate content behind animation. Reduced motion must be supported.
 
 Use motion sparingly:
 
-- One strong first-load composition.
-- Small state transitions for navigation, language switching, and dashboard interactions.
+- One strong first-load composition in which the stage assembles without delaying readable content.
+- Door transitions use transform and clip-path, never animated layout properties. Closing, content swap, and opening form one short sequence; rapid selections are safely serialized or coalesced.
+- Project selection remains keyboard- and touch-operable with correct tab semantics and announced state.
+- Reduced motion replaces the door travel with an immediate content swap and a short crossfade.
+- Small state transitions support navigation, language switching, proof tickets, and dashboard interactions.
 - No bounce, elastic, or generic fade-on-scroll everywhere.
 
 ## Components And Surfaces
 
 Public site:
 
+- Global shell: compact sticky header, neutral white canvas, brown rules, honey primary action, and page-specific stage treatment.
+- Home stage: data-driven project selector using published Content Graph entries and Cloudflare media; the doors close and reopen in place when selection changes.
+- Project archive and case studies: ticket/rail navigation and evidence-led editorial rows, not identical cards.
+- Architecture and practice: production-line sequencing that connects business pressure, decisions, implementation, verification, and release.
+- Resume, contact, privacy, and legal pages: quieter compositions using the same palette, typography, controls, and proof language rather than a separate visual theme.
 - Primary CTA: "Start a conversation" / "Hablemos".
 - Secondary CTA: "View selected work" / equivalent Spanish copy.
 - WhatsApp CTA: large but discreet, integrated into contact.
@@ -174,3 +190,6 @@ Dashboard:
 - Do not use terminal aesthetics as shorthand for engineering quality.
 - Do not use beige editorial restraint as the default.
 - Do not use generic AI illustrations, glassmorphism, gradient text, or soft bordered shadow cards.
+- Do not use cold corporate blue, navy, purple, violet, cyan, or mint as brand colors.
+- Do not turn the stage into skeuomorphic machinery, a theme park, or a collection of fake dashboards. Real content and screenshots remain the evidence.
+- Do not navigate to a new route when a visitor changes the active project inside the home stage.

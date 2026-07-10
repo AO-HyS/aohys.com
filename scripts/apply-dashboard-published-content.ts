@@ -155,7 +155,7 @@ function slugFromContentId(contentId: string): string {
   return contentId.slice("case-study:".length);
 }
 
-function caseStudyPath(contentId: string, locale: Locale): string {
+function projectPath(contentId: string, locale: Locale): string {
   const slug = slugFromContentId(contentId);
 
   return locale === "es" ? `/es/casos/${slug}` : `/case-studies/${slug}`;
@@ -178,10 +178,10 @@ function contentIdFromPath(href: string, locale: Locale): string | undefined {
 
   if (locale === "es") {
     if (normalized === "/es/contacto") return "contact";
-    if (normalized === "/es/casos") return "case-studies";
-    if (normalized === "/es/cv") return "resume";
+    if (normalized === "/es/blog" || normalized === "/es/casos") return "case-studies";
+    if (normalized === "/es/precios" || normalized === "/es/cv" || normalized === "/es/curriculum") return "resume";
     if (normalized === "/es/arquitectura") return "architecture";
-    const dynamicMatch = normalized.match(/^\/es\/casos\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
+    const dynamicMatch = normalized.match(/^\/es\/(?:blog|casos)\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
 
     if (dynamicMatch?.[1]) {
       return `case-study:${dynamicMatch[1]}`;
@@ -191,10 +191,10 @@ function contentIdFromPath(href: string, locale: Locale): string | undefined {
   }
 
   if (normalized === "/contact") return "contact";
-  if (normalized === "/case-studies") return "case-studies";
-  if (normalized === "/resume") return "resume";
+  if (normalized === "/blog" || normalized === "/case-studies") return "case-studies";
+  if (normalized === "/pricing" || normalized === "/resume") return "resume";
   if (normalized === "/architecture") return "architecture";
-  const dynamicMatch = normalized.match(/^\/case-studies\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
+  const dynamicMatch = normalized.match(/^\/(?:blog|case-studies)\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
 
   if (dynamicMatch?.[1]) {
     return `case-study:${dynamicMatch[1]}`;
@@ -231,7 +231,7 @@ function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
   const structureFallback = structureFallbackForDraft(draft);
 
   return {
-    path: caseStudyPath(draft.contentId, locale),
+    path: projectPath(draft.contentId, locale),
     title,
     summary: draft.summary,
     seoDescription: draft.seoDescription,

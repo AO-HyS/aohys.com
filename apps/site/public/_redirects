@@ -1,0 +1,8 @@
+/blog /case-studies 301
+/blog/* /case-studies/:splat 301
+/agents /practice 301
+/pricing /resume 301
+/es/blog /es/casos 301
+/es/blog/* /es/casos/:splat 301
+/es/agentes /es/practica 301
+/es/precios /es/curriculum 301

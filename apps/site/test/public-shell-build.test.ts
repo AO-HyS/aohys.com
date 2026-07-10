@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { getHomePageContent } from "@aohys/content-graph";
 import { describe, expect, it } from "vitest";
 
 const siteRoot = process.cwd();
@@ -10,10 +11,7 @@ function read(relativePath: string) {
 }
 
 function listFiles(dir: string): string[] {
-  if (!existsSync(dir)) {
-    return [];
-  }
-
+  if (!existsSync(dir)) return [];
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const entryPath = path.join(dir, entry.name);
     return entry.isDirectory() ? listFiles(entryPath) : entryPath;
@@ -21,7 +19,7 @@ function listFiles(dir: string): string[] {
 }
 
 describe("built public shell", () => {
-  it("renders the home shell with SEO copy and approved visual tokens", () => {
+  it("renders the Sunlit Product Stage with graph content and the approved palette", () => {
     const indexPath = path.join(distRoot, "index.html");
     expect(existsSync(indexPath), "dist/index.html must exist after build").toBe(true);
 
@@ -30,34 +28,66 @@ describe("built public shell", () => {
       .filter((filePath) => filePath.endsWith(".css"))
       .map((filePath) => readFileSync(filePath, "utf8"))
       .join("\n");
-    const sourceCss = read("src/styles/global.css");
     const styleClasses = read("src/styles/classes.ts");
+    const stageSource = read("src/components/sunlit/SunlitProjectStage.astro");
+    const proofMediaSource = read("src/components/sunlit/proof-media.ts");
+    const proofImageSource = read("src/components/sunlit/SunlitProofImage.astro");
+    const outcomes = getHomePageContent("en").selectedOutcomes;
 
     expect(html).toContain('<html lang="en"');
-    expect(html).toMatch(/<title>(Alejandro Ortiz Corro|AOHYS)/);
-    expect(html).toContain('name="description"');
-    expect(html).toContain("business software");
-    expect(html).toContain("sell, operate, and ship");
     expect(html).toContain('data-site-shell="public"');
     expect(html).toContain('href="/case-studies"');
     expect(html).toContain('href="/architecture"');
     expect(html).toContain('href="/resume"');
     expect(html).toContain('href="/contact"');
-    expect(html).toContain("Start a conversation");
-    expect(html).toContain("View selected work");
-    expect(html).toContain("/images/brand/aohys-logo.png");
-    expect(html).toContain("Public code, private client work.");
-    expect(html).toContain("Client code, product code");
-    expect(html).not.toContain("Download ATS PDF");
-    expect(html).not.toMatch(/lorem|\btodo\b|placeholder/i);
-    expect(css).toContain("--color-primary");
-    expect(css).toContain("--color-mint");
+    expect(html).toContain(">Work<");
+    expect(html).toContain(">Practice<");
+    expect(html).toContain(">Architecture<");
+    expect(html).toContain(">About<");
+    expect(html).toContain(">Talk<");
+    expect(html).toContain('data-project-stage');
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain('role="tabpanel"');
+    expect(html).toContain('data-stage-door="left"');
+    expect(html).toContain('data-stage-door="right"');
+    expect(html).toContain('aria-live="polite"');
+    expect(html).toContain('aria-busy="false"');
+    expect(outcomes).not.toHaveLength(0);
+    for (const outcome of outcomes) {
+      expect(html).toContain(`data-content-id="${outcome.contentId}"`);
+      expect(html).toContain(`href="${outcome.path}"`);
+    }
+    expect(html).not.toMatch(/aohys-pixel|pixel-product-landscape|pixel-hills|pixel-lake/i);
+    expect(html).not.toMatch(/>Solutions<|>Agents<|>Pricing<|>Docs<|>Blog</);
+    expect(styleClasses).toContain("[--color-primary:oklch(0.8623_0.129_80)]");
+    expect(styleClasses).toContain("[--color-secondary:oklch(0.7779_0.1104_121.8)]");
+    expect(styleClasses).toContain("[--color-accent:oklch(0.8008_0.1283_55.5)]");
+    expect(styleClasses).toContain("[--color-ink:oklch(0.3649_0.0215_61.4)]");
+    expect(styleClasses).toContain("[--color-focus:oklch(0.3649_0.0215_61.4)]");
+    expect(styleClasses).not.toMatch(/--color-(?:mint|sky|coral|lilac|aqua)/);
+    expect(styleClasses).toContain("overflow-x-clip");
+    expect(styleClasses).not.toContain("overflow-x-hidden");
     expect(css).toMatch(/Mona Sans Variable|Mona_Sans_Variable/);
     expect(css).toMatch(/Atkinson Hyperlegible Next Variable|Atkinson_Hyperlegible_Next_Variable/);
     expect(css).toContain("prefers-reduced-motion");
-    expect(sourceCss.trim()).toBe('@import "tailwindcss";');
-    expect(styleClasses).toContain("oklch(");
-    expect(styleClasses).toMatch(/Mona_Sans_Variable|Mona Sans/);
-    expect(styleClasses).toMatch(/Atkinson_Hyperlegible_Next|Atkinson Hyperlegible Next/);
+    expect(proofMediaSource).toMatch(/dashboardMedia\?\.thumbSrc[\s\S]*dashboardMedia\?\.src[\s\S]*staticMedia\?\.thumbSrc[\s\S]*staticMedia\?\.src[\s\S]*evidenceSrc[\s\S]*BRAND_FALLBACK_SRC/);
+    expect(proofImageSource).toContain('candidate.addEventListener("error"');
+    expect(proofImageSource).toContain("currentIndex + 1");
+    expect(proofImageSource).toContain('candidate.dataset.fallbackExhausted = "true"');
+    expect(stageSource).toContain("resolveProofMedia");
+    expect(stageSource).toContain("SunlitProofImage");
+    expect(stageSource).toContain("requestedIndex");
+    expect(stageSource).toContain('data-active-tone="0"');
+    expect(stageSource).toContain("stage.dataset.activeTone");
+    expect(stageSource).toContain("object-fit: contain");
+    expect(stageSource).toContain("grid-area: 1 / 1");
+    expect(stageSource).not.toContain(".sunlit-project-panel { position: absolute");
+    expect(stageSource).not.toContain(".sunlit-stage-scene { min-height: 34rem");
+    expect(stageSource).toContain('figure[data-media-kind="site"]');
+    expect(stageSource).toContain("sunlit-rail-hint");
+    expect(stageSource).toContain("aria-selected");
+    expect(stageSource).toContain("ArrowRight");
+    expect(stageSource).toContain("Home");
+    expect(stageSource).toContain("End");
   });
 });

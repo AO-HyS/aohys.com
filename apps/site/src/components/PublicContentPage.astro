@@ -7,36 +7,128 @@ import {
   getLocalizedPath,
   getPrivacyPageContent,
   getResumePageContent,
-  STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID,
   type ContentId,
   type PublicRoute,
 } from "@aohys/content-graph";
-import { DASHBOARD_PUBLIC_MEDIA_BY_CONTENT_ID } from "../generated/dashboard-public-media";
 import { DASHBOARD_PUBLIC_SETTINGS } from "../generated/dashboard-public-settings";
 import { getUiCopy } from "../i18n";
-import { cx, proofImageClass, screenshotImageClass, ui } from "../styles/classes";
+import SunlitCtaBand from "./sunlit/SunlitCtaBand.astro";
+import SunlitProcessRail from "./sunlit/SunlitProcessRail.astro";
+import SunlitProjectStage from "./sunlit/SunlitProjectStage.astro";
+import SunlitProofImage from "./sunlit/SunlitProofImage.astro";
+import { resolveProofMedia } from "./sunlit/proof-media";
 
-interface Props {
-  route: PublicRoute;
-}
+interface Props { route: PublicRoute; }
 
 const { route } = Astro.props;
 const { id, locale, node, variant } = route;
+const copy = getUiCopy(locale).publicPage;
+const contactCopy = getUiCopy(locale).contactForm;
+const homeContent = getHomePageContent(locale);
+const caseStudyIndexContent = getCaseStudyIndexContent(locale);
+const architectureContent = id === "architecture" ? getArchitecturePageContent(locale) : undefined;
+const caseStudyContent = node.type === "case-study" ? getCaseStudyPageContent(id, locale) : undefined;
+const resumeContent = node.type === "resume" ? getResumePageContent(locale) : undefined;
+const privacyContent = node.type === "privacy" ? getPrivacyPageContent(locale) : undefined;
 const isHome = id === "home";
+const isPractice = id === "practice";
 const isArchitecture = id === "architecture";
-const isCaseStudyIndex = node.type === "case-study-index";
+const isWorkIndex = node.type === "case-study-index";
 const isCaseStudy = node.type === "case-study";
 const isResume = node.type === "resume";
 const isContact = node.type === "contact";
 const isPrivacy = node.type === "privacy";
-const copy = getUiCopy(locale).publicPage;
-const contactCopy = getUiCopy(locale).contactForm;
-const homeContent = isHome ? getHomePageContent(locale) : undefined;
-const architectureContent = isArchitecture ? getArchitecturePageContent(locale) : undefined;
-const caseStudyIndexContent = isCaseStudyIndex ? getCaseStudyIndexContent(locale) : undefined;
-const caseStudyContent = isCaseStudy ? getCaseStudyPageContent(id, locale) : undefined;
-const resumeContent = isResume ? getResumePageContent(locale) : undefined;
-const privacyContent = isPrivacy ? getPrivacyPageContent(locale) : undefined;
+const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
+const publicContactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL ?? "alejandro.ortiz@aohys.com";
+const publicWhatsAppUrl = DASHBOARD_PUBLIC_SETTINGS.PUBLIC_WHATSAPP_URL ?? import.meta.env.PUBLIC_WHATSAPP_URL ?? "https://wa.me/522299020825";
+const directEmailHref = `mailto:${publicContactEmail}`;
+
+const labels = locale === "es" ? {
+  available: "Disponible para proyectos seleccionados",
+  work: "Trabajo",
+  practice: "Práctica",
+  architecture: "Arquitectura",
+  about: "Sobre mí",
+  talk: "Hablemos",
+  viewWork: "Ver trabajo",
+  viewProject: "Abrir caso",
+  publicProof: "Prueba pública",
+  selectedStage: "Cada proyecto cambia de escenario. La prueba queda a la vista.",
+  selectedStageIntro: "Elige un proyecto. Las puertas se cierran, la evidencia cambia detrás y el escenario vuelve a abrirse sin sacarte de la página.",
+  process: "El resultado se ve. El criterio también.",
+  workArchive: "Archivo de trabajo",
+  workArchiveBody: "Sistemas públicos, productos activos y experiencia confidencial contados con límites claros y evidencia revisable.",
+  evidence: "Evidencia",
+  readCase: "Leer caso",
+  source: "Fuente pública",
+  role: "Rol",
+  constraints: "Restricciones",
+  related: "Más trabajo revisable",
+  profile: "Perfil de entrega",
+  experience: "Experiencia",
+  capabilities: "Capacidades",
+  projects: "Proyectos clave",
+  education: "Educación e idiomas",
+  download: "Abrir CV en PDF",
+  contactRail: "Una conversación concreta empieza con contexto útil.",
+  privacyRail: "Datos claros. Límites visibles.",
+  formAside: "Cuéntame qué debe existir, mejorar o volverse confiable.",
+  direct: "Contacto directo",
+  verified: "Prueba verificada",
+  openLink: "Abrir enlace",
+  casePath: "Ruta del caso",
+  contactSteps: ["Objetivo", "Contexto", "Respuesta"],
+} : {
+  available: "Available for selected projects",
+  work: "Work",
+  practice: "Practice",
+  architecture: "Architecture",
+  about: "About",
+  talk: "Talk",
+  viewWork: "View work",
+  viewProject: "Open case",
+  publicProof: "Public proof",
+  selectedStage: "Every project changes the set. The proof stays in view.",
+  selectedStageIntro: "Choose a project. The doors close, the evidence changes behind them, and the same stage reopens without taking you to a new page.",
+  process: "The outcome is visible. So is the judgment.",
+  workArchive: "Work archive",
+  workArchiveBody: "Public systems, active products, and confidential experience told with clear boundaries and reviewable evidence.",
+  evidence: "Evidence",
+  readCase: "Read case",
+  source: "Public source",
+  role: "Role",
+  constraints: "Constraints",
+  related: "More reviewable work",
+  profile: "Delivery profile",
+  experience: "Experience",
+  capabilities: "Capabilities",
+  projects: "Key projects",
+  education: "Education and languages",
+  download: "Open resume PDF",
+  contactRail: "A useful conversation starts with concrete context.",
+  privacyRail: "Clear data. Visible boundaries.",
+  formAside: "Tell me what needs to exist, improve, or become reliable.",
+  direct: "Direct contact",
+  verified: "Verified proof",
+  openLink: "Open link",
+  casePath: "Case path",
+  contactSteps: ["Goal", "Context", "Reply"],
+};
+
+function localizedHref(contentId?: ContentId) {
+  return contentId ? getLocalizedPath(contentId, locale) : undefined;
+}
+
+const primaryHref = localizedHref(variant.primaryActionContentId);
+const secondaryHref = localizedHref(variant.secondaryActionContentId);
+function mediaForContentId(contentId: string, evidenceSrc?: string, evidenceAlt?: string) {
+  return resolveProofMedia(contentId, evidenceSrc, evidenceAlt ?? copy.mediaAlts.architecturePreview);
+}
+
+const firstOutcome = homeContent.selectedOutcomes[0];
+const caseMedia = isCaseStudy && caseStudyContent
+  ? mediaForContentId(String(id), caseStudyContent.publicEvidence[0]?.src, caseStudyContent.publicEvidence[0]?.altText)
+  : undefined;
 const caseStudySections = caseStudyContent ? [
   caseStudyContent.problem,
   caseStudyContent.businessOutcome,
@@ -46,987 +138,697 @@ const caseStudySections = caseStudyContent ? [
   caseStudyContent.executionHighlights,
   caseStudyContent.qualitySecurityPerformance,
 ] : [];
-
-function actionHref(contentId?: ContentId): string | undefined {
-  return contentId ? getLocalizedPath(contentId, locale) : undefined;
-}
-
-const primaryHref = actionHref(variant.primaryActionContentId);
-const secondaryHref = actionHref(variant.secondaryActionContentId);
-const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
-const publicContactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL ?? "alejandro.ortiz@aohys.com";
-const publicWhatsAppUrl = DASHBOARD_PUBLIC_SETTINGS.PUBLIC_WHATSAPP_URL ?? import.meta.env.PUBLIC_WHATSAPP_URL ?? "https://wa.me/522299020825";
-const directEmailHref = `mailto:${publicContactEmail}`;
-
-function splitHeadline(headline: string): string[] {
-  const parts = headline.split(". ");
-  return parts.map((part, index) => {
-    if (index < parts.length - 1 && !part.endsWith(".")) {
-      return `${part}.`;
-    }
-
-    return part;
-  });
-}
-
-const homeHeadlineParts = homeContent ? splitHeadline(homeContent.headline) : [];
-
-const routeSignalById: Partial<Record<ContentId | string, string>> = {
-  "case-studies": locale === "es" ? "Trabajo que puedo mostrar" : "Work I can show",
-  architecture: locale === "es" ? "Sistema público" : "Public system",
-  resume: locale === "es" ? "Contexto profesional" : "Professional context",
-  contact: locale === "es" ? "Contacto directo" : "Direct contact",
-  privacy: locale === "es" ? "Límite de privacidad" : "Privacy boundary",
-  practice: locale === "es" ? "Práctica de ingeniería" : "Engineering practice",
-};
-const routeSignal = routeSignalById[id] ?? variant.summary;
-
-const fallbackEvidenceImageByContentId: Partial<Record<ContentId | string, { src: string; thumbSrc?: string; alt: string; kind: string }>> = {
-  "case-study:casa-roca": {
-    ...STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:casa-roca"],
-    alt: locale === "es" ? "Captura pública del sitio Casa Roca en producción" : "Public Casa Roca production website screenshot",
-  },
-  "case-study:the-barber-central": {
-    ...STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:the-barber-central"],
-    alt: locale === "es" ? "Landing page de desarrollo de The Barber Central" : "The Barber Central development landing page",
-  },
-  "case-study:nutri-plan": {
-    ...STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:nutri-plan"],
-    alt: locale === "es" ? "Dashboard administrativo de Nutri Plan" : "Nutri Plan administrative dashboard",
-  },
-  "case-study:enterprise-systems": {
-    ...STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:enterprise-systems"],
-    alt: locale === "es" ? "Mapa público seguro de trabajo enterprise confidencial" : "Public-safe map of confidential enterprise systems work",
-  },
-  "case-study:engineering-practice": {
-    ...STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:engineering-practice"],
-    alt: locale === "es" ? "Superficie visual de arquitectura pública de AOHYS" : "AOHYS public architecture proof surface",
-  },
-};
-const evidenceImageByContentId: Partial<Record<ContentId | string, { src: string; thumbSrc?: string; alt: string; kind: string }>> = {
-  ...fallbackEvidenceImageByContentId,
-  ...DASHBOARD_PUBLIC_MEDIA_BY_CONTENT_ID,
-};
-
-function evidenceImageForContent(contentId: string) {
-  return evidenceImageByContentId[contentId];
-}
-
-function evidenceImageForPath(path: string) {
-  const normalizedPath = path.replace(/\/$/, "");
-  const dynamicSlug = normalizedPath.match(/^\/case-studies\/([a-z0-9]+(?:-[a-z0-9]+)*)$/)?.[1]
-    ?? normalizedPath.match(/^\/es\/casos\/([a-z0-9]+(?:-[a-z0-9]+)*)$/)?.[1];
-
-  if (dynamicSlug) {
-    const dynamicImage = evidenceImageForContent(`case-study:${dynamicSlug}`);
-
-    if (dynamicImage) {
-      return dynamicImage;
-    }
-  }
-
-  if (path.includes("casa-roca")) {
-    return evidenceImageForContent("case-study:casa-roca");
-  }
-
-  if (path.includes("the-barber-central")) {
-    return evidenceImageForContent("case-study:the-barber-central");
-  }
-
-  if (path.includes("nutri-plan")) {
-    return evidenceImageForContent("case-study:nutri-plan");
-  }
-
-  if (path.includes("enterprise-systems") || path.includes("sistemas-enterprise")) {
-    return evidenceImageForContent("case-study:enterprise-systems");
-  }
-
-  if (
-    path.includes("engineering-practice") ||
-    path.includes("practica-de-ingenieria") ||
-    path === "/practice" ||
-    path === "/es/practica"
-  ) {
-    return evidenceImageForContent("case-study:engineering-practice");
-  }
-
-  return undefined;
-}
-
-const caseStudyEvidenceImage = isCaseStudy ? evidenceImageForContent(id) : undefined;
 ---
 
-{
-  isHome && homeContent ? (
-    <>
-      <section class={ui.homeProofHero} aria-labelledby="home-title" data-home-content-id={id}>
-        <div class={ui.homeHeroCopy}>
-          <p class={cx(ui.signalLine, ui.homeSignalLine)}>{copy.signal}</p>
-          <h1 id="home-title" class={ui.homeHeadline} aria-label={homeContent.headline}>
-            {homeHeadlineParts.map((part) => <span aria-hidden="true">{part}</span>)}
-          </h1>
-          <p class={cx(ui.heroLead, ui.homeHeroLead)}>
-            {homeContent.deck}
-          </p>
-          <div class={ui.heroActions} aria-label={copy.actions}>
-            {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
-            {secondaryHref && <a class={cx(ui.button, ui.buttonSecondaryOnLightHero)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
-          </div>
+{isHome ? (
+  <>
+    <section class="sunlit-hero" aria-labelledby="home-title" data-home-content-id={id}>
+      <div class="sunlit-hero-copy">
+        <p class="sunlit-availability"><span aria-hidden="true"></span>{labels.available}</p>
+        <h1 id="home-title">{homeContent.headline}</h1>
+        <p class="sunlit-lead">{homeContent.deck}</p>
+        <div class="sunlit-actions" aria-label={copy.actions}>
+          <a class="sunlit-button sunlit-button-primary" href={getLocalizedPath("case-studies", locale)}>{labels.viewWork}</a>
+          <a class="sunlit-button sunlit-button-text" href={getLocalizedPath("contact", locale)}>{labels.talk}<span aria-hidden="true">→</span></a>
         </div>
-
-        <figure class={cx(ui.proofBoard, ui.homeProofBoard)} aria-label={homeContent.proofBoardLabel}>
-          <img
-            class={ui.heroArtifactAsset}
-            src="/images/generated/aohys-architecture-proof-surface.png"
-            alt={locale === "es" ? "Mapa visual del sistema público, privado y observable de AOHYS" : "Visual map of the AOHYS public, private, and observable system"}
+      </div>
+      <div class="sunlit-hero-stage" aria-label={firstOutcome?.title}>
+        <span class="sunlit-hero-arch sunlit-hero-arch-one" aria-hidden="true"></span>
+        <span class="sunlit-hero-arch sunlit-hero-arch-two" aria-hidden="true"></span>
+        <figure>
+          <span class="sunlit-hanger" aria-hidden="true"></span>
+          <figcaption>{firstOutcome?.title} · {firstOutcome?.label}</figcaption>
+          <SunlitProofImage
+            contentId={firstOutcome ? String(firstOutcome.contentId) : "home"}
+            evidenceSrc={firstOutcome?.evidence.src}
+            alt={firstOutcome?.evidence.altText ?? copy.mediaAlts.architecturePreview}
+            evidenceKind={firstOutcome?.evidence.kind}
             loading="eager"
-            decoding="async"
           />
-          <div class={ui.heroProofShots} aria-hidden="true">
-            {homeContent.selectedOutcomes.slice(0, 3).map((outcome) => {
-              const evidenceImage = evidenceImageForPath(outcome.path);
-              const imageSrc = evidenceImage?.thumbSrc ?? evidenceImage?.src ?? outcome.evidence.src;
-
-              return imageSrc ? (
-                <span class={ui.heroProofFrame}>
-                  <img
-                    class={proofImageClass(evidenceImage?.kind ?? "site")}
-                    src={imageSrc}
-                    alt=""
-                    loading="eager"
-                    decoding="async"
-                  />
-                </span>
-              ) : null;
-            })}
-          </div>
-          <figcaption class={ui.proofBoardCaption}>
-            <span>{copy.publicSample}</span>
-            <strong>{homeContent.proofBoardTitle}</strong>
-            <p>{homeContent.proofBoardBody}</p>
-          </figcaption>
-          <div class={ui.heroProofRibbon} aria-label={homeContent.selectedOutcomesHeading}>
-            {homeContent.selectedOutcomes.slice(0, 3).map((outcome) => (
-              <a class={ui.heroProofRibbonItem} href={outcome.path}>
-                <span>{outcome.label}</span>
-                <strong>{outcome.title}</strong>
-              </a>
-            ))}
-          </div>
         </figure>
-      </section>
+        <span class="sunlit-stage-stamp">{labels.publicProof}</span>
+        <span class="sunlit-stage-ticket" aria-hidden="true">01</span>
+        <div class="sunlit-stage-steps" aria-hidden="true"><span></span><i></i><b></b></div>
+      </div>
+    </section>
 
-      <section class={ui.selectedOutcomes} aria-labelledby="ledger-title" data-home-section="selected-outcomes">
-        <div class={ui.sectionHeading}>
-          <p class={ui.signalLine}>{copy.proofHeadingSignal}</p>
-          <h2 id="ledger-title">{homeContent.selectedOutcomesHeading}</h2>
-          <p class={ui.sectionIntro}>{homeContent.selectedOutcomesIntro}</p>
-        </div>
-        <div class={ui.outcomeLedger}>
-          {homeContent.selectedOutcomes.map((outcome, index) => (
-            <a class={ui.outcomeRow} href={outcome.path}>
-              <span class={ui.outcomeIndex}>{String(index + 1).padStart(2, "0")}</span>
-              {(() => {
-                const evidenceImage = evidenceImageForPath(outcome.path);
-                const imageSrc = evidenceImage?.thumbSrc ?? evidenceImage?.src ?? outcome.evidence.src;
-                const imageAlt = imageSrc === outcome.evidence.src
-                  ? outcome.evidence.altText
-                  : evidenceImage?.alt ?? outcome.evidence.altText;
+    <SunlitProjectStage
+      outcomes={homeContent.selectedOutcomes}
+      locale={locale}
+      heading={labels.selectedStage}
+      intro={`${homeContent.selectedOutcomesHeading} ${labels.selectedStageIntro}`}
+    />
 
-                return (
-                  <figure class={ui.outcomeShot} aria-label={imageAlt}>
-                    {imageSrc ? (
-                      <img class={screenshotImageClass(evidenceImage?.kind ?? "site")} src={imageSrc} alt={imageAlt} loading="eager" decoding="async" />
-                    ) : (
-                      <span class={ui.evidenceFallback}>{outcome.evidence.label}</span>
-                    )}
-                  </figure>
-                );
-              })()}
-              <div class={ui.outcomeSummary}>
-                <span class={ui.eyebrow}>{outcome.label}</span>
-                <strong class={ui.outcomeTitle}>{outcome.title}</strong>
-                <p class={ui.bodyMutedPretty}>{outcome.outcome}</p>
-              </div>
-              <p class={ui.bodyMutedPretty}>{outcome.role}</p>
-              <span class={ui.outcomeArrow} aria-hidden="true">→</span>
-            </a>
-          ))}
-        </div>
-      </section>
+    <SunlitProcessRail
+      heading={labels.process}
+      body={homeContent.practiceBody}
+      stages={[
+        ...homeContent.practicePoints,
+        { label: homeContent.proofBoardTitle, text: homeContent.proofBoardBody },
+      ]}
+      locale={locale}
+    />
 
-      <section class={ui.architectureStage} aria-labelledby="home-architecture-title" data-home-section="architecture">
-        <div class="min-w-0">
-          <h2 id="home-architecture-title">{homeContent.architectureHeading}</h2>
-          <p class={ui.architectureLead}>{homeContent.architectureBody}</p>
-        </div>
-        <div class={ui.architectureProofStack}>
-          <figure class={cx(ui.framedImage, "rounded-lg")}>
-            <img
-              class="w-full aspect-[16/10] object-cover object-center"
-              src="/images/generated/aohys-architecture-proof-surface.png"
-              alt={locale === "es" ? "Mapa del sistema público y privado de AOHYS" : "AOHYS public and private system map"}
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-          <div class={ui.architectureTrack} aria-label={homeContent.architectureHeading}>
-            {homeContent.architectureStages.map((stage) => (
-              <div class={ui.architectureStep}>
-                <span>{stage.label}</span>
-                <p>{stage.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section class={ui.practiceSection} aria-labelledby="practice-title" data-home-section="practice">
-        <div class={ui.sectionHeading}>
-          <h2 id="practice-title">{homeContent.practiceHeading}</h2>
-          <p class={ui.sectionIntro}>{homeContent.practiceBody}</p>
-        </div>
-        <div class={ui.practiceList}>
-          {homeContent.practicePoints.map((point) => (
-            <div class={ui.practiceItem}>
-              <span>{point.label}</span>
-              <p>{point.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section class={ui.contactBand} aria-labelledby="home-contact-title" data-home-section="contact">
-        <div>
-          <h2 id="home-contact-title">{homeContent.contactHeading}</h2>
-          <p>{homeContent.contactBody}</p>
-        </div>
-        <div class={ui.contactActions} aria-label={copy.actions}>
-          <a class={cx(ui.button, ui.buttonPrimary)} href={homeContent.emailHref}>{homeContent.emailLabel}</a>
-          <a class={cx(ui.button, ui.buttonWhatsapp)} href={homeContent.whatsappHref} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="home_contact_band">{homeContent.whatsappLabel}</a>
-        </div>
-      </section>
-    </>
-  ) : isArchitecture && architectureContent ? (
-    <>
-      <section class={ui.architecturePageHero} aria-labelledby="architecture-title" data-architecture-content-id={id}>
-        <div class={ui.architecturePageCopy}>
-          <p class={cx(ui.signalLine, "!text-[color:var(--color-dark-muted)]")}>{routeSignal}</p>
-          <h1 id="architecture-title">{architectureContent.heading}</h1>
-          <p class={cx(ui.heroLead, "!text-[color:var(--color-dark-muted)]")}>{architectureContent.deck}</p>
-          <div class={ui.heroActions} aria-label={copy.actions}>
-            {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
-            {secondaryHref && <a class={cx(ui.button, ui.buttonSecondaryOnDark)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
-          </div>
-        </div>
-
-        <div class={ui.architectureHeroAside}>
-          <figure class={ui.darkPanelFigure}>
-            <img
-              class="w-full aspect-video object-cover object-center"
-              src="/images/proof/aohys-system-map.svg"
-              alt={locale === "es" ? "Mapa de arquitectura de la muestra pública AOHYS" : "Architecture map for the AOHYS public sample"}
-              loading="eager"
-              decoding="async"
-            />
-          </figure>
-          <aside class={cx(ui.sourceIndex, ui.sourceIndexDark)} aria-label={architectureContent.sourceLabel}>
-            <strong>{architectureContent.sourceLabel}</strong>
-            <div class={cx(ui.sourceLinks, ui.sourceLinksDark)}>
-              {architectureContent.sourceLinks.map((link) => (
-                <a href={link.href}>{link.label}</a>
-              ))}
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section class={ui.architectureMap} aria-labelledby="architecture-map-title">
-        <div class={ui.sectionHeading}>
-          <h2 id="architecture-map-title">{variant.title}</h2>
-          <p class={ui.sectionIntro}>{variant.summary}</p>
-        </div>
-        <div class={ui.rowList}>
-          {architectureContent.sections.map((section) => (
-            <article class={ui.architectureRow}>
-              <h3>{section.title}</h3>
-              <p>{section.body}</p>
-              {section.links && (
-                <div class={cx(ui.sourceLinks, ui.sourceLinksInline)}>
-                  {section.links.map((link) => (
-                    <a href={link.href}>{link.label}</a>
-                  ))}
-                </div>
-              )}
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section class={ui.boundaryNote} aria-label={architectureContent.heading}>
-        <p>{architectureContent.boundaryNote}</p>
-      </section>
-    </>
-  ) : isCaseStudyIndex && caseStudyIndexContent ? (
-    <>
-      <section class={ui.caseStudyIndexHero} aria-labelledby="case-study-index-title" data-case-study-index-content-id={id}>
-        <div class={ui.caseStudyHeroCopy}>
-          <p class={ui.signalLine}>{routeSignal}</p>
-          <h1 id="case-study-index-title">{caseStudyIndexContent.heading}</h1>
-          <p class={ui.heroLead}>{caseStudyIndexContent.intro}</p>
-          <div class={ui.heroActions} aria-label={copy.actions}>
-            {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
-            {secondaryHref && <a class={cx(ui.button, ui.buttonSecondaryOnLightHero)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
-          </div>
-        </div>
-        <figure class={ui.caseIndexProofWall} aria-label={locale === "es" ? "Capturas públicas de proyectos seleccionados" : "Public screenshots from selected work"}>
-          <span class={ui.caseIndexProofFrame}>
-            <img class={screenshotImageClass("site")} src="/images/proof/casa-roca-production.png" alt={locale === "es" ? "Captura pública de Casa Roca" : "Public Casa Roca screenshot"} loading="eager" decoding="async" />
-          </span>
-          <span class={ui.caseIndexProofFrame}>
-            <img class={screenshotImageClass("landing")} src="/images/proof/barber-central-proof-thumb.png" alt={locale === "es" ? "Landing page de The Barber Central" : "The Barber Central landing page"} loading="eager" decoding="async" />
-          </span>
-          <span class={ui.caseIndexProofFrame}>
-            <img class={screenshotImageClass("dashboard")} src="/images/proof/nutri-plan-proof-thumb.png" alt={locale === "es" ? "Dashboard administrativo de Nutri Plan" : "Nutri Plan administrative dashboard"} loading="eager" decoding="async" />
-          </span>
-        </figure>
-      </section>
-
-      <section class={ui.contentSection} aria-labelledby="selected-work-title">
-        <div class={ui.sectionHeading}>
-          <h2 id="selected-work-title">{caseStudyIndexContent.heading}</h2>
-          <p class={ui.sectionIntro}>{caseStudyIndexContent.intro}</p>
-        </div>
-        <div class={ui.rowList}>
-          {caseStudyIndexContent.entries.map((entry) => (
-            <a class={ui.selectedWorkRow} href={entry.path}>
-              <span>{entry.statusLabel}</span>
-              <figure class={ui.selectedWorkShot}>
-                {(() => {
-                  const evidenceImage = evidenceImageForPath(entry.path);
-                  return evidenceImage ? (
-                    <img
-                      class={screenshotImageClass(evidenceImage.kind, "compact")}
-                      src={evidenceImage.thumbSrc ?? evidenceImage.src}
-                      alt={evidenceImage.alt}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ) : (
-                    <span>{entry.evidenceLabel}</span>
-                  );
-                })()}
-              </figure>
-              <strong class={ui.selectedWorkTitle}>{entry.title}</strong>
-              <p>{entry.summary}</p>
-              <em>{entry.evidenceLabel}</em>
-            </a>
-          ))}
-        </div>
-      </section>
-    </>
-  ) : isCaseStudy && caseStudyContent ? (
-    <>
-      <section class={ui.caseStudyHero} aria-labelledby="case-study-title" data-case-study-content-id={id}>
-        <div class={ui.caseStudyHeroCopy}>
-          <p class={ui.signalLine}>{caseStudyContent.statusLabel}</p>
-          <h1 id="case-study-title">{variant.title}</h1>
-          <p class={ui.heroLead}>{caseStudyContent.overview}</p>
-          <div class={ui.heroActions} aria-label={copy.actions}>
-            {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
-            {secondaryHref && <a class={cx(ui.button, ui.buttonSecondaryOnLightHero)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
-          </div>
-        </div>
-
-        <aside class={ui.caseStudyStatus} aria-label={caseStudyContent.statusLabel}>
-          {caseStudyEvidenceImage && (
-            <img
-              src={caseStudyEvidenceImage.src}
-              alt={caseStudyEvidenceImage.alt}
-              loading="eager"
-              decoding="async"
-            />
-          )}
-          <span>{caseStudyContent.statusLabel}</span>
-          <strong>{variant.summary}</strong>
-        </aside>
-      </section>
-
-      <section class={ui.contentSection} aria-labelledby="case-study-detail-title">
-        <div class={ui.sectionHeading}>
-          <h2 id="case-study-detail-title">{variant.title}</h2>
-          <p class={ui.sectionIntro}>{variant.summary}</p>
-        </div>
-        <div class={ui.rowList}>
-          {caseStudySections.map((section) => (
-            <article class={ui.studyRow}>
-              <h3>{section.title}</h3>
-              <p>{section.body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section class={ui.contentSection} aria-labelledby="case-study-evidence-title">
-        <div class={ui.sectionHeading}>
-          <h2 id="case-study-evidence-title">{caseStudyContent.publicEvidenceTitle}</h2>
-        </div>
-        <div class={ui.rowList}>
-          {caseStudyContent.publicEvidence.map((evidence) => (
-            <a
-              class={ui.evidenceLink}
-              href={evidence.href}
-              aria-label={evidence.altText}
-              target={evidence.href.startsWith("http") ? "_blank" : undefined}
-              rel={evidence.href.startsWith("http") ? "noreferrer" : undefined}
-            >
-              <span>{evidence.label}</span>
-              <strong>{evidence.description}</strong>
-            </a>
-          ))}
-        </div>
-      </section>
-
-      <section class={ui.confidentiality} aria-labelledby="case-study-confidentiality-title">
-        <h2 id="case-study-confidentiality-title">{caseStudyContent.confidentialityNote.title}</h2>
-        <p>{caseStudyContent.confidentialityNote.body}</p>
-      </section>
-    </>
-  ) : isResume && resumeContent ? (
-    <>
-      <section class={ui.resumeHero} aria-labelledby="resume-title" data-resume-content-id={id}>
-        <div class={ui.resumeIdentity}>
-          <p class={cx(ui.signalLine, "!text-[color:var(--color-dark-honey)]")}>{routeSignal}</p>
-          <h1 id="resume-title">{resumeContent.name}</h1>
-          <p class={ui.resumeRole}>{resumeContent.role}</p>
-          <p class={cx(ui.heroLead, "max-w-[52ch] !text-[color:var(--color-dark-muted)]")}>{resumeContent.intro}</p>
-          <div class={ui.heroActions} aria-label={copy.actions}>
-            <a class={cx(ui.button, ui.buttonPrimary)} href={resumeContent.pdf.href} download={resumeContent.pdf.fileName}>
-              {resumeContent.pdf.label}
-            </a>
-            {primaryHref && <a class={cx(ui.button, ui.buttonSecondaryOnDark)} href={primaryHref}>{variant.primaryActionLabel}</a>}
-          </div>
-        </div>
-
-        <aside class={ui.resumeProofPanel} aria-label={resumeContent.proof.label}>
-          <figure class={ui.darkPanelFigure}>
-            <img
-              class="w-full aspect-[16/10] object-cover object-center"
-              src="/images/generated/aohys-delivery-artifact.png"
-              alt={locale === "es" ? "Artefacto visual de entrega, QA y release de AOHYS" : "Visual artifact of AOHYS delivery, QA, and release practice"}
-              loading="eager"
-              decoding="async"
-            />
-          </figure>
-          <div class={ui.resumeProofCopy}>
-            <span>{resumeContent.proof.label}</span>
-            <strong>{resumeContent.proof.title}</strong>
-            <p>{resumeContent.proof.body}</p>
-          </div>
-          <div class={ui.resumeContact} aria-label={resumeContent.name}>
-            <span>{resumeContent.location}</span>
-            {resumeContent.contactLinks.map((link) => (
-              <a href={link.href}>
-                <strong>{link.label}</strong>
-                <span>{link.text}</span>
-              </a>
-            ))}
-          </div>
-        </aside>
-      </section>
-
-      <section class={ui.contentSection} aria-labelledby="resume-summary-title">
-        <div class={ui.sectionHeading}>
-          <h2 id="resume-summary-title">{resumeContent.summaryTitle}</h2>
-        </div>
-        <div class={ui.resumeCopy}>
-          {resumeContent.summary.map((paragraph) => <p>{paragraph}</p>)}
-        </div>
-      </section>
-
-      <section class={ui.contentSection} aria-labelledby="resume-highlights-title">
-        <div class={ui.sectionHeading}>
-          <h2 id="resume-highlights-title">{resumeContent.highlightsTitle}</h2>
-        </div>
-        <div class={ui.rowList}>
-          {resumeContent.highlights.map((highlight) => (
-            <article class={ui.resumeRow}>
-              <span>{highlight.label}</span>
-              <p>{highlight.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section class={ui.contentSection} aria-labelledby="resume-projects-title">
-        <div class={ui.sectionHeading}>
-          <h2 id="resume-projects-title">{resumeContent.projectsTitle}</h2>
-        </div>
-        <div class={ui.rowList}>
-          {resumeContent.projects.map((project) => (
-            <article class={ui.resumeEntry}>
-              <h3>{project.title}</h3>
-              <p>{project.summary}</p>
-              <ul>
-                {project.bullets.map((bullet) => <li>{bullet}</li>)}
-              </ul>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section class={ui.contentSection} aria-labelledby="resume-experience-title">
-        <div class={ui.sectionHeading}>
-          <h2 id="resume-experience-title">{resumeContent.experienceTitle}</h2>
-        </div>
-        <div class={ui.rowList}>
-          {resumeContent.experience.map((job) => (
-            <article class={ui.resumeEntry}>
-              <div class={ui.resumeEntryHeading}>
-                <h3>{job.role}</h3>
-                <span>{job.period}</span>
-              </div>
-              <p>{job.company}</p>
-              <ul>
-                {job.bullets.map((bullet) => <li>{bullet}</li>)}
-              </ul>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section class={ui.contentSection} aria-labelledby="resume-skills-title">
-        <div class={ui.sectionHeading}>
-          <h2 id="resume-skills-title">{resumeContent.skillsTitle}</h2>
-        </div>
-        <div class={ui.rowList}>
-          {resumeContent.skills.map((skillGroup) => (
-            <article class={ui.resumeRow}>
-              <span>{skillGroup.label}</span>
-              <p>{skillGroup.items.join(", ")}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section class={ui.contentSection} aria-labelledby="resume-education-title">
-        <div class={ui.sectionHeading}>
-          <h2 id="resume-education-title">{resumeContent.educationTitle}</h2>
-        </div>
-        <div class={ui.rowList}>
-          {resumeContent.education.map((education) => (
-            <article class={ui.resumeRow}>
-              <span>{education.period}</span>
-              <p><strong>{education.degree}</strong> · {education.institution}</p>
-            </article>
-          ))}
-          <article class={ui.resumeRow}>
-            <span>{resumeContent.languagesTitle}</span>
-            <p>{resumeContent.languages.join(", ")}</p>
+    <section class="sunlit-home-split" aria-labelledby="home-architecture-title">
+      <div class="sunlit-split-copy">
+        <span>{labels.architecture}</span>
+        <h2 id="home-architecture-title">{homeContent.architectureHeading}</h2>
+        <p>{homeContent.architectureBody}</p>
+        <a href={getLocalizedPath("architecture", locale)}>{variant.secondaryActionLabel ?? labels.architecture}<span aria-hidden="true">→</span></a>
+      </div>
+      <div class="sunlit-boundary-map" aria-label={homeContent.proofBoardLabel}>
+        {homeContent.architectureStages.map((stage, index) => (
+          <article>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <h3>{stage.label}</h3>
+            <p>{stage.text}</p>
           </article>
-        </div>
-      </section>
+        ))}
+        <i aria-hidden="true"></i>
+      </div>
+    </section>
 
-      <section class={ui.contentSection} aria-labelledby="resume-context-title">
-        <div class={ui.sectionHeading}>
-          <h2 id="resume-context-title">{resumeContent.contextTitle}</h2>
-          <p class={ui.sectionIntro}>{resumeContent.pdf.description}</p>
+    <SunlitCtaBand
+      heading={homeContent.contactHeading}
+      body={homeContent.contactBody}
+      href={getLocalizedPath("contact", locale)}
+      label={variant.primaryActionLabel ?? labels.talk}
+      secondaryHref={directEmailHref}
+      secondaryLabel={homeContent.emailLabel}
+    />
+  </>
+) : isWorkIndex ? (
+  <>
+    <section class="sunlit-page-hero sunlit-work-hero" aria-labelledby="work-title" data-case-study-index-content-id={id}>
+      <div>
+        <p>{labels.workArchive}</p>
+        <h1 id="work-title">{caseStudyIndexContent.heading}</h1>
+        <p>{caseStudyIndexContent.intro}</p>
+      </div>
+      <aside class="sunlit-work-program" aria-label={labels.workArchive}>
+        <span aria-hidden="true"></span>
+        <strong>{labels.workArchive}</strong>
+        <div>{caseStudyIndexContent.entries.map((entry) => <i>{entry.title}</i>)}</div>
+      </aside>
+    </section>
+
+    <section class="sunlit-work-archive" aria-label={labels.workArchive}>
+      <header>
+        <h2>{labels.workArchive}</h2>
+        <p>{labels.workArchiveBody}</p>
+      </header>
+      <div class="sunlit-archive-list">
+        {caseStudyIndexContent.entries.map((entry, index) => {
+          const entryDetail = getCaseStudyPageContent(entry.contentId, locale);
+          const entryMedia = mediaForContentId(
+            String(entry.contentId),
+            entryDetail?.publicEvidence[0]?.src,
+            entryDetail?.publicEvidence[0]?.altText ?? entry.evidenceLabel,
+          );
+          return (
+            <article data-tone={index % 3}>
+              <figure data-media-kind={entryMedia.kind}>
+                <SunlitProofImage
+                  contentId={String(entry.contentId)}
+                  evidenceSrc={entryDetail?.publicEvidence[0]?.src}
+                  alt={entryDetail?.publicEvidence[0]?.altText ?? entry.evidenceLabel}
+                  evidenceKind={entryDetail?.publicEvidence[0]?.kind}
+                />
+              </figure>
+              <div>
+                <p>{entry.statusLabel}</p>
+                <h3>{entry.title}</h3>
+                <p>{entry.summary}</p>
+                <strong>{labels.evidence}: {entry.evidenceLabel}</strong>
+                <a href={entry.path}>{labels.readCase}<span aria-hidden="true">→</span></a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <SunlitCtaBand heading={homeContent.contactHeading} body={homeContent.contactBody} href={getLocalizedPath("contact", locale)} label={labels.talk} />
+  </>
+) : isPractice ? (
+  <>
+    <section class="sunlit-page-hero sunlit-practice-hero" aria-labelledby="practice-title" data-practice-content-id={id}>
+      <div>
+        <p>{labels.practice}</p>
+        <h1 id="practice-title">{variant.title}</h1>
+        <p>{variant.summary}</p>
+        <div class="sunlit-actions">
+          {primaryHref && <a class="sunlit-button sunlit-button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
+          {secondaryHref && <a class="sunlit-button sunlit-button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
         </div>
-        <div class={ui.rowList}>
-          {resumeContent.contextLinks.map((link) => (
-            <a class={ui.evidenceLink} href={link.href}>
-              <span>{link.label}</span>
-              <strong>{link.text}</strong>
+      </div>
+      <div class="sunlit-practice-artifact" role="img" aria-label={homeContent.practiceHeading}>
+        {homeContent.practicePoints.map((point, index) => (
+          <div><span>{index + 1}</span><strong>{point.label}</strong><i aria-hidden="true">✓</i></div>
+        ))}
+        <b>{labels.verified}</b>
+      </div>
+    </section>
+
+    <SunlitProcessRail heading={homeContent.practiceHeading} body={homeContent.practiceBody} stages={homeContent.practicePoints} locale={locale} />
+
+    <section class="sunlit-practice-proof" aria-labelledby="practice-proof-title">
+      <header><span>{labels.publicProof}</span><h2 id="practice-proof-title">{homeContent.proofBoardTitle}</h2><p>{homeContent.proofBoardBody}</p></header>
+      <div>
+        {homeContent.selectedOutcomes.map((outcome) => (
+          <a href={outcome.path}>
+            <span>{outcome.label}</span><strong>{outcome.title}</strong><p>{outcome.role}</p><i aria-hidden="true">↗</i>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <SunlitCtaBand heading={homeContent.contactHeading} body={homeContent.contactBody} href={getLocalizedPath("contact", locale)} label={labels.talk} />
+  </>
+) : isArchitecture && architectureContent ? (
+  <>
+    <section class="sunlit-page-hero sunlit-architecture-hero" aria-labelledby="architecture-title" data-architecture-content-id={id}>
+      <div>
+        <p>{labels.architecture}</p>
+        <h1 id="architecture-title">{architectureContent.heading}</h1>
+        <p>{architectureContent.deck}</p>
+        <div class="sunlit-actions">
+          {primaryHref && <a class="sunlit-button sunlit-button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
+          {secondaryHref && <a class="sunlit-button sunlit-button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+        </div>
+      </div>
+      <aside class="sunlit-source-reel" aria-label={architectureContent.sourceLabel}>
+        <span aria-hidden="true"></span>
+        <h2>{architectureContent.sourceLabel}</h2>
+        {architectureContent.sourceLinks.map((link) => <a href={link.href}>{link.label}<i aria-hidden="true">↗</i></a>)}
+      </aside>
+    </section>
+
+    <SunlitProcessRail heading={homeContent.architectureHeading} body={homeContent.architectureBody} stages={homeContent.architectureStages} locale={locale} tone="dark" />
+
+    <section class="sunlit-architecture-ledger" aria-label={labels.architecture}>
+      {architectureContent.sections.map((section) => (
+        <article>
+          <h2>{section.title}</h2>
+          <p>{section.body}</p>
+          {section.links && <div>{section.links.map((link) => <a href={link.href}>{link.label} ↗</a>)}</div>}
+        </article>
+      ))}
+      <footer><strong>{labels.privacyRail}</strong><p>{architectureContent.boundaryNote}</p></footer>
+    </section>
+
+    <SunlitCtaBand heading={homeContent.contactHeading} body={homeContent.contactBody} href={getLocalizedPath("contact", locale)} label={labels.talk} />
+  </>
+) : isCaseStudy && caseStudyContent && caseMedia ? (
+  <>
+    <article class="sunlit-case" data-case-study-content-id={id}>
+      <header class="sunlit-case-hero">
+        <div>
+          <p>{caseStudyContent.statusLabel}</p>
+          <h1>{variant.title}</h1>
+          <p>{caseStudyContent.overview}</p>
+          <div class="sunlit-actions">
+            {primaryHref && <a class="sunlit-button sunlit-button-primary" href={primaryHref}>{variant.primaryActionLabel}</a>}
+            {secondaryHref && <a class="sunlit-button sunlit-button-secondary" href={secondaryHref}>{variant.secondaryActionLabel}</a>}
+          </div>
+        </div>
+        <figure data-media-kind={caseMedia.kind}>
+          <span class="sunlit-hanger" aria-hidden="true"></span>
+          <SunlitProofImage
+            contentId={String(id)}
+            evidenceSrc={caseStudyContent.publicEvidence[0]?.src}
+            alt={caseStudyContent.publicEvidence[0]?.altText}
+            evidenceKind={caseStudyContent.publicEvidence[0]?.kind}
+            loading="eager"
+          />
+          <figcaption>{labels.publicProof} · {caseStudyContent.statusLabel}</figcaption>
+        </figure>
+      </header>
+
+      <div class="sunlit-case-rail" aria-label={labels.casePath}>
+        {caseStudySections.map((section, index) => (
+          <section>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <div><h2>{section.title}</h2><p>{section.body}</p></div>
+          </section>
+        ))}
+      </div>
+
+      <section class="sunlit-case-evidence" aria-labelledby="case-evidence-title">
+        <header><p>{labels.evidence}</p><h2 id="case-evidence-title">{caseStudyContent.publicEvidenceTitle}</h2></header>
+        <div>
+          {caseStudyContent.publicEvidence.map((evidence) => (
+            <a href={evidence.href} aria-label={evidence.altText}>
+              <span aria-hidden="true">✓</span><strong>{evidence.label}</strong><p>{evidence.description}</p><i>{labels.openLink} ↗</i>
             </a>
           ))}
         </div>
+        <footer><strong>{caseStudyContent.confidentialityNote.title}</strong><p>{caseStudyContent.confidentialityNote.body}</p></footer>
       </section>
-    </>
-  ) : isContact ? (
-    <>
-      <section class={ui.contactFormSection} aria-labelledby="contact-title" data-contact-content-id={id}>
-        <div class={ui.contactFormCopy}>
-          <p class={cx(ui.signalLine, "!text-[color:var(--color-dark-honey)]")}>{routeSignal}</p>
-          <h1 id="contact-title">{variant.title}</h1>
-          <p class={cx(ui.heroLead, "max-w-[50ch] !text-[color:var(--color-dark-muted)]")}>{variant.summary}</p>
-          <div class={ui.contactDirectActions} aria-label={copy.actions}>
-            <a class={cx(ui.button, ui.buttonWhatsapp)} href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_hero">{contactCopy.whatsappLabel}</a>
-            <a class={cx(ui.button, ui.buttonSecondaryOnDark)} href={directEmailHref} data-analytics-event="email_cta_clicked" data-analytics-target="contact_hero">{contactCopy.emailLabel}</a>
-          </div>
-          <figure class={ui.contactArchitectureCard}>
-            <img
-              class="w-full aspect-video object-cover object-center"
-              src="/images/generated/aohys-hero-system-map.png"
-              alt={locale === "es" ? "Mapa visual del flujo de contacto y operación de AOHYS" : "Visual map of the AOHYS contact and operations flow"}
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
+    </article>
+
+    <section class="sunlit-related" aria-labelledby="related-title">
+      <h2 id="related-title">{labels.related}</h2>
+      <div>
+        {caseStudyIndexContent.entries.filter((entry) => entry.contentId !== id).map((entry) => (
+          <a href={entry.path}><span>{entry.statusLabel}</span><strong>{entry.title}</strong><i aria-hidden="true">→</i></a>
+        ))}
+      </div>
+    </section>
+
+    <SunlitCtaBand heading={homeContent.contactHeading} body={homeContent.contactBody} href={getLocalizedPath("contact", locale)} label={labels.talk} />
+  </>
+) : isResume && resumeContent ? (
+  <>
+    <section class="sunlit-page-hero sunlit-about-hero" aria-labelledby="about-title" data-resume-content-id={id}>
+      <div>
+        <p>{labels.about}</p>
+        <h1 id="about-title">{resumeContent.name}</h1>
+        <p class="sunlit-about-role">{resumeContent.role} · {resumeContent.location}</p>
+        <p>{resumeContent.intro}</p>
+        <div class="sunlit-actions">
+          <a class="sunlit-button sunlit-button-primary" href={resumeContent.pdf.href}>{labels.download}</a>
+          <a class="sunlit-button sunlit-button-secondary" href={getLocalizedPath("contact", locale)}>{labels.talk}</a>
         </div>
+      </div>
+      <aside class="sunlit-profile-ticket">
+        <span>{resumeContent.proof.label}</span>
+        <h2>{resumeContent.proof.title}</h2>
+        <p>{resumeContent.proof.body}</p>
+        <i aria-hidden="true">✓</i>
+      </aside>
+    </section>
 
-        <form
-          class={ui.contactForm}
-          method="post"
-          action={contactEndpoint || directEmailHref}
-          data-contact-form
-          data-contact-endpoint={contactEndpoint}
-          data-success-message={contactCopy.successMessage}
-          data-degraded-success-message={contactCopy.degradedSuccessMessage}
-          data-error-message={contactCopy.errorMessage}
-          data-validation-message={contactCopy.validationMessage}
-          data-email-error-message={contactCopy.emailErrorMessage}
-          data-backend-error-message={contactCopy.backendErrorMessage}
-          data-endpoint-missing={contactCopy.endpointMissing}
-          data-retry-label={contactCopy.retryLabel}
-          data-analytics-view="contact_form_viewed"
-          data-analytics-submit="contact_form_submit_attempted"
-          data-analytics-target="contact_form"
-        >
-          <div class={ui.contactFormHeading}>
-            <h2>{contactCopy.formTitle}</h2>
-            <p>{contactCopy.formIntro}</p>
-          </div>
+    <section class="sunlit-profile-summary" aria-labelledby="profile-title">
+      <header><h2 id="profile-title">{resumeContent.summaryTitle}</h2></header>
+      <div>{resumeContent.summary.map((paragraph) => <p>{paragraph}</p>)}</div>
+      <aside>{resumeContent.highlights.map((highlight) => <div><strong>{highlight.label}</strong><p>{highlight.text}</p></div>)}</aside>
+    </section>
 
-          <label class={ui.fieldLabel}>
-            <span>{contactCopy.nameLabel}</span>
-            <input name="name" type="text" autocomplete="name" required />
-          </label>
+    <section class="sunlit-experience" aria-labelledby="experience-title">
+      <header><h2 id="experience-title">{resumeContent.experienceTitle}</h2></header>
+      <div>
+        {resumeContent.experience.map((job, index) => (
+          <article><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{job.role}</h3><p>{job.company} · {job.period}</p><ul>{job.bullets.map((bullet) => <li>{bullet}</li>)}</ul></div></article>
+        ))}
+      </div>
+    </section>
 
-          <div class={ui.fieldGrid}>
-            <label class={ui.fieldLabel}>
-              <span>{contactCopy.emailLabel}</span>
-              <input name="email" type="email" autocomplete="email" required />
-            </label>
-            <label class={ui.fieldLabel}>
-              <span>{contactCopy.phoneLabel}</span>
-              <input name="phone" type="tel" autocomplete="tel" />
-            </label>
-          </div>
+    <section class="sunlit-capabilities" aria-labelledby="capabilities-title">
+      <header><h2 id="capabilities-title">{resumeContent.skillsTitle}</h2></header>
+      <div>{resumeContent.skills.map((group) => <article><h3>{group.label}</h3><p>{group.items.join(" · ")}</p></article>)}</div>
+    </section>
 
-          <label class={ui.fieldLabel}>
-            <span>{contactCopy.companyLabel}</span>
-            <input name="company" type="text" autocomplete="organization" />
-          </label>
+    <section class="sunlit-profile-projects" aria-labelledby="projects-title">
+      <header><h2 id="projects-title">{resumeContent.projectsTitle}</h2></header>
+      <div>{resumeContent.projects.map((project) => <article><h3>{project.title}</h3><p>{project.summary}</p><ul>{project.bullets.map((bullet) => <li>{bullet}</li>)}</ul></article>)}</div>
+    </section>
 
-          <div class={ui.fieldGrid}>
-            <label class={ui.fieldLabel}>
-              <span>{contactCopy.intentLabel}</span>
-              <select name="intent" required>
-                <option value="project">{contactCopy.intentProject}</option>
-                <option value="hiring">{contactCopy.intentHiring}</option>
-                <option value="architecture-review">{contactCopy.intentArchitecture}</option>
-                <option value="website">{contactCopy.intentWebsite}</option>
-                <option value="other">{contactCopy.intentOther}</option>
-              </select>
-            </label>
+    <section class="sunlit-education" aria-labelledby="education-title">
+      <header><h2 id="education-title">{resumeContent.educationTitle}</h2></header>
+      <div>{resumeContent.education.map((item) => <p><strong>{item.degree}</strong><span>{item.institution} · {item.period}</span></p>)}</div>
+      <p>{resumeContent.languagesTitle}: {resumeContent.languages.join(" · ")}</p>
+    </section>
 
-            <fieldset class={ui.contactChoice}>
-              <legend>{contactCopy.preferredContactLabel}</legend>
-              <label>
-                <input name="preferredContactPath" type="radio" value="email" required checked />
-                <span>{contactCopy.preferredEmail}</span>
-              </label>
-              <label>
-                <input name="preferredContactPath" type="radio" value="whatsapp" required />
-                <span>{contactCopy.preferredWhatsApp}</span>
-              </label>
-            </fieldset>
-          </div>
+    <SunlitCtaBand heading={homeContent.contactHeading} body={homeContent.contactBody} href={getLocalizedPath("contact", locale)} label={labels.talk} />
+  </>
+) : isContact ? (
+  <>
+    <section class="sunlit-page-hero sunlit-contact-hero" aria-labelledby="contact-title" data-contact-content-id={id}>
+      <div>
+        <p>{labels.contactRail}</p>
+        <h1 id="contact-title">{variant.title}</h1>
+        <p>{variant.summary}</p>
+        <div class="sunlit-contact-direct">
+          <a href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_hero">{contactCopy.whatsappLabel} ↗</a>
+          <a href={directEmailHref} data-analytics-event="email_cta_clicked" data-analytics-target="contact_hero">{publicContactEmail}</a>
+        </div>
+      </div>
+      <aside class="sunlit-contact-ticket"><span aria-hidden="true">✦</span><h2>{labels.formAside}</h2><p>{homeContent.contactBody}</p><div class="sunlit-contact-path" aria-label={labels.contactRail}>{labels.contactSteps.map((step) => <strong>{step}</strong>)}</div></aside>
+    </section>
 
-          <label class={ui.fieldLabel}>
-            <span>{contactCopy.messageLabel}</span>
-            <textarea name="message" rows="6" required></textarea>
-          </label>
+    <section class="sunlit-contact-layout" aria-label={contactCopy.formTitle}>
+      <aside>
+        <span>{labels.direct}</span>
+        <h2>{contactCopy.formTitle}</h2>
+        <p>{contactCopy.formIntro}</p>
+        <div>
+          <a href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_direct_panel">{contactCopy.whatsappLabel}</a>
+          <a href={directEmailHref} data-analytics-event="email_cta_clicked" data-analytics-target="contact_direct_panel">{publicContactEmail}</a>
+        </div>
+      </aside>
+      <form
+        method="post"
+        action={contactEndpoint || directEmailHref}
+        data-contact-form
+        data-contact-endpoint={contactEndpoint}
+        data-success-message={contactCopy.successMessage}
+        data-degraded-success-message={contactCopy.degradedSuccessMessage}
+        data-error-message={contactCopy.errorMessage}
+        data-validation-message={contactCopy.validationMessage}
+        data-email-error-message={contactCopy.emailErrorMessage}
+        data-backend-error-message={contactCopy.backendErrorMessage}
+        data-endpoint-missing={contactCopy.endpointMissing}
+        data-retry-label={contactCopy.retryLabel}
+        data-analytics-view="contact_form_viewed"
+        data-analytics-submit="contact_form_submit_attempted"
+        data-analytics-target="contact_form"
+      >
+        <label><span>{contactCopy.nameLabel}</span><input name="name" type="text" autocomplete="name" required /></label>
+        <div class="sunlit-field-grid">
+          <label><span>{contactCopy.emailLabel}</span><input name="email" type="email" autocomplete="email" required /></label>
+          <label><span>{contactCopy.phoneLabel}</span><input name="phone" type="tel" autocomplete="tel" /></label>
+        </div>
+        <label><span>{contactCopy.companyLabel}</span><input name="company" type="text" autocomplete="organization" /></label>
+        <div class="sunlit-field-grid">
+          <label><span>{contactCopy.intentLabel}</span><select name="intent" required><option value="project">{contactCopy.intentProject}</option><option value="hiring">{contactCopy.intentHiring}</option><option value="architecture-review">{contactCopy.intentArchitecture}</option><option value="website">{contactCopy.intentWebsite}</option><option value="other">{contactCopy.intentOther}</option></select></label>
+          <fieldset><legend>{contactCopy.preferredContactLabel}</legend><label><input name="preferredContactPath" type="radio" value="email" required checked /><span>{contactCopy.preferredEmail}</span></label><label><input name="preferredContactPath" type="radio" value="whatsapp" required /><span>{contactCopy.preferredWhatsApp}</span></label></fieldset>
+        </div>
+        <label><span>{contactCopy.messageLabel}</span><textarea name="message" rows="6" placeholder={contactCopy.messagePlaceholder} required></textarea></label>
+        <label class="sunlit-consent"><input name="consentToContact" type="checkbox" value="true" required /><span>{contactCopy.consentLabel}</span></label>
+        <label class="sunlit-honeypot" aria-hidden="true"><span>{contactCopy.honeypotLabel}</span><input name="website" type="text" autocomplete="off" tabindex="-1" /></label>
+        <input name="formStartedAt" type="hidden" value="" />
+        <input name="sourcePath" type="hidden" value={route.path} />
+        <input name="locale" type="hidden" value={locale} />
+        <input name="referrer" type="hidden" value="" />
+        <div class="sunlit-submit"><button type="submit" data-submit-label={contactCopy.submitLabel} data-sending-label={contactCopy.sendingLabel}>{contactCopy.submitLabel}<span aria-hidden="true">→</span></button><p>{contactCopy.fallbackText} <a href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_form_error_fallback">{contactCopy.whatsappLabel}</a></p></div>
+        <p class="sunlit-contact-status" role="status" data-contact-status></p>
+      </form>
+    </section>
 
-          <label class={ui.consentRow}>
-            <input name="consentToContact" type="checkbox" value="true" required />
-            <span>{contactCopy.consentLabel}</span>
-          </label>
-
-          <label class={ui.contactHoneypot} aria-hidden="true">
-            <span>Website</span>
-            <input name="website" type="text" autocomplete="off" tabindex="-1" />
-          </label>
-          <input name="formStartedAt" type="hidden" value="" />
-          <input name="sourcePath" type="hidden" value={route.path} />
-          <input name="locale" type="hidden" value={locale} />
-          <input name="referrer" type="hidden" value="" />
-
-          <div class={ui.contactSubmitRow}>
-            <button class={cx(ui.button, ui.buttonPrimary)} type="submit" data-submit-label={contactCopy.submitLabel} data-sending-label={contactCopy.sendingLabel}>
-              {contactCopy.submitLabel}
-            </button>
-            <p>{contactCopy.fallbackText} <a href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_form_fallback">{contactCopy.whatsappLabel}</a></p>
-          </div>
-          <p class={ui.contactStatus} role="status" data-contact-status></p>
-        </form>
-      </section>
-
-      <script>
-        const dispatchContactAnalytics = (event: string, properties: Record<string, string | boolean> = {}) => {
-          window.dispatchEvent(new CustomEvent("aohys:analytics", {
-            detail: { event, properties },
-          }));
-        };
-
-        const messageWithRetry = (message: string | undefined, retryLabel: string | undefined) =>
-          [message, retryLabel].filter(Boolean).join(" ");
-
-        const readErrorCode = async (response: Response) => {
+    <script>
+      const dispatchContactAnalytics = (event: string, properties: Record<string, string | boolean> = {}) => {
+        window.dispatchEvent(new CustomEvent("aohys:analytics", { detail: { event, properties } }));
+      };
+      const messageWithRetry = (message: string | undefined, retry: string | undefined) => [message, retry].filter(Boolean).join(" ");
+      const readJson = async (response: Response) => { try { return await response.json(); } catch { return {}; } };
+      const stringStatus = (payload: unknown, key: string, fallback: string) => {
+        if (!payload || typeof payload !== "object") return fallback;
+        const value = (payload as Record<string, unknown>)[key];
+        return typeof value === "string" && value ? value : fallback;
+      };
+      for (const candidate of document.querySelectorAll("[data-contact-form]")) {
+        if (!(candidate instanceof HTMLFormElement)) continue;
+        const form = candidate;
+        const status = form.querySelector("[data-contact-status]");
+        const startedAt = form.querySelector('input[name="formStartedAt"]');
+        const referrer = form.querySelector('input[name="referrer"]');
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (startedAt instanceof HTMLInputElement) startedAt.value = String(Date.now());
+        if (referrer instanceof HTMLInputElement) referrer.value = document.referrer;
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          if (!form.checkValidity()) {
+            if (status instanceof HTMLElement) { status.dataset.state = "error"; status.textContent = messageWithRetry(form.dataset.validationMessage, form.dataset.retryLabel); }
+            dispatchContactAnalytics("contact_form_submit_failed", { failure_reason: "validation_failed" });
+            form.reportValidity(); return;
+          }
+          const endpoint = form.dataset.contactEndpoint ?? "";
+          if (!endpoint) {
+            if (status instanceof HTMLElement) { status.dataset.state = "error"; status.textContent = messageWithRetry(form.dataset.endpointMissing, form.dataset.retryLabel); }
+            dispatchContactAnalytics("contact_form_submit_failed", { failure_reason: "endpoint_missing" }); return;
+          }
+          const formData = new FormData(form);
+          const payload = Object.fromEntries(formData.entries());
+          if (submitButton instanceof HTMLButtonElement) { submitButton.disabled = true; submitButton.textContent = submitButton.dataset.sendingLabel ?? submitButton.textContent; }
+          if (status instanceof HTMLElement) { status.dataset.state = "sending"; status.textContent = ""; }
           try {
-            const payload = await response.json();
-            return typeof payload?.code === "string" ? payload.code : "";
+            const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, consentToContact: formData.get("consentToContact") === "true", formStartedAt: Number(payload.formStartedAt) }) });
+            const result = await readJson(response);
+            if (!response.ok) {
+              const code = stringStatus(result, "code", "");
+              const reason = response.status === 400 || code === "validation_error" ? "validation_failed" : code.includes("email") || code.includes("provider") ? "email_delivery_failed" : "backend_unavailable";
+              dispatchContactAnalytics("contact_form_submit_failed", { failure_reason: reason });
+              const message = reason === "validation_failed" ? form.dataset.validationMessage : reason === "email_delivery_failed" ? form.dataset.emailErrorMessage : form.dataset.backendErrorMessage;
+              if (status instanceof HTMLElement) { status.dataset.state = "error"; status.textContent = messageWithRetry(message, form.dataset.retryLabel); }
+              return;
+            }
+            const notificationStatus = stringStatus(result, "notificationStatus", "unknown");
+            const analyticsStatus = stringStatus(result, "analyticsStatus", "unknown");
+            const deliveryDegraded = notificationStatus === "failed" || notificationStatus === "skipped";
+            dispatchContactAnalytics("contact_form_submit_succeeded", { notification_status: notificationStatus, analytics_status: analyticsStatus, delivery_degraded: deliveryDegraded });
+            form.reset();
+            if (status instanceof HTMLElement) { status.dataset.state = deliveryDegraded ? "warning" : "success"; status.textContent = deliveryDegraded ? form.dataset.degradedSuccessMessage ?? form.dataset.successMessage ?? "" : form.dataset.successMessage ?? ""; }
           } catch {
-            return "";
+            dispatchContactAnalytics("contact_form_submit_failed", { failure_reason: "backend_unavailable" });
+            if (status instanceof HTMLElement) { status.dataset.state = "error"; status.textContent = messageWithRetry(form.dataset.backendErrorMessage, form.dataset.retryLabel); }
+          } finally {
+            if (submitButton instanceof HTMLButtonElement) { submitButton.disabled = false; submitButton.textContent = submitButton.dataset.submitLabel ?? submitButton.textContent; }
           }
-        };
+        });
+      }
+    </script>
+  </>
+) : isPrivacy && privacyContent ? (
+  <>
+    <section class="sunlit-page-hero sunlit-privacy-hero" aria-labelledby="privacy-title" data-privacy-content-id={id}>
+      <div><p>{labels.privacyRail}</p><h1 id="privacy-title">{privacyContent.heading}</h1><p>{privacyContent.intro}</p></div>
+      <aside aria-hidden="true"><span>✓</span><strong>{labels.privacyRail}</strong></aside>
+    </section>
+    <article class="sunlit-legal">
+      {privacyContent.sections.map((section, index) => <section><span>{String(index + 1).padStart(2, "0")}</span><div><h2>{section.title}</h2><p>{section.body}</p></div></section>)}
+      <footer><strong>{labels.constraints}</strong><p>{privacyContent.boundaryNote}</p></footer>
+    </article>
+    <SunlitCtaBand heading={homeContent.contactHeading} body={homeContent.contactBody} href={getLocalizedPath("contact", locale)} label={labels.talk} />
+  </>
+) : (
+  <section class="sunlit-page-hero" aria-labelledby="route-title" data-content-type={node.type}>
+    <div><p>{copy.signal}</p><h1 id="route-title">{variant.title}</h1><p>{variant.summary}</p></div>
+  </section>
+)}
 
-        const readSubmissionResult = async (response: Response) => {
-          try {
-            return await response.json();
-          } catch {
-            return {};
-          }
-        };
-
-        const stringStatus = (payload: unknown, key: string, fallback: string) => {
-          if (!payload || typeof payload !== "object") {
-            return fallback;
-          }
-
-          const value = (payload as Record<string, unknown>)[key];
-          return typeof value === "string" && value ? value : fallback;
-        };
-
-        const shouldShowDegradedSuccess = (notificationStatus: string) =>
-          notificationStatus === "failed" || notificationStatus === "skipped";
-
-        const failureReasonForResponse = (response: Response, code: string) => {
-          if (response.status === 400 || code === "validation_error") {
-            return "validation_failed";
-          }
-
-          if (
-            code === "email_delivery_failed" ||
-            code === "provider_configuration_error" ||
-            code === "analytics_delivery_failed"
-          ) {
-            return "email_delivery_failed";
-          }
-
-          return "backend_unavailable";
-        };
-
-        const failureMessageForReason = (form: HTMLFormElement, reason: string) => {
-          if (reason === "validation_failed") {
-            return form.dataset.validationMessage ?? form.dataset.errorMessage ?? "";
-          }
-
-          if (reason === "email_delivery_failed") {
-            return form.dataset.emailErrorMessage ?? form.dataset.errorMessage ?? "";
-          }
-
-          return form.dataset.backendErrorMessage ?? form.dataset.errorMessage ?? "";
-        };
-
-        for (const form of document.querySelectorAll("[data-contact-form]")) {
-          const endpoint = form instanceof HTMLFormElement ? form.dataset.contactEndpoint : "";
-          const status = form.querySelector("[data-contact-status]");
-          const startedAt = form.querySelector('input[name="formStartedAt"]');
-          const referrer = form.querySelector('input[name="referrer"]');
-          const submitButton = form.querySelector('button[type="submit"]');
-
-          if (startedAt instanceof HTMLInputElement) {
-            startedAt.value = String(Date.now());
-          }
-
-          if (referrer instanceof HTMLInputElement) {
-            referrer.value = document.referrer;
-          }
-
-          form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            if (!(form instanceof HTMLFormElement)) {
-              return;
-            }
-
-            if (!form.checkValidity()) {
-              if (status instanceof HTMLElement) {
-                status.dataset.state = "error";
-                status.textContent = messageWithRetry(
-                  form.dataset.validationMessage,
-                  form.dataset.retryLabel,
-                );
-              }
-              dispatchContactAnalytics("contact_form_submit_failed", {
-                failure_reason: "validation_failed",
-              });
-              form.reportValidity();
-              return;
-            }
-
-            if (!endpoint) {
-              if (status instanceof HTMLElement) {
-                status.dataset.state = "error";
-                status.textContent = messageWithRetry(
-                  form.dataset.endpointMissing,
-                  form.dataset.retryLabel,
-                );
-              }
-              dispatchContactAnalytics("contact_form_submit_failed", {
-                failure_reason: "endpoint_missing",
-              });
-              return;
-            }
-
-            const formData = new FormData(form);
-            const payload = Object.fromEntries(formData.entries());
-            payload.consentToContact = formData.get("consentToContact") === "true" ? "true" : "";
-
-            if (submitButton instanceof HTMLButtonElement) {
-              submitButton.disabled = true;
-              submitButton.textContent = submitButton.dataset.sendingLabel ?? submitButton.textContent;
-            }
-            if (status instanceof HTMLElement) {
-              status.dataset.state = "sending";
-              status.textContent = "";
-            }
-
-            try {
-              const response = await fetch(endpoint, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  ...payload,
-                  consentToContact: payload.consentToContact === "true",
-                  formStartedAt: Number(payload.formStartedAt),
-                }),
-              });
-
-              if (!response.ok) {
-                const errorCode = await readErrorCode(response);
-                const failureReason = failureReasonForResponse(response, errorCode);
-                dispatchContactAnalytics("contact_form_submit_failed", {
-                  failure_reason: failureReason,
-                });
-                if (status instanceof HTMLElement) {
-                  status.dataset.state = "error";
-                  status.textContent = messageWithRetry(
-                    failureMessageForReason(form, failureReason),
-                    form.dataset.retryLabel,
-                  );
-                }
-                return;
-              }
-
-              const result = await readSubmissionResult(response);
-              const notificationStatus = stringStatus(result, "notificationStatus", "unknown");
-              const analyticsStatus = stringStatus(result, "analyticsStatus", "unknown");
-              const deliveryDegraded = shouldShowDegradedSuccess(notificationStatus);
-
-              dispatchContactAnalytics("contact_form_submit_succeeded", {
-                notification_status: notificationStatus,
-                analytics_status: analyticsStatus,
-                delivery_degraded: deliveryDegraded,
-              });
-
-              form.reset();
-              if (status instanceof HTMLElement) {
-                status.dataset.state = deliveryDegraded ? "warning" : "success";
-                status.textContent = deliveryDegraded
-                  ? form.dataset.degradedSuccessMessage ?? form.dataset.successMessage ?? ""
-                  : form.dataset.successMessage ?? "";
-              }
-            } catch {
-              dispatchContactAnalytics("contact_form_submit_failed", {
-                failure_reason: "backend_unavailable",
-              });
-              if (status instanceof HTMLElement) {
-                status.dataset.state = "error";
-                status.textContent = messageWithRetry(
-                  form.dataset.backendErrorMessage ?? form.dataset.errorMessage,
-                  form.dataset.retryLabel,
-                );
-              }
-            } finally {
-              if (submitButton instanceof HTMLButtonElement) {
-                submitButton.disabled = false;
-                submitButton.textContent = submitButton.dataset.submitLabel ?? submitButton.textContent;
-              }
-            }
-          });
-        }
-      </script>
-    </>
-  ) : isPrivacy && privacyContent ? (
-    <>
-      <section class={ui.routeHero} aria-labelledby="privacy-title" data-privacy-content-id={id}>
-        <div class={ui.routeHeroCopy}>
-          <p class={ui.signalLine}>{routeSignal}</p>
-          <h1 id="privacy-title">{privacyContent.heading}</h1>
-          <p class={ui.heroLead}>{privacyContent.intro}</p>
-          <div class={ui.heroActions} aria-label={copy.actions}>
-            {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
-            {secondaryHref && <a class={cx(ui.button, ui.buttonSecondary)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
-          </div>
-        </div>
-        <aside class={ui.routePanel} aria-label={copy.routeMetadataAria}>
-          <span>{copy.canonical}</span>
-          <strong>{route.path}</strong>
-          <span>{copy.contentType}</span>
-          <strong>{node.type}</strong>
-        </aside>
-      </section>
-
-      <section class={ui.routeProofSection} aria-labelledby="privacy-sections-title">
-        <div class={ui.sectionHeading}>
-          <h2 id="privacy-sections-title">{variant.summary}</h2>
-        </div>
-        <div class={ui.rowList}>
-          {privacyContent.sections.map((section) => (
-            <div class={ui.routeProofItem}>
-              <span>{section.title}</span>
-              <p>{section.body}</p>
-            </div>
-          ))}
-        </div>
-        <p class={ui.privacyBoundaryNote}>{privacyContent.boundaryNote}</p>
-      </section>
-    </>
-  ) : (
-    <>
-      <section class={ui.routeHero} aria-labelledby="route-title" data-content-type={node.type}>
-        <div class={ui.routeHeroCopy}>
-          <p class={ui.signalLine}>{routeSignal}</p>
-          <h1 id="route-title">{variant.title}</h1>
-          <p class={ui.heroLead}>{variant.summary}</p>
-          <div class={ui.heroActions} aria-label={copy.actions}>
-            {primaryHref && <a class={cx(ui.button, ui.buttonPrimary)} href={primaryHref}>{variant.primaryActionLabel}</a>}
-            {secondaryHref && <a class={cx(ui.button, ui.buttonSecondary)} href={secondaryHref}>{variant.secondaryActionLabel}</a>}
-          </div>
-        </div>
-        <aside class={ui.routePanel} aria-label={copy.routeMetadataAria}>
-          <span>{copy.canonical}</span>
-          <strong>{route.path}</strong>
-          <span>{copy.contentType}</span>
-          <strong>{node.type}</strong>
-        </aside>
-      </section>
-
-      <section class={ui.routeProofSection} aria-labelledby="route-proof-title">
-        <div class={ui.sectionHeading}>
-          <h2 id="route-proof-title">{copy.routeProofTitle}</h2>
-        </div>
-        <div class={ui.rowList}>
-          {copy.routeProof.map((item) => (
-            <div class={ui.routeProofItem}>
-              <span>{item.label}</span>
-              <p>{item.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-    </>
-  )
-}
+<style>
+  .sunlit-hero, .sunlit-page-hero { width: var(--container); margin: 0 auto; }
+  .sunlit-hero { display: grid; min-height: min(46rem, calc(100svh - 4.5rem)); grid-template-columns: minmax(0, .9fr) minmax(28rem, 1.25fr); align-items: center; gap: clamp(2rem, 5vw, 5rem); padding: 4rem 0; }
+  .sunlit-hero-copy { position: relative; z-index: 2; }
+  .sunlit-availability, .sunlit-page-hero > div > p:first-child, .sunlit-case-hero > div > p:first-child { display: flex; width: fit-content; align-items: center; gap: .55rem; margin: 0 0 1.25rem; padding: .35rem .65rem; border-radius: .3rem; background: var(--color-accent); font-size: .78rem; font-weight: 760; }
+  .sunlit-availability span { width: .5rem; height: .5rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
+  .sunlit-hero h1, .sunlit-page-hero h1, .sunlit-case-hero h1 { max-width: 12ch; margin: 0; font-size: var(--text-hero); font-weight: 780; letter-spacing: -.04em; line-height: .99; text-wrap: balance; }
+  .sunlit-lead, .sunlit-page-hero > div > p:last-of-type, .sunlit-case-hero > div > p:last-of-type { max-width: 55ch; margin: 1.5rem 0 0; color: var(--color-muted); font-size: var(--text-lead); line-height: 1.48; }
+  .sunlit-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
+  .sunlit-button { display: inline-flex; min-height: 3.25rem; align-items: center; justify-content: center; gap: 1.5rem; padding: 0 1.2rem; border: 2px solid var(--color-ink); border-radius: .6rem; text-decoration: none; font-weight: 760; }
+  .sunlit-button-primary { background: var(--color-primary); box-shadow: 0 4px 0 var(--color-ink); }
+  .sunlit-button-secondary { background: var(--color-bg); }
+  .sunlit-button-text { border-color: transparent; }
+  .sunlit-button:hover { transform: translateY(-2px); }
+  .sunlit-hero-stage { position: relative; min-height: 38rem; overflow: hidden; border-bottom: 2px solid var(--color-ink); }
+  .sunlit-hero-stage::before { content: ""; position: absolute; right: 0; bottom: 0; left: 4%; height: 25%; border: 2px solid var(--color-ink); border-bottom: 0; border-radius: 50% 50% 0 0; background: var(--color-secondary); }
+  .sunlit-hero-arch { position: absolute; bottom: 21%; width: 52%; height: 66%; border: 2px solid var(--color-ink); border-bottom: 0; border-radius: 50% 50% 0 0; }
+  .sunlit-hero-arch-one { right: 4%; background: var(--color-secondary); }
+  .sunlit-hero-arch-two { right: 28%; height: 46%; background: var(--color-primary); }
+  .sunlit-hero-stage figure { position: absolute; right: 12%; bottom: 13%; z-index: 3; width: 68%; margin: 0; transform: rotate(.5deg); border: 10px solid var(--color-bg); background: var(--color-bg); box-shadow: 0 6px 0 var(--color-ink); animation: sunlit-assemble 700ms cubic-bezier(.22, 1, .36, 1) both; }
+  .sunlit-hero-stage figcaption { padding: .45rem .5rem; font-size: .76rem; font-weight: 760; text-transform: uppercase; }
+  .sunlit-hero-stage img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
+  .sunlit-hanger { position: absolute; top: -3.8rem; left: 50%; width: 2px; height: 3.8rem; background: var(--color-ink); }
+  .sunlit-hanger::after { content: ""; position: absolute; top: -.2rem; left: -.36rem; width: .75rem; height: .75rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
+  .sunlit-stage-stamp { position: absolute; right: 7%; bottom: 10%; z-index: 4; padding: .45rem .7rem; transform: rotate(-5deg); border: 4px double var(--color-secondary-ink); background: var(--color-bg); color: var(--color-secondary-ink); font-size: .72rem; font-weight: 760; text-transform: uppercase; }
+  .sunlit-stage-ticket { position: absolute; top: 8%; right: 7%; z-index: 4; display: grid; width: 4.2rem; height: 5.5rem; place-items: center; border: 2px solid var(--color-ink); background: var(--color-bg); font-size: 1.8rem; font-weight: 760; box-shadow: 0 4px 0 var(--color-ink); }
+  .sunlit-stage-steps { position: absolute; right: 17%; bottom: 1%; left: 15%; z-index: 2; height: 5rem; }
+  .sunlit-stage-steps span, .sunlit-stage-steps i, .sunlit-stage-steps b { position: absolute; bottom: 0; height: 1.4rem; border: 2px solid var(--color-ink); border-radius: 50% 50% 0 0; }
+  .sunlit-stage-steps span { right: 0; left: 0; background: var(--color-primary); }
+  .sunlit-stage-steps i { right: 9%; left: 9%; bottom: 1.2rem; background: var(--color-secondary); }
+  .sunlit-stage-steps b { right: 20%; left: 20%; bottom: 2.4rem; background: var(--color-primary); }
+  @keyframes sunlit-assemble { from { transform: translateY(1.2rem) rotate(.5deg); } to { transform: translateY(0) rotate(.5deg); } }
+  .sunlit-home-split { display: grid; width: 100%; margin: clamp(5rem, 10vw, 9rem) 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); background: var(--color-dark); color: var(--color-dark-ink); --color-focus: var(--color-primary); }
+  .sunlit-split-copy { padding: clamp(3rem, 8vw, 7rem) max(1rem, calc((100vw - 72rem) / 2)); padding-right: clamp(2rem, 6vw, 5rem); }
+  .sunlit-split-copy > span, .sunlit-practice-proof header > span { color: var(--color-primary); font-size: .88rem; font-weight: 720; }
+  .sunlit-split-copy h2 { max-width: 14ch; margin: .75rem 0 1rem; font-size: var(--text-h2); font-weight: 760; letter-spacing: -.035em; line-height: 1.03; }
+  .sunlit-split-copy p { max-width: 57ch; color: color-mix(in oklch, var(--color-dark-ink), transparent 22%); }
+  .sunlit-split-copy a { display: inline-flex; min-height: 3.25rem; align-items: center; gap: 2rem; margin-top: 1.2rem; padding: 0 1rem; border: 2px solid var(--color-primary); background: var(--color-primary); color: var(--color-primary-ink); text-decoration: none; font-weight: 760; }
+  .sunlit-boundary-map { position: relative; display: grid; align-content: center; gap: 1px; padding: clamp(3rem, 8vw, 7rem) max(1rem, calc((100vw - 72rem) / 2)) clamp(3rem, 8vw, 7rem) clamp(2rem, 6vw, 5rem); background: var(--color-secondary); color: var(--color-ink); }
+  .sunlit-boundary-map article { position: relative; z-index: 1; padding: 1.2rem; border: 2px solid var(--color-ink); background: var(--color-bg); }
+  .sunlit-boundary-map article span { font-size: .75rem; font-weight: 760; }
+  .sunlit-boundary-map h3 { margin: .8rem 0 .35rem; font-size: 1.35rem; }
+  .sunlit-boundary-map p { margin: 0; color: var(--color-muted); }
+  .sunlit-page-hero { display: grid; min-height: 34rem; grid-template-columns: minmax(0, 1.2fr) minmax(18rem, .8fr); align-items: center; gap: clamp(2rem, 6vw, 6rem); padding: clamp(4rem, 8vw, 7rem) 0; }
+  .sunlit-page-hero h1 { max-width: 13ch; }
+  .sunlit-page-hero > div > p:first-child { background: var(--color-primary); }
+  .sunlit-work-hero, .sunlit-contact-hero { border-bottom: 2px solid var(--color-ink); }
+  .sunlit-profile-ticket, .sunlit-contact-ticket { position: relative; min-height: 15rem; padding: 2rem; border: 2px solid var(--color-ink); background: var(--color-primary); box-shadow: 0 6px 0 var(--color-ink); }
+  .sunlit-work-program { position: relative; display: grid; min-height: 18rem; align-content: end; overflow: hidden; padding: 2rem; border: 2px solid var(--color-ink); background: var(--color-secondary); box-shadow: 0 6px 0 var(--color-ink); }
+  .sunlit-work-program > span { position: absolute; top: -3.5rem; right: -2rem; width: 11rem; height: 11rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
+  .sunlit-work-program > span::after { content: ""; position: absolute; inset: 2rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-accent); }
+  .sunlit-work-program > strong { position: relative; z-index: 1; margin-bottom: 1rem; font-size: clamp(1.8rem, 4vw, 3.3rem); line-height: 1; }
+  .sunlit-work-program > div { position: relative; z-index: 1; display: grid; }
+  .sunlit-work-program i { padding: .35rem 0; border-top: 1px solid color-mix(in oklch, var(--color-ink), transparent 45%); font-style: normal; font-weight: 650; }
+  .sunlit-work-archive, .sunlit-profile-summary, .sunlit-experience, .sunlit-capabilities, .sunlit-profile-projects, .sunlit-education, .sunlit-related { width: var(--container); margin: clamp(5rem, 10vw, 9rem) auto; }
+  .sunlit-work-archive > header, .sunlit-profile-summary > header, .sunlit-experience > header, .sunlit-capabilities > header, .sunlit-profile-projects > header, .sunlit-education > header { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: 2rem; margin-bottom: 2rem; }
+  .sunlit-work-archive > header h2, .sunlit-profile-summary > header h2, .sunlit-experience > header h2, .sunlit-capabilities > header h2, .sunlit-profile-projects > header h2, .sunlit-education > header h2, .sunlit-related h2 { margin: 0; font-size: var(--text-h2); font-weight: 760; letter-spacing: -.035em; line-height: 1; }
+  .sunlit-work-archive > header p { max-width: 52ch; margin: 0; color: var(--color-muted); }
+  .sunlit-archive-list { border-top: 2px solid var(--color-ink); }
+  .sunlit-archive-list article { display: grid; min-height: 24rem; grid-template-columns: minmax(16rem, .8fr) minmax(0, 1.2fr); gap: clamp(1.2rem, 5vw, 5rem); align-items: center; padding: 2rem 0; border-bottom: 2px solid var(--color-ink); }
+  .sunlit-archive-list figure { display: grid; height: 20rem; margin: 0; overflow: hidden; place-items: center; border: 8px solid var(--color-bg); outline: 2px solid var(--color-ink); background: color-mix(in oklch, var(--color-secondary), white 72%); box-shadow: 0 5px 0 var(--color-ink); }
+  .sunlit-archive-list img { width: 100%; height: 100%; object-fit: contain; object-position: center top; }
+  .sunlit-archive-list figure[data-media-kind="site"] img,
+  .sunlit-archive-list figure[data-media-kind="public-site"] img { object-fit: cover; }
+  .sunlit-archive-list article > div:last-child > p:first-child { width: fit-content; margin: 0 0 1rem; padding: .3rem .55rem; background: var(--color-accent); font-size: .76rem; font-weight: 760; }
+  .sunlit-archive-list h3 { margin: 0; font-size: clamp(2rem, 4.6vw, 4rem); font-weight: 770; letter-spacing: -.035em; line-height: 1; }
+  .sunlit-archive-list article > div:last-child > p:nth-of-type(2) { max-width: 58ch; color: var(--color-muted); }
+  .sunlit-archive-list article strong { display: block; font-size: .82rem; }
+  .sunlit-archive-list article a { display: inline-flex; min-height: 3rem; align-items: center; gap: 2rem; margin-top: 1.2rem; padding: 0 1rem; border: 2px solid var(--color-ink); background: var(--color-primary); text-decoration: none; font-weight: 760; box-shadow: 0 3px 0 var(--color-ink); }
+  .sunlit-practice-artifact, .sunlit-case-hero figure { position: relative; margin: 0; transform: rotate(1deg); border: 9px solid var(--color-bg); outline: 2px solid var(--color-ink); background: var(--color-bg); box-shadow: 0 6px 0 var(--color-ink); }
+  .sunlit-practice-artifact { display: grid; gap: 0; padding: 1.5rem; background: var(--color-primary); }
+  .sunlit-practice-artifact > div { display: grid; min-height: 5.4rem; grid-template-columns: 2.4rem 1fr auto; align-items: center; gap: .8rem; border-bottom: 2px solid var(--color-ink); }
+  .sunlit-practice-artifact > div > span, .sunlit-practice-artifact > div > i { display: grid; width: 2rem; height: 2rem; place-items: center; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-bg); font-style: normal; font-weight: 760; }
+  .sunlit-practice-artifact > div > i { background: var(--color-secondary); }
+  .sunlit-practice-artifact > b { justify-self: end; margin: 1rem -2.5rem -2.5rem 0; padding: .45rem .7rem; transform: rotate(-5deg); border: 4px double var(--color-accent-ink); background: var(--color-bg); color: var(--color-accent-ink); font-weight: 760; }
+  .sunlit-case-hero figure { display: grid; height: clamp(22rem, 32vw, 27rem); grid-template-rows: minmax(0, 1fr) auto; place-items: center; background: color-mix(in oklch, var(--color-secondary), white 72%); }
+  .sunlit-case-hero figure img { display: block; width: 100%; height: 100%; max-height: 27rem; object-fit: contain; object-position: center top; }
+  .sunlit-case-hero figure[data-media-kind="site"] img,
+  .sunlit-case-hero figure[data-media-kind="public-site"] img { object-fit: cover; }
+  .sunlit-practice-proof { display: grid; width: var(--container); margin: clamp(5rem, 10vw, 9rem) auto; grid-template-columns: minmax(17rem, .7fr) minmax(0, 1.3fr); gap: clamp(2rem, 6vw, 6rem); }
+  .sunlit-practice-proof header h2 { margin: .6rem 0 1rem; font-size: var(--text-h2); line-height: 1; }
+  .sunlit-practice-proof header p { color: var(--color-muted); }
+  .sunlit-practice-proof > div { border-top: 2px solid var(--color-ink); }
+  .sunlit-practice-proof a { position: relative; display: grid; min-height: 7rem; grid-template-columns: .8fr 1.2fr; align-content: center; gap: .2rem 1rem; padding: 1rem 3rem 1rem 0; border-bottom: 2px solid var(--color-ink); text-decoration: none; }
+  .sunlit-practice-proof a span { font-size: .76rem; font-weight: 760; }
+  .sunlit-practice-proof a p { grid-column: 2; margin: 0; color: var(--color-muted); }
+  .sunlit-practice-proof a i { position: absolute; top: 50%; right: 0; transform: translateY(-50%); }
+  .sunlit-architecture-hero { position: relative; width: 100%; overflow: clip; padding-inline: max(1rem, calc((100vw - 72rem) / 2)); background: var(--color-secondary); }
+  .sunlit-architecture-hero > div > p:last-of-type { color: var(--color-ink); }
+  .sunlit-architecture-hero::before { content: ""; position: absolute; top: -11rem; left: 42%; width: 30rem; height: 30rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
+  .sunlit-architecture-hero::after { content: ""; position: absolute; right: 0; bottom: 3rem; left: 46%; height: 3px; background: var(--color-ink); }
+  .sunlit-architecture-hero > * { position: relative; z-index: 1; }
+  .sunlit-source-reel { position: relative; padding: 2rem; border: 2px solid var(--color-ink); background: var(--color-bg); box-shadow: 0 6px 0 var(--color-ink); }
+  .sunlit-source-reel > span { position: absolute; top: -1.4rem; right: 2rem; width: 2.8rem; height: 2.8rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-secondary); }
+  .sunlit-source-reel h2 { margin: 0 0 1rem; font-size: 1.5rem; }
+  .sunlit-source-reel a { display: flex; min-height: 3rem; align-items: center; justify-content: space-between; border-top: 1px solid var(--color-rule); text-decoration: none; }
+  .sunlit-architecture-ledger { width: var(--container); margin: clamp(5rem, 10vw, 9rem) auto; border-top: 2px solid var(--color-ink); }
+  .sunlit-architecture-ledger article { display: grid; grid-template-columns: minmax(15rem, .7fr) minmax(0, 1.3fr); gap: 2rem; padding: 2rem 0; border-bottom: 2px solid var(--color-ink); }
+  .sunlit-architecture-ledger h2 { margin: 0; font-size: clamp(1.8rem, 3vw, 3rem); line-height: 1; }
+  .sunlit-architecture-ledger article p { max-width: 70ch; margin: 0; color: var(--color-muted); }
+  .sunlit-architecture-ledger article div { grid-column: 2; }
+  .sunlit-architecture-ledger article a { margin-right: 1rem; font-weight: 700; }
+  .sunlit-architecture-ledger footer, .sunlit-case-evidence footer, .sunlit-legal footer { display: grid; grid-template-columns: .7fr 1.3fr; gap: 2rem; padding: 2rem; background: var(--color-secondary); }
+  .sunlit-architecture-ledger footer p, .sunlit-case-evidence footer p, .sunlit-legal footer p { margin: 0; }
+  .sunlit-case { width: 100%; }
+  .sunlit-case-hero { display: grid; width: var(--container); min-height: 38rem; margin: 0 auto; grid-template-columns: 1fr 1fr; align-items: center; gap: clamp(2rem, 6vw, 6rem); padding: clamp(4rem, 8vw, 7rem) 0; }
+  .sunlit-case-hero figure figcaption { padding: .55rem; font-size: .75rem; font-weight: 760; }
+  .sunlit-case-rail { width: var(--container); margin: 2rem auto clamp(5rem, 10vw, 9rem); border-top: 2px solid var(--color-ink); }
+  .sunlit-case-rail section { display: grid; grid-template-columns: 5rem minmax(0, 1fr); gap: 1.5rem; padding: 2.2rem 0; border-bottom: 2px solid var(--color-ink); }
+  .sunlit-case-rail section > span { align-self: start; display: grid; width: 3rem; height: 3rem; place-items: center; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); font-weight: 760; }
+  .sunlit-case-rail section:nth-child(even) > span { background: var(--color-secondary); }
+  .sunlit-case-rail h2 { margin: 0 0 .6rem; font-size: clamp(1.8rem, 3vw, 3rem); letter-spacing: -.025em; line-height: 1.05; }
+  .sunlit-case-rail p { max-width: 72ch; margin: 0; color: var(--color-muted); font-size: 1.08rem; }
+  .sunlit-case-evidence { width: var(--container); margin: clamp(5rem, 10vw, 9rem) auto; border: 2px solid var(--color-ink); }
+  .sunlit-case-evidence > header { padding: 2rem; background: var(--color-primary); }
+  .sunlit-case-evidence > header p { margin: 0; font-weight: 760; }
+  .sunlit-case-evidence > header h2 { margin: .5rem 0 0; font-size: var(--text-h2); }
+  .sunlit-case-evidence > div { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+  .sunlit-case-evidence > div a { display: grid; min-height: 13rem; grid-template-columns: 2.3rem 1fr; align-content: start; gap: .5rem .8rem; padding: 1.5rem; border-right: 1px solid var(--color-rule); text-decoration: none; }
+  .sunlit-case-evidence > div a > span { grid-row: 1 / 4; display: grid; width: 2rem; height: 2rem; place-items: center; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-secondary); }
+  .sunlit-case-evidence a p { margin: 0; color: var(--color-muted); }
+  .sunlit-case-evidence a i { margin-top: 1rem; font-style: normal; font-weight: 700; }
+  .sunlit-related > div { display: flex; overflow-x: auto; gap: 1rem; padding: 1.5rem 0 .6rem; }
+  .sunlit-related a { display: grid; min-width: min(20rem, 82vw); min-height: 10rem; padding: 1.2rem; border: 2px solid var(--color-ink); background: var(--color-bg); text-decoration: none; box-shadow: 0 4px 0 var(--color-ink); }
+  .sunlit-related a span { font-size: .72rem; font-weight: 760; }
+  .sunlit-related a strong { align-self: end; font-size: 1.4rem; }
+  .sunlit-related a i { justify-self: end; }
+  .sunlit-about-role { font-weight: 720; color: var(--color-ink) !important; }
+  .sunlit-profile-ticket span { display: block; margin-bottom: 2rem; font-size: .76rem; font-weight: 760; }
+  .sunlit-profile-ticket h2 { margin: 0; font-size: clamp(1.8rem, 3.5vw, 3rem); line-height: 1.05; }
+  .sunlit-profile-ticket i { position: absolute; right: 1rem; bottom: 1rem; display: grid; width: 3rem; height: 3rem; place-items: center; border: 3px double var(--color-ink); border-radius: 50%; font-style: normal; }
+  .sunlit-profile-summary { display: grid; grid-template-columns: .6fr 1fr; gap: 2rem 5rem; }
+  .sunlit-profile-summary > header { display: block; }
+  .sunlit-profile-summary > div p:first-child { margin-top: 0; }
+  .sunlit-profile-summary > aside { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); border: 2px solid var(--color-ink); }
+  .sunlit-profile-summary > aside div { padding: 1.2rem; border-right: 1px solid var(--color-rule); }
+  .sunlit-profile-summary > aside div:last-child { border-right: 0; }
+  .sunlit-profile-summary > aside p { margin: .5rem 0 0; color: var(--color-muted); font-size: .9rem; }
+  .sunlit-experience > div { border-top: 2px solid var(--color-ink); }
+  .sunlit-experience article { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: 1rem; padding: 1.8rem 0; border-bottom: 2px solid var(--color-ink); }
+  .sunlit-experience article > span { font-weight: 760; }
+  .sunlit-experience h3 { margin: 0; font-size: 1.55rem; }
+  .sunlit-experience article p { margin: .2rem 0 .7rem; color: var(--color-muted); }
+  .sunlit-experience ul, .sunlit-profile-projects ul { margin: 0; padding-left: 1.2rem; }
+  .sunlit-capabilities > div, .sunlit-profile-projects > div { display: grid; grid-template-columns: repeat(3, 1fr); border: 2px solid var(--color-ink); }
+  .sunlit-capabilities article, .sunlit-profile-projects article { padding: 1.4rem; border-right: 1px solid var(--color-rule); border-bottom: 1px solid var(--color-rule); }
+  .sunlit-capabilities h3, .sunlit-profile-projects h3 { margin: 0 0 .7rem; font-size: 1.35rem; }
+  .sunlit-capabilities p, .sunlit-profile-projects p { color: var(--color-muted); }
+  .sunlit-profile-projects > div { grid-template-columns: repeat(3, 1fr); }
+  .sunlit-education { display: grid; grid-template-columns: .65fr 1fr; gap: 2rem 4rem; }
+  .sunlit-education > header { display: block; }
+  .sunlit-education > div p { display: grid; margin: 0; padding: 1rem 0; border-bottom: 1px solid var(--color-rule); }
+  .sunlit-education > div span { color: var(--color-muted); }
+  .sunlit-education > p { grid-column: 2; }
+  .sunlit-contact-ticket { background: var(--color-secondary); }
+  .sunlit-contact-ticket > span { display: block; color: var(--color-primary); font-size: 2rem; }
+  .sunlit-contact-ticket h2 { margin: 1.5rem 0 .8rem; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; }
+  .sunlit-contact-path { display: flex; align-items: center; gap: .55rem; margin-top: 2rem; }
+  .sunlit-contact-path strong { display: flex; min-height: 2.75rem; flex: 1; align-items: center; justify-content: center; border-top: 2px solid var(--color-ink); border-bottom: 2px solid var(--color-ink); font-size: .82rem; }
+  .sunlit-contact-path strong + strong::before { content: "→"; margin-right: .55rem; color: var(--color-accent-ink); }
+  .sunlit-contact-direct { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.4rem; }
+  .sunlit-contact-direct a { font-weight: 700; }
+  .sunlit-contact-layout { display: grid; width: var(--container); margin: clamp(4rem, 8vw, 7rem) auto; grid-template-columns: minmax(17rem, .65fr) minmax(0, 1.35fr); border: 2px solid var(--color-ink); box-shadow: 0 7px 0 var(--color-ink); }
+  .sunlit-contact-layout > aside { padding: clamp(1.5rem, 4vw, 3rem); background: var(--color-secondary); }
+  .sunlit-contact-layout > aside > span { font-size: .78rem; font-weight: 760; }
+  .sunlit-contact-layout > aside h2 { margin: 2rem 0 1rem; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; }
+  .sunlit-contact-layout > aside div { display: grid; margin-top: 2rem; }
+  .sunlit-contact-layout > aside a { padding: .7rem 0; border-top: 1px solid var(--color-ink); font-weight: 700; }
+  .sunlit-contact-layout form { display: grid; gap: 1.2rem; padding: clamp(1.5rem, 4vw, 3rem); }
+  .sunlit-contact-layout form > label, .sunlit-field-grid > label { display: grid; gap: .35rem; font-weight: 700; }
+  .sunlit-field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .sunlit-contact-layout input, .sunlit-contact-layout select, .sunlit-contact-layout textarea { box-sizing: border-box; width: 100%; min-height: 3.25rem; padding: .7rem .8rem; border: 2px solid var(--color-ink); border-radius: .35rem; background: var(--color-bg); color: var(--color-ink); font: inherit; }
+  .sunlit-contact-layout textarea { resize: vertical; }
+  .sunlit-contact-layout fieldset { margin: 0; padding: .6rem .8rem; border: 2px solid var(--color-ink); }
+  .sunlit-contact-layout fieldset label { display: inline-flex; align-items: center; gap: .4rem; margin-right: .8rem; }
+  .sunlit-contact-layout fieldset input, .sunlit-consent input { width: 1.2rem; min-height: 1.2rem; }
+  .sunlit-consent { grid-template-columns: auto 1fr; align-items: start; }
+  .sunlit-honeypot { position: absolute; left: -9999px; }
+  .sunlit-submit { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .sunlit-submit button { display: inline-flex; min-height: 3.5rem; align-items: center; gap: 2rem; padding: 0 1.2rem; border: 2px solid var(--color-ink); border-radius: .55rem; background: var(--color-primary); color: var(--color-ink); font: inherit; font-weight: 760; box-shadow: 0 4px 0 var(--color-ink); cursor: pointer; }
+  .sunlit-submit p { margin: 0; color: var(--color-muted); font-size: .88rem; }
+  .sunlit-contact-status { min-height: 1.5rem; margin: 0; font-weight: 700; }
+  .sunlit-contact-status[data-state="error"] { color: var(--color-accent-ink); }
+  .sunlit-contact-status[data-state="success"] { color: var(--color-secondary-ink); }
+  .sunlit-privacy-hero aside { display: grid; aspect-ratio: 1; place-items: center; border: 4px double var(--color-secondary-ink); border-radius: 50%; background: var(--color-secondary); color: var(--color-secondary-ink); text-align: center; }
+  .sunlit-privacy-hero aside span { display: grid; width: 3rem; height: 3rem; place-items: center; border: 2px solid currentColor; border-radius: 50%; font-size: 1.5rem; }
+  .sunlit-privacy-hero aside strong { max-width: 10ch; }
+  .sunlit-legal { width: var(--narrow); margin: 2rem auto clamp(5rem, 10vw, 9rem); border-top: 2px solid var(--color-ink); }
+  .sunlit-legal section { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: 1rem; padding: 2rem 0; border-bottom: 1px solid var(--color-rule); }
+  .sunlit-legal section > span { font-weight: 760; }
+  .sunlit-legal h2 { margin: 0 0 .6rem; font-size: clamp(1.6rem, 3vw, 2.7rem); }
+  .sunlit-legal p { margin: 0; color: var(--color-muted); }
+  @media (max-width: 900px) {
+    .sunlit-hero { min-height: auto; grid-template-columns: 1fr; }
+    .sunlit-hero-stage { min-height: 34rem; }
+    .sunlit-page-hero, .sunlit-case-hero { grid-template-columns: 1fr; }
+    .sunlit-home-split { grid-template-columns: 1fr; }
+    .sunlit-archive-list article { grid-template-columns: minmax(13rem, .8fr) minmax(0, 1.2fr); }
+    .sunlit-practice-proof { grid-template-columns: 1fr; }
+    .sunlit-profile-summary { grid-template-columns: 1fr; }
+    .sunlit-profile-summary > aside { grid-template-columns: repeat(2, 1fr); }
+    .sunlit-capabilities > div, .sunlit-profile-projects > div { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 700px) {
+    .sunlit-work-archive > header, .sunlit-profile-summary > header, .sunlit-experience > header, .sunlit-capabilities > header, .sunlit-profile-projects > header, .sunlit-education > header { grid-template-columns: 1fr; }
+    .sunlit-archive-list article { grid-template-columns: 1fr; }
+    .sunlit-archive-list figure { grid-column: 1; height: 17rem; }
+    .sunlit-archive-list article > div:last-child { grid-column: 1; }
+    .sunlit-architecture-ledger article { grid-template-columns: 1fr; gap: 1rem; }
+    .sunlit-architecture-ledger article p, .sunlit-architecture-ledger article div { grid-column: 1; }
+    .sunlit-case-rail section { grid-template-columns: 3.5rem minmax(0, 1fr); }
+    .sunlit-architecture-ledger footer, .sunlit-case-evidence footer, .sunlit-legal footer { grid-template-columns: 1fr; }
+    .sunlit-profile-summary > aside { grid-template-columns: 1fr; }
+    .sunlit-capabilities > div, .sunlit-profile-projects > div { grid-template-columns: 1fr; }
+    .sunlit-education { grid-template-columns: 1fr; }
+    .sunlit-education > p { grid-column: 1; }
+    .sunlit-contact-layout { grid-template-columns: 1fr; }
+    .sunlit-field-grid { grid-template-columns: 1fr; }
+    .sunlit-submit { align-items: stretch; flex-direction: column; }
+  }
+  @media (max-width: 420px) {
+    .sunlit-hero-stage { min-height: 27rem; }
+    .sunlit-hero-stage figure { right: 6%; width: 78%; border-width: 7px; }
+    .sunlit-stage-ticket { right: 2%; width: 3.3rem; height: 4.2rem; }
+    .sunlit-actions { align-items: stretch; flex-direction: column; }
+    .sunlit-button { width: auto; }
+    .sunlit-case-rail section { grid-template-columns: 1fr; }
+    .sunlit-case-rail section > div { grid-column: 1; }
+    .sunlit-legal section { grid-template-columns: 2.5rem minmax(0, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sunlit-hero-stage figure { animation: none; }
+    .sunlit-button:hover { transform: none; }
+  }
+</style>

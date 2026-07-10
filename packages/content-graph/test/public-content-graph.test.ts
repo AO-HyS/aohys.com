@@ -12,6 +12,7 @@ import {
   getLanguageAlternates,
   getLocaleVariant,
   getLocalizedPath,
+  getPublicNavigation,
   getPublicRouteMap,
   getResumePageContent,
   getSeoMetadata,
@@ -143,7 +144,7 @@ describe("Public Content Graph", () => {
   it("returns canonical SEO metadata and language alternates", () => {
     expect(getLanguageAlternates("resume")).toEqual({
       en: "https://aohys.com/resume",
-      es: "https://aohys.com/es/cv",
+      es: "https://aohys.com/es/curriculum",
       "x-default": "https://aohys.com/resume",
     });
 
@@ -173,8 +174,8 @@ describe("Public Content Graph", () => {
     const englishHome = getHomePageContent("en");
     const spanishHome = getHomePageContent("es");
 
-    expect(englishHome.headline).toContain("sell, operate, and ship");
-    expect(spanishHome.headline).toContain("vender, operar y lanzar");
+    expect(englishHome.headline).toContain("moves real work");
+    expect(spanishHome.headline).toContain("mueve el trabajo real");
     expect(englishHome.selectedOutcomes).toHaveLength(4);
     expect(englishHome.selectedOutcomes.map((outcome) => outcome.path)).toEqual([
       "/case-studies/casa-roca",
@@ -188,6 +189,52 @@ describe("Public Content Graph", () => {
     );
     expect(spanishHome.selectedOutcomes[0]?.path).toBe("/es/casos/casa-roca");
     expect(spanishHome.whatsappHref).toMatch(/^https:\/\/wa\.me\/52/);
+  });
+
+  it("returns the graph-backed AOHYS public information architecture", () => {
+    const englishNavigation = getPublicNavigation("en");
+    const spanishNavigation = getPublicNavigation("es");
+
+    expect(englishNavigation.items.map((item) => item.slotId)).toEqual([
+      "solutions",
+      "agents",
+      "pricing",
+      "docs",
+      "blog",
+    ]);
+    expect(englishNavigation.items.map((item) => item.label)).toEqual([
+      "Work",
+      "Practice",
+      "About",
+      "Architecture",
+      "Talk",
+    ]);
+    expect(englishNavigation.items.map((item) => item.href)).toEqual([
+      "/case-studies",
+      "/practice",
+      "/resume",
+      "/architecture",
+      "/contact",
+    ]);
+    expect(spanishNavigation.items.map((item) => item.href)).toEqual([
+      "/es/casos",
+      "/es/practica",
+      "/es/curriculum",
+      "/es/arquitectura",
+      "/es/contacto",
+    ]);
+    expect(englishNavigation.actions.map((action) => [action.slotId, action.href])).toEqual([
+      ["login", "/dashboard"],
+      ["signup", "/contact"],
+    ]);
+    expect(englishNavigation.dropdown.items).toHaveLength(4);
+    expect(englishNavigation.dropdown.items.map((item) => item.href)).toEqual([
+      "/case-studies/casa-roca",
+      "/case-studies/the-barber-central",
+      "/architecture",
+      "/practice",
+    ]);
+    expect(englishNavigation.dropdown.preview.codeLines.join("\n")).toContain("aohys.publish");
   });
 
   it("creates locale entries and public manifest ids for new dashboard case studies", async () => {
@@ -498,7 +545,7 @@ describe("Public Content Graph", () => {
     const englishArchitecture = getArchitecturePageContent("en");
     const spanishArchitecture = getArchitecturePageContent("es");
 
-    expect(englishArchitecture.heading).toBe("The public code shows the work around the work.");
+    expect(englishArchitecture.heading).toBe("Public code for systems that stay private.");
     expect(englishArchitecture.sourceLinks.map((link) => link.href)).toEqual([
       "https://github.com/AO-HyS/aohys.com",
       "https://github.com/AO-HyS/aohys.com/blob/develop/README.md",
@@ -510,7 +557,7 @@ describe("Public Content Graph", () => {
     expect(englishArchitecture.sections.map((section) => section.title)).toContain("Environment Contract");
     expect(englishArchitecture.sections.map((section) => section.title)).toContain("Public Content Graph");
     expect(englishArchitecture.sections.every((section) => section.body.length > 40)).toBe(true);
-    expect(spanishArchitecture.heading).toBe("El código público muestra el trabajo alrededor del trabajo.");
+    expect(spanishArchitecture.heading).toBe("Código público para sistemas que siguen privados.");
     expect(spanishArchitecture.sourceLinks[0]?.href).toBe("https://github.com/AO-HyS/aohys.com");
   });
 
@@ -552,7 +599,7 @@ describe("Public Content Graph", () => {
       href: "/downloads/alejandro-ortiz-corro-resume.pdf",
       fileName: "alejandro-ortiz-corro-resume.pdf",
     });
-    expect(englishResume.proof.title).toBe("The site supports the resume.");
+    expect(englishResume.proof.title).toBe("The proof packet supports a serious review.");
     expect(englishResume.summary.join(" ")).toMatch(/React|TypeScript|Next\.js|agents|observability/i);
     expect(englishResume.contextLinks.map((link) => link.href)).toEqual([
       "/case-studies",

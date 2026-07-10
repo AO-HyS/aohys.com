@@ -56,10 +56,26 @@ export interface EvidenceAsset {
 export interface StaticEvidenceImageAsset {
   src: string;
   thumbSrc?: string;
+  alt?: string;
   kind: "site" | "landing" | "dashboard" | "diagram";
 }
 
 export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceImageAsset> = {
+  home: {
+    src: "/images/proof/casa-roca-production.png",
+    alt: "Public Casa Roca production website screenshot",
+    kind: "site",
+  },
+  "home:architecture-backdrop": {
+    src: "/images/proof/enterprise-delivery-map.svg",
+    alt: "Public-safe enterprise delivery architecture map",
+    kind: "diagram",
+  },
+  "home:practice-backdrop": {
+    src: "/images/proof/barber-central-landing.png",
+    alt: "The Barber Central development landing page",
+    kind: "landing",
+  },
   "case-study:casa-roca": {
     src: "/images/proof/casa-roca-production.png",
     kind: "site",
@@ -79,8 +95,13 @@ export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceI
     kind: "diagram",
   },
   "case-study:engineering-practice": {
-    src: "/images/generated/aohys-architecture-proof-surface.png",
+    src: "/images/proof/enterprise-delivery-map.svg",
     kind: "diagram",
+  },
+  practice: {
+    src: "/images/proof/barber-central-landing.png",
+    alt: "The Barber Central product delivery evidence",
+    kind: "landing",
   },
 };
 
@@ -101,6 +122,8 @@ export interface HomeStage {
 
 export interface HomePageContent {
   headline: string;
+  headlineLines?: string[];
+  headlineEmphasisWords?: string[];
   deck: string;
   proofBoardLabel: string;
   proofBoardTitle: string;
@@ -120,6 +143,52 @@ export interface HomePageContent {
   emailHref: string;
   whatsappLabel: string;
   whatsappHref: string;
+}
+
+export interface PublicNavigationItem {
+  slotId: "solutions" | "agents" | "pricing" | "docs" | "blog";
+  label: string;
+  contentId?: ContentId | string;
+  href: string;
+  external?: boolean;
+  dropdown?: boolean;
+}
+
+export interface PublicNavigationAction {
+  slotId: "login" | "signup";
+  label: string;
+  contentId?: ContentId | string;
+  href: string;
+  style: "secondary" | "primary";
+}
+
+export interface PublicNavigationDropdownItem {
+  id: string;
+  label: string;
+  text: string;
+  href: string;
+  icon: "site" | "operations" | "system" | "practice";
+  tone: number;
+}
+
+export interface PublicNavigationPreview {
+  tabs: string[];
+  codeLines: string[];
+}
+
+export interface PublicNavigation {
+  brand: {
+    homeLabel: string;
+    wordmarkSrc: string;
+    fallbackSrc: string;
+  };
+  items: PublicNavigationItem[];
+  actions: PublicNavigationAction[];
+  dropdown: {
+    label: string;
+    items: PublicNavigationDropdownItem[];
+    preview: PublicNavigationPreview;
+  };
 }
 
 export interface ArchitectureSourceLink {
@@ -319,6 +388,13 @@ interface LocalizedContentEntry {
   secondaryActionContentId?: ContentId | string;
   homeContent?: Omit<HomePageContent, "selectedOutcomes"> & {
     selectedOutcomes: Array<Omit<HomeOutcome, "path">>;
+  };
+  publicNavigation?: Omit<PublicNavigation, "items" | "actions" | "dropdown"> & {
+    items: Array<Omit<PublicNavigationItem, "href">>;
+    actions: Array<Omit<PublicNavigationAction, "href"> & { href?: string }>;
+    dropdown: Omit<PublicNavigation["dropdown"], "items"> & {
+      items: Array<Omit<PublicNavigationDropdownItem, "href"> & { contentId: ContentId | string }>;
+    };
   };
   architectureContent?: ArchitecturePageContent;
   caseStudyContent?: CaseStudyPageContent;
@@ -612,6 +688,37 @@ export function getHomePageContent(locale: Locale): HomePageContent {
       ...selectedOutcomes,
       ...dashboardOutcomes,
     ],
+  };
+}
+
+export function getPublicNavigation(locale: Locale): PublicNavigation {
+  const home = getDictionaryEntry("home", locale);
+
+  if (!home.publicNavigation) {
+    throw new Error(`Public navigation is missing for locale "${locale}".`);
+  }
+
+  return {
+    brand: home.publicNavigation.brand,
+    items: home.publicNavigation.items.map((item) => ({
+      ...item,
+      href: item.contentId ? getLocalizedPath(item.contentId, locale) : "#",
+    })),
+    actions: home.publicNavigation.actions.map((action) => ({
+      ...action,
+      href: action.href ?? (action.contentId ? getLocalizedPath(action.contentId, locale) : "#"),
+    })),
+    dropdown: {
+      ...home.publicNavigation.dropdown,
+      items: home.publicNavigation.dropdown.items.map((item) => ({
+        id: item.id,
+        label: item.label,
+        text: item.text,
+        icon: item.icon,
+        tone: item.tone,
+        href: getLocalizedPath(item.contentId, locale),
+      })),
+    },
   };
 }
 
