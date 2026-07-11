@@ -71,6 +71,39 @@ describe("Cloudflare Pages release plan", () => {
     expect(requests[0]?.init?.headers).toMatchObject({ Authorization: "Bearer secret-token" });
   });
 
+  it("still verifies apex DNS when Pages already reports the domain active", async () => {
+    const responses = [
+      cloudflareResponse([{ name: "aohys.com", status: "active" }]),
+      cloudflareResponse([{ id: "zone-id", name: "aohys.com", status: "active" }]),
+      cloudflareResponse([
+        {
+          id: "record-id",
+          name: "aohys.com",
+          type: "CNAME",
+          content: "aohys-com.pages.dev",
+          proxied: true,
+        },
+      ]),
+    ];
+    const fetchImpl = async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("Unexpected request");
+      return response;
+    };
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        reconcileDns: true,
+        fetchImpl,
+      }),
+    ).resolves.toMatchObject({ domain: { status: "active" } });
+    expect(responses).toHaveLength(0);
+  });
+
   it("creates a missing domain once and polls until Cloudflare activates it", async () => {
     const responses = [
       cloudflareResponse([]),
@@ -103,6 +136,124 @@ describe("Cloudflare Pages release plan", () => {
     });
     expect(requests.map((request) => request.method)).toEqual(["GET", "POST", "GET", "GET"]);
     expect(requests[1]?.body).toBe(JSON.stringify({ name: "aohys.com" }));
+  });
+
+  it("creates the proxied apex CNAME only when no routing record exists", async () => {
+    const responses = [
+      cloudflareResponse([{ name: "aohys.com", status: "pending" }]),
+      cloudflareResponse([{ id: "zone-id", name: "aohys.com", status: "active" }]),
+      cloudflareResponse([]),
+      cloudflareResponse({
+        id: "record-id",
+        name: "aohys.com",
+        type: "CNAME",
+        content: "aohys-com.pages.dev",
+        proxied: true,
+      }),
+      cloudflareResponse({ name: "aohys.com", status: "active" }),
+    ];
+    const requests: Array<{ input: string; init?: RequestInit }> = [];
+    const fetchImpl = async (input: string | URL | Request, init?: RequestInit) => {
+      requests.push({ input: String(input), init });
+      const response = responses.shift();
+      if (!response) throw new Error("Unexpected request");
+      return response;
+    };
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        reconcileDns: true,
+        fetchImpl,
+        pollIntervalMs: 0,
+        sleep: async () => undefined,
+      }),
+    ).resolves.toMatchObject({ domain: { status: "active" } });
+    expect(requests.map((request) => request.init?.method)).toEqual([
+      "GET",
+      "GET",
+      "GET",
+      "POST",
+      "GET",
+    ]);
+    expect(requests[3]?.init?.body).toBe(
+      JSON.stringify({
+        type: "CNAME",
+        name: "aohys.com",
+        content: "aohys-com.pages.dev",
+        proxied: true,
+        ttl: 1,
+        comment: "Managed by the AOHYS production release train",
+      }),
+    );
+  });
+
+  it("refuses to overwrite conflicting apex DNS records", async () => {
+    const responses = [
+      cloudflareResponse([{ name: "aohys.com", status: "pending" }]),
+      cloudflareResponse([{ id: "zone-id", name: "aohys.com", status: "active" }]),
+      cloudflareResponse([
+        { id: "record-id", name: "aohys.com", type: "A", content: "192.0.2.1", proxied: true },
+      ]),
+    ];
+    const fetchImpl = async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("Unexpected request");
+      return response;
+    };
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        reconcileDns: true,
+        fetchImpl,
+      }),
+    ).rejects.toThrow("refusing to overwrite");
+  });
+
+  it("recovers an ambiguous DNS create when the expected record now exists", async () => {
+    const responses: Array<Response | Error> = [
+      cloudflareResponse([{ name: "aohys.com", status: "pending" }]),
+      cloudflareResponse([{ id: "zone-id", name: "aohys.com", status: "active" }]),
+      cloudflareResponse([]),
+      new Error("connection closed after upload"),
+      cloudflareResponse([
+        {
+          id: "record-id",
+          name: "aohys.com",
+          type: "CNAME",
+          content: "aohys-com.pages.dev",
+          proxied: true,
+        },
+      ]),
+      cloudflareResponse({ name: "aohys.com", status: "active" }),
+    ];
+    const fetchImpl = async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("Unexpected request");
+      if (response instanceof Error) throw response;
+      return response;
+    };
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        reconcileDns: true,
+        fetchImpl,
+        pollIntervalMs: 0,
+        sleep: async () => undefined,
+      }),
+    ).resolves.toMatchObject({ domain: { status: "active" } });
+    expect(responses).toHaveLength(0);
   });
 
   it("surfaces terminal validation errors without deleting or recreating the domain", async () => {
@@ -152,6 +303,44 @@ describe("Cloudflare Pages release plan", () => {
       }),
     ).resolves.toMatchObject({ domain: { status: "active" } });
     expect(methods).toEqual(["GET", "PATCH", "GET"]);
+  });
+
+  it("repairs missing DNS before retrying a stale Pages validation", async () => {
+    const responses = [
+      cloudflareResponse([{ name: "aohys.com", status: "error" }]),
+      cloudflareResponse([{ id: "zone-id", name: "aohys.com", status: "active" }]),
+      cloudflareResponse([]),
+      cloudflareResponse({
+        id: "record-id",
+        name: "aohys.com",
+        type: "CNAME",
+        content: "aohys-com.pages.dev",
+        proxied: true,
+      }),
+      cloudflareResponse({ name: "aohys.com", status: "pending" }),
+      cloudflareResponse({ name: "aohys.com", status: "active" }),
+    ];
+    const methods: Array<string | undefined> = [];
+    const fetchImpl = async (_input: string | URL | Request, init?: RequestInit) => {
+      methods.push(init?.method);
+      const response = responses.shift();
+      if (!response) throw new Error("Unexpected request");
+      return response;
+    };
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        reconcileDns: true,
+        fetchImpl,
+        pollIntervalMs: 0,
+        sleep: async () => undefined,
+      }),
+    ).resolves.toMatchObject({ domain: { status: "active" } });
+    expect(methods).toEqual(["GET", "GET", "GET", "POST", "PATCH", "GET"]);
   });
 
   it("retries transient API failures without exposing the token", async () => {

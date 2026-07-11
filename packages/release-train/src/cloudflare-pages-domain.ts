@@ -29,11 +29,26 @@ interface CloudflareApiEnvelope<T> {
   errors?: CloudflareApiError[];
 }
 
+interface CloudflareZone {
+  id: string;
+  name: string;
+  status: string;
+}
+
+interface CloudflareDnsRecord {
+  id: string;
+  name: string;
+  type: string;
+  content: string;
+  proxied?: boolean;
+}
+
 export interface EnsureCloudflarePagesDomainOptions {
   accountId: string;
   apiToken: string;
   projectName: string;
   domainName: string;
+  reconcileDns?: boolean;
   fetchImpl?: typeof fetch;
   maxPollAttempts?: number;
   pollIntervalMs?: number;
@@ -170,9 +185,14 @@ export async function ensureCloudflarePagesDomain(
 
   async function request<T>(
     path: string,
-    init?: { method?: "GET" | "POST" | "PATCH"; body?: Record<string, string> },
+    init?: {
+      method?: "GET" | "POST" | "PATCH";
+      body?: Record<string, unknown>;
+      retry?: boolean;
+    },
   ): Promise<T> {
-    for (let attempt = 0; attempt < maxRequestAttempts; attempt += 1) {
+    const requestAttemptLimit = init?.retry === false ? 1 : maxRequestAttempts;
+    for (let attempt = 0; attempt < requestAttemptLimit; attempt += 1) {
       const remaining = deadline - now();
       if (remaining <= 0) {
         throw new Error(`Cloudflare Pages domain ${options.domainName} reconciliation timed out.`);
@@ -190,7 +210,7 @@ export async function ensureCloudflarePagesDomain(
           signal: AbortSignal.timeout(Math.min(requestTimeoutMs, remaining)),
         });
       } catch (error) {
-        if (attempt + 1 < maxRequestAttempts) {
+        if (attempt + 1 < requestAttemptLimit) {
           await waitWithinDeadline(retryDelayMs * 2 ** attempt);
           continue;
         }
@@ -198,7 +218,7 @@ export async function ensureCloudflarePagesDomain(
         throw new Error(redact(`Cloudflare Pages API request could not complete: ${detail}`));
       }
 
-      if ((response.status === 429 || response.status >= 500) && attempt + 1 < maxRequestAttempts) {
+      if ((response.status === 429 || response.status >= 500) && attempt + 1 < requestAttemptLimit) {
         const retryAfterHeader = response.headers.get("Retry-After");
         const retryAfterSeconds = retryAfterHeader === null ? Number.NaN : Number(retryAfterHeader);
         const delay = Number.isFinite(retryAfterSeconds) && retryAfterSeconds >= 0
@@ -231,6 +251,70 @@ export async function ensureCloudflarePagesDomain(
   const findDomain = async () =>
     (await listDomains()).find((domain) => domain.name === options.domainName);
 
+  async function reconcileApexDnsRecord(): Promise<void> {
+    const zones = await request<CloudflareZone[]>(
+      `/zones?name=${encodeURIComponent(options.domainName)}&account.id=${encodeURIComponent(options.accountId)}&status=active`,
+    );
+    const zone = zones.find(
+      (candidate) => candidate.name === options.domainName && candidate.status === "active",
+    );
+
+    if (!zone) {
+      throw new Error(
+        `Cloudflare zone ${options.domainName} is not active in the Pages project account.`,
+      );
+    }
+
+    const expectedTarget = `${options.projectName}.pages.dev`;
+    const recordsPath = `/zones/${encodeURIComponent(zone.id)}/dns_records?name=${encodeURIComponent(options.domainName)}`;
+    const readRoutingRecords = async () =>
+      (await request<CloudflareDnsRecord[]>(recordsPath)).filter((record) =>
+        ["A", "AAAA", "CNAME"].includes(record.type),
+      );
+
+    function hasExpectedRecord(records: CloudflareDnsRecord[]): boolean {
+      return records.some(
+        (record) =>
+          record.type === "CNAME" &&
+          record.name === options.domainName &&
+          record.content.replace(/\.$/, "") === expectedTarget &&
+          record.proxied === true,
+      );
+    }
+
+    function assertNoConflictingRecords(records: CloudflareDnsRecord[]): void {
+      if (records.length === 0) return;
+      const recordTypes = [...new Set(records.map((record) => record.type))].join(", ");
+      throw new Error(
+        `Cloudflare zone ${options.domainName} has conflicting apex routing records (${recordTypes}); refusing to overwrite them.`,
+      );
+    }
+
+    const routingRecords = await readRoutingRecords();
+    if (hasExpectedRecord(routingRecords)) return;
+    assertNoConflictingRecords(routingRecords);
+
+    try {
+      await request<CloudflareDnsRecord>(`/zones/${encodeURIComponent(zone.id)}/dns_records`, {
+        method: "POST",
+        retry: false,
+        body: {
+          type: "CNAME",
+          name: options.domainName,
+          content: expectedTarget,
+          proxied: true,
+          ttl: 1,
+          comment: "Managed by the AOHYS production release train",
+        },
+      });
+    } catch (creationError) {
+      const recordsAfterFailure = await readRoutingRecords();
+      if (hasExpectedRecord(recordsAfterFailure)) return;
+      assertNoConflictingRecords(recordsAfterFailure);
+      throw creationError;
+    }
+  }
+
   let domain = await findDomain();
   let created = false;
   let validationRetried = false;
@@ -261,6 +345,12 @@ export async function ensureCloudflarePagesDomain(
     return request<CloudflarePagesDomain>(exactDomainPath, { method: "PATCH" });
   }
 
+  if (domain.status === "blocked") {
+    throw domainFailure(domain);
+  }
+  if (options.reconcileDns) {
+    await reconcileApexDnsRecord();
+  }
   if (domain.status === "active") {
     return { domain, created };
   }
