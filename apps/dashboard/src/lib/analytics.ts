@@ -134,7 +134,10 @@ export function buildDashboardPostHogConfig(
 }
 
 export function dashboardSurfaceFromPath(path: string): DashboardAnalyticsSurface {
-  const normalized = path.replace(/^\/dashboard\/?/, "").split(/[?#]/, 1)[0];
+  const pathname = path.split(/[?#]/, 1)[0] ?? "";
+  const normalized = pathname
+    .replace(/^\/dashboard(?:\/|$)/, "/")
+    .replace(/^\/+/, "");
   const segment = normalized.split("/", 1)[0];
 
   if (!segment) return "overview";
@@ -195,7 +198,10 @@ export function captureDashboardEvent(
   properties: DashboardAnalyticsProperties,
 ): void {
   void analyticsClientPromise?.then((client) => {
-    client?.capture(event, sanitizeDashboardAnalyticsProperties(properties));
+    client?.capture(event, {
+      $geoip_disable: true,
+      ...sanitizeDashboardAnalyticsProperties(properties),
+    });
   });
 }
 

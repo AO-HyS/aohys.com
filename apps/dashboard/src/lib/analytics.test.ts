@@ -35,6 +35,8 @@ describe("dashboard analytics contract", () => {
     expect(dashboardSurfaceFromPath("/dashboard/case-studies")).toBe("projects");
     expect(dashboardSurfaceFromPath("/dashboard/media?locale=en")).toBe("projects");
     expect(dashboardSurfaceFromPath("/dashboard/leads")).toBe("leads");
+    expect(dashboardSurfaceFromPath("/projects")).toBe("projects");
+    expect(dashboardSurfaceFromPath("/leads")).toBe("leads");
   });
 
   it("observes each dashboard pathname once", () => {
@@ -109,6 +111,7 @@ describe("dashboard analytics contract", () => {
         person_profiles: "never",
       }));
       expect(capture).toHaveBeenCalledWith("dashboard_surface_viewed", {
+        $geoip_disable: true,
         environment: "preview",
         surface: "overview",
         path: "/dashboard",
