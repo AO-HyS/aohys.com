@@ -41,6 +41,19 @@ describe("built public routes", () => {
       expect(includesAlternate(html, "es", seo.alternates.es)).toBe(true);
       expect(includesAlternate(html, "x-default", seo.alternates["x-default"])).toBe(true);
       expect(html).toContain(`<title>${seo.title}</title>`);
+      expect(html).toContain(`property="og:title" content="${seo.title}"`);
+      expect(html).toContain(`property="og:description" content="${seo.description}"`);
+      expect(html).toContain(`property="og:url" content="${seo.canonicalUrl}"`);
+      expect(html).toContain(`property="og:image" content="${seo.socialImage.url}"`);
+      expect(html).toContain(`property="og:image:alt" content="${seo.socialImage.alt}"`);
+
+      const structuredDataMatch = html.match(/<script type="application\/ld\+json">(.+?)<\/script>/);
+      if (seo.structuredData) {
+        expect(structuredDataMatch).not.toBeNull();
+        expect(JSON.parse(structuredDataMatch?.[1] ?? "{}")).toEqual(seo.structuredData);
+      } else {
+        expect(structuredDataMatch).toBeNull();
+      }
       expect(html).not.toMatch(/lorem ipsum/i);
       expect(html).not.toMatch(/\bTODO(?:\s|:|$)/);
     }

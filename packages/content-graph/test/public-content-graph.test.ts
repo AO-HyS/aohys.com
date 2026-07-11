@@ -187,6 +187,42 @@ describe("Public Content Graph", () => {
     expect(seo.alternates.es).toBe("https://aohys.com/es/contacto");
     expect(seo.title).toMatch(/AOHYS|Alejandro/);
     expect(seo.description).toMatch(/WhatsApp|correo|proyecto|conversaci[oó]n/i);
+    expect(seo.socialImage).toEqual({
+      url: "https://aohys.com/images/generated/aohys-hero-system-map.png",
+      alt: "Mapa del sistema de ingeniería de producto AOHYS",
+    });
+    expect(seo.structuredData).toBeUndefined();
+
+    const projectSeo = getSeoMetadata("case-study:casa-roca", "en");
+    expect(projectSeo.socialImage).toEqual({
+      url: "https://aohys.com/images/proof/casa-roca-value-v2.jpg",
+      alt: "Casa Roca guest experience and conversion path preview on AOHYS",
+    });
+
+    const homeSeo = getSeoMetadata("home", "en");
+    expect(homeSeo.structuredData).toMatchObject({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      url: "https://aohys.com/",
+      name: "AOHYS",
+    });
+
+    const resumeSeo = getSeoMetadata("resume", "es");
+    expect(resumeSeo.structuredData).toMatchObject({
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      url: "https://aohys.com/es/curriculum",
+      inLanguage: "es",
+      mainEntity: {
+        "@type": "Person",
+        name: "Alejandro Ortiz Corro",
+        jobTitle: "Ingeniero de producto",
+        sameAs: ["https://www.linkedin.com/in/alejandrortizcrr/", "https://github.com/corrortiz"],
+      },
+    });
+    expect(resumeSeo.structuredData && "mainEntity" in resumeSeo.structuredData
+      ? resumeSeo.structuredData.mainEntity
+      : {}).not.toHaveProperty("image");
   });
 
   it("derives sitemap entries from graph eligibility", () => {
