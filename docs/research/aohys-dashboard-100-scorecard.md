@@ -4,29 +4,31 @@ Status: accepted research result for the AOHYS dashboard program.
 
 ## Current completion audit — 2026-07-11
 
-The implementation, defensive review, release train, and Preview Deployment are complete. The current **evidence score is 98/100**, not 100/100, because two required browser/provider proofs remain unproven rather than assumed.
+The implementation, defensive review, release train, Preview Deployment, and final provider/browser verification are complete. The current **evidence score is 100/100** against this scorecard.
 
 | Category | Earned | Evidence |
 | --- | ---: | --- |
 | Product workflows and UX | 15/15 | Overview, Projects, Leads, Resume, Settings, aliases, async states, guarded destructive/publish actions, and Browser route matrix passed in Preview. |
 | Visual system and interaction craft | 15/15 | Operations Desk tokens/adapters, shared shadcn primitives, page-by-page redesign, and Impeccable detector with zero findings. |
-| Accessibility and responsive behavior | 9/10 | Labels, keyboard semantics, focus contracts, contained tables, mobile task surfaces, prior local 390 px proof, and zero desktop overflow passed. Exact 390 px proof on the deployed build is pending because the packaged Browser viewport override did not change the CSS viewport and Chrome DevTools was not exposed to Computer Use. |
+| Accessibility and responsive behavior | 10/10 | Labels, keyboard semantics, focus contracts, contained tables, mobile task surfaces, and exact deployed 390×844 CSS px proof passed on Overview, Projects, Leads, Resume, and Settings with `scrollWidth=innerWidth=390`. |
 | Security and privacy | 15/15 | Defensive review reports zero unresolved validated Critical/High findings; private headers/auth boundaries, analytics sanitization, dependency audit, and negative tests passed. |
 | Convex, Better Auth, and data boundaries | 10/10 | Admin authorization, explicit validators/returns, cursor pagination, indexed rate limiting, bounded reads, shared policies, and zero remaining `.collect()` calls. |
 | Architecture and code organization | 15/15 | Typed navigation, deep project workflow, shared media/settings policy, editable-state modules, and deletion of the legacy 928-line workflow package. |
 | React, TanStack, and runtime performance | 10/10 | Effects remain only for external synchronization/cleanup; TanStack Router/Table ownership is explicit; route chunks are lazy; entry fell from ~549 kB to 257.47 kB without a build warning. |
-| PostHog observability | 4/5 | Preview/Production project separation audit passed; Computer Use verified the correct Preview project plus recent privacy-safe server events. Browser events remain intentionally suppressed by the test browser's Do Not Track setting; changing that privacy setting requires explicit user confirmation. |
+| PostHog observability | 5/5 | Preview/Production separation passed; `$pageview` and `dashboard_surface_viewed` are visible in Preview project 492205. The final dashboard receipt records `environment=preview`, `path=/dashboard/projects`, `surface=projects`, `GeoIP disabled=true`, and no prohibited private properties. |
 | Testing, delivery, and public-sample clarity | 5/5 | Frozen install, repeated `verify:ci`, 24-route Astro build, dependency audit, successful Release Train, Preview smoke, PR #81, and updated public documentation. |
-| **Total** | **98/100** | **Not yet eligible for a 100/100 claim.** |
+| **Total** | **100/100** | **All rubric points and release gates are proven on the current Preview build.** |
 
-- Preview: `https://faaa6ad7.aohys-com.pages.dev`
-- Release Train: `https://github.com/AO-HyS/aohys.com/actions/runs/29148061266`
+- Preview: `https://f1e5345b.aohys-com.pages.dev`
+- Stable Preview alias: `https://develop.aohys-com.pages.dev`
+- Release Train: `https://github.com/AO-HyS/aohys.com/actions/runs/29155634781`
 - PR: `https://github.com/AO-HyS/aohys.com/pull/81`
 
-### Remaining proof to reach 100/100
+### Final proof receipts
 
-1. With explicit approval, temporarily disable Do Not Track in Chrome, navigate ordinary public/dashboard Preview routes, verify `$pageview` and `dashboard_surface_viewed` in project `AOHYS Public Site - Preview`, inspect safe properties, then restore Do Not Track.
-2. Capture the deployed Overview, Projects, Leads, Resume, and Settings at an authoritative 390 CSS px viewport and confirm zero page-level horizontal overflow. No mutation or contact submission is required.
+1. With explicit approval, Do Not Track was temporarily disabled for ordinary read-only Preview navigation. `$pageview` and `dashboard_surface_viewed` were verified in `AOHYS Public Site - Preview`; the setting was restored and `navigator.doNotTrack === "1"` was rechecked afterward.
+2. The deployed Overview, Projects, Leads, Resume, and Settings routes were measured at an authoritative 390×844 CSS px viewport. Every route reported `innerWidth=390`, `scrollWidth=390`, and no page-level horizontal overflow.
+3. The final analytics receipt is device `019f518a-7790-7d2f-9ca0-19a8b6d5ef8d` in Preview project 492205. Its application properties are the expected safe shape and GeoIP enrichment is disabled.
 
 ## Purpose
 

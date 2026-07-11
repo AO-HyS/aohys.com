@@ -2,7 +2,7 @@
 
 Date: 2026-07-11  
 Issue: AOH-75  
-Status: code contract and environment isolation verified; server events are visible in the Preview provider project, while browser-event proof is pending an explicitly approved Do Not Track override.
+Status: code contract, environment isolation, and live Preview provider receipts verified. Do Not Track was restored after the explicitly approved temporary verification window.
 
 ## Observability decision
 
@@ -108,23 +108,25 @@ Do not embed these analytics in the AOHYS dashboard. PostHog remains the analyti
 - Dashboard runtime config now receives only the public PostHog key/host in addition to existing public runtime values.
 - The lead ID no longer appears in PostHog payload expectations.
 
-## Remaining deployed/provider proof
+## Deployed/provider verification procedure
 
-After the preview branch is deployed:
+For Preview and each future promotion:
 
 1. Use Browser on the preview public site to verify PostHog script/config requests have no CSP errors.
 2. Navigate ordinary public routes and private dashboard routes; do not mutate production or submit synthetic contacts.
 3. Inspect request payloads for event name, environment, surface/path, and absence of prohibited keys.
-4. Use Computer Use in the signed-in PostHog app to create/verify the Preview dashboard insights above.
+4. Use Computer Use in the signed-in PostHog app to verify the Preview dashboard insights above.
 5. Confirm the preview events appear only in the preview project.
 6. After explicit merge approval and production promotion, repeat read-only page/surface verification in the Production project.
 
 No deliberate exception, provider failure, contact submission, or private-record mutation is required to prove the contract.
 
-## Preview provider receipt — 2026-07-11
+## Final Preview provider receipt — 2026-07-11
 
-- Release Train audits confirmed Preview/Production key separation before deployment.
+- Release Train run `29155634781` confirmed Preview/Production key separation, deployed `https://f1e5345b.aohys-com.pages.dev`, updated the stable Preview alias, and passed smoke checks.
 - Computer Use identified project `AOHYS Public Site - Preview` (project ID 492205) and separately confirmed the production project.
 - Recent `lead_submitted` and `csp_violation_reported` events were visible in Preview with environment-scoped service identities and no private message/contact property in the event list.
-- Ordinary public and dashboard routes were visited after deployment, but the browser respected Do Not Track and emitted no browser events. The repository must not weaken `respect_dnt: true` merely to manufacture evidence.
-- Temporarily changing the user's browser privacy setting requires explicit confirmation and must be restored immediately after `$pageview` and `dashboard_surface_viewed` are verified.
+- With explicit user approval, Do Not Track was temporarily disabled for ordinary read-only route navigation. `$pageview` and `dashboard_surface_viewed` then appeared in project 492205; Do Not Track was restored immediately and `navigator.doNotTrack === "1"` was verified afterward.
+- Final `dashboard_surface_viewed` device `019f518a-7790-7d2f-9ca0-19a8b6d5ef8d` contains `environment=preview`, `path=/dashboard/projects`, `surface=projects`, and `GeoIP disabled=true`.
+- Inspection of that final event found none of `admin_email`, `lead_id`, `message`, `phone`, `company`, `secret`, or `auth_token`.
+- The implemented fixes preserve the PostHog SDK envelope token only at the transport boundary, keep application-property sanitization strict, observe TanStack history without a component effect, normalize both full and base-relative dashboard paths, and disable GeoIP for every private dashboard event.
