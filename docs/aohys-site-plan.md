@@ -28,7 +28,7 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Hosting/deploy: Cloudflare with Wrangler, GitHub Actions, and `develop -> main -> production`.
 - Media: Cloudflare handles image storage/optimization; Convex stores metadata and references only.
 - Media upload: Dashboard supports uploading images from V1.
-- Media scope: A small set of generated images plus sanitized screenshots; prompts are not required metadata.
+- Media scope: A small set of generated images plus sanitized screenshots. Final bitmap prompts live in `docs/aohys-public-site-image-prompts.md`; prompts are planning artifacts, not runtime metadata.
 - Analytics and errors: PostHog handles pageviews, explicit events, dashboards, and errors; autocapture starts disabled.
 - Contact: Primary form stores leads in Convex and sends notifications through Resend.
 - Contact email: Public email is `alejandro.ortiz@aohys.com`; system sender is `Alejandro Ortiz <contact@aohys.com>`.
@@ -36,9 +36,10 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Resend DNS: Verify Cloudflare DNS before production, especially SPF alignment for Resend.
 - i18n: English is default at `/`; Spanish lives under `/es/`.
 - Slugs: Public section slugs are localized; internal IDs remain stable.
-- Public Content Graph: stable content IDs own route paths, locale variants, SEO metadata, sitemap eligibility, and evidence relationships.
+- Public Content Graph: stable content IDs own route paths, locale variants, SEO metadata, sitemap eligibility, and public link/media relationships.
+- Public route implementation: Astro uses native i18n config, the public shell uses locale JSON for UI copy, and the Public Content Graph owns page identity, localized slugs, metadata, sitemap rules, and private route exclusions.
 - Content source of truth: public pages should resolve through the graph instead of duplicating slugs, metadata, alternates, and sitemap rules in each route file.
-- Content safety: evidence assets must carry public-safe usage intent and alt text; private work details, private data, and dashboard routes are excluded from the public graph.
+- Content safety: public media must carry public-safe usage intent and alt text; private work details, private data, and dashboard routes are excluded from the public graph.
 - Content documentation: The canonical content planning document is `docs/public-content-graph.md`; the architectural decision is `docs/adr/0003-public-content-graph.md`.
 - Dashboard language: English only.
 - Release Train: `develop` is the Development Branch, `main` is the Production Branch, and both branches should be protected.
@@ -49,20 +50,24 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Environment source of truth: GitHub Environments own deploy-time preview and production secrets; `.env.local` is local-only and uncommitted.
 - Environment validation: Release Train gates should fail before deploy if required values are missing, secrets drift, or provider targets point to the wrong environment.
 - Environment documentation: The canonical environment planning document is `docs/environment-contract.md`; the architectural decision is `docs/adr/0002-environment-contract-source-of-truth.md`.
+- Convex backend foundation: `apps/backend` owns the Convex schema, generated bindings, and first public lead intake mutation. The initial dev deployment is `dev/aohys-local`; preview and production values remain GitHub Environment responsibilities.
+- Contact workflow: `/contact` and `/es/contacto` render a real bilingual form with preferred contact path, consent, spam honeypot, direct email, and WhatsApp fallback. Submissions target the Convex HTTP action `/contact`, which persists leads, sends Resend notifications, and captures PostHog conversion metadata without message text or contact identity.
+- Public analytics workflow: the Astro layout emits an explicit PostHog `$pageview` payload per public route, with browser autocapture disabled. Contact and CTA events are limited to `contact_form_viewed`, `contact_form_submit_attempted`, `contact_form_submit_failed`, `whatsapp_cta_clicked`, and `email_cta_clicked`; contact field values are stripped before capture. Browser errors are captured with fixed metadata only.
 - CTA: Primary CTA is neutral: "Start a conversation" / "Hablemos"; contact form captures lead intent.
 - Privacy: Include serious minimal privacy pages from V1; no newsletter in V1.
-- CV: `/resume` is the primary dynamic resume URL; PDF should be ATS-first, single-column, text-based, and human-readable.
-- Resume SEO: Update summary and content for ATS/robots, with a link back to the dynamic site.
-- Public V1 pages EN: `/`, `/case-studies`, `/case-studies/casa-roca`, `/case-studies/the-barber-central`, `/case-studies/nutri-plan`, `/case-studies/enterprise-systems`, `/practice`, `/architecture`, `/resume`, `/contact`, `/privacy`.
-- Public V1 pages ES: `/es/`, `/es/casos`, `/es/casos/casa-roca`, `/es/casos/the-barber-central`, `/es/casos/nutri-plan`, `/es/casos/sistemas-enterprise`, `/es/practica`, `/es/arquitectura`, `/es/cv`, `/es/contacto`, `/es/privacidad`.
-- Dashboard V1 sections: Overview, Leads, Case studies, Media, Site settings, Resume.
+- CV: `/resume` is the primary dynamic resume URL; `/es/cv` is the Spanish route. The downloadable PDF lives at `/downloads/alejandro-ortiz-corro-resume.pdf`.
+- Resume SEO: Resume content is graph-backed, readable by people and parsing tools, linked to the PDF artifact, and linked back to dynamic site context.
+- Public V1 pages EN: `/`, `/case-studies`, `/case-studies/casa-roca`, `/case-studies/the-barber-central`, `/case-studies/nutri-plan`, `/case-studies/enterprise-systems`, `/case-studies/engineering-practice`, `/practice`, `/architecture`, `/resume`, `/contact`, `/privacy`.
+- Public V1 pages ES: `/es/`, `/es/casos`, `/es/casos/casa-roca`, `/es/casos/the-barber-central`, `/es/casos/nutri-plan`, `/es/casos/sistemas-enterprise`, `/es/casos/practica-de-ingenieria`, `/es/practica`, `/es/arquitectura`, `/es/cv`, `/es/contacto`, `/es/privacidad`.
+- Dashboard V1 sections: Projects, Leads, Resume, and a small contact setting inside Projects.
 - Dashboard overview: Operational checklist and quick links, not embedded analytics.
-- Dashboard UI Kit: private dashboard routes should use AOHYS workflow surfaces instead of composing raw primitives directly.
-- Dashboard primitive adapter: use shadcn/ui as editable source primitives behind the Dashboard UI Kit implementation.
+- Dashboard app: private dashboard routes are served by `apps/dashboard`, a Vite React app with TanStack Router and shadcn/ui.
+- Dashboard data access: React calls admin-gated Convex functions directly; Cloudflare Pages validates auth/admin before serving the shell and injects Convex runtime config.
+- Dashboard primitive adapter: use shadcn/ui source components through the CLI and semantic Tailwind tokens.
 - Dashboard mobile: validate dashboard workflows at 390px, avoid horizontal overflow, keep visible tap targets at least 44px, and do not render duplicate mobile/desktop controls with the same meaning.
-- Dashboard documentation: The canonical dashboard planning document is `docs/dashboard-ui-kit.md`; the architectural decision is `docs/adr/0004-dashboard-ui-kit.md`.
-- Case study structure: Problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance, public evidence, confidentiality note.
-- Case study ordering: Casa Roca as production proof; The Barber Central as modern technical flagship; Nutri Plan as active private build; Enterprise Systems as scale/credibility; Engineering Practice as current AI-assisted process.
+- Dashboard documentation: The canonical dashboard planning document is `docs/dashboard-ui-kit.md`; it documents the React app architecture, Pages auth/API boundary, Convex backend shape, and legacy fallback package boundary.
+- Case study structure: Problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance, public links/media, confidentiality note.
+- Case study ordering: Casa Roca as live hospitality site; The Barber Central as modern technical flagship; Nutri Plan as active private build; Enterprise Systems as scale/credibility; Engineering Practice as current AI-assisted process.
 - Casa Roca: Present with real name and public link to `casa-roca.mx`.
 - The Barber Central and Nutri Plan: Present as active builds, with visible development pages/screenshots when useful.
 - Enterprise work: Include a dedicated home section for Tala, Drift, Prenuvo, AutoZone/DataZone, Accenture, and CEMEX/NEORIS, summarized with confidentiality.
@@ -78,7 +83,12 @@ The Impeccable design direction is now resolved enough to begin implementation. 
 - Technical type: Do not use monospace as the technical voice. Use tabular numerals in Mona Sans or Atkinson for ledgers, dates, metrics, and proof rows.
 - Layout bans: No identical icon-card grids, no nested cards, no hero metric template, no terminal aesthetic, no repeated uppercase section eyebrows, no numbered section scaffolding, no beige editorial default, no glassmorphism, no gradient text, no soft ghost-card shadows.
 - Motion: Motion should feel like review, assembly, and reveal: annotations settle, screenshots align, and proof artifacts enter with purpose. Content must never depend on animation to appear.
-- Visual assets: Generated editorial assets plus sanitized screenshots, optimized through Cloudflare. Generated imagery should be limited and purposeful; screenshots carry most case-study proof.
+- Visual assets: Real screenshots and authored system maps should carry most of the proof. Generated imagery is allowed only when it adds a specific missing scene; it should not become a repeated generic style.
+- Current public media assets: the home surface now prioritizes the real AOHYS logo at `apps/site/public/images/brand/aohys-logo.png`, the generated architecture support surface at `apps/site/public/images/generated/aohys-architecture-proof-surface.png`, the Casa Roca production screenshot, the real The Barber Central landing screenshot, the Nutri Plan admin dashboard screenshot, cropped thumbnails for compact frames, and the public-safe Enterprise delivery map. Earlier weaker screenshots (`barber-central-ops.png`, `nutri-plan-proof.png`) should not be reintroduced as the default treatment unless a future pass crops or replaces them with stronger media.
+- Public site refinement status: the July 1 polish pass moved the public site into a lighter pastel work-ledger direction, rewrote the home and primary case-study copy to avoid internal/robotic phrasing, added distinct public media per case, introduced cropped thumbnails where full screenshots became unreadable in compact frames, and made external links open actual public or development pages when one exists.
+- Dashboard refinement status: the private dashboard is now a real React app. Projects are the primary unit and own text, achievements, structure, images, URL, CTA, SEO metadata, status, and public link state. Legacy `/dashboard/case-studies`, `/dashboard/media`, and `/dashboard/settings` paths route into Projects. Saving writes private drafts to Convex; Publish marks reviewed drafts, dispatches the Release Train, and the Astro build applies published drafts through `pnpm run publish:content:build`.
+- Preview dashboard data status: `pnpm run deploy:preview` now runs `pnpm run seed:dashboard:preview` after the Convex preview deploy. The seed upserts bilingual project drafts and `PUBLIC_WHATSAPP_URL` into the private preview Convex deployment through internal Convex functions so reviewers can inspect a filled dashboard without touching production data.
+- Quality gates: Local behavior tests should use Vitest for package and built-site checks; Husky pre-commit plus GitHub Actions verification are implemented in issue #31. The pre-commit hook runs foundation validation, lint, typecheck, and tests; pull-request CI runs install, foundation validation, lint, typecheck, tests, and build as readable steps.
 
 ## Design System Snapshot
 
@@ -123,10 +133,10 @@ Starter tokens:
   --text-caption: 0.8125rem;
   --text-small: 0.875rem;
   --text-body: 1rem;
-  --text-lead: clamp(1.125rem, 0.35vw + 1.05rem, 1.375rem);
-  --text-h3: clamp(1.5rem, 1vw + 1.25rem, 2rem);
-  --text-h2: clamp(2.15rem, 2.4vw + 1.5rem, 4rem);
-  --text-hero: clamp(3rem, 6vw + 0.25rem, 5.75rem);
+  --text-lead: 1.25rem;
+  --text-h3: 1.75rem;
+  --text-h2: 3.25rem;
+  --text-hero: 4.75rem;
 
   --leading-caption: 1.35;
   --leading-body: 1.62;
@@ -162,6 +172,12 @@ Recommended home sequence:
 5. Engineering practice: agent-assisted workflow, QA discipline, observability, deployment, and documentation as current practice.
 6. Contact: form, email, and large but discreet WhatsApp CTA.
 
+Current implementation status: the home is graph-backed and follows the light pastel proof-ledger direction: clean navigation, Alejandro-first senior-engineering hero copy, visible conversion CTAs, generated system map support, real public-safe proof screenshots, cropped proof thumbnails for compact surfaces, horizontal proof-ledger rows, architecture stage, operating-principles section, institutional email, and WhatsApp CTA. The dedicated contact route uses the same proof-surface language with direct WhatsApp/email paths, a generated delivery artifact, and the full lead capture UI backed by the provider submission path. Browser QA artifacts for the current home pass live under `output/playwright/`. Future case-study issues should expand these screenshots into richer detail pages instead of reverting to placeholders.
+
+Architecture page status: `/architecture` and `/es/arquitectura` now render graph-backed public source framing, public/private boundary copy, Release Train, Environment Contract, Public Content Graph, provider responsibilities, and GitHub source/documentation links.
+
+Case study status: the selected-work index and all primary case-study detail routes now use graph-backed content. Casa Roca, The Barber Central, Nutri Plan, Enterprise Systems, and Engineering Practice carry localized status labels, public-safe evidence, confidentiality notes, and the agreed problem/outcome/role/constraints/architecture/execution/quality structure.
+
 Case study pages should use the same proof-ledger rhythm:
 
 - Problem.
@@ -171,10 +187,12 @@ Case study pages should use the same proof-ledger rhythm:
 - Architecture decisions.
 - Execution highlights.
 - Quality/security/performance notes.
-- Public evidence.
+- Public links/media.
 - Confidentiality note.
 
-Resume pages should be typography-first, ATS-friendly, and visibly linked to the dynamic site. Do not over-design the resume surface in a way that hurts parsing or readability.
+Resume page status: `/resume` and `/es/cv` now render graph-backed semantic CV content, localized metadata, a dark proof hero, generated architecture artifact support, contact links, dynamic context links, and a downloadable hiring-friendly PDF artifact. The PDF is generated from the English graph content with `apps/site/scripts/build-resume-pdf.py` and is intentionally single-column and text-based.
+
+Resume pages should balance two jobs: the dynamic route can carry the authored proof surface and richer context, while the downloadable PDF must stay compact, readable, and easy to parse. Do not move decorative structure into the PDF or add UI copy that exposes internal hiring/ATS strategy to visitors.
 
 ## Implementation Sequence
 
@@ -182,27 +200,30 @@ Resume pages should be typography-first, ATS-friendly, and visibly linked to the
 2. Establish the Release Train expectations in documentation, branch protection, baseline verification commands, and GitHub issue scope.
 3. Establish the Environment Contract expectations in documentation, issue scope, and future validation gates.
 4. Establish the Public Content Graph expectations in documentation, route scope, SEO rules, and future dashboard publishing rules.
-5. Establish the Dashboard UI Kit expectations in documentation, dashboard route scope, mobile behavior, and future shadcn/ui adapter rules.
+5. Establish the dashboard app expectations in documentation, dashboard route scope, mobile behavior, shadcn/ui usage, and Pages-to-Convex API proxy rules.
 6. Scaffold `apps/site` as the Astro public site with Cloudflare/Wrangler compatibility in mind.
 7. Add shared design tokens, font loading, global layout, metadata helpers, i18n routing, sitemap/robots basics, and the home shell.
 8. Build public V1 route skeletons in English and Spanish.
 9. Implement the first real home page with the approved visual system.
 10. Run browser QA for desktop and mobile, then use Impeccable polish on the visible public home.
 11. Add case study detail content and resume content.
-12. Add contact form integration with Convex and Resend.
-13. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction.
+12. Add contact form integration with Convex and Resend. Current status: implemented with Convex HTTP action, provider adapters, PostHog safe conversion metadata, and sanitized `lead_intake_failed` events for pre-persistence backend failures.
+13. Add PostHog analytics and error capture. Current status: implemented for explicit pageviews, selected CTA/form conversion events, fixed-shape browser error capture, disabled autocapture, documented preview/production Environment Contract values, and a requirement that preview/production use different PostHog project keys before launch promotion.
+14. Add Cloudflare/Wrangler release path. Current status: implemented with Convex deploy before Cloudflare Pages Direct Upload, GitHub Actions release workflow, preview/production Environment Contract validation, Cloudflare Pages project naming, smoke commands that verify CSP/dashboard/contact boundaries, and a versioned Cloudflare Redirect Rules manifest for canonical host redirects.
+15. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction. Current status: Cloudflare Pages functions protect `/dashboard`, serve the Vite React dashboard app, bridge Google sign-in through Convex Better Auth, enforce the admin allowlist, keep private responses noindex/no-store, inject Convex runtime config, store project/resume drafts in Convex, upload media through Cloudflare Images direct upload URLs, and publish reviewed drafts through the Release Train.
+16. Harden privacy, security, and launch readiness. Current status: privacy routes now explain contact data, PostHog analytics/errors, and private project boundaries; Cloudflare Pages `_headers` applies security headers; contact form states distinguish validation, endpoint missing, email/provider, backend, and retry paths; launch QA is documented in `docs/launch-hardening.md`.
+17. Publish the public source evaluation package. Current status: `README.md` explains how to evaluate the repo without private credentials, maps the architecture and provider responsibilities, documents local/preview/production environment boundaries, links the PRD, issue breakdown, TDD plan, Release Train, Environment Contract, Public Content Graph, dashboard architecture, and Launch Hardening docs, and clarifies that code is MIT while content, brand, CV, case-study material, images, screenshots, and generated media are reserved.
+18. Install quality gates. Current status: Husky pre-commit runs `pnpm run verify:precommit`, `pnpm verify` runs the complete CI gate through `verify:ci`, and `.github/workflows/quality-gates.yml` verifies pull requests into `develop` and `main` without requiring private provider secrets.
 
-Next Impeccable command after this document:
+Next Impeccable command after the current home redesign:
 
 ```bash
-$impeccable craft AOHYS public site shell
+$impeccable critique AOHYS public site home
 ```
 
 ## Open Questions
 - Exact Cloudflare product choice for media originals versus variants: Cloudflare Images, R2, or both.
-- Final PostHog project keys, environment naming, and error capture setup.
-- Final Resend DNS verification and SPF update in Cloudflare.
+- Cloudflare Images activation/account hash for generated media delivery.
 - Final business WhatsApp number after Meta verification is complete.
-- Exact sanitized screenshots and development URLs to use for The Barber Central and Nutri Plan.
-- Updated ATS-first resume content and PDF generation/storage approach.
+- Final screenshot set and generated bitmap set for the deeper case-study pages.
 - Whether GitHub Issues can be disabled on `AO-HyS/aohys.com` after repo creation.

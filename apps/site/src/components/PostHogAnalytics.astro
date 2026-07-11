@@ -1,0 +1,44 @@
+---
+import {
+  buildAnalyticsBootstrapPayload,
+  type AnalyticsContext,
+} from "../analytics";
+
+interface Props {
+  contentId?: string;
+  locale: string;
+  canonicalUrl: string;
+  path: string;
+  environment: string;
+}
+
+const {
+  contentId = "unknown",
+  locale,
+  canonicalUrl,
+  path,
+  environment,
+} = Astro.props;
+
+const context: AnalyticsContext = {
+  contentId,
+  locale,
+  path,
+  canonicalUrl,
+  environment,
+};
+
+const payload = buildAnalyticsBootstrapPayload({
+  key: import.meta.env.PUBLIC_POSTHOG_KEY,
+  host: import.meta.env.PUBLIC_POSTHOG_HOST,
+  autocapturePolicy: import.meta.env.PUBLIC_POSTHOG_AUTOCAPTURE,
+}, context);
+const payloadJson = JSON.stringify(payload).replaceAll("<", "\\u003c");
+---
+
+<script is:inline id="aohys-posthog-config" type="application/json" set:html={payloadJson}></script>
+<script>
+  import { bootPostHogFromDocument } from "../posthog-client";
+
+  bootPostHogFromDocument();
+</script>

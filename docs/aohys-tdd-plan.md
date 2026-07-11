@@ -26,6 +26,8 @@ For each issue:
 - Keep mocks at system edges: network services, PostHog transport, Resend transport, Cloudflare media APIs, and auth provider callbacks.
 - Keep one test focused on one observable behavior.
 - Do not use tests to lock in temporary implementation details.
+- Use Vitest for local package/site behavior tests unless a higher-value browser or provider smoke check is required.
+- Avoid one-off Node assertion scripts for ordinary test coverage; if a check belongs in the quality surface, make it a named test or a release smoke command.
 
 ## Core Test Seams
 
@@ -74,13 +76,13 @@ Use for:
 
 ### Dashboard
 
-Highest seam: authenticated browser behavior against the Dashboard UI Kit shell and workflow surfaces.
+Highest seam: authenticated browser behavior against the React dashboard app, backed by Cloudflare Pages auth/API proxying and Convex HTTP endpoints.
 
 Use for:
 
 - Access control.
 - Lead review.
-- Content/media settings.
+- Project content, image metadata, and contact settings.
 - Resume management.
 - Dashboard noindex and private routing.
 - Workflow state surfaces.
@@ -123,18 +125,19 @@ Use for:
 | #4 Bilingual Routing, SEO, and Public Page Skeletons | Public Content Graph and public route map | Stable content IDs for `/` and `/es/` resolve to localized routes with correct canonical and language alternate metadata. |
 | #5 Home Page Proof Narrative | Graph-backed public home route | Visitor sees Alejandro-first positioning, primary CTA, and selected-work proof section sourced from graph-backed content. |
 | #6 Architecture and Public Code Sample Page | Graph-backed architecture route | Architecture page explains public/private boundaries and links to repo context, with sitemap and metadata behavior from the graph. |
-| #7 Case Study Template and Casa Roca Detail | Graph-backed case-study detail route | Casa Roca page renders the complete case-study structure with public evidence and confidentiality note. |
+| #7 Case Study Template and Casa Roca Detail | Graph-backed case-study detail route | Casa Roca page renders the complete case-study structure with public links/media and confidentiality note. |
 | #8 Remaining Selected Work Case Studies | Graph-backed case-study index and detail routes | Each selected work entry appears in the index and links to a detail page with the correct project status. |
 | #9 Resume Page and ATS-Friendly PDF | Graph-backed resume route and PDF artifact | Resume page renders semantic sections and the PDF artifact is text-based, downloadable, and linked from the graph. |
 | #10 Convex Backend Foundation | Convex public API/functions and Environment Contract | A valid lead-like payload can be validated through the public function boundary without direct DB coupling, and Convex variables map to the current environment. |
 | #11 Contact Lead Capture With Email Notification | Contact form and Environment Contract | A valid contact submission stores a lead, sends notification through the email adapter, and records only safe analytics metadata when provider settings validate. |
 | #12 PostHog Analytics and Error Capture | Analytics adapter and Environment Contract | Pageview and conversion events are explicit, environment-aware, and do not include contact message text. |
 | #13 Cloudflare and Wrangler Deployment Path | Release Train and Wrangler/build commands | Cloudflare-compatible build command completes and exposes documented output for preview and production smoke testing. |
-| #14 Better Auth and Private Dashboard Shell | Dashboard route, Environment Contract, and Dashboard UI Kit | Anonymous visitor cannot access `/dashboard`; allowlisted admin can reach the shell, auth origins/secrets validate, and the shell exposes navigation plus operational overview. |
-| #15 Dashboard Lead Review Workflow | Dashboard UI Kit lead workflow surface | Admin can view a newly submitted lead, update its review status, and see loading/empty/error/saved states. |
-| #16 Dashboard Content and Media Workflow | Dashboard UI Kit content/media workflow surfaces | Admin can create or update one public content/media metadata item with alt text, safe validation, and Public Content Graph invariants preserved. |
+| #14 Better Auth and Private Dashboard Shell | Dashboard route, Environment Contract, React app shell, and Convex runtime config | Anonymous visitor cannot access `/dashboard`; allowlisted admin can reach the React shell, auth origins/secrets validate, and the shell exposes navigation plus operational overview. |
+| #15 Dashboard Lead Review Workflow | React dashboard lead workflow | Admin can view a newly submitted lead, update its review status through an admin-gated Convex mutation, and see loading/empty/error/saved states. |
+| #16 Dashboard Content and Media Workflow | React dashboard project workspace | Admin can manage one project's text, SEO description, CTA, URL, achievements, structure notes, status, evidence state, and image metadata while Public Content Graph invariants are preserved. |
 | #17 Privacy, Security, and Launch Hardening | Production-like smoke suite | Public routes, dashboard protection, dashboard mobile/state behavior, privacy copy, analytics privacy, and contact error states pass launch smoke checks. |
 | #18 Public README and Source Evaluation Package | Repository documentation | README gives an evaluator enough information to run, inspect, and understand the repo without private credentials, including dashboard architecture. |
+| #31 Quality Gates: Husky and GitHub Actions | Local hooks and pull request workflow | Pre-commit and PR checks run the same core quality commands, including lint, typecheck, test, and build, without requiring private provider secrets. |
 
 ## Issue Body Guidance
 
@@ -167,6 +170,7 @@ Refactor only after a vertical behavior is green. In this repo, expected refacto
 
 - Writing all tests for an issue before any implementation.
 - Testing Astro components by private internals instead of route behavior.
+- Keeping route/source smoke checks as custom Node scripts when Vitest can own the behavior.
 - Mocking Convex internals instead of testing through public functions/actions.
 - Testing PostHog or Resend by sending real events/emails in default local tests.
 - Creating shallow helper modules only to make unit tests easy.
@@ -177,5 +181,5 @@ Refactor only after a vertical behavior is green. In this repo, expected refacto
 - Reading environment variables ad hoc across app modules instead of through the Environment Contract seam.
 - Duplicating slugs, canonical URLs, language alternates, sitemap rules, or case-study structure across individual route files.
 - Letting dashboard publishing mutate public content without preserving Public Content Graph invariants.
-- Composing private dashboard routes directly from primitive UI everywhere instead of using Dashboard UI Kit workflow surfaces.
+- Returning to server-rendered dashboard HTML fragments instead of a real React dashboard app with routed workflows.
 - Treating mobile dashboard usability as a late polish pass.

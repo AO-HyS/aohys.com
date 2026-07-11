@@ -12,7 +12,7 @@ Environment Contract: `docs/environment-contract.md`
 
 Public Content Graph: `docs/public-content-graph.md`
 
-Dashboard UI Kit: `docs/dashboard-ui-kit.md`
+Dashboard architecture: `docs/dashboard-ui-kit.md`
 
 ## Published Issues
 
@@ -35,6 +35,7 @@ Dashboard UI Kit: `docs/dashboard-ui-kit.md`
 | https://github.com/AO-HyS/aohys.com/issues/16 | Dashboard Content and Media Workflow |
 | https://github.com/AO-HyS/aohys.com/issues/17 | Privacy, Security, and Launch Hardening |
 | https://github.com/AO-HyS/aohys.com/issues/18 | Public README and Source Evaluation Package |
+| https://github.com/AO-HyS/aohys.com/issues/31 | Quality Gates: Husky pre-commit and GitHub Actions verify workflow |
 
 ## Proposed Vertical Slices
 
@@ -84,7 +85,7 @@ Build the architecture page as a Public Content Graph node explaining the public
 
 **User stories covered:** 11, 32, 34, 46, 47, 50.
 
-Create the reusable case-study detail experience from graph-backed case-study nodes, then ship Casa Roca as the first complete production-proof case study with public evidence, confidentiality notes, responsive layout, and SEO metadata.
+Create the reusable case-study detail experience from graph-backed case-study nodes, then ship Casa Roca as the first complete live-site case study with public links/media, confidentiality notes, responsive layout, and SEO metadata.
 
 ### 7. Remaining Selected Work Case Studies
 
@@ -118,6 +119,8 @@ Set up Convex for application state and define the first production-shaped data 
 
 Implement the public contact flow end-to-end: intent capture, form validation, spam resistance baseline, Convex lead persistence, Resend notification, PostHog explicit event, privacy-safe analytics behavior, email fallback messaging, WhatsApp CTA, and Environment Contract validation for provider settings.
 
+Current implementation status: contact submissions now persist the lead before optional provider delivery. Missing or failing Resend/PostHog settings do not reject the visitor request after persistence; provider delivery status is returned for operations, and sanitized provider failure events are captured in PostHog when analytics is configured.
+
 ### 11. PostHog Analytics and Error Capture
 
 **Blocked by:** 2, 3.
@@ -125,6 +128,8 @@ Implement the public contact flow end-to-end: intent capture, form validation, s
 **User stories covered:** 39, 40, 41, 42, 65.
 
 Wire explicit PostHog pageviews, selected conversion events, Environment Contract separation, disabled autocapture, and frontend error capture. Verify that sensitive contact message content is not captured.
+
+Current implementation status: public pages emit explicit pageview/conversion/error events with an `environment` property. Cloudflare CSP allows the PostHog asset/config host, and server-side operational events cover lead provider failures plus dashboard runtime exceptions without sending cookies, tokens, exception messages, contact identity, or message text.
 
 ### 12. Cloudflare and Wrangler Deployment Path
 
@@ -134,13 +139,17 @@ Wire explicit PostHog pageviews, selected conversion events, Environment Contrac
 
 Configure Wrangler, Cloudflare-compatible builds, the protected Release Train, preview/production deploy flow, Environment Contract validation, canonical domain behavior, `aohys.net` to `aohys.com` redirect, and deployment smoke checks.
 
+Current implementation status: release scripts, Wrangler Pages Direct Upload plan, GitHub Actions workflow, release-target environment validation, Convex runtime environment sync, smoke commands, and Cloudflare Redirect Rules manifest are implemented in the #13 branch.
+
 ### 13. Better Auth and Private Dashboard Shell
 
 **Blocked by:** 1, 9.
 
 **User stories covered:** 16, 21, 22, 23, 35, 36, 59.
 
-Create the private dashboard shell with Better Auth, Convex integration, admin allowlist, protected route behavior, noindex/robots protection, Dashboard UI Kit shell/surfaces, operational overview, and Environment Contract validation for auth origins/secrets.
+Create the private dashboard shell with Better Auth, Convex integration, admin allowlist, protected route behavior, noindex/robots protection, React app shell, operational overview, and Environment Contract validation for auth origins/secrets.
+
+Current implementation status: Cloudflare Pages functions protect `/dashboard`, serve the Vite React dashboard shell, mark private responses noindex/no-store, start Google OAuth through `/dashboard/sign-in/google`, proxy `/api/auth/*` to Convex while preserving the public host, catch unexpected dashboard runtime exceptions before Cloudflare can show a raw Worker 1101 page, and mount Better Auth in Convex with Google OAuth through the official `@convex-dev/better-auth` component.
 
 ### 14. Dashboard Lead Review Workflow
 
@@ -148,7 +157,9 @@ Create the private dashboard shell with Better Auth, Convex integration, admin a
 
 **User stories covered:** 16, 56, 57, 59.
 
-Build the first real dashboard workflow through the Dashboard UI Kit: list incoming leads, view details, update review/contact status, preserve privacy, represent loading/empty/error/saved states, and verify that changes reflect in Convex.
+Build the first real dashboard workflow in the React dashboard app: list incoming leads, view details, update review/contact status, preserve privacy, represent loading/empty/error/saved states, and verify that changes reflect in Convex.
+
+Current implementation status: Cloudflare Pages serves the React app at `/dashboard/leads`, verifies the Better Auth session and admin allowlist before serving the shell, and the dashboard reads/updates lead review status through admin-gated Convex functions. Local tests cover noindex sign-in, unauthorized access, direct Convex dashboard hooks, and persisted status updates.
 
 ### 15. Dashboard Content and Media Workflow
 
@@ -156,7 +167,9 @@ Build the first real dashboard workflow through the Dashboard UI Kit: list incom
 
 **User stories covered:** 17, 18, 19, 20, 43, 44, 45, 46, 59, 60.
 
-Build dashboard workflows through the Dashboard UI Kit for case-study content, media metadata, site settings, and resume content. Include Cloudflare media integration once the product choice is decided, and preserve Public Content Graph invariants when dashboard workflows publish public content.
+Build dashboard workflows in the React dashboard app for project content, media metadata, contact settings, and resume content. Include Cloudflare media integration once the product choice is decided, and preserve Public Content Graph invariants when dashboard workflows publish public content.
+
+Current implementation status: `/dashboard/projects` is the primary React workspace; legacy `/dashboard/case-studies`, `/dashboard/media`, and `/dashboard/settings` route into it. The dashboard calls admin-gated Convex functions directly and merges Convex metadata with the Public Content Graph in the React app for stable content IDs, localized paths, and sitemap eligibility. Convex stores project drafts, resume drafts, case-study metadata, media metadata with alt text/usage intent, `PUBLIC_` site settings, and resume PDF/version records. Cloudflare Images direct upload URLs are created server-side, the dashboard publishes reviewed drafts through GitHub Actions `workflow_dispatch`, and the release build applies published drafts before Astro compiles.
 
 ### 16. Privacy, Security, and Launch Hardening
 
@@ -164,7 +177,9 @@ Build dashboard workflows through the Dashboard UI Kit for case-study content, m
 
 **User stories covered:** 21, 22, 38, 39, 41, 58, 59.
 
-Harden the launch surface: privacy page accuracy, Public Content Graph sitemap/robots behavior, Dashboard UI Kit mobile/state behavior, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, Environment Contract separation, Release Train readiness checks, production smoke checks, and browser QA.
+Harden the launch surface: privacy page accuracy, Public Content Graph sitemap/robots behavior, React dashboard mobile/state behavior, dashboard noindex validation, contact error states, analytics privacy, security headers where appropriate, Environment Contract separation, Release Train readiness checks, production smoke checks, and browser QA.
+
+Current implementation status: privacy pages render graph-backed bilingual copy for contact data, PostHog analytics/errors, and private project boundaries; Cloudflare Pages ships `_headers` with security headers and PostHog CSP allowances; the contact form has safe validation, endpoint missing, email/provider, backend, and retry states; backend contact intake persists before optional provider delivery; dashboard runtime exceptions return private unavailable states instead of raw Worker 1101 pages; launch QA commands and browser checks live in `docs/launch-hardening.md`.
 
 ### 17. Public README and Source Evaluation Package
 
@@ -172,26 +187,38 @@ Harden the launch surface: privacy page accuracy, Public Content Graph sitemap/r
 
 **User stories covered:** 9, 10, 28, 29, 30, 61, 62, 67, 68, 69.
 
-Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, Dashboard UI Kit, Public Content Graph, Environment Contract, Release Train, license boundaries, and no-contribution framing.
+Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, dashboard architecture, Public Content Graph, Environment Contract, Release Train, license boundaries, and no-contribution framing.
+
+Current implementation status: `README.md` now acts as the public evaluation package. It explains how to inspect and run the repo without private credentials, maps the architecture and providers, documents dashboard boundaries, distinguishes local/preview/production credentials, links the PRD, issue breakdown, TDD plan, Release Train, Environment Contract, Public Content Graph, dashboard architecture, and Launch Hardening docs, and states the MIT-code versus reserved-content/license boundary. `verify:foundation` now checks for the required README sections and boundary language.
+
+### 18. Quality Gates: Husky pre-commit and GitHub Actions verify workflow
+
+**Blocked by:** 2, 3, 4.
+
+**User stories covered:** 63, 64, 65, 66, 67, 68.
+
+Add the baseline quality gates for local and pull-request review: Husky pre-commit, a GitHub Actions verify workflow, dependency-install validation, lint/typecheck/test/build coverage, and clear behavior for checks that do not require private provider secrets. This issue exists so testing and quality standards are not scattered across feature slices.
+
+Current implementation status: Husky is installed through the root `prepare` script and `.husky/pre-commit` runs `pnpm run verify:precommit` with foundation validation, lint, typecheck, and tests. `pnpm verify` delegates to `verify:ci`, which runs foundation validation, lint, typecheck, tests, and build. `.github/workflows/quality-gates.yml` runs pull-request checks into `develop` and `main` with readable install/foundation/lint/typecheck/test/build steps that do not require private provider secrets. Pre-push remains manual so local iteration stays practical; meaningful PRs should run `pnpm verify` before merge.
 
 ## Architecture Review Notes
 
-The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module. The second selected candidate is the Environment Contract module. The third selected candidate is the Public Content Graph module. The fourth selected candidate is the Dashboard UI Kit module.
+The first `/improve-codebase-architecture` candidate selected for implementation is the Release Train module. The second selected candidate is the Environment Contract module. The third selected candidate is the Public Content Graph module. The fourth selected candidate is the Dashboard architecture module. The quality-gates issue (#31) now tracks the local hook and PR-check surface that should support all of those modules.
 
 Expected order for architecture deepening:
 
 1. Release Train. Completed in documentation and issues.
 2. Environment Contract. Completed in documentation and issues.
 3. Public Content Graph. Completed in documentation and issues.
-4. Dashboard UI Kit. Current architecture focus.
+4. Dashboard architecture. Current architecture focus.
 
 The Release Train should create locality for deployment rules and leverage for future agents. Branch protection, GitHub Actions, Wrangler, Cloudflare Preview/Production, environment validation, and smoke checks should not be scattered across unrelated issue work.
 
 The Environment Contract should create locality for secrets, public variables, provider outputs, and environment validation. App code, dashboard code, Convex functions, and release workflows should cross the same validation seam instead of reading ad hoc provider variables directly.
 
-The Public Content Graph should create locality for bilingual routes, SEO metadata, sitemap eligibility, evidence assets, case-study structure, resume content, and future dashboard publishing. Astro route files should consume the graph rather than becoming independent sources of content truth.
+The Public Content Graph should create locality for bilingual routes, SEO metadata, sitemap eligibility, public media, case-study structure, resume content, and future dashboard publishing. Astro route files should consume the graph rather than becoming independent sources of content truth.
 
-The Dashboard UI Kit should create locality for private dashboard shell, workflow surfaces, forms, lists/details, state handling, mobile behavior, and shadcn/ui primitive usage. Authenticated dashboard routes should consume dashboard workflow surfaces rather than composing raw primitives directly.
+The dashboard app should create locality for private routes, project workflows, forms, lists/details, state handling, mobile behavior, and shadcn/ui primitive usage. Authenticated dashboard routes should render through the React app while Pages Functions own auth and private Convex proxying.
 
 ## Granularity Notes
 

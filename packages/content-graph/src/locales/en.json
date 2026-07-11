@@ -1,0 +1,938 @@
+{
+  "home": {
+    "path": "/",
+    "title": "Alejandro Ortiz Corro",
+    "summary": "Product engineer creating vivid websites, ambitious product systems, and modern ways for teams to design, build, and grow.",
+    "seoDescription": "Alejandro Ortiz Corro designs and builds expressive experiences, product systems, data workflows, and AI-augmented engineering practices for teams ready to create what comes next.",
+    "primaryActionLabel": "Start a conversation",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "View selected work",
+    "secondaryActionContentId": "case-studies",
+    "homeContent": {
+      "headline": "Software for what you want to make real.",
+      "headlineLines": [
+        "Software for what you",
+        "want to make real."
+      ],
+      "headlineEmphasisWords": ["make", "real"],
+      "deck": "I turn ambitious goals into thoughtful interfaces, capable product systems, and an engineering practice amplified by advanced AI.",
+      "proofBoardLabel": "AOHYS systems map",
+      "proofBoardTitle": "Ideas shaped into complete product systems.",
+      "proofBoardBody": "Design principles, interfaces, data, cloud operations, AI-assisted development, and releases working as one clear system.",
+      "selectedOutcomesHeading": "Selected systems at work.",
+      "selectedOutcomesIntro": "Live sites, operational products, enterprise workflows, and the engineering system behind each release.",
+      "selectedOutcomes": [
+        {
+          "contentId": "case-study:casa-roca",
+          "label": "Hospitality site",
+          "title": "Casa Roca",
+        "outcome": "A live hospitality site that gives guests a clear first impression and a direct path to contact.",
+          "role": "Guest trust, search, conversion path",
+          "evidence": {
+            "label": "Live site",
+            "altText": "Casa Roca production website hero screenshot",
+            "kind": "public-site",
+            "publicSafe": true,
+            "src": "/images/proof/casa-roca-production.png"
+          }
+        },
+        {
+          "contentId": "case-study:the-barber-central",
+          "label": "Operations product",
+          "title": "The Barber Central",
+        "outcome": "A service-business product shaped around booking, availability, payment readiness, and customer communication.",
+          "role": "Operations workflow, payments, customer flow",
+          "evidence": {
+            "label": "Development preview",
+            "altText": "The Barber Central development landing page",
+            "kind": "development-preview",
+            "publicSafe": true,
+            "src": "/images/proof/barber-central-landing.png"
+          }
+        },
+        {
+          "contentId": "case-study:nutri-plan",
+          "label": "Client operations",
+          "title": "Nutri Plan",
+        "outcome": "An operating system for plans, dashboards, client workflows, and educational content.",
+          "role": "Plans, dashboards, client workflows",
+          "evidence": {
+            "label": "Product preview",
+            "altText": "Nutri Plan administrative dashboard screenshot",
+            "kind": "development-preview",
+            "publicSafe": true,
+            "src": "/images/proof/nutri-plan-dashboard.png"
+          }
+        },
+        {
+          "contentId": "case-study:enterprise-systems",
+          "label": "Enterprise delivery",
+          "title": "Enterprise systems",
+        "outcome": "Complex product and backend work across escalations, payment plans, cashback, customs workflows, and release support.",
+          "role": "Backend workflows, operational reliability, release support",
+          "evidence": {
+            "label": "Systems map",
+            "altText": "Enterprise systems map focused on operational scale and reliable delivery",
+            "kind": "private-system",
+            "publicSafe": true,
+            "src": "/images/proof/enterprise-systems-map-v2.svg"
+          }
+        }
+      ],
+      "architectureHeading": "Craft across the whole product system.",
+      "architectureBody": "From design principles and expressive front ends to backend workflows, SQL data, cloud operations, and advanced AI development, every layer supports the same product goal.",
+      "architectureStages": [
+        {
+          "label": "Product design",
+        "text": "Interaction principles, information architecture, accessibility, and visual systems turn an idea into an experience people understand."
+        },
+        {
+          "label": "Front-end craft",
+        "text": "Responsive interfaces, design systems, performance, motion, and cutting-edge browser capabilities make the experience feel considered."
+        },
+        {
+          "label": "Backend & data",
+        "text": "APIs, auth, business workflows, SQL and PostgreSQL models, and operational dashboards give the product a capable foundation."
+        },
+        {
+          "label": "AI & delivery",
+        "text": "Advanced agent workflows support research, architecture, implementation, testing, cloud operations, and release verification."
+        }
+      ],
+      "practiceHeading": "Services for the next thing your team wants to achieve.",
+      "practiceBody": "From a new product experience to a stronger architecture or a more capable delivery practice, each collaboration turns a clear objective into software your team can keep improving.",
+      "practicePoints": [
+        {
+          "label": "Product systems",
+        "text": "Shape the product idea, interface, workflows, data, and operating model into one coherent experience."
+        },
+        {
+          "label": "Architecture & modernization",
+        "text": "Evolve an existing system with clearer boundaries, modern capabilities, and room for the product to grow."
+        },
+        {
+          "label": "Delivery acceleration",
+        "text": "Combine advanced AI workflows, previews, quality gates, observability, and cloud operations into everyday delivery."
+        }
+      ],
+      "contactHeading": "What would you like your team to create next?",
+      "contactBody": "Share the goal, the people it should serve, and the change you want to make possible. Together we can shape a beautiful product system and a practical path to bring it to life.",
+      "emailLabel": "Email Alejandro",
+      "emailHref": "mailto:alejandro.ortiz@aohys.com",
+      "whatsappLabel": "WhatsApp",
+      "whatsappHref": "https://wa.me/522299020825"
+    },
+    "publicNavigation": {
+      "brand": {
+        "homeLabel": "AOHYS home",
+        "wordmarkSrc": "/images/brand/aohys-connections-wordmark-v3.svg",
+        "fallbackSrc": "/images/brand/aohys-connections-mark-v3.svg"
+      },
+      "items": [
+        {
+          "slotId": "solutions",
+          "label": "Work",
+          "contentId": "case-studies",
+          "dropdown": true
+        },
+        {
+          "slotId": "agents",
+          "label": "Services",
+          "contentId": "practice"
+        },
+        {
+          "slotId": "pricing",
+          "label": "About",
+          "contentId": "resume"
+        },
+        {
+          "slotId": "docs",
+          "label": "Architecture",
+          "contentId": "architecture"
+        },
+        {
+          "slotId": "blog",
+          "label": "Start a conversation",
+          "contentId": "contact"
+        }
+      ],
+      "actions": [
+        {
+          "slotId": "login",
+          "label": "Dashboard",
+          "href": "/dashboard",
+          "style": "secondary"
+        },
+        {
+          "slotId": "signup",
+          "label": "Start a conversation",
+          "contentId": "contact",
+          "style": "primary"
+        }
+      ],
+      "dropdown": {
+        "label": "Work",
+        "items": [
+          {
+            "id": "public-site",
+            "contentId": "case-study:casa-roca",
+            "label": "Public Site",
+            "text": "Casa Roca production site and direct conversion path.",
+            "icon": "site",
+            "tone": 0
+          },
+          {
+            "id": "operations",
+            "contentId": "case-study:the-barber-central",
+            "label": "Operations",
+            "text": "Booking, payments, availability, and customer workflows.",
+            "icon": "operations",
+            "tone": 1
+          },
+          {
+            "id": "system",
+            "contentId": "architecture",
+            "label": "System",
+            "text": "Experience, data, edge, observability, and release responsibilities.",
+            "icon": "system",
+            "tone": 2
+          },
+          {
+            "id": "delivery",
+            "contentId": "practice",
+            "label": "Services",
+            "text": "Product systems, modernization, and delivery acceleration.",
+            "icon": "practice",
+            "tone": 3
+          }
+        ],
+        "preview": {
+          "tabs": ["cURL", "NodeJS", "Rust", "Go", "PHP", "C#", "Java", "Python"],
+          "codeLines": [
+            "const system = await aohys.publish({",
+            "  publicSite: \"Casa Roca\",",
+            "  dashboard: \"Multiple products, one system.\",",
+            "  releasePath: \"preview -> production\"",
+            "});"
+          ]
+        }
+      }
+    }
+  },
+  "case-studies": {
+    "path": "/case-studies",
+    "title": "Selected work",
+    "summary": "Live sites, active product builds, enterprise systems, and the engineering decisions behind each result.",
+    "seoDescription": "Selected work by Alejandro Ortiz Corro across production websites, active product builds, business systems, enterprise delivery, and modern product engineering.",
+    "primaryActionLabel": "Start a conversation",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Read architecture notes",
+    "secondaryActionContentId": "architecture"
+  },
+  "case-study:casa-roca": {
+    "path": "/case-studies/casa-roca",
+    "title": "Casa Roca guest experience and conversion path",
+    "summary": "A live hospitality site with a clear story, direct contact path, and production delivery discipline.",
+    "seoDescription": "Casa Roca is a live hospitality website for a boutique stay in Veracruz, with clear place storytelling, direct guest inquiry paths, search-ready pages, and production release discipline.",
+    "primaryActionLabel": "Start a conversation",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Back to selected work",
+    "secondaryActionContentId": "case-studies",
+    "caseStudyContent": {
+      "statusLabel": "Live hospitality site",
+      "overview": "Casa Roca is the digital arrival point for a boutique stay in Roca Partida, Veracruz. It helps guests understand the place quickly, decide whether it fits their trip, and contact the business directly.",
+      "problem": {
+        "title": "Opportunity",
+        "body": "Casa Roca had the opportunity to turn its place, experience, and credibility into a clear digital arrival with a direct next step for guests."
+      },
+      "businessOutcome": {
+        "title": "Business outcome",
+        "body": "The production site gives Casa Roca a clear destination for guests, search traffic, brand trust, and direct inquiries."
+      },
+      "role": {
+        "title": "Role",
+        "body": "Product direction, bilingual experience planning, SEO metadata, release verification, performance care, and the complete guest-facing delivery."
+      },
+      "constraints": {
+        "title": "Design considerations",
+        "body": "The experience brings speed, two languages, a tangible sense of place, and an unmistakable path to inquiry together for every guest."
+      },
+      "architectureDecisions": {
+        "title": "Architecture decisions",
+        "body": "Keep guest pages fast, treat bilingual content and search metadata as product concerns, and make direct contact the primary conversion path."
+      },
+      "executionHighlights": {
+        "title": "Execution highlights",
+        "body": "The work covered hospitality positioning, localized routes, responsive art direction, production deployment, and verification on the real domain."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Quality, security, and performance",
+        "body": "The live site uses explicit metadata, resilient layouts, optimized media, and stable pages that remain readable to guests and search engines."
+      },
+      "publicEvidenceTitle": "Public links",
+      "publicEvidence": [
+        {
+          "label": "Live website",
+          "description": "Open the live Casa Roca website.",
+          "href": "https://casa-roca.mx",
+          "altText": "Casa Roca production website",
+          "kind": "public-site",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Scope note",
+        "body": "This case focuses on the guest experience and production delivery."
+      }
+    }
+  },
+  "case-study:the-barber-central": {
+    "path": "/case-studies/the-barber-central",
+    "title": "The Barber Central booking and operations system",
+    "summary": "An active booking and operations product shaped around the daily workflow of service businesses.",
+    "seoDescription": "The Barber Central shows active product architecture for booking, operations, payment readiness, and customer communication workflows.",
+    "primaryActionLabel": "Start a conversation",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Back to selected work",
+    "secondaryActionContentId": "case-studies",
+    "caseStudyContent": {
+      "statusLabel": "Active build",
+      "overview": "The Barber Central is an active product build for service businesses that need booking, availability, customer communication, and payments to feel like one system instead of a pile of tools.",
+      "problem": {
+        "title": "Opportunity",
+        "body": "Service businesses can bring bookings, reminders, staff operations, and payments into one generous daily workflow that gives growth more room."
+      },
+      "businessOutcome": {
+        "title": "Business outcome",
+        "body": "The product direction centers the daily operating workflow: book clients, manage availability, communicate clearly, and keep the business moving without stitching tools together by hand."
+      },
+      "role": {
+        "title": "Role",
+        "body": "Product architecture, workflow modeling, full-stack implementation planning, booking flow decisions, payments readiness, customer communication, and quality gates for an active build."
+      },
+      "constraints": {
+        "title": "Design considerations",
+        "body": "Booking logic, staff availability, reminders, payments, and customer communication evolve together around the rhythm of the day."
+      },
+      "architectureDecisions": {
+        "title": "Architecture decisions",
+        "body": "Make the booking path simple, keep the operational dashboard task-first, and treat provider integrations as explicit business boundaries instead of hidden glue."
+      },
+      "executionHighlights": {
+        "title": "Execution highlights",
+        "body": "The work covers booking IA, operations dashboard shape, provider setup, environment discipline, and manual browser QA for flows where auth, origin, and preview behavior matter."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Quality, security, and performance",
+        "body": "The project emphasizes protected environments, explicit verification commands, browser QA, source checks, and careful handling of auth/provider configuration before public launch."
+      },
+      "publicEvidenceTitle": "Public links",
+      "publicEvidence": [
+        {
+          "label": "Development preview",
+          "description": "Open the development landing page for The Barber Central.",
+          "href": "https://the-barber-central-landing.a-ortizcrr.workers.dev",
+          "altText": "The Barber Central development landing page",
+          "kind": "development-preview",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Scope note",
+        "body": "This case follows the active product direction and release path."
+      }
+    }
+  },
+  "case-study:nutri-plan": {
+    "path": "/case-studies/nutri-plan",
+    "title": "Nutri Plan client workflow system",
+    "summary": "A product system for client workflows, plans, dashboards, and educational content.",
+    "seoDescription": "Nutri Plan shows active product work around client workflows, structured plans, operational dashboards, educational content, and delivery quality.",
+    "primaryActionLabel": "Start a conversation",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Back to selected work",
+    "secondaryActionContentId": "case-studies",
+    "caseStudyContent": {
+      "statusLabel": "Product system",
+      "overview": "Nutri Plan connects nutrition workflows, dashboards, mobile access, educational content, and operational clarity across several product surfaces.",
+      "problem": {
+        "title": "Opportunity",
+        "body": "Nutrition teams can connect client records, plans, dashboards, and mobile experiences through one shared product model."
+      },
+      "businessOutcome": {
+        "title": "Business outcome",
+        "body": "The build organizes the product around real operational roles and shared backend state so client work, admin work, and mobile access can come from one model."
+      },
+      "role": {
+        "title": "Role",
+        "body": "Product workflow architecture, dashboard planning, backend state modeling, mobile coordination, quality practice, and release discipline."
+      },
+      "constraints": {
+        "title": "Design considerations",
+        "body": "Health-related records call for thoughtful access boundaries, consistent workflow state, clear roles, and releases that respect ongoing client work."
+      },
+      "architectureDecisions": {
+        "title": "Architecture decisions",
+        "body": "Keep the backend as a shared source of truth, give dashboard and mobile workflows explicit responsibilities, and make environment and QA gates part of release readiness."
+      },
+      "executionHighlights": {
+        "title": "Execution highlights",
+        "body": "The work spans landing, dashboard, admin dashboard, mobile app, Convex-backed state, route QA, preview verification, and operational parity with the reference system."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Quality, security, and performance",
+        "body": "The project uses functional QA, route sweeps, environment separation, protected release branches, and preview validation when auth, routing, UI, or behavior changes."
+      },
+      "publicEvidenceTitle": "Public links",
+      "publicEvidence": [
+        {
+          "label": "Sanitized preview",
+          "description": "Review the product screen and workflow notes.",
+          "href": "/case-studies/nutri-plan",
+          "altText": "Nutri Plan sanitized product preview",
+          "kind": "development-preview",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Scope note",
+        "body": "This case focuses on system responsibilities and delivery outcomes."
+      }
+    }
+  },
+  "case-study:enterprise-systems": {
+    "path": "/case-studies/enterprise-systems",
+    "title": "Enterprise systems at operational scale",
+    "summary": "Complex product workflows, integrations, backend delivery, and release support across high-stakes operational environments.",
+    "seoDescription": "Enterprise Systems covers business outcomes, architecture judgment, escalation leadership, backend delivery, and dependable release practice.",
+    "primaryActionLabel": "Start a conversation",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Read architecture notes",
+    "secondaryActionContentId": "architecture",
+    "caseStudyContent": {
+      "statusLabel": "Enterprise systems",
+      "overview": "Complex product and backend work across escalations, payment plans, cashback, customs workflows, integrations, and reliability inside large operational environments.",
+      "problem": {
+        "title": "Opportunity",
+        "body": "Large systems create meaningful opportunities when ownership, integrations, operational workflows, and support paths are made visible."
+      },
+      "businessOutcome": {
+        "title": "Business outcome",
+        "body": "Reliable delivery under pressure: untangling escalations, shipping backend workflows, and improving operational paths without creating new failure points."
+      },
+      "role": {
+        "title": "Role",
+        "body": "Backend delivery, escalation leadership, payment-plan and cashback work, customs workflow implementation, cross-team coordination, and production-minded problem solving."
+      },
+      "constraints": {
+        "title": "Operating considerations",
+        "body": "Scale, integration design, data sensitivity, cross-team ownership, and production continuity shaped every decision."
+      },
+      "architectureDecisions": {
+        "title": "Architecture decisions",
+        "body": "Work from the business workflow backward, isolate risky integration points, keep operational contracts explicit, and favor maintainable backend paths over clever one-off fixes."
+      },
+      "executionHighlights": {
+        "title": "Execution highlights",
+        "body": "Selected work includes payment-plan workflows, cashback implementation, customs handling, escalation ownership, and backend delivery across complex organizational contexts."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Quality, security, and performance",
+        "body": "The work depends on careful change management, production awareness, data sensitivity, clear handoffs, and testing around workflows where mistakes become operational risk."
+      },
+      "publicEvidenceTitle": "Public links",
+      "publicEvidence": [
+        {
+          "label": "Systems overview",
+          "description": "Review the enterprise delivery system through responsibilities, tradeoffs, and operational outcomes.",
+          "href": "/case-studies/enterprise-systems",
+          "altText": "Enterprise systems delivery overview",
+          "kind": "private-system",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Client details",
+        "body": "Client details remain private."
+      }
+    }
+  },
+  "case-study:engineering-practice": {
+    "path": "/case-studies/engineering-practice",
+    "title": "Engineering practice for dependable releases",
+    "summary": "Modern agent-assisted engineering framed through planning, QA, architecture, observability, deploys, and documentation.",
+    "seoDescription": "Engineering Practice explains Alejandro Ortiz Corro's modern agent-assisted software delivery process across planning, QA, architecture, observability, deployment, and documentation.",
+    "primaryActionLabel": "Review the architecture",
+    "primaryActionContentId": "architecture",
+    "secondaryActionLabel": "Start a conversation",
+    "secondaryActionContentId": "contact",
+    "caseStudyContent": {
+      "statusLabel": "Engineering practice",
+      "overview": "Engineering Practice is the operating system behind the work: structured discovery, TDD, agent-assisted implementation, browser QA, release discipline, observability, and documentation.",
+      "problem": {
+        "title": "Opportunity",
+        "body": "Modern software work moves quickly; strong architecture, tests, review, and production checks turn that energy into confident momentum."
+      },
+      "businessOutcome": {
+        "title": "Business outcome",
+        "body": "A repeatable engineering process lets projects move faster while still producing inspectable decisions, safer releases, better handoffs, and stronger confidence for business stakeholders."
+      },
+      "role": {
+        "title": "Role",
+        "body": "Technical planning, architecture review, TDD flow, agent orchestration, browser QA, release train discipline, source-quality checks, and documentation as part of delivery."
+      },
+      "constraints": {
+        "title": "Design considerations",
+        "body": "Automation should expand useful feedback while keeping ownership visible, review thoughtful, and delivery quality grounded in judgment."
+      },
+      "architectureDecisions": {
+        "title": "Architecture decisions",
+        "body": "Use clear seams, graph-backed public content, explicit environment contracts, protected branches, focused tests, and manual browser verification for visible behavior."
+      },
+      "executionHighlights": {
+        "title": "Execution highlights",
+        "body": "The delivery system includes PR review, TDD tracers, visual checks, GitHub issue flow, release documentation, and browser QA."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Quality, security, and performance",
+        "body": "Quality includes source checks, type checks, behavior tests, build verification, visual QA, and deployment paths that can be audited."
+      },
+      "publicEvidenceTitle": "Public links",
+      "publicEvidence": [
+        {
+          "label": "Source and process",
+          "description": "Source, tests, documentation, and PR history show the engineering workflow behind the site.",
+          "href": "https://github.com/AO-HyS/aohys.com",
+          "altText": "Source and release process for AOHYS engineering practice",
+          "kind": "architecture-note",
+          "publicSafe": true
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Scope note",
+        "body": "This case focuses on the delivery system behind dependable releases."
+      }
+    }
+  },
+  "practice": {
+    "path": "/practice",
+    "title": "Three ways to move a product forward.",
+    "summary": "Build a complete product, add senior product-engineering capacity to a defined project, or modernize the system already carrying the business.",
+    "seoDescription": "Work with AOHYS to build a website, web app, or mobile app from zero; add a senior product engineer to a delivery team; or modernize an existing product with AI, data, cloud, and delivery capabilities.",
+    "primaryActionLabel": "Start a conversation",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "See the architecture",
+    "secondaryActionContentId": "architecture",
+    "practiceContent": {
+      "heading": "Bring the product ambition. Choose how we work.",
+      "deck": "From a first sketch to a product ready for its next chapter, I join where senior product and engineering judgment can create momentum. Every engagement has a clear working rhythm, tangible outputs, and a system your team can keep improving.",
+      "services": [
+        {
+          "id": "product-systems",
+          "title": "Build a complete product from zero",
+          "problem": "You have a real audience and a valuable idea, but the product path still needs to be shaped across experience, operations, data, architecture, and release.",
+          "result": "A production-ready website, web application, or mobile application with a coherent customer journey, dependable workflows, measurable behavior, and room to grow.",
+          "engagement": "I lead the product and engineering path from framing and system design through implementation, production launch, and an operating handoff your team can own.",
+          "deliverables": ["Product brief and journey map", "Working website, web app, or mobile app", "Backend, data, and operational workflows", "Production launch and ownership handoff"]
+        },
+        {
+          "id": "architecture-modernization",
+          "title": "Add a senior collaborator to your team",
+          "problem": "The project and destination are defined, and the team wants experienced hands to accelerate product and architecture decisions and turn the plan into dependable software.",
+          "result": "More delivery capacity without a long ramp-up: clearer decisions, stronger implementation, fewer blind spots, and a senior collaborator who improves the work around the code.",
+          "engagement": "I embed with your existing product and engineering team for a focused phase, owning a meaningful workstream while collaborating in your planning, review, QA, and release rhythm.",
+          "deliverables": ["A clearly owned delivery workstream", "Production code and product decisions", "Architecture and implementation reviews", "Tests, release evidence, and team handoff"]
+        },
+        {
+          "id": "delivery-acceleration",
+          "title": "Modernize what is already in motion",
+          "problem": "An existing product or process already creates value, and the business is ready to expand it with clearer boundaries, connected data, modern workflows, and a stronger delivery path.",
+          "result": "A safer, more capable system that preserves useful behavior while adding the right AI, data, cloud, observability, and delivery capabilities around it.",
+          "engagement": "We map the current system, choose the highest-leverage boundary, and ship modernization in verified increments so the business keeps moving while the foundation improves.",
+          "deliverables": ["Current-state and opportunity map", "Target architecture with explicit tradeoffs", "AI, data, cloud, or workflow integration", "Incremental rollout, verification, and operating playbook"]
+        }
+      ],
+      "processHeading": "Clear from the first working session.",
+      "process": [
+        {"label": "Align", "text": "Confirm the outcome, audience, constraints, decision owners, and the evidence that will define progress."},
+        {"label": "Make the system visible", "text": "Map the experience, workflows, data, boundaries, risks, and tradeoffs before effort disappears into implementation."},
+        {"label": "Ship useful slices", "text": "Deliver complete, reviewable increments with real states, instrumentation, QA, and production checks."},
+        {"label": "Leave operating clarity", "text": "Hand over working software, explicit decisions, release evidence, and a practical next-step plan."}
+      ],
+      "deliverablesHeading": "Work you can keep using after the engagement.",
+      "deliverables": ["A shared product and system map", "Production-ready software increments", "Architecture and decision records", "Quality, observability, and release evidence", "A practical operating handoff"],
+      "relatedHeading": "Inspect the work and the system behind it.",
+      "relatedContentIds": ["architecture", "case-studies"]
+    }
+  },
+  "architecture": {
+    "path": "/architecture",
+    "title": "Architecture",
+    "summary": "The engineering craft behind product design, front ends, backend and SQL data, AI workflows, cloud operations, and delivery.",
+    "seoDescription": "Architecture notes for Alejandro Ortiz Corro's product systems: design principles, modern front ends, backend and PostgreSQL data, AI-augmented engineering, cloud operations, observability, and releases.",
+    "primaryActionLabel": "Review selected work",
+    "primaryActionContentId": "case-studies",
+    "secondaryActionLabel": "Start a conversation",
+    "secondaryActionContentId": "contact",
+    "architectureContent": {
+      "heading": "Architecture that gives ideas room to grow.",
+      "deck": "A complete product connects design principles, front-end craft, backend and SQL data, AI-assisted development, cloud operations, and delivery into one understandable system.",
+      "systemHeading": "One system, six responsibilities.",
+      "systemBody": "Each layer has a purpose, an owner, and a visible connection to the next. The goal is not more brand names; it is more capability working toward the product vision.",
+      "layers": [
+        {"id": "experience", "label": "Product design", "body": "Principles, information architecture, interaction, accessibility, and visual systems that make the product feel intentional.", "technologies": ["Design principles", "Interaction", "Accessibility", "Design systems"]},
+        {"id": "edge", "label": "Front-end systems", "body": "Responsive interfaces with strong performance, motion, browser capabilities, and maintainable component architecture.", "technologies": ["Semantic web", "Component architecture", "WebGL", "Performance"]},
+        {"id": "product-data", "label": "Backend & data", "body": "Business workflows, APIs, auth, SQL and PostgreSQL models, and operational dashboards built around clear data ownership.", "technologies": ["APIs", "SQL & PostgreSQL", "Data modeling", "Database dashboards", "Auth"]},
+        {"id": "communication", "label": "AI engineering", "body": "Advanced agent workflows that support research, architecture, implementation, code review, testing, and documentation.", "technologies": ["Agent orchestration", "Context engineering", "AI-assisted architecture", "AI code review"]},
+        {"id": "observability", "label": "Quality & insight", "body": "Tests, analytics, logs, error signals, and health checks that make product behavior visible and improvable.", "technologies": ["TDD", "Browser QA", "Analytics", "Structured logs", "Health checks"]},
+        {"id": "delivery", "label": "Cloud delivery", "body": "Cloud dashboards, edge deployment, media pipelines, previews, promotion, and verification working as one release practice.", "technologies": ["Cloud operations", "Edge delivery", "Preview environments", "Media pipelines", "Release verification"]}
+      ],
+      "tradeoffsHeading": "Architecture is a sequence of tradeoffs.",
+      "tradeoffs": [
+        {"title": "Progressive enhancement before spectacle", "reason": "Motion and WebGL can add meaning, but the page still needs to communicate and convert without them.", "result": "Semantic DOM content stays primary; the canvas becomes a responsive, optional layer."},
+        {"title": "Reactive data without hidden ownership", "reason": "Fast UI updates are valuable only when mutations, auth, and operational workflows remain explicit.", "result": "Convex owns product state while page content and public routes stay in the typed content graph."},
+        {"title": "Preview before production", "reason": "A green build does not prove that a release works in its real environment.", "result": "Protected branches, preview checks, and smoke verification make promotion a separate decision."}
+      ],
+      "sourceLabel": "Inspect the source",
+      "sourceLinks": [
+        {
+          "label": "Repository",
+          "href": "https://github.com/AO-HyS/aohys.com"
+        },
+        {
+          "label": "README",
+          "href": "https://github.com/AO-HyS/aohys.com/blob/develop/README.md"
+        },
+        {
+          "label": "Release Train",
+          "href": "https://github.com/AO-HyS/aohys.com/blob/develop/docs/release-train.md"
+        },
+        {
+          "label": "Environment Contract",
+          "href": "https://github.com/AO-HyS/aohys.com/blob/develop/docs/environment-contract.md"
+        },
+        {
+          "label": "Public Content Graph",
+          "href": "https://github.com/AO-HyS/aohys.com/blob/develop/docs/public-content-graph.md"
+        }
+      ],
+      "sections": [
+        {
+          "title": "Astro route system",
+        "body": "Astro owns localized marketing routes. Stable content IDs drive slugs, canonical metadata, language alternates, sitemap eligibility, and robots behavior instead of scattered page constants."
+        },
+        {
+          "title": "Dashboard boundary",
+        "body": "The dashboard belongs on the same domain but has a different responsibility: authenticated, omitted from the sitemap, noindex, and isolated from marketing routes."
+        },
+        {
+          "title": "Release Train",
+        "body": "Feature branches target develop first. Production moves through a separate main promotion path with Cloudflare/Wrangler checks, environment validation, and smoke verification before the canonical domain changes."
+        },
+        {
+          "title": "Environment Contract",
+          "body": "Local, preview, and production settings are treated as an explicit contract. Provider dashboards may help setup, but durable deploy-time values should reconcile back to GitHub Environments."
+        },
+        {
+          "title": "Public Content Graph",
+          "body": "The graph is the seam between content and routes. It owns locale variants, paths, SEO metadata, sitemap behavior, media references, and future dashboard publishing invariants."
+        },
+        {
+          "title": "Provider responsibilities",
+          "body": "Cloudflare handles hosting and media delivery, Convex owns application state and dashboard workflows, PostHog owns analytics and errors, and Resend handles lead notifications."
+        }
+      ],
+      "boundaryNote": "This repository is a public working sample. It does not make private client code, product code, credentials, private screenshots, or operational data public."
+    }
+  },
+  "resume": {
+    "path": "/resume",
+    "title": "About Alejandro",
+    "summary": "Senior product engineering experience, delivery judgment, selected projects, and the systems behind the work.",
+    "seoTitle": "About Alejandro Ortiz Corro | AOHYS",
+    "seoDescription": "Meet Alejandro Ortiz Corro and review senior product engineering experience, selected projects, delivery practice, architecture judgment, and a downloadable resume.",
+    "primaryActionLabel": "Start a conversation",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Read architecture notes",
+    "secondaryActionContentId": "architecture",
+    "resumeContent": {
+      "name": "Alejandro Ortiz Corro",
+      "role": "Senior Product Engineer / Frontend Systems",
+      "location": "Mexico",
+      "intro": "I turn product intent into beautiful interfaces, capable backend systems, thoughtful data models, and delivery practices amplified by advanced AI.",
+      "pdf": {
+        "label": "Open resume PDF",
+        "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
+        "fileName": "alejandro-ortiz-corro-resume.pdf",
+        "description": "A compact resume for hiring and delivery review. The site adds selected work, architecture decisions, and the release practice behind them."
+      },
+      "proof": {
+        "label": "Selected results",
+        "title": "9+ years building product systems that keep creating value after launch.",
+        "body": "The work spans high-traffic commerce, operational products, modern interfaces, public sites, and the delivery systems that help teams keep improving."
+      },
+      "contactLinks": [
+        {
+          "label": "Email",
+          "href": "mailto:alejandro.ortiz@aohys.com",
+          "text": "alejandro.ortiz@aohys.com"
+        },
+        {
+          "label": "Phone",
+          "href": "tel:+522299020825",
+          "text": "+52 229 902 0825"
+        },
+        {
+          "label": "LinkedIn",
+          "href": "https://www.linkedin.com/in/alejandrortizcrr/",
+          "text": "linkedin.com/in/alejandrortizcrr"
+        },
+        {
+          "label": "GitHub",
+          "href": "https://github.com/corrortiz",
+          "text": "github.com/corrortiz"
+        },
+        {
+          "label": "Portfolio",
+          "href": "https://aohys.com",
+          "text": "aohys.com"
+        }
+      ],
+      "contextTitle": "More context online",
+      "contextLinks": [
+        {
+          "label": "Selected work",
+          "href": "/case-studies",
+          "text": "Live sites, active builds, product systems, and enterprise delivery."
+        },
+        {
+          "label": "Architecture",
+          "href": "/architecture",
+          "text": "Experience layers, release train, environment contract, and operational boundaries."
+        },
+        {
+          "label": "Contact",
+          "href": "/contact",
+          "text": "Hiring, architecture review, product systems, and software project conversations."
+        }
+      ],
+      "summaryTitle": "Delivery profile",
+      "summary": [
+        "Senior product engineer with 9+ years of experience across React, TypeScript, Next.js, product architecture, performance, SEO, and maintainable UI systems.",
+        "I have shipped across enterprise systems, startup products, healthcare workflows, e-commerce platforms, public business sites, and systems serving 30.5M+ monthly users.",
+        "My recent work goes beyond screens: Next.js as a backend surface, backend workflow delivery, escalation ownership, payment plans, cashback, customs workflows, and cross-functional product execution.",
+        "I work with agents, TDD, browser QA, release discipline, observability, and documentation so ambiguous goals become software teams can operate and improve."
+      ],
+      "highlightsTitle": "Selected results",
+      "highlights": [
+        {
+          "label": "30.5M+ monthly users",
+          "text": "Contributed to e-commerce platform work at Datazone/AutoZone with SEO, performance, React, and React Native modernization."
+        },
+        {
+          "label": "80% load-time reduction",
+          "text": "Executed major Next.js migration work at Tala Mobile, reducing load times from 3-5 seconds to under 1 second."
+        },
+        {
+          "label": "Mission-critical dispatch",
+          "text": "Implemented keyboard dispatch workflows for a major US emergency response platform with zero-error tolerance requirements."
+        },
+        {
+          "label": "Working system sample",
+          "text": "Built this site so technical evaluators can review SEO, i18n, content graph, QA, branch protection, and release practice."
+        }
+      ],
+      "projectsTitle": "Key projects",
+      "projects": [
+        {
+          "title": "Emergency Response Dispatch System",
+          "summary": "Mission-critical emergency response platform used during the pandemic.",
+          "bullets": [
+            "Implemented complex keyboard dispatch workflows with React, Redux Saga, TypeScript, and Cypress.",
+            "Covered dispatch scenarios with comprehensive testing around zero-error tolerance workflows.",
+            "Contributed to software used for coordinating emergency responses."
+          ]
+        },
+        {
+          "title": "CARE Customer Support Management System",
+          "summary": "Enterprise customer support platform with performance-sensitive internal workflows.",
+          "bullets": [
+            "Built and improved React, TypeScript, Redux, and Next.js surfaces for internal teams.",
+            "Reduced page load times from 3-5 seconds to under 1 second through performance-focused migration work.",
+            "Implemented real-time updates and complex state management features."
+          ]
+        },
+        {
+          "title": "AOHYS Product Systems",
+          "summary": "Product work across service business workflows, nutrition operations, hospitality sites, and this delivery system.",
+          "bullets": [
+            "Built outcome-led case studies for Casa Roca, The Barber Central, Nutri Plan, enterprise systems, and engineering practice.",
+            "Designed clear system boundaries across marketing routes, authenticated workflows, data, and media delivery.",
+            "Uses modern agent-assisted delivery, TDD, browser QA, source-quality gates, and release documentation."
+          ]
+        }
+      ],
+      "experienceTitle": "Professional experience",
+      "experience": [
+        {
+          "role": "Senior Frontend Developer",
+          "company": "Tala Mobile",
+          "period": "2023 - Present",
+          "bullets": [
+            "Executed major Next.js migration work that reduced load times from 3-5 seconds to under 1 second.",
+            "Contributed to CARE internal system development and enhancement.",
+            "Implemented product workflows based on team and stakeholder requirements, including backend-oriented delivery through Next.js surfaces.",
+            "Worked across escalations, payment plans, cashback, customs workflows, and cross-functional delivery."
+          ]
+        },
+        {
+          "role": "Senior Frontend Developer",
+          "company": "Drift",
+          "period": "2022 - 2023",
+          "bullets": [
+            "Developed and maintained a video recording Chrome extension.",
+            "Built and enhanced analytics dashboards for marketing playbook performance tracking.",
+            "Created data visualization tools for customer interaction insights.",
+            "Optimized dashboard performance and user experience for marketing teams."
+          ]
+        },
+        {
+          "role": "Software Engineer",
+          "company": "Prenuvo",
+          "period": "2021 - 2022",
+          "bullets": [
+            "Delivered full-stack product features in a fast-paced medical imaging startup environment.",
+            "Implemented critical features for healthcare platform workflows.",
+            "Improved application performance and user experience.",
+            "Collaborated with cross-functional teams to define and ship product functionality."
+          ]
+        },
+        {
+          "role": "Engineer Associate System IT-Development",
+          "company": "Datazone/AutoZone",
+          "period": "2020 - 2021",
+          "bullets": [
+            "Contributed to e-commerce platform development serving 30.5M+ monthly users.",
+            "Implemented SEO optimizations and performance improvements.",
+            "Participated in systems modernization using React and React Native.",
+            "Enhanced mobile application features and user experience."
+          ]
+        },
+        {
+          "role": "Application Development Senior Analyst",
+          "company": "Accenture",
+          "period": "2018 - 2020",
+          "bullets": [
+            "Modernized a 30+ year-old legacy application using React and Redux.",
+            "Implemented TDD practices and modern component architecture.",
+            "Mentored team members on React and Redux best practices.",
+            "Collaborated with international teams across multiple time zones."
+          ]
+        },
+        {
+          "role": "Senior Software Engineer",
+          "company": "NEORIS/CEMEX",
+          "period": "2018",
+          "bullets": [
+            "Developed features for CEMEX GO, serving 12,000+ users across 23 countries.",
+            "Implemented critical bug fixes and performance improvements.",
+            "Refactored legacy code to modern React standards.",
+            "Mentored team members on frontend best practices."
+          ]
+        },
+        {
+          "role": "Software Developer",
+          "company": "AO HyS",
+          "period": "2015 - 2018",
+          "bullets": [
+            "Founded and operated an independent development studio.",
+            "Delivered custom solutions for healthcare and e-commerce clients.",
+            "Implemented full-stack solutions using React, Node.js, and related technologies.",
+            "Managed client relationships and project deliverables."
+          ]
+        }
+      ],
+      "skillsTitle": "Core technologies & capabilities",
+      "skills": [
+        {
+          "label": "Product design principles",
+          "items": ["Information architecture", "Interaction systems", "Accessibility", "Visual systems", "Content structure"]
+        },
+        {
+          "label": "Front-end systems",
+          "items": ["Responsive interfaces", "React & TypeScript", "Component architecture", "Performance", "Motion & WebGL"]
+        },
+        {
+          "label": "Back-end, SQL & data",
+          "items": ["API design", "Domain workflows", "SQL & PostgreSQL", "Data modeling", "Database dashboards"]
+        },
+        {
+          "label": "Cloud & operations",
+          "items": ["AWS dashboards", "Edge delivery", "Cloudflare & Vercel operations", "Media pipelines", "Observability"]
+        },
+        {
+          "label": "Quality & delivery",
+          "items": ["TDD", "Browser QA", "CI/CD", "Release verification", "Documentation"]
+        },
+        {
+          "label": "AI-augmented engineering",
+          "items": ["Agent orchestration", "Context engineering", "AI-assisted architecture", "Implementation review", "AI-assisted QA"]
+        }
+      ],
+      "educationTitle": "Education",
+      "education": [
+        {
+          "degree": "Bachelor of Engineering, Software Development",
+          "institution": "UNAD - Open and Distance University of Mexico",
+          "period": "2014 - 2018"
+        },
+        {
+          "degree": "Bachelor of Business Administration, Maritime Trade",
+          "institution": "ITBOCA - Technological Institute of Boca del Rio",
+          "period": "2004 - 2008"
+        }
+      ],
+      "languagesTitle": "Languages",
+      "languages": ["English - Fluent", "Spanish - Native"]
+    }
+  },
+  "contact": {
+    "path": "/contact",
+    "title": "Let’s make the next move clear.",
+    "summary": "Share what you want to create, improve, or bring to life. I will read the context myself and reply with useful questions and a practical next step. WhatsApp is fastest in Mexico; email is ideal for a longer brief.",
+    "seoDescription": "Contact Alejandro Ortiz Corro and AOHYS by email or WhatsApp for software projects, architecture review, product systems, or hiring conversations.",
+    "primaryActionLabel": "Start a conversation",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Review selected work",
+    "secondaryActionContentId": "case-studies"
+  },
+  "privacy": {
+    "path": "/privacy",
+    "title": "Privacy",
+    "summary": "How AOHYS treats contact data, analytics, errors, and private project information.",
+    "seoDescription": "AOHYS privacy route explaining contact data, analytics, error reporting, private project boundaries, and public code limits.",
+    "primaryActionLabel": "Start a conversation",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Back home",
+    "secondaryActionContentId": "home",
+    "privacyContent": {
+      "heading": "Privacy",
+      "intro": "This site is public code as an engineering sample, but private client work and operational data stay private.",
+      "sections": [
+        {
+          "title": "Contact requests",
+          "body": "When you send the contact form, AOHYS uses your name, email, optional phone/company, preferred contact path, intent, and message only to respond to the request."
+        },
+        {
+          "title": "Analytics and errors",
+          "body": "PostHog is used for explicit pageviews, selected CTA/form events, and browser error signals. Autocapture is disabled, and contact message text is not sent to analytics."
+        },
+        {
+          "title": "Private project boundaries",
+        "body": "This repository is public for review. Private client code, credentials, operational records, and dashboard data are not public."
+        }
+      ],
+      "boundaryNote": "The private dashboard under /dashboard is authenticated, noindexed, excluded from the sitemap, and separate from public SEO pages."
+    }
+  }
+}

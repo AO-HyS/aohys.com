@@ -4,10 +4,33 @@
   "private": true,
   "description": "Convex backend surface for AOHYS leads, content, media, and dashboard workflows.",
   "type": "module",
+  "exports": {
+    "./convex/_generated/api": {
+      "types": "./convex/_generated/api.d.ts",
+      "default": "./convex/_generated/api.js"
+    },
+    "./convex/_generated/dataModel": {
+      "types": "./convex/_generated/dataModel.d.ts"
+    }
+  },
   "scripts": {
-    "build": "node ../../scripts/package-task.mjs build @aohys/backend",
-    "lint": "node ../../scripts/package-task.mjs lint @aohys/backend",
-    "typecheck": "node ../../scripts/package-task.mjs typecheck @aohys/backend",
-    "test": "node ../../scripts/package-task.mjs test @aohys/backend"
+    "build": "tsc --noEmit -p tsconfig.json",
+    "codegen": "convex codegen --typecheck=disable",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@aohys/content-graph": "workspace:*",
+    "@aohys/core": "workspace:*",
+    "@aohys/environment": "workspace:*",
+    "@convex-dev/better-auth": "^0.12.5",
+    "better-auth": "^1.6.22",
+    "convex": "^1.42.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   }
 }

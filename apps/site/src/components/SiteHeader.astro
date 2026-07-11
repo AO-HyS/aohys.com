@@ -1,0 +1,219 @@
+---
+import { getLocalizedPath, getPublicNavigation, type ContentId, type Locale } from "@aohys/content-graph";
+import { getUiCopy } from "../i18n";
+
+interface Props {
+  locale?: Locale;
+  currentId?: ContentId | string;
+}
+
+const { locale = "en", currentId = "home" } = Astro.props;
+const alternateLocale = locale === "en" ? "es" : "en";
+const copy = getUiCopy(locale).header;
+const navigation = getPublicNavigation(locale);
+const languageHref = getLocalizedPath(currentId, alternateLocale);
+const contactAction = navigation.actions.find((action) => action.contentId === "contact");
+const navOrder = ["case-studies", "practice", "architecture", "resume"];
+const navItems = navOrder
+  .map((contentId) => navigation.items.find((item) => item.contentId === contentId))
+  .filter((item): item is NonNullable<typeof item> => Boolean(item));
+
+function isCurrent(contentId?: string) {
+  if (!contentId) return false;
+  if (contentId === "case-studies") return currentId === "case-studies" || currentId.startsWith("case-study:");
+  return currentId === contentId;
+}
+---
+
+<header class="sunlit-header" data-sunlit-header>
+  <a class="sunlit-skip" href="#main-content">{copy.skip}</a>
+  <nav class="sunlit-nav" aria-label={copy.aria}>
+    <a class="sunlit-brand" href={getLocalizedPath("home", locale)} aria-label={navigation.brand.homeLabel}>
+      <img src={navigation.brand.wordmarkSrc} alt="AOHYS" width="312" height="64" />
+    </a>
+
+    <div class="sunlit-desktop-links">
+      {navItems.map((item) => (
+        <a href={item.href} aria-current={isCurrent(item.contentId) ? "page" : undefined}>{item.label}</a>
+      ))}
+    </div>
+
+    <div class="sunlit-nav-actions">
+      <a class="sunlit-language" href={languageHref} hreflang={alternateLocale}>{copy.language}</a>
+      {contactAction && <a class="sunlit-talk sunlit-ticket-button" href={contactAction.href} aria-current={currentId === "contact" ? "page" : undefined}>{contactAction.label}</a>}
+      <button
+        class="sunlit-menu-button"
+        type="button"
+        aria-label={copy.menu}
+        aria-expanded="false"
+        aria-controls="sunlit-mobile-panel"
+        data-menu-trigger
+      ><span aria-hidden="true"></span></button>
+    </div>
+
+    <div class="sunlit-mobile-panel" id="sunlit-mobile-panel" hidden data-menu-panel>
+      {navItems.map((item) => (
+        <a href={item.href} aria-current={isCurrent(item.contentId) ? "page" : undefined}>{item.label}</a>
+      ))}
+      <a class="sunlit-mobile-language" href={languageHref} hreflang={alternateLocale}>{copy.language}</a>
+      {contactAction && <a href={contactAction.href} aria-current={currentId === "contact" ? "page" : undefined}>{contactAction.label}</a>}
+    </div>
+  </nav>
+</header>
+
+<script>
+  for (const header of document.querySelectorAll("[data-sunlit-header]")) {
+    const trigger = header.querySelector("[data-menu-trigger]");
+    const panel = header.querySelector("[data-menu-panel]");
+    if (!(trigger instanceof HTMLButtonElement) || !(panel instanceof HTMLElement)) continue;
+
+    const close = () => {
+      trigger.setAttribute("aria-expanded", "false");
+      panel.hidden = true;
+    };
+
+    trigger.addEventListener("click", () => {
+      const nextOpen = trigger.getAttribute("aria-expanded") !== "true";
+      trigger.setAttribute("aria-expanded", String(nextOpen));
+      panel.hidden = !nextOpen;
+    });
+    header.addEventListener("keydown", (event) => {
+      if (!(event instanceof KeyboardEvent)) return;
+      if (event.key === "Escape") {
+        close();
+        trigger.focus();
+      }
+    });
+    header.addEventListener("focusout", (event) => {
+      if (!(event instanceof FocusEvent)) return;
+      const next = event.relatedTarget;
+      if (!(next instanceof Node) || !header.contains(next)) close();
+    });
+  }
+</script>
+
+<style>
+  .sunlit-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid color-mix(in oklch, var(--color-ink), transparent 82%);
+    background: color-mix(in oklch, var(--color-bg), transparent 5%);
+    backdrop-filter: blur(14px);
+  }
+  .sunlit-nav {
+    position: relative;
+    display: grid;
+    width: var(--container);
+    min-height: 4.5rem;
+    margin: 0 auto;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 2rem;
+  }
+  .sunlit-skip {
+    position: fixed;
+    top: .75rem;
+    left: .75rem;
+    z-index: 100;
+    min-height: 2.75rem;
+    padding: .7rem 1rem;
+    transform: translateY(-160%);
+    border: 2px solid var(--color-ink);
+    background: var(--color-primary);
+    font-weight: 750;
+  }
+  .sunlit-skip:focus { transform: translateY(0); }
+  .sunlit-brand {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: .22rem;
+    text-decoration: none;
+    font-size: 1.55rem;
+    font-weight: 820;
+    letter-spacing: -.035em;
+  }
+  .sunlit-brand img { display: block; width: clamp(7.5rem, 12vw, 9.6rem); height: auto; }
+  .sunlit-desktop-links, .sunlit-nav-actions { display: flex; align-items: center; }
+  .sunlit-desktop-links { justify-content: center; gap: clamp(.25rem, 1.5vw, 1.4rem); }
+  .sunlit-desktop-links a, .sunlit-language {
+    position: relative;
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    padding: 0 .65rem;
+    text-decoration: none;
+    font-size: .9rem;
+    font-weight: 650;
+  }
+  .sunlit-desktop-links a::after {
+    content: "";
+    position: absolute;
+    right: .65rem;
+    bottom: .48rem;
+    left: .65rem;
+    height: .22rem;
+    transform: scaleX(0);
+    transform-origin: left;
+    background: var(--color-primary);
+    transition: transform 180ms cubic-bezier(.22, 1, .36, 1);
+  }
+  .sunlit-desktop-links a:hover::after,
+  .sunlit-desktop-links a[aria-current="page"]::after { transform: scaleX(1); }
+  .sunlit-nav-actions { justify-content: flex-end; gap: .5rem; }
+  .sunlit-language { padding-inline: .5rem; }
+  .sunlit-talk {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    padding: 0 1.15rem;
+    text-decoration: none;
+    font-weight: 760;
+    transition: transform 160ms cubic-bezier(.22, 1, .36, 1), background 160ms ease;
+  }
+  .sunlit-talk:hover { transform: translateY(-2px); background: var(--color-accent); }
+  .sunlit-menu-button { display: none; }
+  .sunlit-mobile-panel { position: absolute; }
+  @media (max-width: 800px) {
+    .sunlit-nav { grid-template-columns: 1fr auto; gap: 1rem; }
+    .sunlit-desktop-links, .sunlit-nav-actions .sunlit-language, .sunlit-nav-actions .sunlit-talk { display: none; }
+    .sunlit-menu-button {
+      display: grid;
+      width: 2.75rem;
+      min-height: 2.75rem;
+      place-items: center;
+      border: 2px solid var(--color-ink);
+      border-radius: .55rem;
+      background: var(--color-bg);
+      color: var(--color-ink);
+    }
+    .sunlit-menu-button span,
+    .sunlit-menu-button span::before,
+    .sunlit-menu-button span::after { display: block; width: 1rem; height: 2px; background: currentColor; content: ""; }
+    .sunlit-menu-button span::before { transform: translateY(-5px); }
+    .sunlit-menu-button span::after { transform: translateY(3px); }
+    .sunlit-mobile-panel {
+      right: 0;
+      top: calc(100% + 1px);
+      width: min(22rem, calc(100vw - 2rem));
+      border: 2px solid var(--color-ink);
+      background: var(--color-bg);
+      box-shadow: 0 6px 0 var(--color-ink);
+    }
+    .sunlit-mobile-panel a {
+      display: flex;
+      min-height: 3.5rem;
+      align-items: center;
+      padding: 0 1rem;
+      border-bottom: 1px solid var(--color-rule);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .sunlit-mobile-panel a:last-child { border-bottom: 0; background: var(--color-primary); }
+    .sunlit-mobile-panel a[aria-current="page"] { background: color-mix(in oklch, var(--color-secondary), white 58%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sunlit-talk, .sunlit-desktop-links a::after { transition: none; }
+  }
+</style>

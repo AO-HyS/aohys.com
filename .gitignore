@@ -17,7 +17,9 @@ coverage/
 .codex/
 .cursor/
 .expect/
+.playwright-cli/
 .gemini/
 .impeccable/config.local.json
 .opencode/
 .vscode/
+output/

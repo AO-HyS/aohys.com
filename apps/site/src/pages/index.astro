@@ -1,0 +1,27 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PublicContentPage from "../components/PublicContentPage.astro";
+import { getSeoMetadata, resolvePublicPath } from "@aohys/content-graph";
+
+const route = resolvePublicPath("/");
+
+if (!route) {
+  throw new Error("Missing Public Content Graph route for /");
+}
+
+const seo = getSeoMetadata(route.id, route.locale);
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  locale={seo.lang}
+  canonicalUrl={seo.canonicalUrl}
+  alternates={seo.alternates}
+  robots={seo.robots}
+  socialImage={seo.socialImage}
+  structuredData={seo.structuredData}
+  contentId={route.id}
+>
+  <PublicContentPage route={route} />
+</BaseLayout>

@@ -9,19 +9,22 @@ const workspacePackages = [
   ["apps/site", "@aohys/site"],
   ["apps/dashboard", "@aohys/dashboard"],
   ["apps/backend", "@aohys/backend"],
+  ["packages/core", "@aohys/core"],
   ["packages/environment", "@aohys/environment"],
   ["packages/content-graph", "@aohys/content-graph"],
-  ["packages/dashboard-ui", "@aohys/dashboard-ui"],
   ["packages/release-train", "@aohys/release-train"],
 ];
 
 const requiredRootScripts = [
   "build",
   "lint",
+  "prepare",
   "typecheck",
   "test",
   "verify",
+  "verify:ci",
   "verify:foundation",
+  "verify:precommit",
 ];
 
 const requiredPackageScripts = ["build", "lint", "typecheck", "test"];
@@ -29,6 +32,8 @@ const requiredPackageScripts = ["build", "lint", "typecheck", "test"];
 const requiredFiles = [
   ".env.example",
   ".gitignore",
+  ".github/workflows/quality-gates.yml",
+  ".husky/pre-commit",
   "LICENSE",
   "README.md",
   "docs/workspace.md",
@@ -36,6 +41,7 @@ const requiredFiles = [
   "docs/environment-contract.md",
   "docs/public-content-graph.md",
   "docs/dashboard-ui-kit.md",
+  "apps/backend/convex/tsconfig.json",
 ];
 
 function filePath(relativePath) {
@@ -105,7 +111,30 @@ if (rootPackage) {
       `package.json must define script ${scriptName}`,
     );
   }
+
+  check(
+    Boolean(rootPackage.devDependencies?.husky),
+    "package.json must include husky as a devDependency",
+  );
 }
+
+includesAll(".github/workflows/quality-gates.yml", [
+  "name: Quality Gates",
+  "pull_request:",
+  "branches:",
+  "develop",
+  "main",
+  "pnpm install --frozen-lockfile",
+  "pnpm run verify:foundation",
+  "pnpm run lint",
+  "pnpm run typecheck",
+  "pnpm run test",
+  "pnpm run build",
+]);
+
+includesAll(".husky/pre-commit", [
+  "pnpm run verify:precommit",
+]);
 
 includesAll("pnpm-workspace.yaml", ["apps/*", "packages/*"]);
 
@@ -132,34 +161,64 @@ for (const [workspaceDir, expectedName] of workspacePackages) {
 }
 
 includesAll("README.md", [
+  "## Evaluation Guide",
+  "## Quality Gates",
+  "## Architecture Map",
+  "## Public Source Boundary",
+  "## Environment and Credentials",
+  "## Provider Responsibilities",
+  "## Dashboard Architecture",
+  "## Privacy and Security",
+  "## License and Asset Boundaries",
+  "docs/aohys-prd.md",
+  "docs/aohys-issue-breakdown.md",
+  "docs/aohys-tdd-plan.md",
   "pnpm install",
   "pnpm verify",
+  "pnpm run verify:precommit",
+  "Pre-push stays manual",
   "docs/workspace.md",
   "docs/release-train.md",
   "docs/environment-contract.md",
   "docs/public-content-graph.md",
   "docs/dashboard-ui-kit.md",
+  "docs/launch-hardening.md",
+  "Convex",
+  "Cloudflare",
+  "PostHog",
+  "Resend",
+  "Better Auth",
+  "Cloudflare Images",
+  "code is public as a working example",
   "not a community open-source product",
+  "does not include a contribution workflow",
+  "reserved unless stated otherwise",
 ]);
 
 includesAll("docs/workspace.md", [
   "apps/site",
   "apps/dashboard",
   "apps/backend",
+  "packages/core",
   "packages/environment",
   "packages/content-graph",
-  "packages/dashboard-ui",
   "packages/release-train",
 ]);
 
 includesAll(".env.example", [
   "AOHYS_ENV=local",
   "PUBLIC_SITE_URL=http://localhost:4321",
+  "PUBLIC_CONTACT_ENDPOINT=",
   "PUBLIC_POSTHOG_KEY=",
   "CONVEX_URL=",
   "RESEND_API_KEY=",
   "BETTER_AUTH_SECRET=",
   "ADMIN_EMAIL=alejandro.ortiz@aohys.com",
+]);
+
+includesAll("apps/backend/convex/tsconfig.json", [
+  "../tsconfig.json",
+  "../src/**/*.ts",
 ]);
 
 includesAll(".gitignore", [

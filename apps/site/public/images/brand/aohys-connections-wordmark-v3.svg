@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 312 64" role="img" aria-labelledby="title">
+  <title id="title">AOHYS</title>
+  <g fill="#473C33">
+    <path fill-rule="evenodd" d="M2 56 23 8h18l21 48H47l-4-11H21l-4 11H2Zm24-23h12l-6-16-6 16Z"/>
+    <path fill-rule="evenodd" d="m70 20 12-12h28l12 12v24l-12 12H82L70 44V20Zm14 3v18h24V23H84Z"/>
+    <path d="M134 8h14v18h22V8h14v48h-14V38h-22v18h-14V8Zm59 0h16l11 18 11-18h16l-20 31v17h-14V39L193 8Z"/>
+    <path d="M255 8h39v12h-25c-3 0-5 1-5 3s2 3 5 4l12 3c10 2 15 6 15 13 0 9-8 14-20 14h-22V45h24c3 0 5-1 5-3s-2-3-6-4l-11-2c-10-2-15-7-15-14 0-8 7-14 19-14Z"/>
+  </g>
+  <path d="m84 32 12-8 12 8M96 24v17" fill="none" stroke="#FEC868" stroke-width="4" stroke-linecap="square" stroke-linejoin="miter"/>
+  <circle cx="84" cy="32" r="3.5" fill="#FDA769" stroke="#473C33" stroke-width="2"/>
+  <circle cx="96" cy="24" r="3.5" fill="#FEC868" stroke="#473C33" stroke-width="2"/>
+  <circle cx="108" cy="32" r="3.5" fill="#ABC270" stroke="#473C33" stroke-width="2"/>
+</svg>

@@ -1,0 +1,24 @@
+{
+  "name": "AOHYS canonical host redirects",
+  "description": "Redirect aohys.net, www.aohys.net, and www.aohys.com to the canonical https://aohys.com host while preserving path and query string.",
+  "kind": "zone",
+  "phase": "http_request_dynamic_redirect",
+  "rules": [
+    {
+      "ref": "aohys_canonical_host_redirect",
+      "description": "Canonicalize public hostnames to aohys.com.",
+      "expression": "(http.host in {\"aohys.net\" \"www.aohys.net\" \"www.aohys.com\"})",
+      "action": "redirect",
+      "action_parameters": {
+        "from_value": {
+          "status_code": 301,
+          "target_url": {
+            "expression": "concat(\"https://aohys.com\", http.request.uri.path)"
+          },
+          "preserve_query_string": true
+        }
+      },
+      "enabled": true
+    }
+  ]
+}

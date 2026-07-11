@@ -101,11 +101,11 @@ The visual implementation will follow the Impeccable process and the approved de
 - Keep route generation, metadata helpers, sitemap generation, case-study templates, resume rendering, and future dashboard publishing behind the Public Content Graph seam.
 - Exclude `/dashboard`, private operational surfaces, draft content, and unsafe private-work details from public sitemap eligibility.
 - Record the content decision in `docs/adr/0003-public-content-graph.md` and the operational shape in `docs/public-content-graph.md`.
-- Use React with Vite and TanStack Router for the private dashboard.
+- Use React with Vite and TanStack Router for the private dashboard app.
 - Keep the private dashboard in English only.
-- Use a Dashboard UI Kit module for private dashboard workflow composition.
-- Treat shadcn/ui as the Dashboard Primitive Adapter, not as the dashboard interface.
-- Keep dashboard shell, workflow surfaces, forms, data lists/details, empty/loading/error states, and mobile behavior behind the Dashboard UI Kit seam.
+- Use `apps/dashboard` as the owner of dashboard routing, screens, workflow state, forms, and shadcn/ui components.
+- Treat shadcn/ui as editable source components inside the dashboard app.
+- Keep `apps/site` limited to dashboard auth, admin authorization, private response headers, shell serving, and runtime config injection for direct Convex access.
 - Validate dashboard workflows at 390px and treat mobile usability as part of the dashboard acceptance surface.
 - Record the dashboard decision in `docs/adr/0004-dashboard-ui-kit.md` and the operational shape in `docs/dashboard-ui-kit.md`.
 - Host all public and private surfaces under one domain, with the dashboard under `/dashboard`.
@@ -145,7 +145,7 @@ The visual implementation will follow the Impeccable process and the approved de
 - Code license should be MIT; content, brand, copy, CV, case-study material, images, and assets remain reserved.
 - The hero should focus on business outcomes and reliable architecture, not stack names.
 - Stack choices should appear as evidence in architecture, README, and implementation details.
-- Case studies should follow the agreed structure: problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance, public evidence, and confidentiality note.
+- Case studies should follow the agreed structure: problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance, public links/media, and confidentiality note.
 - Case study ordering should start with Casa Roca, then The Barber Central, Nutri Plan, Enterprise Systems, and Engineering Practice.
 - Enterprise work should mention Tala, Drift, Prenuvo, AutoZone/DataZone, Accenture, and CEMEX/NEORIS with appropriate confidentiality.
 - Engineering Practice should describe modern agent-assisted engineering, QA, architecture, observability, deployment, and documentation as practice.
@@ -176,7 +176,7 @@ The visual implementation will follow the Impeccable process and the approved de
 - Release Train tests should validate observable release behavior: local verification, Cloudflare-compatible build output, preview smoke checks, production smoke checks, and branch/source assumptions.
 - Environment Contract tests should validate observable configuration behavior: missing required values fail, safe local placeholders pass local validation, and production validation rejects preview/local provider targets.
 - Public Content Graph tests should validate observable route and metadata behavior: stable IDs resolve to English/Spanish paths, canonical URLs and language alternates are correct, sitemap eligibility is explicit, and private dashboard routes remain excluded.
-- Dashboard UI Kit tests should validate authenticated workflow behavior: dashboard shell access, navigation, state surfaces, mobile layout, no duplicate controls, and preservation of Public Content Graph and Environment Contract invariants.
+- Dashboard app tests should validate authenticated workflow behavior: shell access, routed navigation, state surfaces, mobile layout, no duplicate controls, direct Convex data access, and preservation of Public Content Graph and Environment Contract invariants.
 - The visual QA seam is Impeccable-backed browser review: use the approved design context, check typography, color, spatial rhythm, responsive behavior, motion, UX copy, and slop-pattern avoidance.
 - Public page tests should cover the home page, case study index, one case study detail page, architecture page, resume page, contact page, and privacy page in both language trees where applicable.
 - SEO tests should verify canonical URLs, localized alternates, page titles, meta descriptions, robots behavior, sitemap inclusion/exclusion, and dashboard noindex.

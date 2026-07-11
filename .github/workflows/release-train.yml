@@ -1,0 +1,194 @@
+name: Release Train
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+  push:
+    branches:
+      - develop
+      - main
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: Environment to deploy from the dashboard publish action.
+        required: true
+        default: preview
+        type: choice
+        options:
+          - preview
+          - production
+
+permissions:
+  actions: read
+  contents: read
+  deployments: write
+
+concurrency:
+  group: release-train-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify workspace
+        run: pnpm verify
+
+  deploy-preview:
+    name: Deploy Preview
+    runs-on: ubuntu-latest
+    needs: verify
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/develop') || (github.event_name == 'workflow_dispatch' && inputs.target_environment == 'preview')
+    environment: preview
+    env:
+      AOHYS_ENV: preview
+      PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+      PUBLIC_CONTACT_ENDPOINT: ${{ vars.PUBLIC_CONTACT_ENDPOINT }}
+      PUBLIC_POSTHOG_KEY: ${{ vars.PUBLIC_POSTHOG_KEY }}
+      PUBLIC_POSTHOG_HOST: ${{ vars.PUBLIC_POSTHOG_HOST }}
+      PUBLIC_POSTHOG_AUTOCAPTURE: ${{ vars.PUBLIC_POSTHOG_AUTOCAPTURE }}
+      CONVEX_URL: ${{ vars.CONVEX_URL }}
+      CONVEX_DEPLOYMENT: ${{ vars.CONVEX_DEPLOYMENT }}
+      CONVEX_SITE_URL: ${{ vars.CONVEX_SITE_URL }}
+      CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_FROM: ${{ vars.RESEND_FROM }}
+      LEAD_NOTIFICATION_EMAIL: ${{ vars.LEAD_NOTIFICATION_EMAIL }}
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+      BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL }}
+      BETTER_AUTH_TRUSTED_ORIGINS: ${{ vars.BETTER_AUTH_TRUSTED_ORIGINS }}
+      ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
+      GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_PROJECT_NAME: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
+      CLOUDFLARE_IMAGES_ACCOUNT_HASH: ${{ vars.CLOUDFLARE_IMAGES_ACCOUNT_HASH }}
+      CLOUDFLARE_IMAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_IMAGES_API_TOKEN }}
+      PUBLISH_GITHUB_REPOSITORY: ${{ vars.PUBLISH_GITHUB_REPOSITORY }}
+      PUBLISH_GITHUB_TOKEN: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
+      PUBLISH_GITHUB_WORKFLOW_ID: ${{ vars.PUBLISH_GITHUB_WORKFLOW_ID }}
+      PUBLIC_CONTACT_EMAIL: ${{ vars.PUBLIC_CONTACT_EMAIL }}
+      PUBLIC_WHATSAPP_URL: ${{ vars.PUBLIC_WHATSAPP_URL }}
+      SMOKE_CONTACT_SUBMIT: ${{ vars.SMOKE_CONTACT_SUBMIT }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit PostHog environment separation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: pnpm run audit:posthog-env
+
+      - name: Audit Cloudflare Pages runtime bindings
+        run: pnpm run audit:cloudflare-pages-runtime
+
+      - name: Deploy Cloudflare Pages preview with sync:convex-env
+        id: deploy-preview
+        run: |
+          set -o pipefail
+          deploy_log="${RUNNER_TEMP}/aohys-preview-deploy.log"
+          pnpm run deploy:preview | tee "${deploy_log}"
+          smoke_base_url="$(pnpm exec tsx scripts/extract-cloudflare-pages-deployment-url.ts < "${deploy_log}")"
+          echo "smoke_base_url=${smoke_base_url}" >> "${GITHUB_OUTPUT}"
+
+      - name: Smoke preview
+        env:
+          SMOKE_BASE_URL: ${{ steps.deploy-preview.outputs.smoke_base_url }}
+        run: pnpm run smoke:preview
+
+  deploy-production:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    needs: verify
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.target_environment == 'production')
+    environment: production
+    env:
+      AOHYS_ENV: production
+      PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+      PUBLIC_CONTACT_ENDPOINT: ${{ vars.PUBLIC_CONTACT_ENDPOINT }}
+      PUBLIC_POSTHOG_KEY: ${{ vars.PUBLIC_POSTHOG_KEY }}
+      PUBLIC_POSTHOG_HOST: ${{ vars.PUBLIC_POSTHOG_HOST }}
+      PUBLIC_POSTHOG_AUTOCAPTURE: ${{ vars.PUBLIC_POSTHOG_AUTOCAPTURE }}
+      CONVEX_URL: ${{ vars.CONVEX_URL }}
+      CONVEX_DEPLOYMENT: ${{ vars.CONVEX_DEPLOYMENT }}
+      CONVEX_SITE_URL: ${{ vars.CONVEX_SITE_URL }}
+      CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_FROM: ${{ vars.RESEND_FROM }}
+      LEAD_NOTIFICATION_EMAIL: ${{ vars.LEAD_NOTIFICATION_EMAIL }}
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+      BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL }}
+      BETTER_AUTH_TRUSTED_ORIGINS: ${{ vars.BETTER_AUTH_TRUSTED_ORIGINS }}
+      ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
+      GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_PROJECT_NAME: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
+      CLOUDFLARE_IMAGES_ACCOUNT_HASH: ${{ vars.CLOUDFLARE_IMAGES_ACCOUNT_HASH }}
+      CLOUDFLARE_IMAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_IMAGES_API_TOKEN }}
+      PUBLISH_GITHUB_REPOSITORY: ${{ vars.PUBLISH_GITHUB_REPOSITORY }}
+      PUBLISH_GITHUB_TOKEN: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
+      PUBLISH_GITHUB_WORKFLOW_ID: ${{ vars.PUBLISH_GITHUB_WORKFLOW_ID }}
+      PUBLIC_CONTACT_EMAIL: ${{ vars.PUBLIC_CONTACT_EMAIL }}
+      PUBLIC_WHATSAPP_URL: ${{ vars.PUBLIC_WHATSAPP_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit PostHog environment separation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: pnpm run audit:posthog-env
+
+      - name: Audit Cloudflare Pages runtime bindings
+        run: pnpm run audit:cloudflare-pages-runtime
+
+      - name: Deploy Cloudflare Pages production with sync:convex-env
+        run: pnpm run deploy:production
+
+      - name: Smoke production
+        run: pnpm run smoke:production

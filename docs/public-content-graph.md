@@ -1,6 +1,6 @@
 # AOHYS Public Content Graph
 
-This document defines the Public Content Graph module for `aohys.com`. It exists so Astro routes, localized slugs, SEO metadata, sitemap rules, evidence assets, case studies, resume content, and future dashboard editing all share one stable content model.
+This document defines the Public Content Graph module for `aohys.com`. It exists so Astro routes, localized slugs, SEO metadata, sitemap rules, public media, case studies, resume content, and future dashboard editing all share one stable content model.
 
 ## Goal
 
@@ -10,9 +10,9 @@ The graph should prevent page-level duplication. A future route should not have 
 
 ## Module Shape
 
-The Public Content Graph is a deep module. Its future interface should stay small: resolve a route, list public routes, load a content node, load a localized variant, and expose SEO/sitemap data.
+The Public Content Graph is a deep module. Its interface should stay small: resolve a route, list public routes, load a content node, load a localized variant, and expose SEO/sitemap data.
 
-Its implementation can hide Astro content collections, local content files, generated resume artifacts, dashboard-managed Convex metadata, media references, draft states, redirects, and future content migrations.
+Its current implementation hides local locale JSON dictionaries behind a TypeScript API. As the project grows, it can also hide Astro content collections, generated resume artifacts, dashboard-managed Convex metadata, media references, draft states, redirects, and future content migrations.
 
 The seam is content resolution. Astro pages, sitemap generation, metadata helpers, case-study templates, resume rendering, and dashboard publishing workflows should cross that seam instead of reading scattered frontmatter or route constants directly.
 
@@ -45,6 +45,7 @@ Initial IDs:
 | `case-study:the-barber-central` | `/case-studies/the-barber-central` | `/es/casos/the-barber-central` | case study |
 | `case-study:nutri-plan` | `/case-studies/nutri-plan` | `/es/casos/nutri-plan` | case study |
 | `case-study:enterprise-systems` | `/case-studies/enterprise-systems` | `/es/casos/sistemas-enterprise` | case study |
+| `case-study:engineering-practice` | `/case-studies/engineering-practice` | `/es/casos/practica-de-ingenieria` | case study |
 | `practice` | `/practice` | `/es/practica` | practice page |
 | `architecture` | `/architecture` | `/es/arquitectura` | architecture page |
 | `resume` | `/resume` | `/es/cv` | resume page |
@@ -66,7 +67,7 @@ The implementation can evolve, but every public content node should carry these 
 - robots/sitemap eligibility;
 - draft or published state;
 - source boundary classification;
-- evidence assets;
+- public media and links;
 - confidentiality note when relevant.
 
 Case-study nodes should additionally carry:
@@ -79,7 +80,16 @@ Case-study nodes should additionally carry:
 - architecture decisions;
 - execution highlights;
 - quality/security/performance notes;
-- public evidence links or assets.
+- public links or media.
+
+Resume nodes should additionally carry:
+
+- name, role, location, and contact links;
+- hiring-friendly professional summary;
+- proof metadata for the dynamic resume page: label, title, and body copy;
+- selected impact, key projects, professional experience, skills, education, and languages;
+- PDF artifact metadata including href, filename, label, and description;
+- dynamic context links back to richer site routes.
 
 ## Sitemap And Robots Rules
 
@@ -89,7 +99,7 @@ Default public sitemap entries:
 
 - published English public pages;
 - published Spanish public pages;
-- case-study detail pages with safe public evidence;
+- case-study detail pages with safe public links and media;
 - resume page and dynamic resume URL.
 
 Excluded from sitemap:
@@ -103,21 +113,41 @@ Excluded from sitemap:
 
 Robots/noindex behavior should also be graph-driven for public pages and explicitly enforced for private routes.
 
-## Evidence Assets
+## Public Media
 
-Evidence assets are references that support public claims: sanitized screenshots, public URLs, generated editorial images, architecture diagrams, PDF artifacts, and source links.
+Public media references support public pages: sanitized screenshots, public URLs, generated editorial images, architecture diagrams, PDF artifacts, and source links.
 
 Rules:
 
-- Evidence assets should not expose private data, secrets, private code, or internal client material.
+- Public media should not expose private data, secrets, private code, or internal client material.
 - Screenshots carry most proof; generated images should be purposeful and limited.
 - Media storage and optimization stay behind the future Media Pipeline module, while the graph stores usage intent and safe references.
-- Alt text is part of the content node or evidence asset metadata, not an afterthought in page markup.
+- The graph may include stable public `src` references for first-party media that ships with the Astro site. Those paths must point to sanitized assets only.
+- Alt text is part of the content node or public media metadata, not an afterthought in page markup.
 
 ## Dashboard Dependency
 
-The private dashboard may eventually edit case-study content, media metadata, site settings, and resume content. It should not bypass the Public Content Graph. Dashboard workflows should mutate content through a publishing seam that preserves stable IDs, locale variants, SEO fields, sitemap rules, and evidence safety.
+The private dashboard can now manage metadata for case-study content, media, site settings, and resume versions. It must not bypass the Public Content Graph. Dashboard workflows should mutate content through a publishing seam that preserves stable IDs, locale variants, SEO fields, sitemap rules, and public-media safety. The current implementation keeps public copy in the graph and stores dashboard-managed metadata in Convex.
 
-## TDD Connection
+## Current Test Surface
 
-The Public Content Graph should be tested through route and metadata behavior. The first useful tracer is resolving `/` and `/es/` from stable content IDs and verifying canonical plus language alternate metadata. Later tracers should cover case-study index/detail routes, missing locale handling, sitemap eligibility, dashboard exclusion, and content safety rules.
+The Public Content Graph is tested with Vitest through route and metadata behavior:
+
+- stable content IDs resolve to English and Spanish paths;
+- route paths resolve back to graph nodes;
+- SEO metadata includes canonical and language alternate data;
+- sitemap entries come from graph eligibility;
+- `/dashboard` and private routes are excluded;
+- missing locale variants fail explicitly.
+
+Astro route smoke tests consume the built site output instead of using ad hoc Node assertions. Later tracers should cover richer case-study content shape, resume/PDF relationships, public-media safety, and dashboard publishing invariants.
+
+The current home tracer also uses the graph for the public work narrative: selected outcomes resolve to localized case-study paths, public entries carry safe labels, optional sanitized image sources, and accessible text, and the contact CTA keeps the institutional email plus WhatsApp path in the same locale-aware content seam.
+
+The architecture page also resolves its public source framing through the graph. Its content owns the public/private boundary note, source links, Release Train, Environment Contract, Public Content Graph, and provider responsibility sections for English and Spanish routes.
+
+Casa Roca is the first complete graph-backed case study. `case-study:casa-roca` owns its localized status label, overview, problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance notes, public link, alt text, and confidentiality note. Case-study routes without complete detail content continue to render skeleton route pages until their public-safe content is added.
+
+The selected-work index is also graph-backed. It resolves Casa Roca, The Barber Central, Nutri Plan, Enterprise Systems, and Engineering Practice from stable case-study IDs, localized paths, explicit project statuses, public-safe evidence labels, and the same confidentiality-aware detail shape.
+
+The resume route is graph-backed as well. `resume` resolves `/resume` and `/es/cv`, owns localized semantic CV content, exposes the `/downloads/alejandro-ortiz-corro-resume.pdf` artifact, carries proof copy for the dynamic page, and links back to selected work, architecture, and contact routes so hiring readers can move into richer context.

@@ -1,0 +1,131 @@
+---
+import PostHogAnalytics from "../components/PostHogAnalytics.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import "@fontsource-variable/mona-sans/index.css";
+import "@fontsource-variable/atkinson-hyperlegible-next/index.css";
+import "../styles/global.css";
+import { bodyClass, ui } from "../styles/classes";
+import type { ContentId, Locale, SeoStructuredData, SocialImageMetadata } from "@aohys/content-graph";
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  canonicalUrl: string;
+  alternates: Record<Locale | "x-default", string>;
+  robots?: string;
+  socialImage: SocialImageMetadata;
+  structuredData?: SeoStructuredData;
+  contentId?: ContentId | string;
+}
+
+const {
+  title,
+  description,
+  locale,
+  canonicalUrl,
+  alternates,
+  robots = "index,follow",
+  socialImage,
+  structuredData,
+  contentId,
+} = Astro.props;
+
+const analyticsEnvironment = import.meta.env.AOHYS_ENV ?? "local";
+const structuredDataJson = structuredData ? JSON.stringify(structuredData).replaceAll("<", "\\u003c") : null;
+const analyticsPath = (() => {
+  try {
+    return new URL(canonicalUrl).pathname || "/";
+  } catch {
+    return "/";
+  }
+})();
+---
+
+<!doctype html>
+<html lang={locale} class="overflow-x-clip scroll-smooth motion-reduce:scroll-auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    <meta property="og:site_name" content="AOHYS" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImage.url} />
+    <meta property="og:image:secure_url" content={socialImage.url} />
+    <meta property="og:image:alt" content={socialImage.alt} />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="canonical" href={canonicalUrl} />
+    {
+      Object.entries(alternates).map(([hreflang, href]) => (
+        <link rel="alternate" hreflang={hreflang} href={href} />
+      ))
+    }
+    <title>{title}</title>
+    {structuredDataJson && <script is:inline type="application/ld+json" set:html={structuredDataJson}></script>}
+  </head>
+  <body class={bodyClass}>
+    <div class={ui.siteShell} data-site-shell="public" data-content-id={contentId}>
+      <SiteHeader locale={locale} currentId={contentId} />
+      <main id="main-content">
+        <slot />
+      </main>
+      <SiteFooter locale={locale} />
+    </div>
+    <PostHogAnalytics
+      contentId={contentId}
+      locale={locale}
+      canonicalUrl={canonicalUrl}
+      path={analyticsPath}
+      environment={analyticsEnvironment}
+    />
+    <style is:global>
+      .sunlit-ticket-button {
+        display: inline-flex;
+        min-height: 3.25rem;
+        width: fit-content;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        padding: 0 1.2rem;
+        border: 2px solid var(--color-ink);
+        border-radius: .6rem;
+        background: var(--color-primary);
+        color: var(--color-primary-ink);
+        text-decoration: none;
+        font: inherit;
+        font-weight: 760;
+        box-shadow: 0 4px 0 var(--color-ink);
+        cursor: pointer;
+        transition: transform 160ms cubic-bezier(.22, 1, .36, 1), background 160ms ease, box-shadow 160ms ease;
+      }
+      .sunlit-ticket-button:hover { transform: translateY(-2px); background: var(--color-accent); box-shadow: 0 6px 0 var(--color-ink); }
+      .sunlit-ticket-button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--color-ink); }
+      .sunlit-ticket-button:disabled { opacity: .58; cursor: wait; }
+      .sunlit-text-action {
+        display: inline-flex;
+        min-height: 2.75rem;
+        width: fit-content;
+        align-items: center;
+        gap: .65rem;
+        padding: .35rem 0 .15rem;
+        border: 0;
+        border-bottom: 2px solid currentColor;
+        border-radius: 0;
+        background: transparent;
+        color: inherit;
+        text-decoration: none;
+        font: inherit;
+        font-weight: 720;
+      }
+      .sunlit-text-action:hover { border-bottom-color: var(--color-accent); }
+      @media (prefers-reduced-motion: reduce) { .sunlit-ticket-button { transition: none; } }
+    </style>
+  </body>
+</html>
