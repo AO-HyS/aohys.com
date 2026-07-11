@@ -2,6 +2,32 @@
 
 Status: accepted research result for the AOHYS dashboard program.
 
+## Current completion audit — 2026-07-11
+
+The implementation, defensive review, release train, and Preview Deployment are complete. The current **evidence score is 98/100**, not 100/100, because two required browser/provider proofs remain unproven rather than assumed.
+
+| Category | Earned | Evidence |
+| --- | ---: | --- |
+| Product workflows and UX | 15/15 | Overview, Projects, Leads, Resume, Settings, aliases, async states, guarded destructive/publish actions, and Browser route matrix passed in Preview. |
+| Visual system and interaction craft | 15/15 | Operations Desk tokens/adapters, shared shadcn primitives, page-by-page redesign, and Impeccable detector with zero findings. |
+| Accessibility and responsive behavior | 9/10 | Labels, keyboard semantics, focus contracts, contained tables, mobile task surfaces, prior local 390 px proof, and zero desktop overflow passed. Exact 390 px proof on the deployed build is pending because the packaged Browser viewport override did not change the CSS viewport and Chrome DevTools was not exposed to Computer Use. |
+| Security and privacy | 15/15 | Defensive review reports zero unresolved validated Critical/High findings; private headers/auth boundaries, analytics sanitization, dependency audit, and negative tests passed. |
+| Convex, Better Auth, and data boundaries | 10/10 | Admin authorization, explicit validators/returns, cursor pagination, indexed rate limiting, bounded reads, shared policies, and zero remaining `.collect()` calls. |
+| Architecture and code organization | 15/15 | Typed navigation, deep project workflow, shared media/settings policy, editable-state modules, and deletion of the legacy 928-line workflow package. |
+| React, TanStack, and runtime performance | 10/10 | Effects remain only for external synchronization/cleanup; TanStack Router/Table ownership is explicit; route chunks are lazy; entry fell from ~549 kB to 257.47 kB without a build warning. |
+| PostHog observability | 4/5 | Preview/Production project separation audit passed; Computer Use verified the correct Preview project plus recent privacy-safe server events. Browser events remain intentionally suppressed by the test browser's Do Not Track setting; changing that privacy setting requires explicit user confirmation. |
+| Testing, delivery, and public-sample clarity | 5/5 | Frozen install, repeated `verify:ci`, 24-route Astro build, dependency audit, successful Release Train, Preview smoke, PR #81, and updated public documentation. |
+| **Total** | **98/100** | **Not yet eligible for a 100/100 claim.** |
+
+- Preview: `https://faaa6ad7.aohys-com.pages.dev`
+- Release Train: `https://github.com/AO-HyS/aohys.com/actions/runs/29148061266`
+- PR: `https://github.com/AO-HyS/aohys.com/pull/81`
+
+### Remaining proof to reach 100/100
+
+1. With explicit approval, temporarily disable Do Not Track in Chrome, navigate ordinary public/dashboard Preview routes, verify `$pageview` and `dashboard_surface_viewed` in project `AOHYS Public Site - Preview`, inspect safe properties, then restore Do Not Track.
+2. Capture the deployed Overview, Projects, Leads, Resume, and Settings at an authoritative 390 CSS px viewport and confirm zero page-level horizontal overflow. No mutation or contact submission is required.
+
 ## Purpose
 
 This scorecard turns “100/100” into a release claim that must be proven with current code, runtime, provider, and visual evidence. A category cannot receive credit from intent, screenshots alone, string-presence tests, or a green build that does not exercise the requirement.
@@ -247,4 +273,3 @@ Every audit and implementation review must report:
 - `docs/environment-contract.md`
 - `docs/release-train.md`
 - `scripts/verify-foundation.mjs`
-

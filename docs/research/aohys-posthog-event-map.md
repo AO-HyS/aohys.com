@@ -2,7 +2,7 @@
 
 Date: 2026-07-11  
 Issue: AOH-75  
-Status: code contract implemented and locally verified; provider dashboard and deployed-event proof remain pending.
+Status: code contract and environment isolation verified; server events are visible in the Preview provider project, while browser-event proof is pending an explicitly approved Do Not Track override.
 
 ## Observability decision
 
@@ -120,3 +120,11 @@ After the preview branch is deployed:
 6. After explicit merge approval and production promotion, repeat read-only page/surface verification in the Production project.
 
 No deliberate exception, provider failure, contact submission, or private-record mutation is required to prove the contract.
+
+## Preview provider receipt — 2026-07-11
+
+- Release Train audits confirmed Preview/Production key separation before deployment.
+- Computer Use identified project `AOHYS Public Site - Preview` (project ID 492205) and separately confirmed the production project.
+- Recent `lead_submitted` and `csp_violation_reported` events were visible in Preview with environment-scoped service identities and no private message/contact property in the event list.
+- Ordinary public and dashboard routes were visited after deployment, but the browser respected Do Not Track and emitted no browser events. The repository must not weaken `respect_dnt: true` merely to manufacture evidence.
+- Temporarily changing the user's browser privacy setting requires explicit confirmation and must be restored immediately after `$pageview` and `dashboard_surface_viewed` are verified.

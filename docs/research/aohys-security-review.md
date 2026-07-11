@@ -9,7 +9,7 @@ Method: defensive source review, trust-boundary tracing, negative unit tests, he
 - Unresolved validated Critical findings: **0**
 - Unresolved validated High findings: **0**
 - Production merge: **not authorized**
-- Preview provider verification: tracked by AOH-86
+- Preview provider verification: Release Train, smoke, and PostHog server-event proof passed; privacy-preserving browser-event proof remains tracked by AOH-86.
 
 ## Remediated findings
 
@@ -41,4 +41,4 @@ Method: defensive source review, trust-boundary tracing, negative unit tests, he
 
 ## Remaining external proof
 
-AOH-86 owns preview deployment, environment audits, live preview smoke checks, PostHog Preview-project inspection, and final responsive/keyboard evidence. Those checks must not generate deliberate failures or synthetic contact submissions. Production remains blocked until explicit user approval.
+AOH-86 deployed Preview successfully through the official Release Train, passed environment audits and smoke, and verified the correct PostHog Preview project. Do Not Track suppressed browser telemetry during QA, so browser-event proof remains pending explicit permission to temporarily change that local privacy setting. Production remains blocked until explicit user approval.
