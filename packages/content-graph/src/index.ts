@@ -408,7 +408,43 @@ export interface SeoMetadata {
   canonicalUrl: string;
   alternates: Record<Locale | "x-default", string>;
   robots: "index,follow" | "noindex,nofollow";
+  socialImage: SocialImageMetadata;
+  structuredData?: SeoStructuredData;
 }
+
+export interface SocialImageMetadata {
+  url: string;
+  alt: string;
+}
+
+export interface WebsiteStructuredData {
+  "@context": "https://schema.org";
+  "@type": "WebSite";
+  "@id": string;
+  url: string;
+  name: "AOHYS";
+  inLanguage: Locale[];
+}
+
+export interface ProfilePageStructuredData {
+  "@context": "https://schema.org";
+  "@type": "ProfilePage";
+  "@id": string;
+  url: string;
+  name: string;
+  description: string;
+  inLanguage: Locale;
+  mainEntity: {
+    "@type": "Person";
+    "@id": string;
+    name: "Alejandro Ortiz Corro";
+    url: string;
+    jobTitle: string;
+    sameAs: [string, string];
+  };
+}
+
+export type SeoStructuredData = WebsiteStructuredData | ProfilePageStructuredData;
 
 export interface SitemapEntry {
   url: string;
@@ -909,14 +945,63 @@ export function resolvePublicPath(pathname: string): PublicRoute | null {
 export function getSeoMetadata(contentId: ContentId | string, locale: Locale): SeoMetadata {
   const node = getContentNode(contentId);
   const localizedVariant = getLocaleVariant(node, locale);
+  const canonicalUrl = toAbsoluteUrl(localizedVariant.path);
+  const staticEvidence = STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID[contentId];
+  const evidencePath = staticEvidence?.thumbSrc ?? staticEvidence?.src;
+  const socialImagePath =
+    contentId !== "home" && evidencePath && /\.(?:jpe?g|png)$/i.test(evidencePath)
+      ? evidencePath
+      : "/images/generated/aohys-hero-system-map.png";
+  const usesEvidenceImage = socialImagePath === evidencePath;
+  const socialImageAlt = usesEvidenceImage
+    ? locale === "es"
+      ? `Vista previa de ${localizedVariant.title} en AOHYS`
+      : `${localizedVariant.title} preview on AOHYS`
+    : locale === "es"
+      ? "Mapa del sistema de ingeniería de producto AOHYS"
+      : "AOHYS product engineering system map";
+  const structuredData: SeoStructuredData | undefined =
+    contentId === "home"
+      ? {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "@id": `${SITE_URL}/#website`,
+          url: `${SITE_URL}/`,
+          name: "AOHYS",
+          inLanguage: [...LOCALES],
+        }
+      : contentId === "resume"
+        ? {
+            "@context": "https://schema.org",
+            "@type": "ProfilePage",
+            "@id": `${canonicalUrl}#profile-page`,
+            url: canonicalUrl,
+            name: localizedVariant.seoTitle,
+            description: localizedVariant.seoDescription,
+            inLanguage: locale,
+            mainEntity: {
+              "@type": "Person",
+              "@id": `${SITE_URL}/#alejandro-ortiz-corro`,
+              name: "Alejandro Ortiz Corro",
+              url: `${SITE_URL}/resume`,
+              jobTitle: locale === "es" ? "Ingeniero de producto" : "Product engineer",
+              sameAs: ["https://www.linkedin.com/in/alejandrortizcrr/", "https://github.com/corrortiz"],
+            },
+          }
+        : undefined;
 
   return {
     lang: locale,
     title: localizedVariant.seoTitle,
     description: localizedVariant.seoDescription,
-    canonicalUrl: toAbsoluteUrl(localizedVariant.path),
+    canonicalUrl,
     alternates: getLanguageAlternates(contentId),
     robots: node.status === "published" && node.sitemap.include ? "index,follow" : "noindex,nofollow",
+    socialImage: {
+      url: toAbsoluteUrl(socialImagePath),
+      alt: socialImageAlt,
+    },
+    structuredData,
   };
 }
 

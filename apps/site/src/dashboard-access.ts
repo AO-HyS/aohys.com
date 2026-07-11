@@ -1,4 +1,4 @@
-import { renderDashboardSignIn, renderDashboardState } from "@aohys/dashboard-ui";
+import { renderDashboardSignIn, renderDashboardState } from "./dashboard-access-states.js";
 import { validateEnvironmentContract, type EnvironmentName } from "@aohys/environment";
 import { capturePostHogServerEvent } from "./posthog-server.js";
 import { PRIVATE_HTML_HEADERS, PRIVATE_NO_STORE_HEADERS } from "./security-headers.js";
@@ -43,6 +43,8 @@ export interface DashboardAppShellConfig {
   convexUrl: string;
   betterAuthUrl: string;
   imagesAccountHash?: string;
+  posthogKey?: string;
+  posthogHost?: string;
 }
 
 export async function safeHandleDashboardRequest(
@@ -135,6 +137,8 @@ export async function handleDashboardRequest(
     convexUrl: environment.CONVEX_URL,
     betterAuthUrl: url.origin,
     imagesAccountHash: environment.CLOUDFLARE_IMAGES_ACCOUNT_HASH?.trim() || undefined,
+    posthogKey: environment.PUBLIC_POSTHOG_KEY?.trim() || undefined,
+    posthogHost: environment.PUBLIC_POSTHOG_HOST?.trim() || undefined,
   }));
 }
 

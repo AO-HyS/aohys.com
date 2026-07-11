@@ -12,7 +12,6 @@ const workspacePackages = [
   ["packages/core", "@aohys/core"],
   ["packages/environment", "@aohys/environment"],
   ["packages/content-graph", "@aohys/content-graph"],
-  ["packages/dashboard-ui", "@aohys/dashboard-ui"],
   ["packages/release-train", "@aohys/release-train"],
 ];
 
@@ -203,7 +202,6 @@ includesAll("docs/workspace.md", [
   "packages/core",
   "packages/environment",
   "packages/content-graph",
-  "packages/dashboard-ui",
   "packages/release-train",
 ]);
 

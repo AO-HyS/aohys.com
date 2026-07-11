@@ -19,6 +19,8 @@ const seo = getSeoMetadata(route.id, route.locale);
   canonicalUrl={seo.canonicalUrl}
   alternates={seo.alternates}
   robots={seo.robots}
+  socialImage={seo.socialImage}
+  structuredData={seo.structuredData}
   contentId={route.id}
 >
   <PublicContentPage route={route} />

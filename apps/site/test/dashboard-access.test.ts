@@ -18,6 +18,8 @@ const validEnvironment: DashboardAccessEnvironment = {
   CLOUDFLARE_IMAGES_ACCOUNT_HASH: "cloudflare-images-hash",
   CLOUDFLARE_IMAGES_API_TOKEN: "cloudflare-images-token",
   PUBLISH_GITHUB_TOKEN: "github-publish-token",
+  PUBLIC_POSTHOG_KEY: "phc_preview",
+  PUBLIC_POSTHOG_HOST: "https://us.i.posthog.com",
 };
 
 describe("dashboard access guard", () => {
@@ -76,6 +78,8 @@ describe("dashboard access guard", () => {
     expect(html).toContain('"convexUrl":"https://effervescent-minnow-483.convex.cloud"');
     expect(html).toContain('"betterAuthUrl":"https://preview.aohys.com"');
     expect(html).toContain('"imagesAccountHash":"cloudflare-images-hash"');
+    expect(html).toContain('"posthogKey":"phc_preview"');
+    expect(html).toContain('"posthogHost":"https://us.i.posthog.com"');
   });
 
   it("rejects preview dashboard runtime when the Images account hash is not configured", async () => {

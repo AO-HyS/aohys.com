@@ -1,3 +1,4 @@
+import { normalizePublicWhatsappUrl, resolvePublicMediaUrl, selectPublicationMedia } from "@aohys/core";
 import { v, type ObjectType } from "convex/values";
 import {
   internalMutation,
@@ -8,6 +9,8 @@ import {
   type QueryCtx,
 } from "./_generated/server.js";
 import { requireAdmin } from "./auth.js";
+import { buildDashboardOverview } from "../src/dashboard-overview.js";
+import { localizedCaseStudyPath, requireCaseStudyContentId, requireSafeProjectKey, requireUnreservedStaticSlug } from "../src/project-identity.js";
 
 const localeValidator = v.union(v.literal("en"), v.literal("es"));
 
@@ -37,6 +40,11 @@ const mediaStorageProviderValidator = v.union(
   v.literal("external"),
 );
 
+const writableMediaStorageProviderValidator = v.union(
+  v.literal("cloudflare-images"),
+  v.literal("external"),
+);
+
 const mediaUsageValidator = v.union(
   v.literal("case-study"),
   v.literal("resume"),
@@ -56,6 +64,67 @@ const settingClassificationValidator = v.union(
   v.literal("policy-value"),
 );
 
+const overviewPathValidator = v.union(
+  v.literal("/projects"),
+  v.literal("/resume"),
+  v.literal("/settings"),
+);
+
+const overviewGateStatusValidator = v.union(
+  v.literal("clear"),
+  v.literal("ready"),
+  v.literal("blocked"),
+  v.literal("unavailable"),
+);
+
+const dashboardOverviewReturns = v.object({
+  environment: environmentValidator,
+  state: v.union(
+    v.literal("clear"),
+    v.literal("action-required"),
+    v.literal("ready-to-queue"),
+    v.literal("partial"),
+  ),
+  gates: v.array(v.object({
+    id: v.union(
+      v.literal("project-copy"),
+      v.literal("evidence"),
+      v.literal("resume"),
+      v.literal("public-contact"),
+      v.literal("release-provider"),
+    ),
+    label: v.string(),
+    status: overviewGateStatusValidator,
+    reason: v.string(),
+    actionLabel: v.optional(v.string()),
+    actionPath: v.optional(overviewPathValidator),
+  })),
+  blockers: v.array(v.object({
+    code: v.union(
+      v.literal("data-limit-reached"),
+      v.literal("project-copy-incomplete"),
+      v.literal("project-evidence-incomplete"),
+      v.literal("resume-incomplete"),
+      v.literal("public-contact-invalid"),
+      v.literal("release-provider-unavailable"),
+    ),
+    title: v.string(),
+    reason: v.string(),
+    actionLabel: v.optional(v.string()),
+    actionPath: v.optional(overviewPathValidator),
+  })),
+  nextAction: v.optional(v.object({
+    label: v.string(),
+    path: overviewPathValidator,
+    reason: v.string(),
+  })),
+  release: v.object({
+    providerState: v.union(v.literal("configured"), v.literal("unavailable")),
+    workflowState: v.literal("not-requested"),
+    deploymentState: v.literal("unknown"),
+  }),
+});
+
 const listForDashboardReturns = v.object({
   caseStudies: v.array(v.object({
     contentId: v.string(),
@@ -66,6 +135,7 @@ const listForDashboardReturns = v.object({
   projectDrafts: v.array(v.object({
     contentId: v.string(),
     locale: localeValidator,
+    localizedSlug: v.optional(v.string()),
     title: v.string(),
     summary: v.string(),
     seoDescription: v.string(),
@@ -119,6 +189,7 @@ const upsertProjectDraftArgs = {
   status: caseStudyStatusValidator,
   evidenceStatus: evidenceStatusValidator,
   locale: localeValidator,
+  localizedSlug: v.optional(v.string()),
   title: v.string(),
   summary: v.string(),
   seoDescription: v.string(),
@@ -127,6 +198,54 @@ const upsertProjectDraftArgs = {
   ctaHref: v.string(),
   achievements: v.string(),
   structureNotes: v.string(),
+};
+
+const localizedProjectDraftArgs = {
+  localizedSlug: v.string(),
+  title: v.string(),
+  summary: v.string(),
+  seoDescription: v.string(),
+  projectUrl: v.optional(v.string()),
+  ctaLabel: v.string(),
+  achievements: v.string(),
+  structureNotes: v.string(),
+};
+
+async function requireAvailableLocalizedSlug(
+  ctx: MutationCtx,
+  contentId: string,
+  locale: "en" | "es",
+  localizedSlug: string,
+): Promise<void> {
+  requireUnreservedStaticSlug(contentId, locale, localizedSlug);
+  const existingDraft = await ctx.db
+    .query("projectDrafts")
+    .withIndex("by_locale_and_localized_slug", (query) =>
+      query.eq("locale", locale).eq("localizedSlug", localizedSlug),
+    )
+    .first();
+  if (existingDraft && existingDraft.contentId !== contentId) {
+    throw new Error(`The ${locale.toUpperCase()} localized slug already belongs to another project.`);
+  }
+
+  const legacyContentId = `case-study:${localizedSlug}`;
+  if (legacyContentId !== contentId) {
+    const legacyMetadata = await ctx.db
+      .query("caseStudyMetadata")
+      .withIndex("by_content_id", (query) => query.eq("contentId", legacyContentId))
+      .first();
+    if (legacyMetadata) {
+      throw new Error(`The ${locale.toUpperCase()} localized slug collides with an existing legacy project route.`);
+    }
+  }
+}
+
+const createProjectArgs = {
+  contentKey: v.string(),
+  status: caseStudyStatusValidator,
+  evidenceStatus: evidenceStatusValidator,
+  en: v.object(localizedProjectDraftArgs),
+  es: v.object(localizedProjectDraftArgs),
 };
 
 const upsertProjectDraftReturns = v.object({
@@ -147,26 +266,35 @@ const upsertSiteSettingReturns = v.object({
   updatedAt: v.number(),
 });
 
+function withinLimit<T>(rows: T[], limit: number, label: string): T[] {
+  if (rows.length > limit) {
+    throw new Error(`${label} exceeds the safe dashboard operation limit.`);
+  }
+
+  return rows;
+}
+
 async function listForDashboardHandler(ctx: QueryCtx) {
   const [caseStudies, projectDrafts, resumeDrafts, media, settings, resumeVersions] = await Promise.all([
-    ctx.db.query("caseStudyMetadata").collect(),
-    ctx.db.query("projectDrafts").collect(),
-    ctx.db.query("resumeDrafts").collect(),
-    ctx.db.query("mediaMetadata").take(100),
-    ctx.db.query("siteSettings").take(100),
-    ctx.db.query("resumeVersions").take(50),
+    ctx.db.query("caseStudyMetadata").take(101),
+    ctx.db.query("projectDrafts").take(201),
+    ctx.db.query("resumeDrafts").take(11),
+    ctx.db.query("mediaMetadata").order("desc").take(100),
+    ctx.db.query("siteSettings").order("desc").take(100),
+    ctx.db.query("resumeVersions").order("desc").take(50),
   ]);
 
   return {
-    caseStudies: caseStudies.map((caseStudy) => ({
+    caseStudies: withinLimit(caseStudies, 100, "Case study metadata").map((caseStudy) => ({
       contentId: caseStudy.contentId,
       status: caseStudy.status,
       evidenceStatus: caseStudy.evidenceStatus,
       updatedAt: caseStudy.updatedAt,
     })),
-    projectDrafts: projectDrafts.map((projectDraft) => ({
+    projectDrafts: withinLimit(projectDrafts, 200, "Project drafts").map((projectDraft) => ({
       contentId: projectDraft.contentId,
       locale: projectDraft.locale,
+      localizedSlug: projectDraft.localizedSlug,
       title: projectDraft.title,
       summary: projectDraft.summary,
       seoDescription: projectDraft.seoDescription,
@@ -178,7 +306,7 @@ async function listForDashboardHandler(ctx: QueryCtx) {
       updatedAt: projectDraft.updatedAt,
       publishedAt: projectDraft.publishedAt,
     })),
-    resumeDrafts: resumeDrafts.map((resumeDraft) => ({
+    resumeDrafts: withinLimit(resumeDrafts, 10, "Resume drafts").map((resumeDraft) => ({
       locale: resumeDraft.locale,
       contentJson: resumeDraft.contentJson,
       updatedAt: resumeDraft.updatedAt,
@@ -216,6 +344,90 @@ async function listForDashboardHandler(ctx: QueryCtx) {
   };
 }
 
+export const getDashboardOverview = query({
+  args: {
+    environment: environmentValidator,
+  },
+  returns: dashboardOverviewReturns,
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+
+    const [caseStudies, projectDrafts, resumeDrafts, draftMedia, publishedMedia, settings] = await Promise.all([
+      ctx.db.query("caseStudyMetadata").order("desc").take(101),
+      ctx.db.query("projectDrafts").order("desc").take(201),
+      ctx.db.query("resumeDrafts").order("desc").take(11),
+      ctx.db
+        .query("mediaMetadata")
+        .withIndex("by_status_and_usage", (query) =>
+          query.eq("status", "draft").eq("usage", "case-study")
+        )
+        .order("desc")
+        .take(101),
+      ctx.db
+        .query("mediaMetadata")
+        .withIndex("by_status_and_usage", (query) =>
+          query.eq("status", "published").eq("usage", "case-study")
+        )
+        .order("desc")
+        .take(101),
+      ctx.db
+        .query("siteSettings")
+        .withIndex("by_environment_and_key", (query) => query.eq("environment", args.environment))
+        .order("desc")
+        .take(101),
+    ]);
+
+    return buildDashboardOverview({
+      environment: args.environment,
+      truncated: caseStudies.length > 100
+        || projectDrafts.length > 200
+        || resumeDrafts.length > 10
+        || draftMedia.length > 100
+        || publishedMedia.length > 100
+        || settings.length > 100,
+      caseStudies: caseStudies.slice(0, 100).map((item) => ({
+        contentId: item.contentId,
+        evidenceStatus: item.evidenceStatus,
+      })),
+      projectDrafts: projectDrafts.slice(0, 200).map((item) => ({
+        contentId: item.contentId,
+        locale: item.locale,
+        title: item.title,
+        summary: item.summary,
+        seoDescription: item.seoDescription,
+        ctaLabel: item.ctaLabel,
+        ctaHref: item.ctaHref,
+        achievements: item.achievements,
+        structureNotes: item.structureNotes,
+        publishedAt: item.publishedAt,
+      })),
+      media: [
+        ...draftMedia.slice(0, 100).map((item) => ({
+          contentId: item.contentId,
+          status: "draft" as const,
+          selectedForPublic: item.selectedForPublic,
+        })),
+        ...publishedMedia.slice(0, 100).map((item) => ({
+          contentId: item.contentId,
+          status: "published" as const,
+          selectedForPublic: item.selectedForPublic,
+        })),
+      ],
+      resumeDrafts: resumeDrafts.slice(0, 10).map((item) => ({
+        locale: item.locale,
+        contentJson: item.contentJson,
+        publishedAt: item.publishedAt,
+      })),
+      settings: settings.slice(0, 100).map((item) => ({
+        key: item.key,
+        value: item.value,
+        classification: item.classification,
+      })),
+      releaseProviderConfigured: Boolean(process.env.PUBLISH_GITHUB_TOKEN?.trim()),
+    });
+  },
+});
+
 function publicMediaUrl(
   media: {
     storageProvider: "cloudflare-images" | "cloudflare-r2" | "external";
@@ -223,69 +435,21 @@ function publicMediaUrl(
     publicUrl?: string;
   },
 ): string | undefined {
-  if (media.publicUrl) {
-    return media.publicUrl;
-  }
-
-  if (isHttpUrl(media.storageKey)) {
-    return media.storageKey;
-  }
-
-  if (isPublicAssetPath(media.storageKey)) {
-    return media.storageKey.startsWith("/") ? media.storageKey : `/${media.storageKey}`;
-  }
-
-  const accountHash = process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH?.trim();
-
-  if (media.storageProvider !== "cloudflare-images" || !accountHash) {
-    return undefined;
-  }
-
-  return `https://imagedelivery.net/${accountHash}/${media.storageKey}/public`;
-}
-
-function isHttpUrl(value: string): boolean {
-  try {
-    const url = new URL(value);
-
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
-}
-
-function isPublicAssetPath(value: string): boolean {
-  const path = value.split(/[?#]/, 1)[0] ?? "";
-
-  if (!/^(?:\/)?images\/.+\.(?:avif|gif|jpe?g|png|svg|webp)$/i.test(path)) {
-    return false;
-  }
-
-  return publicAssetPathSegments(path).every(isSafePublicAssetPathSegment);
-}
-
-function publicAssetPathSegments(path: string): string[] {
-  return (path.startsWith("/") ? path.slice(1) : path).split("/");
-}
-
-function isSafePublicAssetPathSegment(segment: string): boolean {
-  if (!segment) {
-    return false;
-  }
-
-  try {
-    const decodedSegment = decodeURIComponent(segment);
-
-    return decodedSegment !== "." && decodedSegment !== ".." && !decodedSegment.includes("/") && !decodedSegment.includes("\\");
-  } catch {
-    return false;
-  }
+  const resolution = resolvePublicMediaUrl(media, {
+    cloudflareImagesAccountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
+  });
+  return resolution.status === "resolved" ? resolution.url : undefined;
 }
 
 async function upsertProjectDraftHandler(
   ctx: MutationCtx,
   args: ObjectType<typeof upsertProjectDraftArgs>,
 ) {
+  requireCaseStudyContentId(args.contentId);
+  if (args.localizedSlug !== undefined) requireSafeProjectKey(args.localizedSlug, "Localized slug");
+  if (args.localizedSlug !== undefined) {
+    await requireAvailableLocalizedSlug(ctx, args.contentId, args.locale, args.localizedSlug);
+  }
   const updatedAt = Date.now();
   const existingCaseStudy = await ctx.db
     .query("caseStudyMetadata")
@@ -316,6 +480,7 @@ async function upsertProjectDraftHandler(
   const projectDraft = {
     contentId: args.contentId,
     locale: args.locale,
+    localizedSlug: args.localizedSlug,
     title: args.title,
     summary: args.summary,
     seoDescription: args.seoDescription,
@@ -345,6 +510,14 @@ async function upsertSiteSettingHandler(
   ctx: MutationCtx,
   args: ObjectType<typeof upsertSiteSettingArgs>,
 ) {
+  const normalizedValue = args.key === "PUBLIC_WHATSAPP_URL"
+    ? normalizePublicWhatsappUrl(args.value)
+    : undefined;
+
+  if (args.key !== "PUBLIC_WHATSAPP_URL" || !normalizedValue) {
+    throw new Error("Only a valid direct PUBLIC_WHATSAPP_URL setting can be saved here.");
+  }
+
   const updatedAt = Date.now();
   const existing = await ctx.db
     .query("siteSettings")
@@ -355,13 +528,14 @@ async function upsertSiteSettingHandler(
 
   if (existing) {
     await ctx.db.patch(existing._id, {
-      value: args.value,
+      value: normalizedValue,
       classification: args.classification,
       updatedAt,
     });
   } else {
     await ctx.db.insert("siteSettings", {
       ...args,
+      value: normalizedValue,
       updatedAt,
     });
   }
@@ -395,6 +569,46 @@ export const upsertProjectDraft = mutation({
     await requireAdmin(ctx);
 
     return upsertProjectDraftHandler(ctx, args);
+  },
+});
+
+export const createProject = mutation({
+  args: createProjectArgs,
+  returns: v.object({ contentId: v.string(), updatedAt: v.number() }),
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    requireSafeProjectKey(args.contentKey, "Content key");
+    requireSafeProjectKey(args.en.localizedSlug, "English slug");
+    requireSafeProjectKey(args.es.localizedSlug, "Spanish slug");
+
+    const contentId = `case-study:${args.contentKey}`;
+    const [metadataRows, draftRows] = await Promise.all([
+      ctx.db.query("caseStudyMetadata").withIndex("by_content_id", (query) => query.eq("contentId", contentId)).take(2),
+      ctx.db.query("projectDrafts").withIndex("by_content_id", (query) => query.eq("contentId", contentId)).take(3),
+    ]);
+    if (metadataRows.length > 0 || draftRows.length > 0) {
+      throw new Error("A project with this content key already exists.");
+    }
+    await requireAvailableLocalizedSlug(ctx, contentId, "en", args.en.localizedSlug);
+    await requireAvailableLocalizedSlug(ctx, contentId, "es", args.es.localizedSlug);
+
+    const updatedAt = Date.now();
+    await ctx.db.insert("caseStudyMetadata", {
+      contentId,
+      status: args.status,
+      evidenceStatus: args.evidenceStatus,
+      updatedAt,
+    });
+    for (const locale of ["en", "es"] as const) {
+      await ctx.db.insert("projectDrafts", {
+        contentId,
+        locale,
+        ...args[locale],
+        ctaHref: localizedCaseStudyPath(locale, args[locale].localizedSlug),
+        updatedAt,
+      });
+    }
+    return { contentId, updatedAt };
   },
 });
 
@@ -466,53 +680,35 @@ export const publishContentFromDashboard = internalMutation({
         ? await ctx.db
           .query("projectDrafts")
           .withIndex("by_content_id", (query) => query.eq("contentId", args.contentId ?? ""))
-          .collect()
-        : await ctx.db.query("projectDrafts").collect();
+          .take(3)
+        : await ctx.db.query("projectDrafts").take(201);
+      const boundedProjectDrafts = withinLimit(
+        projectDrafts,
+        args.contentId ? 2 : 200,
+        "Project publication drafts",
+      );
 
-      await Promise.all(projectDrafts.map((projectDraft) =>
+      await Promise.all(boundedProjectDrafts.map((projectDraft) =>
         ctx.db.patch(projectDraft._id, { publishedAt }),
       ));
-      projectDraftsPublished = projectDrafts.length;
+      projectDraftsPublished = boundedProjectDrafts.length;
 
       const mediaRows = args.contentId
         ? await ctx.db
           .query("mediaMetadata")
-          .withIndex("by_content_id", (query) => query.eq("contentId", args.contentId))
-          .collect()
-        : await ctx.db.query("mediaMetadata").collect();
-      const mediaByPublicSlot = new Map<string, typeof mediaRows>();
-      const mediaPublicSlotKey = (media: (typeof mediaRows)[number]) =>
-        `${media.contentId ?? media._id}:${media.usage}`;
-
-      for (const media of mediaRows) {
-        const groupKey = mediaPublicSlotKey(media);
-        mediaByPublicSlot.set(groupKey, [...(mediaByPublicSlot.get(groupKey) ?? []), media]);
-      }
-
-      const exclusivePublicSlotKeys = new Set<string>();
-      const publishableMediaRows = [...mediaByPublicSlot.entries()].flatMap(([groupKey, projectMediaRows]) => {
-        const selectedRows = projectMediaRows.filter((media) =>
-          media.selectedForPublic === true && media.status !== "archived",
-        );
-
-        if (selectedRows.length > 0) {
-          exclusivePublicSlotKeys.add(groupKey);
-
-          return selectedRows;
-        }
-
-        const latestFallback = projectMediaRows
-          .filter((media) => media.status !== "archived")
-          .sort((left, right) => right.updatedAt - left.updatedAt)[0];
-
-        if (latestFallback) {
-          exclusivePublicSlotKeys.add(groupKey);
-
-          return [latestFallback];
-        }
-
-        return [];
-      });
+          .withIndex("by_content_id_and_usage", (query) => query.eq("contentId", args.contentId))
+          .take(101)
+        : await ctx.db.query("mediaMetadata").take(501);
+      const boundedMediaRows = withinLimit(
+        mediaRows,
+        args.contentId ? 100 : 500,
+        "Publication media",
+      );
+      const publicationDecision = selectPublicationMedia(
+        boundedMediaRows.map((media) => ({ ...media, id: media._id })),
+        "publication-request",
+      );
+      const publishableMediaRows = publicationDecision.selected;
 
       await Promise.all(publishableMediaRows.map((media) =>
         ctx.db.patch(media._id, {
@@ -520,21 +716,12 @@ export const publishContentFromDashboard = internalMutation({
           updatedAt: publishedAt,
         }),
       ));
-      if (exclusivePublicSlotKeys.size > 0) {
-        const publishableIds = new Set(publishableMediaRows.map((media) => media._id));
-        const unselectedRows = mediaRows.filter((media) =>
-          exclusivePublicSlotKeys.has(mediaPublicSlotKey(media))
-          && media.status === "published"
-          && !publishableIds.has(media._id),
-        );
-
-        await Promise.all(unselectedRows.map((media) =>
-          ctx.db.patch(media._id, {
-            status: "draft",
-            updatedAt: publishedAt,
-          }),
-        ));
-      }
+      await Promise.all(publicationDecision.displaced.map((media) =>
+        ctx.db.patch(media._id, {
+          status: "draft",
+          updatedAt: publishedAt,
+        }),
+      ));
       mediaPublished = publishableMediaRows.length;
     }
 
@@ -543,13 +730,18 @@ export const publishContentFromDashboard = internalMutation({
         ? await ctx.db
           .query("resumeDrafts")
           .withIndex("by_locale", (query) => query.eq("locale", args.locale ?? "en"))
-          .collect()
-        : await ctx.db.query("resumeDrafts").collect();
+          .take(2)
+        : await ctx.db.query("resumeDrafts").take(11);
+      const boundedResumeDrafts = withinLimit(
+        resumeDrafts,
+        args.locale ? 1 : 10,
+        "Resume publication drafts",
+      );
 
-      await Promise.all(resumeDrafts.map((resumeDraft) =>
+      await Promise.all(boundedResumeDrafts.map((resumeDraft) =>
         ctx.db.patch(resumeDraft._id, { publishedAt }),
       ));
-      resumeDraftsPublished = resumeDrafts.length;
+      resumeDraftsPublished = boundedResumeDrafts.length;
     }
 
     return {
@@ -561,48 +753,9 @@ export const publishContentFromDashboard = internalMutation({
   },
 });
 
-export const upsertCaseStudyMetadata = mutation({
-  args: {
-    contentId: v.string(),
-    status: caseStudyStatusValidator,
-    evidenceStatus: evidenceStatusValidator,
-  },
-  returns: v.object({
-    contentId: v.string(),
-    updatedAt: v.number(),
-  }),
-  handler: async (ctx, args) => {
-    await requireAdmin(ctx);
-
-    const updatedAt = Date.now();
-    const existing = await ctx.db
-      .query("caseStudyMetadata")
-      .withIndex("by_content_id", (query) => query.eq("contentId", args.contentId))
-      .first();
-
-    if (existing) {
-      await ctx.db.patch(existing._id, {
-        status: args.status,
-        evidenceStatus: args.evidenceStatus,
-        updatedAt,
-      });
-    } else {
-      await ctx.db.insert("caseStudyMetadata", {
-        ...args,
-        updatedAt,
-      });
-    }
-
-    return {
-      contentId: args.contentId,
-      updatedAt,
-    };
-  },
-});
-
 export const createMediaMetadata = mutation({
   args: {
-    storageProvider: mediaStorageProviderValidator,
+    storageProvider: writableMediaStorageProviderValidator,
     storageKey: v.string(),
     publicUrl: v.optional(v.string()),
     altText: v.string(),
@@ -623,11 +776,11 @@ export const createMediaMetadata = mutation({
     if (args.selectedForPublic && args.contentId) {
       const siblingMedia = await ctx.db
         .query("mediaMetadata")
-        .withIndex("by_content_id", (query) => query.eq("contentId", args.contentId))
-        .collect();
+        .withIndex("by_content_id_and_usage", (query) => query.eq("contentId", args.contentId))
+        .take(101);
+      withinLimit(siblingMedia, 100, "Project media selection");
 
       await Promise.all(siblingMedia
-        .filter((item) => item.usage === args.usage)
         .map((item) => ctx.db.patch(item._id, {
           selectedForPublic: false,
           updatedAt: now,
@@ -668,11 +821,12 @@ export const selectMediaForPublic = mutation({
 
     const siblingMedia = await ctx.db
       .query("mediaMetadata")
-      .withIndex("by_content_id", (query) => query.eq("contentId", args.contentId))
-      .collect();
+      .withIndex("by_content_id_and_usage", (query) => query.eq("contentId", args.contentId))
+      .take(101);
+    withinLimit(siblingMedia, 100, "Project media selection");
 
     await Promise.all(siblingMedia
-      .filter((item) => item.usage === selectedMedia.usage && item._id !== args.mediaId)
+      .filter((item) => item._id !== args.mediaId)
       .map((item) => ctx.db.patch(item._id, {
         selectedForPublic: false,
         updatedAt: now,
@@ -789,7 +943,8 @@ export const createResumeVersion = mutation({
         .withIndex("by_locale_and_published", (query) =>
           query.eq("locale", args.locale).eq("isPublished", true),
         )
-        .collect();
+        .take(51);
+      withinLimit(publishedVersions, 50, "Published resume versions");
 
       await Promise.all(publishedVersions.map((resumeVersion) =>
         ctx.db.patch(resumeVersion._id, {

@@ -26,6 +26,9 @@ importers:
 
   apps/backend:
     dependencies:
+      '@aohys/content-graph':
+        specifier: workspace:*
+        version: link:../../packages/content-graph
       '@aohys/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -60,12 +63,18 @@ importers:
       '@aohys/content-graph':
         specifier: workspace:*
         version: link:../../packages/content-graph
+      '@aohys/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@convex-dev/better-auth':
         specifier: ^0.12.5
         version: 0.12.5(@standard-schema/spec@1.1.0)(better-auth@1.6.22(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.9(@types/node@26.0.1)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))))(convex@1.42.0(react@19.2.7))(hono@4.12.27)(react@19.2.7)(typescript@6.0.3)
-      '@fontsource-variable/geist':
-        specifier: ^5.2.9
-        version: 5.2.9
+      '@fontsource-variable/atkinson-hyperlegible-next':
+        specifier: ^5.2.6
+        version: 5.2.6
+      '@fontsource-variable/mona-sans':
+        specifier: ^5.2.8
+        version: 5.2.8
       '@tanstack/react-router':
         specifier: ^1.170.16
         version: 1.170.16(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -87,6 +96,9 @@ importers:
       lucide-react:
         specifier: ^1.22.0
         version: 1.22.0(react@19.2.7)
+      posthog-js:
+        specifier: ^1.395.0
+        version: 1.395.0
       radix-ui:
         specifier: ^1.6.0
         version: 1.6.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -142,9 +154,6 @@ importers:
       '@aohys/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@aohys/dashboard-ui':
-        specifier: workspace:*
-        version: link:../../packages/dashboard-ui
       '@aohys/environment':
         specifier: workspace:*
         version: link:../../packages/environment
@@ -193,18 +202,6 @@ importers:
         version: 4.1.9(@types/node@26.0.1)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
 
   packages/core:
-    devDependencies:
-      '@types/node':
-        specifier: ^26.0.1
-        version: 26.0.1
-      typescript:
-        specifier: ^6.0.3
-        version: 6.0.3
-      vitest:
-        specifier: ^4.1.9
-        version: 4.1.9(@types/node@26.0.1)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
-
-  packages/dashboard-ui:
     devDependencies:
       '@types/node':
         specifier: ^26.0.1
@@ -1037,9 +1034,6 @@ packages:
 
   '@fontsource-variable/atkinson-hyperlegible-next@5.2.6':
     resolution: {integrity: sha512-D0Z8peFkRGYACvmWp8Sl8YPGYLBEJbzqapugtsMEYSUUtpQDiZVDHjk9s7bqB4hSCRYCrKuW6V1V+mnHybVnPw==}
-
-  '@fontsource-variable/geist@5.2.9':
-    resolution: {integrity: sha512-TP+QSBG3wxKGPE33CbMy/L0Nu3qvJ6Fy81Yc4LnQ95xH+i+cfEp8fyU8/kfV14YwszxIFPhnoMTbjL71waVpyQ==}
 
   '@fontsource-variable/mona-sans@5.2.8':
     resolution: {integrity: sha512-8OWdTcP8KvRxkU1Skkk+tX3D5XHN9buejxSDwrT7teRfGnpKBYxQUApV/+zS8TzeHiSU8H5Tc0HfBr57ahgcvA==}
@@ -5453,8 +5447,6 @@ snapshots:
   '@floating-ui/utils@0.2.11': {}
 
   '@fontsource-variable/atkinson-hyperlegible-next@5.2.6': {}
-
-  '@fontsource-variable/geist@5.2.9': {}
 
   '@fontsource-variable/mona-sans@5.2.8': {}
 

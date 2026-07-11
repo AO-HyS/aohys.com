@@ -55,16 +55,15 @@ describe("contact provider adapters", () => {
     await captureLeadAnalyticsWithPostHog(
       {
         event: "lead_submitted",
-        distinctId: "lead:lead_123",
+        distinctId: "contact:preview",
         properties: {
-          leadId: "lead_123",
           environment: "preview",
           intent: "project",
-          preferredContactPath: "email",
+          preferred_contact_path: "email",
           locale: "en",
-          sourcePath: "/contact",
-          hasCompany: true,
-          hasPhone: false,
+          source_path: "/contact",
+          has_company: true,
+          has_phone: false,
         },
       },
       {
@@ -80,19 +79,19 @@ describe("contact provider adapters", () => {
     expect(payload).toMatchObject({
       api_key: "phc_preview",
       event: "lead_submitted",
-      distinct_id: "lead:lead_123",
+      distinct_id: "contact:preview",
       properties: {
-        leadId: "lead_123",
         environment: "preview",
         intent: "project",
-        preferredContactPath: "email",
+        preferred_contact_path: "email",
         locale: "en",
-        sourcePath: "/contact",
-        hasCompany: true,
-        hasPhone: false,
+        source_path: "/contact",
+        has_company: true,
+        has_phone: false,
       },
     });
     expect(JSON.stringify(payload)).not.toContain("client@example.com");
     expect(JSON.stringify(payload)).not.toContain("Lead details");
+    expect(JSON.stringify(payload)).not.toContain("lead_123");
   });
 });

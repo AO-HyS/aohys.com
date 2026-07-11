@@ -6,6 +6,10 @@ const fallbackRuntimeConfig: DashboardRuntimeConfig = {
   convexUrl: import.meta.env.VITE_CONVEX_URL ?? "http://127.0.0.1:3210",
   betterAuthUrl: import.meta.env.VITE_BETTER_AUTH_URL ?? "http://localhost:4321",
   imagesAccountHash: import.meta.env.VITE_CLOUDFLARE_IMAGES_ACCOUNT_HASH || undefined,
+  posthogKey: import.meta.env.VITE_PUBLIC_POSTHOG_KEY || undefined,
+  posthogHost: import.meta.env.VITE_PUBLIC_POSTHOG_HOST || undefined,
 };
 
-export const dashboardRuntimeConfig = window.__AOHYS_DASHBOARD__ ?? fallbackRuntimeConfig;
+export const dashboardRuntimeConfig = typeof window === "undefined"
+  ? fallbackRuntimeConfig
+  : window.__AOHYS_DASHBOARD__ ?? fallbackRuntimeConfig;

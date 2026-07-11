@@ -13,19 +13,10 @@ import {
   UploadCloudIcon,
 } from "lucide-react";
 import {
-  useArchiveProjectMedia,
-  useCreateMediaUpload,
   useDashboardContent,
-  useDeleteProjectMedia,
-  usePublishContent,
-  useSaveMediaMetadata,
-  useSaveProjectDraft,
-  useSelectProjectMedia,
-  uploadMediaFile,
   type MediaMetadataRequest,
   type MediaSelectionRequest,
   type MediaUploadRequest,
-  type ProjectDraftRequest,
 } from "@/api";
 import {
   AlertDialog,
@@ -38,6 +29,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Action } from "@/components/dashboard/action";
+import { LabeledInput, LabeledSelect, LabeledTextarea } from "@/components/dashboard/form-controls";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -57,7 +51,6 @@ import {
   FieldLegend,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/sonner";
 import { cn, dashboardClass } from "@/lib/dashboard-classes";
 import {
   cloudflareImagesStorageKeyForFile,
@@ -65,39 +58,22 @@ import {
   validateCloudflareImagesCustomId,
 } from "@/lib/media-upload";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  useProjectsWorkflow,
+  type MediaUploadIssue,
+  type NewProjectInput,
+  type ProjectFormState,
+} from "@/lib/projects-workflow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type {
   DashboardCaseStudyStatus,
+  DashboardContentPayload,
   DashboardEvidenceStatus,
   DashboardLocale,
   DashboardProject,
   DashboardProjectLocaleContent,
 } from "@/types";
-
-type ProjectFormState = ProjectDraftRequest;
-
-interface NewProjectInput {
-  title: string;
-  spanishTitle: string;
-  slug: string;
-  status: DashboardCaseStudyStatus;
-}
-
-interface MediaUploadIssue {
-  title: string;
-  description: string;
-  detail: string;
-  actionLabel: string;
-}
 
 const caseStudyStatuses: DashboardCaseStudyStatus[] = [
   "production-proof",
@@ -111,343 +87,98 @@ const evidenceStatuses: DashboardEvidenceStatus[] = ["missing", "sanitized", "pu
 
 export function ProjectsScreen() {
   const content = useDashboardContent();
-  const archiveProjectMedia = useArchiveProjectMedia();
-  const createMediaUpload = useCreateMediaUpload();
-  const deleteProjectMedia = useDeleteProjectMedia();
-  const publishContent = usePublishContent();
-  const saveMediaMetadata = useSaveMediaMetadata();
-  const saveProjectDraft = useSaveProjectDraft();
-  const selectProjectMedia = useSelectProjectMedia();
-  const [savingKey, setSavingKey] = useState<string | null>(null);
-  const [publishingKey, setPublishingKey] = useState<string | null>(null);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | undefined>();
+
+  if (!content) return <ProjectsSkeleton />;
+
+  return <ProjectsWorkspace content={content} />;
+}
+
+function ProjectsWorkspace({ content }: { content: DashboardContentPayload }) {
+  const [requestedProjectId, setRequestedProjectId] = useState<string | undefined>();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [uploadIssue, setUploadIssue] = useState<MediaUploadIssue | null>(null);
-  const [deleteRequest, setDeleteRequest] = useState<MediaSelectionRequest | null>(null);
 
-  useEffect(() => {
-    if (!content?.projects.length) {
-      return;
-    }
+  const selectedProjectId = requestedProjectId && content.projects.some(
+    (project) => project.contentId === requestedProjectId,
+  )
+    ? requestedProjectId
+    : content.projects[0]?.contentId;
 
-    setSelectedProjectId((current) =>
-      current && content.projects.some((project) => project.contentId === current)
-        ? current
-        : content.projects[0]?.contentId,
-    );
-  }, [content]);
-
-  async function handleSaveProject(payload: ProjectFormState) {
-    const key = `${payload.contentId}:${payload.locale}`;
-    const toastId = toast.loading("Saving project draft", {
-      description: `${payload.title} ${payload.locale.toUpperCase()}`,
-    });
-    setSavingKey(key);
-
-    try {
-      await saveProjectDraft(payload);
-      toast.success("Draft saved", {
-        id: toastId,
-        description: "Publish when this content is ready for the Astro build.",
-      });
-    } catch (error) {
-      toast.error("Draft save failed", {
-        id: toastId,
-        description: error instanceof Error ? error.message : "Project draft could not be saved.",
-      });
-    } finally {
-      setSavingKey(null);
-    }
-  }
-
-  async function handleUploadMedia(payload: MediaUploadRequest, file: File) {
-    const storageKey = validateCloudflareImagesCustomId(payload.storageKey);
-
-    if (!storageKey.isValid) {
-      const issue = mediaUploadCustomIdIssue(storageKey.message);
-
-      setUploadIssue(issue);
-      toast.error(issue.title, {
-        description: issue.detail,
-      });
-      return;
-    }
-
-    const key = `${payload.contentId}:media`;
-    const toastId = toast.loading("Preparing media upload", {
-      description: "Requesting a Cloudflare Images direct upload URL.",
-    });
-    setSavingKey(key);
-
-    try {
-      const upload = await createMediaUpload({
-        ...payload,
-        storageKey: storageKey.value,
-        altText: payload.altText.trim(),
-      });
-      toast.loading("Uploading image", {
-        id: toastId,
-        description: "Cloudflare accepted the upload slot. Sending the selected file now.",
-      });
-      await uploadMediaFile(upload.uploadURL, file);
-      toast.loading("Saving media reference", {
-        id: toastId,
-        description: "The file upload completed. Registering it as the selected Astro image.",
-      });
-      await saveMediaMetadata({
-        storageProvider: "cloudflare-images",
-        storageKey: upload.imageId,
-        publicUrl: upload.publicUrl,
-        altText: payload.altText,
-        contentId: payload.contentId,
-        usage: payload.usage,
-        locale: payload.locale,
-        selectedForPublic: payload.selectedForPublic ?? true,
-      });
-      toast.success("Image uploaded", {
-        id: toastId,
-        description: "It is selected for the public Astro build. Publish when ready.",
-      });
-    } catch (error) {
-      const issue = mediaUploadIssueFromError(error);
-
-      setUploadIssue(issue);
-      toast.error("Media upload failed", {
-        id: toastId,
-        description: issue.detail,
-      });
-    } finally {
-      setSavingKey(null);
-    }
-  }
-
-  async function handleSaveExternalMedia(payload: MediaMetadataRequest) {
-    const key = `${payload.contentId}:media`;
-    const toastId = toast.loading("Saving media reference", {
-      description: "Registering the public image URL for this project.",
-    });
-    setSavingKey(key);
-
-    try {
-      await saveMediaMetadata(payload);
-      toast.success("Media reference saved", {
-        id: toastId,
-        description: "It is selected for the public Astro build. Publish when ready.",
-      });
-    } catch (error) {
-      toast.error("Media reference failed", {
-        id: toastId,
-        description: error instanceof Error ? error.message : "Media reference could not be saved.",
-      });
-    } finally {
-      setSavingKey(null);
-    }
-  }
-
-  async function handleSelectMedia(payload: MediaSelectionRequest) {
-    const key = `${payload.mediaId}:select`;
-    const toastId = toast.loading("Selecting public image");
-    setSavingKey(key);
-
-    try {
-      await selectProjectMedia(payload);
-      toast.success("Public image selected", {
-        id: toastId,
-        description: "This image is the one the Astro build will use for the project.",
-      });
-    } catch (error) {
-      toast.error("Image selection failed", {
-        id: toastId,
-        description: error instanceof Error ? error.message : "The selected image could not be saved.",
-      });
-    } finally {
-      setSavingKey(null);
-    }
-  }
-
-  async function handleArchiveMedia(payload: MediaSelectionRequest) {
-    const key = `${payload.mediaId}:archive`;
-    const toastId = toast.loading("Hiding image");
-    setSavingKey(key);
-
-    try {
-      await archiveProjectMedia(payload);
-      toast.success("Image hidden from publish", {
-        id: toastId,
-        description: "The media record is archived and will not be sent to Astro.",
-      });
-    } catch (error) {
-      toast.error("Image could not be hidden", {
-        id: toastId,
-        description: error instanceof Error ? error.message : "The media record could not be archived.",
-      });
-    } finally {
-      setSavingKey(null);
-    }
-  }
-
-  function handleDeleteMedia(payload: MediaSelectionRequest) {
-    setDeleteRequest(payload);
-  }
-
-  async function handleConfirmDeleteMedia() {
-    if (!deleteRequest) {
-      return;
-    }
-
-    const payload = deleteRequest;
-    const key = `${payload.mediaId}:delete`;
-    const toastId = toast.loading("Deleting image");
-    setSavingKey(key);
-
-    try {
-      await deleteProjectMedia(payload);
-      toast.success("Image deleted", {
-        id: toastId,
-        description: "The media record was removed from the dashboard.",
-      });
-    } catch (error) {
-      toast.error("Image could not be deleted", {
-        id: toastId,
-        description: error instanceof Error ? error.message : "The media record could not be deleted.",
-      });
-    } finally {
-      setSavingKey(null);
-      setDeleteRequest(null);
-    }
-  }
-
-  async function handleCreateProject(input: NewProjectInput) {
-    const contentId = `case-study:${input.slug}`;
-
-    if (content?.projects.some((project) => project.contentId === contentId)) {
-      toast.error("Project slug already exists", {
-        description: "Choose a different slug before creating this draft.",
-      });
-      return;
-    }
-
-    const toastId = toast.loading("Creating project", {
-      description: input.title,
-    });
-    setSavingKey("new-project");
-
-    try {
-      await Promise.all([
-        saveProjectDraft(buildNewProjectDraft(input, "en")),
-        saveProjectDraft(buildNewProjectDraft(input, "es")),
-      ]);
-      setSelectedProjectId(contentId);
-      toast.success("Project created", {
-        id: toastId,
-        description: "The draft exists in both languages. Save details, attach media, then publish.",
-      });
-    } catch (error) {
-      toast.error("Project creation failed", {
-        id: toastId,
-        description: error instanceof Error ? error.message : "The project draft could not be created.",
-      });
-    } finally {
-      setSavingKey(null);
-    }
-  }
-
-  async function handlePublishProject(project: DashboardProject) {
-    setPublishingKey(project.contentId);
-    const toastId = toast.loading("Publishing project", {
-      description: "Marking reviewed drafts and media for the release train.",
-    });
-
-    try {
-      const result = await publishContent({ scope: "project", contentId: project.contentId });
-      const description = result.workflow.status === "queued"
-          ? `GitHub Actions is rebuilding ${result.workflow.ref ?? "develop"} for ${project.title}.`
-          : `${project.title} was marked published, but ${result.workflow.reason ?? "the workflow token is not configured."}`;
-      if (result.workflow.status === "queued") {
-        toast.success("Publish queued", { id: toastId, description });
-      } else {
-        toast.message("Published in Convex", { id: toastId, description });
-      }
-    } catch (error) {
-      toast.error("Publish failed", {
-        id: toastId,
-        description: error instanceof Error ? error.message : "Project publish could not be queued.",
-      });
-    } finally {
-      setPublishingKey(null);
-    }
-  }
+  const {
+    savingKey,
+    publishingKey,
+    uploadIssue,
+    deleteRequest,
+    clearUploadIssue,
+    clearDeleteRequest,
+    requestDeleteMedia: handleDeleteMedia,
+    saveProject: handleSaveProject,
+    uploadMedia: handleUploadMedia,
+    saveExternalMedia: handleSaveExternalMedia,
+    selectMedia: handleSelectMedia,
+    archiveMedia: handleArchiveMedia,
+    confirmDeleteMedia: handleConfirmDeleteMedia,
+    createProject: handleCreateProject,
+    publishProject: handlePublishProject,
+  } = useProjectsWorkflow({
+    existingContentIds: content.projects.map((project) => project.contentId),
+    onProjectCreated: setRequestedProjectId,
+  });
 
   const activeDeleteKey = deleteRequest ? `${deleteRequest.mediaId}:delete` : null;
 
-  if (!content) {
-    return <ProjectsSkeleton />;
-  }
-
   return (
     <div className={dashboardClass.workspace}>
-      <PageHeading
-        eyebrow="Projects"
+      <PageHeader
         title="Project workspace"
         description="Edit stories, outcomes, structure, images, CTA, URL, and SEO metadata. Save keeps work private; Publish sends reviewed content through the release train."
-        action={
-          <Button
+        actions={
+          <Action
             type="button"
-            variant={isCreateOpen ? "secondary" : "default"}
+            variant={isCreateOpen ? "quiet" : "secondary"}
             onClick={() => setIsCreateOpen((current) => !current)}
           >
             <PlusIcon data-icon="inline-start" />
             New project
-          </Button>
+          </Action>
         }
       />
 
-      {content ? (
-        <>
-          {isCreateOpen ? (
-            <NewProjectCard
-              existingContentIds={content.projects.map((project) => project.contentId)}
-              isSaving={savingKey === "new-project"}
-              onCreate={async (input) => {
-                await handleCreateProject(input);
-                setIsCreateOpen(false);
-              }}
-            />
-          ) : null}
-
-          <Tabs
-            value={selectedProjectId ?? content.projects[0]?.contentId}
-            onValueChange={setSelectedProjectId}
-            orientation="vertical"
-            className={dashboardClass.projectShell}
-          >
-            <ProjectTabs projects={content.projects} />
-            <div className="min-w-0">
-              {content.projects.map((project) => (
-                <TabsContent key={project.contentId} value={project.contentId} className="mt-0">
-                  <ProjectEditor
-                    project={project}
-                    isPublishing={publishingKey === project.contentId}
-                    savingKey={savingKey}
-                    onPublish={() => handlePublishProject(project)}
-                    onArchiveMedia={handleArchiveMedia}
-                    onDeleteMedia={handleDeleteMedia}
-                    onSelectMedia={handleSelectMedia}
-                    onSaveExternalMedia={handleSaveExternalMedia}
-                    onSaveMedia={handleUploadMedia}
-                    onSaveProject={handleSaveProject}
-                  />
-                </TabsContent>
-              ))}
-            </div>
-          </Tabs>
-        </>
+      {isCreateOpen ? (
+        <NewProjectCard
+          existingContentIds={content.projects.map((project) => project.contentId)}
+          isSaving={savingKey === "new-project"}
+          onCreate={async (input) => {
+            if (await handleCreateProject(input)) setIsCreateOpen(false);
+          }}
+        />
       ) : null}
+
+      <Tabs value={selectedProjectId} onValueChange={setRequestedProjectId} orientation="vertical" className={dashboardClass.projectShell}>
+        <ProjectTabs projects={content.projects} />
+        <div className="min-w-0">
+          {content.projects.map((project) => (
+            <TabsContent key={project.contentId} value={project.contentId} className="mt-0">
+              <ProjectEditor
+                project={project}
+                isPublishing={publishingKey === project.contentId}
+                savingKey={savingKey}
+                onPublish={() => handlePublishProject(project)}
+                onArchiveMedia={handleArchiveMedia}
+                onDeleteMedia={handleDeleteMedia}
+                onSelectMedia={handleSelectMedia}
+                onSaveExternalMedia={handleSaveExternalMedia}
+                onSaveMedia={handleUploadMedia}
+                onSaveProject={handleSaveProject}
+              />
+            </TabsContent>
+          ))}
+        </div>
+      </Tabs>
       <MediaUploadIssueDialog
         issue={uploadIssue}
         onOpenChange={(open) => {
           if (!open) {
-            setUploadIssue(null);
+            clearUploadIssue();
           }
         }}
       />
@@ -456,7 +187,7 @@ export function ProjectsScreen() {
         isDeleting={activeDeleteKey !== null && savingKey === activeDeleteKey}
         onOpenChange={(open) => {
           if (!open && savingKey !== activeDeleteKey) {
-            setDeleteRequest(null);
+            clearDeleteRequest();
           }
         }}
         onConfirm={handleConfirmDeleteMedia}
@@ -539,56 +270,6 @@ function DeleteMediaDialog({
   );
 }
 
-function mediaUploadCustomIdIssue(detail?: string): MediaUploadIssue {
-  return {
-    title: "Storage key format needs attention",
-    description: "Cloudflare Images needs a valid custom ID before it can create a direct upload slot.",
-    detail: detail ?? "Use a relative key like media/casa-roca-hero. Avoid URLs, dot-prefixed folders, .., or repeated slashes.",
-    actionLabel: "Review storage key",
-  };
-}
-
-function mediaUploadIssueFromError(error: unknown): MediaUploadIssue {
-  const detail = readableUploadErrorMessage(error);
-  const lowerDetail = detail.toLowerCase();
-
-  if (lowerDetail.includes("custom id is invalid")) {
-    return mediaUploadCustomIdIssue();
-  }
-
-  if (lowerDetail.includes("cloudflare images upload is not configured")) {
-    return {
-      title: "Cloudflare Images upload is not configured",
-      description: "This environment is missing the Cloudflare Images runtime configuration required to create direct upload slots.",
-      detail: "Configure the Images account hash and narrow API token in the release environment, sync them to Convex, then retry the upload.",
-      actionLabel: "Got it",
-    };
-  }
-
-  return {
-    title: "Image upload failed",
-    description: "The direct upload did not complete. The selected file was not saved to the dashboard.",
-    detail,
-    actionLabel: "Got it",
-  };
-}
-
-function readableUploadErrorMessage(error: unknown): string {
-  const rawMessage = error instanceof Error ? error.message : "Image upload could not be completed.";
-  const withoutConvexPrefix = rawMessage
-    .replace(/\[CONVEX[^\]]+\]\s*/g, "")
-    .replace(/\[Request ID:[^\]]+\]\s*/g, "")
-    .replace(/^Server Error\s*/i, "")
-    .replace(/^Uncaught Error:\s*/i, "")
-    .trim();
-  const stackStart = withoutConvexPrefix.search(/\n\s*(?:at\s+|Called by client)/i);
-  const readableMessage = stackStart >= 0
-    ? withoutConvexPrefix.slice(0, stackStart).trim()
-    : withoutConvexPrefix;
-
-  return readableMessage || "Image upload could not be completed.";
-}
-
 function ProjectTabs({ projects }: { projects: DashboardProject[] }) {
   return (
     <aside className={dashboardClass.projectNavPanel}>
@@ -622,7 +303,9 @@ function NewProjectCard({
   const [form, setForm] = useState<NewProjectInput>({
     title: "",
     spanishTitle: "",
-    slug: "",
+    contentKey: "",
+    englishSlug: "",
+    spanishSlug: "",
     status: "active-build",
   });
 
@@ -630,17 +313,21 @@ function NewProjectCard({
     setForm((current) => ({
       ...current,
       [key]: value,
-      ...(key === "title" && !current.slug ? { slug: slugifyProjectTitle(String(value)) } : {}),
+      ...(key === "title" && !current.contentKey ? { contentKey: slugifyProjectTitle(String(value)) } : {}),
+      ...(key === "title" && !current.englishSlug ? { englishSlug: slugifyProjectTitle(String(value)) } : {}),
+      ...(key === "spanishTitle" && !current.spanishSlug ? { spanishSlug: slugifyProjectTitle(String(value)) } : {}),
     }));
   }
 
-  const normalizedSlug = form.slug.trim().toLowerCase();
-  const nextContentId = `case-study:${normalizedSlug}`;
-  const slugExists = isSafeProjectSlug(normalizedSlug) && existingContentIds.includes(nextContentId);
+  const contentKey = form.contentKey.trim().toLowerCase();
+  const nextContentId = `case-study:${contentKey}`;
+  const slugExists = isSafeProjectSlug(contentKey) && existingContentIds.includes(nextContentId);
   const canCreate = Boolean(
     form.title.trim()
     && form.spanishTitle.trim()
-    && isSafeProjectSlug(normalizedSlug)
+    && isSafeProjectSlug(contentKey)
+    && isSafeProjectSlug(form.englishSlug)
+    && isSafeProjectSlug(form.spanishSlug)
     && !slugExists,
   );
 
@@ -661,60 +348,28 @@ function NewProjectCard({
               }
               void onCreate({
                 ...form,
-                slug: normalizedSlug,
+                contentKey,
+                englishSlug: form.englishSlug.trim().toLowerCase(),
+                spanishSlug: form.spanishSlug.trim().toLowerCase(),
                 title: form.title.trim(),
                 spanishTitle: form.spanishTitle.trim(),
               });
             }}
           >
             <FieldGroup className={dashboardClass.newProjectForm}>
-              <Field>
-                <FieldLabel htmlFor="new-project-title">English title</FieldLabel>
-                <Input
-                  id="new-project-title"
-                  value={form.title}
-                  onChange={(event) => update("title", event.target.value)}
-                  placeholder="Project name"
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="new-project-spanish-title">Spanish title</FieldLabel>
-                <Input
-                  id="new-project-spanish-title"
-                  value={form.spanishTitle}
-                  onChange={(event) => update("spanishTitle", event.target.value)}
-                  placeholder="Nombre del proyecto"
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="new-project-slug">Slug</FieldLabel>
-                <Input
-                  id="new-project-slug"
-                  value={form.slug}
-                  onChange={(event) => update("slug", slugifyProjectTitle(event.target.value))}
-                  placeholder="project-slug"
-                />
-                <FieldDescription>
-                  {slugExists
-                    ? "This project slug already exists."
-                    : `Creates case-study:${normalizedSlug || "project-slug"}.`}
-                </FieldDescription>
-              </Field>
-              <Field>
-                <FieldLabel>Status</FieldLabel>
-                <Select value={form.status} onValueChange={(value) => update("status", value as DashboardCaseStudyStatus)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {caseStudyStatuses.map((status) => (
-                        <SelectItem key={status} value={status}>{formatProjectStatus(status)}</SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </Field>
+              <LabeledInput label="English title" value={form.title} placeholder="Project name" onValueChange={(value) => update("title", value)} />
+              <LabeledInput label="Spanish title" value={form.spanishTitle} placeholder="Nombre del proyecto" onValueChange={(value) => update("spanishTitle", value)} />
+              <LabeledInput
+                label="Stable content key"
+                value={form.contentKey}
+                placeholder="project-key"
+                description={slugExists ? "This content key already exists." : `Creates case-study:${contentKey || "project-key"}.`}
+                error={slugExists ? "Choose a unique content key." : undefined}
+                onValueChange={(value) => update("contentKey", slugifyProjectTitle(value))}
+              />
+              <LabeledInput label="English slug" value={form.englishSlug} placeholder="project-slug" onValueChange={(value) => update("englishSlug", slugifyProjectTitle(value))} />
+              <LabeledInput label="Spanish slug" value={form.spanishSlug} placeholder="proyecto-slug" onValueChange={(value) => update("spanishSlug", slugifyProjectTitle(value))} />
+              <LabeledSelect label="Status" value={form.status} onValueChange={(value) => update("status", value as DashboardCaseStudyStatus)} options={caseStudyStatuses.map((status) => ({ value: status, label: formatProjectStatus(status) }))} />
               <Button type="submit" disabled={isSaving || !canCreate}>
                 {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <PlusIcon data-icon="inline-start" />}
                 Create draft
@@ -772,8 +427,9 @@ function ProjectEditor({
             </CardHeader>
             <CardContent>
               {project.locales.map((localeContent) => (
-                <TabsContent key={`${project.contentId}:${localeContent.locale}`} value={localeContent.locale} className="mt-0">
+                <TabsContent key={`${project.contentId}:${localeContent.locale}`} value={localeContent.locale} forceMount className="mt-0 data-[state=inactive]:hidden">
                   <ProjectLocaleForm
+                    key={`${project.contentId}:${localeContent.locale}`}
                     localeContent={localeContent}
                     project={project}
                     isSaving={savingKey === `${project.contentId}:${localeContent.locale}`}
@@ -794,6 +450,7 @@ function ProjectEditor({
           onDeleteMedia={onDeleteMedia}
         />
         <ImageUploadForm
+          key={project.contentId}
           project={project}
           isSaving={savingKey === `${project.contentId}:media`}
           onSave={onSaveMedia}
@@ -853,10 +510,10 @@ function ProjectSummaryCard({
             <span>Saved {latestDraft ? formatDate(latestDraft.updatedAt) : "never"}</span>
             <span>Published {latestPublished ? formatDate(latestPublished) : "never"}</span>
           </div>
-          <Button type="button" onClick={() => void onPublish()} disabled={isPublishing}>
-            {isPublishing ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <RocketIcon data-icon="inline-start" />}
+          <Action type="button" pending={isPublishing} pendingLabel="Requesting…" onClick={() => void onPublish()}>
+            <RocketIcon data-icon="inline-start" />
             Publish
-          </Button>
+          </Action>
         </div>
       </CardContent>
     </Card>
@@ -874,7 +531,7 @@ function ProjectLocaleForm({
   isSaving: boolean;
   onSave: (payload: ProjectFormState) => void | Promise<void>;
 }) {
-  const initialForm = useMemo(() => ({
+  const initialForm = {
     contentId: project.contentId,
     locale: localeContent.locale,
     status: project.status,
@@ -887,14 +544,10 @@ function ProjectLocaleForm({
     ctaHref: localeContent.draft?.ctaHref ?? localeContent.ctaHref,
     achievements: localeContent.draft?.achievements ?? localeContent.achievements,
     structureNotes: localeContent.draft?.structureNotes ?? localeContent.structureNotes,
-  }), [localeContent, project]);
+  };
   const [form, setForm] = useState<ProjectFormState>(initialForm);
 
-  useEffect(() => {
-    setForm(initialForm);
-  }, [initialForm]);
-
-  const hasChanges = JSON.stringify(form) !== JSON.stringify(initialForm);
+  const hasChanges = !projectFormsEqual(form, initialForm);
 
   function update<K extends keyof ProjectFormState>(key: K, value: ProjectFormState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -923,72 +576,14 @@ function ProjectLocaleForm({
             <FieldLegend>Identity</FieldLegend>
             <FieldGroup>
               <div className={dashboardClass.formGrid3}>
-                <Field>
-                  <FieldLabel>Status</FieldLabel>
-                  <Select
-                    value={form.status}
-                    onValueChange={(value) => update("status", value as DashboardCaseStudyStatus)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {caseStudyStatuses.map((status) => (
-                          <SelectItem key={status} value={status}>{formatProjectStatus(status)}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field>
-                  <FieldLabel>Public link state</FieldLabel>
-                  <Select
-                    value={form.evidenceStatus}
-                    onValueChange={(value) => update("evidenceStatus", value as DashboardEvidenceStatus)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {evidenceStatuses.map((status) => (
-                          <SelectItem key={status} value={status}>{formatReferenceState(status)}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </Field>
-                <Field>
-                  <FieldLabel>Project URL</FieldLabel>
-                  <Input
-                    value={form.projectUrl ?? ""}
-                    onChange={(event) => update("projectUrl", event.target.value)}
-                    placeholder="https://example.com"
-                  />
-                </Field>
+                <LabeledSelect label="Status" value={form.status} onValueChange={(value) => update("status", value as DashboardCaseStudyStatus)} options={caseStudyStatuses.map((status) => ({ value: status, label: formatProjectStatus(status) }))} />
+                <LabeledSelect label="Public link state" value={form.evidenceStatus} onValueChange={(value) => update("evidenceStatus", value as DashboardEvidenceStatus)} options={evidenceStatuses.map((status) => ({ value: status, label: formatReferenceState(status) }))} />
+                <LabeledInput label="Project URL" value={form.projectUrl ?? ""} placeholder="https://example.com" onValueChange={(value) => update("projectUrl", value)} />
               </div>
-              <Field>
-                <FieldLabel>Title</FieldLabel>
-                <Input value={form.title} onChange={(event) => update("title", event.target.value)} />
-              </Field>
-              <Field>
-                <FieldLabel>Summary</FieldLabel>
-                <Textarea
-                  value={form.summary}
-                  onChange={(event) => update("summary", event.target.value)}
-                  rows={4}
-                />
-              </Field>
-              <Field>
-                <FieldLabel>SEO description</FieldLabel>
-                <Textarea
-                  value={form.seoDescription}
-                  onChange={(event) => update("seoDescription", event.target.value)}
-                  rows={4}
-                />
-                <FieldDescription>Write for search results and humans. No vague proof language.</FieldDescription>
-              </Field>
+              <LabeledInput label="Title" value={form.title} onValueChange={(value) => update("title", value)} />
+              <LabeledInput label="Localized slug" value={form.localizedSlug ?? ""} onValueChange={(value) => update("localizedSlug", slugifyProjectTitle(value))} />
+              <LabeledTextarea label="Summary" value={form.summary} rows={4} onValueChange={(value) => update("summary", value)} />
+              <LabeledTextarea label="SEO description" description="Write for search results and humans. No vague proof language." value={form.seoDescription} rows={4} onValueChange={(value) => update("seoDescription", value)} />
             </FieldGroup>
           </FieldSet>
 
@@ -996,31 +591,11 @@ function ProjectLocaleForm({
             <FieldLegend>Outcome and structure</FieldLegend>
             <FieldGroup>
               <div className={dashboardClass.formGrid2}>
-                <Field>
-                  <FieldLabel>CTA label</FieldLabel>
-                  <Input value={form.ctaLabel} onChange={(event) => update("ctaLabel", event.target.value)} />
-                </Field>
-                <Field>
-                  <FieldLabel>CTA href</FieldLabel>
-                  <Input value={form.ctaHref} onChange={(event) => update("ctaHref", event.target.value)} />
-                </Field>
+                <LabeledInput label="CTA label" value={form.ctaLabel} onValueChange={(value) => update("ctaLabel", value)} />
+                <LabeledInput label="CTA href" value={form.ctaHref} onValueChange={(value) => update("ctaHref", value)} />
               </div>
-              <Field>
-                <FieldLabel>Business outcome</FieldLabel>
-                <Textarea
-                  value={form.achievements}
-                  onChange={(event) => update("achievements", event.target.value)}
-                  rows={7}
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Project structure</FieldLabel>
-                <Textarea
-                  value={form.structureNotes}
-                  onChange={(event) => update("structureNotes", event.target.value)}
-                  rows={7}
-                />
-              </Field>
+              <LabeledTextarea label="Business outcome" value={form.achievements} rows={7} onValueChange={(value) => update("achievements", value)} />
+              <LabeledTextarea label="Project structure" value={form.structureNotes} rows={7} onValueChange={(value) => update("structureNotes", value)} />
             </FieldGroup>
           </FieldSet>
 
@@ -1028,10 +603,10 @@ function ProjectLocaleForm({
             <span aria-live="polite">
               {isSaving ? "Saving..." : hasChanges ? "Draft has local changes." : "No unsaved changes."}
             </span>
-            <Button type="submit" disabled={isSaving || !hasChanges}>
-              {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <SaveIcon data-icon="inline-start" />}
+            <Action type="submit" pending={isSaving} pendingLabel="Saving…" disabled={!hasChanges}>
+              <SaveIcon data-icon="inline-start" />
               Save {localeContent.locale.toUpperCase()}
-            </Button>
+            </Action>
           </div>
     </form>
   );
@@ -1058,7 +633,9 @@ function ProjectImagesCard({
       ?? mediaImages.find((image) => image.status !== "archived")
       ?? project.images.find((image) => image.source === "content-graph");
   const previewImage = selectedImage ?? fallbackImage;
-  const selectedImageMissingPreview = selectedImage?.previewStatus === "missing-url";
+  const selectedImagePreviewStatus = selectedImage?.previewStatus;
+  const selectedImageHasPreviewIssue = selectedImagePreviewStatus !== undefined
+    && selectedImagePreviewStatus !== "ready";
 
   return (
     <Card className={dashboardClass.cardShadow}>
@@ -1072,7 +649,7 @@ function ProjectImagesCard({
             src={previewImage?.src}
             alt={previewImage?.altText ?? "No project image"}
             className={dashboardClass.mediaPreviewFrame}
-            missingLabel={selectedImageMissingPreview ? "Preview URL missing" : undefined}
+            missingLabel={selectedImageHasPreviewIssue ? mediaPreviewIssueLabel(selectedImagePreviewStatus) : undefined}
           />
           <div className={dashboardClass.mediaPreviewCopy}>
             <span className={selectedImage ? dashboardClass.mediaSelectedLabel : undefined}>
@@ -1080,8 +657,8 @@ function ProjectImagesCard({
             </span>
             {previewImage ? <strong>{previewImage.label}</strong> : null}
             <p>
-              {selectedImageMissingPreview
-                ? "This selected media record is missing a public image URL, so Astro will keep using another available project image until this is deleted or re-uploaded."
+              {selectedImageHasPreviewIssue
+                ? selectedImage?.previewIssue ?? "This selected media record cannot resolve to a safe public image, so Astro will keep using another reviewed project image."
                 : selectedImage
                 ? previewImage?.altText
                 : "Choose Use in Astro on one media row to make the public image explicit."}
@@ -1098,7 +675,7 @@ function ProjectImagesCard({
               src={image.src}
               alt={image.altText}
               className={dashboardClass.mediaThumb}
-              missingLabel={image.previewStatus === "missing-url" ? "Preview URL missing" : undefined}
+              missingLabel={image.previewStatus && image.previewStatus !== "ready" ? mediaPreviewIssueLabel(image.previewStatus) : undefined}
             />
             <div className={dashboardClass.mediaRowBody}>
               <div className={dashboardClass.mediaRowTitle}>{image.label}</div>
@@ -1106,7 +683,9 @@ function ProjectImagesCard({
               <div className={dashboardClass.mediaRowTags}>
                 <Badge variant="secondary">{image.source === "media-metadata" ? "Dashboard media" : "Content graph"}</Badge>
                 {image.status ? <Badge variant="outline">{image.status}</Badge> : null}
-                {image.previewStatus === "missing-url" ? <Badge variant="outline">Preview URL missing</Badge> : null}
+                {image.previewStatus && image.previewStatus !== "ready" ? (
+                  <Badge variant="outline">{mediaPreviewIssueLabel(image.previewStatus)}</Badge>
+                ) : null}
                 {image.selectedForPublic ? <Badge>Astro image</Badge> : null}
               </div>
               <div className={dashboardClass.mediaRowActions}>
@@ -1116,7 +695,7 @@ function ProjectImagesCard({
                     variant={image.selectedForPublic ? "secondary" : "outline"}
                     size="sm"
                     disabled={savingKey === `${image.id}:select` || !image.src}
-                    title={!image.src ? "This media record is missing a public image URL." : undefined}
+                    title={!image.src ? image.previewIssue ?? "This media record has no safe public image URL." : undefined}
                     onClick={() => void onSelectMedia({ mediaId: image.id!, contentId: project.contentId })}
                   >
                     {savingKey === `${image.id}:select` ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <EyeIcon data-icon="inline-start" />}
@@ -1164,6 +743,21 @@ function ProjectImagesCard({
       </CardContent>
     </Card>
   );
+}
+
+function mediaPreviewIssueLabel(status: NonNullable<DashboardProject["images"][number]["previewStatus"]>): string {
+  switch (status) {
+    case "unsupported-provider":
+      return "Provider unsupported";
+    case "provider-unavailable":
+      return "Provider unavailable";
+    case "invalid-reference":
+      return "Invalid public reference";
+    case "missing-url":
+      return "Preview URL missing";
+    case "ready":
+      return "Preview ready";
+  }
 }
 
 function MediaImage({
@@ -1230,19 +824,6 @@ function ImageUploadForm({
       storageKeyValidation.value !== form.storageKey.trim(),
   );
   const showStorageKeyError = !trimmedPublicUrl && !storageKeyValidation.isValid;
-
-  useEffect(() => {
-    setFile(null);
-    setPreviewUrl(null);
-    setPublicUrl("");
-    setForm({
-      contentId: project.contentId,
-      storageKey: projectDefaultStorageKey,
-      altText: "",
-      usage: "case-study",
-      locale: "en",
-    });
-  }, [project.contentId, projectDefaultStorageKey]);
 
   useEffect(() => () => {
     if (previewUrl) {
@@ -1337,23 +918,7 @@ function ImageUploadForm({
               />
             </Field>
             <div className={dashboardClass.formGrid2}>
-              <Field>
-                <FieldLabel>Locale</FieldLabel>
-                <Select
-                  value={form.locale}
-                  onValueChange={(value) => setForm((current) => ({ ...current, locale: value as DashboardLocale }))}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="es">Spanish</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </Field>
+              <LabeledSelect label="Locale" value={form.locale ?? "en"} onValueChange={(value) => setForm((current) => ({ ...current, locale: value as DashboardLocale }))} options={[{ value: "en", label: "English" }, { value: "es", label: "Spanish" }]} />
               <Field data-invalid={showStorageKeyError}>
                 <FieldLabel htmlFor={`upload-key-${project.contentId}`}>Storage key</FieldLabel>
                 <Input
@@ -1387,31 +952,6 @@ function ImageUploadForm({
   );
 }
 
-function PageHeading({
-  eyebrow,
-  title,
-  description,
-  action,
-}: {
-  eyebrow: string;
-  title: string;
-  description: string;
-  action?: React.ReactNode;
-}) {
-  return (
-    <section className={cn(dashboardClass.pageHeading, action && dashboardClass.pageHeadingWithAction)}>
-      <div className={dashboardClass.pageHeadingMain}>
-        <Badge className="w-fit" variant="secondary">{eyebrow}</Badge>
-        <div>
-          <h1>{title}</h1>
-          <p>{description}</p>
-        </div>
-      </div>
-      {action ? <div className={dashboardClass.pageHeadingAction}>{action}</div> : null}
-    </section>
-  );
-}
-
 function ProjectsSkeleton() {
   return (
     <div className="flex flex-col gap-4">
@@ -1420,33 +960,6 @@ function ProjectsSkeleton() {
       <Skeleton className="h-96 w-full" />
     </div>
   );
-}
-
-function buildNewProjectDraft(input: NewProjectInput, locale: DashboardLocale): ProjectFormState {
-  const isSpanish = locale === "es";
-  const title = isSpanish ? input.spanishTitle : input.title;
-  const summary = isSpanish
-    ? `Caso público en borrador para ${title}.`
-    : `Public case-study draft for ${title}.`;
-
-  return {
-    contentId: `case-study:${input.slug}`,
-    locale,
-    status: input.status,
-    evidenceStatus: "sanitized",
-    title,
-    summary,
-    seoDescription: summary,
-    projectUrl: "",
-    ctaLabel: isSpanish ? "Hablemos de algo similar" : "Start a similar build",
-    ctaHref: isSpanish ? "/es/contacto" : "/contact",
-    achievements: isSpanish
-      ? "Describe el resultado de negocio antes de publicar este caso."
-      : "Describe the business outcome before publishing this case study.",
-    structureNotes: isSpanish
-      ? "Describe la estructura pública, los límites privados y la evidencia segura."
-      : "Describe the public structure, private boundaries, and safe evidence.",
-  };
 }
 
 function slugifyProjectTitle(value: string): string {
@@ -1496,4 +1009,11 @@ function formatDate(value: number): string {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));
+}
+
+function projectFormsEqual(left: ProjectFormState, right: ProjectFormState): boolean {
+  return Object.keys(left).every((key) => {
+    const field = key as keyof ProjectFormState;
+    return left[field] === right[field];
+  });
 }

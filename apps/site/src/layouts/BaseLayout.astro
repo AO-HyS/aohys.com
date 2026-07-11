@@ -6,7 +6,7 @@ import "@fontsource-variable/mona-sans/index.css";
 import "@fontsource-variable/atkinson-hyperlegible-next/index.css";
 import "../styles/global.css";
 import { bodyClass, ui } from "../styles/classes";
-import type { ContentId, Locale } from "@aohys/content-graph";
+import type { ContentId, Locale, SeoStructuredData, SocialImageMetadata } from "@aohys/content-graph";
 
 interface Props {
   title: string;
@@ -15,6 +15,8 @@ interface Props {
   canonicalUrl: string;
   alternates: Record<Locale | "x-default", string>;
   robots?: string;
+  socialImage: SocialImageMetadata;
+  structuredData?: SeoStructuredData;
   contentId?: ContentId | string;
 }
 
@@ -25,10 +27,13 @@ const {
   canonicalUrl,
   alternates,
   robots = "index,follow",
+  socialImage,
+  structuredData,
   contentId,
 } = Astro.props;
 
 const analyticsEnvironment = import.meta.env.AOHYS_ENV ?? "local";
+const structuredDataJson = structuredData ? JSON.stringify(structuredData).replaceAll("<", "\\u003c") : null;
 const analyticsPath = (() => {
   try {
     return new URL(canonicalUrl).pathname || "/";
@@ -39,7 +44,7 @@ const analyticsPath = (() => {
 ---
 
 <!doctype html>
-<html lang={locale} class="scroll-smooth motion-reduce:scroll-auto">
+<html lang={locale} class="overflow-x-clip scroll-smooth motion-reduce:scroll-auto">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -50,6 +55,9 @@ const analyticsPath = (() => {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImage.url} />
+    <meta property="og:image:secure_url" content={socialImage.url} />
+    <meta property="og:image:alt" content={socialImage.alt} />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
@@ -60,6 +68,7 @@ const analyticsPath = (() => {
       ))
     }
     <title>{title}</title>
+    {structuredDataJson && <script is:inline type="application/ld+json" set:html={structuredDataJson}></script>}
   </head>
   <body class={bodyClass}>
     <div class={ui.siteShell} data-site-shell="public" data-content-id={contentId}>

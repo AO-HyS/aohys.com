@@ -16,11 +16,14 @@ export interface DashboardRuntimeConfig {
   convexUrl: string;
   betterAuthUrl: string;
   imagesAccountHash?: string;
+  posthogKey?: string;
+  posthogHost?: string;
 }
 
 export interface DashboardProjectDraft {
   contentId: string;
   locale: DashboardLocale;
+  localizedSlug?: string;
   title: string;
   summary: string;
   seoDescription: string;
@@ -54,7 +57,8 @@ export interface DashboardProjectImage {
   source: "content-graph" | "media-metadata";
   href?: string;
   src?: string;
-  previewStatus?: "ready" | "missing-url";
+  previewStatus?: "ready" | "missing-url" | "invalid-reference" | "unsupported-provider" | "provider-unavailable";
+  previewIssue?: string;
   storageKey?: string;
   status?: DashboardMediaStatus;
   usage?: DashboardMediaUsage;

@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { api as convexApi } from "@aohys/backend/convex/_generated/api";
 import type { Id } from "@aohys/backend/convex/_generated/dataModel";
-import { useAction, useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { buildDashboardContentPayload } from "@/lib/projects";
 import { dashboardRuntimeConfig } from "@/runtime-config";
 import type {
@@ -19,6 +19,7 @@ import type {
 export interface ProjectDraftRequest {
   contentId: string;
   locale: DashboardLocale;
+  localizedSlug?: string;
   status: DashboardCaseStudyStatus;
   evidenceStatus: DashboardEvidenceStatus;
   title: string;
@@ -31,8 +32,16 @@ export interface ProjectDraftRequest {
   structureNotes: string;
 }
 
+export interface CreateProjectRequest {
+  contentKey: string;
+  status: DashboardCaseStudyStatus;
+  evidenceStatus: DashboardEvidenceStatus;
+  en: Omit<ProjectDraftRequest, "contentId" | "locale" | "status" | "evidenceStatus" | "ctaHref"> & { localizedSlug: string };
+  es: Omit<ProjectDraftRequest, "contentId" | "locale" | "status" | "evidenceStatus" | "ctaHref"> & { localizedSlug: string };
+}
+
 export interface MediaMetadataRequest {
-  storageProvider?: DashboardMediaMetadata["storageProvider"];
+  storageProvider?: "cloudflare-images" | "external";
   storageKey: string;
   publicUrl?: string;
   altText: string;
@@ -110,6 +119,12 @@ export function useDashboardContent(): DashboardContentPayload | undefined {
   );
 }
 
+export function useDashboardOverview() {
+  return useQuery(convexApi.content.getDashboardOverview, {
+    environment: dashboardRuntimeConfig.environment,
+  });
+}
+
 export function useSaveProjectDraft() {
   const saveProjectDraft = useMutation(convexApi.content.upsertProjectDraft);
 
@@ -117,6 +132,11 @@ export function useSaveProjectDraft() {
     (payload: ProjectDraftRequest) => saveProjectDraft(payload),
     [saveProjectDraft],
   );
+}
+
+export function useCreateProject() {
+  const createProject = useMutation(convexApi.content.createProject);
+  return useCallback((payload: CreateProjectRequest) => createProject(payload), [createProject]);
 }
 
 export function useSaveMediaMetadata() {
@@ -240,8 +260,8 @@ export function serializeResumeDraft(content: DashboardResumeContent): string {
   return JSON.stringify(content);
 }
 
-export function useDashboardLeads(): DashboardLead[] | undefined {
-  return useQuery(convexApi.leads.listForDashboard, {});
+export function useDashboardLeads() {
+  return usePaginatedQuery(convexApi.leads.listForDashboard, {}, { initialNumItems: 12 });
 }
 
 export function useSaveLeadStatus() {

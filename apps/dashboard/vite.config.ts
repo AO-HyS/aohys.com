@@ -15,6 +15,17 @@ export default defineConfig({
             : "assets/[name][extname]",
         chunkFileNames: "assets/[name].js",
         entryFileNames: "assets/dashboard.js",
+        manualChunks: (id) => {
+          if (/node_modules\/\.pnpm\/(react|react-dom|scheduler)@/.test(id)) {
+            return "react-runtime";
+          }
+
+          if (/node_modules\/\.pnpm\/(convex|@convex-dev\+better-auth|better-auth)@/.test(id)) {
+            return "data-runtime";
+          }
+
+          return undefined;
+        },
       },
     },
   },

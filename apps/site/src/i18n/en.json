@@ -271,6 +271,7 @@
     "degradedSuccessMessage": "Message saved. I can see it in the dashboard even if the email notification is delayed.",
     "errorMessage": "The form could not send right now. Use WhatsApp or email directly.",
     "validationMessage": "Please review the highlighted fields before retrying.",
+    "rateLimitedMessage": "That request was received too recently. Please wait a few minutes before sending another.",
     "emailErrorMessage": "The notification email could not be sent.",
     "backendErrorMessage": "The contact backend is temporarily unavailable.",
     "endpointMissing": "Contact endpoint is not configured for this environment.",

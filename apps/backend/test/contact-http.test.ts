@@ -24,6 +24,15 @@ describe("contact HTTP error boundary", () => {
       },
     });
 
+    expect(buildPublicContactError(new Error("Uncaught Error: Contact submission rate limit exceeded."))).toEqual({
+      status: 429,
+      body: {
+        ok: false,
+        code: "rate_limited",
+        error: "Please wait before sending another contact request.",
+      },
+    });
+
     expect(buildPublicContactError(new Error("Resend notification failed with status 500."))).toEqual({
       status: 502,
       body: {
@@ -69,13 +78,13 @@ describe("contact HTTP error boundary", () => {
         environment: "preview",
         code: "backend_unavailable",
         status: 502,
-        errorType: "Error",
-        sourcePath: "/contact",
+        error_type: "Error",
+        source_path: "/contact",
         locale: "en",
         intent: "project",
-        preferredContactPath: "whatsapp",
-        hasCompany: true,
-        hasPhone: true,
+        preferred_contact_path: "whatsapp",
+        has_company: true,
+        has_phone: true,
       },
     });
     expect(JSON.stringify(event)).not.toContain("client@example.com");

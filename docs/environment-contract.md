@@ -57,7 +57,7 @@ Local development can receive `CONVEX_URL`, `CONVEX_SITE_URL`, and `CONVEX_DEPLO
 
 The public contact form uses `PUBLIC_CONTACT_ENDPOINT`, a browser-safe build value that should point at the Convex HTTP action `/contact` for the current environment. That endpoint is public by design; provider secrets stay in Convex/GitHub Environment variables.
 
-PostHog browser configuration is intentionally public because the key and host are used by the browser SDK. Preview and production must still use separate GitHub Environment values so analytics streams do not drift together. The preferred setup is two PostHog projects: `AOHYS Public Site - Preview` for branch/develop/previews and `AOHYS Public Site - Production` for `aohys.com`. Every emitted event also includes an `environment` property where the caller has environment context, but that property is a secondary guard, not the primary isolation boundary. Autocapture is a public policy value and starts as `false`; pageviews, conversion events, operational events, and error events are emitted explicitly by the public site or server boundary.
+PostHog browser configuration is intentionally public because the key and host are used by the browser SDK. Preview and production must still use separate GitHub Environment values so analytics streams do not drift together. The preferred setup is two PostHog projects: `AOHYS Public Site - Preview` for branch/develop/previews and `AOHYS Public Site - Production` for `aohys.com`. Every emitted event also includes an `environment` property where the caller has environment context, but that property is a secondary guard, not the primary isolation boundary. Autocapture, pageleave capture, browser persistence, person profiles, and session recording are disabled; Do Not Track is respected. Pageviews, selected conversions, privacy-safe dashboard actions, and fixed-shape error signals are emitted explicitly.
 
 During setup or incident recovery, verify that GitHub Environment `preview` and GitHub Environment `production` do not share the same `PUBLIC_POSTHOG_KEY`. If they do, preview errors and production traffic land in the same PostHog project and should be treated as a configuration bug before release promotion. The Release Train deploy jobs run this audit before deploying `develop` or `main`.
 
@@ -68,12 +68,17 @@ Current explicit PostHog events:
 | `$pageview` | Astro public layout browser client | Content ID, locale, path, canonical URL, and environment only |
 | `contact_form_viewed` | Contact route form view hook | No contact field values |
 | `contact_form_submit_attempted` | Contact form submit hook | No contact field values |
+| `contact_form_submit_succeeded` | Contact form success dispatch | Notification/analytics delivery state only; no contact field values or lead ID |
 | `contact_form_submit_failed` | Contact form failure dispatch | Failure reason only; no message, email, name, phone, or company |
 | `whatsapp_cta_clicked` | Public WhatsApp CTAs | CTA target only |
 | `email_cta_clicked` | Public email CTAs | CTA target only |
 | `lead_submitted` | Convex contact workflow | Environment plus backend-safe conversion metadata only; no message text or contact identity |
-| `lead_provider_failed` | Convex contact workflow | Provider, operation, environment, lead id, and error type only; no message text or contact identity |
+| `lead_provider_failed` | Convex contact workflow | Provider, operation, environment, and error type only; no lead ID, message text, or contact identity |
 | `lead_intake_failed` | Convex contact HTTP boundary | Environment, public error code/status, source path, locale, intent, and boolean presence flags only; no message text or contact identity |
+| `dashboard_surface_viewed` | Private React dashboard | Environment, normalized private path, and surface only; no admin identity |
+| `dashboard_action_succeeded` | Private React dashboard | Environment, surface, typed action, and optional locale/status/workflow state only; no record IDs or field values |
+| `dashboard_action_failed` | Private React dashboard | Same fixed action context plus error type only; no exception message |
+| `dashboard_client_exception` | Private React dashboard | Environment, surface, fixed source, and error type only; no stack, message, URL, or admin identity |
 | `dashboard_runtime_exception` | Cloudflare Pages `/dashboard` guard | Environment, path, source, and error type only; no cookies, tokens, or exception message |
 | `csp_violation_reported` | Cloudflare Pages `/observability/csp` | Environment, path, directive, document path, disposition, and blocked host only; no full URL query, token, contact identity, or message text |
 

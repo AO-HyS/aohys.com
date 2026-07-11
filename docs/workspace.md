@@ -23,7 +23,7 @@ The root `package.json` pins pnpm through `packageManager`. The root `verify` co
 | `packages/core` | Shared TypeScript primitives used across app and package boundaries. |
 | `packages/environment` | Environment Contract implementation for provider variable definitions and runtime/release validation. |
 | `packages/content-graph` | Public Content Graph implementation for stable content IDs, bilingual routes, SEO metadata, sitemap behavior, and private route exclusions. |
-| `packages/dashboard-ui` | Legacy fallback HTML renderers for private sign-in/state surfaces. Active dashboard workflows live in `apps/dashboard`. |
+| `apps/site/src/dashboard-access-states.ts` | Narrow pre-React sign-in and access-state renderer for the private dashboard guard. |
 | `packages/release-train` | Release Train checks, deploy plans, and smoke-check helpers. |
 | `scripts` | Repository-level verification, release environment validation, and smoke commands. |
 

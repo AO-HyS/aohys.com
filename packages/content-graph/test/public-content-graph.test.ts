@@ -22,6 +22,7 @@ import {
   isPrivateRoute,
   resolvePublicPath,
 } from "../src/index.js";
+import { STATIC_CASE_STUDY_ROUTES } from "../src/static-case-study-routes.js";
 
 const staticCaseStudyIds = [
   "case-study:casa-roca",
@@ -30,6 +31,25 @@ const staticCaseStudyIds = [
   "case-study:enterprise-systems",
   "case-study:engineering-practice",
 ] as const;
+
+it("keeps the lightweight static route registry aligned with locale content", () => {
+  const expected = ([
+    ["en", enContent],
+    ["es", esContent],
+  ] as const).flatMap(([locale, dictionary]) =>
+    Object.entries(dictionary)
+      .filter(([contentId]) => contentId.startsWith("case-study:"))
+      .map(([contentId, entry]) => ({
+        contentId,
+        locale,
+        path: entry.path,
+        localizedSlug: entry.path.split("/").at(-1) ?? "",
+      }))
+  ).sort((left, right) => `${left.locale}:${left.contentId}`.localeCompare(`${right.locale}:${right.contentId}`));
+  const registry = [...STATIC_CASE_STUDY_ROUTES]
+    .sort((left, right) => `${left.locale}:${left.contentId}`.localeCompare(`${right.locale}:${right.contentId}`));
+  expect(registry).toEqual(expected);
+});
 
 function dynamicCaseStudyEntry(locale: "en" | "es") {
   const isSpanish = locale === "es";
@@ -167,6 +187,42 @@ describe("Public Content Graph", () => {
     expect(seo.alternates.es).toBe("https://aohys.com/es/contacto");
     expect(seo.title).toMatch(/AOHYS|Alejandro/);
     expect(seo.description).toMatch(/WhatsApp|correo|proyecto|conversaci[oó]n/i);
+    expect(seo.socialImage).toEqual({
+      url: "https://aohys.com/images/generated/aohys-hero-system-map.png",
+      alt: "Mapa del sistema de ingeniería de producto AOHYS",
+    });
+    expect(seo.structuredData).toBeUndefined();
+
+    const projectSeo = getSeoMetadata("case-study:casa-roca", "en");
+    expect(projectSeo.socialImage).toEqual({
+      url: "https://aohys.com/images/proof/casa-roca-value-v2.jpg",
+      alt: "Casa Roca guest experience and conversion path preview on AOHYS",
+    });
+
+    const homeSeo = getSeoMetadata("home", "en");
+    expect(homeSeo.structuredData).toMatchObject({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      url: "https://aohys.com/",
+      name: "AOHYS",
+    });
+
+    const resumeSeo = getSeoMetadata("resume", "es");
+    expect(resumeSeo.structuredData).toMatchObject({
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      url: "https://aohys.com/es/curriculum",
+      inLanguage: "es",
+      mainEntity: {
+        "@type": "Person",
+        name: "Alejandro Ortiz Corro",
+        jobTitle: "Ingeniero de producto",
+        sameAs: ["https://www.linkedin.com/in/alejandrortizcrr/", "https://github.com/corrortiz"],
+      },
+    });
+    expect(resumeSeo.structuredData && "mainEntity" in resumeSeo.structuredData
+      ? resumeSeo.structuredData.mainEntity
+      : {}).not.toHaveProperty("image");
   });
 
   it("derives sitemap entries from graph eligibility", () => {
@@ -300,16 +356,20 @@ describe("Public Content Graph", () => {
     expect(applyProjectDraft(dictionaries.es, {
       contentId,
       locale: "es",
+      localizedSlug: "panel-alfa",
       title: "Dashboard Alpha ES",
       summary: "Un proyecto publicado desde dashboard.",
       seoDescription: "Un caso publico publicado desde dashboard.",
       projectUrl: "https://example.com/dashboard-alpha",
       ctaLabel: "Abrir proyecto",
-      ctaHref: "https://example.com/dashboard-alpha",
+      ctaHref: "/es/casos/panel-alfa",
       achievements: "Llego a publicacion.\n\nCreo un caso seguro.",
       structureNotes: "Usa entradas generadas del grafo.\n\nMantiene datos privados fuera.",
       publishedAt: 124,
     })).toBe(true);
+
+    expect(dictionaries.es[contentId].path).toBe("/es/casos/panel-alfa");
+    expect(dictionaries.es[contentId].primaryActionContentId).toBe(contentId);
 
     expect(publicProjectIdsFromDictionaries(dictionaries, [
       "case-study:casa-roca",
@@ -484,7 +544,32 @@ describe("Public Content Graph", () => {
     );
   });
 
-  it("rejects published public asset storage keys with unsafe path segments", async () => {
+  it("carries the sanitized Casa Roca proof asset into generated public media", async () => {
+    const {
+      buildGeneratedPublicMedia,
+    } = await import("../../../scripts/apply-dashboard-published-content.js");
+
+    expect(buildGeneratedPublicMedia([
+      {
+        storageProvider: "external",
+        storageKey: "images/proof/casa-roca-production.png",
+        altText: "Sanitized Casa Roca production proof.",
+        contentId: "case-study:casa-roca",
+        usage: "case-study",
+        status: "published",
+        selectedForPublic: true,
+        updatedAt: 100,
+      },
+    ])).toEqual({
+      "case-study:casa-roca": {
+        src: "/images/proof/casa-roca-production.png",
+        alt: "Sanitized Casa Roca production proof.",
+        kind: "site",
+      },
+    });
+  });
+
+  it("fails visibly when selected public media uses unsafe path segments", async () => {
     const {
       publicMediaItemsByContentId,
     } = await import("../../../scripts/apply-dashboard-published-content.js");
@@ -495,7 +580,7 @@ describe("Public Content Graph", () => {
       "images/%2e%2e/encoded-parent.png",
       "images/folder%2fencoded-slash.png",
     ];
-    const mediaByContentId = publicMediaItemsByContentId(unsafeStorageKeys.map((storageKey, index) => ({
+    expect(() => publicMediaItemsByContentId(unsafeStorageKeys.map((storageKey, index) => ({
       storageProvider: "external",
       storageKey,
       altText: "Unsafe public asset path.",
@@ -504,9 +589,7 @@ describe("Public Content Graph", () => {
       status: "published",
       selectedForPublic: true,
       updatedAt: 100 + index,
-    })));
-
-    expect([...mediaByContentId.keys()].filter((contentId) => contentId.startsWith("case-study:unsafe-"))).toEqual([]);
+    })))).toThrow("Selected public media for case-study:unsafe-0 is invalid");
   });
 
   it("includes generated dashboard case studies in routes, sitemap, index, and home outcomes", async () => {
