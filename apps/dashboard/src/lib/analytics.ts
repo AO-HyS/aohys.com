@@ -143,6 +143,24 @@ export function dashboardSurfaceFromPath(path: string): DashboardAnalyticsSurfac
   return "unknown";
 }
 
+export function createDashboardPathObserver(
+  initialPath: string,
+  capture: (path: string) => void,
+): (path: string) => void {
+  let lastCapturedPath: string | undefined;
+  const observePath = (path: string) => {
+    if (path === lastCapturedPath) {
+      return;
+    }
+
+    lastCapturedPath = path;
+    capture(path);
+  };
+
+  observePath(initialPath);
+  return observePath;
+}
+
 export function initializeDashboardAnalytics(
   runtimeConfig: DashboardRuntimeConfig,
   importPostHog: PostHogImporter = async () => {

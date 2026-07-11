@@ -7,6 +7,7 @@ import { dashboardRouter } from "@/app/router";
 import { authClient } from "@/lib/auth-client";
 import {
   captureDashboardEvent,
+  createDashboardPathObserver,
   dashboardSurfaceFromPath,
   initializeDashboardAnalytics,
 } from "@/lib/analytics";
@@ -29,11 +30,12 @@ function captureDashboardSurface(path: string) {
   });
 }
 
-captureDashboardSurface(window.location.pathname);
-dashboardRouter.subscribe("onResolved", ({ pathChanged, toLocation }) => {
-  if (pathChanged) {
-    captureDashboardSurface(toLocation.pathname);
-  }
+const observeDashboardPath = createDashboardPathObserver(
+  window.location.pathname,
+  captureDashboardSurface,
+);
+dashboardRouter.history.subscribe(({ location }) => {
+  observeDashboardPath(location.pathname);
 });
 
 createRoot(document.getElementById("root")!).render(

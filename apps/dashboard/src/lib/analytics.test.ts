@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   buildDashboardPostHogConfig,
   captureDashboardEvent,
+  createDashboardPathObserver,
   dashboardSurfaceFromPath,
   initializeDashboardAnalytics,
   sanitizeDashboardAnalyticsProperties,
@@ -34,6 +35,22 @@ describe("dashboard analytics contract", () => {
     expect(dashboardSurfaceFromPath("/dashboard/case-studies")).toBe("projects");
     expect(dashboardSurfaceFromPath("/dashboard/media?locale=en")).toBe("projects");
     expect(dashboardSurfaceFromPath("/dashboard/leads")).toBe("leads");
+  });
+
+  it("observes each dashboard pathname once", () => {
+    const capture = vi.fn();
+    const observePath = createDashboardPathObserver("/dashboard/settings", capture);
+
+    observePath("/dashboard/settings");
+    observePath("/dashboard/projects");
+    observePath("/dashboard/projects");
+    observePath("/dashboard/leads");
+
+    expect(capture.mock.calls).toEqual([
+      ["/dashboard/settings"],
+      ["/dashboard/projects"],
+      ["/dashboard/leads"],
+    ]);
   });
 
   it("removes identity, secrets, and private operational identifiers", () => {
