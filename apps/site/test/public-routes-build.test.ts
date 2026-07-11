@@ -35,6 +35,7 @@ describe("built public routes", () => {
       const seo = getSeoMetadata(route.id, route.locale);
 
       expect(html).toContain(`<html lang="${route.locale}"`);
+      expect(html).toContain('class="overflow-x-clip scroll-smooth motion-reduce:scroll-auto"');
       expect(html).toContain(`name="description" content="${seo.description}"`);
       expect(html).toContain(`rel="canonical" href="${seo.canonicalUrl}"`);
       expect(includesAlternate(html, "en", seo.alternates.en)).toBe(true);
