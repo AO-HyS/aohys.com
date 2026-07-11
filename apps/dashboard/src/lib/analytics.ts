@@ -61,6 +61,7 @@ interface PostHogClient {
 type PostHogImporter = () => Promise<{ default: PostHogClient }>;
 
 const DEFAULT_POSTHOG_HOST = "https://us.i.posthog.com";
+const POSTHOG_TRANSPORT_PROPERTY_KEYS = new Set(["$token"]);
 const SENSITIVE_PROPERTY_PARTS = [
   "admin",
   "company",
@@ -83,6 +84,10 @@ function normalizeHost(value: string | undefined): string {
 }
 
 function isSensitiveProperty(key: string): boolean {
+  if (POSTHOG_TRANSPORT_PROPERTY_KEYS.has(key)) {
+    return false;
+  }
+
   const normalized = key.toLowerCase().replaceAll("-", "_");
   return SENSITIVE_PROPERTY_PARTS.some((part) => normalized.includes(part));
 }

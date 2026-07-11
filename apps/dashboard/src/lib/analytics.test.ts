@@ -53,6 +53,19 @@ describe("dashboard analytics contract", () => {
     });
   });
 
+  it("preserves the PostHog transport token while rejecting application tokens", () => {
+    expect(sanitizeDashboardAnalyticsProperties({
+      $token: "phc_public_ingestion_key",
+      token: "private_application_token",
+      environment: "preview",
+      surface: "overview",
+    })).toEqual({
+      $token: "phc_public_ingestion_key",
+      environment: "preview",
+      surface: "overview",
+    });
+  });
+
   it("captures only the fixed event shape after initialization", async () => {
     const capture = vi.fn();
     const init = vi.fn();
