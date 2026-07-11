@@ -6,6 +6,7 @@ import { FormField } from "@/components/dashboard/form-field";
 import { SaveBar } from "@/components/dashboard/save-bar";
 import { SectionPanel } from "@/components/dashboard/section-panel";
 import { StatusBadge } from "@/components/dashboard/status-badge";
+import { SidebarInset } from "@/components/ui/sidebar";
 import {
   dashboardNavigation,
   findDashboardNavigationItem,
@@ -37,6 +38,12 @@ describe("Operations Desk navigation", () => {
 });
 
 describe("Dashboard primitive adapters", () => {
+  it("allows the dashboard inset to shrink beside the desktop sidebar", () => {
+    const html = renderToStaticMarkup(<SidebarInset />);
+
+    expect(html).toContain("min-w-0");
+  });
+
   it("announces pending actions and prevents duplicate activation", () => {
     const html = renderToStaticMarkup(
       <Action pending pendingLabel="Saving draft…">Save draft</Action>,
