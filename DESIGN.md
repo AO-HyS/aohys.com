@@ -1,6 +1,6 @@
 # Design
 
-This is a starter design context for the AOH&S site. It is not a final token system. Re-run or revise this document after the first real Astro pages, dashboard shell, and media assets exist.
+This is the implemented design contract for the AOHYS public site. The July 2026 direction is **Sunlit Systems Studio**: warm, vivid, product-minded, and playful without becoming childish or decorative for its own sake.
 
 ## Register
 
@@ -8,39 +8,49 @@ brand
 
 ## Design Intent
 
-The public site should feel like a senior engineering review translated into a memorable brand surface: precise, architectural, outcome-driven, and evidence-led. It should avoid the default "developer portfolio" and the default "SaaS landing page". The visitor should remember the judgment behind the work, not a list of tools.
+The public site should feel like a senior engineering review translated into a memorable brand surface: precise, architectural, outcome-driven, and system-led. It should avoid the default "developer portfolio" and the default "SaaS landing page". The visitor should remember the judgment behind the work, not a list of tools.
 
-Physical scene: a product architecture review on a clean white drafting table, with redline decisions, screenshots, system maps, and deployment proof arranged like evidence.
+Physical scene: a sunlit product stage in a small, beautifully made studio. Real project media sits inside a fixed proscenium; olive doors close, the set changes behind them, and the doors reopen on the next project. Honey rails, apricot tickets, brown ink, screenshots, decisions, and system maps make the work feel tangible without turning it into a theme park.
+
+The home hero and project selector are one composition. The visitor never enters a second “work stage” on the same page. Changing a project keeps the URL and surrounding layout stable, coalesces rapid input so the last request wins, and remains operable by keyboard and touch.
 
 ## Color Strategy
 
 Use a full-palette brand system with restrained application. The surface stays clean and high-contrast, but the brand should feel optimistic, precise, and human instead of black-white-red or monochrome. Color appears as proof marks, CTA fills, system paths, section signals, focus states, and small architectural annotations. Do not create a warm cream or beige editorial page.
 
-Primary direction: honey + mint on white for the public site, with dark ink + pastel signal for architecture sections.
+Primary direction: honey + olive + apricot on neutral white, with brown ink for text, structure, and dark surfaces. The palette is warm, optimistic, slightly retro-modern, and playful without becoming childish. Honey carries primary actions and active rails. Olive carries stage doors, supportive fields, and positive states. Apricot carries hover, proof, and human energy. Brown ink replaces black, navy, and cold technical blue.
 
 Starter OKLCH palette:
 
 ```css
 :root {
   --color-bg: oklch(1 0 0);
-  --color-surface: oklch(0.965 0.002 260);
-  --color-ink: oklch(0.18 0.012 260);
-  --color-muted: oklch(0.42 0.018 250);
-  --color-rule: oklch(0.88 0.006 260);
-  --color-primary: oklch(0.70 0.145 78);
-  --color-primary-ink: oklch(0.15 0.015 80);
-  --color-mint: oklch(0.78 0.105 160);
-  --color-mint-ink: oklch(0.18 0.04 165);
-  --color-sky: oklch(0.74 0.09 240);
-  --color-sky-ink: oklch(0.18 0.04 245);
-  --color-coral: oklch(0.68 0.15 35);
-  --color-coral-ink: oklch(1 0 0);
-  --color-dark: oklch(0.09 0.006 260);
-  --color-dark-surface: oklch(0.14 0.01 260);
+  --color-surface: oklch(0.975 0.008 122);
+  --color-ink: oklch(0.3649 0.0215 61.4); /* #473C33 */
+  --color-muted: oklch(0.50 0.025 61.4);
+  --color-rule: oklch(0.86 0.025 80);
+  --color-primary: oklch(0.8623 0.1290 80); /* #FEC868 */
+  --color-primary-ink: oklch(0.3649 0.0215 61.4);
+  --color-secondary: oklch(0.7779 0.1104 121.8); /* #ABC270 */
+  --color-secondary-ink: oklch(0.30 0.025 61.4);
+  --color-accent: oklch(0.8008 0.1283 55.5); /* #FDA769 */
+  --color-accent-ink: oklch(0.30 0.025 61.4);
+  --color-dark: oklch(0.3649 0.0215 61.4);
+  --color-dark-surface: oklch(0.31 0.022 61.4);
+  --color-dark-ink: oklch(0.98 0.006 80);
 }
 ```
 
-The updated seed color came from Impeccable seed `seed-149`: `oklch(0.600 0.124 70.0)`. Keep the primary hue in the honey/amber family, but tune lightness/chroma so it reads as optimistic and professional rather than warning-orange. Mint is for architecture/system flow, sky is for links and informational states, coral is for rare emphasis, and dark ink is for high-contrast technical sections.
+The approved source colors came from the user's July 2026 palette reference. Preserve their relationships and recognizable hex equivalents: olive `#ABC270`, honey `#FEC868`, apricot `#FDA769`, and brown ink `#473C33`. Use neutral white for breathing room; occasional pale fields may be tinted subtly toward olive, but the page must not become cream, sand, or beige.
+
+Approved palette contract (July 2026):
+
+- Honey is the unmistakable primary brand color.
+- Olive is the structural and motion color: doors, rails, selection, and supportive surfaces.
+- Apricot is an accent for proof, hover, tickets, and human warmth.
+- Brown ink carries body text, rules, diagrams, and dark sections.
+- Blue, navy, cyan, purple, violet, and mint are not brand colors.
+- Near-white stays neutral; warmth comes from the palette, not a cream page background.
 
 ## Typography
 
@@ -102,13 +112,20 @@ Loading rules:
 - Use `font-display: swap` with metric-adjusted fallbacks, or Astro/Fontaine-style fallback metrics if the implementation stack supports it.
 - Keep total public font families to these two unless a later critique proves the system needs more contrast.
 
+## Action System
+
+- There is one primary action treatment: the honey ticket. It uses a brown 2px rule, a 4px hard shadow, apricot hover, and a pressed state that moves toward the shadow.
+- Secondary actions are text links with a firm underline. They are not outlined buttons.
+- One primary action is enough for a decision cluster. Do not place two ticket buttons next to each other.
+- Header, hero, forms, closing bands, and case studies all use the same action contract.
+
 ## Layout
 
 The home should read as a sequence of evidence, not a grid of cards.
 
 Use:
 
-- Large hero with outcome-focused copy and a strong evidence/art composition.
+- One integrated hero/project stage with outcome-focused copy and real product media.
 - Case study rows or editorial spreads, not identical cards.
 - Screenshots and generated assets staged as proof artifacts.
 - Dark or high-contrast architecture sections where the system view needs emphasis.
@@ -128,7 +145,7 @@ Avoid:
 
 The visual system should use generated editorial assets and sanitized screenshots together.
 
-Generated assets should show:
+Generated assets, when they are genuinely needed, should show:
 
 - Business goals becoming product systems.
 - Architecture, workflows, deploy paths, and decision maps.
@@ -138,25 +155,55 @@ Screenshots should be sanitized, cropped, and staged as proof. They should never
 
 Media architecture: Cloudflare stores and optimizes images; Convex stores metadata and references only.
 
+Published dashboard/Cloudflare media always wins. Versioned repository assets are deterministic fallbacks and must never leave an empty frame:
+
+- Casa Roca: `casa-roca-value-v2.jpg` for compact stage/archive use and `casa-roca-gallery-v2.jpg` for the case hero.
+- The Barber Central: `barber-central-hero-v2.jpg` across the project stage and case hero.
+- Nutri Plan: `nutri-plan-dashboard-v2.png`, a sanitized dashboard without watermark.
+- Enterprise systems: `enterprise-systems-map-v2.svg`, using only the approved palette and white.
+
+Future capture contract: use versioned `.webm`/`.webp` media at `/media/projects/<slug>/stage-loop.webm`, `/media/projects/<slug>/stage-poster.webp`, and `/media/projects/<slug>/detail-01.webp`. Motion media is enhancement; a readable still image must remain available.
+
 ## Motion
 
-Motion should feel like review, assembly, and reveal: annotations settle, screenshots align, proof artifacts enter with purpose. Do not gate content behind animation. Reduced motion must be supported.
+Motion should feel like a well-made product theatre: the stage stays put while the set changes. Project selection closes two olive doors over the current scene, swaps the real project content behind them, and reopens to reveal the next scene. The active ticket travels along a honey rail; result marks and system annotations settle only after the reveal. Do not navigate away or replace the surrounding layout when switching projects. Do not gate content behind animation. Reduced motion must be supported.
 
 Use motion sparingly:
 
-- One strong first-load composition.
-- Small state transitions for navigation, language switching, and dashboard interactions.
+- One strong first-load composition in which the stage assembles without delaying readable content.
+- Door transitions use transform and clip-path, never animated layout properties. Closing, content swap, and opening form one short sequence; rapid selections are safely serialized or coalesced.
+- Project selection remains keyboard- and touch-operable with correct tab semantics and announced state.
+- Reduced motion replaces the door travel with an immediate content swap and a short crossfade.
+- Small state transitions support navigation, language switching, project markers, and dashboard interactions.
 - No bounce, elastic, or generic fade-on-scroll everywhere.
+
+### WebGL contract
+
+- Use a raw WebGL2 shader with a WebGL1 shader fallback. The canvas is an optional kinetic-depth layer, never the source of essential copy, controls, or project media.
+- Maximum one canvas per page. Current variants are `home`, `architecture`, and `contact`.
+- Render one fullscreen triangle with procedural color, masks, UV distortion, perspective, light, and pointer parallax. Do not use textures, model loaders, visible 3D primitives, boxes, rings, or toruses.
+- Home uses a layered sunlit paper field that changes palette and depth with the active project while the DOM doors close and reopen. Architecture uses perspective topology signals behind the accessible system map. Contact uses soft refractive overlap masks behind Goal / Context / Reply.
+- Cap DPR at `1.5` on desktop and `1` on mobile. Keep the shader quiet enough to protect copy contrast and sustain 60 fps on ordinary phones.
+- Pause rendering outside the viewport and while the document is hidden. Dispose buffers, programs, observers, listeners, and context on teardown.
+- On context loss, show the static fallback; on context restoration, reinitialize the scene.
+- `prefers-reduced-motion` and missing WebGL use a variant-specific CSS fallback immediately. React to live reduced-motion preference changes and never keep an animation frame running while reduced motion is active.
 
 ## Components And Surfaces
 
 Public site:
 
-- Primary CTA: "Start a conversation" / "Hablemos".
+- Global shell: compact sticky header, neutral white canvas, brown rules, honey primary action, and page-specific stage treatment.
+- Home stage: data-driven project selector using published Content Graph entries and Cloudflare media; the doors close and reopen in place when selection changes.
+- Project archive and case studies: ticket/rail navigation with project media and result-led editorial rows, not identical cards.
+- Architecture: an accessible DOM topology for Experience, Edge delivery, Product data, Communication, Observability, and Delivery, paired with a decorative WebGL map and explicit tradeoffs.
+- Services (route remains `/practice` for compatibility): three typed offers—Product systems, Architecture & modernization, and Delivery acceleration—each with problem, result, engagement, process, deliverables, and related work.
+- Resume, contact, privacy, and legal pages: quieter compositions using the same palette, typography, controls, and system/result language rather than a separate visual theme.
+- Primary CTA: "Start a conversation" / "Iniciar conversación".
 - Secondary CTA: "View selected work" / equivalent Spanish copy.
 - WhatsApp CTA: large but discreet, integrated into contact.
-- Case study detail sections: problem, business outcome, role, constraints, architecture decisions, execution highlights, quality/security/performance, public evidence, confidentiality note.
-- Architecture page: public code sample framing, not open-source community framing.
+- Case study detail sections: Challenge, Outcome, My role, System, Decisions, Delivery, Quality & operations, Live link, and Related work.
+- Only the Enterprise case ends with a client-boundary sentence: “Client details remain private.” / “Los detalles de clientes permanecen privados.”
+- Architecture page: responsibilities and tradeoffs first; source links come last.
 
 Dashboard:
 
@@ -174,3 +221,6 @@ Dashboard:
 - Do not use terminal aesthetics as shorthand for engineering quality.
 - Do not use beige editorial restraint as the default.
 - Do not use generic AI illustrations, glassmorphism, gradient text, or soft bordered shadow cards.
+- Do not use cold corporate blue, navy, purple, violet, cyan, or mint as brand colors.
+- Do not turn the stage into skeuomorphic machinery, a theme park, or a collection of fake dashboards. Real content and screenshots remain the evidence.
+- Do not navigate to a new route when a visitor changes the active project inside the home stage.

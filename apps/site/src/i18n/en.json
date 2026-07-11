@@ -2,29 +2,70 @@
   "header": {
     "skip": "Skip to content",
     "aria": "Primary",
-    "homeLabel": "AO AOH&S home",
+    "homeLabel": "AOHYS home",
     "small": "Product engineering",
     "language": "ES",
+    "dashboard": "Dashboard",
+    "login": "Dashboard",
+    "signup": "Start a conversation",
+    "menu": "Open menu",
     "nav": {
+      "solutions": "Work",
+      "agents": "Services",
+      "pricing": "About",
+      "docs": "Architecture",
+      "blog": "Start a conversation",
       "caseStudies": "Work",
-      "architecture": "System",
-      "resume": "Resume",
-      "contact": "Contact"
+      "architecture": "Architecture",
+      "practice": "Services",
+      "resume": "About",
+      "contact": "Start a conversation"
     }
   },
   "footer": {
-    "kicker": "Public code, private client work.",
-    "body": "This site is open for review as an engineering sample. Client code, product code, and operational data stay private.",
+    "kicker": "AOHYS · Product engineering",
+    "body": "Independent product engineering by Alejandro Ortiz Corro.",
+    "boundary": "Public code can be reviewed here. Client work and operational data stay private.",
     "privacy": "Privacy",
-    "architecture": "System notes",
+    "architecture": "Architecture",
+    "systemNotes": "System notes",
+    "work": "Selected work",
+    "resume": "About",
+    "contact": "Start a conversation",
     "dashboard": "Open dashboard",
+    "brandName": "AOHYS",
+    "repository": "Public repository",
+    "publicEvidence": "Selected systems",
+    "start": "Start a conversation",
+    "systemsOperational": "All systems operational",
     "linksAria": "Footer links",
-    "copyright": "Code MIT, content reserved."
+    "copyright": "Code MIT, content reserved.",
+    "social": {
+      "aria": "Social links",
+      "findUs": "Find me on",
+      "github": "GitHub repository",
+      "whatsapp": "WhatsApp",
+      "email": "Email Alejandro",
+      "linkedin": "LinkedIn profile",
+      "marks": {
+        "github": "GH",
+        "whatsapp": "WA",
+        "email": "@",
+        "linkedin": "IN"
+      }
+    },
+    "groups": {
+      "public": "Public",
+      "private": "Private",
+      "proof": "Results",
+      "direct": "Direct",
+      "status": "Status"
+    }
   },
   "publicPage": {
     "signal": "Alejandro Ortiz Corro · AOH&S",
     "actions": "Primary actions",
-    "boardLabel": "AOHYS evidence board",
+    "boardLabel": "AOHYS systems board",
     "publicSample": "Work table",
     "productionSnapshot": "Production site snapshot",
     "productionSnapshotAlt": "Casa Roca production website hero screenshot",
@@ -39,9 +80,94 @@
     "architectureText": "Public/private boundary, observability, delivery path",
     "reviewPath": "Review path",
     "reviewPathText": "feature → develop → main",
-    "homeLead": "I design and build software that connects product intent, backend reliability, operational clarity, and modern delivery practice. This site is the reviewable public example behind that claim.",
-    "proofHeadingSignal": "Visible work",
-    "proofHeading": "The shell starts with real work, not decoration.",
+    "homeLead": "I design and build software that connects product intent, backend reliability, operational clarity, and modern delivery.",
+    "proofHeadingSignal": "Selected work",
+    "proofHeading": "Good systems start with real work and a clear point of view.",
+    "announcementBadge": "New",
+    "announcementText": "Work and releases.",
+    "homePrompt": "Map the public site, dashboard, release path, and proof a reviewer can inspect.",
+    "homeInputAria": "AOHYS system prompt preview",
+    "openLabel": "Open",
+    "codeTabs": ["cURL", "NodeJS", "Rust", "Go", "PHP", "C#", "Java", "Python"],
+    "releasePathValue": "preview -> production",
+    "stateLive": "Live",
+    "stateReady": "Ready",
+    "automation": {
+      "trigger": "Trigger",
+      "addStep": "Add step",
+      "wait": "Wait for review",
+      "gate": "Release gate",
+      "end": "Automation ends"
+    },
+    "brandName": "AOHYS",
+    "demoBar": "Public product system",
+    "stats": {
+      "work": "Selected systems",
+      "routes": "Public routes",
+      "boundaries": "System boundaries",
+      "practice": "Delivery practices"
+    },
+    "homeModules": {
+      "work": {
+        "kicker": "Visible outcomes",
+        "link": "All selected work"
+      },
+      "architecture": {
+        "kicker": "System design",
+        "link": "All system notes"
+      },
+      "practice": {
+        "kicker": "Delivery rhythm",
+        "link": "Read the practice case"
+      },
+      "workflow": {
+        "kicker": "System integrations",
+        "title": "Works with the tools that keep delivery moving.",
+        "body": "The public page is only the visible layer. The useful part is the operating model behind it: routes, dashboard, data, observability, and proof that can be reviewed."
+      },
+      "proof": {
+        "title": "Proof without exposing private work.",
+        "body": "Every public claim points back to visible pages, sanitized media, or a system boundary that protects client data."
+      }
+    },
+    "agentsPage": {
+      "skillsLabel": "Skills",
+      "command": "npx aohys add delivery-skill",
+      "copyCommand": "Copy command",
+      "copyMark": "CP",
+      "docsLink": "Docs",
+      "docsTitle": "AI ready documentation"
+    },
+    "blogPage": {
+      "kicker": "Blog",
+      "subscribe": "Subscribe",
+      "all": "All",
+      "pagination": "Work log pagination",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "pricingPage": {
+      "scaleLabel": "Experience scale",
+      "scaleQuestion": "What can this work help your team create next?",
+      "planLabel": "Plan",
+      "recommended": "Recommended",
+      "planNames": [
+        "Technical review",
+        "Product delivery"
+      ],
+      "featureColumn": "Feature",
+      "included": "Included",
+      "faqKicker": "FAQs",
+      "faqTitle": "Questions about pricing?",
+      "moreQuestions": "More questions? Book a call"
+    },
+    "questions": {
+      "boundary": "What can be reviewed publicly?",
+      "privateData": "Where does private product work stay?",
+      "nextStep": "What happens after contact?",
+      "practice": "How is delivery kept reviewable?",
+      "human": "Talk to a human"
+    },
     "proofRows": [
       {
         "label": "Architecture",
@@ -63,6 +189,41 @@
       }
     ],
     "routeSignal": "Page context",
+    "routeSignals": {
+      "case-studies": "Blog",
+      "architecture": "Public system",
+      "resume": "Pricing",
+      "contact": "Direct contact",
+      "privacy": "Privacy boundary",
+      "practice": "Agents"
+    },
+    "mediaAlts": {
+      "home": "Pixel landscape of the AOHYS public product system",
+      "architectureBackdrop": "Pixel lake beach for the architecture module",
+      "practiceBackdrop": "Pixel green hills for the delivery practice module",
+      "casaRoca": "Public Casa Roca production website screenshot",
+      "barberCentral": "The Barber Central development landing page",
+      "nutriPlan": "Nutri Plan administrative dashboard",
+      "enterpriseSystems": "Public-safe map of confidential enterprise systems work",
+      "engineeringPractice": "AOHYS public architecture proof surface",
+      "architecturePreview": "AOHYS product architecture map",
+      "practicePreview": "AOHYS delivery practice visual artifact",
+      "architectureMap": "Architecture map for the AOHYS public sample",
+      "selectedScreenshotsAria": "Public screenshots from selected work",
+      "casaRocaShot": "Public Casa Roca screenshot",
+      "barberCentralShot": "The Barber Central landing page",
+      "nutriPlanShot": "Nutri Plan administrative dashboard",
+      "resumeArtifact": "Visual artifact of AOHYS delivery, QA, and release practice",
+      "contactFlow": "Visual map of the AOHYS contact and operations flow"
+    },
+    "codeSample": {
+      "openLine": "const system = await aohys.publish({",
+      "publicSiteKey": "publicSite",
+      "dashboardKey": "dashboard",
+      "releasePathKey": "releasePath",
+      "evidenceKey": "evidence",
+      "closeLine": "});"
+    },
     "routeProofTitle": "This page is wired for SEO, i18n, and future content depth.",
     "routeMetadataAria": "Route metadata",
     "canonical": "Canonical",
@@ -83,8 +244,8 @@
     ]
   },
   "contactForm": {
-    "formTitle": "Tell me what you need to ship.",
-    "formIntro": "Share the goal, context, and best way to reach you. I will reply directly.",
+    "formTitle": "Give me the useful context.",
+    "formIntro": "A polished brief is not required. Share the goal, who it should serve, what you want to make possible, and the best way to reach you. I will reply personally with a practical next step.",
     "nameLabel": "Name",
     "emailLabel": "Email",
     "companyLabel": "Company",
@@ -98,8 +259,11 @@
     "preferredContactLabel": "Preferred contact path",
     "preferredEmail": "Email",
     "preferredWhatsApp": "WhatsApp",
+    "preferredContactHelp": "Email is required to confirm your request. Choose WhatsApp and add your phone number when you want the reply there.",
+    "phoneOptionalHint": "Optional unless WhatsApp is selected",
+    "phoneRequiredHint": "Required for a WhatsApp reply",
     "messageLabel": "Message",
-    "messagePlaceholder": "What needs to exist, improve, launch, or become reliable?",
+    "messagePlaceholder": "What would you like to create, improve, or launch? Who should it help, and what matters most right now?",
     "consentLabel": "I understand AOHYS will use this information to respond to my request.",
     "submitLabel": "Send request",
     "sendingLabel": "Sending...",
@@ -112,6 +276,7 @@
     "endpointMissing": "Contact endpoint is not configured for this environment.",
     "retryLabel": "Try again, or use WhatsApp or email directly.",
     "whatsappLabel": "WhatsApp Me",
-    "fallbackText": "Prefer direct contact?"
+    "fallbackText": "Prefer direct contact?",
+    "honeypotLabel": "Website"
   }
 }

@@ -1,0 +1,67 @@
+---
+import { resolveProofMedia } from "./proof-media";
+
+interface Props {
+  contentId: string;
+  evidenceSrc?: string;
+  alt?: string;
+  evidenceKind?: string;
+  loading?: "eager" | "lazy";
+  decoding?: "async" | "auto" | "sync";
+  stageImage?: boolean;
+  preferFull?: boolean;
+  class?: string;
+  width?: number;
+  height?: number;
+}
+
+const {
+  contentId,
+  evidenceSrc,
+  alt,
+  evidenceKind,
+  loading = "lazy",
+  decoding = "async",
+  stageImage = false,
+  preferFull = false,
+  class: className,
+  width = 1600,
+  height = 1000,
+} = Astro.props;
+const media = resolveProofMedia(contentId, evidenceSrc, alt, evidenceKind, preferFull);
+---
+
+<img
+  src={media.src}
+  alt={media.alt}
+  width={width}
+  height={height}
+  loading={loading}
+  decoding={decoding}
+  class={className}
+  data-proof-image
+  data-stage-image={stageImage ? "" : undefined}
+  data-image-candidates={JSON.stringify(media.candidates)}
+  data-candidate-index="0"
+/>
+
+<script>
+  for (const candidate of document.querySelectorAll("[data-proof-image]")) {
+    if (!(candidate instanceof HTMLImageElement)) continue;
+    if (candidate.dataset.proofFallbackBound === "true") continue;
+    candidate.dataset.proofFallbackBound = "true";
+    candidate.addEventListener("error", () => {
+      let candidates: string[] = [];
+      try { candidates = JSON.parse(candidate.dataset.imageCandidates ?? "[]"); } catch { candidates = []; }
+      const currentIndex = Number(candidate.dataset.candidateIndex ?? "0");
+      const nextIndex = Number.isFinite(currentIndex) ? currentIndex + 1 : 1;
+      const nextSrc = candidates[nextIndex];
+      if (!nextSrc) {
+        candidate.dataset.fallbackExhausted = "true";
+        return;
+      }
+      candidate.dataset.candidateIndex = String(nextIndex);
+      candidate.src = nextSrc;
+    });
+  }
+</script>

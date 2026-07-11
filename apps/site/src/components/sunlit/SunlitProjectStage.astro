@@ -1,0 +1,538 @@
+---
+import { type HomeOutcome, type Locale } from "@aohys/content-graph";
+import SunlitProofImage from "./SunlitProofImage.astro";
+import SunlitWebGLScene from "./SunlitWebGLScene.astro";
+import { resolveProofMedia } from "./proof-media";
+
+interface Props {
+  outcomes: HomeOutcome[];
+  locale: Locale;
+  heading: string;
+  intro: string;
+  hero?: boolean;
+}
+
+const { outcomes, locale, heading, intro, hero = false } = Astro.props;
+const labels = locale === "es" ? {
+  region: "Selector de proyectos",
+  open: "Abrir caso",
+  current: "Proyecto visible",
+  loading: "Cambiando escenario",
+  result: "Resultado",
+  evidence: "Sistema",
+  boundary: "Mi rol",
+  swipe: "Proyectos en escena",
+  previous: "Proyecto anterior",
+  next: "Proyecto siguiente",
+  position: "Proyecto",
+  browse: "Ver todos los proyectos",
+  choose: "Elige el siguiente proyecto",
+  chooseIntro: "La escena cambia en el mismo lugar; la URL conserva el proyecto activo.",
+  close: "Cerrar selector",
+  controlHint: "Usa anterior, siguiente o abre el índice completo.",
+  fallbackAlt: "Sistema de producto AOHYS",
+  scene: "Escenario de sistemas de producto AOHYS",
+} : {
+  region: "Project selector",
+  open: "Open case",
+  current: "Project in view",
+  loading: "Changing the set",
+  result: "Result",
+  evidence: "System",
+  boundary: "My role",
+  swipe: "Projects on stage",
+  previous: "Previous project",
+  next: "Next project",
+  position: "Project",
+  browse: "View all projects",
+  choose: "Choose the next project",
+  chooseIntro: "The scene changes in place; the URL keeps the active project.",
+  close: "Close selector",
+  controlHint: "Use previous, next, or open the complete index.",
+  fallbackAlt: "AOHYS product system",
+  scene: "AOHYS product systems stage",
+};
+const projects = outcomes.map((outcome) => ({
+  outcome,
+  media: resolveProofMedia(
+    String(outcome.contentId),
+    outcome.evidence.src,
+    outcome.evidence.altText ?? labels.fallbackAlt,
+    outcome.evidence.kind,
+  ),
+}));
+---
+
+<section
+  class:list={["sunlit-project-stage", hero && "sunlit-project-stage--hero"]}
+  aria-labelledby="sunlit-stage-heading"
+  data-project-stage
+  data-stage-state="open"
+  data-active-tone="0"
+  data-assembled="false"
+  data-current-label={labels.current}
+  data-loading-label={labels.loading}
+  data-position-label={labels.position}
+>
+  <header class="sunlit-stage-heading">
+    <div>
+      <span aria-hidden="true">✦</span>
+      <h2 id="sunlit-stage-heading">{heading}</h2>
+    </div>
+    <p>{intro}</p>
+  </header>
+
+  <div class="sunlit-stage-layout">
+    <div class="sunlit-stage-frame" aria-busy="false" data-stage-frame>
+      <div class="sunlit-stage-canopy" aria-hidden="true"><span></span><i></i></div>
+      <div class="sunlit-stage-scene">
+        <SunlitWebGLScene variant="home" label={labels.scene} class="sunlit-stage-webgl" />
+        {projects.map(({ outcome, media }, index) => {
+          const panelId = `sunlit-project-panel-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
+          const tabId = `sunlit-project-tab-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
+          return (
+            <article
+              id={panelId}
+              class="sunlit-project-panel"
+              role="tabpanel"
+              aria-labelledby={tabId}
+              hidden={index !== 0}
+              data-project-panel
+              data-project-index={index}
+              data-content-id={outcome.contentId}
+              data-project-title={outcome.title}
+              data-project-label={outcome.label}
+              data-set-tone={index % 3}
+            >
+              <div class="sunlit-project-proof">
+                <span class="sunlit-proof-pin" aria-hidden="true"></span>
+                <figure data-media-kind={media.kind}>
+                  <SunlitProofImage
+                    contentId={String(outcome.contentId)}
+                    evidenceSrc={outcome.evidence.src}
+                    alt={outcome.evidence.altText ?? labels.fallbackAlt}
+                    evidenceKind={outcome.evidence.kind}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    stageImage
+                  />
+                </figure>
+                <span class="sunlit-proof-stamp">{outcome.label}</span>
+              </div>
+              <div class="sunlit-project-copy">
+                <p>{outcome.role}</p>
+                <h3>{outcome.title}</h3>
+                <p>{outcome.outcome}</p>
+                <a href={outcome.path}>{labels.open}<span aria-hidden="true">↗</span></a>
+              </div>
+            </article>
+          );
+        })}
+
+        <div class="sunlit-door sunlit-door-left" data-stage-door="left" aria-hidden="true"><span></span></div>
+        <div class="sunlit-door sunlit-door-right" data-stage-door="right" aria-hidden="true"><span></span></div>
+      </div>
+      <div class="sunlit-stage-platform" aria-hidden="true"><span></span><i></i></div>
+      <div class="sunlit-stage-status sr-only" aria-live="polite" aria-atomic="true" data-stage-announcement></div>
+    </div>
+
+    <div class="sunlit-project-switchboard">
+      <div class="sunlit-current-project">
+        <span>{labels.current}</span>
+        <strong data-current-title>{projects[0]?.outcome.title}</strong>
+        <small data-current-label>{projects[0]?.outcome.label}</small>
+      </div>
+      <div class="sunlit-switchboard-controls">
+        <button type="button" data-project-previous aria-label={labels.previous}>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12.5 4.5-5.5 5.5 5.5 5.5" /></svg>
+          <span>{labels.previous}</span>
+        </button>
+        <button type="button" data-project-menu-trigger aria-haspopup="dialog" aria-controls="sunlit-project-index" aria-expanded="false">
+          <span>{labels.browse}</span>
+          <strong><span data-current-number>01</span> / {String(projects.length).padStart(2, "0")}</strong>
+        </button>
+        <button type="button" data-project-next aria-label={labels.next}>
+          <span>{labels.next}</span>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5.5 5.5-5.5 5.5" /></svg>
+        </button>
+      </div>
+      <p>{labels.controlHint}</p>
+    </div>
+  </div>
+
+  <div class="sunlit-ledger-stack">
+    {projects.map(({ outcome }, index) => (
+      <dl class="sunlit-proof-ledger" hidden={index !== 0} data-ledger-panel data-project-index={index}>
+        <div><dt>{labels.result}</dt><dd>{outcome.outcome}</dd></div>
+        <div><dt>{labels.evidence}</dt><dd>{outcome.evidence.label}</dd></div>
+        <div><dt>{labels.boundary}</dt><dd>{outcome.role}</dd></div>
+      </dl>
+    ))}
+  </div>
+
+  <dialog class="sunlit-project-index" id="sunlit-project-index" data-project-dialog aria-labelledby="sunlit-project-index-title">
+    <div class="sunlit-project-index-shell">
+      <header>
+        <div><h2 id="sunlit-project-index-title">{labels.choose}</h2><p>{labels.chooseIntro}</p></div>
+        <button type="button" data-project-dialog-close aria-label={labels.close}>×</button>
+      </header>
+      <div class="sunlit-project-index-list" role="tablist" aria-label={labels.region} aria-orientation="vertical">
+        {projects.map(({ outcome }, index) => {
+          const panelId = `sunlit-project-panel-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
+          const tabId = `sunlit-project-tab-${String(outcome.contentId).replace(/[^a-z0-9]+/gi, "-")}`;
+          return (
+            <button
+              id={tabId}
+              type="button"
+              role="tab"
+              aria-controls={panelId}
+              aria-selected={index === 0 ? "true" : "false"}
+              tabindex={index === 0 ? 0 : -1}
+              data-project-tab
+              data-project-index={index}
+              data-content-id={outcome.contentId}
+            >
+              <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+              <span><strong>{outcome.title}</strong><small>{outcome.label}</small></span>
+              <i aria-hidden="true">→</i>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  </dialog>
+</section>
+
+<script>
+  const wait = (milliseconds: number) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+
+  for (const stage of document.querySelectorAll("[data-project-stage]")) {
+    if (!(stage instanceof HTMLElement)) continue;
+    const tabs = Array.from(stage.querySelectorAll("[data-project-tab]")).filter((tab): tab is HTMLButtonElement => tab instanceof HTMLButtonElement);
+    const panels = Array.from(stage.querySelectorAll("[data-project-panel]")).filter((panel): panel is HTMLElement => panel instanceof HTMLElement);
+    const ledgers = Array.from(stage.querySelectorAll("[data-ledger-panel]")).filter((panel): panel is HTMLElement => panel instanceof HTMLElement);
+    const frame = stage.querySelector("[data-stage-frame]");
+    const announcement = stage.querySelector("[data-stage-announcement]");
+    const currentNumber = stage.querySelector("[data-current-number]");
+    const currentTitle = stage.querySelector("[data-current-title]");
+    const currentLabel = stage.querySelector("[data-current-label]");
+    const previous = stage.querySelector("[data-project-previous]");
+    const next = stage.querySelector("[data-project-next]");
+    const menuTrigger = stage.querySelector("[data-project-menu-trigger]");
+    const projectDialog = stage.querySelector("[data-project-dialog]");
+    const dialogClose = stage.querySelector("[data-project-dialog-close]");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let activeIndex = 0;
+    let requestedIndex = 0;
+    let running = false;
+
+    const projectIndexFromUrl = () => {
+      const projectId = new URL(window.location.href).searchParams.get("project");
+      if (!projectId) return 0;
+      return tabs.findIndex((tab) => tab.dataset.contentId === projectId);
+    };
+
+    const updateProjectUrl = (index: number, mode: "push" | "replace") => {
+      const contentId = tabs[index]?.dataset.contentId;
+      if (!contentId) return;
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("project") === contentId) return;
+      url.searchParams.set("project", contentId);
+      window.history[mode === "push" ? "pushState" : "replaceState"](window.history.state, "", url);
+    };
+
+    const setActivePanel = (index: number) => {
+      tabs.forEach((tab, tabIndex) => {
+        const selected = tabIndex === index;
+        tab.setAttribute("aria-selected", String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+      });
+      panels.forEach((panel, panelIndex) => { panel.hidden = panelIndex !== index; });
+      ledgers.forEach((ledger, ledgerIndex) => { ledger.hidden = ledgerIndex !== index; });
+      if (currentNumber instanceof HTMLElement) currentNumber.textContent = String(index + 1).padStart(2, "0");
+      if (currentTitle instanceof HTMLElement) currentTitle.textContent = panels[index]?.dataset.projectTitle ?? "";
+      if (currentLabel instanceof HTMLElement) currentLabel.textContent = panels[index]?.dataset.projectLabel ?? "";
+      stage.dataset.activeTone = String(index % 3);
+      window.dispatchEvent(new CustomEvent("sunlit:project-change", { detail: { index, contentId: panels[index]?.dataset.contentId } }));
+      activeIndex = index;
+    };
+
+    const loadCandidate = (src: string) => new Promise<string | null>((resolve) => {
+      const image = new Image();
+      const timeout = window.setTimeout(() => resolve(null), 900);
+      image.onload = () => { window.clearTimeout(timeout); resolve(src); };
+      image.onerror = () => { window.clearTimeout(timeout); resolve(null); };
+      image.src = src;
+    });
+
+    const prepareImage = async (panel: HTMLElement) => {
+      const image = panel.querySelector("[data-stage-image]");
+      if (!(image instanceof HTMLImageElement)) return;
+      let candidates: string[] = [];
+      try { candidates = JSON.parse(image.dataset.imageCandidates ?? "[]"); } catch { candidates = [image.src]; }
+      for (const [candidateIndex, candidate] of candidates.entries()) {
+        const loaded = await loadCandidate(candidate);
+        if (loaded) {
+          image.dataset.candidateIndex = String(candidateIndex);
+          image.src = loaded;
+          return;
+        }
+      }
+    };
+
+    const transitionToRequested = async () => {
+      if (running || requestedIndex === activeIndex) return;
+      running = true;
+      if (frame instanceof HTMLElement) frame.setAttribute("aria-busy", "true");
+
+      while (requestedIndex !== activeIndex) {
+        if (reducedMotion.matches) {
+          const targetIndex = requestedIndex;
+          await prepareImage(panels[targetIndex]);
+          setActivePanel(targetIndex);
+          break;
+        }
+
+        stage.dataset.stageState = "closing";
+        await wait(320);
+        stage.dataset.stageState = "swapping";
+        const targetIndex = requestedIndex;
+        setActivePanel(targetIndex);
+        await Promise.race([prepareImage(panels[targetIndex]), wait(1600)]);
+        stage.dataset.stageState = "opening";
+        await wait(340);
+        stage.dataset.stageState = "open";
+      }
+
+      if (frame instanceof HTMLElement) frame.setAttribute("aria-busy", "false");
+      if (announcement instanceof HTMLElement) {
+        const title = panels[activeIndex]?.dataset.projectTitle ?? "";
+        announcement.textContent = title ? `${stage.dataset.currentLabel ?? ""}: ${title}` : "";
+      }
+      running = false;
+      if (requestedIndex !== activeIndex) void transitionToRequested();
+    };
+
+    const requestProject = (index: number, historyMode: "push" | "replace" | "none" = "push") => {
+      if (index < 0 || index >= panels.length) return;
+      requestedIndex = index;
+      if (historyMode !== "none") updateProjectUrl(index, historyMode);
+      if (announcement instanceof HTMLElement && index !== activeIndex) {
+        announcement.textContent = stage.dataset.loadingLabel ?? "";
+      }
+      void transitionToRequested();
+    };
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => {
+        requestProject(index, "push");
+        if (projectDialog instanceof HTMLDialogElement) projectDialog.close();
+        if (menuTrigger instanceof HTMLButtonElement) menuTrigger.focus();
+      });
+      tab.addEventListener("keydown", (event) => {
+        let nextIndex = index;
+        if (event.key === "ArrowDown" || event.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
+        else if (event.key === "ArrowUp" || event.key === "ArrowLeft") nextIndex = (index - 1 + tabs.length) % tabs.length;
+        else if (event.key === "Home") nextIndex = 0;
+        else if (event.key === "End") nextIndex = tabs.length - 1;
+        else return;
+        event.preventDefault();
+        tabs[nextIndex]?.focus();
+        requestProject(nextIndex, "replace");
+      });
+    });
+    if (previous instanceof HTMLButtonElement) previous.addEventListener("click", () => requestProject((activeIndex - 1 + tabs.length) % tabs.length, "push"));
+    if (next instanceof HTMLButtonElement) next.addEventListener("click", () => requestProject((activeIndex + 1) % tabs.length, "push"));
+    if (menuTrigger instanceof HTMLButtonElement && projectDialog instanceof HTMLDialogElement) {
+      menuTrigger.addEventListener("click", () => {
+        menuTrigger.setAttribute("aria-expanded", "true");
+        projectDialog.showModal();
+        tabs[activeIndex]?.focus();
+      });
+      projectDialog.addEventListener("close", () => menuTrigger.setAttribute("aria-expanded", "false"));
+      projectDialog.addEventListener("click", (event) => {
+        if (event.target === projectDialog) projectDialog.close();
+      });
+    }
+    if (dialogClose instanceof HTMLButtonElement && projectDialog instanceof HTMLDialogElement) {
+      dialogClose.addEventListener("click", () => {
+        projectDialog.close();
+        if (menuTrigger instanceof HTMLButtonElement) menuTrigger.focus();
+      });
+    }
+
+    const initialUrl = new URL(window.location.href);
+    const requestedProjectId = initialUrl.searchParams.get("project");
+    const initialIndex = projectIndexFromUrl();
+    if (requestedProjectId && initialIndex < 0) {
+      initialUrl.searchParams.delete("project");
+      window.history.replaceState(window.history.state, "", initialUrl);
+    }
+    setActivePanel(Math.max(0, initialIndex));
+    requestedIndex = activeIndex;
+
+    const onPopState = () => {
+      const index = projectIndexFromUrl();
+      requestProject(index >= 0 ? index : 0, "none");
+    };
+    window.addEventListener("popstate", onPopState);
+
+    for (const image of stage.querySelectorAll("[data-stage-image]")) {
+      if (!(image instanceof HTMLImageElement)) continue;
+      image.addEventListener("error", async () => {
+        const panel = image.closest("[data-project-panel]");
+        if (panel instanceof HTMLElement) await prepareImage(panel);
+      }, { once: true });
+      if (image.complete && image.naturalWidth === 0) {
+        const panel = image.closest("[data-project-panel]");
+        if (panel instanceof HTMLElement) void prepareImage(panel);
+      }
+    }
+    window.requestAnimationFrame(() => { stage.dataset.assembled = "true"; });
+  }
+</script>
+
+<style>
+  .sunlit-project-stage { width: var(--container); margin: clamp(5rem, 10vw, 9rem) auto; }
+  .sunlit-stage-heading { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(16rem, .8fr); align-items: end; gap: 2rem; margin-bottom: 2rem; }
+  .sunlit-stage-heading > div { display: flex; align-items: flex-start; gap: 1rem; }
+  .sunlit-stage-heading span { color: var(--color-accent); font-size: 2rem; line-height: 1; }
+  .sunlit-stage-heading h2 { max-width: 15ch; margin: 0; font-size: var(--text-h2); font-weight: 760; letter-spacing: -.035em; line-height: 1.02; text-wrap: balance; }
+  .sunlit-stage-heading p { max-width: 54ch; margin: 0; color: var(--color-muted); font-size: 1.1rem; }
+  .sunlit-stage-layout { display: grid; gap: 1rem; }
+  .sunlit-stage-frame { position: relative; min-width: 0; padding-top: 2.5rem; }
+  .sunlit-stage-canopy { position: absolute; top: 0; right: 7%; left: 7%; height: 5.4rem; overflow: hidden; pointer-events: none; }
+  .sunlit-stage-canopy::before, .sunlit-stage-canopy::after, .sunlit-stage-canopy span { content: ""; position: absolute; bottom: 0; width: 44%; height: 100%; border-radius: 50% 50% 0 0; }
+  .sunlit-stage-canopy::before { left: 0; background: var(--color-secondary); }
+  .sunlit-stage-canopy::after { right: 0; background: var(--color-primary); }
+  .sunlit-stage-canopy span { left: 30%; background: var(--color-accent); }
+  .sunlit-stage-canopy i { position: absolute; top: 0; right: 10%; width: 2px; height: 2.8rem; background: var(--color-ink); }
+  .sunlit-stage-canopy i::after { content: ""; position: absolute; top: 2.4rem; left: -.55rem; width: 1.1rem; height: 1.1rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
+  .sunlit-stage-scene { position: relative; display: grid; overflow: hidden; border: 2px solid var(--color-ink); background: color-mix(in oklch, var(--color-accent), white 18%); box-shadow: 0 6px 0 var(--color-ink); transition: background 220ms cubic-bezier(.22, 1, .36, 1); }
+  .sunlit-stage-scene > :global(.sunlit-stage-webgl) { position: absolute; inset: 0; z-index: 0; min-height: 0; opacity: .24; background: transparent; }
+  .sunlit-stage-scene::before, .sunlit-stage-scene::after { content: ""; position: absolute; z-index: 0; pointer-events: none; transition: transform 280ms cubic-bezier(.22, 1, .36, 1), background 220ms ease; }
+  .sunlit-stage-scene::before { left: -4rem; bottom: -8rem; width: 22rem; height: 22rem; border: 2px solid color-mix(in oklch, var(--color-ink), transparent 25%); border-radius: 50%; background: color-mix(in oklch, var(--color-primary), transparent 8%); }
+  .sunlit-stage-scene::after { top: 3.5rem; left: 4%; width: 4.5rem; height: 13rem; border: 2px solid color-mix(in oklch, var(--color-ink), transparent 25%); border-radius: 50% 50% .2rem .2rem; background: var(--color-secondary); }
+  [data-active-tone="1"] .sunlit-stage-scene { background: color-mix(in oklch, var(--color-secondary), white 22%); }
+  [data-active-tone="1"] .sunlit-stage-scene::before { transform: translate(8rem, -1rem); background: var(--color-accent); }
+  [data-active-tone="1"] .sunlit-stage-scene::after { transform: translateX(7rem); background: var(--color-primary); }
+  [data-active-tone="2"] .sunlit-stage-scene { background: color-mix(in oklch, var(--color-primary), white 18%); }
+  [data-active-tone="2"] .sunlit-stage-scene::before { transform: translate(3rem, -5rem) scale(.78); background: var(--color-secondary); }
+  [data-active-tone="2"] .sunlit-stage-scene::after { transform: translate(11rem, 5rem) rotate(90deg); background: var(--color-accent); }
+  [data-active-tone="1"] .sunlit-stage-canopy::before { background: var(--color-primary); }
+  [data-active-tone="1"] .sunlit-stage-canopy::after { background: var(--color-accent); }
+  [data-active-tone="1"] .sunlit-stage-canopy span { background: var(--color-secondary); }
+  [data-active-tone="2"] .sunlit-stage-canopy::before { background: var(--color-accent); }
+  [data-active-tone="2"] .sunlit-stage-canopy::after { background: var(--color-secondary); }
+  [data-active-tone="2"] .sunlit-stage-canopy span { background: var(--color-primary); }
+  .sunlit-project-panel { position: relative; z-index: 1; grid-area: 1 / 1; min-height: 33rem; }
+  .sunlit-project-panel:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(17rem, .82fr); align-items: center; gap: clamp(1rem, 3vw, 2.5rem); padding: clamp(1.25rem, 4vw, 3.5rem); }
+  .sunlit-project-proof { position: relative; min-width: 0; transform: rotate(-1deg); }
+  .sunlit-project-proof figure { position: relative; display: grid; height: clamp(18rem, 34vw, 27rem); margin: 0; overflow: hidden; place-items: center; border: 10px solid var(--color-bg); box-shadow: 0 6px 0 var(--color-ink); background: color-mix(in oklch, var(--color-secondary), white 72%); }
+  .sunlit-project-proof img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center top; }
+  .sunlit-project-proof figure[data-media-kind="site"] img,
+  .sunlit-project-proof figure[data-media-kind="public-site"] img { object-fit: cover; }
+  .sunlit-project-proof figure[data-media-kind="diagram"],
+  .sunlit-project-proof figure[data-media-kind="private-system"] { background: var(--color-bg); }
+  .sunlit-proof-pin { position: absolute; top: -.45rem; left: 50%; z-index: 2; width: .9rem; height: .9rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); box-shadow: 0 2px 0 var(--color-ink); }
+  .sunlit-proof-stamp { position: absolute; right: -1rem; bottom: -1rem; padding: .5rem .75rem; transform: rotate(-3deg); border: 3px double var(--color-secondary-ink); background: var(--color-bg); color: var(--color-secondary-ink); font-size: .75rem; font-weight: 780; text-transform: uppercase; }
+  .sunlit-project-copy { position: relative; display: grid; align-content: center; gap: .75rem; padding: clamp(1rem, 2vw, 1.4rem); border: 2px solid var(--color-ink); border-radius: .25rem; background: var(--color-bg); box-shadow: 5px 5px 0 color-mix(in oklch, var(--color-ink), transparent 8%); }
+  .sunlit-project-copy > p:first-child { margin: 0; color: var(--color-muted); font-size: .82rem; font-weight: 720; }
+  .sunlit-project-copy h3 { margin: 0; font-size: clamp(2rem, 4vw, 3.6rem); font-weight: 780; letter-spacing: -.035em; line-height: 1; }
+  .sunlit-project-copy p { margin: 0; font-size: 1rem; line-height: 1.5; }
+  .sunlit-project-copy a { display: inline-flex; min-height: 2.75rem; width: fit-content; align-items: center; gap: 1.5rem; margin-top: .35rem; border-bottom: 2px solid var(--color-ink); text-decoration: none; font-weight: 760; }
+  .sunlit-door { position: absolute; top: 0; bottom: 0; z-index: 8; width: 50.5%; border: 2px solid var(--color-secondary-ink); background: var(--color-secondary); transition: transform 300ms cubic-bezier(.22, 1, .36, 1); }
+  .sunlit-door::before, .sunlit-door::after { content: ""; position: absolute; border: 2px solid color-mix(in oklch, var(--color-secondary-ink), transparent 42%); border-radius: 45% 45% .5rem .5rem; }
+  .sunlit-door::before { inset: 8% 12% 54%; }
+  .sunlit-door::after { inset: 52% 12% 8%; }
+  .sunlit-door span { position: absolute; top: 50%; width: .72rem; height: .72rem; border: 2px solid var(--color-secondary-ink); border-radius: 50%; background: var(--color-primary); }
+  .sunlit-door-left { left: 0; transform: translateX(-102%); }
+  .sunlit-door-right { right: 0; transform: translateX(102%); }
+  .sunlit-door-left span { right: .7rem; }
+  .sunlit-door-right span { left: .7rem; }
+  [data-stage-state="closing"] .sunlit-door, [data-stage-state="swapping"] .sunlit-door { transform: translateX(0); }
+  [data-stage-state="opening"] .sunlit-door-left, [data-stage-state="open"] .sunlit-door-left { transform: translateX(-102%); }
+  [data-stage-state="opening"] .sunlit-door-right, [data-stage-state="open"] .sunlit-door-right { transform: translateX(102%); }
+  .sunlit-stage-platform { position: relative; height: 2.6rem; margin: 0 2%; border: 2px solid var(--color-ink); border-top: 0; border-radius: 0 0 50% 50%; background: var(--color-primary); box-shadow: 0 5px 0 var(--color-ink); transition: transform 560ms cubic-bezier(.22, 1, .36, 1); }
+  [data-assembled="false"] .sunlit-stage-platform { transform: translateY(.7rem); }
+  .sunlit-project-switchboard { display: grid; min-width: 0; grid-template-columns: minmax(14rem, .8fr) minmax(0, 1.2fr); border: 2px solid var(--color-ink); background: var(--color-bg); }
+  .sunlit-current-project { display: grid; min-width: 0; align-content: center; gap: .2rem; padding: .8rem 1rem; border-right: 1px solid var(--color-rule); }
+  .sunlit-current-project > span, .sunlit-current-project small { color: var(--color-muted); font-size: .7rem; }
+  .sunlit-current-project strong { overflow: hidden; font-size: 1rem; line-height: 1.15; text-overflow: ellipsis; white-space: nowrap; }
+  .sunlit-switchboard-controls { display: grid; min-width: 0; grid-template-columns: minmax(7.5rem, .75fr) minmax(10rem, 1.5fr) minmax(7.5rem, .75fr); }
+  .sunlit-switchboard-controls button { display: flex; min-width: 0; min-height: 4.9rem; align-items: center; justify-content: center; gap: .55rem; padding: .65rem .8rem; border: 0; border-right: 1px solid var(--color-rule); background: var(--color-bg); color: var(--color-ink); font: inherit; font-size: .78rem; font-weight: 720; cursor: pointer; }
+  .sunlit-switchboard-controls button:last-child { border-right: 0; }
+  .sunlit-switchboard-controls button:hover { background: color-mix(in oklch, var(--color-accent), white 62%); }
+  .sunlit-switchboard-controls [data-project-menu-trigger] { justify-content: space-between; background: var(--color-primary); }
+  .sunlit-switchboard-controls [data-project-menu-trigger] strong { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sunlit-switchboard-controls svg { flex: 0 0 1.1rem; width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; }
+  .sunlit-project-switchboard > p { grid-column: 1 / -1; margin: 0; padding: .45rem .75rem; border-top: 1px solid var(--color-rule); color: var(--color-muted); font-size: .72rem; font-weight: 650; }
+  .sunlit-project-index { width: min(52rem, calc(100vw - 2rem)); max-height: min(44rem, calc(100svh - 2rem)); margin: auto; padding: 0; overflow: auto; border: 2px solid var(--color-ink); background: var(--color-bg); color: var(--color-ink); box-shadow: 8px 8px 0 var(--color-ink); }
+  .sunlit-project-index::backdrop { background: color-mix(in oklch, var(--color-ink), transparent 22%); }
+  .sunlit-project-index-shell { padding: clamp(1rem, 3vw, 2rem); }
+  .sunlit-project-index header { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; padding-bottom: 1.2rem; border-bottom: 2px solid var(--color-ink); }
+  .sunlit-project-index h2 { max-width: 14ch; margin: 0; font-size: clamp(2rem, 5vw, 3.7rem); letter-spacing: -.035em; line-height: 1; text-wrap: balance; }
+  .sunlit-project-index header p { max-width: 48ch; margin: .7rem 0 0; color: var(--color-muted); }
+  .sunlit-project-index header button { display: grid; flex: 0 0 2.75rem; width: 2.75rem; height: 2.75rem; place-items: center; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-accent); color: var(--color-ink); font: inherit; font-size: 1.5rem; cursor: pointer; }
+  .sunlit-project-index-list { display: grid; }
+  .sunlit-project-index-list > button { display: grid; min-height: 5.6rem; grid-template-columns: 2.5rem minmax(0, 1fr) auto; align-items: center; gap: 1rem; padding: .8rem 0; border: 0; border-bottom: 1px solid var(--color-ink); background: var(--color-bg); color: var(--color-ink); font: inherit; text-align: left; cursor: pointer; }
+  .sunlit-project-index-list > button:hover, .sunlit-project-index-list > button:focus-visible { padding-inline: .8rem; background: color-mix(in oklch, var(--color-primary), white 64%); }
+  .sunlit-project-index-list > button[aria-selected="true"] { background: var(--color-primary); }
+  .sunlit-project-index-list > button > span:first-child { font-variant-numeric: tabular-nums; font-size: .75rem; font-weight: 780; }
+  .sunlit-project-index-list > button > span:nth-child(2) { display: grid; gap: .2rem; min-width: 0; }
+  .sunlit-project-index-list strong { font-size: 1.15rem; line-height: 1.15; }
+  .sunlit-project-index-list small { color: var(--color-muted); font-size: .76rem; }
+  .sunlit-project-index-list i { font-style: normal; }
+  .sunlit-ledger-stack { margin-top: .85rem; }
+  .sunlit-proof-ledger { display: grid; grid-template-columns: 1.35fr .7fr 1fr; margin: 0; border-block: 2px solid var(--color-ink); background: var(--color-bg); }
+  .sunlit-proof-ledger[hidden] { display: none; }
+  .sunlit-proof-ledger > div { position: relative; min-width: 0; padding: .85rem 1rem 1rem; border-right: 1px solid var(--color-rule); }
+  .sunlit-proof-ledger > div::before { content: ""; position: absolute; top: -.1rem; left: 1rem; width: 2.25rem; height: .28rem; background: var(--color-primary); }
+  .sunlit-proof-ledger > div:nth-child(2)::before { background: var(--color-secondary); }
+  .sunlit-proof-ledger > div:nth-child(3)::before { background: var(--color-accent); }
+  .sunlit-proof-ledger > div:last-child { border-right: 0; }
+  .sunlit-proof-ledger dt { margin: 0 0 .35rem; font-size: .72rem; font-weight: 780; }
+  .sunlit-proof-ledger dd { margin: 0; color: var(--color-muted); font-size: .8rem; line-height: 1.35; }
+  .sunlit-project-stage--hero { width: 100%; margin: 0; }
+  .sunlit-project-stage--hero .sunlit-stage-heading { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .sunlit-project-stage--hero .sunlit-stage-frame { padding-top: 1.75rem; }
+  .sunlit-project-stage--hero .sunlit-project-panel { min-height: 26rem; }
+  .sunlit-project-stage--hero .sunlit-project-panel:not([hidden]) { grid-template-columns: minmax(0, 1.08fr) minmax(15rem, .92fr); gap: clamp(1rem, 2vw, 1.5rem); padding: clamp(1rem, 2.4vw, 1.8rem); }
+  .sunlit-project-stage--hero .sunlit-project-proof figure { height: clamp(14rem, 24vw, 19rem); border-width: 7px; }
+  .sunlit-project-stage--hero .sunlit-project-copy h3 { font-size: clamp(1.75rem, 3vw, 2.65rem); }
+  .sunlit-project-stage--hero .sunlit-project-copy p { font-size: .9rem; line-height: 1.42; }
+  @media (max-width: 850px) {
+    .sunlit-stage-heading { grid-template-columns: 1fr; }
+    .sunlit-project-switchboard { grid-template-columns: 1fr; }
+    .sunlit-current-project { border-right: 0; border-bottom: 1px solid var(--color-rule); }
+  }
+  @media (max-width: 650px) {
+    .sunlit-project-stage--hero .sunlit-stage-layout { gap: .8rem; }
+    .sunlit-project-stage--hero .sunlit-project-switchboard { order: -1; }
+    .sunlit-stage-frame { padding-top: 1.35rem; }
+    .sunlit-stage-canopy { right: 4%; left: 4%; height: 3.5rem; }
+    .sunlit-stage-canopy i { display: none; }
+    .sunlit-stage-scene::before, .sunlit-stage-scene::after { display: none; }
+    .sunlit-project-panel { min-height: 0; }
+    .sunlit-project-panel:not([hidden]), .sunlit-project-stage--hero .sunlit-project-panel:not([hidden]) { grid-template-columns: 1fr; align-content: start; padding: .85rem; }
+    .sunlit-project-proof figure, .sunlit-project-stage--hero .sunlit-project-proof figure { height: 12rem; border-width: 6px; }
+    .sunlit-project-copy { align-content: start; gap: .55rem; padding: .9rem; box-shadow: 4px 4px 0 var(--color-ink); }
+    .sunlit-project-copy h3 { font-size: clamp(1.75rem, 10vw, 2.55rem); }
+    .sunlit-switchboard-controls { grid-template-columns: 3.25rem minmax(0, 1fr) 3.25rem; }
+    .sunlit-switchboard-controls button { min-height: 3.8rem; padding: .5rem; }
+    .sunlit-switchboard-controls [data-project-previous] span, .sunlit-switchboard-controls [data-project-next] span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .sunlit-project-index h2 { font-size: clamp(2rem, 10vw, 3rem); }
+    .sunlit-project-index-list > button { min-height: 5rem; }
+    .sunlit-proof-ledger { grid-template-columns: 1fr; }
+    .sunlit-proof-ledger > div { border-right: 0; border-bottom: 1px solid var(--color-rule); }
+    .sunlit-proof-ledger > div:last-child { border-bottom: 0; }
+  }
+  @media (max-width: 360px) {
+    .sunlit-project-stage { margin-block: 3.5rem; }
+    .sunlit-project-proof figure { height: 10.8rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sunlit-door, .sunlit-stage-platform, .sunlit-stage-scene, .sunlit-stage-scene::before, .sunlit-stage-scene::after, .sunlit-switchboard-controls button, .sunlit-project-index-list > button { transition: none; }
+    [data-stage-state] .sunlit-door-left { transform: translateX(-102%); }
+    [data-stage-state] .sunlit-door-right { transform: translateX(102%); }
+  }
+</style>

@@ -1,0 +1,70 @@
+---
+interface Props {
+  heading: string;
+  body?: string;
+  href: string;
+  label: string;
+  secondaryHref?: string;
+  secondaryLabel?: string;
+}
+
+const { heading, body, href, label, secondaryHref, secondaryLabel } = Astro.props;
+---
+
+<section class="sunlit-cta-band" aria-label={heading}>
+  <span class="sunlit-cta-perf" aria-hidden="true"></span>
+  <div>
+    <h2>{heading}</h2>
+    {body && <p>{body}</p>}
+  </div>
+  <div class="sunlit-cta-actions">
+    {secondaryHref && secondaryLabel && <a class="sunlit-text-action" href={secondaryHref}>{secondaryLabel}</a>}
+    <a class="sunlit-ticket-button" href={href}>{label}<span aria-hidden="true">→</span></a>
+  </div>
+</section>
+
+<style>
+  .sunlit-cta-band {
+    position: relative;
+    display: grid;
+    width: var(--container);
+    min-height: 16rem;
+    margin: clamp(5rem, 10vw, 9rem) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2rem;
+    overflow: hidden;
+    padding: clamp(1.5rem, 5vw, 4rem);
+    border: 2px solid var(--color-ink);
+    background: var(--color-accent);
+    box-shadow: 0 7px 0 var(--color-ink);
+  }
+  .sunlit-cta-band::before, .sunlit-cta-band::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 1.4rem;
+    height: 1.4rem;
+    transform: translateY(-50%);
+    border: 2px solid var(--color-ink);
+    border-radius: 50%;
+    background: var(--color-bg);
+  }
+  .sunlit-cta-band::before { left: -.75rem; }
+  .sunlit-cta-band::after { right: -.75rem; }
+  .sunlit-cta-perf { position: absolute; top: 0; bottom: 0; left: 3rem; border-left: 2px dashed color-mix(in oklch, var(--color-ink), transparent 45%); }
+  .sunlit-cta-band > div:first-of-type { padding-left: 2rem; }
+  .sunlit-cta-band h2 { max-width: 18ch; margin: 0; font-size: clamp(2.2rem, 5vw, 4.75rem); font-weight: 780; letter-spacing: -.035em; line-height: 1; text-wrap: balance; }
+  .sunlit-cta-band p { max-width: 56ch; margin: 1rem 0 0; }
+  .sunlit-cta-actions { display: flex; align-items: center; gap: .75rem; }
+  .sunlit-cta-actions a { display: inline-flex; align-items: center; gap: 2rem; font-weight: 760; }
+  .sunlit-cta-actions a:hover { transform: translateY(-2px); }
+  @media (max-width: 760px) {
+    .sunlit-cta-band { grid-template-columns: 1fr; align-items: start; }
+    .sunlit-cta-perf { left: 1.2rem; }
+    .sunlit-cta-band > div:first-of-type { padding-left: 1.2rem; }
+    .sunlit-cta-actions { align-items: stretch; flex-direction: column; }
+    .sunlit-cta-actions { padding-left: 1.2rem; }
+    .sunlit-cta-actions a { max-width: 100%; justify-content: space-between; }
+  }
+</style>

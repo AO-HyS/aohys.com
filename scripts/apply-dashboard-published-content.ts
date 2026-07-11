@@ -155,7 +155,7 @@ function slugFromContentId(contentId: string): string {
   return contentId.slice("case-study:".length);
 }
 
-function caseStudyPath(contentId: string, locale: Locale): string {
+function projectPath(contentId: string, locale: Locale): string {
   const slug = slugFromContentId(contentId);
 
   return locale === "es" ? `/es/casos/${slug}` : `/case-studies/${slug}`;
@@ -178,10 +178,10 @@ function contentIdFromPath(href: string, locale: Locale): string | undefined {
 
   if (locale === "es") {
     if (normalized === "/es/contacto") return "contact";
-    if (normalized === "/es/casos") return "case-studies";
-    if (normalized === "/es/cv") return "resume";
+    if (normalized === "/es/blog" || normalized === "/es/casos") return "case-studies";
+    if (normalized === "/es/precios" || normalized === "/es/cv" || normalized === "/es/curriculum") return "resume";
     if (normalized === "/es/arquitectura") return "architecture";
-    const dynamicMatch = normalized.match(/^\/es\/casos\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
+    const dynamicMatch = normalized.match(/^\/es\/(?:blog|casos)\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
 
     if (dynamicMatch?.[1]) {
       return `case-study:${dynamicMatch[1]}`;
@@ -191,10 +191,10 @@ function contentIdFromPath(href: string, locale: Locale): string | undefined {
   }
 
   if (normalized === "/contact") return "contact";
-  if (normalized === "/case-studies") return "case-studies";
-  if (normalized === "/resume") return "resume";
+  if (normalized === "/blog" || normalized === "/case-studies") return "case-studies";
+  if (normalized === "/pricing" || normalized === "/resume") return "resume";
   if (normalized === "/architecture") return "architecture";
-  const dynamicMatch = normalized.match(/^\/case-studies\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
+  const dynamicMatch = normalized.match(/^\/(?:blog|case-studies)\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
 
   if (dynamicMatch?.[1]) {
     return `case-study:${dynamicMatch[1]}`;
@@ -210,16 +210,16 @@ function publicHrefForDraft(draft: DashboardProjectDraft): string | undefined {
 function achievementFallbackForDraft(draft: DashboardProjectDraft): string {
   return localized(
     draft.locale,
-    `${draft.title} has a public case-study narrative published from the dashboard.`,
-    `${draft.title} tiene una narrativa pública publicada desde el dashboard.`,
+    `${draft.title} has a case-study narrative shaped and published from the dashboard.`,
+    `${draft.title} tiene una narrativa de caso estructurada y publicada desde el dashboard.`,
   );
 }
 
 function structureFallbackForDraft(draft: DashboardProjectDraft): string {
   return localized(
     draft.locale,
-    `${draft.title} uses the public content graph to expose only safe project context.`,
-    `${draft.title} usa el grafo público de contenido para exponer sólo contexto seguro del proyecto.`,
+    `${draft.title} uses the typed content graph to keep project context structured and reviewable.`,
+    `${draft.title} usa el grafo tipado de contenido para mantener el contexto estructurado y revisable.`,
   );
 }
 
@@ -231,7 +231,7 @@ function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
   const structureFallback = structureFallbackForDraft(draft);
 
   return {
-    path: caseStudyPath(draft.contentId, locale),
+    path: projectPath(draft.contentId, locale),
     title,
     summary: draft.summary,
     seoDescription: draft.seoDescription,
@@ -239,7 +239,7 @@ function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
     secondaryActionLabel: localized(locale, "Back to selected work", "Volver a casos"),
     secondaryActionContentId: "case-studies",
     caseStudyContent: {
-      statusLabel: localized(locale, "Published dashboard project", "Proyecto publicado desde dashboard"),
+      statusLabel: localized(locale, "Product system", "Sistema de producto"),
       overview: draft.summary,
       problem: {
         title: localized(locale, "Problem", "Problema"),
@@ -253,16 +253,16 @@ function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
         title: localized(locale, "Role", "Rol"),
         body: localized(
           locale,
-          "Product engineering, delivery planning, public-content shaping, and safe publication from the dashboard workflow.",
-          "Ingeniería de producto, planeación de entrega, estructura de contenido público y publicación segura desde el flujo de dashboard.",
+          "Product engineering, delivery planning, content structure, and publication through the dashboard workflow.",
+          "Ingeniería de producto, planeación de entrega, estructura de contenido y publicación desde el flujo de dashboard.",
         ),
       },
       constraints: {
         title: localized(locale, "Constraints", "Restricciones"),
         body: localized(
           locale,
-          "The public case study can show sanitized project context and links, while private implementation details, credentials, operations data, and client-specific records stay out of the public site.",
-          "El caso público puede mostrar contexto sanitizado del proyecto y enlaces, mientras detalles privados de implementación, credenciales, datos operativos y registros específicos del cliente quedan fuera del sitio público.",
+          "Project scope, data ownership, integration seams, and release constraints stay explicit as the system evolves.",
+          "El alcance, ownership de datos, límites de integración y restricciones de release permanecen explícitos mientras evoluciona el sistema.",
         ),
       },
       architectureDecisions: {
@@ -277,7 +277,7 @@ function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
         title: localized(locale, "Quality, security, and performance", "Calidad, seguridad y rendimiento"),
         body: restParagraphsOrFallback(draft.structureNotes, structureFallback),
       },
-      publicEvidenceTitle: localized(locale, "Public links", "Enlaces públicos"),
+      publicEvidenceTitle: localized(locale, "Project links", "Enlaces del proyecto"),
       publicEvidence: publicHref
         ? [
             {
@@ -291,12 +291,8 @@ function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
           ]
         : [],
       confidentialityNote: {
-        title: localized(locale, "Confidentiality note", "Nota de confidencialidad"),
-        body: localized(
-          locale,
-          "Only public-safe project context is shown here. Private code, dashboards, credentials, analytics, operational records, and customer data remain private.",
-          "Aquí sólo se muestra contexto seguro para publicación. Código privado, dashboards, credenciales, analíticas, registros operativos y datos de clientes permanecen privados.",
-        ),
+        title: localized(locale, "Client context", "Contexto del cliente"),
+        body: localized(locale, "Client details remain private.", "Los detalles del cliente permanecen privados."),
       },
     },
   };
@@ -348,7 +344,7 @@ export function applyProjectDraft(dictionary: LocaleDictionary, draft: Dashboard
       entry.caseStudyContent.qualitySecurityPerformance.body = restParagraphsOrFallback(draft.structureNotes, structureFallback);
     }
 
-    entry.caseStudyContent.publicEvidenceTitle = draft.locale === "es" ? "Enlaces públicos" : "Public links";
+    entry.caseStudyContent.publicEvidenceTitle = draft.locale === "es" ? "Enlaces del proyecto" : "Project links";
 
     const publicHref = publicHrefForDraft(draft);
 

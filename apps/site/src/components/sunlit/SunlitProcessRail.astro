@@ -1,0 +1,78 @@
+---
+import type { HomeStage, Locale } from "@aohys/content-graph";
+
+interface Props {
+  heading: string;
+  body?: string;
+  stages: HomeStage[];
+  locale: Locale;
+  tone?: "light" | "dark";
+}
+
+const { heading, body, stages, locale, tone = "light" } = Astro.props;
+const labels = locale === "es"
+  ? { process: "Ruta de trabajo", verified: "Verificado" }
+  : { process: "Delivery path", verified: "Verified" };
+---
+
+<section class="sunlit-process" data-tone={tone} aria-labelledby={`rail-${heading.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`}>
+  <div class="sunlit-process-heading">
+    <div>
+      <span>{labels.process}</span>
+      <h2 id={`rail-${heading.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`}>{heading}</h2>
+    </div>
+    {body && <p>{body}</p>}
+  </div>
+
+  <div class="sunlit-process-rail">
+    <div class="sunlit-process-cable" aria-hidden="true"></div>
+    {stages.map((stage, index) => (
+      <article>
+        <div class="sunlit-process-node" aria-hidden="true"><span>{index + 1}</span></div>
+        <div class="sunlit-process-ticket">
+          <h3>{stage.label}</h3>
+          <p>{stage.text}</p>
+          <span class="sunlit-ticket-notch" aria-hidden="true"></span>
+        </div>
+      </article>
+    ))}
+    <div class="sunlit-process-seal" aria-label={labels.verified}>
+      <span>✓</span><strong>{labels.verified}</strong>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sunlit-process { width: var(--container); margin: clamp(5rem, 10vw, 9rem) auto; color: var(--color-ink); }
+  .sunlit-process[data-tone="dark"] { width: 100%; padding: clamp(4rem, 8vw, 7rem) max(1rem, calc((100vw - 72rem) / 2)); background: var(--color-dark); color: var(--color-dark-ink); --color-focus: var(--color-primary); }
+  .sunlit-process-heading { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(16rem, .8fr); align-items: end; gap: 2rem; margin-bottom: 3rem; }
+  .sunlit-process-heading span { display: block; margin-bottom: .65rem; color: var(--color-accent); font-size: .86rem; font-weight: 760; }
+  .sunlit-process-heading h2 { max-width: 15ch; margin: 0; font-size: var(--text-h2); font-weight: 760; letter-spacing: -.035em; line-height: 1.02; text-wrap: balance; }
+  .sunlit-process-heading p { max-width: 56ch; margin: 0; color: var(--color-muted); font-size: 1.1rem; }
+  .sunlit-process[data-tone="dark"] .sunlit-process-heading p { color: color-mix(in oklch, var(--color-dark-ink), transparent 25%); }
+  .sunlit-process-rail { position: relative; display: grid; grid-template-columns: repeat(var(--stage-count, 3), minmax(0, 1fr)) minmax(7rem, .55fr); align-items: stretch; gap: 1rem; padding-top: 3rem; }
+  .sunlit-process-cable { position: absolute; top: 1.3rem; right: 4rem; left: 1rem; height: 4px; background: currentColor; }
+  .sunlit-process-rail article { position: relative; min-width: 0; }
+  .sunlit-process-node { position: absolute; top: -3rem; left: 1rem; z-index: 2; display: grid; width: 2.7rem; height: 2.7rem; place-items: center; border: 3px solid currentColor; border-radius: 50%; background: var(--color-primary); color: var(--color-primary-ink); font-weight: 780; box-shadow: 0 3px 0 currentColor; }
+  .sunlit-process-ticket { position: relative; min-height: 17rem; padding: 1.3rem; border: 2px solid currentColor; background: var(--color-bg); color: var(--color-ink); box-shadow: 0 5px 0 currentColor; }
+  .sunlit-process-rail article:nth-of-type(even) .sunlit-process-ticket { background: color-mix(in oklch, var(--color-secondary), white 62%); }
+  .sunlit-process-rail article:nth-of-type(3n) .sunlit-process-ticket { background: color-mix(in oklch, var(--color-accent), white 65%); }
+  .sunlit-process-ticket h3 { margin: 2rem 0 .7rem; font-size: clamp(1.45rem, 2.2vw, 2.2rem); font-weight: 760; letter-spacing: -.025em; line-height: 1.05; }
+  .sunlit-process-ticket p { margin: 0; color: var(--color-muted); line-height: 1.55; }
+  .sunlit-ticket-notch { position: absolute; top: 1rem; right: 1rem; width: .85rem; height: .85rem; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
+  .sunlit-process-seal { align-self: center; display: grid; width: 8.5rem; aspect-ratio: 1; place-items: center; transform: rotate(-4deg); border: 4px double currentColor; border-radius: 50%; color: var(--color-accent); text-align: center; }
+  .sunlit-process-seal span { display: grid; width: 2rem; height: 2rem; place-items: center; border: 2px solid currentColor; border-radius: 50%; font-size: 1.2rem; }
+  .sunlit-process-seal strong { font-size: .78rem; letter-spacing: .03em; white-space: nowrap; }
+  @media (min-width: 801px) {
+    .sunlit-process-rail { grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
+  }
+  @media (max-width: 800px) {
+    .sunlit-process-heading { grid-template-columns: 1fr; }
+    .sunlit-process-rail { grid-template-columns: 1fr; padding-top: 0; padding-left: 3.4rem; }
+    .sunlit-process-cable { top: 1rem; bottom: 3rem; left: 1.3rem; width: 4px; height: auto; }
+    .sunlit-process-node { top: 1rem; left: -3.4rem; }
+    .sunlit-process-ticket { min-height: auto; }
+    .sunlit-process-ticket h3 { margin-top: 1.8rem; }
+    .sunlit-process-seal { width: 8rem; margin-top: 1rem; }
+  }
+</style>

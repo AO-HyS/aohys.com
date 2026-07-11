@@ -28,6 +28,11 @@ describe("public site source quality", () => {
     const analytics = read("src/analytics.ts");
     const posthogClient = read("src/posthog-client.ts");
     const publicContentPage = read("src/components/PublicContentPage.astro");
+    const engineeringPracticeDiagram = read("public/images/proof/engineering-practice-release-cycle.svg");
+    const proofMedia = read("src/components/sunlit/proof-media.ts");
+    const proofImage = read("src/components/sunlit/SunlitProofImage.astro");
+    const stage = read("src/components/sunlit/SunlitProjectStage.astro");
+    const webglScene = read("src/components/sunlit/SunlitWebGLScene.astro");
     const contentGraph = read("../../packages/content-graph/src/index.ts");
     const dashboardAccess = read("src/dashboard-access.ts");
     const dashboardApp = read("../../apps/dashboard/src/main.tsx");
@@ -64,35 +69,108 @@ describe("public site source quality", () => {
     expect(astroConfig).toContain("tailwindcss()");
     expect(sitePackage).toContain('"tailwindcss"');
     expect(sitePackage).toContain('"@tailwindcss/vite"');
-    expect(styleClasses).toContain("[--color-primary:oklch(");
-    expect(styleClasses).toContain("[--color-mint:oklch(");
+    expect(styleClasses).toContain("[--color-primary:oklch(0.8623_0.129_80)]");
+    expect(styleClasses).toContain("[--color-secondary:oklch(0.7779_0.1104_121.8)]");
+    expect(styleClasses).toContain("[--color-accent:oklch(0.8008_0.1283_55.5)]");
+    expect(styleClasses).toContain("[--color-ink:oklch(0.3649_0.0215_61.4)]");
     expect(styleClasses).toContain("[--color-focus:oklch(");
-    expect(styleClasses).toContain("focus-visible:[outline:3px_solid_var(--color-focus)]");
+    expect(styleClasses).toContain("[&_a:focus-visible]:[outline:3px_solid_var(--color-focus)]");
     expect(styleClasses.includes("focus-visible:" + "outline-" + "[3px_solid_var(--color-focus)]")).toBe(false);
     expect(styleClasses).toContain("[--text-hero:");
     expect(styleClasses).toContain("motion-reduce:");
-    expect(publicContentPage).not.toMatch(/class="[^"]*(site-|hero-|proof-|signal-line|button |outcome-|architecture-|practice-|contact-|source-|case-|selected-|resume-|route-|field-|ledger-|privacy-)/);
     expect(layout).toContain('data-site-shell="public"');
     expect(header).toContain("getLocalizedPath");
+    expect(header).toContain("getPublicNavigation");
+    expect(header).not.toContain("const navItems = [");
+    expect(header).not.toContain("const navDropdownItems = [");
     expect(header).toContain("getUiCopy");
     expect(footer).toContain("getUiCopy");
+    expect(footer).not.toContain("min-height: 18rem");
+    expect(enDictionary).toContain("Independent product engineering by Alejandro Ortiz Corro.");
+    expect(esDictionary).toContain("Ingeniería de producto independiente por Alejandro Ortiz Corro.");
     expect(publicContentPage).toContain("getUiCopy");
-    expect(publicContentPage).toContain("STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID");
-    expect(publicContentPage).toContain("evidenceImage?.thumbSrc ?? evidenceImage?.src ?? outcome.evidence.src");
-    expect(publicContentPage).toContain("const imageAlt = imageSrc === outcome.evidence.src");
-    expect(contentGraph).toContain("/images/proof/casa-roca-production.png");
-    expect(contentGraph).toContain("/images/proof/barber-central-landing.png");
-    expect(contentGraph).toContain("/images/proof/barber-central-proof-thumb.png");
-    expect(contentGraph).toContain("/images/proof/nutri-plan-dashboard.png");
-    expect(contentGraph).toContain("/images/proof/nutri-plan-proof-thumb.png");
-    expect(contentGraph).toContain("/images/proof/enterprise-delivery-map.svg");
-    expect(contentGraph).toContain("/images/generated/aohys-architecture-proof-surface.png");
+    expect(publicContentPage).toContain("SunlitProofImage");
+    expect(proofMedia).toContain("STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID");
+    expect(proofMedia).toContain("preferFull");
+    expect(proofMedia).toContain("dashboardMedia?.thumbSrc");
+    expect(proofMedia).toContain("staticMedia?.src");
+    expect(proofMedia).toContain("evidenceSrc");
+    expect(proofMedia).toContain("aohys-connections-mark-v3.svg");
+    expect(proofMedia).toContain("dashboardMedia?.alt ?? evidenceAlt ?? staticMedia?.alt");
+    expect(proofImage).toContain('candidate.addEventListener("error"');
+    expect(stage).toContain("grid-area: 1 / 1");
+    expect(stage).not.toContain(".sunlit-project-panel { position: absolute");
+    expect(webglScene).toContain('canvas.getContext("webgl2"');
+    expect(webglScene).toContain('canvas.getContext("webgl"');
+    expect(webglScene).toContain("attribute");
+    expect(webglScene).toContain("gl_FragColor");
+    expect(webglScene).toContain("uniform vec2 u_pointer");
+    expect(webglScene).toContain("uniform float u_transition");
+    expect(webglScene).toContain("createShader");
+    expect(webglScene).toContain("createProgram");
+    expect(webglScene).toContain("drawArrays");
+    expect(webglScene).toContain('data-scene-variant="contact"');
+    expect(webglScene).not.toMatch(/three|BoxGeometry|TorusGeometry|WebGLRenderer|sampler2D/);
+    expect(existsSync(path.join(siteRoot, "src/components/sunlit/sunlit-three-runtime.ts"))).toBe(false);
+    expect(publicContentPage).not.toContain(".sunlit-button {");
+    expect(publicContentPage).not.toContain('class="sunlit-case-links"');
+    expect(publicContentPage).toContain("syncPreferredContactRequirements");
+    expect(publicContentPage).toContain("phoneInput.required = whatsappSelected");
+    expect(publicContentPage).toContain('data-service-pattern={["new", "team", "modernize"][index]}');
+    expect(publicContentPage).toContain("sunlit-architecture-topology");
+    expect(publicContentPage).toContain("sunlit-project-brief");
+    expect(publicContentPage).not.toContain("border-left: 4px solid");
+    expect(webglScene).toContain("IntersectionObserver");
+    expect(webglScene).toContain("ResizeObserver");
+    expect(webglScene).toContain("visibilitychange");
+    expect(webglScene).toContain("webglcontextlost");
+    expect(webglScene).toContain("webglcontextrestored");
+    expect(webglScene).toContain('reducedMotion.addEventListener("change"');
+    expect(webglScene).toContain("function restartLoop()");
+    const reducedMotionHandler = webglScene.slice(
+      webglScene.indexOf("function onReducedMotionChange()"),
+      webglScene.indexOf("function onContextLost"),
+    );
+    expect(reducedMotionHandler).toContain("stopLoop()");
+    expect(reducedMotionHandler).toContain("restartLoop()");
+    expect(reducedMotionHandler).not.toContain("releaseProgram()");
+    expect(webglScene).toContain("WEBGL_lose_context");
+    expect(webglScene).toContain("Math.min(window.devicePixelRatio || 1, width < 720 ? 1 : 1.5)");
+    expect(sitePackage).not.toMatch(/"(?:@types\/)?three"/);
+    expect(publicContentPage).toContain(".sunlit-architecture-hero > div > p:last-of-type { color: var(--color-ink); }");
+    expect(publicContentPage).toContain("SunlitProjectStage");
+    expect(publicContentPage).toContain("getPracticePageContent");
+    expect(publicContentPage).toContain("SunlitWebGLScene");
+    expect(publicContentPage).toContain("SunlitCtaBand");
+    expect(publicContentPage).toContain(".sunlit-related > div { display: grid;");
+    expect(publicContentPage).not.toContain(".sunlit-related > div { display: flex; overflow-x: auto;");
+    expect(contentGraph).toContain("/images/proof/casa-roca-gallery-v2.jpg");
+    expect(contentGraph).toContain("/images/proof/casa-roca-value-v2.jpg");
+    expect(contentGraph).toContain("/images/proof/barber-central-hero-v2.jpg");
+    expect(contentGraph).toContain("/images/proof/nutri-plan-dashboard-v2.png");
+    expect(contentGraph).toContain("/images/proof/enterprise-systems-map-v2.svg");
+    expect(contentGraph).toContain("/images/proof/engineering-practice-release-cycle.svg");
+    for (const asset of [
+      "public/images/proof/casa-roca-gallery-v2.jpg",
+      "public/images/proof/casa-roca-value-v2.jpg",
+      "public/images/proof/barber-central-hero-v2.jpg",
+      "public/images/proof/nutri-plan-dashboard-v2.png",
+      "public/images/brand/aohys-connections-wordmark-v3.svg",
+      "public/images/brand/aohys-connections-mark-v3.svg",
+      "public/images/brand/aohys-connections-mono-v3.svg",
+      "public/images/brand/aohys-connections-negative-v3.svg",
+    ]) expect(existsSync(path.join(siteRoot, asset)), `${asset} is missing`).toBe(true);
+    expect(engineeringPracticeDiagram).toContain("Reviewable release cycle");
+    expect(
+      [...new Set(engineeringPracticeDiagram.match(/#[0-9a-fA-F]{6}/g)?.map((color) => color.toUpperCase()))].sort(),
+    ).toEqual(["#473C33", "#ABC270", "#FDA769", "#FEC868", "#FFFFFF"].sort());
+    expect(contentGraph).not.toMatch(/aohys-pixel|pixel-product-landscape|pixel-hills|pixel-lake/);
     expect(posthogAnalytics).toContain("buildAnalyticsBootstrapPayload");
     expect(posthogClient).toContain("capture_pageview");
     expect(posthogClient).toContain("captureException");
     expect(source).toContain("contact_form_submit_failed");
     expect(source).not.toContain("autocapture: true");
-    expect(enDictionary).toContain("Client code, product code");
+    expect(enDictionary).toContain("Client work and operational data stay private");
     expect(esDictionary).toContain("Los límites público/privado");
     expect(routePage).toContain("getPublicRouteMap");
     expect(layout).toContain('rel="alternate"');

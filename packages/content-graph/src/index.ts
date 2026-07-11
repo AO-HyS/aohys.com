@@ -56,31 +56,54 @@ export interface EvidenceAsset {
 export interface StaticEvidenceImageAsset {
   src: string;
   thumbSrc?: string;
+  alt?: string;
   kind: "site" | "landing" | "dashboard" | "diagram";
 }
 
 export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceImageAsset> = {
+  home: {
+    src: "/images/proof/casa-roca-value-v2.jpg",
+    alt: "Casa Roca destination story and reservation path",
+    kind: "site",
+  },
+  "home:architecture-backdrop": {
+    src: "/images/proof/enterprise-systems-map-v2.svg",
+    alt: "Enterprise systems and operational flow map",
+    kind: "diagram",
+  },
+  "home:practice-backdrop": {
+    src: "/images/proof/barber-central-hero-v2.jpg",
+    alt: "The Barber Central product hero",
+    kind: "landing",
+  },
   "case-study:casa-roca": {
-    src: "/images/proof/casa-roca-production.png",
+    src: "/images/proof/casa-roca-gallery-v2.jpg",
+    thumbSrc: "/images/proof/casa-roca-value-v2.jpg",
+    alt: "Casa Roca destination gallery and value story",
     kind: "site",
   },
   "case-study:the-barber-central": {
-    src: "/images/proof/barber-central-landing.png",
-    thumbSrc: "/images/proof/barber-central-proof-thumb.png",
+    src: "/images/proof/barber-central-hero-v2.jpg",
+    alt: "The Barber Central booking product hero",
     kind: "landing",
   },
   "case-study:nutri-plan": {
-    src: "/images/proof/nutri-plan-dashboard.png",
-    thumbSrc: "/images/proof/nutri-plan-proof-thumb.png",
+    src: "/images/proof/nutri-plan-dashboard-v2.png",
+    alt: "Sanitized Nutri Plan content operations dashboard",
     kind: "dashboard",
   },
   "case-study:enterprise-systems": {
-    src: "/images/proof/enterprise-delivery-map.svg",
+    src: "/images/proof/enterprise-systems-map-v2.svg",
     kind: "diagram",
   },
   "case-study:engineering-practice": {
-    src: "/images/generated/aohys-architecture-proof-surface.png",
+    src: "/images/proof/engineering-practice-release-cycle.svg",
     kind: "diagram",
+  },
+  practice: {
+    src: "/images/proof/barber-central-hero-v2.jpg",
+    alt: "The Barber Central product delivery system",
+    kind: "landing",
   },
 };
 
@@ -101,6 +124,8 @@ export interface HomeStage {
 
 export interface HomePageContent {
   headline: string;
+  headlineLines?: string[];
+  headlineEmphasisWords?: string[];
   deck: string;
   proofBoardLabel: string;
   proofBoardTitle: string;
@@ -122,6 +147,52 @@ export interface HomePageContent {
   whatsappHref: string;
 }
 
+export interface PublicNavigationItem {
+  slotId: "solutions" | "agents" | "pricing" | "docs" | "blog";
+  label: string;
+  contentId?: ContentId | string;
+  href: string;
+  external?: boolean;
+  dropdown?: boolean;
+}
+
+export interface PublicNavigationAction {
+  slotId: "login" | "signup";
+  label: string;
+  contentId?: ContentId | string;
+  href: string;
+  style: "secondary" | "primary";
+}
+
+export interface PublicNavigationDropdownItem {
+  id: string;
+  label: string;
+  text: string;
+  href: string;
+  icon: "site" | "operations" | "system" | "practice";
+  tone: number;
+}
+
+export interface PublicNavigationPreview {
+  tabs: string[];
+  codeLines: string[];
+}
+
+export interface PublicNavigation {
+  brand: {
+    homeLabel: string;
+    wordmarkSrc: string;
+    fallbackSrc: string;
+  };
+  items: PublicNavigationItem[];
+  actions: PublicNavigationAction[];
+  dropdown: {
+    label: string;
+    items: PublicNavigationDropdownItem[];
+    preview: PublicNavigationPreview;
+  };
+}
+
 export interface ArchitectureSourceLink {
   label: string;
   href: string;
@@ -133,13 +204,52 @@ export interface ArchitectureSection {
   links?: ArchitectureSourceLink[];
 }
 
+export interface ArchitectureLayer {
+  id: "experience" | "edge" | "product-data" | "communication" | "observability" | "delivery";
+  label: string;
+  technologies: string[];
+  body: string;
+}
+
+export interface ArchitectureTradeoff {
+  title: string;
+  reason: string;
+  result: string;
+}
+
 export interface ArchitecturePageContent {
   heading: string;
   deck: string;
+  systemHeading: string;
+  systemBody: string;
+  layers: ArchitectureLayer[];
+  tradeoffsHeading: string;
+  tradeoffs: ArchitectureTradeoff[];
   sourceLabel: string;
   sourceLinks: ArchitectureSourceLink[];
   sections: ArchitectureSection[];
   boundaryNote: string;
+}
+
+export interface PracticeService {
+  id: "product-systems" | "architecture-modernization" | "delivery-acceleration";
+  title: string;
+  problem: string;
+  result: string;
+  engagement: string;
+  deliverables: string[];
+}
+
+export interface PracticePageContent {
+  heading: string;
+  deck: string;
+  services: PracticeService[];
+  processHeading: string;
+  process: HomeStage[];
+  deliverablesHeading: string;
+  deliverables: string[];
+  relatedHeading: string;
+  relatedContentIds: ContentId[];
 }
 
 export interface CaseStudySection {
@@ -320,7 +430,15 @@ interface LocalizedContentEntry {
   homeContent?: Omit<HomePageContent, "selectedOutcomes"> & {
     selectedOutcomes: Array<Omit<HomeOutcome, "path">>;
   };
+  publicNavigation?: Omit<PublicNavigation, "items" | "actions" | "dropdown"> & {
+    items: Array<Omit<PublicNavigationItem, "href">>;
+    actions: Array<Omit<PublicNavigationAction, "href"> & { href?: string }>;
+    dropdown: Omit<PublicNavigation["dropdown"], "items"> & {
+      items: Array<Omit<PublicNavigationDropdownItem, "href"> & { contentId: ContentId | string }>;
+    };
+  };
   architectureContent?: ArchitecturePageContent;
+  practiceContent?: PracticePageContent;
   caseStudyContent?: CaseStudyPageContent;
   resumeContent?: ResumePageContent;
   privacyContent?: PrivacyPageContent;
@@ -615,6 +733,37 @@ export function getHomePageContent(locale: Locale): HomePageContent {
   };
 }
 
+export function getPublicNavigation(locale: Locale): PublicNavigation {
+  const home = getDictionaryEntry("home", locale);
+
+  if (!home.publicNavigation) {
+    throw new Error(`Public navigation is missing for locale "${locale}".`);
+  }
+
+  return {
+    brand: home.publicNavigation.brand,
+    items: home.publicNavigation.items.map((item) => ({
+      ...item,
+      href: item.contentId ? getLocalizedPath(item.contentId, locale) : "#",
+    })),
+    actions: home.publicNavigation.actions.map((action) => ({
+      ...action,
+      href: action.href ?? (action.contentId ? getLocalizedPath(action.contentId, locale) : "#"),
+    })),
+    dropdown: {
+      ...home.publicNavigation.dropdown,
+      items: home.publicNavigation.dropdown.items.map((item) => ({
+        id: item.id,
+        label: item.label,
+        text: item.text,
+        icon: item.icon,
+        tone: item.tone,
+        href: getLocalizedPath(item.contentId, locale),
+      })),
+    },
+  };
+}
+
 export function getArchitecturePageContent(locale: Locale): ArchitecturePageContent {
   const architecture = getDictionaryEntry("architecture", locale);
 
@@ -623,6 +772,16 @@ export function getArchitecturePageContent(locale: Locale): ArchitecturePageCont
   }
 
   return architecture.architectureContent;
+}
+
+export function getPracticePageContent(locale: Locale): PracticePageContent {
+  const practice = getDictionaryEntry("practice", locale);
+
+  if (!practice.practiceContent) {
+    throw new Error(`Practice content is missing for locale "${locale}".`);
+  }
+
+  return practice.practiceContent;
 }
 
 export function getCaseStudyPageContent(contentId: ContentId | string, locale: Locale): CaseStudyPageContent | undefined {

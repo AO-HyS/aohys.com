@@ -5,6 +5,7 @@ import {
   DEFAULT_LOCALE,
   LOCALES,
   MissingLocaleVariantError,
+  STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID,
   getArchitecturePageContent,
   getCaseStudyIndexContent,
   getCaseStudyPageContent,
@@ -12,6 +13,8 @@ import {
   getLanguageAlternates,
   getLocaleVariant,
   getLocalizedPath,
+  getPracticePageContent,
+  getPublicNavigation,
   getPublicRouteMap,
   getResumePageContent,
   getSeoMetadata,
@@ -46,8 +49,8 @@ function dynamicCaseStudyEntry(locale: "en" | "es") {
         ? "El dashboard publico este caso con las secciones necesarias."
         : "The dashboard published this case with the required sections.",
       problem: {
-        title: isSpanish ? "Problema" : "Problem",
-        body: isSpanish ? "Necesitaba una pagina publica." : "It needed a public page.",
+        title: isSpanish ? "Oportunidad" : "Opportunity",
+        body: isSpanish ? "Podía convertirse en una página pública." : "It could become a public page.",
       },
       businessOutcome: {
         title: isSpanish ? "Resultado" : "Business outcome",
@@ -58,8 +61,8 @@ function dynamicCaseStudyEntry(locale: "en" | "es") {
         body: isSpanish ? "Publicacion segura desde dashboard." : "Safe dashboard publication.",
       },
       constraints: {
-        title: isSpanish ? "Restricciones" : "Constraints",
-        body: isSpanish ? "Sin datos privados." : "No private data.",
+        title: isSpanish ? "Consideraciones de diseño" : "Design considerations",
+        body: isSpanish ? "Contenido público y claro." : "Clear public content.",
       },
       architectureDecisions: {
         title: isSpanish ? "Arquitectura" : "Architecture decisions",
@@ -96,6 +99,16 @@ describe("Public Content Graph", () => {
   it("uses English as the default locale and Spanish as the secondary locale", () => {
     expect(DEFAULT_LOCALE).toBe("en");
     expect(LOCALES).toEqual(["en", "es"]);
+  });
+
+  it("uses dedicated static evidence for the engineering practice case study", () => {
+    expect(STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:engineering-practice"]).toEqual({
+      src: "/images/proof/engineering-practice-release-cycle.svg",
+      kind: "diagram",
+    });
+    expect(STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:engineering-practice"]?.src).not.toBe(
+      STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:enterprise-systems"]?.src,
+    );
   });
 
   it("resolves stable content IDs to localized public routes", () => {
@@ -143,7 +156,7 @@ describe("Public Content Graph", () => {
   it("returns canonical SEO metadata and language alternates", () => {
     expect(getLanguageAlternates("resume")).toEqual({
       en: "https://aohys.com/resume",
-      es: "https://aohys.com/es/cv",
+      es: "https://aohys.com/es/curriculum",
       "x-default": "https://aohys.com/resume",
     });
 
@@ -173,8 +186,8 @@ describe("Public Content Graph", () => {
     const englishHome = getHomePageContent("en");
     const spanishHome = getHomePageContent("es");
 
-    expect(englishHome.headline).toContain("sell, operate, and ship");
-    expect(spanishHome.headline).toContain("vender, operar y lanzar");
+    expect(englishHome.headline).toContain("make real");
+    expect(spanishHome.headline).toContain("hacer realidad");
     expect(englishHome.selectedOutcomes).toHaveLength(4);
     expect(englishHome.selectedOutcomes.map((outcome) => outcome.path)).toEqual([
       "/case-studies/casa-roca",
@@ -188,6 +201,52 @@ describe("Public Content Graph", () => {
     );
     expect(spanishHome.selectedOutcomes[0]?.path).toBe("/es/casos/casa-roca");
     expect(spanishHome.whatsappHref).toMatch(/^https:\/\/wa\.me\/52/);
+  });
+
+  it("returns the graph-backed AOHYS public information architecture", () => {
+    const englishNavigation = getPublicNavigation("en");
+    const spanishNavigation = getPublicNavigation("es");
+
+    expect(englishNavigation.items.map((item) => item.slotId)).toEqual([
+      "solutions",
+      "agents",
+      "pricing",
+      "docs",
+      "blog",
+    ]);
+    expect(englishNavigation.items.map((item) => item.label)).toEqual([
+      "Work",
+      "Services",
+      "About",
+      "Architecture",
+      "Start a conversation",
+    ]);
+    expect(englishNavigation.items.map((item) => item.href)).toEqual([
+      "/case-studies",
+      "/practice",
+      "/resume",
+      "/architecture",
+      "/contact",
+    ]);
+    expect(spanishNavigation.items.map((item) => item.href)).toEqual([
+      "/es/casos",
+      "/es/practica",
+      "/es/curriculum",
+      "/es/arquitectura",
+      "/es/contacto",
+    ]);
+    expect(englishNavigation.actions.map((action) => [action.slotId, action.href])).toEqual([
+      ["login", "/dashboard"],
+      ["signup", "/contact"],
+    ]);
+    expect(englishNavigation.dropdown.items).toHaveLength(4);
+    expect(englishNavigation.dropdown.items.map((item) => item.href)).toEqual([
+      "/case-studies/casa-roca",
+      "/case-studies/the-barber-central",
+      "/architecture",
+      "/practice",
+    ]);
+    expect(englishNavigation.dropdown.preview.codeLines.join("\n")).toContain("aohys.publish");
   });
 
   it("creates locale entries and public manifest ids for new dashboard case studies", async () => {
@@ -221,7 +280,14 @@ describe("Public Content Graph", () => {
       title: "Dashboard Alpha",
       primaryActionLabel: "Open project",
       caseStudyContent: {
-        statusLabel: "Published dashboard project",
+        statusLabel: "Product system",
+        publicEvidenceTitle: "Project links",
+        constraints: {
+          body: "Project scope, data ownership, integration seams, and release constraints stay explicit as the system evolves.",
+        },
+        confidentialityNote: {
+          body: "Client details remain private.",
+        },
         publicEvidence: [
           {
             href: "https://example.com/dashboard-alpha",
@@ -498,7 +564,24 @@ describe("Public Content Graph", () => {
     const englishArchitecture = getArchitecturePageContent("en");
     const spanishArchitecture = getArchitecturePageContent("es");
 
-    expect(englishArchitecture.heading).toBe("The public code shows the work around the work.");
+    expect(englishArchitecture.heading).toBe("Architecture that gives ideas room to grow.");
+    expect(englishArchitecture.layers.map((layer) => layer.id)).toEqual([
+      "experience",
+      "edge",
+      "product-data",
+      "communication",
+      "observability",
+      "delivery",
+    ]);
+    expect(englishArchitecture.layers.flatMap((layer) => layer.technologies)).toEqual(expect.arrayContaining([
+      "Design principles",
+      "Semantic web",
+      "SQL & PostgreSQL",
+      "Database dashboards",
+      "Agent orchestration",
+      "Cloud operations",
+    ]));
+    expect(englishArchitecture.tradeoffs).toHaveLength(3);
     expect(englishArchitecture.sourceLinks.map((link) => link.href)).toEqual([
       "https://github.com/AO-HyS/aohys.com",
       "https://github.com/AO-HyS/aohys.com/blob/develop/README.md",
@@ -510,7 +593,7 @@ describe("Public Content Graph", () => {
     expect(englishArchitecture.sections.map((section) => section.title)).toContain("Environment Contract");
     expect(englishArchitecture.sections.map((section) => section.title)).toContain("Public Content Graph");
     expect(englishArchitecture.sections.every((section) => section.body.length > 40)).toBe(true);
-    expect(spanishArchitecture.heading).toBe("El código público muestra el trabajo alrededor del trabajo.");
+    expect(spanishArchitecture.heading).toBe("Arquitectura que da espacio para crecer.");
     expect(spanishArchitecture.sourceLinks[0]?.href).toBe("https://github.com/AO-HyS/aohys.com");
   });
 
@@ -528,8 +611,8 @@ describe("Public Content Graph", () => {
     expect(englishIndex.entries.map((entry) => entry.statusLabel)).toEqual([
       "Live hospitality site",
       "Active build",
-      "Private build",
-      "Enterprise/confidential",
+      "Product system",
+      "Enterprise systems",
       "Engineering practice",
     ]);
     expect(spanishIndex.entries.map((entry) => entry.path)).toEqual([
@@ -552,13 +635,16 @@ describe("Public Content Graph", () => {
       href: "/downloads/alejandro-ortiz-corro-resume.pdf",
       fileName: "alejandro-ortiz-corro-resume.pdf",
     });
-    expect(englishResume.proof.title).toBe("The site supports the resume.");
+    expect(englishResume.proof.title).toBe("9+ years building product systems that keep creating value after launch.");
     expect(englishResume.summary.join(" ")).toMatch(/React|TypeScript|Next\.js|agents|observability/i);
     expect(englishResume.contextLinks.map((link) => link.href)).toEqual([
       "/case-studies",
       "/architecture",
       "/contact",
     ]);
+    expect(englishResume.experience.find((job) => job.company === "NEORIS/CEMEX")?.role).toBe(
+      "Senior Software Engineer",
+    );
 
     expect(spanishResume.role).toBe("Senior Product Engineer / Sistemas Frontend");
     expect(spanishResume.contextTitle).toBe("Más contexto en línea");
@@ -567,6 +653,9 @@ describe("Public Content Graph", () => {
       "/es/arquitectura",
       "/es/contacto",
     ]);
+    expect(spanishResume.experience.find((job) => job.company === "NEORIS/CEMEX")?.role).toBe(
+      "Ingeniero de software sénior",
+    );
   });
 
   it("returns Casa Roca case-study content with public-safe evidence", () => {
@@ -574,24 +663,48 @@ describe("Public Content Graph", () => {
     const spanishCaseStudy = getCaseStudyPageContent("case-study:casa-roca", "es");
 
     expect(englishCaseStudy?.statusLabel).toBe("Live hospitality site");
-    expect(englishCaseStudy?.problem.title).toBe("Problem");
+    expect(englishCaseStudy?.problem.title).toBe("Opportunity");
     expect(englishCaseStudy?.businessOutcome.title).toBe("Business outcome");
-    expect(englishCaseStudy?.role.body).toMatch(/Public site delivery/i);
-    expect(englishCaseStudy?.constraints.body).toMatch(/private booking data/i);
+    expect(englishCaseStudy?.role.body).toMatch(/Product direction/i);
+    expect(englishCaseStudy?.constraints.body).toMatch(/two languages/i);
     expect(englishCaseStudy?.architectureDecisions.body).toMatch(/bilingual content/i);
     expect(englishCaseStudy?.executionHighlights.body).toMatch(/production deployment/i);
-    expect(englishCaseStudy?.qualitySecurityPerformance.body).toMatch(/sensitive operational data/i);
+    expect(englishCaseStudy?.qualitySecurityPerformance.body).toMatch(/optimized media/i);
     expect(englishCaseStudy?.publicEvidence).toHaveLength(1);
     expect(englishCaseStudy?.publicEvidence[0]).toMatchObject({
       href: "https://casa-roca.mx",
       publicSafe: true,
       altText: "Casa Roca production website",
     });
-    expect(englishCaseStudy?.confidentialityNote.body).toMatch(/operational data remain private/i);
+    expect(englishCaseStudy?.confidentialityNote.title).toBe("Scope note");
     expect(spanishCaseStudy?.statusLabel).toBe("Sitio de hospitalidad en vivo");
     expect(spanishCaseStudy?.publicEvidence[0]?.altText).toBe(
       "Sitio Casa Roca en producción",
     );
+  });
+
+  it("returns typed product engineering services in both locales", () => {
+    const englishPractice = getPracticePageContent("en");
+    const spanishPractice = getPracticePageContent("es");
+
+    expect(englishPractice.services.map((service) => service.id)).toEqual([
+      "product-systems",
+      "architecture-modernization",
+      "delivery-acceleration",
+    ]);
+    expect(englishPractice.services.every((service) => service.problem.length > 50)).toBe(true);
+    expect(englishPractice.services.every((service) => service.result.length > 50)).toBe(true);
+    expect(englishPractice.services.map((service) => service.title)).toEqual([
+      "Build a complete product from zero",
+      "Add a senior collaborator to your team",
+      "Modernize what is already in motion",
+    ]);
+    expect(englishPractice.services[0]?.result).toMatch(/website, web application, or mobile application/i);
+    expect(englishPractice.services[2]?.result).toMatch(/AI, data, cloud/i);
+    expect(englishPractice.process).toHaveLength(4);
+    expect(englishPractice.relatedContentIds).toEqual(["architecture", "case-studies"]);
+    expect(spanishPractice.services).toHaveLength(3);
+    expect(spanishPractice.deliverables).toHaveLength(5);
   });
 
   it("fails explicitly when a locale variant is missing", () => {
