@@ -3,6 +3,16 @@ import {
   type EnvironmentValidationResult,
 } from "@aohys/environment";
 
+export {
+  ensureCloudflarePagesDomain,
+  parseCloudflareProductionDomainEnvironment,
+  type CloudflareProductionDomainConfig,
+  type CloudflarePagesDomain,
+  type CloudflarePagesDomainStatus,
+  type EnsureCloudflarePagesDomainOptions,
+  type EnsureCloudflarePagesDomainResult,
+} from "./cloudflare-pages-domain.js";
+
 export type ReleaseDeploymentEnvironment = "preview" | "production";
 
 export interface CloudflarePagesDeployPlan {

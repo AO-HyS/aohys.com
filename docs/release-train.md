@@ -50,7 +50,8 @@ Feature branches should target `develop`. Production promotion should target `ma
 | `pnpm run sync:convex-env:production` | Sync production runtime values from GitHub Environment variables into the production Convex deployment without printing secret values. |
 | `pnpm run seed:dashboard:preview` | Idempotently seed the private preview dashboard with project drafts and public contact settings through `convex run` against internal dashboard functions. |
 | `pnpm run deploy:preview` | Validate preview env, audit PostHog project separation, sync Convex preview runtime variables, deploy Convex with the preview deploy key, seed preview dashboard drafts/settings, apply published dashboard content, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
-| `pnpm run deploy:production` | Validate production env, audit PostHog project separation, sync Convex production runtime variables, deploy Convex with the production deploy key, apply published dashboard content, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch main`. |
+| `pnpm run deploy:production` | Validate production env, audit PostHog project separation, sync Convex production runtime variables, deploy Convex with the production deploy key, apply published dashboard content, build `apps/site`, deploy the `main` build to Pages, and reconcile the canonical `aohys.com` Pages domain before smoke checks. |
+| `pnpm run ensure:cloudflare-production-domain` | Idempotently ensure `aohys.com` is attached to the `aohys-com` Pages project and wait for Cloudflare validation and TLS activation. Production-only. |
 | `pnpm run smoke:preview` | Fetch the preview smoke URL, verify a 2xx public shell, production canonical URL, PostHog/Convex CSP allowances, anonymous `/dashboard` redirect, private sign-in shell, and configured contact endpoint. |
 | `pnpm run smoke:production` | Fetch `https://aohys.com` and verify the same public shell, canonical, security, dashboard, and contact boundaries against production. |
 
@@ -122,6 +123,8 @@ The Cloudflare Pages project name is `aohys-com`. Site deploys use Wrangler Page
 pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop
 pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main
 ```
+
+After a production Direct Upload, the release command reconciles `aohys.com` through the Cloudflare Pages custom-domain API. It lists existing domains first, creates the association only when absent, and waits for `active` before production smoke begins. It never deletes or recreates a domain. Stale `error` or `deactivated` validation states receive one documented validation retry; blocked or persistently terminal states fail closed. Provider requests have bounded timeouts, retry transient network/429/5xx failures, and redact the API token from errors. For an apex zone already delegated to Cloudflare in the same account, Pages owns the DNS validation and certificate lifecycle and creates the required DNS record automatically.
 
 `aohys.net`, `www.aohys.net`, and `www.aohys.com` canonicalization belongs in Cloudflare Redirect Rules, not `apps/site/public/_redirects`, because Cloudflare Pages `_redirects` does not support domain-level redirects. The intended rule payload is versioned in `cloudflare/redirect-rules.json`. Set `SMOKE_CANONICAL_REDIRECT_URL=https://aohys.net/` when the rule is active and should be verified by `pnpm run smoke:production`.
 

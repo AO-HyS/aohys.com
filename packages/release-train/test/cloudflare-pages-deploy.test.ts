@@ -3,9 +3,18 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import {
   buildCloudflarePagesDeployPlan,
+  ensureCloudflarePagesDomain,
   extractCloudflarePagesDeploymentUrl,
+  parseCloudflareProductionDomainEnvironment,
   validateReleaseEnvironment,
 } from "../src/index.js";
+
+function cloudflareResponse<T>(result: T, init?: ResponseInit): Response {
+  return new Response(JSON.stringify({ success: init?.status ? init.status < 400 : true, result }), {
+    status: init?.status ?? 200,
+    headers: { "Content-Type": "application/json" },
+  });
+}
 
 const validPreviewReleaseValues = {
   AOHYS_ENV: "preview",
@@ -38,6 +47,245 @@ const validPreviewReleaseValues = {
 };
 
 describe("Cloudflare Pages release plan", () => {
+  it("leaves an active production domain unchanged", async () => {
+    const requests: Array<{ input: string; init?: RequestInit }> = [];
+    const fetchImpl = async (input: string | URL | Request, init?: RequestInit) => {
+      requests.push({ input: String(input), init });
+      return cloudflareResponse([{ name: "aohys.com", status: "active" }]);
+    };
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        fetchImpl,
+      }),
+    ).resolves.toEqual({
+      created: false,
+      domain: { name: "aohys.com", status: "active" },
+    });
+    expect(requests).toHaveLength(1);
+    expect(requests[0]?.init?.method).toBe("GET");
+    expect(requests[0]?.init?.headers).toMatchObject({ Authorization: "Bearer secret-token" });
+  });
+
+  it("creates a missing domain once and polls until Cloudflare activates it", async () => {
+    const responses = [
+      cloudflareResponse([]),
+      cloudflareResponse({ name: "aohys.com", status: "initializing" }),
+      cloudflareResponse({ name: "aohys.com", status: "pending" }),
+      cloudflareResponse({ name: "aohys.com", status: "active" }),
+    ];
+    const requests: RequestInit[] = [];
+    const fetchImpl = async (_input: string | URL | Request, init?: RequestInit) => {
+      requests.push(init ?? {});
+      const response = responses.shift();
+      if (!response) throw new Error("Unexpected request");
+      return response;
+    };
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        fetchImpl,
+        maxPollAttempts: 2,
+        pollIntervalMs: 0,
+        sleep: async () => undefined,
+      }),
+    ).resolves.toEqual({
+      created: true,
+      domain: { name: "aohys.com", status: "active" },
+    });
+    expect(requests.map((request) => request.method)).toEqual(["GET", "POST", "GET", "GET"]);
+    expect(requests[1]?.body).toBe(JSON.stringify({ name: "aohys.com" }));
+  });
+
+  it("surfaces terminal validation errors without deleting or recreating the domain", async () => {
+    const fetchImpl = async () =>
+      cloudflareResponse([
+        {
+          name: "aohys.com",
+          status: "blocked",
+          validation_data: { status: "error", error_message: "DNS validation failed" },
+        },
+      ]);
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        fetchImpl,
+      }),
+    ).rejects.toThrow("DNS validation failed");
+  });
+
+  it("retries a stale validation once and then waits for activation", async () => {
+    const responses = [
+      cloudflareResponse([{ name: "aohys.com", status: "error" }]),
+      cloudflareResponse({ name: "aohys.com", status: "pending" }),
+      cloudflareResponse({ name: "aohys.com", status: "active" }),
+    ];
+    const methods: Array<string | undefined> = [];
+    const fetchImpl = async (_input: string | URL | Request, init?: RequestInit) => {
+      methods.push(init?.method);
+      const response = responses.shift();
+      if (!response) throw new Error("Unexpected request");
+      return response;
+    };
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        fetchImpl,
+        pollIntervalMs: 0,
+        sleep: async () => undefined,
+      }),
+    ).resolves.toMatchObject({ domain: { status: "active" } });
+    expect(methods).toEqual(["GET", "PATCH", "GET"]);
+  });
+
+  it("retries transient API failures without exposing the token", async () => {
+    const responses = [
+      new Response("temporarily unavailable", { status: 503 }),
+      cloudflareResponse([{ name: "aohys.com", status: "active" }]),
+    ];
+    const fetchImpl = async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("Unexpected request");
+      return response;
+    };
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        fetchImpl,
+        retryDelayMs: 0,
+        sleep: async () => undefined,
+      }),
+    ).resolves.toMatchObject({ domain: { status: "active" } });
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        fetchImpl: async () => {
+          throw new Error("request secret-token failed");
+        },
+        maxRequestAttempts: 1,
+      }),
+    ).rejects.not.toThrow("secret-token");
+  });
+
+  it("bounds individual requests and reports malformed provider responses safely", async () => {
+    const fetchImpl = async (_input: string | URL | Request, init?: RequestInit): Promise<Response> =>
+      new Promise((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => reject(new Error("request aborted")));
+      });
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        fetchImpl,
+        requestTimeoutMs: 1,
+        maxRequestAttempts: 1,
+      }),
+    ).rejects.toThrow("could not complete");
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        fetchImpl: async () => new Response("not json", { status: 502 }),
+        maxRequestAttempts: 1,
+      }),
+    ).rejects.toThrow("malformed JSON with HTTP 502");
+  });
+
+  it("parses only the production canonical-domain CLI contract", () => {
+    expect(
+      parseCloudflareProductionDomainEnvironment({
+        AOHYS_ENV: "production",
+        PUBLIC_SITE_URL: "https://aohys.com",
+        CLOUDFLARE_ACCOUNT_ID: "account-id",
+        CLOUDFLARE_API_TOKEN: "token",
+        CLOUDFLARE_PROJECT_NAME: "aohys-com",
+      }),
+    ).toEqual({
+      accountId: "account-id",
+      apiToken: "token",
+      projectName: "aohys-com",
+      domainName: "aohys.com",
+    });
+    expect(() =>
+      parseCloudflareProductionDomainEnvironment({
+        AOHYS_ENV: "preview",
+        PUBLIC_SITE_URL: "https://aohys.com",
+      }),
+    ).toThrow("only with AOHYS_ENV=production");
+    expect(() =>
+      parseCloudflareProductionDomainEnvironment({
+        AOHYS_ENV: "production",
+        PUBLIC_SITE_URL: "https://www.aohys.com",
+      }),
+    ).toThrow("PUBLIC_SITE_URL=https://aohys.com");
+    expect(() =>
+      parseCloudflareProductionDomainEnvironment({
+        AOHYS_ENV: "production",
+        PUBLIC_SITE_URL: "https://aohys.com",
+        CLOUDFLARE_PROJECT_NAME: "wrong-project",
+      }),
+    ).toThrow("CLOUDFLARE_PROJECT_NAME=aohys-com");
+  });
+
+  it("recovers from a concurrent domain creation race by re-reading the domain", async () => {
+    const responses = [
+      cloudflareResponse([]),
+      new Response(
+        JSON.stringify({ success: false, result: null, errors: [{ message: "Domain already exists" }] }),
+        { status: 409, headers: { "Content-Type": "application/json" } },
+      ),
+      cloudflareResponse([{ name: "aohys.com", status: "active" }]),
+    ];
+    const fetchImpl = async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("Unexpected request");
+      return response;
+    };
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        fetchImpl,
+      }),
+    ).resolves.toEqual({
+      created: false,
+      domain: { name: "aohys.com", status: "active" },
+    });
+  });
+
   it("maps preview and production to Wrangler Pages direct-upload commands", () => {
     expect(buildCloudflarePagesDeployPlan("preview")).toEqual({
       environment: "preview",
@@ -174,7 +422,10 @@ describe("Cloudflare Pages release plan", () => {
       "pnpm run release:env:preview && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:preview && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"preview release\" && pnpm run seed:dashboard:preview && pnpm run publish:content:build && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop",
     );
     expect(rootPackage.scripts["deploy:production"]).toBe(
-      "pnpm run release:env:production && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:production && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"production release\" && pnpm run publish:content:build && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main",
+      "pnpm run release:env:production && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:production && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"production release\" && pnpm run publish:content:build && pnpm --filter @aohys/site build && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main && pnpm run ensure:cloudflare-production-domain",
+    );
+    expect(rootPackage.scripts["ensure:cloudflare-production-domain"]).toBe(
+      "tsx scripts/ensure-cloudflare-pages-domain.ts",
     );
 
     expect(existsSync(workflowPath), "release-train.yml must exist").toBe(true);
