@@ -8,6 +8,7 @@ const config = parseCloudflareProductionDomainEnvironment(process.env);
 const result = await ensureCloudflarePagesDomain({
   ...config,
   reconcileDns: true,
+  dnsZoneAccount: "external",
 });
 
 console.log(
