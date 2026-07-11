@@ -5,6 +5,7 @@ import {
   dashboardSurfaceFromPath,
   initializeDashboardAnalytics,
   sanitizeDashboardAnalyticsProperties,
+  sanitizeDashboardPostHogEnvelopeProperties,
 } from "./analytics";
 
 describe("dashboard analytics contract", () => {
@@ -53,14 +54,14 @@ describe("dashboard analytics contract", () => {
     });
   });
 
-  it("preserves the PostHog transport token while rejecting application tokens", () => {
-    expect(sanitizeDashboardAnalyticsProperties({
-      $token: "phc_public_ingestion_key",
-      token: "private_application_token",
+  it("preserves only the SDK transport token in the PostHog envelope", () => {
+    expect(sanitizeDashboardPostHogEnvelopeProperties({
+      token: "phc_public_ingestion_key",
+      auth_token: "private_application_token",
       environment: "preview",
       surface: "overview",
     })).toEqual({
-      $token: "phc_public_ingestion_key",
+      token: "phc_public_ingestion_key",
       environment: "preview",
       surface: "overview",
     });

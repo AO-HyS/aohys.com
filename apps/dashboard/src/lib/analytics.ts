@@ -61,7 +61,6 @@ interface PostHogClient {
 type PostHogImporter = () => Promise<{ default: PostHogClient }>;
 
 const DEFAULT_POSTHOG_HOST = "https://us.i.posthog.com";
-const POSTHOG_TRANSPORT_PROPERTY_KEYS = new Set(["$token"]);
 const SENSITIVE_PROPERTY_PARTS = [
   "admin",
   "company",
@@ -84,10 +83,6 @@ function normalizeHost(value: string | undefined): string {
 }
 
 function isSensitiveProperty(key: string): boolean {
-  if (POSTHOG_TRANSPORT_PROPERTY_KEYS.has(key)) {
-    return false;
-  }
-
   const normalized = key.toLowerCase().replaceAll("-", "_");
   return SENSITIVE_PROPERTY_PARTS.some((part) => normalized.includes(part));
 }
@@ -104,6 +99,19 @@ export function sanitizeDashboardAnalyticsProperties(
         typeof value === "boolean"
       )),
   ) as Record<string, string | number | boolean>;
+}
+
+export function sanitizeDashboardPostHogEnvelopeProperties(
+  properties: object,
+): Record<string, string | number | boolean> {
+  const sanitized = sanitizeDashboardAnalyticsProperties(properties);
+  const token = (properties as Record<string, unknown>).token;
+
+  if (typeof token === "string" && token.length > 0) {
+    sanitized.token = token;
+  }
+
+  return sanitized;
 }
 
 export function buildDashboardPostHogConfig(
@@ -154,7 +162,7 @@ export function initializeDashboardAnalytics(
       client.init(runtimeConfig.posthogKey!.trim(), {
         ...posthogConfig,
         before_send: (event) => event
-          ? { ...event, properties: sanitizeDashboardAnalyticsProperties(event.properties ?? {}) }
+          ? { ...event, properties: sanitizeDashboardPostHogEnvelopeProperties(event.properties ?? {}) }
           : null,
       });
       return client;
