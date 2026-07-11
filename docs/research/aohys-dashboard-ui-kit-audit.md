@@ -5,6 +5,10 @@ Issue: AOH-73
 Scope: `apps/dashboard` and its remaining dependency on `packages/dashboard-ui`  
 Method: source review, current shadcn CLI inspection, official shadcn documentation, deterministic Impeccable scan, independent visual review, and local Browser verification at 1280x720 and 390x844.
 
+## Final implementation receipt
+
+The 8/20 score below is the preserved baseline that drove the redesign, not the final state. The finished Operations Desk implementation passes the current 100/100 scorecard, zero-finding Impeccable scan, independent code review, and deployed responsive QA. The exact Preview revision passed all five authenticated surfaces at 1440, 1024, 768, 390, and 320 CSS px; 200% reflow and reduced-motion behavior also passed. See `aohys-dashboard-100-scorecard.md` and `aohys-dashboard-final-code-review.md` for current evidence.
+
 ## Decision
 
 Preserve the installed Radix/shadcn foundation, but replace the dashboard's visual foundation and screen-level composition. The dashboard currently behaves like a functional admin shell while looking and reading like a generic shadcn starter. It does not yet demonstrate the same authored system, product judgment, or brand discipline as the public site.

@@ -102,8 +102,9 @@ Do not embed these analytics in the AOHYS dashboard. PostHog remains the analyti
 
 ## Local verification completed
 
-- Backend: 23 tests passed, including contact analytics privacy and provider failure events.
-- Dashboard: 17 tests passed, including persistence-free PostHog configuration, route normalization, sensitive-key removal, and fixed-shape capture.
+- Backend: 39 tests passed, including contact analytics privacy, provider failure events, atomic content creation, and route-collision guards.
+- Dashboard: 36 tests passed, including persistence-free PostHog configuration, shared route classification, sensitive-key removal, fixed-shape capture, and responsive primitive ownership.
+- Content graph: 24 tests passed, including localized publishing identity and exact static-route registry drift checks.
 - Site: 41 tests passed across analytics, CSP reporting, dashboard guard, public shell, and public routes; 24 Astro pages built.
 - Dashboard runtime config now receives only the public PostHog key/host in addition to existing public runtime values.
 - The lead ID no longer appears in PostHog payload expectations.
@@ -123,10 +124,11 @@ No deliberate exception, provider failure, contact submission, or private-record
 
 ## Final Preview provider receipt — 2026-07-11
 
-- Release Train run `29155634781` confirmed Preview/Production key separation, deployed `https://f1e5345b.aohys-com.pages.dev`, updated the stable Preview alias, and passed smoke checks.
+- Release Train run `29158207406` confirmed Preview/Production key separation, deployed `https://c4720451.aohys-com.pages.dev`, updated the stable Preview alias, and passed smoke checks.
 - Computer Use identified project `AOHYS Public Site - Preview` (project ID 492205) and separately confirmed the production project.
 - Recent `lead_submitted` and `csp_violation_reported` events were visible in Preview with environment-scoped service identities and no private message/contact property in the event list.
 - With explicit user approval, Do Not Track was temporarily disabled for ordinary read-only route navigation. `$pageview` and `dashboard_surface_viewed` then appeared in project 492205; Do Not Track was restored immediately and `navigator.doNotTrack === "1"` was verified afterward.
 - Final `dashboard_surface_viewed` device `019f518a-7790-7d2f-9ca0-19a8b6d5ef8d` contains `environment=preview`, `path=/dashboard/projects`, `surface=projects`, and `GeoIP disabled=true`.
 - Inspection of that final event found none of `admin_email`, `lead_id`, `message`, `phone`, `company`, `secret`, or `auth_token`.
 - The implemented fixes preserve the PostHog SDK envelope token only at the transport boundary, keep application-property sanitization strict, observe TanStack history without a component effect, normalize both full and base-relative dashboard paths, and disable GeoIP for every private dashboard event.
+- Dashboard navigation and analytics now share one optional route matcher, preserving `unknown` for unmatched routes instead of duplicating classification logic.

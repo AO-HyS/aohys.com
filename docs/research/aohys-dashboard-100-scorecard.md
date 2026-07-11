@@ -10,25 +10,30 @@ The implementation, defensive review, release train, Preview Deployment, and fin
 | --- | ---: | --- |
 | Product workflows and UX | 15/15 | Overview, Projects, Leads, Resume, Settings, aliases, async states, guarded destructive/publish actions, and Browser route matrix passed in Preview. |
 | Visual system and interaction craft | 15/15 | Operations Desk tokens/adapters, shared shadcn primitives, page-by-page redesign, and Impeccable detector with zero findings. |
-| Accessibility and responsive behavior | 10/10 | Labels, keyboard semantics, focus contracts, contained tables, mobile task surfaces, and exact deployed 390×844 CSS px proof passed on Overview, Projects, Leads, Resume, and Settings with `scrollWidth=innerWidth=390`. |
+| Accessibility and responsive behavior | 10/10 | Labels, keyboard semantics, focus contracts, contained tables, mobile task surfaces, a 25-case deployed route/viewport matrix, 200% reflow, and reduced-motion proof passed. |
 | Security and privacy | 15/15 | Defensive review reports zero unresolved validated Critical/High findings; private headers/auth boundaries, analytics sanitization, dependency audit, and negative tests passed. |
-| Convex, Better Auth, and data boundaries | 10/10 | Admin authorization, explicit validators/returns, cursor pagination, indexed rate limiting, bounded reads, shared policies, and zero remaining `.collect()` calls. |
-| Architecture and code organization | 15/15 | Typed navigation, deep project workflow, shared media/settings policy, editable-state modules, and deletion of the legacy 928-line workflow package. |
+| Convex, Better Auth, and data boundaries | 10/10 | Admin authorization, explicit validators/returns, cursor pagination, indexed rate limiting, bounded reads, atomic bilingual project creation, locale-aware slug collision guards, shared policies, and zero remaining `.collect()` calls. |
+| Architecture and code organization | 15/15 | Typed navigation, stable Content IDs with independent localized slugs, a drift-tested static-route registry, shared media/settings policy, editable-state modules, and deletion of the legacy 928-line workflow package. |
 | React, TanStack, and runtime performance | 10/10 | Effects remain only for external synchronization/cleanup; TanStack Router/Table ownership is explicit; route chunks are lazy; entry fell from ~549 kB to 257.47 kB without a build warning. |
 | PostHog observability | 5/5 | Preview/Production separation passed; `$pageview` and `dashboard_surface_viewed` are visible in Preview project 492205. The final dashboard receipt records `environment=preview`, `path=/dashboard/projects`, `surface=projects`, `GeoIP disabled=true`, and no prohibited private properties. |
 | Testing, delivery, and public-sample clarity | 5/5 | Frozen install, repeated `verify:ci`, 24-route Astro build, dependency audit, successful Release Train, Preview smoke, PR #81, and updated public documentation. |
 | **Total** | **100/100** | **All rubric points and release gates are proven on the current Preview build.** |
 
-- Preview: `https://f1e5345b.aohys-com.pages.dev`
+- Preview: `https://c4720451.aohys-com.pages.dev`
 - Stable Preview alias: `https://develop.aohys-com.pages.dev`
-- Release Train: `https://github.com/AO-HyS/aohys.com/actions/runs/29155634781`
+- Release Train: `https://github.com/AO-HyS/aohys.com/actions/runs/29158207406`
 - PR: `https://github.com/AO-HyS/aohys.com/pull/81`
 
 ### Final proof receipts
 
 1. With explicit approval, Do Not Track was temporarily disabled for ordinary read-only Preview navigation. `$pageview` and `dashboard_surface_viewed` were verified in `AOHYS Public Site - Preview`; the setting was restored and `navigator.doNotTrack === "1"` was rechecked afterward.
-2. The deployed Overview, Projects, Leads, Resume, and Settings routes were measured at an authoritative 390×844 CSS px viewport. Every route reported `innerWidth=390`, `scrollWidth=390`, and no page-level horizontal overflow.
-3. The final analytics receipt is device `019f518a-7790-7d2f-9ca0-19a8b6d5ef8d` in Preview project 492205. Its application properties are the expected safe shape and GeoIP enrichment is disabled.
+2. The deployed Overview, Projects, Leads, Resume, and Settings routes passed all 25 combinations at 1440×900, 1024×768, 768×1024, 390×844, and 320×800 CSS px. Every case matched its requested width, had `scrollWidth=innerWidth`, rendered its expected heading and main surface, and had no broken image.
+3. Real Chrome page zoom was set to 200% while the responsive viewport was exactly 320 CSS px. Projects reported `innerWidth=320`, `scrollWidth=320`, its expected heading, and zero broken images; the 25-case matrix separately proves all five routes at 320 CSS px.
+4. At 390×844, `prefers-reduced-motion: reduce` was active, the mobile Sheet remained operable, and computed animation/transition durations collapsed to `0.01ms`.
+5. Public regressions passed on `/`, `/es/`, `/case-studies`, and `/es/casos` at 1440, 390, and 320 CSS px with no page overflow, broken image, failed request, or application console error.
+6. QA discovered one genuine Leads overflow at 768 px. The shared `SidebarInset` now owns `min-width: 0`; a regression test and a full 25-case rerun prove the correction.
+7. Computer Use visual inspection covered desktop and exact 768, 390, and 320 widths. The project creation form was inspected without submitting a mutation. The final Preview was left open in Chrome with DevTools and device emulation closed.
+8. The final analytics receipt is device `019f518a-7790-7d2f-9ca0-19a8b6d5ef8d` in Preview project 492205. Its application properties are the expected safe shape and GeoIP enrichment is disabled.
 
 ## Purpose
 

@@ -9,7 +9,7 @@ Method: defensive source review, trust-boundary tracing, negative unit tests, he
 - Unresolved validated Critical findings: **0**
 - Unresolved validated High findings: **0**
 - Production merge: **not authorized**
-- Preview provider verification: Release Train, smoke, and PostHog server-event proof passed; privacy-preserving browser-event proof remains tracked by AOH-86.
+- Preview provider verification: Release Train, smoke, PostHog server events, and privacy-preserving dashboard browser-event proof passed. Do Not Track was restored after the approved verification window.
 
 ## Remediated findings
 
@@ -20,6 +20,7 @@ Method: defensive source review, trust-boundary tracing, negative unit tests, he
 | Media publication | Duplicated URL/custom-ID policy risked traversal and divergent public selection | Consolidated validation, public URL resolution, and deterministic publication selection in `@aohys/core`; rejected credentials, traversal, encoded traversal/slashes, and unsupported new R2 writes | `packages/core/src/media-policy.ts`, `packages/core/test/media-policy.test.ts` |
 | Public settings | Arbitrary setting keys/URLs could reach generated public configuration | Restricted writes to a canonical direct `https://wa.me/<digits>` value and revalidated during the build applicator | `packages/core/src/public-settings.ts`, `apps/backend/test/site-setting-security.test.ts` |
 | Analytics | Dashboard or public event properties could include private identity/content | Disabled autocapture, persistence, profiles, and recording; introduced fixed events/properties and a denylist sanitizer for identity, messages, contact values, auth material, and URLs | `apps/dashboard/src/lib/analytics.ts`, `apps/dashboard/src/lib/analytics.test.ts` |
+| Content graph writes | Two client mutations and route-derived identity could create partial bilingual projects or collide with static/localized routes | Replaced creation with one authenticated atomic mutation, introduced stable Content IDs plus independent locale slugs, and added exact static-route drift/collision guards | `apps/backend/convex/content.ts`, `packages/content-graph/src/static-case-study-routes.ts`, related backend/content-graph tests |
 | Private HTML | Legacy workflow renderer duplicated private models and enlarged the pre-React boundary | Deleted the legacy workflow package; retained only narrow sign-in/access states beside the Cloudflare site guard | `apps/site/src/dashboard-access-states.ts`, `apps/site/test/dashboard-access.test.ts` |
 
 ## Authorization and platform controls
@@ -39,6 +40,6 @@ Method: defensive source review, trust-boundary tracing, negative unit tests, he
 - Impeccable detector: zero findings.
 - Public Astro build: 24 routes; Casa Roca sanitized evidence asset remained reachable in local Browser proof.
 
-## Remaining external proof
+## Final external proof
 
-AOH-86 deployed Preview successfully through the official Release Train, passed environment audits and smoke, and verified the correct PostHog Preview project. Do Not Track suppressed browser telemetry during QA, so browser-event proof remains pending explicit permission to temporarily change that local privacy setting. Production remains blocked until explicit user approval.
+AOH-86 deployed Preview through Release Train run `29158207406` to `https://c4720451.aohys-com.pages.dev`; the stable Preview alias was updated and environment audits plus smoke passed. In PostHog Preview project 492205, `$pageview` and `dashboard_surface_viewed` were visible. The final dashboard event recorded `environment=preview`, `path=/dashboard/projects`, `surface=projects`, and `GeoIP disabled=true`, with none of the prohibited identity, contact, content, secret, or auth properties. Do Not Track was restored and `navigator.doNotTrack === "1"` was rechecked. Production remains blocked until explicit user approval.
