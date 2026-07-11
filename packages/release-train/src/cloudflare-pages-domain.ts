@@ -49,6 +49,7 @@ export interface EnsureCloudflarePagesDomainOptions {
   projectName: string;
   domainName: string;
   reconcileDns?: boolean;
+  dnsZoneAccount?: "external" | "pages-account";
   fetchImpl?: typeof fetch;
   maxPollAttempts?: number;
   pollIntervalMs?: number;
@@ -313,6 +314,7 @@ export async function ensureCloudflarePagesDomain(
       assertNoConflictingRecords(recordsAfterFailure);
       throw creationError;
     }
+
   }
 
   let domain = await findDomain();
@@ -348,8 +350,14 @@ export async function ensureCloudflarePagesDomain(
   if (domain.status === "blocked") {
     throw domainFailure(domain);
   }
-  if (options.reconcileDns) {
-    await reconcileApexDnsRecord();
+  const dnsManagement = !options.reconcileDns
+    ? undefined
+    : options.dnsZoneAccount === "external"
+      ? "external"
+      : await reconcileApexDnsRecord();
+  if (dnsManagement === "external" && domain.status !== "active") {
+    validationRetried = true;
+    domain = await request<CloudflarePagesDomain>(exactDomainPath, { method: "PATCH" });
   }
   if (domain.status === "active") {
     return { domain, created };

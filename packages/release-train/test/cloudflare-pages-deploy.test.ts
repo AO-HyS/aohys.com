@@ -191,6 +191,63 @@ describe("Cloudflare Pages release plan", () => {
     );
   });
 
+  it("retries Pages validation when DNS belongs to an external Cloudflare account", async () => {
+    const responses = [
+      cloudflareResponse([{ name: "aohys.com", status: "pending" }]),
+      cloudflareResponse({ name: "aohys.com", status: "active" }),
+    ];
+    const methods: Array<string | undefined> = [];
+    const urls: string[] = [];
+    const fetchImpl = async (input: string | URL | Request, init?: RequestInit) => {
+      urls.push(String(input));
+      methods.push(init?.method);
+      const response = responses.shift();
+      if (!response) throw new Error("Unexpected request");
+      return response;
+    };
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "pages-account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        reconcileDns: true,
+        dnsZoneAccount: "external",
+        fetchImpl,
+      }),
+    ).resolves.toMatchObject({ domain: { status: "active" } });
+    expect(methods).toEqual(["GET", "PATCH"]);
+    expect(urls.every((url) => !url.includes("/zones"))).toBe(true);
+  });
+
+  it("fails closed when an explicitly same-account zone is missing", async () => {
+    const responses = [
+      cloudflareResponse([{ name: "aohys.com", status: "pending" }]),
+      cloudflareResponse([]),
+    ];
+    const methods: Array<string | undefined> = [];
+    const fetchImpl = async (_input: string | URL | Request, init?: RequestInit) => {
+      methods.push(init?.method);
+      const response = responses.shift();
+      if (!response) throw new Error("Unexpected request");
+      return response;
+    };
+
+    await expect(
+      ensureCloudflarePagesDomain({
+        accountId: "pages-account-id",
+        apiToken: "secret-token",
+        projectName: "aohys-com",
+        domainName: "aohys.com",
+        reconcileDns: true,
+        dnsZoneAccount: "pages-account",
+        fetchImpl,
+      }),
+    ).rejects.toThrow("not active in the Pages project account");
+    expect(methods).toEqual(["GET", "GET"]);
+  });
+
   it("refuses to overwrite conflicting apex DNS records", async () => {
     const responses = [
       cloudflareResponse([{ name: "aohys.com", status: "pending" }]),
