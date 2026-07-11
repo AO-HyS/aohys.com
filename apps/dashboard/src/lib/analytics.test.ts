@@ -37,6 +37,7 @@ describe("dashboard analytics contract", () => {
     expect(dashboardSurfaceFromPath("/dashboard/leads")).toBe("leads");
     expect(dashboardSurfaceFromPath("/projects")).toBe("projects");
     expect(dashboardSurfaceFromPath("/leads")).toBe("leads");
+    expect(dashboardSurfaceFromPath("/dashboard/not-real")).toBe("unknown");
   });
 
   it("observes each dashboard pathname once", () => {

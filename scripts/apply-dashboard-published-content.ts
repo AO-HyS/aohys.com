@@ -13,6 +13,7 @@ type Locale = "en" | "es";
 interface DashboardProjectDraft {
   contentId: string;
   locale: Locale;
+  localizedSlug?: string;
   title: string;
   summary: string;
   seoDescription: string;
@@ -161,10 +162,12 @@ function slugFromContentId(contentId: string): string {
   return contentId.slice("case-study:".length);
 }
 
-function projectPath(contentId: string, locale: Locale): string {
-  const slug = slugFromContentId(contentId);
+function projectPath(draft: DashboardProjectDraft): string {
+  const slug = draft.localizedSlug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(draft.localizedSlug)
+    ? draft.localizedSlug
+    : slugFromContentId(draft.contentId);
 
-  return locale === "es" ? `/es/casos/${slug}` : `/case-studies/${slug}`;
+  return draft.locale === "es" ? `/es/casos/${slug}` : `/case-studies/${slug}`;
 }
 
 function fallbackText(value: string, fallback: string): string {
@@ -179,34 +182,9 @@ function restParagraphsOrFallback(value: string, fallback: string): string {
   return fallbackText(restParagraphs(value), fallback);
 }
 
-function contentIdFromPath(href: string, locale: Locale): string | undefined {
+function contentIdFromPath(dictionary: LocaleDictionary, href: string): string | undefined {
   const normalized = href.replace(/\/$/, "");
-
-  if (locale === "es") {
-    if (normalized === "/es/contacto") return "contact";
-    if (normalized === "/es/blog" || normalized === "/es/casos") return "case-studies";
-    if (normalized === "/es/precios" || normalized === "/es/cv" || normalized === "/es/curriculum") return "resume";
-    if (normalized === "/es/arquitectura") return "architecture";
-    const dynamicMatch = normalized.match(/^\/es\/(?:blog|casos)\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
-
-    if (dynamicMatch?.[1]) {
-      return `case-study:${dynamicMatch[1]}`;
-    }
-
-    return undefined;
-  }
-
-  if (normalized === "/contact") return "contact";
-  if (normalized === "/blog" || normalized === "/case-studies") return "case-studies";
-  if (normalized === "/pricing" || normalized === "/resume") return "resume";
-  if (normalized === "/architecture") return "architecture";
-  const dynamicMatch = normalized.match(/^\/(?:blog|case-studies)\/([a-z0-9]+(?:-[a-z0-9]+)*)$/);
-
-  if (dynamicMatch?.[1]) {
-    return `case-study:${dynamicMatch[1]}`;
-  }
-
-  return undefined;
+  return Object.entries(dictionary).find(([, entry]) => entry.path?.replace(/\/$/, "") === normalized)?.[0];
 }
 
 function publicHrefForDraft(draft: DashboardProjectDraft): string | undefined {
@@ -237,7 +215,7 @@ function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
   const structureFallback = structureFallbackForDraft(draft);
 
   return {
-    path: projectPath(draft.contentId, locale),
+    path: projectPath(draft),
     title,
     summary: draft.summary,
     seoDescription: draft.seoDescription,
@@ -318,11 +296,12 @@ export function applyProjectDraft(dictionary: LocaleDictionary, draft: Dashboard
   }
 
   entry.title = draft.title;
+  entry.path = projectPath(draft);
   entry.summary = draft.summary;
   entry.seoDescription = draft.seoDescription;
   entry.primaryActionLabel = draft.ctaLabel;
 
-  const actionContentId = contentIdFromPath(draft.ctaHref, draft.locale);
+  const actionContentId = contentIdFromPath(dictionary, draft.ctaHref);
 
   if (actionContentId) {
     entry.primaryActionContentId = actionContentId;

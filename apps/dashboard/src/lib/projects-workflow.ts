@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   useArchiveProjectMedia,
+  useCreateProject,
   useCreateMediaUpload,
   useDeleteProjectMedia,
   usePublishContent,
@@ -11,6 +12,7 @@ import {
   type MediaMetadataRequest,
   type MediaSelectionRequest,
   type MediaUploadRequest,
+  type CreateProjectRequest,
   type ProjectDraftRequest,
   type PublishContentResponse,
 } from "@/api";
@@ -28,7 +30,9 @@ export type ProjectFormState = ProjectDraftRequest;
 export interface NewProjectInput {
   title: string;
   spanishTitle: string;
-  slug: string;
+  contentKey: string;
+  englishSlug: string;
+  spanishSlug: string;
   status: DashboardCaseStudyStatus;
 }
 
@@ -78,14 +82,31 @@ export async function runProjectMediaUpload(
 
 export async function runProjectCreation(
   input: NewProjectInput,
-  saveDraft: (payload: ProjectDraftRequest) => Promise<unknown>,
+  createProject: (payload: CreateProjectRequest) => Promise<unknown>,
 ): Promise<string> {
-  const contentId = `case-study:${input.slug}`;
-  await Promise.all([
-    saveDraft(buildNewProjectDraft(input, "en")),
-    saveDraft(buildNewProjectDraft(input, "es")),
-  ]);
+  const contentId = `case-study:${input.contentKey}`;
+  const english = buildNewProjectDraft(input, "en");
+  const spanish = buildNewProjectDraft(input, "es");
+  await createProject({
+    contentKey: input.contentKey,
+    status: input.status,
+    evidenceStatus: "missing",
+    en: omitDraftIdentity(english),
+    es: omitDraftIdentity(spanish),
+  });
   return contentId;
+}
+
+function omitDraftIdentity(draft: ProjectDraftRequest) {
+  const {
+    contentId: _contentId,
+    locale: _locale,
+    status: _status,
+    evidenceStatus: _evidenceStatus,
+    ctaHref: _ctaHref,
+    ...localized
+  } = draft;
+  return localized as CreateProjectRequest["en"];
 }
 
 export async function runProjectPublication(
@@ -103,6 +124,7 @@ export function useProjectsWorkflow({
   onProjectCreated: (contentId: string) => void;
 }) {
   const archiveProjectMedia = useArchiveProjectMedia();
+  const createProjectMutation = useCreateProject();
   const createMediaUpload = useCreateMediaUpload();
   const deleteProjectMedia = useDeleteProjectMedia();
   const publishContent = usePublishContent();
@@ -209,16 +231,16 @@ export function useProjectsWorkflow({
   }
 
   async function createProject(input: NewProjectInput) {
-    const contentId = `case-study:${input.slug}`;
+    const contentId = `case-study:${input.contentKey}`;
     if (existingContentIds.includes(contentId)) {
-      toast.error("Project slug already exists", { description: "Choose a different slug before creating this draft." });
+      toast.error("Project content key already exists", { description: "Choose a different stable content key before creating this draft." });
       return false;
     }
 
     const toastId = toast.loading("Creating project", { description: input.title });
     setSavingKey("new-project");
     try {
-      const createdContentId = await runProjectCreation(input, saveProjectDraft);
+      const createdContentId = await runProjectCreation(input, createProjectMutation);
       captureDashboardAction("succeeded", "projects", "create_project");
       onProjectCreated(createdContentId);
       toast.success("Project created", { id: toastId, description: "The draft exists in both languages. Save details, attach media, then publish." });
@@ -296,18 +318,20 @@ export function useProjectsWorkflow({
 }
 
 export function buildNewProjectDraft(input: NewProjectInput, locale: DashboardLocale): ProjectFormState {
-  const contentId = `case-study:${input.slug}`;
+  const contentId = `case-study:${input.contentKey}`;
   const localizedTitle = locale === "en" ? input.title : input.spanishTitle;
+  const localizedSlug = locale === "en" ? input.englishSlug : input.spanishSlug;
   return {
     contentId,
     locale,
+    localizedSlug,
     status: input.status,
     evidenceStatus: "missing",
     title: localizedTitle,
     summary: "",
     seoDescription: "",
     ctaLabel: locale === "en" ? "View project" : "Ver proyecto",
-    ctaHref: locale === "en" ? `/case-studies/${input.slug}` : `/es/casos/${input.slug}`,
+    ctaHref: locale === "en" ? `/case-studies/${localizedSlug}` : `/es/casos/${localizedSlug}`,
     achievements: "",
     structureNotes: "",
   };

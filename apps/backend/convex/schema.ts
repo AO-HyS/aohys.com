@@ -109,6 +109,7 @@ export default defineSchema({
   projectDrafts: defineTable({
     contentId: v.string(),
     locale: localeValidator,
+    localizedSlug: v.optional(v.string()),
     title: v.string(),
     summary: v.string(),
     seoDescription: v.string(),
@@ -121,7 +122,8 @@ export default defineSchema({
     publishedAt: v.optional(v.number()),
   })
     .index("by_content_id", ["contentId"])
-    .index("by_content_id_and_locale", ["contentId", "locale"]),
+    .index("by_content_id_and_locale", ["contentId", "locale"])
+    .index("by_locale_and_localized_slug", ["locale", "localizedSlug"]),
 
   resumeDrafts: defineTable({
     locale: localeValidator,

@@ -19,6 +19,7 @@ import type {
 export interface ProjectDraftRequest {
   contentId: string;
   locale: DashboardLocale;
+  localizedSlug?: string;
   status: DashboardCaseStudyStatus;
   evidenceStatus: DashboardEvidenceStatus;
   title: string;
@@ -29,6 +30,14 @@ export interface ProjectDraftRequest {
   ctaHref: string;
   achievements: string;
   structureNotes: string;
+}
+
+export interface CreateProjectRequest {
+  contentKey: string;
+  status: DashboardCaseStudyStatus;
+  evidenceStatus: DashboardEvidenceStatus;
+  en: Omit<ProjectDraftRequest, "contentId" | "locale" | "status" | "evidenceStatus" | "ctaHref"> & { localizedSlug: string };
+  es: Omit<ProjectDraftRequest, "contentId" | "locale" | "status" | "evidenceStatus" | "ctaHref"> & { localizedSlug: string };
 }
 
 export interface MediaMetadataRequest {
@@ -123,6 +132,11 @@ export function useSaveProjectDraft() {
     (payload: ProjectDraftRequest) => saveProjectDraft(payload),
     [saveProjectDraft],
   );
+}
+
+export function useCreateProject() {
+  const createProject = useMutation(convexApi.content.createProject);
+  return useCallback((payload: CreateProjectRequest) => createProject(payload), [createProject]);
 }
 
 export function useSaveMediaMetadata() {

@@ -26,6 +26,9 @@ importers:
 
   apps/backend:
     dependencies:
+      '@aohys/content-graph':
+        specifier: workspace:*
+        version: link:../../packages/content-graph
       '@aohys/core':
         specifier: workspace:*
         version: link:../../packages/core

@@ -22,6 +22,7 @@ import {
   isPrivateRoute,
   resolvePublicPath,
 } from "../src/index.js";
+import { STATIC_CASE_STUDY_ROUTES } from "../src/static-case-study-routes.js";
 
 const staticCaseStudyIds = [
   "case-study:casa-roca",
@@ -30,6 +31,25 @@ const staticCaseStudyIds = [
   "case-study:enterprise-systems",
   "case-study:engineering-practice",
 ] as const;
+
+it("keeps the lightweight static route registry aligned with locale content", () => {
+  const expected = ([
+    ["en", enContent],
+    ["es", esContent],
+  ] as const).flatMap(([locale, dictionary]) =>
+    Object.entries(dictionary)
+      .filter(([contentId]) => contentId.startsWith("case-study:"))
+      .map(([contentId, entry]) => ({
+        contentId,
+        locale,
+        path: entry.path,
+        localizedSlug: entry.path.split("/").at(-1) ?? "",
+      }))
+  ).sort((left, right) => `${left.locale}:${left.contentId}`.localeCompare(`${right.locale}:${right.contentId}`));
+  const registry = [...STATIC_CASE_STUDY_ROUTES]
+    .sort((left, right) => `${left.locale}:${left.contentId}`.localeCompare(`${right.locale}:${right.contentId}`));
+  expect(registry).toEqual(expected);
+});
 
 function dynamicCaseStudyEntry(locale: "en" | "es") {
   const isSpanish = locale === "es";
@@ -300,16 +320,20 @@ describe("Public Content Graph", () => {
     expect(applyProjectDraft(dictionaries.es, {
       contentId,
       locale: "es",
+      localizedSlug: "panel-alfa",
       title: "Dashboard Alpha ES",
       summary: "Un proyecto publicado desde dashboard.",
       seoDescription: "Un caso publico publicado desde dashboard.",
       projectUrl: "https://example.com/dashboard-alpha",
       ctaLabel: "Abrir proyecto",
-      ctaHref: "https://example.com/dashboard-alpha",
+      ctaHref: "/es/casos/panel-alfa",
       achievements: "Llego a publicacion.\n\nCreo un caso seguro.",
       structureNotes: "Usa entradas generadas del grafo.\n\nMantiene datos privados fuera.",
       publishedAt: 124,
     })).toBe(true);
+
+    expect(dictionaries.es[contentId].path).toBe("/es/casos/panel-alfa");
+    expect(dictionaries.es[contentId].primaryActionContentId).toBe(contentId);
 
     expect(publicProjectIdsFromDictionaries(dictionaries, [
       "case-study:casa-roca",

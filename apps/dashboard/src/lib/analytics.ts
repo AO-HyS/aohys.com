@@ -1,4 +1,5 @@
 import type { DashboardRuntimeConfig } from "@/types";
+import { matchDashboardNavigationItem } from "@/app/navigation";
 
 export const DASHBOARD_ANALYTICS_EVENTS = [
   "dashboard_surface_viewed",
@@ -134,16 +135,7 @@ export function buildDashboardPostHogConfig(
 }
 
 export function dashboardSurfaceFromPath(path: string): DashboardAnalyticsSurface {
-  const pathname = path.split(/[?#]/, 1)[0] ?? "";
-  const normalized = pathname
-    .replace(/^\/dashboard(?:\/|$)/, "/")
-    .replace(/^\/+/, "");
-  const segment = normalized.split("/", 1)[0];
-
-  if (!segment) return "overview";
-  if (segment === "case-studies" || segment === "media" || segment === "projects") return "projects";
-  if (segment === "leads" || segment === "resume" || segment === "settings") return segment;
-  return "unknown";
+  return matchDashboardNavigationItem(path)?.id ?? "unknown";
 }
 
 export function createDashboardPathObserver(

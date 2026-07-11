@@ -9,6 +9,7 @@ import { StatusBadge } from "@/components/dashboard/status-badge";
 import {
   dashboardNavigation,
   findDashboardNavigationItem,
+  matchDashboardNavigationItem,
   normalizeDashboardPath,
 } from "@/app/navigation";
 import { SessionBoundaryState } from "@/app/route-states";
@@ -25,6 +26,7 @@ describe("Operations Desk navigation", () => {
     expect(findDashboardNavigationItem("/dashboard/case-studies").id).toBe("projects");
     expect(findDashboardNavigationItem("/dashboard/media?project=casa-roca").id).toBe("projects");
     expect(findDashboardNavigationItem("/dashboard/not-real").id).toBe("overview");
+    expect(matchDashboardNavigationItem("/dashboard/not-real")).toBeUndefined();
   });
 
   it("normalizes dashboard paths without changing real route identity", () => {

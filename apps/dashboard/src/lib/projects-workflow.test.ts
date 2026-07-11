@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { ProjectDraftRequest } from "@/api";
+import type { CreateProjectRequest } from "@/api";
 import {
   runProjectCreation,
   runProjectMediaUpload,
@@ -7,17 +7,26 @@ import {
 } from "@/lib/projects-workflow";
 
 describe("Projects workflow", () => {
-  it("creates both locale drafts through one operation", async () => {
-    const saveDraft = vi.fn(async (_draft: ProjectDraftRequest) => undefined);
+  it("creates both locale drafts through one atomic request with independent routes", async () => {
+    const createProject = vi.fn(async (_request: CreateProjectRequest) => undefined);
     const contentId = await runProjectCreation({
       title: "AOHYS",
-      spanishTitle: "AOHYS",
-      slug: "aohys",
+      spanishTitle: "AOHYS Español",
+      contentKey: "aohys",
+      englishSlug: "aohys-platform",
+      spanishSlug: "plataforma-aohys",
       status: "active-build",
-    }, saveDraft);
+    }, createProject);
 
     expect(contentId).toBe("case-study:aohys");
-    expect(saveDraft.mock.calls.map(([draft]) => draft.locale)).toEqual(["en", "es"]);
+    expect(createProject).toHaveBeenCalledTimes(1);
+    expect(createProject).toHaveBeenCalledWith(expect.objectContaining({
+      contentKey: "aohys",
+      en: expect.objectContaining({ localizedSlug: "aohys-platform" }),
+      es: expect.objectContaining({ localizedSlug: "plataforma-aohys" }),
+    }));
+    expect(createProject.mock.calls[0]?.[0].en).not.toHaveProperty("ctaHref");
+    expect(createProject.mock.calls[0]?.[0].es).not.toHaveProperty("ctaHref");
   });
 
   it("runs upload slot, file transfer, and metadata registration in order", async () => {

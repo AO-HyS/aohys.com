@@ -23,6 +23,7 @@ export interface DashboardRuntimeConfig {
 export interface DashboardProjectDraft {
   contentId: string;
   locale: DashboardLocale;
+  localizedSlug?: string;
   title: string;
   summary: string;
   seoDescription: string;

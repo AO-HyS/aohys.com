@@ -10,6 +10,7 @@ import {
 } from "./_generated/server.js";
 import { requireAdmin } from "./auth.js";
 import { buildDashboardOverview } from "../src/dashboard-overview.js";
+import { localizedCaseStudyPath, requireCaseStudyContentId, requireSafeProjectKey, requireUnreservedStaticSlug } from "../src/project-identity.js";
 
 const localeValidator = v.union(v.literal("en"), v.literal("es"));
 
@@ -134,6 +135,7 @@ const listForDashboardReturns = v.object({
   projectDrafts: v.array(v.object({
     contentId: v.string(),
     locale: localeValidator,
+    localizedSlug: v.optional(v.string()),
     title: v.string(),
     summary: v.string(),
     seoDescription: v.string(),
@@ -187,6 +189,7 @@ const upsertProjectDraftArgs = {
   status: caseStudyStatusValidator,
   evidenceStatus: evidenceStatusValidator,
   locale: localeValidator,
+  localizedSlug: v.optional(v.string()),
   title: v.string(),
   summary: v.string(),
   seoDescription: v.string(),
@@ -195,6 +198,54 @@ const upsertProjectDraftArgs = {
   ctaHref: v.string(),
   achievements: v.string(),
   structureNotes: v.string(),
+};
+
+const localizedProjectDraftArgs = {
+  localizedSlug: v.string(),
+  title: v.string(),
+  summary: v.string(),
+  seoDescription: v.string(),
+  projectUrl: v.optional(v.string()),
+  ctaLabel: v.string(),
+  achievements: v.string(),
+  structureNotes: v.string(),
+};
+
+async function requireAvailableLocalizedSlug(
+  ctx: MutationCtx,
+  contentId: string,
+  locale: "en" | "es",
+  localizedSlug: string,
+): Promise<void> {
+  requireUnreservedStaticSlug(contentId, locale, localizedSlug);
+  const existingDraft = await ctx.db
+    .query("projectDrafts")
+    .withIndex("by_locale_and_localized_slug", (query) =>
+      query.eq("locale", locale).eq("localizedSlug", localizedSlug),
+    )
+    .first();
+  if (existingDraft && existingDraft.contentId !== contentId) {
+    throw new Error(`The ${locale.toUpperCase()} localized slug already belongs to another project.`);
+  }
+
+  const legacyContentId = `case-study:${localizedSlug}`;
+  if (legacyContentId !== contentId) {
+    const legacyMetadata = await ctx.db
+      .query("caseStudyMetadata")
+      .withIndex("by_content_id", (query) => query.eq("contentId", legacyContentId))
+      .first();
+    if (legacyMetadata) {
+      throw new Error(`The ${locale.toUpperCase()} localized slug collides with an existing legacy project route.`);
+    }
+  }
+}
+
+const createProjectArgs = {
+  contentKey: v.string(),
+  status: caseStudyStatusValidator,
+  evidenceStatus: evidenceStatusValidator,
+  en: v.object(localizedProjectDraftArgs),
+  es: v.object(localizedProjectDraftArgs),
 };
 
 const upsertProjectDraftReturns = v.object({
@@ -243,6 +294,7 @@ async function listForDashboardHandler(ctx: QueryCtx) {
     projectDrafts: withinLimit(projectDrafts, 200, "Project drafts").map((projectDraft) => ({
       contentId: projectDraft.contentId,
       locale: projectDraft.locale,
+      localizedSlug: projectDraft.localizedSlug,
       title: projectDraft.title,
       summary: projectDraft.summary,
       seoDescription: projectDraft.seoDescription,
@@ -393,6 +445,11 @@ async function upsertProjectDraftHandler(
   ctx: MutationCtx,
   args: ObjectType<typeof upsertProjectDraftArgs>,
 ) {
+  requireCaseStudyContentId(args.contentId);
+  if (args.localizedSlug !== undefined) requireSafeProjectKey(args.localizedSlug, "Localized slug");
+  if (args.localizedSlug !== undefined) {
+    await requireAvailableLocalizedSlug(ctx, args.contentId, args.locale, args.localizedSlug);
+  }
   const updatedAt = Date.now();
   const existingCaseStudy = await ctx.db
     .query("caseStudyMetadata")
@@ -423,6 +480,7 @@ async function upsertProjectDraftHandler(
   const projectDraft = {
     contentId: args.contentId,
     locale: args.locale,
+    localizedSlug: args.localizedSlug,
     title: args.title,
     summary: args.summary,
     seoDescription: args.seoDescription,
@@ -511,6 +569,46 @@ export const upsertProjectDraft = mutation({
     await requireAdmin(ctx);
 
     return upsertProjectDraftHandler(ctx, args);
+  },
+});
+
+export const createProject = mutation({
+  args: createProjectArgs,
+  returns: v.object({ contentId: v.string(), updatedAt: v.number() }),
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    requireSafeProjectKey(args.contentKey, "Content key");
+    requireSafeProjectKey(args.en.localizedSlug, "English slug");
+    requireSafeProjectKey(args.es.localizedSlug, "Spanish slug");
+
+    const contentId = `case-study:${args.contentKey}`;
+    const [metadataRows, draftRows] = await Promise.all([
+      ctx.db.query("caseStudyMetadata").withIndex("by_content_id", (query) => query.eq("contentId", contentId)).take(2),
+      ctx.db.query("projectDrafts").withIndex("by_content_id", (query) => query.eq("contentId", contentId)).take(3),
+    ]);
+    if (metadataRows.length > 0 || draftRows.length > 0) {
+      throw new Error("A project with this content key already exists.");
+    }
+    await requireAvailableLocalizedSlug(ctx, contentId, "en", args.en.localizedSlug);
+    await requireAvailableLocalizedSlug(ctx, contentId, "es", args.es.localizedSlug);
+
+    const updatedAt = Date.now();
+    await ctx.db.insert("caseStudyMetadata", {
+      contentId,
+      status: args.status,
+      evidenceStatus: args.evidenceStatus,
+      updatedAt,
+    });
+    for (const locale of ["en", "es"] as const) {
+      await ctx.db.insert("projectDrafts", {
+        contentId,
+        locale,
+        ...args[locale],
+        ctaHref: localizedCaseStudyPath(locale, args[locale].localizedSlug),
+        updatedAt,
+      });
+    }
+    return { contentId, updatedAt };
   },
 });
 

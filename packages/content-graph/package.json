@@ -9,6 +9,11 @@
       "types": "./src/index.ts",
       "import": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./static-case-study-routes": {
+      "types": "./src/static-case-study-routes.ts",
+      "import": "./src/static-case-study-routes.ts",
+      "default": "./src/static-case-study-routes.ts"
     }
   },
   "scripts": {

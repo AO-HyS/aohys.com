@@ -208,7 +208,7 @@ function fallbackProjectVariant(
   primaryActionLabel?: string;
   primaryActionContentId?: string;
 } {
-  const slug = slugFromContentId(contentId);
+  const slug = draft?.localizedSlug ?? slugFromContentId(contentId);
   const fallbackTitle = titleFromSlug(slug);
   const fallbackSummary = locale === "es"
     ? "Borrador de caso publico creado desde el dashboard."

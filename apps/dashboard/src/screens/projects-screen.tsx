@@ -303,7 +303,9 @@ function NewProjectCard({
   const [form, setForm] = useState<NewProjectInput>({
     title: "",
     spanishTitle: "",
-    slug: "",
+    contentKey: "",
+    englishSlug: "",
+    spanishSlug: "",
     status: "active-build",
   });
 
@@ -311,17 +313,21 @@ function NewProjectCard({
     setForm((current) => ({
       ...current,
       [key]: value,
-      ...(key === "title" && !current.slug ? { slug: slugifyProjectTitle(String(value)) } : {}),
+      ...(key === "title" && !current.contentKey ? { contentKey: slugifyProjectTitle(String(value)) } : {}),
+      ...(key === "title" && !current.englishSlug ? { englishSlug: slugifyProjectTitle(String(value)) } : {}),
+      ...(key === "spanishTitle" && !current.spanishSlug ? { spanishSlug: slugifyProjectTitle(String(value)) } : {}),
     }));
   }
 
-  const normalizedSlug = form.slug.trim().toLowerCase();
-  const nextContentId = `case-study:${normalizedSlug}`;
-  const slugExists = isSafeProjectSlug(normalizedSlug) && existingContentIds.includes(nextContentId);
+  const contentKey = form.contentKey.trim().toLowerCase();
+  const nextContentId = `case-study:${contentKey}`;
+  const slugExists = isSafeProjectSlug(contentKey) && existingContentIds.includes(nextContentId);
   const canCreate = Boolean(
     form.title.trim()
     && form.spanishTitle.trim()
-    && isSafeProjectSlug(normalizedSlug)
+    && isSafeProjectSlug(contentKey)
+    && isSafeProjectSlug(form.englishSlug)
+    && isSafeProjectSlug(form.spanishSlug)
     && !slugExists,
   );
 
@@ -342,7 +348,9 @@ function NewProjectCard({
               }
               void onCreate({
                 ...form,
-                slug: normalizedSlug,
+                contentKey,
+                englishSlug: form.englishSlug.trim().toLowerCase(),
+                spanishSlug: form.spanishSlug.trim().toLowerCase(),
                 title: form.title.trim(),
                 spanishTitle: form.spanishTitle.trim(),
               });
@@ -352,13 +360,15 @@ function NewProjectCard({
               <LabeledInput label="English title" value={form.title} placeholder="Project name" onValueChange={(value) => update("title", value)} />
               <LabeledInput label="Spanish title" value={form.spanishTitle} placeholder="Nombre del proyecto" onValueChange={(value) => update("spanishTitle", value)} />
               <LabeledInput
-                label="Slug"
-                value={form.slug}
-                placeholder="project-slug"
-                description={slugExists ? "This project slug already exists." : `Creates case-study:${normalizedSlug || "project-slug"}.`}
-                error={slugExists ? "Choose a unique slug." : undefined}
-                onValueChange={(value) => update("slug", slugifyProjectTitle(value))}
+                label="Stable content key"
+                value={form.contentKey}
+                placeholder="project-key"
+                description={slugExists ? "This content key already exists." : `Creates case-study:${contentKey || "project-key"}.`}
+                error={slugExists ? "Choose a unique content key." : undefined}
+                onValueChange={(value) => update("contentKey", slugifyProjectTitle(value))}
               />
+              <LabeledInput label="English slug" value={form.englishSlug} placeholder="project-slug" onValueChange={(value) => update("englishSlug", slugifyProjectTitle(value))} />
+              <LabeledInput label="Spanish slug" value={form.spanishSlug} placeholder="proyecto-slug" onValueChange={(value) => update("spanishSlug", slugifyProjectTitle(value))} />
               <LabeledSelect label="Status" value={form.status} onValueChange={(value) => update("status", value as DashboardCaseStudyStatus)} options={caseStudyStatuses.map((status) => ({ value: status, label: formatProjectStatus(status) }))} />
               <Button type="submit" disabled={isSaving || !canCreate}>
                 {isSaving ? <LoaderCircleIcon data-icon="inline-start" className="animate-spin" /> : <PlusIcon data-icon="inline-start" />}
@@ -571,6 +581,7 @@ function ProjectLocaleForm({
                 <LabeledInput label="Project URL" value={form.projectUrl ?? ""} placeholder="https://example.com" onValueChange={(value) => update("projectUrl", value)} />
               </div>
               <LabeledInput label="Title" value={form.title} onValueChange={(value) => update("title", value)} />
+              <LabeledInput label="Localized slug" value={form.localizedSlug ?? ""} onValueChange={(value) => update("localizedSlug", slugifyProjectTitle(value))} />
               <LabeledTextarea label="Summary" value={form.summary} rows={4} onValueChange={(value) => update("summary", value)} />
               <LabeledTextarea label="SEO description" description="Write for search results and humans. No vague proof language." value={form.seoDescription} rows={4} onValueChange={(value) => update("seoDescription", value)} />
             </FieldGroup>

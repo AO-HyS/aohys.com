@@ -21,6 +21,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@aohys/content-graph": "workspace:*",
     "@aohys/core": "workspace:*",
     "@aohys/environment": "workspace:*",
     "@convex-dev/better-auth": "^0.12.5",

@@ -92,10 +92,14 @@ export function normalizeDashboardPath(path: string): string {
 }
 
 export function findDashboardNavigationItem(path: string): DashboardNavigationItem {
+  return matchDashboardNavigationItem(path) ?? dashboardNavigation[0];
+}
+
+export function matchDashboardNavigationItem(path: string): DashboardNavigationItem | undefined {
   const normalizedPath = normalizeDashboardPath(path);
   return dashboardNavigation.find((item) => (
     item.path === normalizedPath || (item.aliases as readonly string[]).includes(normalizedPath)
-  )) ?? dashboardNavigation[0];
+  ));
 }
 
 export function isDashboardNavigationItemActive(
