@@ -48,8 +48,9 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index("by_created_at", ["createdAt"])
     .index("by_status_and_created_at", ["status", "createdAt"])
-    .index("by_email", ["email"]),
+    .index("by_email_and_created_at", ["email", "createdAt"]),
 
   mediaMetadata: defineTable({
     storageProvider: v.union(
@@ -74,7 +75,7 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index("by_status_and_usage", ["status", "usage"])
-    .index("by_content_id", ["contentId"]),
+    .index("by_content_id_and_usage", ["contentId", "usage"]),
 
   siteSettings: defineTable({
     key: v.string(),

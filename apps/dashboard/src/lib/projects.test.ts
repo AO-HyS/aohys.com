@@ -132,7 +132,7 @@ describe("buildDashboardContentPayload", () => {
       expect(casaRoca?.images.find((image) => image.id === `unsafe-media-id-${index}`)).toMatchObject({
         src: undefined,
         href: undefined,
-        previewStatus: "missing-url",
+        previewStatus: "invalid-reference",
       });
     }
   });
@@ -160,8 +160,33 @@ describe("buildDashboardContentPayload", () => {
     expect(legacyMedia).toMatchObject({
       src: undefined,
       href: undefined,
-      previewStatus: "missing-url",
+      previewStatus: "provider-unavailable",
       selectedForPublic: true,
+    });
+  });
+
+  it("surfaces legacy R2 rows as unsupported instead of inventing a public URL", () => {
+    const payload = buildDashboardContentPayload({
+      ...emptyDashboardContent,
+      media: [{
+        id: "legacy-r2-media-id",
+        storageProvider: "cloudflare-r2",
+        storageKey: "media/casa-roca/legacy-proof",
+        altText: "Legacy R2 proof.",
+        contentId: "case-study:casa-roca",
+        usage: "case-study",
+        status: "draft",
+        selectedForPublic: true,
+        updatedAt: 900,
+      }],
+    } as unknown as DashboardConvexContentPayload);
+    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
+
+    expect(casaRoca?.images.find((image) => image.id === "legacy-r2-media-id")).toMatchObject({
+      src: undefined,
+      href: undefined,
+      previewStatus: "unsupported-provider",
+      previewIssue: "Cloudflare R2 has no public delivery adapter in the AOHYS media policy.",
     });
   });
 

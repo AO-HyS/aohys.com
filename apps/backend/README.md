@@ -55,9 +55,9 @@ The first schema includes:
 - `projectDrafts`
 - `resumeVersions`
 
-The public `leads.submit` mutation validates through `src/lead-intake.ts` before inserting into Convex. Reusable normalization and assertion primitives come from `@aohys/core` instead of staying embedded in feature code. Tests exercise this boundary without direct database coupling.
+The public contact endpoint is the only anonymous lead-intake boundary. It is implemented as a Convex HTTP action at `/contact`, validates and normalizes through `src/contact-workflow.ts`, and persists through the internal `leads.createFromContact` mutation. The internal mutation atomically enforces a bounded submission window per normalized email before inserting. Reusable normalization and assertion primitives come from `@aohys/core` instead of staying embedded in feature code.
 
-The public contact endpoint is implemented as a Convex HTTP action at `/contact`. It validates the submission, persists the lead through an internal mutation, sends a Resend notification through an injected provider adapter, and captures a PostHog conversion event with metadata only. Once a lead is persisted, Resend and PostHog provider drift is reported through sanitized operational events instead of rejecting the visitor request. Public failures return safe codes such as `validation_error` and `backend_unavailable`; private provider messages and contact fields are not reflected back to the browser.
+After persistence, the workflow sends a Resend notification through an injected provider adapter and captures a PostHog conversion event with metadata only. Provider drift is reported through sanitized operational events instead of rejecting the visitor request. Public failures return safe codes such as `validation_error`, `rate_limited`, and `backend_unavailable`; private provider messages and contact fields are not reflected back to the browser.
 
 Private dashboard workflows are exposed as public Convex functions guarded by `requireAdmin(ctx)`, which validates the Better Auth session and `ADMIN_EMAIL` allowlist:
 

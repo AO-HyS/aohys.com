@@ -1,15 +1,17 @@
 import type { EnvironmentName } from "@aohys/environment";
+import { CONTACT_SUBMISSION_RATE_LIMIT_MESSAGE } from "./contact-abuse.js";
 import type { ContactLeadInput, LeadAnalyticsEvent } from "./contact-workflow.js";
 
 export type PublicContactErrorCode =
   | "validation_error"
+  | "rate_limited"
   | "provider_configuration_error"
   | "email_delivery_failed"
   | "analytics_delivery_failed"
   | "backend_unavailable";
 
 export interface PublicContactError {
-  status: 400 | 502 | 503;
+  status: 400 | 429 | 502 | 503;
   body: {
     ok: false;
     code: PublicContactErrorCode;
@@ -50,19 +52,30 @@ export function buildContactIntakeFailureEvent({
       environment,
       code: publicError.body.code,
       status: publicError.status,
-      errorType: errorTypeFor(error),
-      ...(sourcePath ? { sourcePath } : {}),
+      error_type: errorTypeFor(error),
+      ...(sourcePath ? { source_path: sourcePath } : {}),
       ...(locale ? { locale } : {}),
       ...(intent ? { intent } : {}),
-      ...(preferredContactPath ? { preferredContactPath } : {}),
-      hasCompany: Boolean(input?.company),
-      hasPhone: Boolean(input?.phone),
+      ...(preferredContactPath ? { preferred_contact_path: preferredContactPath } : {}),
+      has_company: Boolean(input?.company),
+      has_phone: Boolean(input?.phone),
     },
   };
 }
 
 export function buildPublicContactError(error: unknown): PublicContactError {
   const message = error instanceof Error ? error.message : "";
+
+  if (message.includes(CONTACT_SUBMISSION_RATE_LIMIT_MESSAGE)) {
+    return {
+      status: 429,
+      body: {
+        ok: false,
+        code: "rate_limited",
+        error: "Please wait before sending another contact request.",
+      },
+    };
+  }
 
   if (message.startsWith("Contact providers are not configured")) {
     return {

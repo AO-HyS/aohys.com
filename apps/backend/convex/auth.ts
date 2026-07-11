@@ -3,7 +3,6 @@ import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
 import { betterAuth, type BetterAuthOptions } from "better-auth/minimal";
 import { components } from "./_generated/api.js";
 import type { DataModel } from "./_generated/dataModel.js";
-import { query } from "./_generated/server.js";
 import authConfig from "./auth.config.js";
 
 export const authComponent = createClient<DataModel>(components.betterAuth);
@@ -39,11 +38,6 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
 };
 
 export const { getAuthUser } = authComponent.clientApi();
-
-export const getCurrentUser = query({
-  args: {},
-  handler: async (ctx) => authComponent.safeGetAuthUser(ctx),
-});
 
 export function parseAdminEmails(value: string | undefined): string[] {
   return (value ?? "")

@@ -82,7 +82,7 @@ The system intentionally keeps public marketing/content concerns separate from p
 - `packages/core`: shared foundation package.
 - `packages/environment`: Environment Contract implementation.
 - `packages/content-graph`: Public Content Graph implementation for stable IDs, bilingual routes, SEO metadata, sitemap behavior, and private route exclusions.
-- `packages/dashboard-ui`: legacy private fallback renderers for sign-in/state pages while the active dashboard app lives in `apps/dashboard`.
+- `apps/site/src/dashboard-access-states.ts`: narrow pre-React sign-in and access-state renderer used by the private site guard.
 - `packages/release-train`: Release Train deployment plans, environment validation, workflow checks, and smoke helpers.
 
 ## Public Source Boundary

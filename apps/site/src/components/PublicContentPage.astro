@@ -612,6 +612,7 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
         data-degraded-success-message={contactCopy.degradedSuccessMessage}
         data-error-message={contactCopy.errorMessage}
         data-validation-message={contactCopy.validationMessage}
+        data-rate-limited-message={contactCopy.rateLimitedMessage}
         data-email-error-message={contactCopy.emailErrorMessage}
         data-backend-error-message={contactCopy.backendErrorMessage}
         data-endpoint-missing={contactCopy.endpointMissing}
@@ -698,9 +699,9 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
             const result = await readJson(response);
             if (!response.ok) {
               const code = stringStatus(result, "code", "");
-              const reason = response.status === 400 || code === "validation_error" ? "validation_failed" : code.includes("email") || code.includes("provider") ? "email_delivery_failed" : "backend_unavailable";
+              const reason = response.status === 429 || code === "rate_limited" ? "rate_limited" : response.status === 400 || code === "validation_error" ? "validation_failed" : code.includes("email") || code.includes("provider") ? "email_delivery_failed" : "backend_unavailable";
               dispatchContactAnalytics("contact_form_submit_failed", { failure_reason: reason });
-              const message = reason === "validation_failed" ? form.dataset.validationMessage : reason === "email_delivery_failed" ? form.dataset.emailErrorMessage : form.dataset.backendErrorMessage;
+              const message = reason === "rate_limited" ? form.dataset.rateLimitedMessage : reason === "validation_failed" ? form.dataset.validationMessage : reason === "email_delivery_failed" ? form.dataset.emailErrorMessage : form.dataset.backendErrorMessage;
               if (status instanceof HTMLElement) { status.dataset.state = "error"; status.textContent = messageWithRetry(message, form.dataset.retryLabel); }
               return;
             }

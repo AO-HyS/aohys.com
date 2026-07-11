@@ -125,15 +125,15 @@ describe("contact lead workflow", () => {
     expect(JSON.stringify(notifications[0])).toContain("https://preview.aohys.com/dashboard/leads");
     expect(analyticsEvents[0]).toMatchObject({
       event: "lead_submitted",
-      distinctId: "lead:lead_123",
+      distinctId: "contact:preview",
       properties: {
         environment: "preview",
         intent: "project",
-        preferredContactPath: "whatsapp",
+        preferred_contact_path: "whatsapp",
         locale: "en",
-        sourcePath: "/contact",
-        hasCompany: true,
-        hasPhone: true,
+        source_path: "/contact",
+        has_company: true,
+        has_phone: true,
       },
     });
     expect(JSON.stringify(analyticsEvents[0])).not.toContain(
@@ -142,6 +142,7 @@ describe("contact lead workflow", () => {
     expect(JSON.stringify(analyticsEvents[0])).not.toContain(
       "alejandro.ortiz@aohys.com",
     );
+    expect(JSON.stringify(analyticsEvents[0])).not.toContain("lead_123");
   });
 
   it("stores a lead even when optional contact provider settings are missing", async () => {
@@ -224,15 +225,15 @@ describe("contact lead workflow", () => {
     expect(analyticsEvents).toHaveLength(2);
     expect(analyticsEvents[1]).toMatchObject({
       event: "lead_provider_failed",
-      distinctId: "lead:lead_123",
+      distinctId: "contact:preview",
       properties: {
-        leadId: "lead_123",
         environment: "preview",
         provider: "resend",
         operation: "lead_notification",
-        errorType: "Error",
+        error_type: "Error",
       },
     });
     expect(JSON.stringify(analyticsEvents[1])).not.toContain("alejandro.ortiz@aohys.com");
+    expect(JSON.stringify(analyticsEvents[1])).not.toContain("lead_123");
   });
 });

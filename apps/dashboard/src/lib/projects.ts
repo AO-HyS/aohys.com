@@ -14,6 +14,7 @@ import type {
   DashboardProjectDraft,
   DashboardResumeContent,
 } from "@/types";
+import { resolvePublicMediaUrl } from "@/lib/media-upload";
 
 export type DashboardConvexContentPayload = FunctionReturnType<typeof convexApi.content.listForDashboard>;
 
@@ -141,7 +142,10 @@ function buildDashboardProjectRows(
               : undefined,
         })),
         ...media.map((item) => {
-          const deliveryUrl = dashboardMediaPreviewUrl(item, imagesAccountHash);
+          const resolution = resolvePublicMediaUrl(item, {
+            cloudflareImagesAccountHash: imagesAccountHash,
+          });
+          const deliveryUrl = resolution.status === "resolved" ? resolution.url : undefined;
 
           return {
             id: item.id,
@@ -150,7 +154,12 @@ function buildDashboardProjectRows(
             source: "media-metadata" as const,
             href: deliveryUrl,
             src: deliveryUrl,
-            previewStatus: deliveryUrl ? "ready" as const : "missing-url" as const,
+            previewStatus: resolution.status === "resolved"
+              ? "ready" as const
+              : resolution.status === "invalid"
+                ? "invalid-reference" as const
+                : resolution.status,
+            previewIssue: resolution.status === "resolved" ? undefined : resolution.reason,
             storageKey: item.storageKey,
             status: item.status,
             usage: item.usage,
@@ -245,62 +254,4 @@ function isHttpUrl(value: string): boolean {
 
 function isImageHref(value: string): boolean {
   return /\.(?:avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(value);
-}
-
-function dashboardMediaPreviewUrl(
-  media: Pick<DashboardMediaMetadata, "publicUrl" | "storageProvider" | "storageKey">,
-  imagesAccountHash?: string,
-): string | undefined {
-  if (media.publicUrl) {
-    return media.publicUrl;
-  }
-
-  if (isHttpUrl(media.storageKey)) {
-    return media.storageKey;
-  }
-
-  if (isPublicAssetPath(media.storageKey)) {
-    return media.storageKey.startsWith("/") ? media.storageKey : `/${media.storageKey}`;
-  }
-
-  return cloudflareImagesDeliveryUrl(media, imagesAccountHash);
-}
-
-function isPublicAssetPath(value: string): boolean {
-  const path = value.split(/[?#]/, 1)[0] ?? "";
-
-  if (!/^(?:\/)?images\/.+\.(?:avif|gif|jpe?g|png|svg|webp)$/i.test(path)) {
-    return false;
-  }
-
-  return publicAssetPathSegments(path).every(isSafePublicAssetPathSegment);
-}
-
-function publicAssetPathSegments(path: string): string[] {
-  return (path.startsWith("/") ? path.slice(1) : path).split("/");
-}
-
-function isSafePublicAssetPathSegment(segment: string): boolean {
-  if (!segment) {
-    return false;
-  }
-
-  try {
-    const decodedSegment = decodeURIComponent(segment);
-
-    return decodedSegment !== "." && decodedSegment !== ".." && !decodedSegment.includes("/") && !decodedSegment.includes("\\");
-  } catch {
-    return false;
-  }
-}
-
-function cloudflareImagesDeliveryUrl(
-  media: Pick<DashboardMediaMetadata, "storageProvider" | "storageKey">,
-  imagesAccountHash?: string,
-): string | undefined {
-  if (media.storageProvider !== "cloudflare-images" || !imagesAccountHash) {
-    return undefined;
-  }
-
-  return `https://imagedelivery.net/${imagesAccountHash}/${media.storageKey}/public`;
 }

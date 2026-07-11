@@ -1,6 +1,11 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import {
+  normalizePublicWhatsappUrl,
+  resolvePublicMediaUrl,
+  selectPublicationMedia,
+} from "../packages/core/src/index.js";
 import { hasConvexDeploymentAccess, runConvexFunction } from "./convex-run.js";
 
 type Locale = "en" | "es";
@@ -26,6 +31,7 @@ interface DashboardResumeDraft {
 }
 
 export interface DashboardMediaMetadata {
+  id?: string;
   storageProvider?: "cloudflare-images" | "cloudflare-r2" | "external";
   storageKey: string;
   publicUrl?: string;
@@ -393,106 +399,47 @@ function generatedMediaKind(item: DashboardMediaMetadata): string {
   return "site";
 }
 
-export function publicMediaItemsByContentId(mediaItems: DashboardMediaMetadata[]): Map<string, DashboardMediaMetadata> {
-  const mediaByContentId = new Map<string, PublicDashboardMediaMetadata>();
+export function publicMediaItemsByContentId(mediaItems: DashboardMediaMetadata[]): Map<string, PublicDashboardMediaMetadata> {
+  const resolvedItems = mediaItems.flatMap((item, index): Array<PublicDashboardMediaMetadata & { id: string }> => {
+    const resolution = resolvePublicMediaUrl({
+      storageProvider: item.storageProvider ?? "external",
+      storageKey: item.storageKey,
+      publicUrl: item.publicUrl,
+    }, {
+      cloudflareImagesAccountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
+    });
 
-  for (const item of mediaItems) {
-    const publicUrl = publicMediaUrl(item);
-
-    if (
-      !item.contentId ||
-      !publicUrl ||
-      item.status !== "published" ||
-      (item.usage !== "case-study" && item.usage !== "site" && item.usage !== "architecture")
-    ) {
-      continue;
+    if (item.status === "published" && item.selectedForPublic === true && resolution.status !== "resolved") {
+      throw new Error(
+        `Selected public media for ${item.contentId ?? "an unscoped asset"} is invalid: ${resolution.reason}`,
+      );
     }
 
-    const publicItem: PublicDashboardMediaMetadata = {
+    if (resolution.status !== "resolved") return [];
+
+    return [{
       ...item,
-      publicUrl,
-    };
-    const existing = mediaByContentId.get(item.contentId);
-    const itemIsSelected = item.selectedForPublic === true;
-    const existingIsSelected = existing?.selectedForPublic === true;
+      id: item.id ?? `${item.contentId ?? "unscoped"}:${item.usage}:${item.updatedAt}:${index}`,
+      storageProvider: item.storageProvider ?? "external",
+      publicUrl: resolution.url,
+    }];
+  });
+  const decision = selectPublicationMedia(resolvedItems, "public-build");
 
-    if (
-      !existing ||
-      (itemIsSelected && !existingIsSelected) ||
-      (itemIsSelected === existingIsSelected && item.updatedAt > existing.updatedAt)
-    ) {
-      mediaByContentId.set(item.contentId, publicItem);
-    }
-  }
-
-  return mediaByContentId;
+  return new Map(decision.selected.flatMap((item) =>
+    item.contentId ? [[item.contentId, item] as const] : []
+  ));
 }
 
-function publicMediaUrl(item: DashboardMediaMetadata): string | undefined {
-  if (item.publicUrl) {
-    return item.publicUrl;
-  }
-
-  if (isHttpUrl(item.storageKey)) {
-    return item.storageKey;
-  }
-
-  if (isPublicAssetPath(item.storageKey)) {
-    return item.storageKey.startsWith("/") ? item.storageKey : `/${item.storageKey}`;
-  }
-
-  const accountHash = process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH?.trim();
-
-  if (item.storageProvider !== "cloudflare-images" || !accountHash) {
-    return undefined;
-  }
-
-  return `https://imagedelivery.net/${accountHash}/${item.storageKey}/public`;
-}
-
-function isHttpUrl(value: string): boolean {
-  try {
-    const url = new URL(value);
-
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
-}
-
-function isPublicAssetPath(value: string): boolean {
-  const path = value.split(/[?#]/, 1)[0] ?? "";
-
-  if (!/^(?:\/)?images\/.+\.(?:avif|gif|jpe?g|png|svg|webp)$/i.test(path)) {
-    return false;
-  }
-
-  return publicAssetPathSegments(path).every(isSafePublicAssetPathSegment);
-}
-
-function publicAssetPathSegments(path: string): string[] {
-  return (path.startsWith("/") ? path.slice(1) : path).split("/");
-}
-
-function isSafePublicAssetPathSegment(segment: string): boolean {
-  if (!segment) {
-    return false;
-  }
-
-  try {
-    const decodedSegment = decodeURIComponent(segment);
-
-    return decodedSegment !== "." && decodedSegment !== ".." && !decodedSegment.includes("/") && !decodedSegment.includes("\\");
-  } catch {
-    return false;
-  }
-}
-
-function writeGeneratedPublicMedia(mediaItems: DashboardMediaMetadata[]): number {
+export function buildGeneratedPublicMedia(mediaItems: DashboardMediaMetadata[]): Record<string, {
+  src: string;
+  alt: string;
+  kind: string;
+}> {
   const mediaByContentId = publicMediaItemsByContentId(mediaItems);
-
   const entries = [...mediaByContentId.entries()].sort(([left], [right]) => left.localeCompare(right));
-  const mediaLiteral = Object.fromEntries(entries.map(([contentId, item]) => [
+
+  return Object.fromEntries(entries.map(([contentId, item]) => [
     contentId,
     {
       src: item.publicUrl,
@@ -500,6 +447,10 @@ function writeGeneratedPublicMedia(mediaItems: DashboardMediaMetadata[]): number
       kind: generatedMediaKind(item),
     },
   ]));
+}
+
+function writeGeneratedPublicMedia(mediaItems: DashboardMediaMetadata[]): number {
+  const mediaLiteral = buildGeneratedPublicMedia(mediaItems);
 
   mkdirSync(generatedSiteDir, { recursive: true });
   writeFileSync(generatedMediaFile, [
@@ -514,7 +465,7 @@ function writeGeneratedPublicMedia(mediaItems: DashboardMediaMetadata[]): number
     "",
   ].join("\n"));
 
-  return entries.length;
+  return Object.keys(mediaLiteral).length;
 }
 
 function writeGeneratedPublicSettings(settings: DashboardSiteSetting[]): number {
@@ -524,8 +475,11 @@ function writeGeneratedPublicSettings(settings: DashboardSiteSetting[]): number 
     setting.environment === activeEnvironment &&
     setting.key === "PUBLIC_WHATSAPP_URL",
   ) ?? publicSettings.find((setting) => setting.key === "PUBLIC_WHATSAPP_URL");
-  const settingsLiteral = whatsappSetting?.value
-    ? { PUBLIC_WHATSAPP_URL: whatsappSetting.value }
+  const normalizedWhatsappUrl = whatsappSetting?.value
+    ? normalizePublicWhatsappUrl(whatsappSetting.value)
+    : undefined;
+  const settingsLiteral = normalizedWhatsappUrl
+    ? { PUBLIC_WHATSAPP_URL: normalizedWhatsappUrl }
     : {};
 
   mkdirSync(generatedSiteDir, { recursive: true });

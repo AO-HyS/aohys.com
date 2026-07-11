@@ -103,7 +103,6 @@ function hasAnalyticsSettings(values: Record<string, string | undefined>): boole
 }
 
 function buildProviderFailureEvent(
-  leadId: string,
   environment: EnvironmentName,
   provider: "posthog" | "resend",
   operation: "lead_analytics" | "lead_notification",
@@ -113,13 +112,12 @@ function buildProviderFailureEvent(
 
   return {
     event: "lead_provider_failed",
-    distinctId: `lead:${leadId}`,
+    distinctId: `contact:${environment}`,
     properties: {
-      leadId,
       environment,
       provider,
       operation,
-      errorType,
+      error_type: errorType,
     },
   };
 }
@@ -314,22 +312,20 @@ function renderLeadNotificationEmail({
 }
 
 function buildLeadAnalyticsEvent(
-  leadId: string,
   lead: PreparedContactLead,
   environment: EnvironmentName,
 ): LeadAnalyticsEvent {
   return {
     event: "lead_submitted",
-    distinctId: `lead:${leadId}`,
+    distinctId: `contact:${environment}`,
     properties: {
-      leadId,
       environment,
       intent: lead.intent,
-      preferredContactPath: lead.preferredContactPath,
+      preferred_contact_path: lead.preferredContactPath,
       locale: lead.locale,
-      sourcePath: lead.sourcePath,
-      hasCompany: Boolean(lead.company),
-      hasPhone: Boolean(lead.phone),
+      source_path: lead.sourcePath,
+      has_company: Boolean(lead.company),
+      has_phone: Boolean(lead.phone),
     },
   };
 }
@@ -347,13 +343,12 @@ export async function submitContactLead(
 
   if (hasAnalyticsSettings(context.values)) {
     try {
-      await context.adapters.captureAnalyticsEvent(buildLeadAnalyticsEvent(leadId, lead, context.environment));
+      await context.adapters.captureAnalyticsEvent(buildLeadAnalyticsEvent(lead, context.environment));
       analyticsStatus = "captured";
     } catch (error) {
       analyticsStatus = "failed";
       await captureProviderFailure(
         buildProviderFailureEvent(
-          leadId,
           context.environment,
           "posthog",
           "lead_analytics",
@@ -375,7 +370,6 @@ export async function submitContactLead(
       notificationStatus = "failed";
       await captureProviderFailure(
         buildProviderFailureEvent(
-          leadId,
           context.environment,
           "resend",
           "lead_notification",

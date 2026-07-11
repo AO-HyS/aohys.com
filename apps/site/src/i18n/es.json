@@ -271,6 +271,7 @@
     "degradedSuccessMessage": "Mensaje guardado. Puedo verlo en el dashboard aunque la notificación por correo se retrase.",
     "errorMessage": "El formulario no pudo enviarse ahora. Usa WhatsApp o correo directo.",
     "validationMessage": "Revisa los campos marcados antes de intentar de nuevo.",
+    "rateLimitedMessage": "Esa solicitud se recibió hace muy poco. Espera unos minutos antes de enviar otra.",
     "emailErrorMessage": "No se pudo enviar el correo de notificación.",
     "backendErrorMessage": "El backend de contacto no está disponible temporalmente.",
     "endpointMissing": "El endpoint de contacto no está configurado para este ambiente.",

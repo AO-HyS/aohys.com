@@ -21,3 +21,17 @@ Agents may push branches, open pull requests, and resolve or close review thread
 - Do not replace Browser verification with ad hoc Playwright.
 - Do not replace Computer Use with Browser or shell when local Mac app UI operation is the task.
 - Do not use GitHub Actions to orchestrate local subagents.
+
+## Agent skills
+
+### Issue tracker
+
+Linear is the operational tracker for AOHYS; external pull requests are not an automatic triage surface. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Use the canonical `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, and `wontfix` labels. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+AOHYS uses a single domain context through `CONTEXT.md` and global ADRs in `docs/adr/`. See `docs/agents/domain.md`.

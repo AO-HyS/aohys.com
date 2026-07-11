@@ -153,7 +153,10 @@ export function bootPostHogFromDocument(documentRef = document, windowRef = wind
       autocapture: payload.config.autocapture,
       capture_pageview: payload.config.capture_pageview,
       capture_pageleave: payload.config.capture_pageleave,
+      disable_persistence: payload.config.disable_persistence,
+      disable_session_recording: payload.config.disable_session_recording,
       person_profiles: payload.config.person_profiles,
+      respect_dnt: payload.config.respect_dnt,
       before_send: (event) => event
         ? { ...event, properties: sanitizeAnalyticsProperties(event.properties ?? {}) }
         : null,

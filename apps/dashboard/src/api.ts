@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { api as convexApi } from "@aohys/backend/convex/_generated/api";
 import type { Id } from "@aohys/backend/convex/_generated/dataModel";
-import { useAction, useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { buildDashboardContentPayload } from "@/lib/projects";
 import { dashboardRuntimeConfig } from "@/runtime-config";
 import type {
@@ -32,7 +32,7 @@ export interface ProjectDraftRequest {
 }
 
 export interface MediaMetadataRequest {
-  storageProvider?: DashboardMediaMetadata["storageProvider"];
+  storageProvider?: "cloudflare-images" | "external";
   storageKey: string;
   publicUrl?: string;
   altText: string;
@@ -108,6 +108,12 @@ export function useDashboardContent(): DashboardContentPayload | undefined {
     () => content ? buildDashboardContentPayload(content, imagesAccountHash) : undefined,
     [content, imagesAccountHash],
   );
+}
+
+export function useDashboardOverview() {
+  return useQuery(convexApi.content.getDashboardOverview, {
+    environment: dashboardRuntimeConfig.environment,
+  });
 }
 
 export function useSaveProjectDraft() {
@@ -240,8 +246,8 @@ export function serializeResumeDraft(content: DashboardResumeContent): string {
   return JSON.stringify(content);
 }
 
-export function useDashboardLeads(): DashboardLead[] | undefined {
-  return useQuery(convexApi.leads.listForDashboard, {});
+export function useDashboardLeads() {
+  return usePaginatedQuery(convexApi.leads.listForDashboard, {}, { initialNumItems: 12 });
 }
 
 export function useSaveLeadStatus() {

@@ -39,7 +39,7 @@ describe("public site source quality", () => {
     const dashboardStyles = read("../../apps/dashboard/src/styles.css");
     const dashboardClasses = read("../../apps/dashboard/src/lib/dashboard-classes.ts");
     const dashboardPackage = read("../../apps/dashboard/package.json");
-    const dashboardUiPackage = read("../../packages/dashboard-ui/src/index.ts");
+    const dashboardAccessStates = read("src/dashboard-access-states.ts");
     const dashboardFunction = read("../../functions/dashboard/[[path]].ts");
     const authFunction = read("../../functions/api/auth/[[path]].ts");
     const cspFunction = read("../../functions/observability/csp.ts");
@@ -204,13 +204,14 @@ describe("public site source quality", () => {
     expect(dashboardApp).toContain("@tanstack/react-router");
     expect(dashboardApp).toContain("RouterProvider");
     expect(dashboardStyles).toContain('@import "tailwindcss";');
-    expect(dashboardStyles).toContain('@source "../../../packages/dashboard-ui/src";');
+    expect(dashboardStyles).not.toContain("packages/dashboard-ui/src");
     expect(dashboardStyles).toContain("@theme inline");
     expect(dashboardStyles).not.toMatch(/@layer\s+components|@apply|^\s*(body|:root|\.dark|[.][A-Za-z_-][\w-]*)\b/m);
     expect(dashboardClasses).toContain("[--background:oklch(");
     expect(dashboardClasses).toContain("dashboardClass");
-    expect(dashboardUiPackage).toContain("/dashboard-app/assets/dashboard.css");
-    expect(dashboardUiPackage).not.toMatch(/<style|DASHBOARD_CSS|@media\s*\(|@apply|@layer\s+components/i);
+    expect(dashboardAccessStates).toContain("/dashboard-app/assets/dashboard.css");
+    expect(dashboardAccessStates).toContain('data-dashboard-surface="sign-in"');
+    expect(dashboardAccessStates).not.toMatch(/<style|DASHBOARD_CSS|@media\s*\(|@apply|@layer\s+components/i);
     expect(dashboardPackage).toContain("vite build");
   });
 });

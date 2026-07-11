@@ -25,4 +25,4 @@ The earlier Dashboard UI Kit direction was useful for the first guard/shell slic
 - shadcn/ui should be installed and managed through its CLI inside `apps/dashboard`.
 - Mobile dashboard behavior should be a first-class acceptance surface, including 390px checks.
 - Public Content Graph publishing invariants and Environment Contract failures should surface through dashboard app states.
-- `packages/dashboard-ui` remains a legacy fallback package for private sign-in/state HTML until those surfaces are moved or deleted.
+- The site guard owns only a narrow pre-React renderer for private sign-in and access-state HTML; all dashboard workflows live in `apps/dashboard`.

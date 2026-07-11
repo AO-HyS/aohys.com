@@ -484,7 +484,32 @@ describe("Public Content Graph", () => {
     );
   });
 
-  it("rejects published public asset storage keys with unsafe path segments", async () => {
+  it("carries the sanitized Casa Roca proof asset into generated public media", async () => {
+    const {
+      buildGeneratedPublicMedia,
+    } = await import("../../../scripts/apply-dashboard-published-content.js");
+
+    expect(buildGeneratedPublicMedia([
+      {
+        storageProvider: "external",
+        storageKey: "images/proof/casa-roca-production.png",
+        altText: "Sanitized Casa Roca production proof.",
+        contentId: "case-study:casa-roca",
+        usage: "case-study",
+        status: "published",
+        selectedForPublic: true,
+        updatedAt: 100,
+      },
+    ])).toEqual({
+      "case-study:casa-roca": {
+        src: "/images/proof/casa-roca-production.png",
+        alt: "Sanitized Casa Roca production proof.",
+        kind: "site",
+      },
+    });
+  });
+
+  it("fails visibly when selected public media uses unsafe path segments", async () => {
     const {
       publicMediaItemsByContentId,
     } = await import("../../../scripts/apply-dashboard-published-content.js");
@@ -495,7 +520,7 @@ describe("Public Content Graph", () => {
       "images/%2e%2e/encoded-parent.png",
       "images/folder%2fencoded-slash.png",
     ];
-    const mediaByContentId = publicMediaItemsByContentId(unsafeStorageKeys.map((storageKey, index) => ({
+    expect(() => publicMediaItemsByContentId(unsafeStorageKeys.map((storageKey, index) => ({
       storageProvider: "external",
       storageKey,
       altText: "Unsafe public asset path.",
@@ -504,9 +529,7 @@ describe("Public Content Graph", () => {
       status: "published",
       selectedForPublic: true,
       updatedAt: 100 + index,
-    })));
-
-    expect([...mediaByContentId.keys()].filter((contentId) => contentId.startsWith("case-study:unsafe-"))).toEqual([]);
+    })))).toThrow("Selected public media for case-study:unsafe-0 is invalid");
   });
 
   it("includes generated dashboard case studies in routes, sitemap, index, and home outcomes", async () => {

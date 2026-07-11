@@ -29,7 +29,10 @@ describe("public site analytics contract", () => {
       autocapture: false,
       capture_pageview: false,
       capture_pageleave: false,
-      person_profiles: "identified_only",
+      disable_persistence: true,
+      disable_session_recording: true,
+      person_profiles: "never",
+      respect_dnt: true,
     });
 
     expect(buildExplicitPageviewEvent(context)).toEqual({
