@@ -317,8 +317,11 @@ describe("built public routes", () => {
     expect(resumeHtml).toContain('href="/architecture"');
     expect(resumeHtml.indexOf("Selected Systems")).toBeLessThan(resumeHtml.indexOf("Professional experience"));
     expect(resumeHtml).toContain("Senior Frontend Developer");
+    expect(resumeHtml).toContain("Tala Mobile · 2023 - Present");
+    expect(resumeHtml.match(/\bTala(?: Mobile)?\b/gi) ?? []).toHaveLength(1);
     expect(resumeHtml).toContain("3–5 seconds to under 1 second");
     expect(resumeHtml).toContain("Java work in progress");
+    expect(resumeHtml.slice(resumeHtml.indexOf('id="projects-title"'), resumeHtml.indexOf('id="experience-title"'))).not.toMatch(/\bTala(?: Mobile)?\b/i);
 
     expect(spanishResumeHtml).toContain('data-resume-content-id="resume"');
     expect(spanishResumeHtml).toContain("Sobre Alejandro");
@@ -333,6 +336,9 @@ describe("built public routes", () => {
     expect(spanishResumeHtml).toContain('href="/es/casos"');
     expect(spanishResumeHtml).toContain('href="/es/arquitectura"');
     expect(spanishResumeHtml.indexOf("Sistemas seleccionados")).toBeLessThan(spanishResumeHtml.indexOf("Experiencia profesional"));
+    expect(spanishResumeHtml).toContain("Tala Mobile · 2023 - Presente");
+    expect(spanishResumeHtml.match(/\bTala(?: Mobile)?\b/gi) ?? []).toHaveLength(1);
+    expect(spanishResumeHtml.slice(spanishResumeHtml.indexOf('id="projects-title"'), spanishResumeHtml.indexOf('id="experience-title"'))).not.toMatch(/\bTala(?: Mobile)?\b/i);
 
     expect(existsSync(pdfPath), "resume PDF must be copied into dist").toBe(true);
     const pdfBytes = readFileSync(pdfPath);
@@ -363,10 +369,10 @@ describe("built public routes", () => {
       expect(expectedOrder.map((heading) => atsText.indexOf(heading))).toEqual(
         [...expectedOrder.map((heading) => atsText.indexOf(heading))].sort((a, b) => a - b),
       );
-      expect(atsText).toContain("Senior Frontend Developer | Financial technology company | 2023 - Present");
+      expect(atsText).toContain("Senior Frontend Developer | Tala Mobile | 2023 - Present");
+      expect(atsText.match(/\bTala(?: Mobile)?\b/gi) ?? []).toHaveLength(1);
       expect(atsText).toMatch(/approximately 3–5 seconds to under 1 second/i);
       expect(atsText).not.toMatch(/\bCARE\b/);
-      expect(atsText).not.toMatch(/\bTala(?: Mobile)?\b/i);
       expect(atsText).not.toMatch(/80%|Open[- ]to[- ]Work|Available for selected projects|AI[\/-]ML Engineer|\bRAG\b|fine-tuning|model eval(?:s|uations)|New York|App Store/i);
     } finally {
       await parser.destroy();
@@ -375,10 +381,14 @@ describe("built public routes", () => {
 
   it("keeps prohibited positioning and private-work claims out of built public output", () => {
     const publicHtml = getPublicRouteMap().map((route) => readDist(routeHtmlPath(route.path))).join("\n");
+    const nonResumeHtml = getPublicRouteMap()
+      .filter((route) => route.id !== "resume")
+      .map((route) => readDist(routeHtmlPath(route.path)))
+      .join("\n");
 
     expect(findForbiddenPublicClaims(publicHtml)).toEqual([]);
     expect(publicHtml).not.toMatch(/\bCARE\b/);
-    expect(publicHtml).not.toMatch(/\bTala(?: Mobile)?\b/i);
+    expect(nonResumeHtml).not.toMatch(/\bTala(?: Mobile)?\b/i);
   });
 
   it("renders the contact form with consent, preferred contact path, and WhatsApp fallback", () => {

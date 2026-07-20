@@ -748,8 +748,8 @@
     }
   },
   "resume": {
-    "approvedAt": "2026-07-20T17:51:17.000Z",
-    "approvedHash": "781f420b39c182874a914e6d67d193b2e8bd836652387761edf430a6025fc45c",
+    "approvedAt": "2026-07-20T18:11:32.000Z",
+    "approvedHash": "cd3bb46c9b593d7826e787eab337d21109f297bf2622c63c49259a339e18b165",
     "path": "/es/curriculum",
     "title": "Sobre Alejandro",
     "summary": "Experiencia canónica de un Senior Software Engineer que trabaja en sistemas de producto, profundidad frontend, workflows backend y delivery AI-native.",
@@ -894,7 +894,7 @@
       "experience": [
         {
           "role": "Senior Frontend Developer",
-          "company": "Empresa de tecnología financiera",
+          "company": "Tala Mobile",
           "period": "2023 - Presente",
           "bullets": [
             "Coordino alcance, roadmap, workflows y éxito con stakeholders y múltiples equipos para una plataforma interna de operaciones de atención al cliente y recuperación de cuentas, manteniendo el título contractual Senior Frontend Developer.",
