@@ -1,0 +1,35 @@
+{
+  "caseStudy": {
+    "achievementFallback": "{title} has a case-study narrative shaped and published from the dashboard.",
+    "architectureDecisionsTitle": "Architecture decisions",
+    "backToSelectedWork": "Back to selected work",
+    "businessOutcomeTitle": "Business outcome",
+    "clientContextBody": "Client details remain private.",
+    "clientContextTitle": "Client context",
+    "constraintsBody": "Project scope, data ownership, integration seams, and release constraints stay explicit as the system evolves.",
+    "constraintsTitle": "Constraints",
+    "draftSummary": "Public case-study draft created from the dashboard.",
+    "executionHighlightsTitle": "Execution highlights",
+    "liveSiteLabel": "Live site",
+    "openProject": "Open {title}.",
+    "previewAlt": "Preview of the {title} case study",
+    "primaryActionLabel": "Let's talk",
+    "problemTitle": "Problem",
+    "productRoleBody": "Product engineering, delivery planning, content structure, and publication through the dashboard workflow.",
+    "projectLinksTitle": "Project links",
+    "qualityTitle": "Quality, security, and performance",
+    "roleTitle": "Role",
+    "statusLabel": "Product system",
+    "structureFallback": "{title} uses the typed content graph to keep project context structured and reviewable.",
+    "viewProject": "View project"
+  },
+  "dashboard": {
+    "contentHeading": "English content",
+    "languageName": "English"
+  },
+  "seo": {
+    "defaultImageAlt": "AOHYS product engineering system map",
+    "evidencePreviewAlt": "{title} preview on AOHYS",
+    "resumeJobTitle": "Senior Software Engineer · AI-Native Product Development"
+  }
+}

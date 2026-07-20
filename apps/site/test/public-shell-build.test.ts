@@ -44,7 +44,7 @@ describe("built public shell", () => {
     expect(html).toContain(">Services<");
     expect(html).toContain(">Architecture<");
     expect(html).toContain(">About<");
-    expect(html).toContain(">Start a conversation<");
+    expect(html).toContain(">Let&#39;s talk<");
     expect(html).toContain('data-project-stage');
     expect(html).toContain('role="tablist"');
     expect(html).toContain('aria-orientation="vertical"');

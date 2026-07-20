@@ -1,0 +1,35 @@
+{
+  "caseStudy": {
+    "achievementFallback": "{title} tiene una narrativa de caso estructurada y publicada desde el dashboard.",
+    "architectureDecisionsTitle": "Decisiones de arquitectura",
+    "backToSelectedWork": "Volver a casos",
+    "businessOutcomeTitle": "Resultado de negocio",
+    "clientContextBody": "Los detalles del cliente permanecen privados.",
+    "clientContextTitle": "Contexto del cliente",
+    "constraintsBody": "El alcance, ownership de datos, límites de integración y restricciones de release permanecen explícitos mientras evoluciona el sistema.",
+    "constraintsTitle": "Restricciones",
+    "draftSummary": "Borrador de caso publico creado desde el dashboard.",
+    "executionHighlightsTitle": "Ejecución",
+    "liveSiteLabel": "Sitio en vivo",
+    "openProject": "Abrir {title}.",
+    "previewAlt": "Vista previa del caso de estudio {title}",
+    "primaryActionLabel": "Hablemos",
+    "problemTitle": "Problema",
+    "productRoleBody": "Ingeniería de producto, planeación de entrega, estructura de contenido y publicación desde el flujo de dashboard.",
+    "projectLinksTitle": "Enlaces del proyecto",
+    "qualityTitle": "Calidad, seguridad y rendimiento",
+    "roleTitle": "Rol",
+    "statusLabel": "Sistema de producto",
+    "structureFallback": "{title} usa el grafo tipado de contenido para mantener el contexto estructurado y revisable.",
+    "viewProject": "Ver proyecto"
+  },
+  "dashboard": {
+    "contentHeading": "Spanish content",
+    "languageName": "Spanish"
+  },
+  "seo": {
+    "defaultImageAlt": "Mapa del sistema de ingeniería de producto AOHYS",
+    "evidencePreviewAlt": "Vista previa de {title} en AOHYS",
+    "resumeJobTitle": "Senior Software Engineer · Desarrollo de producto AI-native"
+  }
+}

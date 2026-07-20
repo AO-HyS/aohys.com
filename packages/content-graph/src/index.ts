@@ -1,12 +1,21 @@
 import enContent from "./locales/en.json" with { type: "json" };
 import esContent from "./locales/es.json" with { type: "json" };
 import { DASHBOARD_PUBLIC_PROJECT_IDS } from "./generated/dashboard-public-projects.js";
+import { formatI18n, getSharedI18n } from "./i18n.js";
 
 export {
   FORBIDDEN_PUBLIC_CLAIMS,
   assertPublicClaimsSafe,
   findForbiddenPublicClaims,
 } from "./public-claim-policy.js";
+export {
+  formatI18n,
+  getAlternateLocale,
+  getLocalizedCaseStudyPath,
+  getLocalizedValue,
+  getSharedI18n,
+} from "./i18n.js";
+export type { I18nLocale, SharedI18n } from "./i18n.js";
 
 export const SITE_URL = "https://aohys.com";
 export const DEFAULT_LOCALE = "en";
@@ -69,9 +78,9 @@ export interface StaticEvidenceImageAsset {
 
 export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceImageAsset> = {
   home: {
-    src: "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc",
-    alt: "ETERIA public landing page linen art direction",
-    kind: "landing",
+    src: "/images/proof/eteria-garden-blue-table-og.jpg",
+    alt: "ETERIA outdoor celebration table styled with blue textiles, ivory flowers, and layered place settings",
+    kind: "site",
   },
   "home:architecture-backdrop": {
     src: "/images/proof/enterprise-systems-map-v2.svg",
@@ -84,9 +93,9 @@ export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceI
     kind: "landing",
   },
   "case-study:eteria": {
-    src: "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc",
-    alt: "ETERIA public landing page linen art direction",
-    kind: "landing",
+    src: "/images/proof/eteria-garden-blue-table-og.jpg",
+    alt: "ETERIA outdoor celebration table styled with blue textiles, ivory flowers, and layered place settings",
+    kind: "site",
   },
   "case-study:casa-roca": {
     src: "/images/proof/casa-roca-gallery-v2.jpg",
@@ -854,6 +863,7 @@ export function getCaseStudyPageContent(contentId: ContentId | string, locale: L
 function homeOutcomeFromCaseStudy(contentId: ContentId | string, locale: Locale): HomeOutcome {
   const variant = getLocaleVariant(contentId, locale);
   const caseStudyContent = getCaseStudyPageContent(contentId, locale);
+  const i18n = getSharedI18n(locale);
 
   if (!caseStudyContent) {
     throw new Error(`Home selected outcome "${contentId}" is missing detail content in locale "${locale}".`);
@@ -868,9 +878,7 @@ function homeOutcomeFromCaseStudy(contentId: ContentId | string, locale: Locale)
     role: caseStudyContent.role.body,
     evidence: caseStudyContent.publicEvidence[0] ?? {
       label: caseStudyContent.publicEvidenceTitle,
-      altText: locale === "es"
-        ? `Vista previa del caso de estudio ${variant.title}`
-        : `Preview of the ${variant.title} case study`,
+      altText: formatI18n(i18n.caseStudy.previewAlt, { title: variant.title }),
       kind: "public-site",
       publicSafe: true,
     },
@@ -964,6 +972,7 @@ export function resolvePublicPath(pathname: string): PublicRoute | null {
 export function getSeoMetadata(contentId: ContentId | string, locale: Locale): SeoMetadata {
   const node = getContentNode(contentId);
   const localizedVariant = getLocaleVariant(node, locale);
+  const i18n = getSharedI18n(locale);
   const canonicalUrl = toAbsoluteUrl(localizedVariant.path);
   const staticEvidence = STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID[contentId];
   const evidencePath = staticEvidence?.thumbSrc ?? staticEvidence?.src;
@@ -973,12 +982,8 @@ export function getSeoMetadata(contentId: ContentId | string, locale: Locale): S
       : "/images/generated/aohys-hero-system-map.png";
   const usesEvidenceImage = socialImagePath === evidencePath;
   const socialImageAlt = usesEvidenceImage
-    ? locale === "es"
-      ? `Vista previa de ${localizedVariant.title} en AOHYS`
-      : `${localizedVariant.title} preview on AOHYS`
-    : locale === "es"
-      ? "Mapa del sistema de ingeniería de producto AOHYS"
-      : "AOHYS product engineering system map";
+    ? formatI18n(i18n.seo.evidencePreviewAlt, { title: localizedVariant.title })
+    : i18n.seo.defaultImageAlt;
   const structuredData: SeoStructuredData | undefined =
     contentId === "home"
       ? {
@@ -1003,9 +1008,7 @@ export function getSeoMetadata(contentId: ContentId | string, locale: Locale): S
               "@id": `${SITE_URL}/#alejandro-ortiz-corro`,
               name: "Alejandro Ortiz Corro",
               url: `${SITE_URL}/resume`,
-              jobTitle: locale === "es"
-                ? "Senior Software Engineer · Desarrollo de producto AI-native"
-                : "Senior Software Engineer · AI-Native Product Development",
+              jobTitle: i18n.seo.resumeJobTitle,
               sameAs: ["https://www.linkedin.com/in/alejandrortizcrr/", "https://github.com/corrortiz"],
             },
           }

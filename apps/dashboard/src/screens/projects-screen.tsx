@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { getSharedI18n } from "@aohys/content-graph";
 import {
   CircleAlertIcon,
   ExternalLinkIcon,
@@ -85,6 +86,10 @@ const caseStudyStatuses: DashboardCaseStudyStatus[] = [
 ];
 
 const evidenceStatuses: DashboardEvidenceStatus[] = ["missing", "sanitized", "published"];
+const dashboardLocaleOptions = (["en", "es"] as const).map((locale) => ({
+  value: locale,
+  label: getSharedI18n(locale).dashboard.languageName,
+}));
 
 export function ProjectsScreen() {
   const content = useDashboardContent();
@@ -420,7 +425,7 @@ function ProjectEditor({
                 <TabsList className={dashboardClass.localeTabsList}>
                   {project.locales.map((localeContent) => (
                     <TabsTrigger key={localeContent.locale} value={localeContent.locale}>
-                      {localeContent.locale === "en" ? "English" : "Spanish"}
+                      {getSharedI18n(localeContent.locale).dashboard.languageName}
                     </TabsTrigger>
                   ))}
                 </TabsList>
@@ -564,7 +569,7 @@ function ProjectLocaleForm({
     >
       <div className={dashboardClass.projectFormHeader}>
         <div>
-          <h2>{localeContent.locale === "en" ? "English content" : "Spanish content"}</h2>
+          <h2>{getSharedI18n(localeContent.locale).dashboard.contentHeading}</h2>
           <p>
             {localeContent.path} · {localeContent.draft ? "private dashboard draft" : "public content graph"}
           </p>
@@ -923,7 +928,7 @@ function ImageUploadForm({
               />
             </Field>
             <div className={dashboardClass.formGrid2}>
-              <LabeledSelect label="Locale" value={form.locale ?? "en"} onValueChange={(value) => setForm((current) => ({ ...current, locale: value as DashboardLocale }))} options={[{ value: "en", label: "English" }, { value: "es", label: "Spanish" }]} />
+              <LabeledSelect label="Locale" value={form.locale ?? "en"} onValueChange={(value) => setForm((current) => ({ ...current, locale: value as DashboardLocale }))} options={dashboardLocaleOptions} />
               <Field data-invalid={showStorageKeyError}>
                 <FieldLabel htmlFor={`upload-key-${project.contentId}`}>Storage key</FieldLabel>
                 <Input

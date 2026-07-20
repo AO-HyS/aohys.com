@@ -48,7 +48,7 @@ The current shell includes the graph-backed home proof narrative, selected-work 
 
 Cloudflare Pages security headers are authored in `src/security-headers.ts`. `public/_headers` is generated from that shared source with `pnpm --filter @aohys/site sync:headers`, and `sync:headers:check` guards it during site lint/test. Pages Functions responses such as `/dashboard` and `/observability/csp` use the same module directly. The route build tests verify the generated header artifact alongside sitemap, robots, privacy, analytics, and contact failure-state behavior.
 
-UI copy that belongs to the shell lives in locale JSON files under `src/i18n`. Public page identity, localized slugs, SEO metadata, and sitemap eligibility come from `@aohys/content-graph`.
+UI copy that belongs to the shell lives in locale JSON files under `src/i18n`. Shared labels and route decisions used by the graph, dashboard, backend, or publishing bridge live in `@aohys/content-graph` locale catalogs. Production components select copy through those typed dictionaries; locale-driven ternaries and `if` branches are not the localization contract. Public page identity, localized slugs, SEO metadata, and sitemap eligibility also come from `@aohys/content-graph`.
 
 Private behavior is implemented outside the Astro route graph:
 

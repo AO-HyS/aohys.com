@@ -12,6 +12,27 @@ function read(relativePath: string) {
 }
 
 describe("public site source quality", () => {
+  it("keeps localized production copy behind typed i18n catalogs", () => {
+    const localizedSources = [
+      "src/components/PublicContentPage.astro",
+      "src/components/SiteFooter.astro",
+      "src/components/SiteHeader.astro",
+      "src/components/sunlit/SunlitProcessRail.astro",
+      "src/components/sunlit/SunlitProjectStage.astro",
+      "../../apps/backend/src/project-identity.ts",
+      "../../apps/dashboard/src/lib/projects.ts",
+      "../../apps/dashboard/src/lib/projects-workflow.ts",
+      "../../apps/dashboard/src/screens/projects-screen.tsx",
+      "../../packages/content-graph/src/index.ts",
+      "../../packages/content-graph/test/public-content-graph.test.ts",
+      "../../scripts/apply-dashboard-published-content.ts",
+    ].map(read).join("\n");
+
+    expect(localizedSources).not.toMatch(/(?:locale|draft\.locale|localeContent\.locale)\s*===\s*["'](?:en|es)["']/);
+    expect(read("src/i18n.ts")).toContain("satisfies Record<Locale, UiCopy>");
+    expect(read("../../packages/content-graph/src/i18n.ts")).toContain("satisfies Record<I18nLocale, SharedI18n>");
+  });
+
   it("keeps design tokens, fonts, and graph-backed routing wired", () => {
     const globalCss = read("src/styles/global.css");
     const styleClasses = read("src/styles/classes.ts");
@@ -150,13 +171,13 @@ describe("public site source quality", () => {
     expect(contentGraph).toContain("/images/proof/nutri-plan-dashboard-v2.png");
     expect(contentGraph).toContain("/images/proof/enterprise-systems-map-v2.svg");
     expect(contentGraph).toContain("/images/proof/engineering-practice-release-cycle.svg");
-    expect(contentGraph).toContain("/images/proof/eteria-ivory-linen-hero.webp");
+    expect(contentGraph).toContain("/images/proof/eteria-garden-blue-table-og.jpg");
     for (const asset of [
       "public/images/proof/casa-roca-gallery-v2.jpg",
       "public/images/proof/casa-roca-value-v2.jpg",
       "public/images/proof/barber-central-hero-v2.jpg",
       "public/images/proof/nutri-plan-dashboard-v2.png",
-      "public/images/proof/eteria-ivory-linen-hero.webp",
+      "public/images/proof/eteria-garden-blue-table-og.jpg",
       "public/images/brand/aohys-connections-wordmark-v3.svg",
       "public/images/brand/aohys-connections-mark-v3.svg",
       "public/images/brand/aohys-connections-mono-v3.svg",

@@ -1,5 +1,5 @@
 ---
-import { getLocalizedPath, getPublicNavigation, type ContentId, type Locale } from "@aohys/content-graph";
+import { getAlternateLocale, getLocalizedPath, getPublicNavigation, type ContentId, type Locale } from "@aohys/content-graph";
 import { getUiCopy } from "../i18n";
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
 }
 
 const { locale = "en", currentId = "home" } = Astro.props;
-const alternateLocale = locale === "en" ? "es" : "en";
+const alternateLocale = getAlternateLocale(locale);
 const copy = getUiCopy(locale).header;
 const navigation = getPublicNavigation(locale);
 const languageHref = getLocalizedPath(currentId, alternateLocale);

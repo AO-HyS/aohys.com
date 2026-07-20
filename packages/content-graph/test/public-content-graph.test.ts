@@ -9,17 +9,22 @@ import {
   STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID,
   assertPublicClaimsSafe,
   findForbiddenPublicClaims,
+  formatI18n,
+  getAlternateLocale,
   getArchitecturePageContent,
   getCaseStudyIndexContent,
   getCaseStudyPageContent,
   getHomePageContent,
   getLanguageAlternates,
+  getLocalizedCaseStudyPath,
+  getLocalizedValue,
   getLocaleVariant,
   getLocalizedPath,
   getPracticePageContent,
   getPublicNavigation,
   getPublicRouteMap,
   getResumePageContent,
+  getSharedI18n,
   getSeoMetadata,
   getSitemapEntries,
   isPrivateRoute,
@@ -55,74 +60,82 @@ it("keeps the lightweight static route registry aligned with locale content", ()
   expect(registry).toEqual(expected);
 });
 
-function dynamicCaseStudyEntry(locale: "en" | "es") {
-  const isSpanish = locale === "es";
-
-  return {
-    path: isSpanish ? "/es/casos/dashboard-alpha" : "/case-studies/dashboard-alpha",
-    title: isSpanish ? "Dashboard Alpha ES" : "Dashboard Alpha",
-    summary: isSpanish
-      ? "Caso publicado desde dashboard con contenido localizado completo."
-      : "A dashboard-published case study with complete localized public content.",
-    seoDescription: isSpanish
-      ? "Caso dinamico publicado desde dashboard para validar rutas publicas localizadas."
-      : "Dynamic dashboard-published case study for validating localized public routes.",
+const dynamicCaseStudyEntries = {
+  en: {
+    path: "/case-studies/dashboard-alpha",
+    title: "Dashboard Alpha",
+    summary: "A dashboard-published case study with complete localized public content.",
+    seoDescription: "Dynamic dashboard-published case study for validating localized public routes.",
     caseStudyContent: {
-      statusLabel: isSpanish ? "Proyecto publicado" : "Published project",
-      overview: isSpanish
-        ? "El dashboard publico este caso con las secciones necesarias."
-        : "The dashboard published this case with the required sections.",
-      problem: {
-        title: isSpanish ? "Oportunidad" : "Opportunity",
-        body: isSpanish ? "Podía convertirse en una página pública." : "It could become a public page.",
-      },
-      businessOutcome: {
-        title: isSpanish ? "Resultado" : "Business outcome",
-        body: isSpanish ? "El caso ya aparece en el sitio publico." : "The case appears on the public site.",
-      },
-      role: {
-        title: isSpanish ? "Rol" : "Role",
-        body: isSpanish ? "Publicacion segura desde dashboard." : "Safe dashboard publication.",
-      },
-      constraints: {
-        title: isSpanish ? "Consideraciones de diseño" : "Design considerations",
-        body: isSpanish ? "Contenido público y claro." : "Clear public content.",
-      },
-      architectureDecisions: {
-        title: isSpanish ? "Arquitectura" : "Architecture decisions",
-        body: isSpanish ? "Usa el grafo publico." : "Uses the public graph.",
-      },
-      executionHighlights: {
-        title: isSpanish ? "Ejecucion" : "Execution highlights",
-        body: isSpanish ? "Publicado con manifest generado." : "Published with a generated manifest.",
-      },
-      qualitySecurityPerformance: {
-        title: isSpanish ? "Calidad" : "Quality, security, and performance",
-        body: isSpanish ? "Solo contenido seguro." : "Only safe content.",
-      },
-      publicEvidenceTitle: isSpanish ? "Enlaces publicos" : "Public links",
-      publicEvidence: [
-        {
-          label: isSpanish ? "Sitio en vivo" : "Live site",
-          description: isSpanish ? "Abrir Dashboard Alpha." : "Open Dashboard Alpha.",
-          href: "https://example.com/dashboard-alpha",
-          altText: isSpanish ? "Dashboard Alpha publicado" : "Dashboard Alpha published",
-          kind: "public-site",
-          publicSafe: true,
-        },
-      ],
-      confidentialityNote: {
-        title: isSpanish ? "Nota" : "Confidentiality note",
-        body: isSpanish ? "Los datos privados no se publican." : "Private data is not published.",
-      },
+      statusLabel: "Published project",
+      overview: "The dashboard published this case with the required sections.",
+      problem: { title: "Opportunity", body: "It could become a public page." },
+      businessOutcome: { title: "Business outcome", body: "The case appears on the public site." },
+      role: { title: "Role", body: "Safe dashboard publication." },
+      constraints: { title: "Design considerations", body: "Clear public content." },
+      architectureDecisions: { title: "Architecture decisions", body: "Uses the public graph." },
+      executionHighlights: { title: "Execution highlights", body: "Published with a generated manifest." },
+      qualitySecurityPerformance: { title: "Quality, security, and performance", body: "Only safe content." },
+      publicEvidenceTitle: "Public links",
+      publicEvidence: [{
+        label: "Live site",
+        description: "Open Dashboard Alpha.",
+        href: "https://example.com/dashboard-alpha",
+        altText: "Dashboard Alpha published",
+        kind: "public-site",
+        publicSafe: true,
+      }],
+      confidentialityNote: { title: "Confidentiality note", body: "Private data is not published." },
     },
-  };
+  },
+  es: {
+    path: "/es/casos/dashboard-alpha",
+    title: "Dashboard Alpha ES",
+    summary: "Caso publicado desde dashboard con contenido localizado completo.",
+    seoDescription: "Caso dinamico publicado desde dashboard para validar rutas publicas localizadas.",
+    caseStudyContent: {
+      statusLabel: "Proyecto publicado",
+      overview: "El dashboard publico este caso con las secciones necesarias.",
+      problem: { title: "Oportunidad", body: "Podía convertirse en una página pública." },
+      businessOutcome: { title: "Resultado", body: "El caso ya aparece en el sitio publico." },
+      role: { title: "Rol", body: "Publicacion segura desde dashboard." },
+      constraints: { title: "Consideraciones de diseño", body: "Contenido público y claro." },
+      architectureDecisions: { title: "Arquitectura", body: "Usa el grafo publico." },
+      executionHighlights: { title: "Ejecucion", body: "Publicado con manifest generado." },
+      qualitySecurityPerformance: { title: "Calidad", body: "Solo contenido seguro." },
+      publicEvidenceTitle: "Enlaces publicos",
+      publicEvidence: [{
+        label: "Sitio en vivo",
+        description: "Abrir Dashboard Alpha.",
+        href: "https://example.com/dashboard-alpha",
+        altText: "Dashboard Alpha publicado",
+        kind: "public-site",
+        publicSafe: true,
+      }],
+      confidentialityNote: { title: "Nota", body: "Los datos privados no se publican." },
+    },
+  },
+} as const;
+
+function dynamicCaseStudyEntry(locale: "en" | "es") {
+  return dynamicCaseStudyEntries[locale];
 }
 
 describe("Public Content Graph", () => {
   it("uses English as the default locale and Spanish as the secondary locale", () => {
     expect(DEFAULT_LOCALE).toBe("en");
     expect(LOCALES).toEqual(["en", "es"]);
+  });
+
+  it("resolves shared UI copy and locale routing without inline language branches", () => {
+    expect(getAlternateLocale("en")).toBe("es");
+    expect(getAlternateLocale("es")).toBe("en");
+    expect(getLocalizedCaseStudyPath("en", "dashboard-alpha")).toBe("/case-studies/dashboard-alpha");
+    expect(getLocalizedCaseStudyPath("es", "dashboard-alpha")).toBe("/es/casos/dashboard-alpha");
+    expect(getLocalizedValue("es", { en: "English", es: "Español" })).toBe("Español");
+    expect(getSharedI18n("en").caseStudy.viewProject).toBe("View project");
+    expect(getSharedI18n("es").caseStudy.viewProject).toBe("Ver proyecto");
+    expect(formatI18n(getSharedI18n("es").caseStudy.previewAlt, { title: "ETERIA" })).toContain("ETERIA");
   });
 
   it("uses dedicated static evidence for the engineering practice case study", () => {
@@ -137,9 +150,9 @@ describe("Public Content Graph", () => {
 
   it("uses a public-safe ETERIA landing asset as the lead project evidence", () => {
     expect(STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:eteria"]).toEqual({
-      src: "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc",
-      alt: "ETERIA public landing page linen art direction",
-      kind: "landing",
+      src: "/images/proof/eteria-garden-blue-table-og.jpg",
+      alt: "ETERIA outdoor celebration table styled with blue textiles, ivory flowers, and layered place settings",
+      kind: "site",
     });
   });
 
@@ -311,7 +324,7 @@ describe("Public Content Graph", () => {
       "Services",
       "About",
       "Architecture",
-      "Start a conversation",
+      "Let's talk",
     ]);
     expect(englishNavigation.items.map((item) => item.href)).toEqual([
       "/case-studies",
@@ -901,6 +914,9 @@ describe("Public Content Graph", () => {
 
     expect(findForbiddenPublicClaims(publicCopy)).toEqual([]);
     expect(findForbiddenPublicClaims(resumeCopy)).toEqual([]);
+    expect(publicCopy).not.toMatch(/\bCARE\b/);
+    expect(enterpriseCopy).toMatch(/customer-support and account-recovery operations platform/i);
+    expect(enterpriseCopy).toMatch(/atención al cliente y recuperación de cuentas/i);
     expect(enterpriseCopy).toMatch(/3(?:-|–)5 seconds.*under 1 second/i);
     expect(enterpriseCopy).not.toMatch(/final client|cliente final|New York/i);
     expect(eteriaCopy).not.toMatch(/App Store|credential|private route|customer data|datos de clientes/i);

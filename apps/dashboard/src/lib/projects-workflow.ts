@@ -1,5 +1,10 @@
 import { useState } from "react";
 import {
+  getLocalizedCaseStudyPath,
+  getLocalizedValue,
+  getSharedI18n,
+} from "@aohys/content-graph";
+import {
   useArchiveProjectMedia,
   useCreateProject,
   useCreateMediaUpload,
@@ -319,8 +324,9 @@ export function useProjectsWorkflow({
 
 export function buildNewProjectDraft(input: NewProjectInput, locale: DashboardLocale): ProjectFormState {
   const contentId = `case-study:${input.contentKey}`;
-  const localizedTitle = locale === "en" ? input.title : input.spanishTitle;
-  const localizedSlug = locale === "en" ? input.englishSlug : input.spanishSlug;
+  const localizedTitle = getLocalizedValue(locale, { en: input.title, es: input.spanishTitle });
+  const localizedSlug = getLocalizedValue(locale, { en: input.englishSlug, es: input.spanishSlug });
+  const i18n = getSharedI18n(locale);
   return {
     contentId,
     locale,
@@ -330,8 +336,8 @@ export function buildNewProjectDraft(input: NewProjectInput, locale: DashboardLo
     title: localizedTitle,
     summary: "",
     seoDescription: "",
-    ctaLabel: locale === "en" ? "View project" : "Ver proyecto",
-    ctaHref: locale === "en" ? `/case-studies/${localizedSlug}` : `/es/casos/${localizedSlug}`,
+    ctaLabel: i18n.caseStudy.viewProject,
+    ctaHref: getLocalizedCaseStudyPath(locale, localizedSlug),
     achievements: "",
     structureNotes: "",
   };

@@ -1,5 +1,6 @@
 ---
 import { type HomeOutcome, type Locale } from "@aohys/content-graph";
+import { getUiCopy } from "../../i18n";
 import SunlitProofImage from "./SunlitProofImage.astro";
 import SunlitWebGLScene from "./SunlitWebGLScene.astro";
 import { resolveProofMedia } from "./proof-media";
@@ -13,45 +14,7 @@ interface Props {
 }
 
 const { outcomes, locale, heading, intro, hero = false } = Astro.props;
-const labels = locale === "es" ? {
-  region: "Selector de proyectos",
-  open: "Abrir caso",
-  current: "Proyecto visible",
-  loading: "Cambiando escenario",
-  result: "Resultado",
-  evidence: "Sistema",
-  boundary: "Mi rol",
-  swipe: "Proyectos en escena",
-  previous: "Proyecto anterior",
-  next: "Proyecto siguiente",
-  position: "Proyecto",
-  browse: "Ver todos los proyectos",
-  choose: "Elige el siguiente proyecto",
-  chooseIntro: "La escena cambia en el mismo lugar; la URL conserva el proyecto activo.",
-  close: "Cerrar selector",
-  controlHint: "Usa anterior, siguiente o abre el índice completo.",
-  fallbackAlt: "Sistema de producto AOHYS",
-  scene: "Escenario de sistemas de producto AOHYS",
-} : {
-  region: "Project selector",
-  open: "Open case",
-  current: "Project in view",
-  loading: "Changing the set",
-  result: "Result",
-  evidence: "System",
-  boundary: "My role",
-  swipe: "Projects on stage",
-  previous: "Previous project",
-  next: "Next project",
-  position: "Project",
-  browse: "View all projects",
-  choose: "Choose the next project",
-  chooseIntro: "The scene changes in place; the URL keeps the active project.",
-  close: "Close selector",
-  controlHint: "Use previous, next, or open the complete index.",
-  fallbackAlt: "AOHYS product system",
-  scene: "AOHYS product systems stage",
-};
+const labels = getUiCopy(locale).sunlit.projectStage;
 const projects = outcomes.map((outcome) => ({
   outcome,
   media: resolveProofMedia(

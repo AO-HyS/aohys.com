@@ -2,9 +2,12 @@ import { api as convexApi } from "@aohys/backend/convex/_generated/api";
 import {
   PUBLIC_CONTENT_NODES,
   STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID,
+  getAlternateLocale,
   getCaseStudyPageContent,
   getLocaleVariant,
+  getLocalizedCaseStudyPath,
   getResumePageContent,
+  getSharedI18n,
 } from "@aohys/content-graph";
 import type { FunctionReturnType } from "convex/server";
 import type {
@@ -128,7 +131,7 @@ function buildDashboardProjectRows(
       updatedAt: metadata?.updatedAt ?? 0,
       locales: (["en", "es"] as const).map((locale) => {
         const draft = draftsByContentIdAndLocale.get(`${contentId}:${locale}`);
-        const oppositeDraft = draftsByContentIdAndLocale.get(`${contentId}:${locale === "en" ? "es" : "en"}`);
+        const oppositeDraft = draftsByContentIdAndLocale.get(`${contentId}:${getAlternateLocale(locale)}`);
         const variant = node
           ? getLocaleVariant(node, locale)
           : fallbackProjectVariant(contentId, locale, draft ?? oppositeDraft);
@@ -238,16 +241,15 @@ function fallbackProjectVariant(
 } {
   const slug = draft?.localizedSlug ?? slugFromContentId(contentId);
   const fallbackTitle = titleFromSlug(slug);
-  const fallbackSummary = locale === "es"
-    ? "Borrador de caso publico creado desde el dashboard."
-    : "Public case-study draft created from the dashboard.";
+  const i18n = getSharedI18n(locale);
+  const fallbackSummary = i18n.caseStudy.draftSummary;
 
   return {
-    path: locale === "es" ? `/es/casos/${slug}` : `/case-studies/${slug}`,
+    path: getLocalizedCaseStudyPath(locale, slug),
     title: draft?.title ?? fallbackTitle,
     summary: draft?.summary ?? fallbackSummary,
     seoDescription: draft?.seoDescription ?? draft?.summary ?? fallbackSummary,
-    primaryActionLabel: draft?.ctaLabel ?? (locale === "es" ? "Hablemos" : "Start a conversation"),
+    primaryActionLabel: draft?.ctaLabel ?? i18n.caseStudy.primaryActionLabel,
     primaryActionContentId: "contact",
   };
 }
