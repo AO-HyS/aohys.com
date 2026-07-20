@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildDashboardContentPayload, type DashboardConvexContentPayload } from "./projects";
+import {
+  buildDashboardContentPayload,
+  resolveProjectMediaPreview,
+  type DashboardConvexContentPayload,
+} from "./projects";
 
 const emptyDashboardContent = {
   caseStudies: [],
@@ -11,6 +15,33 @@ const emptyDashboardContent = {
 } as unknown as DashboardConvexContentPayload;
 
 describe("buildDashboardContentPayload", () => {
+  it("previews committed evidence while a legacy Astro selection awaits review", () => {
+    const result = resolveProjectMediaPreview([
+      {
+        id: "legacy-selection",
+        label: "Legacy selection",
+        altText: "Legacy dashboard media.",
+        source: "media-metadata",
+        src: "https://cdn.example.com/legacy.png",
+        status: "published",
+        selectedForPublic: true,
+      },
+      {
+        label: "Committed proof",
+        altText: "Committed public-safe proof.",
+        source: "content-graph",
+        src: "/images/proof/committed.png",
+      },
+    ]);
+
+    expect(result.selectedImageNeedsReview).toBe(true);
+    expect(result.selectedImage).toBeUndefined();
+    expect(result.previewImage).toMatchObject({
+      source: "content-graph",
+      src: "/images/proof/committed.png",
+    });
+  });
+
   it("uses the Astro evidence image for content-graph project media previews", () => {
     const payload = buildDashboardContentPayload(emptyDashboardContent);
     const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
@@ -36,6 +67,7 @@ describe("buildDashboardContentPayload", () => {
           usage: "case-study",
           status: "draft",
           selectedForPublic: true,
+          selectedForPublicAt: 122,
           updatedAt: 123,
         },
       ],
@@ -48,6 +80,7 @@ describe("buildDashboardContentPayload", () => {
       href: "https://imagedelivery.net/cloudflare-hash/media/casa-roca/selected/public",
       previewStatus: "ready",
       selectedForPublic: true,
+      selectedForPublicAt: 122,
     });
   });
 
@@ -162,6 +195,7 @@ describe("buildDashboardContentPayload", () => {
       href: undefined,
       previewStatus: "provider-unavailable",
       selectedForPublic: true,
+      selectedForPublicAt: undefined,
     });
   });
 

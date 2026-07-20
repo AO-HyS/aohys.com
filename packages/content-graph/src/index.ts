@@ -2,6 +2,12 @@ import enContent from "./locales/en.json" with { type: "json" };
 import esContent from "./locales/es.json" with { type: "json" };
 import { DASHBOARD_PUBLIC_PROJECT_IDS } from "./generated/dashboard-public-projects.js";
 
+export {
+  FORBIDDEN_PUBLIC_CLAIMS,
+  assertPublicClaimsSafe,
+  findForbiddenPublicClaims,
+} from "./public-claim-policy.js";
+
 export const SITE_URL = "https://aohys.com";
 export const DEFAULT_LOCALE = "en";
 export const LOCALES = ["en", "es"] as const;
@@ -21,6 +27,7 @@ export type ContentType =
 export type ContentId =
   | "home"
   | "case-studies"
+  | "case-study:eteria"
   | "case-study:casa-roca"
   | "case-study:the-barber-central"
   | "case-study:nutri-plan"
@@ -62,9 +69,9 @@ export interface StaticEvidenceImageAsset {
 
 export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceImageAsset> = {
   home: {
-    src: "/images/proof/casa-roca-value-v2.jpg",
-    alt: "Casa Roca destination story and reservation path",
-    kind: "site",
+    src: "/images/proof/eteria-ivory-linen-hero.webp",
+    alt: "ETERIA public landing page linen art direction",
+    kind: "landing",
   },
   "home:architecture-backdrop": {
     src: "/images/proof/enterprise-systems-map-v2.svg",
@@ -74,6 +81,11 @@ export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceI
   "home:practice-backdrop": {
     src: "/images/proof/barber-central-hero-v2.jpg",
     alt: "The Barber Central product hero",
+    kind: "landing",
+  },
+  "case-study:eteria": {
+    src: "/images/proof/eteria-ivory-linen-hero.webp",
+    alt: "ETERIA public landing page linen art direction",
     kind: "landing",
   },
   "case-study:casa-roca": {
@@ -496,11 +508,12 @@ const contentByLocale = {
 } as Record<Locale, ContentDictionary>;
 
 const STATIC_CASE_STUDY_IDS = [
-  "case-study:casa-roca",
+  "case-study:eteria",
+  "case-study:engineering-practice",
+  "case-study:enterprise-systems",
   "case-study:the-barber-central",
   "case-study:nutri-plan",
-  "case-study:enterprise-systems",
-  "case-study:engineering-practice",
+  "case-study:casa-roca",
 ] as const satisfies readonly ContentId[];
 
 const STATIC_CONTENT_IDS = [
@@ -560,7 +573,19 @@ const staticBaseNodes = [
     sitemap: { include: true, changefreq: "weekly", priority: 0.9 },
   },
   {
-    id: "case-study:casa-roca",
+    id: "case-study:eteria",
+    type: "case-study",
+    status: "published",
+    sitemap: { include: true, changefreq: "monthly", priority: 0.88 },
+  },
+  {
+    id: "case-study:engineering-practice",
+    type: "case-study",
+    status: "published",
+    sitemap: { include: true, changefreq: "monthly", priority: 0.82 },
+  },
+  {
+    id: "case-study:enterprise-systems",
     type: "case-study",
     status: "published",
     sitemap: { include: true, changefreq: "monthly", priority: 0.8 },
@@ -578,16 +603,10 @@ const staticBaseNodes = [
     sitemap: { include: true, changefreq: "monthly", priority: 0.78 },
   },
   {
-    id: "case-study:enterprise-systems",
+    id: "case-study:casa-roca",
     type: "case-study",
     status: "published",
     sitemap: { include: true, changefreq: "monthly", priority: 0.76 },
-  },
-  {
-    id: "case-study:engineering-practice",
-    type: "case-study",
-    status: "published",
-    sitemap: { include: true, changefreq: "monthly", priority: 0.74 },
   },
   {
     id: "practice",
@@ -984,7 +1003,9 @@ export function getSeoMetadata(contentId: ContentId | string, locale: Locale): S
               "@id": `${SITE_URL}/#alejandro-ortiz-corro`,
               name: "Alejandro Ortiz Corro",
               url: `${SITE_URL}/resume`,
-              jobTitle: locale === "es" ? "Ingeniero de producto" : "Product engineer",
+              jobTitle: locale === "es"
+                ? "Senior Software Engineer · Desarrollo de producto AI-native"
+                : "Senior Software Engineer · AI-Native Product Development",
               sameAs: ["https://www.linkedin.com/in/alejandrortizcrr/", "https://github.com/corrortiz"],
             },
           }

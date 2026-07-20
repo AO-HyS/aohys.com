@@ -1,11 +1,13 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { isIP } from "node:net";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   normalizePublicWhatsappUrl,
   resolvePublicMediaUrl,
   selectPublicationMedia,
 } from "../packages/core/src/index.js";
+import { assertPublicClaimsSafe } from "../packages/content-graph/src/public-claim-policy.js";
 import { hasConvexDeploymentAccess, runConvexFunction } from "./convex-run.js";
 
 type Locale = "en" | "es";
@@ -22,12 +24,14 @@ interface DashboardProjectDraft {
   ctaHref: string;
   achievements: string;
   structureNotes: string;
+  updatedAt?: number;
   publishedAt?: number;
 }
 
 interface DashboardResumeDraft {
   locale: Locale;
   contentJson: string;
+  updatedAt?: number;
   publishedAt?: number;
 }
 
@@ -42,6 +46,7 @@ export interface DashboardMediaMetadata {
   status: "draft" | "published" | "archived";
   locale?: Locale;
   selectedForPublic?: boolean;
+  selectedForPublicAt?: number;
   updatedAt: number;
 }
 
@@ -63,6 +68,8 @@ interface DashboardContentPayload {
 }
 
 interface LocalizedEntry {
+  approvedAt?: string;
+  approvedHash?: string;
   path?: string;
   title?: string;
   summary?: string;
@@ -98,23 +105,48 @@ interface LocalizedEntry {
 
 type LocaleDictionary = Record<string, LocalizedEntry>;
 
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
 const localeFiles: Record<Locale, string> = {
-  en: path.resolve("packages/content-graph/src/locales/en.json"),
-  es: path.resolve("packages/content-graph/src/locales/es.json"),
+  en: path.join(repoRoot, "packages/content-graph/src/locales/en.json"),
+  es: path.join(repoRoot, "packages/content-graph/src/locales/es.json"),
 };
-const generatedContentGraphDir = path.resolve("packages/content-graph/src/generated");
+const generatedContentGraphDir = path.join(repoRoot, "packages/content-graph/src/generated");
 const generatedPublicProjectsFile = path.join(generatedContentGraphDir, "dashboard-public-projects.ts");
-const generatedSiteDir = path.resolve("apps/site/src/generated");
+const generatedSiteDir = path.join(repoRoot, "apps/site/src/generated");
 const generatedMediaFile = path.join(generatedSiteDir, "dashboard-public-media.ts");
 const generatedSettingsFile = path.join(generatedSiteDir, "dashboard-public-settings.ts");
 
 const STATIC_CASE_STUDY_IDS = new Set([
+  "case-study:eteria",
   "case-study:casa-roca",
   "case-study:the-barber-central",
   "case-study:nutri-plan",
   "case-study:enterprise-systems",
   "case-study:engineering-practice",
 ]);
+
+export function shouldApplyDashboardDraft(
+  entry: LocalizedEntry | undefined,
+  publishedAt: number | undefined,
+  updatedAt?: number,
+): boolean {
+  if (!publishedAt) {
+    return false;
+  }
+
+  if (!entry?.approvedAt) {
+    return true;
+  }
+
+  const approvedAt = Date.parse(entry.approvedAt);
+
+  if (!Number.isFinite(approvedAt)) {
+    throw new Error(`Invalid approvedAt value "${entry.approvedAt}" in public content.`);
+  }
+
+  return Boolean(updatedAt && updatedAt > approvedAt);
+}
 
 async function loadDashboardContent(): Promise<DashboardContentPayload | null> {
   if (!hasConvexDeploymentAccess()) {
@@ -188,7 +220,34 @@ function contentIdFromPath(dictionary: LocaleDictionary, href: string): string |
 }
 
 function publicHrefForDraft(draft: DashboardProjectDraft): string | undefined {
-  return draft.projectUrl || (draft.ctaHref.startsWith("http") ? draft.ctaHref : undefined);
+  const candidate = draft.projectUrl?.trim()
+    || (/^https?:/i.test(draft.ctaHref) ? draft.ctaHref.trim() : undefined);
+
+  if (!candidate) return undefined;
+
+  let parsed: URL;
+  try {
+    parsed = new URL(candidate);
+  } catch {
+    throw new Error(`Invalid public project URL for ${draft.contentId}.`);
+  }
+
+  const hostname = parsed.hostname.toLowerCase().replace(/^\[|\]$/g, "").replace(/\.$/, "");
+  if (parsed.protocol !== "https:"
+    || parsed.username
+    || parsed.password
+    || isIP(hostname) !== 0
+    || !hostname.includes(".")
+    || hostname === "localhost"
+    || hostname.endsWith(".localhost")
+    || hostname.endsWith(".local")
+    || hostname.endsWith(".internal")
+    || hostname === "home.arpa"
+    || hostname.endsWith(".home.arpa")) {
+    throw new Error(`Unsafe public project URL for ${draft.contentId}.`);
+  }
+
+  return parsed.toString();
 }
 
 function achievementFallbackForDraft(draft: DashboardProjectDraft): string {
@@ -285,7 +344,16 @@ function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
 export function applyProjectDraft(dictionary: LocaleDictionary, draft: DashboardProjectDraft): boolean {
   let entry = dictionary[draft.contentId];
 
+  if (entry && !shouldApplyDashboardDraft(entry, draft.publishedAt, draft.updatedAt)) {
+    console.log(`Skipping stale published project draft ${draft.contentId} (${draft.locale}).`);
+    return false;
+  }
+
   if (!entry) {
+    if (!shouldApplyDashboardDraft(undefined, draft.publishedAt)) {
+      return false;
+    }
+
     if (!isCaseStudyContentId(draft.contentId)) {
       console.log(`Skipping unknown content entry ${draft.contentId} (${draft.locale}).`);
       return false;
@@ -350,14 +418,20 @@ export function applyProjectDraft(dictionary: LocaleDictionary, draft: Dashboard
   return true;
 }
 
-function applyResumeDraft(dictionary: LocaleDictionary, draft: DashboardResumeDraft): void {
+export function applyResumeDraft(dictionary: LocaleDictionary, draft: DashboardResumeDraft): boolean {
   const resume = dictionary.resume;
 
   if (!resume) {
     throw new Error(`Resume content entry is missing for ${draft.locale}.`);
   }
 
+  if (!shouldApplyDashboardDraft(resume, draft.publishedAt, draft.updatedAt)) {
+    console.log(`Skipping stale published resume draft (${draft.locale}).`);
+    return false;
+  }
+
   resume.resumeContent = JSON.parse(draft.contentJson) as unknown;
+  return true;
 }
 
 function generatedMediaKind(item: DashboardMediaMetadata): string {
@@ -380,6 +454,20 @@ function generatedMediaKind(item: DashboardMediaMetadata): string {
 
 export function publicMediaItemsByContentId(mediaItems: DashboardMediaMetadata[]): Map<string, PublicDashboardMediaMetadata> {
   const resolvedItems = mediaItems.flatMap((item, index): Array<PublicDashboardMediaMetadata & { id: string }> => {
+    // A curated case study can only replace its committed evidence after an
+    // explicit media selection made later than the code-reviewed copy boundary.
+    // Publication may update `updatedAt`; `selectedForPublicAt` is the stable,
+    // per-asset review signal.
+    if (item.contentId && STATIC_CASE_STUDY_IDS.has(item.contentId)) {
+      const sourceDictionary = JSON.parse(readFileSync(localeFiles.en, "utf8")) as LocaleDictionary;
+      const approvedAt = Date.parse(sourceDictionary[item.contentId]?.approvedAt ?? "");
+      if (!Number.isFinite(approvedAt)
+        || !item.selectedForPublicAt
+        || item.selectedForPublicAt <= approvedAt) {
+        return [];
+      }
+    }
+
     const resolution = resolvePublicMediaUrl({
       storageProvider: item.storageProvider ?? "external",
       storageKey: item.storageKey,
@@ -580,9 +668,13 @@ async function main(): Promise<void> {
       continue;
     }
 
-    applyResumeDraft(dictionaries[draft.locale], draft);
-    appliedResumes += 1;
+    if (applyResumeDraft(dictionaries[draft.locale], draft)) {
+      appliedResumes += 1;
+    }
   }
+
+  assertPublicClaimsSafe(dictionaries.en, "dashboard-applied English public content");
+  assertPublicClaimsSafe(dictionaries.es, "dashboard-applied Spanish public content");
 
   writeLocaleFile("en", dictionaries.en);
   writeLocaleFile("es", dictionaries.es);

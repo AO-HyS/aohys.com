@@ -71,6 +71,7 @@ export default defineSchema({
     status: v.union(v.literal("draft"), v.literal("published"), v.literal("archived")),
     locale: v.optional(localeValidator),
     selectedForPublic: v.optional(v.boolean()),
+    selectedForPublicAt: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })

@@ -2,7 +2,7 @@
 
 Public source website for Alejandro Ortiz Corro and AOH&S.
 
-This repository is a working sample of engineering standards: an Astro public site, a private React dashboard app, Convex backend workflows, Cloudflare deployment and media handling, PostHog analytics/errors, Resend lead notifications, Better Auth authentication, and a protected release path.
+This repository is a working sample of Alejandro's AI-native product-development practice: an Astro public site, a private React dashboard app, Convex backend workflows, Cloudflare deployment and media handling, PostHog analytics/errors, Resend lead notifications, Better Auth authentication, and a protected release path. Human accountability stays explicit from business intent and domain decisions through implementation, verification, and release.
 
 The canonical public domain is `https://aohys.com`. `aohys.net` is intended to redirect to `aohys.com` through Cloudflare Redirect Rules.
 
@@ -26,6 +26,8 @@ Start with the docs:
 - [Public Content Graph](docs/public-content-graph.md)
 - [Dashboard architecture](docs/dashboard-ui-kit.md)
 - [Launch Hardening](docs/launch-hardening.md)
+
+For a hiring or product evaluation, the shortest public path is the bilingual home page, the six selected case studies, the lifecycle architecture, and the concise two-page resume PDF. The public site explains outcomes and public-safe evidence; the reusable Development System, client repositories, and operational material remain private work.
 
 Run the repo locally from the root:
 
@@ -67,11 +69,11 @@ Husky installs through the root `prepare` script and runs `.husky/pre-commit` be
 | Private dashboard app | `apps/dashboard` served under `/dashboard` | React app with TanStack Router, shadcn/ui, project workflows, lead review, resume operations, and direct admin-gated Convex access |
 | Backend | `apps/backend` | Convex schema, HTTP actions, contact leads, email notification adapters, PostHog server events, Better Auth routes, and admin-gated dashboard functions |
 | Environment Contract | `packages/environment` | Shared variable registry, local/preview/production validation, public-vs-secret boundaries |
-| Public Content Graph | `packages/content-graph` | Stable content IDs, localized routes, SEO metadata, sitemap eligibility, public-safe content relationships |
+| Public Content Graph | `packages/content-graph` | Stable content IDs, localized routes, SEO metadata, sitemap eligibility, public-safe content relationships, and the editorial order of selected systems |
 | Release Train | `packages/release-train` and `.github/workflows/release-train.yml` | Branch-to-environment release plan, Cloudflare deploy commands, smoke checks, redirect manifest |
 | Documentation | `docs/` | Product, architecture, TDD, release, environment, dashboard, privacy, and issue planning |
 
-The system intentionally keeps public marketing/content concerns separate from private operational concerns. Public Astro pages are optimized for SEO and direct reading; authenticated workflows live behind the dashboard boundary.
+The system intentionally keeps public communication separate from private operational work. Public Astro pages present selected systems, outcomes, evidence, and the six-stage delivery lifecycle for SEO and direct reading; authenticated workflows and the adaptable Development System remain behind private boundaries.
 
 ## Workspace
 

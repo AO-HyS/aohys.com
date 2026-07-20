@@ -164,6 +164,7 @@ const listForDashboardReturns = v.object({
     status: mediaStatusValidator,
     locale: v.optional(localeValidator),
     selectedForPublic: v.optional(v.boolean()),
+    selectedForPublicAt: v.optional(v.number()),
     updatedAt: v.number(),
   })),
   settings: v.array(v.object({
@@ -323,6 +324,7 @@ async function listForDashboardHandler(ctx: QueryCtx) {
       status: item.status,
       locale: item.locale,
       selectedForPublic: item.selectedForPublic,
+      selectedForPublicAt: item.selectedForPublicAt,
       updatedAt: item.updatedAt,
     })),
     settings: settings.map((setting) => ({
@@ -783,12 +785,14 @@ export const createMediaMetadata = mutation({
       await Promise.all(siblingMedia
         .map((item) => ctx.db.patch(item._id, {
           selectedForPublic: false,
+          selectedForPublicAt: undefined,
           updatedAt: now,
         })));
     }
 
     const mediaId = await ctx.db.insert("mediaMetadata", {
       ...args,
+      selectedForPublicAt: args.selectedForPublic ? now : undefined,
       createdAt: now,
       updatedAt: now,
     });
@@ -829,11 +833,13 @@ export const selectMediaForPublic = mutation({
       .filter((item) => item._id !== args.mediaId)
       .map((item) => ctx.db.patch(item._id, {
         selectedForPublic: false,
+        selectedForPublicAt: undefined,
         updatedAt: now,
       })));
 
     await ctx.db.patch(args.mediaId, {
       selectedForPublic: true,
+      selectedForPublicAt: now,
       status: selectedMedia.status === "archived" ? "draft" : selectedMedia.status,
       updatedAt: now,
     });
@@ -866,6 +872,7 @@ export const archiveMedia = mutation({
 
     await ctx.db.patch(args.mediaId, {
       selectedForPublic: false,
+      selectedForPublicAt: undefined,
       status: "archived",
       updatedAt: now,
     });

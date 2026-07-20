@@ -12,6 +12,7 @@ import type {
   DashboardMediaMetadata,
   DashboardProject,
   DashboardProjectDraft,
+  DashboardProjectImage,
   DashboardResumeContent,
 } from "@/types";
 import { resolvePublicMediaUrl } from "@/lib/media-upload";
@@ -22,6 +23,32 @@ type DashboardCaseStudyMetadata = Pick<
   DashboardProject,
   "contentId" | "status" | "evidenceStatus" | "updatedAt"
 >;
+
+export function resolveProjectMediaPreview(images: DashboardProjectImage[]) {
+  const mediaImages = images.filter((image) => image.source === "media-metadata");
+  const selectedImageCandidate = mediaImages.find(
+    (image) => image.selectedForPublic && image.status !== "archived",
+  );
+  const selectedImageNeedsReview = Boolean(selectedImageCandidate && !selectedImageCandidate.selectedForPublicAt);
+  const selectedImage = selectedImageNeedsReview ? undefined : selectedImageCandidate;
+  const contentGraphImage = images.find((image) => image.source === "content-graph");
+  const fallbackImage = selectedImage
+    ? undefined
+    : selectedImageNeedsReview
+      ? contentGraphImage
+        ?? mediaImages.find((image) => image.status === "published" && image !== selectedImageCandidate)
+        ?? mediaImages.find((image) => image.status !== "archived" && image !== selectedImageCandidate)
+      : mediaImages.find((image) => image.status === "published")
+        ?? mediaImages.find((image) => image.status !== "archived")
+        ?? contentGraphImage;
+
+  return {
+    previewImage: selectedImage ?? fallbackImage,
+    selectedImage,
+    selectedImageCandidate,
+    selectedImageNeedsReview,
+  };
+}
 
 export function buildDashboardContentPayload(
   content: DashboardConvexContentPayload,
@@ -164,6 +191,7 @@ function buildDashboardProjectRows(
             status: item.status,
             usage: item.usage,
             selectedForPublic: item.selectedForPublic,
+            selectedForPublicAt: item.selectedForPublicAt,
           };
         }),
       ],
