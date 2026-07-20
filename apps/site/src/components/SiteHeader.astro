@@ -47,6 +47,8 @@ function isCurrent(contentId?: string) {
         aria-label={copy.menu}
         aria-expanded="false"
         aria-controls="sunlit-mobile-panel"
+        data-menu-label-open={copy.menu}
+        data-menu-label-close={copy.menuClose}
         data-menu-trigger
       ><span aria-hidden="true"></span></button>
     </div>
@@ -67,15 +69,20 @@ function isCurrent(contentId?: string) {
     const panel = header.querySelector("[data-menu-panel]");
     if (!(trigger instanceof HTMLButtonElement) || !(panel instanceof HTMLElement)) continue;
 
+    const setOpen = (isOpen: boolean) => {
+      const label = isOpen ? trigger.dataset.menuLabelClose : trigger.dataset.menuLabelOpen;
+      trigger.setAttribute("aria-expanded", String(isOpen));
+      if (label) trigger.setAttribute("aria-label", label);
+      panel.hidden = !isOpen;
+    };
+
     const close = () => {
-      trigger.setAttribute("aria-expanded", "false");
-      panel.hidden = true;
+      setOpen(false);
     };
 
     trigger.addEventListener("click", () => {
       const nextOpen = trigger.getAttribute("aria-expanded") !== "true";
-      trigger.setAttribute("aria-expanded", String(nextOpen));
-      panel.hidden = !nextOpen;
+      setOpen(nextOpen);
     });
     header.addEventListener("keydown", (event) => {
       if (!(event instanceof KeyboardEvent)) return;

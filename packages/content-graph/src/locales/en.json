@@ -499,19 +499,19 @@
     }
   },
   "case-study:enterprise-systems": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "e8682311de0bf0c096e0b69a6db8136b4131077cb009a211cc3e19e0c8beb9e2",
+    "approvedAt": "2026-07-20T17:51:17.000Z",
+    "approvedHash": "434c072959bf4d204db2722dc3da5e8f1cd889053b704e974afe515d55c4d2a1",
     "path": "/case-studies/enterprise-systems",
     "title": "Enterprise product systems under operational pressure",
-    "summary": "An internal customer-support and account-recovery operations platform at Tala and mission-critical emergency-response software show product judgment, performance work, and dependable delivery inside complex organizations.",
-    "seoDescription": "Enterprise Product Systems covers an internal customer-support and account-recovery operations platform at Tala, a mission-critical emergency-response platform for a large US city, performance, workflows, observability, and dependable delivery without exposing private client details.",
+    "summary": "An internal customer-support and account-recovery operations platform and mission-critical emergency-response software show product judgment, performance work, and dependable delivery inside complex organizations.",
+    "seoDescription": "Enterprise Product Systems covers an internal customer-support and account-recovery operations platform, a mission-critical emergency-response platform for a large US city, performance, workflows, observability, and dependable delivery without exposing private client details.",
     "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Read architecture notes",
     "secondaryActionContentId": "architecture",
     "caseStudyContent": {
       "statusLabel": "Enterprise product systems",
-      "overview": "An internal customer-support and account-recovery operations platform at Tala and mission-critical emergency-response software for a large US city show how product workflows, performance, observability, and delivery operate inside complex organizations.",
+      "overview": "An internal customer-support and account-recovery operations platform and mission-critical emergency-response software for a large US city show how product workflows, performance, observability, and delivery operate inside complex organizations.",
       "problem": {
         "title": "Opportunity",
         "body": "Large systems create meaningful opportunities when ownership, integrations, operational workflows, and support paths are made visible."
@@ -522,7 +522,7 @@
       },
       "role": {
         "title": "Role",
-        "body": "At Tala: stakeholder communication, roadmap and workflow definition, frontend depth, server-side and API work, observability, backend-oriented delivery, and Java work in progress. Earlier emergency-response work focused on custom keyboard dispatch and rigorous testing."
+        "body": "In financial technology: stakeholder communication, roadmap and workflow definition, frontend depth, server-side and API work, observability, backend-oriented delivery, and Java work in progress. Earlier emergency-response work focused on custom keyboard dispatch and rigorous testing."
       },
       "constraints": {
         "title": "Operating considerations",
@@ -748,8 +748,8 @@
     }
   },
   "resume": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "dc22ce9264752535c43f4cf99a619e22df5e4a098d8f5cadb0b31b712f59d43d",
+    "approvedAt": "2026-07-20T18:11:32.000Z",
+    "approvedHash": "aae09620b9335d07ad3154f26dece792f20fa06ac22896364af581291a4d6000",
     "path": "/resume",
     "title": "About Alejandro",
     "summary": "Canonical experience for a Senior Software Engineer working across product systems, frontend depth, backend workflows, and AI-native delivery.",
@@ -863,7 +863,7 @@
         },
         {
           "title": "Enterprise Product Systems",
-          "summary": "An internal customer-support and account-recovery operations platform at Tala and mission-critical emergency-response software demonstrate stakeholder work, performance, complex workflows, and reliable delivery.",
+          "summary": "An internal customer-support and account-recovery operations platform and mission-critical emergency-response software demonstrate stakeholder work, performance, complex workflows, and reliable delivery.",
           "bullets": [
             "The platform improved from approximately 3–5 seconds to under 1 second; client details and private architecture remain protected."
           ]

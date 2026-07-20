@@ -499,19 +499,19 @@
     }
   },
   "case-study:enterprise-systems": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "ea19f8abb0887a898faab786a30f7a83ab6a971d10cf196558801ce5079fe5dc",
+    "approvedAt": "2026-07-20T17:51:17.000Z",
+    "approvedHash": "1cb6d5c496e76f52ace7340cfdc5dd35728fc7bf88fa09fd89fd3978353e8928",
     "path": "/es/casos/sistemas-enterprise",
     "title": "Sistemas de producto enterprise bajo presión operativa",
-    "summary": "Una plataforma interna de operaciones de atención al cliente y recuperación de cuentas en Tala y software mission-critical de respuesta a emergencias muestran criterio de producto, performance y delivery confiable dentro de organizaciones complejas.",
-    "seoDescription": "Sistemas de producto enterprise cubre una plataforma interna de operaciones de atención al cliente y recuperación de cuentas en Tala, una plataforma mission-critical de respuesta a emergencias para una gran ciudad de Estados Unidos, performance, workflows, observabilidad y delivery confiable.",
+    "summary": "Una plataforma interna de operaciones de atención al cliente y recuperación de cuentas y software mission-critical de respuesta a emergencias muestran criterio de producto, performance y delivery confiable dentro de organizaciones complejas.",
+    "seoDescription": "Sistemas de producto enterprise cubre una plataforma interna de operaciones de atención al cliente y recuperación de cuentas, una plataforma mission-critical de respuesta a emergencias para una gran ciudad de Estados Unidos, performance, workflows, observabilidad y delivery confiable.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
     "secondaryActionContentId": "architecture",
     "caseStudyContent": {
       "statusLabel": "Sistemas de producto enterprise",
-      "overview": "Una plataforma interna de operaciones de atención al cliente y recuperación de cuentas en Tala y software mission-critical de respuesta a emergencias para una gran ciudad de Estados Unidos muestran cómo operan producto, performance, observabilidad y delivery dentro de organizaciones complejas.",
+      "overview": "Una plataforma interna de operaciones de atención al cliente y recuperación de cuentas y software mission-critical de respuesta a emergencias para una gran ciudad de Estados Unidos muestran cómo operan producto, performance, observabilidad y delivery dentro de organizaciones complejas.",
       "problem": {
         "title": "Oportunidad",
         "body": "Los sistemas grandes abren oportunidades valiosas cuando ownership, integraciones, workflows operativos y caminos de soporte se vuelven visibles."
@@ -522,7 +522,7 @@
       },
       "role": {
         "title": "Rol",
-        "body": "En Tala: comunicación con stakeholders, definición de roadmap y workflows, profundidad frontend, trabajo server-side y de APIs, observabilidad, delivery backend-oriented y trabajo en Java en crecimiento. Antes, el trabajo de emergencia se enfocó en dispatch por teclado y pruebas rigurosas."
+        "body": "En tecnología financiera: comunicación con stakeholders, definición de roadmap y workflows, profundidad frontend, trabajo server-side y de APIs, observabilidad, delivery backend-oriented y trabajo en Java en crecimiento. Antes, el trabajo de emergencia se enfocó en dispatch por teclado y pruebas rigurosas."
       },
       "constraints": {
         "title": "Consideraciones operativas",
@@ -748,8 +748,8 @@
     }
   },
   "resume": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "0eac07c7220430b4ae9dec86878a6701c0a375c69f30f8873af60a033eba93d1",
+    "approvedAt": "2026-07-20T18:11:32.000Z",
+    "approvedHash": "cd3bb46c9b593d7826e787eab337d21109f297bf2622c63c49259a339e18b165",
     "path": "/es/curriculum",
     "title": "Sobre Alejandro",
     "summary": "Experiencia canónica de un Senior Software Engineer que trabaja en sistemas de producto, profundidad frontend, workflows backend y delivery AI-native.",
@@ -863,7 +863,7 @@
         },
         {
           "title": "Sistemas de producto enterprise",
-          "summary": "Una plataforma interna de operaciones de atención al cliente y recuperación de cuentas en Tala y software mission-critical de respuesta a emergencias demuestran trabajo con stakeholders, performance, workflows complejos y delivery confiable.",
+          "summary": "Una plataforma interna de operaciones de atención al cliente y recuperación de cuentas y software mission-critical de respuesta a emergencias demuestran trabajo con stakeholders, performance, workflows complejos y delivery confiable.",
           "bullets": [
             "La plataforma mejoró de aproximadamente 3–5 segundos a menos de 1 segundo; los detalles de clientes y arquitectura privada permanecen protegidos."
           ]
