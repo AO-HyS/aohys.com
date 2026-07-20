@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "contractVersion": "0.7.0",
+  "preparation": {
+    "mode": "normalize",
+    "mutationScope": [
+      ".development-system/repository.json",
+      ".codex/development-system/repository.md",
+      ".factory/development-system/repository.md"
+    ]
+  },
+  "product": {
+    "name": "aohys.com",
+    "packageManager": "pnpm",
+    "stack": [
+      "react",
+      "convex"
+    ]
+  },
+  "preserved": {
+    "releasePolicyFiles": [
+      ".github/workflows/release-train.yml"
+    ],
+    "designFiles": [
+      ".agents/skills/impeccable/scripts/detector/design-system.mjs",
+      ".claude/skills/impeccable/scripts/detector/design-system.mjs",
+      ".gemini/skills/impeccable/scripts/detector/design-system.mjs",
+      ".opencode/skills/impeccable/scripts/detector/design-system.mjs",
+      "apps/dashboard/src/styles.css"
+    ]
+  },
+  "commands": {
+    "review": {
+      "script": "lint",
+      "command": "pnpm run lint"
+    },
+    "validation": {
+      "script": "verify:ci",
+      "command": "pnpm run verify:ci"
+    },
+    "qa": {
+      "script": "test",
+      "command": "pnpm run test"
+    },
+    "preview": {
+      "script": "cloudflare:local",
+      "command": "pnpm run cloudflare:local"
+    }
+  },
+  "harnesses": {
+    "codex": {
+      "adapter": "native",
+      "contract": ".codex/development-system/repository.md"
+    },
+    "t3code": {
+      "adapter": "codex",
+      "contract": ".codex/development-system/repository.md"
+    },
+    "factory": {
+      "adapter": "documented-equivalent",
+      "contract": ".factory/development-system/repository.md"
+    }
+  },
+  "rules": {
+    "react": true,
+    "convex": true,
+    "preserveProductIdentity": true
+  },
+  "architectureDiagnostic": {
+    "id": "improve-codebase-architecture",
+    "mode": "manual",
+    "effect": "proposal-only",
+    "sequence": [
+      "inspect",
+      "propose-deepening",
+      "request-refactor-authorization"
+    ]
+  },
+  "services": {
+    "paidActivation": false
+  }
+}
