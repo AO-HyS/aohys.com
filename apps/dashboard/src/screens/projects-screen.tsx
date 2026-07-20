@@ -57,6 +57,7 @@ import {
   defaultProjectMediaStorageKey,
   validateCloudflareImagesCustomId,
 } from "@/lib/media-upload";
+import { resolveProjectMediaPreview } from "@/lib/projects";
 import {
   useProjectsWorkflow,
   type MediaUploadIssue,
@@ -625,14 +626,11 @@ function ProjectImagesCard({
   onArchiveMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
   onDeleteMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
 }) {
-  const mediaImages = project.images.filter((image) => image.source === "media-metadata");
-  const selectedImage = mediaImages.find((image) => image.selectedForPublic && image.status !== "archived");
-  const fallbackImage = selectedImage
-    ? null
-    : mediaImages.find((image) => image.status === "published")
-      ?? mediaImages.find((image) => image.status !== "archived")
-      ?? project.images.find((image) => image.source === "content-graph");
-  const previewImage = selectedImage ?? fallbackImage;
+  const {
+    previewImage,
+    selectedImage,
+    selectedImageNeedsReview,
+  } = resolveProjectMediaPreview(project.images);
   const selectedImagePreviewStatus = selectedImage?.previewStatus;
   const selectedImageHasPreviewIssue = selectedImagePreviewStatus !== undefined
     && selectedImagePreviewStatus !== "ready";
@@ -653,15 +651,21 @@ function ProjectImagesCard({
           />
           <div className={dashboardClass.mediaPreviewCopy}>
             <span className={selectedImage ? dashboardClass.mediaSelectedLabel : undefined}>
-              {selectedImage ? "Selected for Astro" : "No dashboard image selected"}
+              {selectedImage
+                ? "Selected for Astro"
+                : selectedImageNeedsReview
+                  ? "Selection review required"
+                  : "No dashboard image selected"}
             </span>
             {previewImage ? <strong>{previewImage.label}</strong> : null}
             <p>
               {selectedImageHasPreviewIssue
                 ? selectedImage?.previewIssue ?? "This selected media record cannot resolve to a safe public image, so Astro will keep using another reviewed project image."
                 : selectedImage
-                ? previewImage?.altText
-                : "Choose Use in Astro on one media row to make the public image explicit."}
+                  ? previewImage?.altText
+                  : selectedImageNeedsReview
+                    ? "This legacy selection keeps the committed public-safe image until you explicitly choose Use in Astro again."
+                    : "Choose Use in Astro on one media row to make the public image explicit."}
             </p>
           </div>
         </div>
@@ -686,13 +690,14 @@ function ProjectImagesCard({
                 {image.previewStatus && image.previewStatus !== "ready" ? (
                   <Badge variant="outline">{mediaPreviewIssueLabel(image.previewStatus)}</Badge>
                 ) : null}
-                {image.selectedForPublic ? <Badge>Astro image</Badge> : null}
+                {image.selectedForPublicAt ? <Badge>Astro image</Badge> : null}
+                {image.selectedForPublic && !image.selectedForPublicAt ? <Badge variant="outline">Review required</Badge> : null}
               </div>
               <div className={dashboardClass.mediaRowActions}>
                 {image.id && image.status !== "archived" ? (
                   <Button
                     type="button"
-                    variant={image.selectedForPublic ? "secondary" : "outline"}
+                    variant={image.selectedForPublicAt ? "secondary" : "outline"}
                     size="sm"
                     disabled={savingKey === `${image.id}:select` || !image.src}
                     title={!image.src ? image.previewIssue ?? "This media record has no safe public image URL." : undefined}

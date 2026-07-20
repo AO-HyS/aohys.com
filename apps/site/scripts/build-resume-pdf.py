@@ -6,12 +6,19 @@ from pathlib import Path
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+from reportlab.pdfgen.canvas import Canvas
+from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CONTENT_PATH = REPO_ROOT / "packages/content-graph/src/locales/en.json"
 OUTPUT_PATH = REPO_ROOT / "apps/site/public/downloads/alejandro-ortiz-corro-resume.pdf"
+
+
+class DeterministicCanvas(Canvas):
+  def __init__(self, *args, **kwargs):
+    kwargs["invariant"] = 1
+    super().__init__(*args, **kwargs)
 
 
 def paragraph(text: str, style: ParagraphStyle) -> Paragraph:
@@ -38,34 +45,34 @@ def build_pdf() -> None:
     "ResumeTitle",
     parent=styles["Title"],
     fontName="Helvetica-Bold",
-    fontSize=18,
-    leading=22,
+    fontSize=17,
+    leading=20,
     spaceAfter=4,
   )
   subtitle = ParagraphStyle(
     "ResumeSubtitle",
     parent=styles["Normal"],
     fontName="Helvetica",
-    fontSize=10,
-    leading=13,
-    spaceAfter=8,
+    fontSize=9.25,
+    leading=11,
+    spaceAfter=5,
   )
   heading = ParagraphStyle(
     "ResumeHeading",
     parent=styles["Heading2"],
     fontName="Helvetica-Bold",
-    fontSize=12,
-    leading=15,
-    spaceBefore=8,
-    spaceAfter=4,
+    fontSize=10.5,
+    leading=12.5,
+    spaceBefore=5,
+    spaceAfter=2.5,
   )
   body = ParagraphStyle(
     "ResumeBody",
     parent=styles["BodyText"],
     fontName="Helvetica",
-    fontSize=9.25,
-    leading=12.2,
-    spaceAfter=4,
+    fontSize=9.2,
+    leading=11.2,
+    spaceAfter=3,
   )
   body_bold = ParagraphStyle(
     "ResumeBodyBold",
@@ -76,17 +83,18 @@ def build_pdf() -> None:
   doc = SimpleDocTemplate(
     str(OUTPUT_PATH),
     pagesize=A4,
-    rightMargin=0.62 * inch,
-    leftMargin=0.62 * inch,
-    topMargin=0.54 * inch,
-    bottomMargin=0.54 * inch,
+    rightMargin=0.56 * inch,
+    leftMargin=0.56 * inch,
+    topMargin=0.48 * inch,
+    bottomMargin=0.48 * inch,
     title="Alejandro Ortiz Corro Resume",
     author="Alejandro Ortiz Corro",
+    subject="Senior Software Engineer · AI-Native Product Development",
   )
 
   story = [
     paragraph(resume["name"], title),
-    paragraph(resume["role"], subtitle),
+    paragraph(f"{resume['role']} | {resume['location']}", subtitle),
     paragraph(" | ".join(link["text"] for link in resume["contactLinks"]), body),
     paragraph("Dynamic resume: https://aohys.com/resume", body),
     paragraph("Selected work: https://aohys.com/case-studies", body),
@@ -96,20 +104,17 @@ def build_pdf() -> None:
   for summary in resume["summary"]:
     story.append(paragraph(summary, body))
 
-  add_heading(story, resume["highlightsTitle"], heading)
-  for highlight in resume["highlights"]:
-    story.append(paragraph(f"{highlight['label']}: {highlight['text']}", body))
-
   add_heading(story, resume["projectsTitle"], heading)
   for project in resume["projects"]:
     story.append(paragraph(project["title"], body_bold))
     story.append(paragraph(project["summary"], body))
-    add_bullets(story, project["bullets"], body)
+
+  story.append(PageBreak())
 
   add_heading(story, resume["experienceTitle"], heading)
-  for job in resume["experience"]:
+  for index, job in enumerate(resume["experience"]):
     story.append(paragraph(f"{job['role']} | {job['company']} | {job['period']}", body_bold))
-    add_bullets(story, job["bullets"], body)
+    add_bullets(story, job["bullets"][:3 if index == 0 else 1], body)
 
   add_heading(story, resume["skillsTitle"], heading)
   for skill_group in resume["skills"]:
@@ -122,7 +127,7 @@ def build_pdf() -> None:
   add_heading(story, resume["languagesTitle"], heading)
   story.append(paragraph(", ".join(resume["languages"]), body))
 
-  doc.build(story)
+  doc.build(story, canvasmaker=DeterministicCanvas)
 
 
 if __name__ == "__main__":

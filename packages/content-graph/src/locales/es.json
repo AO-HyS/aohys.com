@@ -2,105 +2,137 @@
   "home": {
     "path": "/es/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Ingeniero de producto que crea sitios vivos, sistemas ambiciosos y formas modernas de diseñar, construir y crecer.",
-    "seoDescription": "Alejandro Ortiz Corro diseña y construye experiencias expresivas, sistemas de producto, flujos de datos y prácticas de ingeniería aumentadas con IA para equipos que quieren crear lo que sigue.",
-    "primaryActionLabel": "Iniciar conversación",
+    "summary": "Senior Software Engineer que convierte objetivos de negocio en sistemas de producto que llegan a producción mediante profundidad frontend, workflows backend y desarrollo AI-native.",
+    "seoDescription": "Alejandro Ortiz Corro es Senior Software Engineer enfocado en desarrollo de producto AI-native, sistemas end-to-end, profundidad frontend, workflows backend, arquitectura y delivery responsable.",
+    "primaryActionLabel": "Hablemos de un producto o un rol",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Software para hacer realidad lo que imaginas.",
+      "headline": "Senior Software Engineer · Desarrollo de producto AI-native",
       "headlineLines": [
-        "Software para hacer realidad",
-        "lo que imaginas."
+        "Senior Software Engineer",
+        "Desarrollo de producto AI-native"
       ],
-      "headlineEmphasisWords": ["realidad", "imaginas"],
-      "deck": "Convierto objetivos ambiciosos en interfaces cuidadas, sistemas de producto capaces y una práctica de ingeniería amplificada por IA avanzada.",
-      "proofBoardLabel": "Mapa de sistemas AOHYS",
-      "proofBoardTitle": "Ideas convertidas en sistemas de producto completos.",
-      "proofBoardBody": "Principios de diseño, interfaces, datos, operaciones cloud, desarrollo asistido por IA y releases trabajando como un sistema claro.",
-      "selectedOutcomesHeading": "Sistemas seleccionados en acción.",
-      "selectedOutcomesIntro": "Sitios en producción, productos operativos, workflows enterprise y el sistema de ingeniería detrás de cada release.",
+      "headlineEmphasisWords": ["AI-native", "producto"],
+      "deck": "Convierto objetivos de negocio en sistemas de producto que llegan a producción, combinando comunicación con stakeholders, product engineering end-to-end, sistemas backend, delivery AI-native, arquitectura de sistemas y experiencia profunda en frontend.",
+      "proofBoardLabel": "Ingeniería de producto en práctica",
+      "proofBoardTitle": "La intención de negocio se convierte en software funcional.",
+      "proofBoardBody": "Trabajo con clientes y stakeholders, doy forma al producto y al dominio, construyo a través del sistema y conservo la responsabilidad sobre verificación y release.",
+      "selectedOutcomesHeading": "Trabajo seleccionado, ordenado por evidencia.",
+      "selectedOutcomesIntro": "Trabajo de cliente en producción, práctica AI-native, sistemas enterprise y productos que avanzan deliberadamente hacia release.",
       "selectedOutcomes": [
         {
-          "contentId": "case-study:casa-roca",
-          "label": "Sitio de hospitalidad",
-          "title": "Casa Roca",
-        "outcome": "Un sitio de hospitalidad en producción que da una primera impresión clara y un camino directo para contactar.",
-          "role": "Confianza del huésped, búsqueda, conversión",
+          "contentId": "case-study:eteria",
+          "label": "Proyecto de cliente · En producción",
+          "title": "ETERIA",
+          "outcome": "Un sistema para un negocio de eventos que conecta landing pública, captura de leads, propuestas, operación privada y un cliente interno SwiftUI.",
+          "role": "Dirección de producto, delivery full-stack, operación y release",
           "evidence": {
-            "label": "Sitio en vivo",
-            "altText": "Hero del sitio Casa Roca en producción",
+            "label": "Landing pública",
+            "altText": "Dirección de arte en lino de la landing pública de ETERIA",
             "kind": "public-site",
             "publicSafe": true,
-            "src": "/images/proof/casa-roca-production.png"
+            "src": "/images/proof/eteria-ivory-linen-hero.webp"
           }
         },
         {
-          "contentId": "case-study:the-barber-central",
-          "label": "Producto operativo",
-          "title": "The Barber Central",
-        "outcome": "Un producto para negocios de servicios diseñado alrededor de reservas, disponibilidad, pagos y comunicación con clientes.",
-          "role": "Operación, pagos, flujo de clientes",
+          "contentId": "case-study:engineering-practice",
+          "label": "Práctica de desarrollo AI-native",
+          "title": "Práctica de desarrollo AI-native",
+          "outcome": "Los agentes trabajan en requisitos, dominio, specs, tickets, implementación, revisión, QA y release mientras una persona conserva la responsabilidad.",
+          "role": "Orquestación, quality gates, browser QA y decisiones de release",
           "evidence": {
-            "label": "Preview de desarrollo",
-            "altText": "Landing page de desarrollo de The Barber Central",
-            "kind": "development-preview",
+            "label": "Lifecycle revisable",
+            "altText": "Lifecycle de desarrollo AI-native desde intención de negocio hasta release",
+            "kind": "architecture-note",
             "publicSafe": true,
-            "src": "/images/proof/barber-central-landing.png"
-          }
-        },
-        {
-          "contentId": "case-study:nutri-plan",
-          "label": "Operación de clientes",
-          "title": "Nutri Plan",
-        "outcome": "Un sistema operativo para planes, dashboards, flujos de clientes y contenido educativo.",
-          "role": "Planes, dashboards, workflows de clientes",
-          "evidence": {
-            "label": "Preview de producto",
-            "altText": "Dashboard administrativo de Nutri Plan",
-            "kind": "development-preview",
-            "publicSafe": true,
-            "src": "/images/proof/nutri-plan-dashboard.png"
+            "src": "/images/proof/engineering-practice-release-cycle.svg"
           }
         },
         {
           "contentId": "case-study:enterprise-systems",
-          "label": "Entrega enterprise",
-          "title": "Sistemas enterprise",
-        "outcome": "Trabajo complejo de producto y backend en escalations, payment plans, cashback, customs workflows y soporte de releases.",
-          "role": "Workflows backend, confiabilidad operativa, soporte de releases",
+          "label": "Sistemas de producto enterprise",
+          "title": "Sistemas de producto enterprise",
+          "outcome": "Workflows de atención al cliente sensibles a performance y software mission-critical de respuesta a emergencias dentro de organizaciones complejas.",
+          "role": "Stakeholders, workflows, performance y delivery confiable",
           "evidence": {
-            "label": "Mapa de sistemas",
-            "altText": "Mapa de sistemas enterprise enfocado en escala operativa y entrega confiable",
+            "label": "Mapa sanitizado",
+            "altText": "Mapa de sistemas de producto enterprise enfocado en delivery responsable y confiabilidad operativa",
             "kind": "private-system",
             "publicSafe": true,
             "src": "/images/proof/enterprise-systems-map-v2.svg"
           }
+        },
+        {
+          "contentId": "case-study:the-barber-central",
+          "label": "Acercándose a producción",
+          "title": "The Barber Central",
+          "outcome": "Un SaaS para negocios de servicios que abarca reservas, clientes, staff, inventario, reporting, analíticas y retención.",
+          "role": "Sistema de producto, operación del negocio y preparación de release",
+          "evidence": {
+            "label": "Preview pública",
+            "altText": "Preview pública de producto de The Barber Central",
+            "kind": "development-preview",
+            "publicSafe": true,
+            "src": "/images/proof/barber-central-hero-v2.jpg"
+          }
+        },
+        {
+          "contentId": "case-study:nutri-plan",
+          "label": "Testing y preparación para producción",
+          "title": "NutriPlan Digital",
+          "outcome": "Un SaaS clínico multi-superficie que conecta workflows profesionales, administración, acceso móvil y estado compartido de producto.",
+          "role": "Workflows de dominio, delivery multi-superficie y paridad de ambientes",
+          "evidence": {
+            "label": "Vista sanitizada",
+            "altText": "Dashboard sanitizado de NutriPlan Digital sin datos clínicos ni de pacientes",
+            "kind": "development-preview",
+            "publicSafe": true,
+            "src": "/images/proof/nutri-plan-dashboard-v2.png"
+          }
+        },
+        {
+          "contentId": "case-study:casa-roca",
+          "label": "Experiencia de hospitalidad en producción",
+          "title": "Casa Roca",
+          "outcome": "Una experiencia pública de hospitalidad en producción con historia del lugar, páginas listas para búsqueda y contacto directo.",
+          "role": "Experiencia de huéspedes, SEO, conversión y delivery a producción",
+          "evidence": {
+            "label": "Sitio en vivo",
+            "altText": "Experiencia de hospitalidad Casa Roca en producción y ruta de contacto directo",
+            "kind": "public-site",
+            "publicSafe": true,
+            "src": "/images/proof/casa-roca-value-v2.jpg"
+          }
         }
       ],
-      "architectureHeading": "Cuidado en todo el sistema de producto.",
-      "architectureBody": "Desde principios de diseño y front ends expresivos hasta workflows backend, datos SQL, operación cloud y desarrollo avanzado con IA, cada capa impulsa el mismo objetivo de producto.",
+      "architectureHeading": "Los objetivos de negocio se convierten en sistemas en producción.",
+      "architectureBody": "El trabajo comienza con intención y claridad de dominio, avanza por decisiones de producto y arquitectura, y llega a producción mediante implementación, verificación y autoridad explícita de release.",
       "architectureStages": [
         {
-          "label": "Diseño de producto",
-        "text": "Principios de interacción, arquitectura de información, accesibilidad y sistemas visuales convierten una idea en una experiencia que se entiende."
+          "label": "Comunicación con negocio",
+          "text": "Conversaciones con stakeholders, objetivos, restricciones y modelos de dominio definen lo que el sistema debe hacer posible."
         },
         {
-          "label": "Calidad front-end",
-        "text": "Interfaces responsivas, sistemas de diseño, performance, movimiento y capacidades modernas del navegador hacen que la experiencia se sienta cuidada."
+          "label": "Product engineering end-to-end",
+          "text": "Las decisiones de producto conectan experiencia, profundidad frontend, datos, workflows y necesidades operativas en un sistema coherente."
         },
         {
-          "label": "Backend y datos",
-        "text": "APIs, auth, workflows de negocio, modelos SQL y PostgreSQL, y dashboards operativos dan al producto una base capaz."
+          "label": "Sistemas backend",
+          "text": "APIs, auth, reglas de negocio, ownership de datos y workflows operativos vuelven confiable el producto más allá de su interfaz."
         },
         {
-          "label": "IA y delivery",
-        "text": "Workflows avanzados con agentes apoyan investigación, arquitectura, implementación, pruebas, operación cloud y verificación de releases."
+          "label": "Delivery AI-native",
+          "text": "Los agentes ejecutan a lo largo del lifecycle; pruebas, revisión, browser QA, preview y responsabilidad humana de release mantienen el trabajo confiable."
+        },
+        {
+          "label": "Arquitectura de sistemas",
+          "text": "Límites claros, observabilidad, rutas de release y superficies operativas permiten evolucionar el producto sin perder responsabilidad."
         }
       ],
-      "practiceHeading": "Servicios para lo siguiente que tu equipo quiere lograr.",
-      "practiceBody": "Desde una nueva experiencia de producto hasta una arquitectura más capaz o una mejor práctica de delivery, cada colaboración convierte un objetivo claro en software que tu equipo puede seguir mejorando.",
+      "practiceHeading": "Cuéntame qué estás construyendo.",
+      "practiceBody": "Puedo integrarme a un equipo, dar forma a un producto nuevo, modernizar un sistema en movimiento o ayudar a convertir un delivery difícil en software funcional.",
       "practicePoints": [
         {
           "label": "Sistemas de producto",
@@ -115,8 +147,8 @@
         "text": "Integrar IA avanzada, previews, quality gates, observabilidad y operación cloud al trabajo diario."
         }
       ],
-      "contactHeading": "¿Qué te gustaría que tu equipo creara después?",
-      "contactBody": "Comparte el objetivo, las personas a quienes debe servir y el cambio que quieres hacer posible. Juntos podemos darle forma a un sistema de producto hermoso y a una ruta práctica para hacerlo realidad.",
+      "contactHeading": "Hablemos de un producto o un rol.",
+      "contactBody": "Cuéntame qué estás construyendo, a quién debe servir y qué lo está frenando. Leeré el contexto personalmente y responderé con preguntas útiles y un siguiente paso práctico.",
       "emailLabel": "Escribir a Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",
       "whatsappLabel": "WhatsApp",
@@ -175,17 +207,17 @@
         "items": [
           {
             "id": "sitio-publico",
-            "contentId": "case-study:casa-roca",
-            "label": "Sitio en vivo",
-            "text": "Casa Roca en producción y camino directo de conversión.",
+            "contentId": "case-study:eteria",
+            "label": "Producción",
+            "text": "Landing pública de ETERIA y sistema de producto de cliente end-to-end.",
             "icon": "site",
             "tone": 0
           },
           {
             "id": "operaciones",
-            "contentId": "case-study:the-barber-central",
-            "label": "Operaciones",
-            "text": "Reservas, pagos, disponibilidad y flujos con clientes.",
+            "contentId": "case-study:engineering-practice",
+            "label": "Práctica AI-native",
+            "text": "Agentes a lo largo del lifecycle con responsabilidad humana.",
             "icon": "operations",
             "tone": 1
           },
@@ -210,7 +242,7 @@
           "tabs": ["cURL", "NodeJS", "Rust", "Go", "PHP", "C#", "Java", "Python"],
           "codeLines": [
             "const system = await aohys.publish({",
-            "  publicSite: \"Casa Roca\",",
+            "  publicSite: \"ETERIA\",",
             "  dashboard: \"Múltiples productos, un sistema.\",",
             "  releasePath: \"preview -> producción\"",
             "});"
@@ -229,17 +261,79 @@
     "secondaryActionLabel": "Leer arquitectura",
     "secondaryActionContentId": "architecture"
   },
+  "case-study:eteria": {
+    "approvedAt": "2026-07-20T07:18:23.000Z",
+    "approvedHash": "0058ca5d5369bbc4b0ce26d76d5d45deb8f33988dc48fa5fbaaf01e185fb1ae1",
+    "path": "/es/casos/eteria",
+    "title": "ETERIA: sistema de producto para un negocio de eventos",
+    "summary": "Un proyecto de cliente en producción que conecta descubrimiento público, captura de leads, propuestas, operación privada y un cliente interno SwiftUI.",
+    "seoDescription": "ETERIA es un producto de cliente en producción con landing pública, conversión por leads y WhatsApp, propuestas públicas, operación web privada, Convex, PostHog, SwiftUI y Release Train protegido.",
+    "primaryActionLabel": "Hablemos de un producto o un rol",
+    "primaryActionContentId": "contact",
+    "secondaryActionLabel": "Volver a casos",
+    "secondaryActionContentId": "case-studies",
+    "caseStudyContent": {
+      "statusLabel": "Proyecto de cliente · En producción",
+      "overview": "ETERIA es un proyecto de cliente en producción para un negocio de eventos. Conecta una landing pública y rutas reales de leads con propuestas y workflows operativos privados.",
+      "problem": {
+        "title": "Oportunidad",
+        "body": "El negocio necesitaba una ruta coherente desde el primer contacto público hasta una propuesta y el trabajo cotidiano necesario para entregar un evento."
+      },
+      "businessOutcome": {
+        "title": "Resultado de negocio",
+        "body": "El sistema en producción da al equipo un espacio público para generar confianza, capturar leads por formulario y WhatsApp, compartir propuestas versionadas y coordinar el trabajo dentro de límites autenticados."
+      },
+      "role": {
+        "title": "Rol",
+        "body": "Dirección de producto e implementación end-to-end de landing, captura de leads, propuestas públicas, aplicación web privada, workflows operativos, backend compartido, cliente interno SwiftUI y proceso de release."
+      },
+      "constraints": {
+        "title": "Consideraciones de diseño",
+        "body": "La historia pública debe demostrar un producto funcional y mantener el material operativo sensible dentro de sus límites de acceso. Aquí sólo aparecen arte público de la landing y descripciones sanitizadas."
+      },
+      "architectureDecisions": {
+        "title": "Decisiones de arquitectura",
+        "body": "Convex controla el estado y los workflows compartidos, PostHog aporta observabilidad en producción, la landing y las propuestas siguen siendo compartibles, y las superficies web privada y SwiftUI conservan sus límites de acceso."
+      },
+      "executionHighlights": {
+        "title": "Ejecución",
+        "body": "El producto avanzó mediante un Release Train protegido con previews de desarrollo, promoción a producción, smoke checks y autorización humana explícita en los límites de release."
+      },
+      "qualitySecurityPerformance": {
+        "title": "Calidad, seguridad y rendimiento",
+        "body": "Las rutas públicas, conversión de leads, analíticas, estado backend, límites de privacidad y comportamiento responsivo se verifican como un sistema; la evidencia operativa privada se sanitiza o no se publica."
+      },
+      "publicEvidenceTitle": "Enlaces públicos",
+      "publicEvidence": [
+        {
+          "label": "Landing ETERIA en producción",
+          "description": "Abrir la experiencia pública de ETERIA en producción.",
+          "href": "https://momentos-eteria.com",
+          "altText": "Landing pública de eventos ETERIA en producción",
+          "kind": "public-site",
+          "publicSafe": true,
+          "src": "/images/proof/eteria-ivory-linen-hero.webp"
+        }
+      ],
+      "confidentialityNote": {
+        "title": "Nota de alcance",
+        "body": "Este caso usa únicamente evidencia pública y sanitizada."
+      }
+    }
+  },
   "case-study:casa-roca": {
+    "approvedAt": "2026-07-20T07:18:23.000Z",
+    "approvedHash": "00dcf5f4846471e1fd4a5db7306979ab09f714ea98724a0a6974ec98dafe75b2",
     "path": "/es/casos/casa-roca",
     "title": "Casa Roca: experiencia de huéspedes y contacto directo",
-    "summary": "Un sitio de hospitalidad en vivo con una historia clara, contacto directo y disciplina de producción.",
+    "summary": "Una experiencia pública de hospitalidad en producción con historia clara, contacto directo y releases disciplinados.",
     "seoDescription": "Casa Roca es un sitio de hospitalidad en vivo para una estancia boutique en Veracruz, con historia clara del lugar, contacto directo, páginas listas para búsqueda y disciplina de release.",
     "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
-      "statusLabel": "Sitio de hospitalidad en vivo",
+      "statusLabel": "Experiencia de hospitalidad en producción",
       "overview": "Casa Roca es el punto de llegada digital de una estancia boutique en Roca Partida, Veracruz. Ayuda a que los huéspedes entiendan rápido el lugar, decidan si encaja con su viaje y contacten al negocio directamente.",
       "problem": {
         "title": "Oportunidad",
@@ -287,17 +381,19 @@
     }
   },
   "case-study:the-barber-central": {
+    "approvedAt": "2026-07-20T07:18:23.000Z",
+    "approvedHash": "27b339e92c5fc295323638967427f1a8e25da2841200cfaea5a804fd985f4ad8",
     "path": "/es/casos/the-barber-central",
     "title": "The Barber Central: reservas y operación",
-    "summary": "Producto activo de reservaciones y operaciones diseñado alrededor del día a día de negocios de servicios.",
-    "seoDescription": "The Barber Central muestra arquitectura de producto activo para reservaciones, operaciones, preparación de pagos y comunicación con clientes.",
+    "summary": "SaaS para negocios de servicios acercándose a producción con reservas, clientes, staff, inventario, reporting, analíticas y retención.",
+    "seoDescription": "The Barber Central es un SaaS para negocios de servicios acercándose a producción con reservas, clientes, staff, inventario, reporting, analíticas y retención.",
     "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
-      "statusLabel": "Build activo",
-      "overview": "The Barber Central es un producto activo para negocios de servicios que necesitan reservas, disponibilidad, comunicación con clientes y pagos sintiéndose como un solo sistema, no como herramientas pegadas.",
+      "statusLabel": "Acercándose a producción",
+      "overview": "The Barber Central es un SaaS acercándose a producción para barberías, salones y estudios. Reservas, clientes, staff, inventario, reporting, analíticas y retención funcionan como un sistema operativo en vez de herramientas pegadas.",
       "problem": {
         "title": "Oportunidad",
         "body": "Los negocios de servicios pueden reunir reservas, recordatorios, personal y pagos en un solo workflow diario que dé más espacio al crecimiento."
@@ -344,17 +440,19 @@
     }
   },
   "case-study:nutri-plan": {
+    "approvedAt": "2026-07-20T07:18:23.000Z",
+    "approvedHash": "c0794f7f2dda5ac1b27336f9c715af82efefb5dae95c8714e5a1f8440bf8effe",
     "path": "/es/casos/nutri-plan",
-    "title": "Nutri Plan: sistema de workflows de clientes",
-    "summary": "Sistema de producto para flujos de clientes, planes, dashboards y contenido educativo.",
-    "seoDescription": "Nutri Plan muestra trabajo de producto activo alrededor de flujos de clientes, planes estructurados, dashboards operativos, contenido educativo y calidad de entrega.",
+    "title": "NutriPlan Digital: sistema de producto clínico",
+    "summary": "SaaS clínico multi-superficie en testing y preparación para producción, con workflows protegidos para profesionales, administración y móvil.",
+    "seoDescription": "NutriPlan Digital es un SaaS clínico multi-superficie en testing y preparación para producción con workflows profesionales, administrativos, móviles y backend compartido.",
     "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
-      "statusLabel": "Sistema de producto",
-      "overview": "Nutri Plan conecta workflows de nutrición, dashboards, acceso móvil, contenido educativo y claridad operativa entre varias superficies de producto.",
+      "statusLabel": "Testing y preparación para producción",
+      "overview": "NutriPlan Digital es un SaaS clínico multi-superficie en testing y preparación para producción. Conecta workflows profesionales, administración, acceso móvil, contenido educativo y claridad operativa mediante estado backend compartido.",
       "problem": {
         "title": "Oportunidad",
         "body": "Los equipos de nutrición pueden conectar expedientes, planes, dashboards y experiencias móviles mediante un modelo compartido de producto."
@@ -401,28 +499,30 @@
     }
   },
   "case-study:enterprise-systems": {
+    "approvedAt": "2026-07-20T07:18:23.000Z",
+    "approvedHash": "3c37f38215ea3791bafa6ca2b066f3847f46b33db25be2eead19b9696c3861d7",
     "path": "/es/casos/sistemas-enterprise",
-    "title": "Sistemas enterprise a escala operativa",
-    "summary": "Workflows complejos de producto, integraciones, backend delivery y soporte de releases en ambientes operativos de alto riesgo.",
-    "seoDescription": "Sistemas enterprise cubre resultados de negocio, criterio de arquitectura, liderazgo en escalations, backend delivery y práctica confiable de release.",
+    "title": "Sistemas de producto enterprise bajo presión operativa",
+    "summary": "CARE en Tala y software mission-critical de respuesta a emergencias muestran criterio de producto, performance y delivery confiable dentro de organizaciones complejas.",
+    "seoDescription": "Sistemas de producto enterprise cubre CARE en Tala, una plataforma mission-critical de respuesta a emergencias para una gran ciudad de Estados Unidos, performance, workflows, observabilidad y delivery confiable.",
     "primaryActionLabel": "Iniciar conversación",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
     "secondaryActionContentId": "architecture",
     "caseStudyContent": {
-      "statusLabel": "Sistemas enterprise",
-      "overview": "Trabajo complejo de producto y backend en escalations, payment plans, cashback, customs workflows, integraciones y confiabilidad dentro de ambientes operativos grandes.",
+      "statusLabel": "Sistemas de producto enterprise",
+      "overview": "CARE en Tala y software mission-critical de respuesta a emergencias para una gran ciudad de Estados Unidos muestran cómo operan producto, performance, observabilidad y delivery dentro de organizaciones complejas.",
       "problem": {
         "title": "Oportunidad",
         "body": "Los sistemas grandes abren oportunidades valiosas cuando ownership, integraciones, workflows operativos y caminos de soporte se vuelven visibles."
       },
       "businessOutcome": {
         "title": "Resultado de negocio",
-        "body": "Entrega confiable bajo presión: destrabar escalations, construir workflows backend y mejorar caminos operativos sin crear nuevos puntos de falla."
+        "body": "El performance de CARE mejoró de aproximadamente 3–5 segundos a menos de 1 segundo. Los workflows de respuesta a emergencias soportaron dispatch de alto riesgo donde importaban la confiabilidad y la precisión."
       },
       "role": {
         "title": "Rol",
-        "body": "Backend delivery, liderazgo en escalations, trabajo en payment plans y cashback, implementación de customs workflows, coordinación entre equipos y resolución con mentalidad de producción."
+        "body": "En Tala: comunicación con stakeholders, definición de roadmap y workflows, profundidad frontend, trabajo server-side y de APIs, observabilidad, delivery backend-oriented y trabajo en Java en crecimiento. Antes, el trabajo de emergencia se enfocó en dispatch por teclado y pruebas rigurosas."
       },
       "constraints": {
         "title": "Consideraciones operativas",
@@ -458,17 +558,19 @@
     }
   },
   "case-study:engineering-practice": {
+    "approvedAt": "2026-07-20T07:18:23.000Z",
+    "approvedHash": "69c56403da0143fefe6d8e88bb2402ae69030de7cbcf133023d7140932e4ef02",
     "path": "/es/casos/practica-de-ingenieria",
-    "title": "Práctica de ingeniería para releases confiables",
-    "summary": "Ingeniería moderna asistida por agentes explicada con planeación, QA, arquitectura, observabilidad, deploys y documentación.",
-    "seoDescription": "Práctica de ingeniería explica el proceso moderno de Alejandro Ortiz Corro con agentes, QA, arquitectura, observabilidad, despliegue y documentación.",
+    "title": "Práctica de desarrollo AI-native con responsabilidad humana",
+    "summary": "Los agentes trabajan en requisitos, dominio, specs, tickets, implementación, revisión, QA, preview y release mientras el criterio humano conserva la responsabilidad.",
+    "seoDescription": "La práctica de desarrollo AI-native explica agentes en requisitos, dominio, specs, tickets, implementación, revisión, QA, preview y release con responsabilidad humana y límites privados.",
     "primaryActionLabel": "Revisar la arquitectura",
     "primaryActionContentId": "architecture",
     "secondaryActionLabel": "Iniciar conversación",
     "secondaryActionContentId": "contact",
     "caseStudyContent": {
-      "statusLabel": "Práctica de ingeniería",
-      "overview": "La práctica de ingeniería es el sistema operativo detrás del trabajo: discovery estructurado, TDD, implementación con agentes, browser QA, release discipline, observabilidad y documentación.",
+      "statusLabel": "Práctica de desarrollo AI-native",
+      "overview": "Desarrollo AI-native significa que los agentes ejecutan trabajo en requisitos, modelado de dominio, specs, tickets, implementación, revisión, QA, preview y release mientras yo conservo responsabilidad por decisiones, calidad y autoridad de release.",
       "problem": {
         "title": "Oportunidad",
         "body": "El software moderno se mueve rápido; arquitectura, pruebas, revisión y checks de producción convierten esa energía en impulso con confianza."
@@ -479,11 +581,11 @@
       },
       "role": {
         "title": "Rol",
-        "body": "Planeación técnica, revisión de arquitectura, flujo TDD, orquestación de agentes, browser QA, disciplina de release train, source-quality checks y documentación como parte del delivery."
+        "body": "Dirijo el trabajo, reviso decisiones y código, elijo gates proporcionales, inspecciono el comportamiento en browser y autorizo el release. Los agentes aportan ejecución especializada a lo largo del lifecycle."
       },
       "constraints": {
         "title": "Consideraciones de diseño",
-        "body": "La automatización debe ampliar el feedback útil, mantener visible el ownership y cuidar la revisión y el criterio de entrega."
+        "body": "El Development System que coordina este trabajo es una herramienta privada y adaptable: no es open source, producto comercial ni template universal. La evidencia pública viene de sistemas entregados y artefactos sanitizados."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
@@ -568,30 +670,30 @@
   "architecture": {
     "path": "/es/arquitectura",
     "title": "Arquitectura",
-    "summary": "El oficio de ingeniería detrás de diseño de producto, front end, backend y datos SQL, workflows de IA, operación cloud y delivery.",
-    "seoDescription": "Notas de arquitectura de Alejandro Ortiz Corro: principios de diseño, front ends modernos, backend y PostgreSQL, ingeniería aumentada con IA, operación cloud, observabilidad y releases.",
+    "summary": "El lifecycle AI-native que lleva intención de negocio por dominio, specs, agentes, verificación, preview y producción.",
+    "seoDescription": "Arquitectura de desarrollo de producto AI-native de Alejandro Ortiz Corro: intención de negocio, grilling, dominio, specs, tickets, agentes, pruebas, browser QA, preview, Release Train y smoke checks.",
     "primaryActionLabel": "Revisar trabajo",
     "primaryActionContentId": "case-studies",
     "secondaryActionLabel": "Iniciar conversación",
     "secondaryActionContentId": "contact",
     "architectureContent": {
-      "heading": "Arquitectura que da espacio para crecer.",
-      "deck": "Un producto completo conecta principios de diseño, calidad front-end, backend y datos SQL, desarrollo asistido por IA, operación cloud y delivery como un sistema entendible.",
-      "systemHeading": "Un sistema, seis responsabilidades.",
-      "systemBody": "Cada capa tiene un propósito, un owner y una conexión visible con la siguiente. La meta no es sumar marcas: es sumar capacidades trabajando hacia la visión del producto.",
+      "heading": "De la intención de negocio a producción.",
+      "deck": "La ingeniería de producto AI-native es un lifecycle disciplinado: los agentes ejecutan trabajo significativo en cada etapa mientras conservo criterio de producto, responsabilidad y autoridad de release.",
+      "systemHeading": "Un lifecycle, seis etapas con responsabilidad.",
+      "systemBody": "La secuencia hace visibles decisiones, dependencias, verificación y límites de release. AOHYS es una implementación pública de esta práctica, no el límite de la arquitectura ni un mapa del Development System privado.",
       "layers": [
-        {"id": "experience", "label": "Diseño de producto", "body": "Principios, arquitectura de información, interacción, accesibilidad y sistemas visuales que hacen intencional al producto.", "technologies": ["Principios de diseño", "Interacción", "Accesibilidad", "Sistemas de diseño"]},
-        {"id": "edge", "label": "Sistemas front-end", "body": "Interfaces responsivas con performance, movimiento, capacidades del navegador y arquitectura de componentes mantenible.", "technologies": ["Web semántica", "Arquitectura de componentes", "WebGL", "Performance"]},
-        {"id": "product-data", "label": "Backend y datos", "body": "Workflows de negocio, APIs, auth, modelos SQL y PostgreSQL, y dashboards operativos con ownership claro de los datos.", "technologies": ["APIs", "SQL y PostgreSQL", "Modelado de datos", "Dashboards de base de datos", "Auth"]},
-        {"id": "communication", "label": "Ingeniería con IA", "body": "Workflows avanzados con agentes para investigación, arquitectura, implementación, code review, pruebas y documentación.", "technologies": ["Orquestación de agentes", "Ingeniería de contexto", "Arquitectura asistida por IA", "Code review con IA"]},
-        {"id": "observability", "label": "Calidad e insights", "body": "Pruebas, analíticas, logs, señales de error y health checks que vuelven visible y mejorable el comportamiento del producto.", "technologies": ["TDD", "Browser QA", "Analíticas", "Logs estructurados", "Health checks"]},
-        {"id": "delivery", "label": "Delivery cloud", "body": "Dashboards cloud, despliegue edge, pipelines de media, previews, promoción y verificación como una sola práctica de release.", "technologies": ["Operación cloud", "Edge delivery", "Ambientes preview", "Pipelines de media", "Verificación de releases"]}
+        {"id": "experience", "label": "Intención de negocio", "body": "Escuchar al negocio, aclarar el resultado de usuario, revelar restricciones y hacer grilling del lenguaje ambiguo antes de elegir un camino técnico.", "technologies": ["Intención de negocio", "Contexto de stakeholders", "Grilling", "Definición de resultados"]},
+        {"id": "edge", "label": "Dominio y decisiones", "body": "Modelar el dominio, nombrar conceptos estables, comparar tradeoffs y registrar decisiones que dan forma al producto y al sistema.", "technologies": ["Modelado de dominio", "Decisiones de arquitectura", "Límites de producto", "Tradeoffs"]},
+        {"id": "product-data", "label": "Specs y grafo de dependencias", "body": "Convertir la dirección acordada en specs, tickets ejecutables, ownership, seams de aceptación y dependencias que conservan el orden correcto.", "technologies": ["Specs y tickets", "Grafo de dependencias", "Criterios de aceptación", "Límite de release"]},
+        {"id": "communication", "label": "Implementación con agentes", "body": "Agentes especializados investigan, implementan, prueban y revisan trabajo acotado. El orquestador humano integra evidencia y resuelve decisiones que las herramientas no pueden asumir.", "technologies": ["Implementación con agentes", "Revisión especializada", "Ingeniería de contexto", "Orquestación humana"]},
+        {"id": "observability", "label": "Verificación y browser QA", "body": "Usar TDD proporcional, linting, type checks, pruebas de comportamiento, revisión independiente y browser QA para verificar el resultado real y visible.", "technologies": ["TDD", "Code review", "Browser QA", "Evidencia visual", "Observabilidad"]},
+        {"id": "delivery", "label": "De preview a producción", "body": "Construir un Preview Deployment, reunir revisión humana, promover mediante Release Train, verificar el Production Deployment y ejecutar smoke checks.", "technologies": ["Preview Deployment", "Release Train", "Production Deployment", "Smoke checks"]}
       ],
       "tradeoffsHeading": "La arquitectura es una secuencia de tradeoffs.",
       "tradeoffs": [
-        {"title": "Progressive enhancement antes que espectáculo", "reason": "El movimiento y WebGL pueden sumar significado, pero la página debe comunicar y convertir sin ellos.", "result": "El contenido semántico en DOM sigue siendo principal; el canvas es una capa responsiva y opcional."},
-        {"title": "Datos reactivos sin ownership oculto", "reason": "Las actualizaciones rápidas de UI sirven solo cuando mutations, auth y workflows operativos siguen explícitos.", "result": "Convex controla el estado del producto; el content graph tipado mantiene contenido y rutas públicas."},
-        {"title": "Preview antes que producción", "reason": "Un build verde no demuestra que un release funciona en su ambiente real.", "result": "Ramas protegidas, checks de preview y smoke verification vuelven la promoción una decisión separada."}
+        {"title": "Ejecución de agentes con responsabilidad humana", "reason": "Los agentes amplían la capacidad de ejecución, pero no pueden asumir intención de negocio, aceptación de riesgo ni autoridad de release.", "result": "Sigo siendo responsable de lo que se construye, cómo se verifica y si está listo para release."},
+        {"title": "Explicación pública sin publicar la herramienta privada", "reason": "El lifecycle debe ser inspeccionable sin exponer instrucciones privadas, métodos operativos ni detalles de entrega.", "result": "El Development System permanece privado y adaptable; productos entregados y artefactos sanitizados aportan la evidencia."},
+        {"title": "Preview antes que producción", "reason": "Un build verde no demuestra que un release funciona en su ambiente real.", "result": "Promoción protegida, Preview Deployment, revisión humana y smoke checks vuelven producción una decisión separada."}
       ],
       "sourceLabel": "Revisar el source",
       "sourceLinks": [
@@ -618,48 +720,50 @@
       ],
       "sections": [
         {
-          "title": "Sistema de rutas Astro",
-        "body": "Astro controla las rutas localizadas de marketing. IDs estables definen slugs, metadata canónica, alternates de idioma, sitemap y robots en vez de constantes duplicadas."
+          "title": "Responsabilidad humana",
+          "body": "Los agentes ejecutan requisitos, modelado, specs, tickets, implementación, pruebas, revisión y QA. Alejandro conserva criterio de producto, integra evidencia y autoriza el release."
         },
         {
-          "title": "Límite del dashboard",
-        "body": "El dashboard vive en el mismo dominio con otra responsabilidad: autenticado, fuera del sitemap, noindex y aislado de las rutas de marketing."
+          "title": "Public Source Site y Private Work",
+          "body": "El Public Source Site permite inspeccionar decisiones de implementación de AOHYS. Private Work —código de clientes, datos, pantallas operativas, credenciales y Development System— permanece privado."
         },
         {
           "title": "Release Train",
-          "body": "Las ramas de feature apuntan primero a develop. Producción pasa por una promoción separada hacia main con checks de Cloudflare/Wrangler, validación de ambiente y smoke verification antes de tocar el dominio canónico."
+          "body": "Primero se construye y revisa un Preview Deployment. Producción avanza mediante promoción separada con autoridad explícita, checks de ambiente, verificación de deployment y smoke checks en el dominio canónico."
         },
         {
-          "title": "Environment Contract",
-          "body": "Local, preview y production se tratan como un contrato explícito. Los dashboards de proveedores ayudan a configurar, pero los valores durables de deploy deben reconciliarse con GitHub Environments."
+          "title": "AOHYS como implementación visible",
+          "body": "AOHYS demuestra rutas públicas localizadas, workflows privados autenticados, contenido tipado, observabilidad y una ruta de release protegida. Es un ejemplo concreto de una arquitectura profesional más amplia."
         },
         {
-          "title": "Public Content Graph",
-          "body": "El grafo es el seam entre contenido y rutas. Controla variantes de idioma, paths, metadata SEO, sitemap, referencias de media e invariantes futuros de publicación desde dashboard."
+          "title": "Development System privado",
+          "body": "El Development System coordina herramientas y agentes en distintos entornos de coding. Es privado, no open source ni template comercial, y cada equipo debe adaptar su propia práctica."
         },
         {
-          "title": "Responsabilidades de proveedores",
-          "body": "Cloudflare maneja hosting y media delivery, Convex el estado de aplicación y workflows del dashboard, PostHog analíticas y errores, y Resend notificaciones de leads."
+          "title": "Feedback de producción",
+          "body": "Observabilidad, analíticas, errores, smoke checks y feedback de stakeholders regresan el comportamiento real a la siguiente decisión de producto; release no es el final del lifecycle."
         }
       ],
     "boundaryNote": "Este repositorio es una muestra pública funcional. No vuelve públicos código de clientes, código de producto, credenciales, capturas privadas ni datos operativos."
     }
   },
   "resume": {
+    "approvedAt": "2026-07-20T07:18:23.000Z",
+    "approvedHash": "8dbdd5adf5a7cfd8162ac17617a34d0e1bc83f1f9046e6f2530b87195383d8f5",
     "path": "/es/curriculum",
     "title": "Sobre Alejandro",
-    "summary": "Experiencia senior en ingeniería de producto, criterio de entrega, proyectos seleccionados y los sistemas detrás del trabajo.",
+    "summary": "Experiencia canónica de un Senior Software Engineer que trabaja en sistemas de producto, profundidad frontend, workflows backend y delivery AI-native.",
     "seoTitle": "Sobre Alejandro Ortiz Corro | AOHYS",
-    "seoDescription": "Conoce a Alejandro Ortiz Corro y revisa experiencia senior en ingeniería de producto, proyectos seleccionados, práctica de entrega, criterio de arquitectura y CV descargable.",
-    "primaryActionLabel": "Iniciar conversación",
+    "seoDescription": "Alejandro Ortiz Corro es Senior Software Engineer enfocado en desarrollo de producto AI-native, sistemas enterprise, productos seleccionados, arquitectura, frontend, backend y delivery responsable.",
+    "primaryActionLabel": "Hablemos de un producto o un rol",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
     "secondaryActionContentId": "architecture",
     "resumeContent": {
       "name": "Alejandro Ortiz Corro",
-      "role": "Senior Product Engineer / Sistemas Frontend",
+      "role": "Senior Software Engineer · Desarrollo de producto AI-native",
       "location": "México",
-      "intro": "Convierto la intención de producto en interfaces hermosas, sistemas backend capaces, modelos de datos claros y prácticas de delivery amplificadas por IA avanzada.",
+      "intro": "Convierto objetivos de negocio en sistemas de producto que llegan a producción. Frontend es una especialidad profunda; mi trabajo actual también abarca comunicación con stakeholders, workflows backend, arquitectura, observabilidad y delivery AI-native con responsabilidad humana.",
       "pdf": {
         "label": "Abrir CV en PDF",
         "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
@@ -668,8 +772,8 @@
       },
       "proof": {
         "label": "Resultados seleccionados",
-        "title": "Más de 9 años construyendo sistemas que siguen creando valor después del release.",
-        "body": "El trabajo abarca e-commerce de alto tráfico, productos operativos, interfaces modernas, sitios públicos y sistemas de delivery que ayudan a los equipos a seguir mejorando."
+        "title": "Del contexto de negocio al software en producción.",
+        "body": "El trabajo reciente abarca ETERIA en producción, sistemas enterprise, SaaS para servicios y clínica, experiencias públicas y la práctica responsable detrás de cada release."
       },
       "contactLinks": [
         {
@@ -716,59 +820,73 @@
           "text": "Hiring, revisión de arquitectura, sistemas de producto y conversaciones de software."
         }
       ],
-      "summaryTitle": "Perfil de entrega",
+      "summaryTitle": "Resumen profesional",
       "summary": [
-        "Senior product engineer con más de 9 años de experiencia en React, TypeScript, Next.js, arquitectura de producto, performance, SEO y sistemas UI mantenibles.",
-        "He entregado en sistemas enterprise, productos startup, workflows de salud, plataformas e-commerce, sitios públicos y sistemas con más de 30.5M usuarios mensuales.",
-        "Mi trabajo reciente va más allá de pantallas: Next.js como superficie backend, delivery de workflows backend, manejo de escalations, payment plans, cashback, customs workflows y ejecución cross-functional.",
-        "Trabajo con agentes, TDD, browser QA, release discipline, observabilidad y documentación para convertir objetivos ambiguos en software que los equipos pueden operar y mejorar."
+        "Senior Software Engineer con más de 9 años en sistemas enterprise, productos startup, healthcare, comercio, negocios de servicios y experiencias públicas.",
+        "Combino comunicación con negocio y stakeholders, product engineering end-to-end, workflows backend, arquitectura y experiencia profunda en React, TypeScript, Next.js, performance y sistemas UI accesibles.",
+        "AI-native significa que los agentes ejecutan requisitos, dominio, specs, tickets, implementación, revisión, QA y release mientras conservo responsabilidad humana por decisiones, calidad y autoridad de release."
       ],
       "highlightsTitle": "Resultados seleccionados",
       "highlights": [
         {
-          "label": "30.5M+ usuarios mensuales",
-          "text": "Contribuí en trabajo de plataforma e-commerce en Datazone/AutoZone con SEO, performance, React y modernización con React Native."
+          "label": "Performance de CARE",
+          "text": "Ayudé a reducir cargas de aproximadamente 3–5 segundos a menos de 1 segundo mediante migración enfocada en Next.js y performance."
         },
         {
-          "label": "80% menos tiempo de carga",
-          "text": "Ejecuté trabajo importante de migración a Next.js en Tala Mobile, reduciendo cargas de 3-5 segundos a menos de 1 segundo."
+          "label": "Dispatch mission-critical",
+          "text": "Implementé workflows custom de dispatch por teclado y pruebas completas para software de respuesta a emergencias de una gran ciudad de Estados Unidos."
         },
         {
-          "label": "Dispatch crítico",
-          "text": "Implementé workflows de keyboard dispatch para una plataforma de respuesta a emergencias en Estados Unidos con tolerancia cero a errores."
+          "label": "Delivery AI-native",
+          "text": "Uso agentes en todo el lifecycle con TDD, revisión independiente, browser QA, previews, Release Trains, smoke checks y autoridad humana explícita."
         },
         {
-          "label": "Muestra de sistema funcional",
-          "text": "Construí este sitio para que evaluadores técnicos puedan revisar SEO, i18n, content graph, QA, branch protection y release practice."
+          "label": "Profundidad frontend, alcance más amplio",
+          "text": "La experiencia profunda en React, TypeScript e interfaces ahora soporta trabajo server-side y de APIs, observabilidad, workflows de producto y Java en crecimiento."
         }
       ],
-      "projectsTitle": "Proyectos clave",
+      "projectsTitle": "Sistemas seleccionados",
       "projects": [
         {
-          "title": "Emergency Response Dispatch System",
-          "summary": "Plataforma crítica de respuesta a emergencias usada durante la pandemia.",
+          "title": "ETERIA",
+          "summary": "Producto de cliente en producción con landing pública, leads y WhatsApp, propuestas, operación web privada, Convex, PostHog y cliente interno SwiftUI.",
           "bullets": [
-            "Implementé workflows complejos de keyboard dispatch con React, Redux Saga, TypeScript y Cypress.",
-            "Cubrí escenarios de dispatch con pruebas completas alrededor de workflows con tolerancia cero a errores.",
-            "Contribuí a software usado para coordinar respuestas a emergencias."
+            "Responsable de dirección de producto, delivery end-to-end, límites público/privado y Release Train protegido."
           ]
         },
         {
-          "title": "CARE Customer Support Management System",
-          "summary": "Plataforma enterprise de customer support con workflows internos sensibles a performance.",
+          "title": "Práctica de desarrollo AI-native",
+          "summary": "Agentes en requisitos, dominio, specs, tickets, implementación, revisión, QA, preview y release con responsabilidad humana.",
           "bullets": [
-            "Construí y mejoré superficies con React, TypeScript, Redux y Next.js para equipos internos.",
-            "Reduje cargas de página de 3-5 segundos a menos de 1 segundo mediante trabajo de migración enfocado en performance.",
-            "Implementé actualizaciones en tiempo real y features complejas de manejo de estado."
+            "El Development System que coordina el trabajo es privado y adaptable; los sistemas entregados aportan la evidencia pública."
           ]
         },
         {
-          "title": "AOHYS Product Systems",
-          "summary": "Trabajo de producto para negocios de servicios, operaciones de nutrición, hospitalidad y este sistema de delivery.",
+          "title": "Sistemas de producto enterprise",
+          "summary": "CARE en Tala y software mission-critical de respuesta a emergencias demuestran trabajo con stakeholders, performance, workflows complejos y delivery confiable.",
           "bullets": [
-            "Construí case studies orientados a resultados para Casa Roca, The Barber Central, Nutri Plan, enterprise systems y engineering practice.",
-            "Diseñé límites claros entre rutas de marketing, workflows autenticados, datos y media delivery.",
-            "Usa delivery moderno asistido por agentes, TDD, browser QA, quality gates y documentación de release."
+            "CARE mejoró de aproximadamente 3–5 segundos a menos de 1 segundo; los detalles de clientes y arquitectura privada permanecen protegidos."
+          ]
+        },
+        {
+          "title": "The Barber Central",
+          "summary": "SaaS para negocios de servicios acercándose a producción con reservas, clientes, staff, inventario, reporting, analíticas y retención.",
+          "bullets": [
+            "Construido como producto multi-superficie coherente con gates explícitos de calidad y release."
+          ]
+        },
+        {
+          "title": "NutriPlan Digital",
+          "summary": "SaaS clínico multi-superficie en testing y preparación para producción con backend compartido y workflows protegidos.",
+          "bullets": [
+            "Mantiene información clínica y de pacientes fuera de la evidencia pública mientras prueba el comportamiento real."
+          ]
+        },
+        {
+          "title": "Casa Roca",
+          "summary": "Experiencia pública de hospitalidad en producción con historia del lugar, páginas listas para búsqueda, media responsiva y contacto directo.",
+          "bullets": [
+            "Entregué la experiencia de huéspedes y la verifiqué en el dominio de producción."
           ]
         }
       ],
@@ -779,10 +897,9 @@
           "company": "Tala Mobile",
           "period": "2023 - Presente",
           "bullets": [
-            "Ejecuté trabajo importante de migración a Next.js que redujo tiempos de carga de 3-5 segundos a menos de 1 segundo.",
-            "Contribuí al desarrollo y mejora del sistema interno CARE.",
-            "Implementé workflows de producto con base en requerimientos del equipo y stakeholders, incluyendo delivery backend-oriented a través de superficies Next.js.",
-            "Trabajé en escalations, payment plans, cashback, customs workflows y delivery cross-functional."
+            "Coordino alcance, roadmap, workflows y éxito con stakeholders y múltiples equipos para CARE, manteniendo el título contractual Senior Frontend Developer.",
+            "Ayudé a reducir cargas de CARE de aproximadamente 3–5 segundos a menos de 1 segundo y a su evolución moderna con Next.js/Turborepo.",
+            "Entrego escalations, payment plans, cashback y otros workflows entre frontend, trabajo server-side y de APIs, observabilidad y rutas backend-oriented; ampliando trabajo en Java."
           ]
         },
         {
@@ -790,10 +907,8 @@
           "company": "Drift",
           "period": "2022 - 2023",
           "bullets": [
-            "Desarrollé y mantuve una extensión de Chrome para grabación de video.",
-            "Construí y mejoré dashboards de analíticas para tracking de marketing playbooks.",
-            "Creé herramientas de visualización de datos para insights de interacciones con clientes.",
-            "Optimicé performance y experiencia de usuario para equipos de marketing."
+            "Construí y mantuve una extensión de Chrome para grabación de video, incluyendo restricciones de APIs y manifest.",
+            "Entregué dashboards de analíticas y visualizaciones de funnel para workflows B2B de marketing y ventas."
           ]
         },
         {
@@ -801,10 +916,8 @@
           "company": "Prenuvo",
           "period": "2021 - 2022",
           "bullets": [
-            "Entregué features full-stack en un ambiente startup de medical imaging.",
-            "Implementé features críticas para workflows de plataforma healthcare.",
-            "Mejoré performance y experiencia de usuario.",
-            "Colaboré con equipos cross-functional para definir y lanzar funcionalidad de producto."
+            "Entregué features full-stack en un equipo pequeño de medical imaging para superficies de marketing, ventas y presentación de resultados.",
+            "Consumí APIs y colaboré directamente con diseño bajo restricciones de privacidad y seguridad; no trabajé en modelos médicos de IA."
           ]
         },
         {
@@ -812,10 +925,8 @@
           "company": "Datazone/AutoZone",
           "period": "2020 - 2021",
           "bullets": [
-            "Contribuí al desarrollo de plataforma e-commerce con más de 30.5M usuarios mensuales.",
-            "Implementé optimizaciones SEO y mejoras de performance.",
-            "Participé en modernización de sistemas usando React y React Native.",
-            "Mejoré features móviles y experiencia de usuario."
+            "Trabajé en el selector que conecta perfiles de vehículos con partes compatibles dentro de una gran plataforma e-commerce.",
+            "Contribuí a la modernización de React SPA a Next.js, delivery con React Native y metadata SEO definida por marketing."
           ]
         },
         {
@@ -823,10 +934,8 @@
           "company": "Accenture",
           "period": "2018 - 2020",
           "bullets": [
-            "Modernicé una aplicación legacy de más de 30 años usando React y Redux.",
-            "Implementé prácticas TDD y arquitectura moderna de componentes.",
-            "Mentoreé miembros del equipo en buenas prácticas de React y Redux.",
-            "Colaboré con equipos internacionales en múltiples zonas horarias."
+            "Modernicé una plataforma mission-critical de respuesta a emergencias con décadas de historia para una gran ciudad de Estados Unidos usando React y Redux.",
+            "Implementé workflows custom de dispatch por teclado con pruebas rigurosas y apoyé a ingenieros junior dentro de un programa internacional."
           ]
         },
         {
@@ -834,37 +943,32 @@
           "company": "NEORIS/CEMEX",
           "period": "2018",
           "bullets": [
-            "Desarrollé features para CEMEX GO, sirviendo a más de 12,000 usuarios en 23 países.",
-            "Implementé fixes críticos y mejoras de performance.",
-            "Refactoricé código legacy hacia estándares modernos de React.",
-            "Mentoreé miembros del equipo en buenas prácticas frontend."
+            "Contribuí a una superficie de facturación dentro de CEMEX GO y crecí dentro de un producto distribuido entre muchos equipos."
           ]
         },
         {
-          "role": "Software Developer",
-          "company": "AO HyS",
-          "period": "2015 - 2018",
+          "role": "Ingeniero de software independiente",
+          "company": "AOHYS",
+          "period": "2015 - Presente",
           "bullets": [
-            "Fundé y operé un estudio independiente de desarrollo.",
-            "Entregué soluciones a la medida para clientes de salud y e-commerce.",
-            "Implementé soluciones full-stack con React, Node.js y tecnologías relacionadas.",
-            "Manejé relaciones con clientes y entregables de proyecto."
+            "Construí una práctica continua desde automatización Excel/VBA hacia Java, React y trabajo enterprise, productos completos y desarrollo AI-native.",
+            "Los sistemas actuales incluyen ETERIA, The Barber Central, NutriPlan Digital, Casa Roca y AOHYS."
           ]
         }
       ],
-      "skillsTitle": "Tecnologías centrales y capacidades",
+      "skillsTitle": "Capacidades técnicas",
       "skills": [
         {
-          "label": "Principios de diseño de producto",
-          "items": ["Arquitectura de información", "Sistemas de interacción", "Accesibilidad", "Sistemas visuales", "Estructura de contenido"]
+          "label": "Negocio e ingeniería de producto",
+          "items": ["Comunicación con stakeholders", "Workflows de dominio", "Arquitectura de producto", "Requisitos y specs", "Ownership de delivery"]
         },
         {
           "label": "Sistemas front-end",
           "items": ["Interfaces responsivas", "React y TypeScript", "Arquitectura de componentes", "Performance", "Movimiento y WebGL"]
         },
         {
-          "label": "Back-end, SQL y datos",
-          "items": ["Diseño de APIs", "Workflows de dominio", "SQL y PostgreSQL", "Modelado de datos", "Dashboards de bases de datos"]
+          "label": "Workflows backend y datos",
+          "items": ["Next.js server-side", "Integración de APIs", "Convex", "SQL y PostgreSQL", "Java en crecimiento"]
         },
         {
           "label": "Cloud y operación",
@@ -875,8 +979,8 @@
           "items": ["TDD", "Browser QA", "CI/CD", "Verificación de releases", "Documentación"]
         },
         {
-          "label": "Ingeniería aumentada con IA",
-          "items": ["Orquestación de agentes", "Ingeniería de contexto", "Arquitectura asistida por IA", "Revisión de implementación", "QA asistido por IA"]
+          "label": "Desarrollo AI-native",
+          "items": ["Orquestación de agentes", "Dominio y specs", "TDD", "Revisión independiente", "Browser QA y release"]
         }
       ],
       "educationTitle": "Educación",
@@ -898,10 +1002,10 @@
   },
   "contact": {
     "path": "/es/contacto",
-    "title": "Hagamos claro el siguiente movimiento.",
-    "summary": "Comparte lo que quieres crear, mejorar o hacer realidad. Leeré el contexto personalmente y responderé con preguntas útiles y un siguiente paso práctico. En México WhatsApp suele ser lo más rápido; el correo es ideal para un brief más largo.",
-    "seoDescription": "Contacta a Alejandro Ortiz Corro y AOHYS por correo o WhatsApp para proyectos de software, revisión de arquitectura, sistemas de producto o conversaciones laborales.",
-    "primaryActionLabel": "Iniciar conversación",
+    "title": "Cuéntame qué estás construyendo.",
+    "summary": "Comparte el producto, rol o sistema que quieres hacer avanzar. Leeré el contexto personalmente y responderé con preguntas útiles y un siguiente paso práctico. En México WhatsApp suele ser lo más rápido; el correo es ideal para un brief más largo.",
+    "seoDescription": "Contacta a Alejandro Ortiz Corro por correo o WhatsApp para hablar de un producto, un rol de software, arquitectura, modernización o un reto de delivery AI-native.",
+    "primaryActionLabel": "Hablemos de un producto o un rol",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Revisar trabajo",
     "secondaryActionContentId": "case-studies"

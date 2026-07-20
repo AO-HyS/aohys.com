@@ -9,6 +9,8 @@ export interface StaticCaseStudyRoute {
 
 // Kept isolated so Convex can reserve public routes without loading locale copy.
 export const STATIC_CASE_STUDY_ROUTES: readonly StaticCaseStudyRoute[] = [
+  { contentId: "case-study:eteria", locale: "en", path: "/case-studies/eteria", localizedSlug: "eteria" },
+  { contentId: "case-study:eteria", locale: "es", path: "/es/casos/eteria", localizedSlug: "eteria" },
   { contentId: "case-study:casa-roca", locale: "en", path: "/case-studies/casa-roca", localizedSlug: "casa-roca" },
   { contentId: "case-study:casa-roca", locale: "es", path: "/es/casos/casa-roca", localizedSlug: "casa-roca" },
   { contentId: "case-study:the-barber-central", locale: "en", path: "/case-studies/the-barber-central", localizedSlug: "the-barber-central" },
