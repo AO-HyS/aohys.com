@@ -4,6 +4,22 @@ This context names the project concepts that should stay stable across the publi
 
 ## Language
 
+**AI-Native Product Development**:
+Software product work that uses AI-capable agents across a six-stage delivery lifecycle while keeping business intent, domain decisions, verification, and release under human accountability.
+_Avoid_: AI-generated software, autonomous delivery, AI/ML engineering
+
+**Human Accountability**:
+The explicit responsibility people retain for business intent, domain decisions, scope, review, evidence, release approval, and production outcomes when agents assist the work.
+_Avoid_: Human in the loop as a vague slogan, fully autonomous agents
+
+**Selected Systems**:
+The editorially ordered set of public-safe systems used to show breadth across client delivery, engineering practice, enterprise work, product modernization, and live operations.
+_Avoid_: Portfolio gallery, every project, client list
+
+**Development System**:
+The private, adaptable delivery practice used across business intent, domain decisions, specifications, implementation, verification, and release. The public site explains its principles and lifecycle, not its repository, manifests, or private operating detail.
+_Avoid_: Open-source framework, public agent repository, fixed methodology
+
 **Public Source Site**:
 The public `aohys.com` codebase that visitors and technical evaluators can inspect as a working sample of AOHYS engineering standards.
 _Avoid_: Open-source product, community OSS project, React portfolio

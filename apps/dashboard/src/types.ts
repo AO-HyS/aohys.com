@@ -63,6 +63,7 @@ export interface DashboardProjectImage {
   status?: DashboardMediaStatus;
   usage?: DashboardMediaUsage;
   selectedForPublic?: boolean;
+  selectedForPublicAt?: number;
 }
 
 export interface DashboardProject {
@@ -90,6 +91,7 @@ export interface DashboardMediaMetadata {
   status: DashboardMediaStatus;
   locale?: DashboardLocale;
   selectedForPublic?: boolean;
+  selectedForPublicAt?: number;
   updatedAt: number;
 }
 

@@ -150,11 +150,13 @@ describe("public site source quality", () => {
     expect(contentGraph).toContain("/images/proof/nutri-plan-dashboard-v2.png");
     expect(contentGraph).toContain("/images/proof/enterprise-systems-map-v2.svg");
     expect(contentGraph).toContain("/images/proof/engineering-practice-release-cycle.svg");
+    expect(contentGraph).toContain("/images/proof/eteria-ivory-linen-hero.webp");
     for (const asset of [
       "public/images/proof/casa-roca-gallery-v2.jpg",
       "public/images/proof/casa-roca-value-v2.jpg",
       "public/images/proof/barber-central-hero-v2.jpg",
       "public/images/proof/nutri-plan-dashboard-v2.png",
+      "public/images/proof/eteria-ivory-linen-hero.webp",
       "public/images/brand/aohys-connections-wordmark-v3.svg",
       "public/images/brand/aohys-connections-mark-v3.svg",
       "public/images/brand/aohys-connections-mono-v3.svg",

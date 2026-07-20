@@ -33,8 +33,16 @@ pnpm exec wrangler pages dev apps/site/dist \
 Regenerate the text-based resume PDF after editing English resume graph content:
 
 ```sh
-python3 apps/site/scripts/build-resume-pdf.py
+pnpm run build:resume-pdf
 ```
+
+Preview and production deploys run `publish:content:build` and then `verify:published-content`. That post-publish gate regenerates the PDF from the applied canonical resume, extracts it in the public-route test, and rebuilds the site before Cloudflare receives any files. A dashboard revision can replace curated static content only when its own `updatedAt` is later than the entry's `approvedAt`; republishing old copy does not make it fresh. Bump `approvedAt` whenever a curated locale entry is reviewed and changed in source.
+
+Each curated case study and resume entry also carries an `approvedHash`. Source changes must update both the approval timestamp and hash; CI recomputes the digest so forgetting the approval boundary cannot silently expose an older dashboard revision.
+
+Only the deploy command sets `AOHYS_DASHBOARD_CONTENT_APPLIED=1`, after the authenticated publication bridge has applied reviewed dashboard revisions. Normal CI never trusts a marker stored in public content and always enforces the committed approval hashes.
+
+Curated case studies use the public-safe evidence assets committed with their copy by default. Dashboard media can replace one only after an admin explicitly selects that asset later than the case study's code-reviewed `approvedAt`; publishing alone does not refresh that per-asset review signal.
 
 The current shell includes the graph-backed home proof narrative, selected-work index, case-study detail pages, resume page, text-based PDF artifact, bilingual route skeletons, global tokens, font loading, graph-backed metadata, navigation, footer, sitemap, robots output, Astro native i18n config, and Vitest route/build smoke checks.
 

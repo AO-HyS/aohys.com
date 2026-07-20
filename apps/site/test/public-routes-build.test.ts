@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { getPublicRouteMap, getSeoMetadata, getSitemapEntries } from "@aohys/content-graph";
+import { findForbiddenPublicClaims, getPublicRouteMap, getSeoMetadata, getSitemapEntries } from "@aohys/content-graph";
+import { PDFParse } from "pdf-parse";
 import { describe, expect, it } from "vitest";
 import { CONTENT_SECURITY_POLICY, renderCloudflarePagesStaticHeaders } from "../src/security-headers.js";
 
@@ -80,44 +81,45 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain('data-home-content-id="home"');
-    expect(homeHtml).toContain("Software for what you want to make real.");
+    expect(homeHtml).toContain("Senior Software Engineer · AI-Native Product Development");
     expect(homeHtml).toContain('class="sunlit-studio-hero"');
-    expect(homeHtml).toContain("Services for the next thing your team wants to achieve.");
-    expect(homeHtml).toContain("Craft across the whole product system.");
+    expect(homeHtml).toContain("Tell me what you are building.");
+    expect(homeHtml).toContain("Business goals become production systems.");
     expect(homeHtml).toContain("/images/proof/enterprise-systems-map-v2.svg");
     expect(homeHtml).toContain('data-project-stage');
     expect(homeHtml).toContain('data-stage-door="left"');
     expect(homeHtml).toContain('data-stage-door="right"');
-    expect(homeHtml).toContain("Choose a project. The doors close, the system behind them changes");
-    expect(homeHtml).toContain("What would you like your team to create next?");
+    expect(homeHtml).toContain("Client production work, AI-native delivery practice, enterprise systems");
+    expect(homeHtml).toContain("Talk about a product or role.");
     expect(homeHtml).toContain("Independent product engineering by Alejandro Ortiz Corro.");
     expect(homeHtml).not.toContain("Public code can be reviewed here");
     expect(homeHtml).not.toContain("Still deciding?");
-    expect(homeHtml).toContain('href="/case-studies/casa-roca"');
+    expect(homeHtml).toContain('href="/case-studies/eteria"');
+    expect(homeHtml).toContain('href="/case-studies/engineering-practice"');
+    expect(homeHtml).toContain('href="/case-studies/enterprise-systems"');
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
     expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
-    expect(homeHtml).toContain('href="/case-studies/enterprise-systems"');
-    expect(homeHtml).toContain("/images/proof/casa-roca-value-v2.jpg");
-    expect(homeHtml).toContain('alt="Casa Roca production website hero screenshot"');
+    expect(homeHtml).toContain('href="/case-studies/casa-roca"');
+    expect(homeHtml).toContain("/images/proof/eteria-ivory-linen-hero.webp");
+    expect(homeHtml).toContain('alt="ETERIA public landing page linen art direction"');
     expect(homeHtml).toContain("/images/proof/barber-central-hero-v2.jpg");
     expect(homeHtml).toContain("WhatsApp");
     expect(homeHtml).not.toContain("Cloudflare · Convex · PostHog · Resend");
     expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Software para hacer realidad lo que imaginas.");
+    expect(spanishHomeHtml).toContain("Senior Software Engineer · Desarrollo de producto AI-native");
     expect(spanishHomeHtml).toContain('class="sunlit-studio-hero"');
-    expect(spanishHomeHtml).toContain("Servicios para lo siguiente que tu equipo quiere lograr.");
-    expect(spanishHomeHtml).toContain("Cuidado en todo el sistema de producto.");
-    expect(spanishHomeHtml).toContain("Elige un proyecto. Las puertas se cierran, cambia el sistema detrás");
-    expect(spanishHomeHtml).toContain("¿Qué te gustaría que tu equipo creara después?");
+    expect(spanishHomeHtml).toContain("Cuéntame qué estás construyendo.");
+    expect(spanishHomeHtml).toContain("Los objetivos de negocio se convierten en sistemas en producción.");
+    expect(spanishHomeHtml).toContain("Trabajo de cliente en producción, práctica de delivery AI-native, sistemas enterprise");
+    expect(spanishHomeHtml).toContain("Hablemos de un producto o un rol.");
     expect(spanishHomeHtml).toContain("Ingeniería de producto independiente por Alejandro Ortiz Corro.");
     expect(spanishHomeHtml).not.toContain("El código público se puede revisar aquí");
     expect(spanishHomeHtml).not.toContain("¿Todavía evaluando?");
-    expect(spanishHomeHtml).toContain('href="/es/casos/casa-roca"');
-    expect(spanishHomeHtml).toContain("/images/proof/casa-roca-value-v2.jpg");
-    expect(spanishHomeHtml).toContain('alt="Hero del sitio Casa Roca en producción"');
-    expect(spanishHomeHtml).not.toContain('alt="Casa Roca destination gallery and value story"');
+    expect(spanishHomeHtml).toContain('href="/es/casos/eteria"');
+    expect(spanishHomeHtml).toContain("/images/proof/eteria-ivory-linen-hero.webp");
+    expect(spanishHomeHtml).toContain('alt="Dirección de arte en lino de la landing pública de ETERIA"');
     expect(spanishHomeHtml).toContain("WhatsApp");
   });
 
@@ -126,27 +128,30 @@ describe("built public routes", () => {
     const spanishArchitectureHtml = readDist("es/arquitectura/index.html");
 
     expect(architectureHtml).toContain('data-architecture-content-id="architecture"');
-    expect(architectureHtml).toContain("Architecture that gives ideas room to grow.");
-    expect(architectureHtml).toContain("One system, six responsibilities.");
-    expect(architectureHtml).toContain("Front-end systems");
-    expect(architectureHtml).toContain("PostgreSQL");
-    expect(architectureHtml).toContain("AI engineering");
-    expect(architectureHtml).toContain("Cloud operations");
+    expect(architectureHtml).toContain("From business intent to production.");
+    expect(architectureHtml).toContain("One lifecycle, six accountable stages.");
+    expect(architectureHtml).toContain("Business intent");
+    expect(architectureHtml).toContain("Domain modeling");
+    expect(architectureHtml).toContain("Specs &amp; tickets");
+    expect(architectureHtml).toContain("Agent implementation");
+    expect(architectureHtml).toContain("Browser QA");
     expect(architectureHtml).toContain("Architecture is a sequence of tradeoffs.");
     expect(architectureHtml.match(/<canvas/g)).toHaveLength(1);
     expect(architectureHtml).toContain("Release Train");
-    expect(architectureHtml).toContain("Environment Contract");
-    expect(architectureHtml).toContain("Public Content Graph");
+    expect(architectureHtml).toContain("Human accountability");
+    expect(architectureHtml).toContain("Public Source Site and Private Work");
+    expect(architectureHtml).toContain("Preview Deployment");
+    expect(architectureHtml).toContain("Production Deployment");
     expect(architectureHtml).toContain('class="sunlit-system-layers"');
     expect(architectureHtml).toContain('class="sunlit-architecture-notes"');
     expect(architectureHtml).not.toContain("<details");
     expect(architectureHtml).toContain('href="https://github.com/AO-HyS/aohys.com"');
     expect(architectureHtml).toContain('href="https://github.com/AO-HyS/aohys.com/blob/develop/docs/release-train.md"');
-    expect(architectureHtml).not.toMatch(/public proof|evidence|confidential/i);
+    expect(architectureHtml).not.toMatch(/manifest|adapter|universal template|open.source development system/i);
 
     expect(spanishArchitectureHtml).toContain('data-architecture-content-id="architecture"');
-    expect(spanishArchitectureHtml).toContain("Arquitectura que da espacio para crecer.");
-    expect(spanishArchitectureHtml).toContain("Un sistema, seis responsabilidades.");
+    expect(spanishArchitectureHtml).toContain("De la intención de negocio a producción.");
+    expect(spanishArchitectureHtml).toContain("Un lifecycle, seis etapas con responsabilidad.");
     expect(spanishArchitectureHtml).toContain("La arquitectura es una secuencia de tradeoffs.");
     expect(spanishArchitectureHtml).toContain("Release Train");
     expect(spanishArchitectureHtml).toContain("Environment Contract");
@@ -186,7 +191,7 @@ describe("built public routes", () => {
 
     expect(casaRocaHtml).toContain('data-case-study-content-id="case-study:casa-roca"');
     expect(casaRocaHtml).toContain("Casa Roca");
-    expect(casaRocaHtml).toContain("Live hospitality site");
+    expect(casaRocaHtml).toContain("Live hospitality experience");
     expect(casaRocaHtml).toContain("Opportunity");
     expect(casaRocaHtml).toContain("Opportunity &amp; outcome");
     expect(casaRocaHtml).toContain("Role &amp; system");
@@ -203,7 +208,7 @@ describe("built public routes", () => {
     expect(casaRocaHtml.indexOf('class="sunlit-case-hero-links"')).toBeLessThan(casaRocaHtml.indexOf('class="sunlit-case-rail"'));
 
     expect(spanishCasaRocaHtml).toContain('data-case-study-content-id="case-study:casa-roca"');
-    expect(spanishCasaRocaHtml).toContain("Sitio de hospitalidad en vivo");
+    expect(spanishCasaRocaHtml).toContain("Experiencia de hospitalidad en producción");
     expect(spanishCasaRocaHtml).toContain("Oportunidad");
     expect(spanishCasaRocaHtml).toContain("Resultado");
     expect(spanishCasaRocaHtml).toContain("Rol y sistema");
@@ -226,81 +231,148 @@ describe("built public routes", () => {
     const nutriPlanHtml = readDist("case-studies/nutri-plan/index.html");
     const enterpriseHtml = readDist("case-studies/enterprise-systems/index.html");
     const engineeringPracticeHtml = readDist("case-studies/engineering-practice/index.html");
+    const eteriaHtml = readDist("case-studies/eteria/index.html");
+    const spanishEteriaHtml = readDist("es/casos/eteria/index.html");
 
     expect(indexHtml).toContain('data-case-study-index-content-id="case-studies"');
     expect(indexHtml).not.toContain('class="sunlit-work-program"');
     expect(indexHtml).not.toContain('class="sunlit-archive-ticket"');
-    expect(indexHtml).toContain('href="/case-studies/casa-roca"');
+    expect(indexHtml).toContain('href="/case-studies/eteria"');
+    expect(indexHtml).toContain('href="/case-studies/engineering-practice"');
+    expect(indexHtml).toContain('href="/case-studies/enterprise-systems"');
     expect(indexHtml).toContain('href="/case-studies/the-barber-central"');
     expect(indexHtml).toContain('href="/case-studies/nutri-plan"');
-    expect(indexHtml).toContain('href="/case-studies/enterprise-systems"');
-    expect(indexHtml).toContain('href="/case-studies/engineering-practice"');
-    expect(indexHtml).toContain("Live hospitality site");
-    expect(indexHtml).toContain("Active build");
-    expect(indexHtml).toContain("Product system");
-    expect(indexHtml).toContain("Enterprise systems");
-    expect(indexHtml).toContain("Engineering practice");
+    expect(indexHtml).toContain('href="/case-studies/casa-roca"');
+    expect(indexHtml).toContain("Client project · In production");
+    expect(indexHtml).toContain("AI-native development practice");
+    expect(indexHtml).toContain("Enterprise product systems");
+    expect(indexHtml).toContain("Approaching production");
+    expect(indexHtml).toContain("Testing &amp; production preparation");
+    expect(indexHtml).toContain("Live hospitality experience");
+    expect(indexHtml.indexOf('href="/case-studies/eteria"')).toBeLessThan(indexHtml.indexOf('href="/case-studies/engineering-practice"'));
+    expect(indexHtml.indexOf('href="/case-studies/engineering-practice"')).toBeLessThan(indexHtml.indexOf('href="/case-studies/enterprise-systems"'));
 
     expect(spanishIndexHtml).toContain('data-case-study-index-content-id="case-studies"');
-    expect(spanishIndexHtml).toContain('href="/es/casos/casa-roca"');
+    expect(spanishIndexHtml).toContain('href="/es/casos/eteria"');
+    expect(spanishIndexHtml).toContain('href="/es/casos/practica-de-ingenieria"');
+    expect(spanishIndexHtml).toContain('href="/es/casos/sistemas-enterprise"');
     expect(spanishIndexHtml).toContain('href="/es/casos/the-barber-central"');
     expect(spanishIndexHtml).toContain('href="/es/casos/nutri-plan"');
-    expect(spanishIndexHtml).toContain('href="/es/casos/sistemas-enterprise"');
-    expect(spanishIndexHtml).toContain('href="/es/casos/practica-de-ingenieria"');
-    expect(spanishIndexHtml).toContain("Sitio de hospitalidad en vivo");
-    expect(spanishIndexHtml).toContain("Build activo");
-    expect(spanishIndexHtml).toContain("Sistema de producto");
-    expect(spanishIndexHtml).toContain("Sistemas enterprise");
-    expect(spanishIndexHtml).toContain("Práctica de ingeniería");
+    expect(spanishIndexHtml).toContain('href="/es/casos/casa-roca"');
+    expect(spanishIndexHtml).toContain("Proyecto de cliente · En producción");
+    expect(spanishIndexHtml).toContain("Práctica de desarrollo AI-native");
+    expect(spanishIndexHtml).toContain("Sistemas de producto enterprise");
+    expect(spanishIndexHtml).toContain("Acercándose a producción");
+    expect(spanishIndexHtml).toContain("Testing y preparación para producción");
+    expect(spanishIndexHtml).toContain("Experiencia de hospitalidad en producción");
 
     expect(barberHtml).toContain('data-case-study-content-id="case-study:the-barber-central"');
-    expect(barberHtml).toContain("Active build");
+    expect(barberHtml).toContain("Approaching production");
     expect(barberHtml).toContain("Development preview");
     expect(nutriPlanHtml).toContain('data-case-study-content-id="case-study:nutri-plan"');
     expect(barberHtml).toContain("/images/proof/barber-central-hero-v2.jpg");
-    expect(nutriPlanHtml).toContain("Product system");
+    expect(nutriPlanHtml).toContain("Testing &amp; production preparation");
     expect(nutriPlanHtml).toContain("/images/proof/nutri-plan-dashboard-v2.png");
     expect(enterpriseHtml).toContain('data-case-study-content-id="case-study:enterprise-systems"');
-    expect(enterpriseHtml).toContain("Enterprise systems");
+    expect(enterpriseHtml).toContain("Enterprise product systems");
+    expect(enterpriseHtml).toContain("3–5 seconds to under 1 second");
     expect(enterpriseHtml).toContain("Client details remain private.");
     expect(enterpriseHtml.match(/Client details remain private\./g)).toHaveLength(1);
     expect(enterpriseHtml).not.toMatch(/confidential/i);
     expect(engineeringPracticeHtml).toContain('data-case-study-content-id="case-study:engineering-practice"');
-    expect(engineeringPracticeHtml).toContain("Engineering practice");
+    expect(engineeringPracticeHtml).toContain("AI-native development practice");
     expect(engineeringPracticeHtml).toContain("Source and process");
+    expect(eteriaHtml).toContain('data-case-study-content-id="case-study:eteria"');
+    expect(eteriaHtml).toContain("Client project · In production");
+    expect(eteriaHtml).toContain("Convex");
+    expect(eteriaHtml).toContain("PostHog");
+    expect(eteriaHtml).toContain("SwiftUI");
+    expect(eteriaHtml).toContain("Release Train");
+    expect(eteriaHtml).toContain('href="https://momentos-eteria.com"');
+    expect(eteriaHtml).toContain("/images/proof/eteria-ivory-linen-hero.webp");
+    expect(eteriaHtml).not.toMatch(/App Store|customer data|private route|credential/i);
+    expect(spanishEteriaHtml).toContain('data-case-study-content-id="case-study:eteria"');
+    expect(spanishEteriaHtml).toContain("Proyecto de cliente · En producción");
+    expect(spanishEteriaHtml).toContain('href="https://momentos-eteria.com"');
   });
 
-  it("renders the graph-backed About page without fabricated pricing and keeps the resume PDF available", () => {
+  it("renders the graph-backed About page and keeps an ATS-readable resume PDF aligned", async () => {
     const resumeHtml = readDist("resume/index.html");
     const spanishResumeHtml = readDist("es/curriculum/index.html");
     const pdfPath = path.join(distRoot, "downloads", "alejandro-ortiz-corro-resume.pdf");
 
     expect(resumeHtml).toContain('data-resume-content-id="resume"');
     expect(resumeHtml).toContain("About Alejandro");
-    expect(resumeHtml).toContain("Senior Product Engineer / Frontend Systems");
-    expect(resumeHtml).toContain("Delivery profile");
+    expect(resumeHtml).toContain("Senior Software Engineer · AI-Native Product Development");
+    expect(resumeHtml).toContain("Professional summary");
+    expect(resumeHtml).toContain("Selected Systems");
     expect(resumeHtml).toContain("Professional experience");
-    expect(resumeHtml).toContain("Core technologies &amp; capabilities");
+    expect(resumeHtml).toContain("Technical capabilities");
     expect(resumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
     expect(resumeHtml).toContain("Open resume PDF");
     expect(resumeHtml).not.toContain("Download ATS PDF");
     expect(resumeHtml).toContain('href="/case-studies"');
     expect(resumeHtml).toContain('href="/architecture"');
+    expect(resumeHtml.indexOf("Selected Systems")).toBeLessThan(resumeHtml.indexOf("Professional experience"));
+    expect(resumeHtml).toContain("Senior Frontend Developer");
+    expect(resumeHtml).toContain("3–5 seconds to under 1 second");
+    expect(resumeHtml).toContain("Java work in progress");
 
     expect(spanishResumeHtml).toContain('data-resume-content-id="resume"');
     expect(spanishResumeHtml).toContain("Sobre Alejandro");
-    expect(spanishResumeHtml).toContain("Senior Product Engineer / Sistemas Frontend");
-    expect(spanishResumeHtml).toContain("Perfil de entrega");
+    expect(spanishResumeHtml).toContain("Senior Software Engineer · Desarrollo de producto AI-native");
+    expect(spanishResumeHtml).toContain("Resumen profesional");
+    expect(spanishResumeHtml).toContain("Sistemas seleccionados");
     expect(spanishResumeHtml).toContain("Experiencia profesional");
-    expect(spanishResumeHtml).toContain("Tecnologías centrales y capacidades");
+    expect(spanishResumeHtml).toContain("Capacidades técnicas");
     expect(spanishResumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
     expect(spanishResumeHtml).toContain("Abrir CV en PDF");
     expect(spanishResumeHtml).not.toContain("Descargar PDF ATS");
     expect(spanishResumeHtml).toContain('href="/es/casos"');
     expect(spanishResumeHtml).toContain('href="/es/arquitectura"');
+    expect(spanishResumeHtml.indexOf("Sistemas seleccionados")).toBeLessThan(spanishResumeHtml.indexOf("Experiencia profesional"));
 
     expect(existsSync(pdfPath), "resume PDF must be copied into dist").toBe(true);
-    expect(readFileSync(pdfPath).subarray(0, 5).toString("utf8")).toBe("%PDF-");
+    const pdfBytes = readFileSync(pdfPath);
+    const pdfSource = pdfBytes.toString("latin1");
+
+    expect(pdfBytes.subarray(0, 5).toString("utf8")).toBe("%PDF-");
+    expect(pdfSource.match(/\/Type\s*\/Page\b/g)).toHaveLength(2);
+    expect(pdfSource).not.toMatch(/\/Encrypt\b/);
+
+    const parser = new PDFParse({ data: Uint8Array.from(pdfBytes) });
+    try {
+      const pdfInfo = await parser.getInfo();
+      const extracted = await parser.getText();
+      const atsText = extracted.text.replace(/\s+/g, " ").trim();
+      const expectedOrder = [
+        "Alejandro Ortiz Corro",
+        "Senior Software Engineer · AI-Native Product Development",
+        "Professional summary",
+        "Selected Systems",
+        "Professional experience",
+        "Technical capabilities",
+        "Education",
+        "Languages",
+      ];
+
+      expect(pdfInfo.total).toBe(2);
+      expect(expectedOrder.every((heading) => atsText.includes(heading))).toBe(true);
+      expect(expectedOrder.map((heading) => atsText.indexOf(heading))).toEqual(
+        [...expectedOrder.map((heading) => atsText.indexOf(heading))].sort((a, b) => a - b),
+      );
+      expect(atsText).toContain("Senior Frontend Developer | Tala Mobile | 2023 - Present");
+      expect(atsText).toMatch(/approximately 3–5 seconds to under 1 second/i);
+      expect(atsText).not.toMatch(/80%|Open[- ]to[- ]Work|Available for selected projects|AI[\/-]ML Engineer|\bRAG\b|fine-tuning|model eval(?:s|uations)|New York|App Store/i);
+    } finally {
+      await parser.destroy();
+    }
+  });
+
+  it("keeps prohibited positioning and private-work claims out of built public output", () => {
+    const publicHtml = getPublicRouteMap().map((route) => readDist(routeHtmlPath(route.path))).join("\n");
+
+    expect(findForbiddenPublicClaims(publicHtml)).toEqual([]);
   });
 
   it("renders the contact form with consent, preferred contact path, and WhatsApp fallback", () => {

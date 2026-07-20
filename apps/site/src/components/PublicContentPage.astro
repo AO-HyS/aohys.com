@@ -46,17 +46,17 @@ const publicWhatsAppUrl = DASHBOARD_PUBLIC_SETTINGS.PUBLIC_WHATSAPP_URL ?? impor
 const directEmailHref = `mailto:${publicContactEmail}`;
 
 const labels = locale === "es" ? {
-  available: "Disponible para proyectos seleccionados",
+  available: "Sistemas de producto · Delivery AI-native",
   work: "Trabajo",
   practice: "Servicios",
   architecture: "Arquitectura",
   about: "Sobre mí",
-  talk: "Iniciar conversación",
+  talk: "Hablemos de un producto o un rol",
   viewWork: "Ver trabajo",
   viewProject: "Abrir caso",
   publicProof: "Sistema seleccionado",
-  selectedStage: "Software para hacer realidad lo que imaginas.",
-  selectedStageIntro: "Elige un proyecto. Las puertas se cierran, cambia el sistema detrás y el mismo escenario vuelve a abrirse.",
+  selectedStage: "Trabajo seleccionado, ordenado por evidencia.",
+  selectedStageIntro: "Trabajo de cliente en producción, práctica de delivery AI-native, sistemas enterprise y productos avanzando deliberadamente hacia release.",
   process: "Los buenos resultados nacen de sistemas claros.",
   workArchive: "Archivo de trabajo",
   workArchiveBody: "Sistemas en producción, productos activos y experiencia enterprise contados por el resultado y las decisiones detrás.",
@@ -95,17 +95,17 @@ const labels = locale === "es" ? {
   contactBriefReply: "Yo respondo con preguntas útiles y un siguiente paso concreto.",
   contactBriefLabel: "Tu brief de proyecto",
 } : {
-  available: "Available for selected projects",
+  available: "Product systems · AI-native delivery",
   work: "Work",
   practice: "Services",
   architecture: "Architecture",
   about: "About",
-  talk: "Start a conversation",
+  talk: "Talk about a product or role",
   viewWork: "View work",
   viewProject: "Open case",
   publicProof: "Selected system",
-  selectedStage: "Software for what you want to make real.",
-  selectedStageIntro: "Choose a project. The doors close, the system behind them changes, and the same stage reopens.",
+  selectedStage: "Selected work, ordered by evidence.",
+  selectedStageIntro: "Client production work, AI-native delivery practice, enterprise systems, and products moving deliberately toward release.",
   process: "Great outcomes start with clear systems.",
   workArchive: "Work archive",
   workArchiveBody: "Live systems, active products, and enterprise work told through results and the decisions behind them.",
@@ -546,6 +546,11 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
       <aside>{resumeContent.highlights.map((highlight) => <div><strong>{highlight.label}</strong><p>{highlight.text}</p></div>)}</aside>
     </section>
 
+    <section class="sunlit-profile-projects" aria-labelledby="projects-title">
+      <header><h2 id="projects-title">{resumeContent.projectsTitle}</h2></header>
+      <div>{resumeContent.projects.map((project) => <article><h3>{project.title}</h3><p>{project.summary}</p><ul>{project.bullets.map((bullet) => <li>{bullet}</li>)}</ul></article>)}</div>
+    </section>
+
     <section class="sunlit-experience" aria-labelledby="experience-title">
       <header><h2 id="experience-title">{resumeContent.experienceTitle}</h2></header>
       <div>
@@ -558,11 +563,6 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
     <section class="sunlit-capabilities" aria-labelledby="capabilities-title">
       <header><h2 id="capabilities-title">{resumeContent.skillsTitle}</h2></header>
       <div>{resumeContent.skills.map((group) => <article><h3>{group.label}</h3><p>{group.items.join(" · ")}</p></article>)}</div>
-    </section>
-
-    <section class="sunlit-profile-projects" aria-labelledby="projects-title">
-      <header><h2 id="projects-title">{resumeContent.projectsTitle}</h2></header>
-      <div>{resumeContent.projects.map((project) => <article><h3>{project.title}</h3><p>{project.summary}</p><ul>{project.bullets.map((bullet) => <li>{bullet}</li>)}</ul></article>)}</div>
     </section>
 
     <section class="sunlit-education" aria-labelledby="education-title">
@@ -792,6 +792,8 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
   .sunlit-work-archive, .sunlit-profile-summary, .sunlit-experience, .sunlit-capabilities, .sunlit-profile-projects, .sunlit-education, .sunlit-related { width: var(--container); margin: clamp(5rem, 10vw, 9rem) auto; }
   .sunlit-work-archive > header, .sunlit-profile-summary > header, .sunlit-experience > header, .sunlit-capabilities > header, .sunlit-profile-projects > header, .sunlit-education > header { display: grid; grid-template-columns: minmax(16rem, .72fr) minmax(0, 1.28fr); align-items: end; gap: clamp(2rem, 6vw, 6rem); margin-bottom: clamp(2rem, 5vw, 4rem); }
   .sunlit-work-archive > header h2, .sunlit-profile-summary > header h2, .sunlit-experience > header h2, .sunlit-capabilities > header h2, .sunlit-profile-projects > header h2, .sunlit-education > header h2, .sunlit-related h2 { margin: 0; font-size: var(--text-h2); font-weight: 760; letter-spacing: -.035em; line-height: 1; }
+  .sunlit-profile-projects > header { grid-template-columns: 1fr; }
+  .sunlit-profile-projects > header h2 { max-width: 18ch; overflow-wrap: normal; word-break: normal; }
   .sunlit-work-archive > header p { max-width: 52ch; margin: 0; color: var(--color-muted); }
   .sunlit-archive-list { border-top: 2px solid var(--color-ink); }
   .sunlit-archive-list article { display: grid; min-height: 28rem; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: clamp(1.5rem, 4vw, 4rem); align-items: center; padding: clamp(2.5rem, 6vw, 5rem) 0; border-bottom: 2px solid var(--color-ink); }
@@ -1223,7 +1225,7 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
   }
   @media (max-width: 390px) {
     .sunlit-studio-hero { width: min(calc(100% - 1rem), 72rem); }
-    .sunlit-studio-hero h1 { font-size: clamp(2.6rem, 14vw, 3.25rem); }
+    .sunlit-studio-hero h1 { font-size: clamp(2.45rem, 12.5vw, 2.9rem); overflow-wrap: normal; word-break: normal; }
     .sunlit-contact-hero-direct { align-items: flex-start; flex-direction: column; }
   }
 </style>
