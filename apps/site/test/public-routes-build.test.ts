@@ -444,7 +444,9 @@ describe("built public routes", () => {
     expect(contactHtml).toContain('id="aohys-posthog-config"');
     expect(contactHtml).toContain('"name":"$pageview"');
     expect(contactHtml).toContain('"content_id":"contact"');
-    expect(contactHtml).toContain('"environment":"local"');
+    expect(contactHtml).toContain(
+      `"environment":"${process.env.AOHYS_ENV ?? "local"}"`,
+    );
     expect(contactHtml).toContain('data-analytics-view="contact_form_viewed"');
     expect(contactHtml).toContain('data-analytics-submit="contact_form_submit_attempted"');
     expect(contactHtml).toContain("contact_form_submit_succeeded");
