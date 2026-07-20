@@ -137,9 +137,9 @@ describe("Public Content Graph", () => {
 
   it("uses a public-safe ETERIA landing asset as the lead project evidence", () => {
     expect(STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:eteria"]).toEqual({
-      src: "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc",
-      alt: "ETERIA public landing page linen art direction",
-      kind: "landing",
+      src: "/images/proof/eteria-garden-blue-table-og.jpg",
+      alt: "ETERIA outdoor celebration table styled with blue textiles, ivory flowers, and layered place settings",
+      kind: "site",
     });
   });
 
@@ -311,7 +311,7 @@ describe("Public Content Graph", () => {
       "Services",
       "About",
       "Architecture",
-      "Start a conversation",
+      "Let's talk",
     ]);
     expect(englishNavigation.items.map((item) => item.href)).toEqual([
       "/case-studies",
@@ -901,6 +901,9 @@ describe("Public Content Graph", () => {
 
     expect(findForbiddenPublicClaims(publicCopy)).toEqual([]);
     expect(findForbiddenPublicClaims(resumeCopy)).toEqual([]);
+    expect(publicCopy).not.toMatch(/\bCARE\b/);
+    expect(enterpriseCopy).toMatch(/customer-support and account-recovery operations platform/i);
+    expect(enterpriseCopy).toMatch(/atención al cliente y recuperación de cuentas/i);
     expect(enterpriseCopy).toMatch(/3(?:-|–)5 seconds.*under 1 second/i);
     expect(enterpriseCopy).not.toMatch(/final client|cliente final|New York/i);
     expect(eteriaCopy).not.toMatch(/App Store|credential|private route|customer data|datos de clientes/i);

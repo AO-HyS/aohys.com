@@ -65,10 +65,10 @@ describe("built public routes", () => {
     const homeHtml = readDist("index.html");
     const spanishHomeHtml = readDist("es/index.html");
 
-    expect(homeHtml).toContain("Start a conversation");
+    expect(homeHtml).toContain("Let&#39;s talk");
     expect(homeHtml).toContain('href="/dashboard"');
     expect(homeHtml).toContain("Open dashboard");
-    expect(spanishHomeHtml).toContain("Iniciar conversación");
+    expect(spanishHomeHtml).toContain("Hablemos");
     expect(spanishHomeHtml).not.toContain('href="/case-studies"');
     expect(spanishHomeHtml).toContain('href="/es/casos"');
     expect(spanishHomeHtml).toContain('href="/dashboard"');
@@ -90,7 +90,8 @@ describe("built public routes", () => {
     expect(homeHtml).toContain('data-stage-door="left"');
     expect(homeHtml).toContain('data-stage-door="right"');
     expect(homeHtml).toContain("Client production work, AI-native delivery practice, enterprise systems");
-    expect(homeHtml).toContain("Talk about a product or role.");
+    expect(homeHtml).toContain("Tell me what you&#39;re building.");
+    expect(homeHtml).not.toContain("Talk about a product or role");
     expect(homeHtml).toContain("Independent product engineering by Alejandro Ortiz Corro.");
     expect(homeHtml).not.toContain("Public code can be reviewed here");
     expect(homeHtml).not.toContain("Still deciding?");
@@ -100,8 +101,8 @@ describe("built public routes", () => {
     expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
     expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
-    expect(homeHtml).toContain("/images/proof/eteria-ivory-linen-hero.webp");
-    expect(homeHtml).toContain('alt="ETERIA public landing page linen art direction"');
+    expect(homeHtml).toContain("/images/proof/eteria-garden-blue-table-og.jpg");
+    expect(homeHtml).toContain('alt="ETERIA outdoor celebration table styled with blue textiles, ivory flowers, and layered place settings"');
     expect(homeHtml).toContain("/images/proof/barber-central-hero-v2.jpg");
     expect(homeHtml).toContain("WhatsApp");
     expect(homeHtml).not.toContain("Cloudflare · Convex · PostHog · Resend");
@@ -113,13 +114,14 @@ describe("built public routes", () => {
     expect(spanishHomeHtml).toContain("Cuéntame qué estás construyendo.");
     expect(spanishHomeHtml).toContain("Los objetivos de negocio se convierten en sistemas en producción.");
     expect(spanishHomeHtml).toContain("Trabajo de cliente en producción, práctica de delivery AI-native, sistemas enterprise");
-    expect(spanishHomeHtml).toContain("Hablemos de un producto o un rol.");
+    expect(spanishHomeHtml).toContain("Cuéntame qué estás construyendo.");
+    expect(spanishHomeHtml).not.toContain("Hablemos de un producto o un rol");
     expect(spanishHomeHtml).toContain("Ingeniería de producto independiente por Alejandro Ortiz Corro.");
     expect(spanishHomeHtml).not.toContain("El código público se puede revisar aquí");
     expect(spanishHomeHtml).not.toContain("¿Todavía evaluando?");
     expect(spanishHomeHtml).toContain('href="/es/casos/eteria"');
-    expect(spanishHomeHtml).toContain("/images/proof/eteria-ivory-linen-hero.webp");
-    expect(spanishHomeHtml).toContain('alt="Dirección de arte en lino de la landing pública de ETERIA"');
+    expect(spanishHomeHtml).toContain("/images/proof/eteria-garden-blue-table-og.jpg");
+    expect(spanishHomeHtml).toContain('alt="Mesa de celebración al aire libre de ETERIA con textiles azules, flores marfil y lugares montados"');
     expect(spanishHomeHtml).toContain("WhatsApp");
   });
 
@@ -289,7 +291,7 @@ describe("built public routes", () => {
     expect(eteriaHtml).toContain("SwiftUI");
     expect(eteriaHtml).toContain("Release Train");
     expect(eteriaHtml).toContain('href="https://momentos-eteria.com"');
-    expect(eteriaHtml).toContain("/images/proof/eteria-ivory-linen-hero.webp");
+    expect(eteriaHtml).toContain("/images/proof/eteria-garden-blue-table-og.jpg");
     expect(eteriaHtml).not.toMatch(/App Store|customer data|private route|credential/i);
     expect(spanishEteriaHtml).toContain('data-case-study-content-id="case-study:eteria"');
     expect(spanishEteriaHtml).toContain("Proyecto de cliente · En producción");
@@ -363,6 +365,7 @@ describe("built public routes", () => {
       );
       expect(atsText).toContain("Senior Frontend Developer | Tala Mobile | 2023 - Present");
       expect(atsText).toMatch(/approximately 3–5 seconds to under 1 second/i);
+      expect(atsText).not.toMatch(/\bCARE\b/);
       expect(atsText).not.toMatch(/80%|Open[- ]to[- ]Work|Available for selected projects|AI[\/-]ML Engineer|\bRAG\b|fine-tuning|model eval(?:s|uations)|New York|App Store/i);
     } finally {
       await parser.destroy();
@@ -373,6 +376,7 @@ describe("built public routes", () => {
     const publicHtml = getPublicRouteMap().map((route) => readDist(routeHtmlPath(route.path))).join("\n");
 
     expect(findForbiddenPublicClaims(publicHtml)).toEqual([]);
+    expect(publicHtml).not.toMatch(/\bCARE\b/);
   });
 
   it("renders the contact form with consent, preferred contact path, and WhatsApp fallback", () => {

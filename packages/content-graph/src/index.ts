@@ -69,9 +69,9 @@ export interface StaticEvidenceImageAsset {
 
 export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceImageAsset> = {
   home: {
-    src: "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc",
-    alt: "ETERIA public landing page linen art direction",
-    kind: "landing",
+    src: "/images/proof/eteria-garden-blue-table-og.jpg",
+    alt: "ETERIA outdoor celebration table styled with blue textiles, ivory flowers, and layered place settings",
+    kind: "site",
   },
   "home:architecture-backdrop": {
     src: "/images/proof/enterprise-systems-map-v2.svg",
@@ -84,9 +84,9 @@ export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceI
     kind: "landing",
   },
   "case-study:eteria": {
-    src: "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc",
-    alt: "ETERIA public landing page linen art direction",
-    kind: "landing",
+    src: "/images/proof/eteria-garden-blue-table-og.jpg",
+    alt: "ETERIA outdoor celebration table styled with blue textiles, ivory flowers, and layered place settings",
+    kind: "site",
   },
   "case-study:casa-roca": {
     src: "/images/proof/casa-roca-gallery-v2.jpg",

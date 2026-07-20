@@ -4,7 +4,7 @@
     "title": "Alejandro Ortiz Corro",
     "summary": "Senior Software Engineer turning business goals into product systems that ship through frontend depth, backend workflows, and AI-native delivery.",
     "seoDescription": "Alejandro Ortiz Corro is a Senior Software Engineer focused on AI-native product development, end-to-end product systems, frontend depth, backend workflows, architecture, and accountable delivery.",
-    "primaryActionLabel": "Talk about a product or role",
+    "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "View selected work",
     "secondaryActionContentId": "case-studies",
@@ -30,10 +30,10 @@
           "role": "Product direction, full-stack delivery, operations, release",
           "evidence": {
             "label": "Public landing",
-            "altText": "ETERIA public landing page linen art direction",
+            "altText": "ETERIA outdoor celebration table styled with blue textiles, ivory flowers, and layered place settings",
             "kind": "public-site",
             "publicSafe": true,
-            "src": "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc"
+            "src": "/images/proof/eteria-garden-blue-table-og.jpg"
           }
         },
         {
@@ -147,7 +147,7 @@
         "text": "Combine advanced AI workflows, previews, quality gates, observability, and cloud operations into everyday delivery."
         }
       ],
-      "contactHeading": "Talk about a product or role.",
+      "contactHeading": "Tell me what you're building.",
       "contactBody": "Tell me what you are building, who it should serve, and what is getting in the way. I will read the context myself and reply with useful questions and a practical next step.",
       "emailLabel": "Email Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",
@@ -184,7 +184,7 @@
         },
         {
           "slotId": "blog",
-          "label": "Start a conversation",
+          "label": "Let's talk",
           "contentId": "contact"
         }
       ],
@@ -197,7 +197,7 @@
         },
         {
           "slotId": "signup",
-          "label": "Start a conversation",
+          "label": "Let's talk",
           "contentId": "contact",
           "style": "primary"
         }
@@ -256,19 +256,19 @@
     "title": "Selected work",
     "summary": "Live sites, active product builds, enterprise systems, and the engineering decisions behind each result.",
     "seoDescription": "Selected work by Alejandro Ortiz Corro across production websites, active product builds, business systems, enterprise delivery, and modern product engineering.",
-    "primaryActionLabel": "Start a conversation",
+    "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Read architecture notes",
     "secondaryActionContentId": "architecture"
   },
   "case-study:eteria": {
-    "approvedAt": "2026-07-20T09:00:00.000Z",
-    "approvedHash": "cd7ee8e4f0c1c112e5d855518cacfe5c7486e49d916bc69ab0e568dce8745b69",
+    "approvedAt": "2026-07-20T14:57:01.000Z",
+    "approvedHash": "200c79b7c82f7588d1cbb8e0c571114e3e036e1c8c4a8c36f68110b296689758",
     "path": "/case-studies/eteria",
     "title": "ETERIA event-business product system",
     "summary": "A client project in production connecting public discovery, lead capture, proposals, private operations, and an internal SwiftUI client.",
     "seoDescription": "ETERIA is a client product in production with a public event landing, lead and WhatsApp conversion, public proposals, private web operations, Convex, PostHog, SwiftUI, and a protected Release Train.",
-    "primaryActionLabel": "Talk about a product or role",
+    "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Back to selected work",
     "secondaryActionContentId": "case-studies",
@@ -312,7 +312,7 @@
           "altText": "ETERIA public event landing in production",
           "kind": "public-site",
           "publicSafe": true,
-          "src": "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc"
+          "src": "/images/proof/eteria-garden-blue-table-og.jpg"
         }
       ],
       "confidentialityNote": {
@@ -322,13 +322,13 @@
     }
   },
   "case-study:casa-roca": {
-    "approvedAt": "2026-07-20T07:18:23.000Z",
-    "approvedHash": "975d5b0bf2262fdc7b1c4e17f3f82e7170bb9b0253a4fb17afe0fa2fc71aca65",
+    "approvedAt": "2026-07-20T14:57:01.000Z",
+    "approvedHash": "770969dabdc4540086a1a87752d8b3c3f8e7604d03a48be3f4f2e9a402e53b17",
     "path": "/case-studies/casa-roca",
     "title": "Casa Roca guest experience and conversion path",
     "summary": "A public hospitality experience in production with a clear story, direct contact path, and disciplined releases.",
     "seoDescription": "Casa Roca is a live hospitality website for a boutique stay in Veracruz, with clear place storytelling, direct guest inquiry paths, search-ready pages, and production release discipline.",
-    "primaryActionLabel": "Start a conversation",
+    "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Back to selected work",
     "secondaryActionContentId": "case-studies",
@@ -381,13 +381,13 @@
     }
   },
   "case-study:the-barber-central": {
-    "approvedAt": "2026-07-20T07:18:23.000Z",
-    "approvedHash": "99b6c69a95f3c00b9a2a41d5d1e2945f309d0ee7bb844fcbc1db9fdaf3070bf9",
+    "approvedAt": "2026-07-20T14:57:01.000Z",
+    "approvedHash": "b3881e07088c2bf675460fea64e2658ce98e40f1d32143523e0c4b97e641eccb",
     "path": "/case-studies/the-barber-central",
     "title": "The Barber Central booking and operations system",
     "summary": "A service-business SaaS approaching production across booking, customers, staff, inventory, reporting, analytics, and retention.",
     "seoDescription": "The Barber Central is a service-business SaaS approaching production across booking, customers, staff, inventory, reporting, analytics, and retention workflows.",
-    "primaryActionLabel": "Start a conversation",
+    "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Back to selected work",
     "secondaryActionContentId": "case-studies",
@@ -440,13 +440,13 @@
     }
   },
   "case-study:nutri-plan": {
-    "approvedAt": "2026-07-20T07:18:23.000Z",
-    "approvedHash": "61c32316775ac1af4c31f3531f240bafc8ff53c88109b5e411897e067da5f24b",
+    "approvedAt": "2026-07-20T14:57:01.000Z",
+    "approvedHash": "7a9c0e79953f4034efba0a6f0a7deb08ad40a960f3e9fe361ab967fc11bf6be9",
     "path": "/case-studies/nutri-plan",
     "title": "NutriPlan Digital clinical product system",
     "summary": "A multi-surface clinical SaaS in testing and production preparation, with protected practitioner, administration, and mobile workflows.",
     "seoDescription": "NutriPlan Digital is a multi-surface clinical SaaS in testing and production preparation across practitioner, administration, mobile, and shared backend workflows.",
-    "primaryActionLabel": "Start a conversation",
+    "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Back to selected work",
     "secondaryActionContentId": "case-studies",
@@ -499,26 +499,26 @@
     }
   },
   "case-study:enterprise-systems": {
-    "approvedAt": "2026-07-20T07:18:23.000Z",
-    "approvedHash": "8b9bb7b14060d17fede34a5fe93ad13ba5c728f5c505aabc8f15381b773d6020",
+    "approvedAt": "2026-07-20T14:57:01.000Z",
+    "approvedHash": "e8682311de0bf0c096e0b69a6db8136b4131077cb009a211cc3e19e0c8beb9e2",
     "path": "/case-studies/enterprise-systems",
     "title": "Enterprise product systems under operational pressure",
-    "summary": "CARE at Tala and mission-critical emergency-response software show product judgment, performance work, and dependable delivery inside complex organizations.",
-    "seoDescription": "Enterprise Product Systems covers CARE at Tala, a mission-critical emergency-response platform for a large US city, performance, workflows, observability, and dependable delivery without exposing private client details.",
-    "primaryActionLabel": "Start a conversation",
+    "summary": "An internal customer-support and account-recovery operations platform at Tala and mission-critical emergency-response software show product judgment, performance work, and dependable delivery inside complex organizations.",
+    "seoDescription": "Enterprise Product Systems covers an internal customer-support and account-recovery operations platform at Tala, a mission-critical emergency-response platform for a large US city, performance, workflows, observability, and dependable delivery without exposing private client details.",
+    "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Read architecture notes",
     "secondaryActionContentId": "architecture",
     "caseStudyContent": {
       "statusLabel": "Enterprise product systems",
-      "overview": "CARE at Tala and mission-critical emergency-response software for a large US city show how product workflows, performance, observability, and delivery operate inside complex organizations.",
+      "overview": "An internal customer-support and account-recovery operations platform at Tala and mission-critical emergency-response software for a large US city show how product workflows, performance, observability, and delivery operate inside complex organizations.",
       "problem": {
         "title": "Opportunity",
         "body": "Large systems create meaningful opportunities when ownership, integrations, operational workflows, and support paths are made visible."
       },
       "businessOutcome": {
         "title": "Business outcome",
-        "body": "CARE performance improved from approximately 3–5 seconds to under 1 second. Emergency-response workflows supported high-stakes dispatch where reliability and precise interaction mattered."
+        "body": "The customer-support and account-recovery platform improved from approximately 3–5 seconds to under 1 second. Emergency-response workflows supported high-stakes dispatch where reliability and precise interaction mattered."
       },
       "role": {
         "title": "Role",
@@ -558,15 +558,15 @@
     }
   },
   "case-study:engineering-practice": {
-    "approvedAt": "2026-07-20T07:18:23.000Z",
-    "approvedHash": "5f326282d5d25f40f0dc02ffd6842e3ce2d5b49849daf5f62e5061d1fcbf93b5",
+    "approvedAt": "2026-07-20T14:57:01.000Z",
+    "approvedHash": "9c3e4f2f39b76e414ced8ae40b2ddda9fd1e27cb4e13ecf31a2ed0955ab85436",
     "path": "/case-studies/engineering-practice",
     "title": "AI-native development practice with human accountability",
     "summary": "Agents work across requirements, domain, specs, tickets, implementation, review, QA, preview, and release while human judgment remains responsible.",
     "seoDescription": "AI-Native Development Practice explains agents across requirements, domain, specs, tickets, implementation, review, QA, preview, and release with human accountability and private-tool boundaries.",
     "primaryActionLabel": "Review the architecture",
     "primaryActionContentId": "architecture",
-    "secondaryActionLabel": "Start a conversation",
+    "secondaryActionLabel": "Let's talk",
     "secondaryActionContentId": "contact",
     "caseStudyContent": {
       "statusLabel": "AI-native development practice",
@@ -621,7 +621,7 @@
     "title": "Three ways to move a product forward.",
     "summary": "Build a complete product, add senior product-engineering capacity to a defined project, or modernize the system already carrying the business.",
     "seoDescription": "Work with AOHYS to build a website, web app, or mobile app from zero; add a senior product engineer to a delivery team; or modernize an existing product with AI, data, cloud, and delivery capabilities.",
-    "primaryActionLabel": "Start a conversation",
+    "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "See the architecture",
     "secondaryActionContentId": "architecture",
@@ -674,7 +674,7 @@
     "seoDescription": "Alejandro Ortiz Corro's AI-native product-development architecture from business intent, grilling and domain modeling through specs, tickets, agents, tests, browser QA, preview, Release Train, and smoke checks.",
     "primaryActionLabel": "Review selected work",
     "primaryActionContentId": "case-studies",
-    "secondaryActionLabel": "Start a conversation",
+    "secondaryActionLabel": "Let's talk",
     "secondaryActionContentId": "contact",
     "architectureContent": {
       "heading": "From business intent to production.",
@@ -748,14 +748,14 @@
     }
   },
   "resume": {
-    "approvedAt": "2026-07-20T07:18:23.000Z",
-    "approvedHash": "8f246c99df821a75d5e51ad6321dcf9b9acce50c609132d87ae42d90c46c4aa8",
+    "approvedAt": "2026-07-20T14:57:01.000Z",
+    "approvedHash": "dc22ce9264752535c43f4cf99a619e22df5e4a098d8f5cadb0b31b712f59d43d",
     "path": "/resume",
     "title": "About Alejandro",
     "summary": "Canonical experience for a Senior Software Engineer working across product systems, frontend depth, backend workflows, and AI-native delivery.",
     "seoTitle": "About Alejandro Ortiz Corro | AOHYS",
     "seoDescription": "Alejandro Ortiz Corro is a Senior Software Engineer focused on AI-native product development, enterprise systems, selected products, architecture, frontend depth, backend workflows, and accountable delivery.",
-    "primaryActionLabel": "Talk about a product or role",
+    "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Read architecture notes",
     "secondaryActionContentId": "architecture",
@@ -829,7 +829,7 @@
       "highlightsTitle": "Selected results",
       "highlights": [
         {
-          "label": "CARE performance",
+          "label": "Support and account-recovery platform performance",
           "text": "Helped reduce page loads from approximately 3–5 seconds to under 1 second through focused Next.js migration and performance work."
         },
         {
@@ -863,9 +863,9 @@
         },
         {
           "title": "Enterprise Product Systems",
-          "summary": "CARE at Tala and mission-critical emergency-response software demonstrate stakeholder work, performance, complex workflows, and reliable delivery.",
+          "summary": "An internal customer-support and account-recovery operations platform at Tala and mission-critical emergency-response software demonstrate stakeholder work, performance, complex workflows, and reliable delivery.",
           "bullets": [
-            "CARE improved from approximately 3–5 seconds to under 1 second; client details and private architecture remain protected."
+            "The platform improved from approximately 3–5 seconds to under 1 second; client details and private architecture remain protected."
           ]
         },
         {
@@ -897,8 +897,8 @@
           "company": "Tala Mobile",
           "period": "2023 - Present",
           "bullets": [
-            "Coordinate scope, roadmap, workflows, and success with stakeholders and multiple teams for CARE while retaining the contractual title Senior Frontend Developer.",
-            "Helped reduce CARE loads from approximately 3–5 seconds to under 1 second; contributed to its modern Next.js/Turborepo evolution.",
+            "Coordinate scope, roadmap, workflows, and success with stakeholders and multiple teams for an internal customer-support and account-recovery operations platform while retaining the contractual title Senior Frontend Developer.",
+            "Helped reduce platform loads from approximately 3–5 seconds to under 1 second; contributed to its modern Next.js/Turborepo evolution.",
             "Deliver escalation, payment-plan, cashback, and other product workflows across frontend, server-side/API work, observability, and backend-oriented paths; expanding into Java."
           ]
         },
@@ -1005,7 +1005,7 @@
     "title": "Tell me what you are building.",
     "summary": "Share the product, role, or system you want to move forward. I will read the context myself and reply with useful questions and a practical next step. WhatsApp is fastest in Mexico; email is ideal for a longer brief.",
     "seoDescription": "Contact Alejandro Ortiz Corro by email or WhatsApp to discuss a product, software-engineering role, architecture, modernization, or an AI-native delivery challenge.",
-    "primaryActionLabel": "Talk about a product or role",
+    "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Review selected work",
     "secondaryActionContentId": "case-studies"
@@ -1015,7 +1015,7 @@
     "title": "Privacy",
     "summary": "How AOHYS treats contact data, analytics, errors, and private project information.",
     "seoDescription": "AOHYS privacy route explaining contact data, analytics, error reporting, private project boundaries, and public code limits.",
-    "primaryActionLabel": "Start a conversation",
+    "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Back home",
     "secondaryActionContentId": "home",

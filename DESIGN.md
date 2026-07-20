@@ -198,7 +198,7 @@ Public site:
 - Architecture: an accessible DOM topology for Experience, Edge delivery, Product data, Communication, Observability, and Delivery, paired with a decorative WebGL map and explicit tradeoffs.
 - Services (route remains `/practice` for compatibility): three typed offers—Product systems, Architecture & modernization, and Delivery acceleration—each with problem, result, engagement, process, deliverables, and related work.
 - Resume, contact, privacy, and legal pages: quieter compositions using the same palette, typography, controls, and system/result language rather than a separate visual theme.
-- Primary CTA: "Start a conversation" / "Iniciar conversación".
+- Primary CTA: "Let's talk" / "Hablemos".
 - Secondary CTA: "View selected work" / equivalent Spanish copy.
 - WhatsApp CTA: large but discreet, integrated into contact.
 - Case study detail sections: Challenge, Outcome, My role, System, Decisions, Delivery, Quality & operations, Live link, and Related work.

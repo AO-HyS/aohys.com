@@ -7,19 +7,19 @@
     "language": "EN",
     "dashboard": "Dashboard",
     "login": "Dashboard",
-    "signup": "Iniciar conversación",
+    "signup": "Hablemos",
     "menu": "Abrir menú",
     "nav": {
       "solutions": "Trabajo",
       "agents": "Servicios",
       "pricing": "Sobre mí",
       "docs": "Arquitectura",
-      "blog": "Iniciar conversación",
+      "blog": "Hablemos",
       "caseStudies": "Casos",
       "architecture": "Arquitectura",
       "practice": "Servicios",
       "resume": "Sobre mí",
-      "contact": "Iniciar conversación"
+      "contact": "Hablemos"
     }
   },
   "footer": {
@@ -31,12 +31,12 @@
     "systemNotes": "Notas del sistema",
     "work": "Trabajo seleccionado",
     "resume": "Sobre mí",
-    "contact": "Iniciar conversación",
+    "contact": "Hablemos",
     "dashboard": "Abrir dashboard",
     "brandName": "AOHYS",
     "repository": "Repositorio público",
     "publicEvidence": "Sistemas seleccionados",
-    "start": "Iniciar conversación",
+    "start": "Hablemos",
     "systemsOperational": "Sistemas operativos",
     "linksAria": "Enlaces de pie de página",
     "copyright": "Código MIT, contenido reservado.",

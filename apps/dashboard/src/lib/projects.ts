@@ -247,7 +247,7 @@ function fallbackProjectVariant(
     title: draft?.title ?? fallbackTitle,
     summary: draft?.summary ?? fallbackSummary,
     seoDescription: draft?.seoDescription ?? draft?.summary ?? fallbackSummary,
-    primaryActionLabel: draft?.ctaLabel ?? (locale === "es" ? "Hablemos" : "Start a conversation"),
+    primaryActionLabel: draft?.ctaLabel ?? (locale === "es" ? "Hablemos" : "Let's talk"),
     primaryActionContentId: "contact",
   };
 }
