@@ -9,6 +9,7 @@
     "login": "Dashboard",
     "signup": "Hablemos",
     "menu": "Abrir menú",
+    "menuClose": "Cerrar menú",
     "nav": {
       "solutions": "Trabajo",
       "agents": "Servicios",

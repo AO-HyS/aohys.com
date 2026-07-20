@@ -140,6 +140,11 @@ describe("public site source quality", () => {
     expect(publicContentPage).toContain('data-service-pattern={["new", "team", "modernize"][index]}');
     expect(publicContentPage).toContain("sunlit-architecture-topology");
     expect(publicContentPage).toContain("sunlit-project-brief");
+    expect(publicContentPage).toContain(".sunlit-profile-projects article > :is(h3, p, ul)");
+    expect(publicContentPage).toContain('font-family: "Atkinson Hyperlegible Next Variable", "Atkinson Hyperlegible Next"');
+    expect(publicContentPage).toContain("list-style: none");
+    expect(header).toContain("data-menu-label-close={copy.menuClose}");
+    expect(header).toContain('trigger.setAttribute("aria-label", label)');
     expect(publicContentPage).not.toContain("border-left: 4px solid");
     expect(webglScene).toContain("IntersectionObserver");
     expect(webglScene).toContain("ResizeObserver");
