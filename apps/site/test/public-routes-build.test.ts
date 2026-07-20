@@ -363,9 +363,10 @@ describe("built public routes", () => {
       expect(expectedOrder.map((heading) => atsText.indexOf(heading))).toEqual(
         [...expectedOrder.map((heading) => atsText.indexOf(heading))].sort((a, b) => a - b),
       );
-      expect(atsText).toContain("Senior Frontend Developer | Tala Mobile | 2023 - Present");
+      expect(atsText).toContain("Senior Frontend Developer | Financial technology company | 2023 - Present");
       expect(atsText).toMatch(/approximately 3–5 seconds to under 1 second/i);
       expect(atsText).not.toMatch(/\bCARE\b/);
+      expect(atsText).not.toMatch(/\bTala(?: Mobile)?\b/i);
       expect(atsText).not.toMatch(/80%|Open[- ]to[- ]Work|Available for selected projects|AI[\/-]ML Engineer|\bRAG\b|fine-tuning|model eval(?:s|uations)|New York|App Store/i);
     } finally {
       await parser.destroy();
@@ -377,6 +378,7 @@ describe("built public routes", () => {
 
     expect(findForbiddenPublicClaims(publicHtml)).toEqual([]);
     expect(publicHtml).not.toMatch(/\bCARE\b/);
+    expect(publicHtml).not.toMatch(/\bTala(?: Mobile)?\b/i);
   });
 
   it("renders the contact form with consent, preferred contact path, and WhatsApp fallback", () => {
