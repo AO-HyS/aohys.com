@@ -12,6 +12,27 @@ function read(relativePath: string) {
 }
 
 describe("public site source quality", () => {
+  it("keeps localized production copy behind typed i18n catalogs", () => {
+    const localizedSources = [
+      "src/components/PublicContentPage.astro",
+      "src/components/SiteFooter.astro",
+      "src/components/SiteHeader.astro",
+      "src/components/sunlit/SunlitProcessRail.astro",
+      "src/components/sunlit/SunlitProjectStage.astro",
+      "../../apps/backend/src/project-identity.ts",
+      "../../apps/dashboard/src/lib/projects.ts",
+      "../../apps/dashboard/src/lib/projects-workflow.ts",
+      "../../apps/dashboard/src/screens/projects-screen.tsx",
+      "../../packages/content-graph/src/index.ts",
+      "../../packages/content-graph/test/public-content-graph.test.ts",
+      "../../scripts/apply-dashboard-published-content.ts",
+    ].map(read).join("\n");
+
+    expect(localizedSources).not.toMatch(/(?:locale|draft\.locale|localeContent\.locale)\s*===\s*["'](?:en|es)["']/);
+    expect(read("src/i18n.ts")).toContain("satisfies Record<Locale, UiCopy>");
+    expect(read("../../packages/content-graph/src/i18n.ts")).toContain("satisfies Record<I18nLocale, SharedI18n>");
+  });
+
   it("keeps design tokens, fonts, and graph-backed routing wired", () => {
     const globalCss = read("src/styles/global.css");
     const styleClasses = read("src/styles/classes.ts");

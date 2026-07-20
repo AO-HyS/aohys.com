@@ -25,7 +25,7 @@ const publicRepositoryUrl = import.meta.env.PUBLIC_REPOSITORY_URL ?? "https://gi
 
   <div class="sunlit-footer-links" aria-label={copy.linksAria}>
     <a href={getLocalizedPath("case-studies", locale)}>{copy.work}</a>
-    <a href={getLocalizedPath("practice", locale)}>{locale === "es" ? "Servicios" : "Services"}</a>
+    <a href={getLocalizedPath("practice", locale)}>{copy.practice}</a>
     <a href={getLocalizedPath("architecture", locale)}>{copy.architecture}</a>
     <a href={getLocalizedPath("resume", locale)}>{copy.resume}</a>
     <a href={getLocalizedPath("privacy", locale)}>{copy.privacy}</a>
