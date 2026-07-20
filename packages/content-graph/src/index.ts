@@ -69,7 +69,7 @@ export interface StaticEvidenceImageAsset {
 
 export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceImageAsset> = {
   home: {
-    src: "/images/proof/eteria-ivory-linen-hero.webp",
+    src: "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc",
     alt: "ETERIA public landing page linen art direction",
     kind: "landing",
   },
@@ -84,7 +84,7 @@ export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceI
     kind: "landing",
   },
   "case-study:eteria": {
-    src: "/images/proof/eteria-ivory-linen-hero.webp",
+    src: "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc",
     alt: "ETERIA public landing page linen art direction",
     kind: "landing",
   },

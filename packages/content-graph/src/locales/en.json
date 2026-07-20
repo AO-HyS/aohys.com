@@ -33,7 +33,7 @@
             "altText": "ETERIA public landing page linen art direction",
             "kind": "public-site",
             "publicSafe": true,
-            "src": "/images/proof/eteria-ivory-linen-hero.webp"
+            "src": "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc"
           }
         },
         {
@@ -262,8 +262,8 @@
     "secondaryActionContentId": "architecture"
   },
   "case-study:eteria": {
-    "approvedAt": "2026-07-20T07:18:23.000Z",
-    "approvedHash": "4b6289302dfba3b0620be7f38c5cac1a3813414a24ea340e5d1b73f8165b74f8",
+    "approvedAt": "2026-07-20T09:00:00.000Z",
+    "approvedHash": "cd7ee8e4f0c1c112e5d855518cacfe5c7486e49d916bc69ab0e568dce8745b69",
     "path": "/case-studies/eteria",
     "title": "ETERIA event-business product system",
     "summary": "A client project in production connecting public discovery, lead capture, proposals, private operations, and an internal SwiftUI client.",
@@ -312,7 +312,7 @@
           "altText": "ETERIA public event landing in production",
           "kind": "public-site",
           "publicSafe": true,
-          "src": "/images/proof/eteria-ivory-linen-hero.webp"
+          "src": "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc"
         }
       ],
       "confidentialityNote": {
