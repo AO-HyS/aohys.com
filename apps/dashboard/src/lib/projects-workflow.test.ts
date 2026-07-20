@@ -1,12 +1,37 @@
 import { describe, expect, it, vi } from "vitest";
 import type { CreateProjectRequest } from "@/api";
 import {
+  buildNewProjectDraft,
   runProjectCreation,
   runProjectMediaUpload,
   runProjectPublication,
 } from "@/lib/projects-workflow";
 
 describe("Projects workflow", () => {
+  it("builds localized draft identity and labels from the shared i18n contract", () => {
+    const input = {
+      title: "Dashboard Alpha",
+      spanishTitle: "Dashboard Alfa",
+      contentKey: "dashboard-alpha",
+      englishSlug: "dashboard-alpha",
+      spanishSlug: "dashboard-alfa",
+      status: "active-build" as const,
+    };
+
+    expect(buildNewProjectDraft(input, "en")).toEqual(expect.objectContaining({
+      title: "Dashboard Alpha",
+      localizedSlug: "dashboard-alpha",
+      ctaLabel: "View project",
+      ctaHref: "/case-studies/dashboard-alpha",
+    }));
+    expect(buildNewProjectDraft(input, "es")).toEqual(expect.objectContaining({
+      title: "Dashboard Alfa",
+      localizedSlug: "dashboard-alfa",
+      ctaLabel: "Ver proyecto",
+      ctaHref: "/es/casos/dashboard-alfa",
+    }));
+  });
+
   it("creates both locale drafts through one atomic request with independent routes", async () => {
     const createProject = vi.fn(async (_request: CreateProjectRequest) => undefined);
     const contentId = await runProjectCreation({

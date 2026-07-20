@@ -23,8 +23,9 @@ interface Props { route: PublicRoute; }
 
 const { route } = Astro.props;
 const { id, locale, node, variant } = route;
-const copy = getUiCopy(locale).publicPage;
-const contactCopy = getUiCopy(locale).contactForm;
+const uiCopy = getUiCopy(locale);
+const copy = uiCopy.publicPage;
+const contactCopy = uiCopy.contactForm;
 const homeContent = getHomePageContent(locale);
 const caseStudyIndexContent = getCaseStudyIndexContent(locale);
 const architectureContent = id === "architecture" ? getArchitecturePageContent(locale) : undefined;
@@ -45,139 +46,11 @@ const publicContactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL ?? "alejandro.or
 const publicWhatsAppUrl = DASHBOARD_PUBLIC_SETTINGS.PUBLIC_WHATSAPP_URL ?? import.meta.env.PUBLIC_WHATSAPP_URL ?? "https://wa.me/522299020825";
 const directEmailHref = `mailto:${publicContactEmail}`;
 
-const labels = locale === "es" ? {
-  available: "Sistemas de producto · Delivery AI-native",
-  work: "Trabajo",
-  practice: "Servicios",
-  architecture: "Arquitectura",
-  about: "Sobre mí",
-  talk: "Hablemos de un producto o un rol",
-  viewWork: "Ver trabajo",
-  viewProject: "Abrir caso",
-  publicProof: "Sistema seleccionado",
-  selectedStage: "Trabajo seleccionado, ordenado por evidencia.",
-  selectedStageIntro: "Trabajo de cliente en producción, práctica de delivery AI-native, sistemas enterprise y productos avanzando deliberadamente hacia release.",
-  process: "Los buenos resultados nacen de sistemas claros.",
-  workArchive: "Archivo de trabajo",
-  workArchiveBody: "Sistemas en producción, productos activos y experiencia enterprise contados por el resultado y las decisiones detrás.",
-  evidence: "Enlaces del proyecto",
-  readCase: "Leer caso",
-  source: "Fuente pública",
-  role: "Rol",
-  constraints: "Restricciones",
-  opportunity: "Oportunidad",
-  considerations: "Consideraciones de diseño",
-  related: "Trabajo relacionado",
-  profile: "Perfil de entrega",
-  experience: "Experiencia",
-  capabilities: "Capacidades",
-  projects: "Proyectos clave",
-  education: "Educación e idiomas",
-  download: "Abrir CV en PDF",
-  contactRail: "Una conversación concreta empieza con contexto útil.",
-  privacyRail: "Datos claros. Límites visibles.",
-  formAside: "Cuéntame qué te gustaría crear y hacer posible.",
-  direct: "Contacto directo",
-  verified: "Sistema verificado",
-  openLink: "Enlace en vivo",
-  casePath: "Ruta del caso",
-  architectureNotes: "Notas de operación",
-  architectureNotesIntro: "Los seams que mantienen conectada la topología.",
-  caseBeats: ["Oportunidad y resultado", "Rol y sistema", "Decisiones", "Entrega"],
-  serviceMode: "Formas de colaborar",
-  serviceFit: "Cuándo encaja",
-  serviceResult: "Lo que cambia",
-  serviceCollaboration: "Cómo colaboramos",
-  serviceOutputs: "Lo que recibes",
-  architectureLiveSystem: "Sistema AOHYS en producción",
-  architectureFlow: "Una señal entra. El sistema conserva el contexto y llega a producción con un release visible.",
-  contactBriefTitle: "Un buen primer mensaje puede ser breve.",
-  contactBriefReply: "Yo respondo con preguntas útiles y un siguiente paso concreto.",
-  contactBriefLabel: "Tu brief de proyecto",
-} : {
-  available: "Product systems · AI-native delivery",
-  work: "Work",
-  practice: "Services",
-  architecture: "Architecture",
-  about: "About",
-  talk: "Talk about a product or role",
-  viewWork: "View work",
-  viewProject: "Open case",
-  publicProof: "Selected system",
-  selectedStage: "Selected work, ordered by evidence.",
-  selectedStageIntro: "Client production work, AI-native delivery practice, enterprise systems, and products moving deliberately toward release.",
-  process: "Great outcomes start with clear systems.",
-  workArchive: "Work archive",
-  workArchiveBody: "Live systems, active products, and enterprise work told through results and the decisions behind them.",
-  evidence: "Project links",
-  readCase: "Read case",
-  source: "Public source",
-  role: "Role",
-  constraints: "Constraints",
-  opportunity: "Opportunity",
-  considerations: "Design considerations",
-  related: "Related work",
-  profile: "Delivery profile",
-  experience: "Experience",
-  capabilities: "Capabilities",
-  projects: "Key projects",
-  education: "Education and languages",
-  download: "Open resume PDF",
-  contactRail: "A useful conversation starts with concrete context.",
-  privacyRail: "Clear data. Visible boundaries.",
-  formAside: "Tell me what you would like to create and make possible.",
-  direct: "Direct contact",
-  verified: "Verified system",
-  openLink: "Live link",
-  casePath: "Case path",
-  architectureNotes: "Operating notes",
-  architectureNotesIntro: "The seams that keep the topology connected.",
-  caseBeats: ["Opportunity & outcome", "Role & system", "Decisions", "Delivery"],
-  serviceMode: "Ways to collaborate",
-  serviceFit: "When it fits",
-  serviceResult: "What changes",
-  serviceCollaboration: "How we work",
-  serviceOutputs: "What you get",
-  architectureLiveSystem: "AOHYS production system",
-  architectureFlow: "A signal enters. The system keeps its context and reaches production with a visible release record.",
-  contactBriefTitle: "A useful first note can be short.",
-  contactBriefReply: "I reply with useful questions and a concrete next step.",
-  contactBriefLabel: "Your project brief",
-};
-
-const serviceModes = locale === "es" ? [
-  { kicker: "Producto nuevo", note: "Sitio · web app · app móvil", symbol: "↗" },
-  { kicker: "Proyecto definido", note: "Producto · ingeniería · release", symbol: "+" },
-  { kicker: "Sistema existente", note: "IA · datos · cloud · delivery", symbol: "→" },
-] : [
-  { kicker: "New product", note: "Website · web app · mobile app", symbol: "↗" },
-  { kicker: "Defined project", note: "Product · engineering · release", symbol: "+" },
-  { kicker: "Existing system", note: "AI · data · cloud · delivery", symbol: "→" },
-];
-
-const architectureHeroNodes = locale === "es" ? [
-  { id: "public", title: "Experiencia pública", detail: "Sitio bilingüe, casos, servicios y accesibilidad", meta: "Astro · EN / ES" },
-  { id: "content", title: "Contenido, dashboard y datos", detail: "Publicación, ownership y contratos compartidos", meta: "Content Graph · Convex" },
-  { id: "media", title: "Media y edge", detail: "Imágenes publicadas, fallbacks versionados y entrega rápida", meta: "Cloudflare" },
-  { id: "signals", title: "Señales y contacto", detail: "Solicitudes, analíticas y errores con límites explícitos", meta: "Formulario · PostHog" },
-  { id: "release", title: "Tren de release", detail: "Preview, checks, promoción y smoke de producción", meta: "develop → main" },
-] : [
-  { id: "public", title: "Public experience", detail: "Bilingual site, cases, services, and accessible interaction", meta: "Astro · EN / ES" },
-  { id: "content", title: "Content, dashboard, and data", detail: "Publishing, ownership, and shared content contracts", meta: "Content Graph · Convex" },
-  { id: "media", title: "Media and edge", detail: "Published images, versioned fallbacks, and fast delivery", meta: "Cloudflare" },
-  { id: "signals", title: "Signals and contact", detail: "Requests, analytics, and errors with explicit boundaries", meta: "Form · PostHog" },
-  { id: "release", title: "Release train", detail: "Preview, checks, promotion, and production smoke", meta: "develop → main" },
-];
-
-const contactBriefPrompts = locale === "es" ? [
-  ["Qué quieres hacer posible", "Crear, evolucionar o lanzar"],
-  ["A quién debe servir", "Personas, equipo o negocio"],
-  ["Qué importa ahora", "Plazo, restricción o señal de éxito"],
-] : [
-  ["What you want to make possible", "Create, evolve, or launch"],
-  ["Who it should serve", "People, team, or business"],
-  ["What matters now", "Timing, constraint, or success signal"],
-];
+const labels = uiCopy.sunlit.publicContent;
+const serviceModes = labels.serviceModes;
+const serviceSignals = labels.serviceSignals;
+const architectureHeroNodes = labels.architectureHeroNodes;
+const contactBriefPrompts = labels.contactBriefPrompts;
 
 function localizedHref(contentId?: ContentId) {
   return contentId ? getLocalizedPath(contentId, locale) : undefined;
@@ -198,15 +71,12 @@ function mediaForContentId(contentId: string, evidenceSrc?: string, evidenceAlt?
 const caseMedia = isCaseStudy && caseStudyContent
   ? mediaForContentId(String(id), caseStudyContent.publicEvidence[0]?.src, caseStudyContent.publicEvidence[0]?.altText)
   : undefined;
-const publicCaseSection = (section: { title: string; body: string }) => {
-  const normalizedTitle = section.title.trim().toLowerCase();
-  if (normalizedTitle === "problem" || normalizedTitle === "problema") return { ...section, title: labels.opportunity };
-  if (normalizedTitle === "constraints" || normalizedTitle === "restricciones") return { ...section, title: labels.considerations };
-  return section;
-};
+const publicCaseSection = (section: { title: string; body: string }, title?: string) => (
+  title ? { ...section, title } : section
+);
 const caseNarrativeBeats = caseStudyContent ? [
-  { id: "outcome", title: labels.caseBeats[0], sections: [publicCaseSection(caseStudyContent.problem), publicCaseSection(caseStudyContent.businessOutcome)] },
-  { id: "role-system", title: labels.caseBeats[1], sections: [publicCaseSection(caseStudyContent.role), publicCaseSection(caseStudyContent.constraints)] },
+  { id: "outcome", title: labels.caseBeats[0], sections: [publicCaseSection(caseStudyContent.problem, labels.opportunity), publicCaseSection(caseStudyContent.businessOutcome)] },
+  { id: "role-system", title: labels.caseBeats[1], sections: [publicCaseSection(caseStudyContent.role), publicCaseSection(caseStudyContent.constraints, labels.considerations)] },
   { id: "decisions", title: labels.caseBeats[2], sections: [caseStudyContent.architectureDecisions] },
   { id: "delivery", title: labels.caseBeats[3], sections: [caseStudyContent.executionHighlights, caseStudyContent.qualitySecurityPerformance] },
 ] : [];
@@ -246,7 +116,7 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
           <article><span>{String(index + 1).padStart(2, "0")}</span><h3>{point.label}</h3><p>{point.text}</p></article>
         ))}
       </div>
-      <a class="sunlit-text-action" href={getLocalizedPath("practice", locale)}>{locale === "es" ? "Ver servicios" : "See services"}<span aria-hidden="true">→</span></a>
+      <a class="sunlit-text-action" href={getLocalizedPath("practice", locale)}>{labels.seeServices}<span aria-hidden="true">→</span></a>
     </section>
 
     <section class="sunlit-home-split" aria-labelledby="home-architecture-title">
@@ -357,7 +227,9 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
             <div><p>{serviceModes[index]?.kicker}</p><h2>{service.title}</h2></div>
           </header>
           <div class="sunlit-service-signal" aria-hidden="true">
-            {index === 0 ? <><span>www</span><span>app</span><span>mobile</span></> : index === 1 ? <><span>PM</span><span>DES</span><strong>AOHYS</strong><span>ENG</span><span>QA</span></> : <><span>now</span><strong>AI · DATA · CLOUD</strong><span>next</span></>}
+            {serviceSignals[index]?.items.map((item, signalIndex) => (
+              signalIndex === serviceSignals[index]?.emphasisIndex ? <strong>{item}</strong> : <span>{item}</span>
+            ))}
           </div>
           <div class="sunlit-service-fit"><strong>{labels.serviceFit}</strong><p>{service.problem}</p></div>
           <div class="sunlit-service-result"><strong>{labels.serviceResult}</strong><p>{service.result}</p></div>
@@ -403,7 +275,7 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
         </div>
       </div>
       <div class="sunlit-architecture-hero-map" aria-labelledby="architecture-hero-map-title">
-        <SunlitWebGLScene variant="architecture" label={locale === "es" ? "Profundidad cinética detrás del mapa del sistema" : "Kinetic depth behind the system map"} />
+        <SunlitWebGLScene variant="architecture" label={labels.architectureSceneLabel} />
         <div class="sunlit-architecture-topology">
           <header>
             <span>{labels.architectureLiveSystem}</span>
@@ -586,7 +458,7 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
         </div>
       </div>
       <div class="sunlit-contact-visual">
-        <SunlitWebGLScene variant="contact" label={locale === "es" ? "Profundidad suave detrás del brief de proyecto" : "Soft depth behind the project brief"} />
+        <SunlitWebGLScene variant="contact" label={labels.contactSceneLabel} />
         <article class="sunlit-project-brief" aria-labelledby="contact-brief-title">
           <header><span>{labels.contactBriefLabel}</span><h2 id="contact-brief-title">{labels.contactBriefTitle}</h2></header>
           <dl>
@@ -1001,7 +873,7 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
     gap: clamp(2rem, 4vw, 4.5rem);
     padding: clamp(3rem, 6vw, 5.5rem) 0;
   }
-  .sunlit-studio-hero h1 { max-width: 10ch; margin: 0; font-size: clamp(3.5rem, 4.8vw, 5.4rem); font-weight: 790; letter-spacing: -.04em; line-height: .96; text-wrap: balance; }
+  .sunlit-studio-hero h1 { max-width: 10ch; margin: 0; font-size: clamp(3.5rem, 4.8vw, 5.4rem); font-weight: 790; letter-spacing: -.04em; line-height: .96; overflow-wrap: normal; text-wrap: balance; word-break: normal; }
   .sunlit-studio-hero .sunlit-lead { max-width: 47ch; }
   .sunlit-home-services, .sunlit-service-list, .sunlit-service-process, .sunlit-service-deliverables, .sunlit-system-map, .sunlit-architecture-tradeoffs, .sunlit-architecture-notes, .sunlit-source-links, .sunlit-client-note { width: var(--container); margin-inline: auto; }
   .sunlit-home-services { margin-block: clamp(5rem, 10vw, 9rem); }

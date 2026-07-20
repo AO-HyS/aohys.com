@@ -1,5 +1,6 @@
 ---
 import type { HomeStage, Locale } from "@aohys/content-graph";
+import { getUiCopy } from "../../i18n";
 
 interface Props {
   heading: string;
@@ -10,9 +11,7 @@ interface Props {
 }
 
 const { heading, body, stages, locale, tone = "light" } = Astro.props;
-const labels = locale === "es"
-  ? { process: "Ruta de trabajo", verified: "Verificado" }
-  : { process: "Delivery path", verified: "Verified" };
+const labels = getUiCopy(locale).sunlit.processRail;
 ---
 
 <section class="sunlit-process" data-tone={tone} aria-labelledby={`rail-${heading.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`}>

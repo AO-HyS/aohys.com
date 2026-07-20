@@ -1,3 +1,4 @@
+import { getLocalizedCaseStudyPath } from "@aohys/content-graph";
 import { staticCaseStudyRouteOwner } from "@aohys/content-graph/static-case-study-routes";
 
 const SAFE_PROJECT_KEY = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -19,7 +20,7 @@ export function requireCaseStudyContentId(contentId: string): string {
 
 export function localizedCaseStudyPath(locale: "en" | "es", localizedSlug: string): string {
   requireSafeProjectKey(localizedSlug, "Localized slug");
-  return locale === "es" ? `/es/casos/${localizedSlug}` : `/case-studies/${localizedSlug}`;
+  return getLocalizedCaseStudyPath(locale, localizedSlug);
 }
 
 export function requireUnreservedStaticSlug(

@@ -7,6 +7,11 @@ import {
   resolvePublicMediaUrl,
   selectPublicationMedia,
 } from "../packages/core/src/index.js";
+import {
+  formatI18n,
+  getLocalizedCaseStudyPath,
+  getSharedI18n,
+} from "../packages/content-graph/src/i18n.js";
 import { assertPublicClaimsSafe } from "../packages/content-graph/src/public-claim-policy.js";
 import { hasConvexDeploymentAccess, runConvexFunction } from "./convex-run.js";
 
@@ -182,10 +187,6 @@ function restParagraphs(value: string): string {
   return rest.join("\n\n") || value.trim();
 }
 
-function localized(locale: Locale, english: string, spanish: string): string {
-  return locale === "es" ? spanish : english;
-}
-
 function isCaseStudyContentId(contentId: string): boolean {
   return /^case-study:[a-z0-9]+(?:-[a-z0-9]+)*$/.test(contentId);
 }
@@ -199,7 +200,7 @@ function projectPath(draft: DashboardProjectDraft): string {
     ? draft.localizedSlug
     : slugFromContentId(draft.contentId);
 
-  return draft.locale === "es" ? `/es/casos/${slug}` : `/case-studies/${slug}`;
+  return getLocalizedCaseStudyPath(draft.locale, slug);
 }
 
 function fallbackText(value: string, fallback: string): string {
@@ -251,19 +252,11 @@ function publicHrefForDraft(draft: DashboardProjectDraft): string | undefined {
 }
 
 function achievementFallbackForDraft(draft: DashboardProjectDraft): string {
-  return localized(
-    draft.locale,
-    `${draft.title} has a case-study narrative shaped and published from the dashboard.`,
-    `${draft.title} tiene una narrativa de caso estructurada y publicada desde el dashboard.`,
-  );
+  return formatI18n(getSharedI18n(draft.locale).caseStudy.achievementFallback, { title: draft.title });
 }
 
 function structureFallbackForDraft(draft: DashboardProjectDraft): string {
-  return localized(
-    draft.locale,
-    `${draft.title} uses the typed content graph to keep project context structured and reviewable.`,
-    `${draft.title} usa el grafo tipado de contenido para mantener el contexto estructurado y revisable.`,
-  );
+  return formatI18n(getSharedI18n(draft.locale).caseStudy.structureFallback, { title: draft.title });
 }
 
 function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
@@ -272,6 +265,7 @@ function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
   const publicHref = publicHrefForDraft(draft);
   const achievementFallback = achievementFallbackForDraft(draft);
   const structureFallback = structureFallbackForDraft(draft);
+  const i18n = getSharedI18n(locale).caseStudy;
 
   return {
     path: projectPath(draft),
@@ -279,53 +273,45 @@ function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
     summary: draft.summary,
     seoDescription: draft.seoDescription,
     primaryActionLabel: draft.ctaLabel,
-    secondaryActionLabel: localized(locale, "Back to selected work", "Volver a casos"),
+    secondaryActionLabel: i18n.backToSelectedWork,
     secondaryActionContentId: "case-studies",
     caseStudyContent: {
-      statusLabel: localized(locale, "Product system", "Sistema de producto"),
+      statusLabel: i18n.statusLabel,
       overview: draft.summary,
       problem: {
-        title: localized(locale, "Problem", "Problema"),
+        title: i18n.problemTitle,
         body: draft.summary,
       },
       businessOutcome: {
-        title: localized(locale, "Business outcome", "Resultado de negocio"),
+        title: i18n.businessOutcomeTitle,
         body: firstParagraphOrFallback(draft.achievements, achievementFallback),
       },
       role: {
-        title: localized(locale, "Role", "Rol"),
-        body: localized(
-          locale,
-          "Product engineering, delivery planning, content structure, and publication through the dashboard workflow.",
-          "Ingeniería de producto, planeación de entrega, estructura de contenido y publicación desde el flujo de dashboard.",
-        ),
+        title: i18n.roleTitle,
+        body: i18n.productRoleBody,
       },
       constraints: {
-        title: localized(locale, "Constraints", "Restricciones"),
-        body: localized(
-          locale,
-          "Project scope, data ownership, integration seams, and release constraints stay explicit as the system evolves.",
-          "El alcance, ownership de datos, límites de integración y restricciones de release permanecen explícitos mientras evoluciona el sistema.",
-        ),
+        title: i18n.constraintsTitle,
+        body: i18n.constraintsBody,
       },
       architectureDecisions: {
-        title: localized(locale, "Architecture decisions", "Decisiones de arquitectura"),
+        title: i18n.architectureDecisionsTitle,
         body: firstParagraphOrFallback(draft.structureNotes, structureFallback),
       },
       executionHighlights: {
-        title: localized(locale, "Execution highlights", "Ejecución"),
+        title: i18n.executionHighlightsTitle,
         body: restParagraphsOrFallback(draft.achievements, achievementFallback),
       },
       qualitySecurityPerformance: {
-        title: localized(locale, "Quality, security, and performance", "Calidad, seguridad y rendimiento"),
+        title: i18n.qualityTitle,
         body: restParagraphsOrFallback(draft.structureNotes, structureFallback),
       },
-      publicEvidenceTitle: localized(locale, "Project links", "Enlaces del proyecto"),
+      publicEvidenceTitle: i18n.projectLinksTitle,
       publicEvidence: publicHref
         ? [
             {
-              label: localized(locale, "Live site", "Sitio en vivo"),
-              description: localized(locale, `Open ${title}.`, `Abrir ${title}.`),
+              label: i18n.liveSiteLabel,
+              description: formatI18n(i18n.openProject, { title }),
               href: publicHref,
               altText: title,
               kind: "public-site",
@@ -334,8 +320,8 @@ function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
           ]
         : [],
       confidentialityNote: {
-        title: localized(locale, "Client context", "Contexto del cliente"),
-        body: localized(locale, "Client details remain private.", "Los detalles del cliente permanecen privados."),
+        title: i18n.clientContextTitle,
+        body: i18n.clientContextBody,
       },
     },
   };
@@ -378,6 +364,7 @@ export function applyProjectDraft(dictionary: LocaleDictionary, draft: Dashboard
   if (entry.caseStudyContent) {
     const achievementFallback = achievementFallbackForDraft(draft);
     const structureFallback = structureFallbackForDraft(draft);
+    const i18n = getSharedI18n(draft.locale).caseStudy;
 
     entry.caseStudyContent.overview = draft.summary;
 
@@ -397,15 +384,15 @@ export function applyProjectDraft(dictionary: LocaleDictionary, draft: Dashboard
       entry.caseStudyContent.qualitySecurityPerformance.body = restParagraphsOrFallback(draft.structureNotes, structureFallback);
     }
 
-    entry.caseStudyContent.publicEvidenceTitle = draft.locale === "es" ? "Enlaces del proyecto" : "Project links";
+    entry.caseStudyContent.publicEvidenceTitle = i18n.projectLinksTitle;
 
     const publicHref = publicHrefForDraft(draft);
 
     if (publicHref) {
       entry.caseStudyContent.publicEvidence = [
         {
-          label: draft.locale === "es" ? "Sitio en vivo" : "Live site",
-          description: draft.locale === "es" ? `Abrir ${draft.title}.` : `Open ${draft.title}.`,
+          label: i18n.liveSiteLabel,
+          description: formatI18n(i18n.openProject, { title: draft.title }),
           href: publicHref,
           altText: draft.title,
           kind: "public-site",

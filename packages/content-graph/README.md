@@ -24,6 +24,8 @@ Astro routes, sitemap generation, metadata helpers, resume rendering, case-study
 - `getPublicRouteMap()` lists all public route variants.
 - `resolvePublicPath(pathname)` resolves a URL path to its graph route or returns `null` for unknown/private paths.
 - `getLocalizedPath(contentId, locale)` returns the route path for a stable content ID.
+- `getSharedI18n(locale)` returns shared graph, dashboard, backend, and publication-bridge labels from typed locale catalogs.
+- `getAlternateLocale(locale)` and `getLocalizedCaseStudyPath(locale, slug)` centralize locale routing decisions.
 - `getHomePageContent(locale)` returns the localized home narrative with graph-backed case-study paths.
 - `getArchitecturePageContent(locale)` returns the localized architecture page framing and source links.
 - `getCaseStudyIndexContent(locale)` returns the localized selected-work index entries.
@@ -34,4 +36,4 @@ Astro routes, sitemap generation, metadata helpers, resume rendering, case-study
 
 The first consumer is `apps/site`, but future dashboard publishing should preserve these invariants instead of writing isolated Astro routes.
 
-Current locale content lives in JSON dictionaries under `src/locales`. Tests are written with Vitest and cover route resolution, localized paths, SEO metadata, sitemap entries, private route exclusions, and missing locale failures.
+Canonical public content lives in JSON dictionaries under `src/locales`; shared application labels live under `src/i18n`. Consumers must select copy through these typed catalogs instead of locale-driven ternaries or `if` branches. Tests are written with Vitest and cover route resolution, localized paths, shared labels, SEO metadata, sitemap entries, private route exclusions, and missing locale failures.
