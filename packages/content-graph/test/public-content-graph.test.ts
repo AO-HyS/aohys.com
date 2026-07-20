@@ -137,7 +137,7 @@ describe("Public Content Graph", () => {
 
   it("uses a public-safe ETERIA landing asset as the lead project evidence", () => {
     expect(STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:eteria"]).toEqual({
-      src: "/images/proof/eteria-ivory-linen-hero.webp",
+      src: "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc",
       alt: "ETERIA public landing page linen art direction",
       kind: "landing",
     });

@@ -33,7 +33,7 @@
             "altText": "Dirección de arte en lino de la landing pública de ETERIA",
             "kind": "public-site",
             "publicSafe": true,
-            "src": "/images/proof/eteria-ivory-linen-hero.webp"
+            "src": "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc"
           }
         },
         {
@@ -262,8 +262,8 @@
     "secondaryActionContentId": "architecture"
   },
   "case-study:eteria": {
-    "approvedAt": "2026-07-20T07:18:23.000Z",
-    "approvedHash": "0058ca5d5369bbc4b0ce26d76d5d45deb8f33988dc48fa5fbaaf01e185fb1ae1",
+    "approvedAt": "2026-07-20T09:00:00.000Z",
+    "approvedHash": "de12cf8cd88941771eeac7c59babb178fd0995e9080d1c8797b21e588272530b",
     "path": "/es/casos/eteria",
     "title": "ETERIA: sistema de producto para un negocio de eventos",
     "summary": "Un proyecto de cliente en producción que conecta descubrimiento público, captura de leads, propuestas, operación privada y un cliente interno SwiftUI.",
@@ -312,7 +312,7 @@
           "altText": "Landing pública de eventos ETERIA en producción",
           "kind": "public-site",
           "publicSafe": true,
-          "src": "/images/proof/eteria-ivory-linen-hero.webp"
+          "src": "/images/proof/eteria-ivory-linen-hero.webp?v=e2ec0ccc"
         }
       ],
       "confidentialityNote": {
