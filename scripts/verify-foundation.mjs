@@ -92,6 +92,21 @@ function includesAll(relativePath, expectedValues) {
   }
 }
 
+function excludesAll(relativePath, forbiddenValues) {
+  const text = readText(relativePath);
+  if (!text) {
+    failures.push(`${relativePath} is missing`);
+    return;
+  }
+
+  for (const forbiddenValue of forbiddenValues) {
+    check(
+      !text.includes(forbiddenValue),
+      `${relativePath} must not include ${forbiddenValue}`,
+    );
+  }
+}
+
 for (const requiredFile of requiredFiles) {
   check(existsSync(filePath(requiredFile)), `${requiredFile} is missing`);
 }
@@ -130,7 +145,29 @@ includesAll(".github/workflows/quality-gates.yml", [
   "pnpm run typecheck",
   "pnpm run test",
   "pnpm run build",
+  "actions/checkout@v5",
+  "pnpm/action-setup@v5",
+  "actions/setup-node@v6",
 ]);
+
+includesAll(".github/workflows/release-train.yml", [
+  "actions/checkout@v5",
+  "pnpm/action-setup@v5",
+  "actions/setup-node@v6",
+  "actions/setup-python@v6",
+]);
+
+for (const workflowPath of [
+  ".github/workflows/quality-gates.yml",
+  ".github/workflows/release-train.yml",
+]) {
+  excludesAll(workflowPath, [
+    "actions/checkout@v4",
+    "pnpm/action-setup@v4",
+    "actions/setup-node@v4",
+    "actions/setup-python@v5",
+  ]);
+}
 
 includesAll(".husky/pre-commit", [
   "pnpm run verify:precommit",
