@@ -1,0 +1,6 @@
+if [ -n "$(git status --porcelain=v1 --untracked-files=all)" ]; then
+  echo "pre-push blocked: commit or remove every non-ignored worktree change so verification matches the pushed tree." >&2
+  exit 1
+fi
+
+pnpm run quality:push

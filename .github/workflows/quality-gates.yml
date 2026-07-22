@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
 
 concurrency:
@@ -17,34 +18,55 @@ concurrency:
 jobs:
   quality-gates:
     name: Quality Gates
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - name: Enforce the release path
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const pullRequest = context.payload.pull_request;
+            if (pullRequest.base.ref !== 'main') {
+              core.notice('Local Husky gates are the source of truth; CI only validates the release path.');
+              return;
+            }
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v5
+            if (
+              pullRequest.head.ref !== 'develop' ||
+              pullRequest.head.repo.full_name !== pullRequest.base.repo.full_name
+            ) {
+              core.setFailed('Pull requests into main must come from develop in this repository.');
+              return;
+            }
 
-      - name: Setup Node
-        uses: actions/setup-node@v6
+            const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'release-train.yml',
+              branch: 'develop',
+              status: 'completed',
+              per_page: 100,
+            });
+            const previewRun = runs.find(
+              (run) =>
+                run.event === 'push' &&
+                run.head_sha === pullRequest.head.sha &&
+                run.conclusion === 'success',
+            );
+            if (!previewRun) {
+              core.setFailed('The develop commit must have a successful preview Release Train before production promotion.');
+            }
+
+  manual-quality:
+    name: Manual Quality
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Verify foundation
-        run: pnpm run verify:foundation
-
-      - name: Lint
-        run: pnpm run lint
-
-      - name: Typecheck
-        run: pnpm run typecheck
-
-      - name: Test
-        run: pnpm run test
-
-      - name: Build
-        run: pnpm run build
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm verify

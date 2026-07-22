@@ -14,10 +14,10 @@ The seam is the release workflow. Feature work should not need to know provider 
 
 ## Branches
 
-| Branch | Role | Deployment meaning |
-| --- | --- | --- |
-| `develop` | Development Branch | Shared development preview state |
-| `main` | Production Branch | Source of truth for `aohys.com` production |
+| Branch    | Role               | Deployment meaning                         |
+| --------- | ------------------ | ------------------------------------------ |
+| `develop` | Development Branch | Shared development preview state           |
+| `main`    | Production Branch  | Source of truth for `aohys.com` production |
 
 Feature branches should target `develop`. Production promotion should target `main` from `develop`.
 
@@ -26,8 +26,9 @@ Feature branches should target `develop`. Production promotion should target `ma
 1. Create a feature branch from `develop`.
 2. Implement the vertical slice using the TDD plan.
 3. Open a pull request into `develop`.
-4. Run local verification and automated checks.
-5. Merge to protected `develop` only after review and checks pass.
+4. Let Husky run the staged pre-commit checks and the complete pre-push gate.
+5. Open the pull request only after local verification passes; GitHub validates
+   release policy but does not repeat the repository suite.
 6. Let `.github/workflows/release-train.yml` deploy the `develop` build to Cloudflare Pages with branch `develop`.
 7. Run preview smoke checks against the preview site.
 8. Open a promotion pull request from `develop` to `main`.
@@ -38,24 +39,25 @@ Feature branches should target `develop`. Production promotion should target `ma
 
 ## Commands
 
-| Command | Purpose |
-| --- | --- |
-| `pnpm run verify:precommit` | Husky pre-commit quality gate: foundation, lint, typecheck, tests. |
-| `pnpm verify` | Full local and CI quality gate: foundation, lint, typecheck, tests, build. |
-| `pnpm run cloudflare:local` | Build the Astro site and serve `apps/site/dist` with Wrangler Pages dev. |
-| `pnpm run release:env:preview` | Validate GitHub Environment values for preview deploys without printing secrets. |
-| `pnpm run release:env:production` | Validate GitHub Environment values for production deploys without printing secrets. |
-| `pnpm run audit:posthog-env` | Locally compare GitHub Environment `preview` and `production` PostHog public values; in GitHub Actions, validate the injected target environment before the Cloudflare runtime audit compares deployed bindings. |
-| `pnpm run sync:convex-env:preview` | Sync preview runtime values from GitHub Environment variables into the preview Convex deployment without printing secret values. |
-| `pnpm run sync:convex-env:production` | Sync production runtime values from GitHub Environment variables into the production Convex deployment without printing secret values. |
-| `pnpm run seed:dashboard:preview` | Idempotently seed the private preview dashboard with project drafts and public contact settings through `convex run` against internal dashboard functions. |
-| `pnpm run deploy:preview` | Validate preview env, audit PostHog project separation, sync Convex preview runtime variables, deploy Convex with the preview deploy key, seed preview dashboard drafts/settings, apply published dashboard content, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
-| `pnpm run deploy:production` | Validate production env, audit PostHog project separation, sync Convex production runtime variables, deploy Convex with the production deploy key, apply published dashboard content, build `apps/site`, deploy the `main` build to Pages, and reconcile the canonical `aohys.com` Pages domain before smoke checks. |
-| `pnpm run ensure:cloudflare-production-domain` | Idempotently ensure `aohys.com` is attached to the `aohys-com` Pages project and wait for Cloudflare validation and TLS activation. Production-only. |
-| `pnpm run smoke:preview` | Fetch the preview smoke URL, verify a 2xx public shell, production canonical URL, PostHog/Convex CSP allowances, anonymous `/dashboard` redirect, private sign-in shell, and configured contact endpoint. |
-| `pnpm run smoke:production` | Fetch `https://aohys.com` and verify the same public shell, canonical, security, dashboard, and contact boundaries against production. |
+| Command                                        | Purpose                                                                                                                                                                                                                                                                                                                           |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm run verify:precommit`                    | Fast Husky pre-commit gate: staged formatting, foundation checks, and React Doctor CLI.                                                                                                                                                                                                                                           |
+| `pnpm run quality:push`                        | Full local pre-push gate: foundation, lint, typecheck, tests, build, and React Doctor CLI.                                                                                                                                                                                                                                        |
+| `pnpm verify`                                  | Full local and CI quality gate: foundation, lint, typecheck, tests, build.                                                                                                                                                                                                                                                        |
+| `pnpm run cloudflare:local`                    | Build the Astro site and serve `apps/site/dist` with Wrangler Pages dev.                                                                                                                                                                                                                                                          |
+| `pnpm run release:env:preview`                 | Validate GitHub Environment values for preview deploys without printing secrets.                                                                                                                                                                                                                                                  |
+| `pnpm run release:env:production`              | Validate GitHub Environment values for production deploys without printing secrets.                                                                                                                                                                                                                                               |
+| `pnpm run audit:posthog-env`                   | Locally compare GitHub Environment `preview` and `production` PostHog public values; in GitHub Actions, validate the injected target environment before the Cloudflare runtime audit compares deployed bindings.                                                                                                                  |
+| `pnpm run sync:convex-env:preview`             | Sync preview runtime values from GitHub Environment variables into the preview Convex deployment without printing secret values.                                                                                                                                                                                                  |
+| `pnpm run sync:convex-env:production`          | Sync production runtime values from GitHub Environment variables into the production Convex deployment without printing secret values.                                                                                                                                                                                            |
+| `pnpm run seed:dashboard:preview`              | Idempotently seed the private preview dashboard with project drafts and public contact settings through `convex run` against internal dashboard functions.                                                                                                                                                                        |
+| `pnpm run deploy:preview`                      | Validate preview env, audit PostHog project separation, sync Convex preview runtime variables, deploy Convex with the preview deploy key, seed preview dashboard drafts/settings, apply published dashboard content, build `apps/site`, and run `wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop`. |
+| `pnpm run deploy:production`                   | Validate production env, audit PostHog project separation, sync Convex production runtime variables, deploy Convex with the production deploy key, apply published dashboard content, build `apps/site`, deploy the `main` build to Pages, and reconcile the canonical `aohys.com` Pages domain before smoke checks.              |
+| `pnpm run ensure:cloudflare-production-domain` | Idempotently ensure `aohys.com` is attached to the `aohys-com` Pages project and wait for Cloudflare validation and TLS activation. Production-only.                                                                                                                                                                              |
+| `pnpm run smoke:preview`                       | Fetch the preview smoke URL, verify a 2xx public shell, production canonical URL, PostHog/Convex CSP allowances, anonymous `/dashboard` redirect, private sign-in shell, and configured contact endpoint.                                                                                                                         |
+| `pnpm run smoke:production`                    | Fetch `https://aohys.com` and verify the same public shell, canonical, security, dashboard, and contact boundaries against production.                                                                                                                                                                                            |
 
-## Required Gates
+## Required Local Gates
 
 - install/build/type/lint verification;
 - route-level public site smoke checks;
@@ -72,11 +74,22 @@ The launch-readiness checklist is maintained in [Launch Hardening Checklist](lau
 
 ## GitHub Actions
 
-`.github/workflows/release-train.yml` runs `pnpm verify` on pull requests into `develop` and `main`. Pushes to `develop` deploy preview through GitHub Environment `preview`; pushes to `main` deploy production through GitHub Environment `production`. Both deploy jobs run `pnpm run audit:posthog-env` before deploying. Local runs compare GitHub Environment `preview` and `production` directly with the owner token. GitHub Actions validates the injected target environment because `GITHUB_TOKEN` cannot read Environment variables through `gh variable list`; the following `pnpm run audit:cloudflare-pages-runtime` gate verifies that deployed Cloudflare Pages preview and production bindings do not share the same PostHog key.
+`.github/workflows/release-train.yml` runs only for pushes to `develop` and
+`main`, plus explicit manual deploys. Pushes to `develop` deploy preview through
+GitHub Environment `preview`; pushes to `main` deploy production through GitHub
+Environment `production`. It installs only what deployment needs and does not
+repeat lint, typecheck, tests, or build-only quality gates before deployment.
 
-`.github/workflows/quality-gates.yml` is the readable pull-request quality workflow. It installs with `pnpm install --frozen-lockfile`, then runs foundation validation, lint, typecheck, tests, and build as separate steps so failures are easy to diagnose without deployment secrets.
+`.github/workflows/quality-gates.yml` is the lightweight pull-request policy
+workflow. Feature PRs pass without checkout or dependency installation.
+Promotion PRs additionally require canonical `develop` as the source and a
+successful preview Release Train for the exact candidate SHA. The full suite
+remains available through manual dispatch.
 
-Husky owns the local pre-commit hook through `.husky/pre-commit`. The hook runs `pnpm run verify:precommit`, which intentionally skips the build step to keep local iteration practical while still catching foundation, lint, type, and behavior-test failures before a commit. Pre-push stays manual; run `pnpm verify` before opening or merging meaningful PRs.
+Husky owns both local boundaries. `.husky/pre-commit` formats staged files and
+runs the fast foundation plus React Doctor checks. `.husky/pre-push` rejects a
+dirty worktree and runs `pnpm run quality:push`, so the pushed commit is the
+exact tree that passed the full repository suite.
 
 The workflow expects GitHub Environment secrets for `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_IMAGES_API_TOKEN`, `CONVEX_DEPLOY_KEY`, `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, and `GOOGLE_CLIENT_SECRET`. The production Cloudflare token needs Pages Write. The current topology explicitly marks the `aohys.com` zone as external to the Pages account, so the release never calls Zone or DNS APIs with that token and only retries Pages validation. The reusable same-account mode requires Zone Read and DNS Write and creates only a missing, conflict-free apex record. Public or policy values such as `PUBLIC_SITE_URL`, `PUBLIC_POSTHOG_HOST`, `RESEND_FROM`, `BETTER_AUTH_TRUSTED_ORIGINS`, `GOOGLE_CLIENT_ID`, `CLOUDFLARE_PROJECT_NAME`, `CLOUDFLARE_IMAGES_ACCOUNT_HASH`, `CONVEX_URL`, and `CONVEX_SITE_URL` are read from GitHub Environment variables.
 

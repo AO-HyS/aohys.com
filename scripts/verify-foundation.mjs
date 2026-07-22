@@ -19,6 +19,10 @@ const requiredRootScripts = [
   "build",
   "lint",
   "prepare",
+  "quality:commit",
+  "quality:push",
+  "react:doctor:changed",
+  "react:doctor:staged",
   "typecheck",
   "test",
   "verify",
@@ -34,6 +38,8 @@ const requiredFiles = [
   ".gitignore",
   ".github/workflows/quality-gates.yml",
   ".husky/pre-commit",
+  ".husky/pre-push",
+  "lint-staged.config.mjs",
   "LICENSE",
   "README.md",
   "docs/workspace.md",
@@ -131,6 +137,12 @@ if (rootPackage) {
     Boolean(rootPackage.devDependencies?.husky),
     "package.json must include husky as a devDependency",
   );
+  for (const dependencyName of ["lint-staged", "prettier", "react-doctor"]) {
+    check(
+      Boolean(rootPackage.devDependencies?.[dependencyName]),
+      `package.json must include ${dependencyName} as a devDependency`,
+    );
+  }
 }
 
 includesAll(".github/workflows/quality-gates.yml", [
@@ -139,15 +151,18 @@ includesAll(".github/workflows/quality-gates.yml", [
   "branches:",
   "develop",
   "main",
-  "pnpm install --frozen-lockfile",
+  "actions/github-script@v8",
+  "pullRequest.head.ref !== 'develop'",
+  "run.head_sha === pullRequest.head.sha",
+  "pnpm verify",
+]);
+
+excludesAll(".github/workflows/quality-gates.yml", [
   "pnpm run verify:foundation",
   "pnpm run lint",
   "pnpm run typecheck",
   "pnpm run test",
   "pnpm run build",
-  "actions/checkout@v5",
-  "pnpm/action-setup@v5",
-  "actions/setup-node@v6",
 ]);
 
 includesAll(".github/workflows/release-train.yml", [
@@ -169,8 +184,10 @@ for (const workflowPath of [
   ]);
 }
 
-includesAll(".husky/pre-commit", [
-  "pnpm run verify:precommit",
+includesAll(".husky/pre-commit", ["pnpm run verify:precommit"]);
+includesAll(".husky/pre-push", [
+  "git status --porcelain",
+  "pnpm run quality:push",
 ]);
 
 includesAll("pnpm-workspace.yaml", ["apps/*", "packages/*"]);
@@ -187,7 +204,10 @@ for (const [workspaceDir, expectedName] of workspacePackages) {
     workspacePackage.name === expectedName,
     `${packageJsonPath} must be named ${expectedName}`,
   );
-  check(workspacePackage.private === true, `${packageJsonPath} must be private`);
+  check(
+    workspacePackage.private === true,
+    `${packageJsonPath} must be private`,
+  );
 
   for (const scriptName of requiredPackageScripts) {
     check(
@@ -213,7 +233,7 @@ includesAll("README.md", [
   "pnpm install",
   "pnpm verify",
   "pnpm run verify:precommit",
-  "Pre-push stays manual",
+  ".husky/pre-push",
   "docs/workspace.md",
   "docs/release-train.md",
   "docs/environment-contract.md",
