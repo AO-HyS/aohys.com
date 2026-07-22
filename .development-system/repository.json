@@ -44,7 +44,8 @@
     },
     "t3code": {
       "adapter": "codex",
-      "contract": ".codex/development-system/repository.md"
+      "contract": ".codex/development-system/repository.md",
+      "operationalEvidence": "structural-inheritance-not-independently-probed"
     },
     "factory": {
       "adapter": "documented-equivalent",
@@ -54,8 +55,9 @@
   "lifecycle": {
     "automatic": {
       "router": "drive-development-flow",
-      "recommendationEffect": "read-only",
-      "manualTransitions": "explicit-human-only"
+      "stageSelection": "infer-load-and-run",
+      "progressLimit": "request-authority-and-human-gates",
+      "recommendationEffect": "read-only"
     },
     "explicitCommands": {
       "codex": [
@@ -87,6 +89,8 @@
         "correct",
         "proportional-qa"
       ],
+      "checksAreDevelopmentSubsteps": true,
+      "externalStateAuthorization": "request-and-repository-policy",
       "deliveryAuthorization": "request-and-repository-policy"
     },
     "promotion": {

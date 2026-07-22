@@ -12,7 +12,7 @@ Preserve this product's domain language, stack, commands, release policy, and vi
 
 Both operator styles are supported:
 
-- Automatic routing: describe the software goal normally. `drive-development-flow` may classify or recommend the next stage, but a recommendation never starts a manual stage or grants authority.
+- Automatic routing: describe the software goal normally. `drive-development-flow` infers, loads, and runs the smallest fitting stage as far as the request authorizes. Recommendation-only requests remain read-only, and the router never approves a human gate or expands authority.
 - Explicit routing: invoke the exact phase command when you want direct control.
 
 Explicit phase commands:
@@ -21,14 +21,14 @@ Explicit phase commands:
 - `/grill-with-docs`: requirements; stop for human approval.
 - `/to-spec`: spec plus Local Visual Plan; stop for human approval.
 - `/to-tickets`: executable slices; stop for human approval.
-- `/flow-implement`: one named terminal slice; run the autonomous implementation-review-correction loop only inside the request's existing authority and stop at the pinned human boundary.
+- `/flow-implement`: one named terminal slice; run the autonomous development loop only inside the request's existing authority and stop at the pinned human boundary. Tests, validation, review, correction, and proportional QA are development substeps and grant no external-state authority.
 - `/flow-code-review`: independent review of an existing branch or pull request.
 
 Commit, push, pull-request, preview, and deploy state changes occur only when the request and repository policy authorize them. Merge, release, and production remain separate exact human authorizations. Neither automatic nor explicit phase routing grants promotion authority.
 
 ## Operational prerequisite
 
-Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.2.0` and verify that the active harness discovers these commands plus `drive-development-flow`.
+Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.2.0` and verify that the active Codex or Factory harness discovers these commands plus `drive-development-flow`. T3Code shares the Codex adapter structurally but has no independent live command proof in this release.
 
 ## Stack rules
 
