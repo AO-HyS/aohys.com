@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "0.7.0",
+  "contractVersion": "0.8.0",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [
@@ -11,23 +11,13 @@
   },
   "product": {
     "name": "aohys.com",
+    "packageName": "aohys.com",
     "packageManager": "pnpm",
-    "stack": [
-      "react",
-      "convex"
-    ]
+    "stack": ["react", "convex"]
   },
   "preserved": {
-    "releasePolicyFiles": [
-      ".github/workflows/release-train.yml"
-    ],
-    "designFiles": [
-      ".agents/skills/impeccable/scripts/detector/design-system.mjs",
-      ".claude/skills/impeccable/scripts/detector/design-system.mjs",
-      ".gemini/skills/impeccable/scripts/detector/design-system.mjs",
-      ".opencode/skills/impeccable/scripts/detector/design-system.mjs",
-      "apps/dashboard/src/styles.css"
-    ]
+    "releasePolicyFiles": [".github/workflows/release-train.yml"],
+    "designFiles": ["apps/dashboard/src/styles.css"]
   },
   "commands": {
     "review": {
@@ -54,12 +44,73 @@
     },
     "t3code": {
       "adapter": "codex",
-      "contract": ".codex/development-system/repository.md"
+      "contract": ".codex/development-system/repository.md",
+      "operationalEvidence": "structural-inheritance-not-independently-probed"
     },
     "factory": {
       "adapter": "documented-equivalent",
       "contract": ".factory/development-system/repository.md"
     }
+  },
+  "lifecycle": {
+    "automatic": {
+      "router": "drive-development-flow",
+      "stageSelection": "infer-load-and-run",
+      "progressLimit": "request-authority-and-human-gates",
+      "recommendationEffect": "read-only"
+    },
+    "explicitCommands": {
+      "codex": [
+        "wayfinder",
+        "grill-with-docs",
+        "to-spec",
+        "to-tickets",
+        "flow-implement",
+        "flow-code-review"
+      ],
+      "factory": [
+        "wayfinder",
+        "grill-with-docs",
+        "to-spec",
+        "to-tickets",
+        "flow-implement",
+        "flow-code-review"
+      ]
+    },
+    "implementPreview": {
+      "command": "flow-implement",
+      "requiresNamedTerminalSlice": true,
+      "terminalState": "ready-for-human",
+      "autonomousOperations": [
+        "implement",
+        "test",
+        "validate",
+        "review",
+        "correct",
+        "proportional-qa"
+      ],
+      "checksAreDevelopmentSubsteps": true,
+      "externalStateAuthorization": "request-and-repository-policy",
+      "deliveryAuthorization": "request-and-repository-policy"
+    },
+    "promotion": {
+      "operations": ["merge", "release", "production"],
+      "authorization": "separate-exact-human-request"
+    }
+  },
+  "operatorPrerequisites": {
+    "skillCatalogVersion": "0.2.0",
+    "installationScope": "global",
+    "readinessScope": "repository-adapter-only",
+    "requiredSkills": [
+      "drive-development-flow",
+      "wayfinder",
+      "grill-with-docs",
+      "to-spec",
+      "to-tickets",
+      "flow-implement",
+      "flow-code-review"
+    ]
   },
   "rules": {
     "react": true,
