@@ -37,8 +37,8 @@
     "verify:ci": "pnpm run verify:foundation && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build",
     "verify:foundation": "node scripts/verify-foundation.mjs",
     "verify:precommit": "pnpm exec lint-staged && pnpm run quality:commit",
-    "react:doctor:staged": "react-doctor --staged --scope lines --no-dead-code --no-supply-chain --no-score --blocking warning",
-    "react:doctor:changed": "react-doctor --scope changed --base origin/develop --no-dead-code --no-supply-chain --no-score --blocking warning",
+    "react:doctor:staged": "node scripts/run-react-doctor-staged.mjs",
+    "react:doctor:changed": "pnpm --filter './apps/**' --filter './packages/**' --workspace-concurrency=1 exec react-doctor . --scope changed --base origin/develop --no-dead-code --no-supply-chain --no-score --blocking warning",
     "verify:published-content": "pnpm run build:resume-pdf && pnpm --filter @aohys/content-graph typecheck && pnpm --filter @aohys/content-graph test && pnpm --filter @aohys/site typecheck && pnpm --filter @aohys/site build && pnpm --filter @aohys/site exec vitest run test/public-shell-build.test.ts test/public-routes-build.test.ts"
   },
   "devDependencies": {

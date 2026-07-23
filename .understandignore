@@ -1,0 +1,3 @@
+# Agent tooling is vendored for reproducible hooks, not product architecture.
+.agents/skills/impeccable/
+.github/skills/impeccable/
