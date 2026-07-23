@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0.0",
+  "repository": "aohys",
+  "profile": "core",
+  "budgetEnforcement": "observe",
+  "wallBudgetMs": 28000,
+  "gates": [
+    {
+      "id": "foundation",
+      "category": "architecture",
+      "command": "pnpm",
+      "args": ["run", "verify:foundation"],
+      "enforcement": "block",
+      "budgetMs": 500
+    },
+    {
+      "id": "lint",
+      "category": "static-analysis",
+      "command": "pnpm",
+      "args": ["run", "lint"],
+      "enforcement": "block",
+      "budgetMs": 5500
+    },
+    {
+      "id": "typecheck",
+      "category": "static-analysis",
+      "command": "pnpm",
+      "args": ["run", "typecheck"],
+      "enforcement": "block",
+      "budgetMs": 8000
+    },
+    {
+      "id": "unit",
+      "category": "test",
+      "command": "pnpm",
+      "args": ["run", "test"],
+      "enforcement": "block",
+      "budgetMs": 5000
+    },
+    {
+      "id": "build",
+      "category": "build",
+      "command": "pnpm",
+      "args": ["run", "build"],
+      "enforcement": "block",
+      "budgetMs": 9000
+    },
+    {
+      "id": "react-doctor",
+      "category": "react",
+      "command": "pnpm",
+      "args": ["run", "react:doctor:changed"],
+      "enforcement": "block",
+      "budgetMs": 500
+    },
+    {
+      "id": "impeccable",
+      "category": "visual-quality",
+      "command": "node",
+      "args": [
+        ".agents/skills/impeccable/scripts/detect.mjs",
+        "--json",
+        "--no-advisory",
+        "apps/dashboard/src",
+        "apps/site/src"
+      ],
+      "enforcement": "block",
+      "budgetMs": 300,
+      "parser": "impeccable-json"
+    }
+  ]
+}
