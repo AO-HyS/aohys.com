@@ -14,6 +14,7 @@ const stagedFiles = execFileSync(
 const sourceFiles = stagedFiles.filter((file) =>
   /^(?:apps|packages)\/.+\.[cm]?[jt]sx?$/.test(file),
 );
+const reactProjects = ["apps/dashboard"];
 
 if (sourceFiles.length === 0) {
   console.log("[react-doctor] skipped: no staged JS/TS source files");
@@ -36,14 +37,11 @@ if (configurationChanged) {
 const result = spawnSync(
   "pnpm",
   [
-    "--filter",
-    "./apps/**",
-    "--filter",
-    "./packages/**",
-    "--workspace-concurrency=1",
     "exec",
     "react-doctor",
     ".",
+    "--project",
+    reactProjects.join(","),
     "--staged",
     "--scope",
     "lines",
