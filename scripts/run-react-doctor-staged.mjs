@@ -34,25 +34,29 @@ if (configurationChanged) {
   process.exit(0);
 }
 
-const result = spawnSync(
-  "pnpm",
-  [
-    "exec",
-    "react-doctor",
-    ".",
-    "--project",
-    reactProjects.join(","),
-    "--staged",
-    "--scope",
-    "lines",
-    "--no-dead-code",
-    "--no-supply-chain",
-    "--no-score",
-    "--blocking",
-    "warning",
-  ],
-  { stdio: "inherit" },
+const impactedProjects = reactProjects.filter((project) =>
+  sourceFiles.some((file) => file.startsWith(`${project}/`)),
 );
 
-if (result.error) throw result.error;
-process.exit(result.status ?? 1);
+for (const project of impactedProjects) {
+  const result = spawnSync(
+    "pnpm",
+    [
+      "exec",
+      "react-doctor",
+      ".",
+      "--staged",
+      "--scope",
+      "lines",
+      "--no-dead-code",
+      "--no-supply-chain",
+      "--no-score",
+      "--blocking",
+      "warning",
+    ],
+    { cwd: project, stdio: "inherit" },
+  );
+
+  if (result.error) throw result.error;
+  if (result.status !== 0) process.exit(result.status ?? 1);
+}
