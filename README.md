@@ -52,26 +52,30 @@ The public pages can be inspected without secrets. Provider-backed flows such as
 
 The repo uses visible local and remote gates because this site is also a public engineering sample.
 
-| Gate | Command | Runs |
-| --- | --- | --- |
-| Pre-commit | `pnpm run verify:precommit` | foundation validation, lint, typecheck, tests |
-| Local full verify | `pnpm verify` | foundation validation, lint, typecheck, tests, build |
-| Pull request CI | `.github/workflows/quality-gates.yml` | install with frozen lockfile, foundation validation, lint, typecheck, tests, build |
-| Release Train | `.github/workflows/release-train.yml` | verify, then Cloudflare preview/production deploys on protected branch pushes |
+| Gate              | Command                               | Runs                                                                               |
+| ----------------- | ------------------------------------- | ---------------------------------------------------------------------------------- |
+| Pre-commit        | `pnpm run verify:precommit`           | staged formatting, foundation validation, React Doctor                             |
+| Pre-push          | `pnpm run quality:push`               | lint, typecheck, tests, build, React Doctor                                        |
+| Local full verify | `pnpm verify`                         | foundation validation, lint, typecheck, tests, build                               |
+| Pull request CI   | `.github/workflows/quality-gates.yml` | install with frozen lockfile, foundation validation, lint, typecheck, tests, build |
+| Release Train     | `.github/workflows/release-train.yml` | verify, then Cloudflare preview/production deploys on protected branch pushes      |
 
-Husky installs through the root `prepare` script and runs `.husky/pre-commit` before commits. Pre-push stays manual for now: `pnpm verify` is required before opening or merging meaningful PRs, but it is not enforced as a local hook so iteration stays practical.
+Husky installs through the root `prepare` script and owns both local
+boundaries. `.husky/pre-commit` keeps commit feedback fast, while
+`.husky/pre-push` rejects a dirty tree and runs the full local quality gate
+before any commit reaches GitHub.
 
 ## Architecture Map
 
-| Area | Location | Responsibility |
-| --- | --- | --- |
-| Public SEO site | `apps/site` | Astro routes, bilingual pages, metadata, sitemap, robots, public contact UI, dashboard route guard, and shell runtime config |
-| Private dashboard app | `apps/dashboard` served under `/dashboard` | React app with TanStack Router, shadcn/ui, project workflows, lead review, resume operations, and direct admin-gated Convex access |
-| Backend | `apps/backend` | Convex schema, HTTP actions, contact leads, email notification adapters, PostHog server events, Better Auth routes, and admin-gated dashboard functions |
-| Environment Contract | `packages/environment` | Shared variable registry, local/preview/production validation, public-vs-secret boundaries |
-| Public Content Graph | `packages/content-graph` | Stable content IDs, localized routes, SEO metadata, sitemap eligibility, public-safe content relationships, and the editorial order of selected systems |
-| Release Train | `packages/release-train` and `.github/workflows/release-train.yml` | Branch-to-environment release plan, Cloudflare deploy commands, smoke checks, redirect manifest |
-| Documentation | `docs/` | Product, architecture, TDD, release, environment, dashboard, privacy, and issue planning |
+| Area                  | Location                                                           | Responsibility                                                                                                                                          |
+| --------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Public SEO site       | `apps/site`                                                        | Astro routes, bilingual pages, metadata, sitemap, robots, public contact UI, dashboard route guard, and shell runtime config                            |
+| Private dashboard app | `apps/dashboard` served under `/dashboard`                         | React app with TanStack Router, shadcn/ui, project workflows, lead review, resume operations, and direct admin-gated Convex access                      |
+| Backend               | `apps/backend`                                                     | Convex schema, HTTP actions, contact leads, email notification adapters, PostHog server events, Better Auth routes, and admin-gated dashboard functions |
+| Environment Contract  | `packages/environment`                                             | Shared variable registry, local/preview/production validation, public-vs-secret boundaries                                                              |
+| Public Content Graph  | `packages/content-graph`                                           | Stable content IDs, localized routes, SEO metadata, sitemap eligibility, public-safe content relationships, and the editorial order of selected systems |
+| Release Train         | `packages/release-train` and `.github/workflows/release-train.yml` | Branch-to-environment release plan, Cloudflare deploy commands, smoke checks, redirect manifest                                                         |
+| Documentation         | `docs/`                                                            | Product, architecture, TDD, release, environment, dashboard, privacy, and issue planning                                                                |
 
 The system intentionally keeps public communication separate from private operational work. Public Astro pages present selected systems, outcomes, evidence, and the six-stage delivery lifecycle for SEO and direct reading; authenticated workflows and the adaptable Development System remain behind private boundaries.
 
@@ -117,11 +121,11 @@ This repo intentionally does not include a contribution workflow. There is no `C
 
 Copy `.env.example` to `.env.local` for local development. Real local secrets stay uncommitted. Preview and production deploy-time values belong in GitHub Environments according to the [Environment Contract](docs/environment-contract.md).
 
-| Environment | Purpose | Source of truth | Credential expectation |
-| --- | --- | --- | --- |
-| `local` | Developer machine and public-source evaluation | `.env.local` plus `.env.example` | Public pages and tests run without private provider secrets; live provider workflows need local secrets |
-| `preview` | `develop` branch verification | GitHub Environment `preview` | Non-production Cloudflare, Convex, PostHog, Resend, Better Auth, and Google OAuth values |
-| `production` | `main` branch and `aohys.com` | GitHub Environment `production` | Production Cloudflare, Convex, PostHog, Resend, Better Auth, and Google OAuth values |
+| Environment  | Purpose                                        | Source of truth                  | Credential expectation                                                                                  |
+| ------------ | ---------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `local`      | Developer machine and public-source evaluation | `.env.local` plus `.env.example` | Public pages and tests run without private provider secrets; live provider workflows need local secrets |
+| `preview`    | `develop` branch verification                  | GitHub Environment `preview`     | Non-production Cloudflare, Convex, PostHog, Resend, Better Auth, and Google OAuth values                |
+| `production` | `main` branch and `aohys.com`                  | GitHub Environment `production`  | Production Cloudflare, Convex, PostHog, Resend, Better Auth, and Google OAuth values                    |
 
 The repository distinguishes browser-safe values from server-only secrets. Public build values use explicit `PUBLIC_` names, while a small set of provider outputs such as Convex client URL and Cloudflare Images delivery hash may enter the dashboard shell when they are not credentials. Secret values such as `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_SECRET`, `CONVEX_DEPLOY_KEY`, `CLOUDFLARE_API_TOKEN`, and `CLOUDFLARE_IMAGES_API_TOKEN` must never be committed or exposed through the public site bundle.
 
@@ -149,14 +153,14 @@ The PostHog audit compares GitHub Environment `preview` and `production` public 
 
 ## Provider Responsibilities
 
-| Provider | Responsibility in this repo |
-| --- | --- |
-| Cloudflare | DNS, `aohys.com` hosting, `aohys.net` redirect rules, Pages deploys through Wrangler, preview/production surfaces, security headers, Cloudflare Images delivery |
-| Convex | Application state, contact leads, content/media metadata, project and resume drafts, site settings, resume versions, Better Auth integration, private dashboard endpoints |
-| PostHog | Separate preview/production projects, explicit pageviews, selected conversion events, browser error capture, sanitized contact/dashboard operational events, dashboard/error analysis outside the repo |
-| Resend | Lead notification email from the institutional sender once provider credentials and DNS are ready |
-| Better Auth | Google sign-in, session handling through Convex, trusted origins, admin allowlist integration |
-| GitHub | Public source hosting, protected `develop` and `main`, GitHub Environments, pull-request checks, Release Train workflow, dashboard-triggered `workflow_dispatch` publishes |
+| Provider    | Responsibility in this repo                                                                                                                                                                            |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Cloudflare  | DNS, `aohys.com` hosting, `aohys.net` redirect rules, Pages deploys through Wrangler, preview/production surfaces, security headers, Cloudflare Images delivery                                        |
+| Convex      | Application state, contact leads, content/media metadata, project and resume drafts, site settings, resume versions, Better Auth integration, private dashboard endpoints                              |
+| PostHog     | Separate preview/production projects, explicit pageviews, selected conversion events, browser error capture, sanitized contact/dashboard operational events, dashboard/error analysis outside the repo |
+| Resend      | Lead notification email from the institutional sender once provider credentials and DNS are ready                                                                                                      |
+| Better Auth | Google sign-in, session handling through Convex, trusted origins, admin allowlist integration                                                                                                          |
+| GitHub      | Public source hosting, protected `develop` and `main`, GitHub Environments, pull-request checks, Release Train workflow, dashboard-triggered `workflow_dispatch` publishes                             |
 
 Cloudflare Images owns dashboard media delivery. Convex creates short-lived direct upload URLs with a narrow Images token, stores only metadata and delivery URLs, and never stores image originals.
 
