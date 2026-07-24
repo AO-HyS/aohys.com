@@ -75,10 +75,10 @@ const publicCaseSection = (section: { title: string; body: string }, title?: str
   title ? { ...section, title } : section
 );
 const caseNarrativeBeats = caseStudyContent ? [
-  { id: "outcome", title: labels.caseBeats[0], sections: [publicCaseSection(caseStudyContent.problem, labels.opportunity), publicCaseSection(caseStudyContent.businessOutcome)] },
+  { id: "project", title: labels.caseBeats[0], sections: [publicCaseSection(caseStudyContent.problem, labels.businessNeed), publicCaseSection(caseStudyContent.businessOutcome)] },
   { id: "role-system", title: labels.caseBeats[1], sections: [publicCaseSection(caseStudyContent.role), publicCaseSection(caseStudyContent.constraints, labels.considerations)] },
   { id: "decisions", title: labels.caseBeats[2], sections: [caseStudyContent.architectureDecisions] },
-  { id: "delivery", title: labels.caseBeats[3], sections: [caseStudyContent.executionHighlights, caseStudyContent.qualitySecurityPerformance] },
+  { id: "delivery-quality", title: labels.caseBeats[3], sections: [caseStudyContent.executionHighlights, caseStudyContent.qualitySecurityPerformance] },
 ] : [];
 const caseProjectLinks = caseStudyContent?.publicEvidence.filter((evidence) => evidence.href !== route.path) ?? [];
 const isEnterpriseCase = id === "case-study:enterprise-systems";
@@ -729,18 +729,18 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
   .sunlit-case-rail section article { min-width: 0; max-width: 62ch; }
   .sunlit-case-rail h3 { margin: 0 0 .65rem; font-size: 1rem; }
   .sunlit-case-rail p { margin: 0; color: var(--color-muted); font-size: 1.08rem; line-height: 1.62; }
-  .sunlit-case-rail [data-case-beat="outcome"] { grid-template-columns: minmax(16rem, .78fr) minmax(0, 1.22fr); border: 2px solid var(--color-ink); background: var(--color-primary); box-shadow: 0 6px 0 var(--color-ink); }
-  .sunlit-case-rail [data-case-beat="outcome"] > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .sunlit-case-rail [data-case-beat="outcome"] p { color: var(--color-ink); }
+  .sunlit-case-rail [data-case-beat="project"] { grid-template-columns: minmax(16rem, .78fr) minmax(0, 1.22fr); border: 2px solid var(--color-ink); background: var(--color-primary); box-shadow: 0 6px 0 var(--color-ink); }
+  .sunlit-case-rail [data-case-beat="project"] > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sunlit-case-rail [data-case-beat="project"] p { color: var(--color-ink); }
   .sunlit-case-rail [data-case-beat="role-system"] { grid-template-columns: minmax(0, 1.2fr) minmax(16rem, .8fr); margin-block: clamp(3rem, 7vw, 6rem); background: color-mix(in oklch, var(--color-secondary), white 64%); }
   .sunlit-case-rail [data-case-beat="role-system"] > header { grid-column: 2; grid-row: 1; }
   .sunlit-case-rail [data-case-beat="role-system"] > div { grid-column: 1; grid-row: 1; padding-top: .4rem; }
   .sunlit-case-rail [data-case-beat="decisions"] { width: min(100%, 66rem); margin-inline: auto; grid-template-columns: minmax(16rem, .72fr) minmax(0, 1.28fr); border-top: 2px solid var(--color-ink); border-bottom: 2px solid var(--color-ink); }
   .sunlit-case-rail [data-case-beat="decisions"] h2 { font-size: clamp(2.2rem, 4vw, 3.6rem); }
   .sunlit-case-rail [data-case-beat="decisions"] > header span { background: var(--color-accent); }
-  .sunlit-case-rail [data-case-beat="delivery"] { grid-template-columns: minmax(16rem, .72fr) minmax(0, 1.28fr); margin-top: clamp(3rem, 7vw, 6rem); background: var(--color-ink); color: var(--color-bg); }
-  .sunlit-case-rail [data-case-beat="delivery"] > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .sunlit-case-rail [data-case-beat="delivery"] p { color: color-mix(in oklch, var(--color-bg), transparent 15%); }
+  .sunlit-case-rail [data-case-beat="delivery-quality"] { grid-template-columns: minmax(16rem, .72fr) minmax(0, 1.28fr); margin-top: clamp(3rem, 7vw, 6rem); background: var(--color-ink); color: var(--color-bg); }
+  .sunlit-case-rail [data-case-beat="delivery-quality"] > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sunlit-case-rail [data-case-beat="delivery-quality"] p { color: color-mix(in oklch, var(--color-bg), transparent 15%); }
   .sunlit-case-evidence { width: var(--container); margin: clamp(5rem, 10vw, 9rem) auto; border: 2px solid var(--color-ink); }
   .sunlit-case-evidence > header { padding: 2rem; background: var(--color-primary); }
   .sunlit-case-evidence > header p { margin: 0; font-weight: 760; }
@@ -874,12 +874,12 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
     width: var(--container);
     min-height: calc(100svh - 4.5rem);
     margin: 0 auto;
-    grid-template-columns: minmax(24rem, .78fr) minmax(34rem, 1.22fr);
+    grid-template-columns: minmax(26rem, .86fr) minmax(34rem, 1.14fr);
     align-items: center;
-    gap: clamp(2rem, 4vw, 4.5rem);
+    gap: clamp(3rem, 4vw, 4.5rem);
     padding: clamp(3rem, 6vw, 5.5rem) 0;
   }
-  .sunlit-studio-hero h1 { max-width: 10ch; margin: 0; font-size: clamp(3.5rem, 4.8vw, 5.4rem); font-weight: 790; letter-spacing: -.04em; line-height: .96; overflow-wrap: normal; text-wrap: balance; word-break: normal; }
+  .sunlit-studio-hero h1 { max-width: 11ch; margin: 0; font-size: clamp(3.5rem, 4.8vw, 5rem); font-weight: 790; letter-spacing: -.04em; line-height: .96; overflow-wrap: normal; text-wrap: balance; word-break: normal; }
   .sunlit-studio-hero .sunlit-lead { max-width: 47ch; }
   .sunlit-home-services, .sunlit-service-list, .sunlit-service-process, .sunlit-service-deliverables, .sunlit-system-map, .sunlit-architecture-tradeoffs, .sunlit-architecture-notes, .sunlit-source-links, .sunlit-client-note { width: var(--container); margin-inline: auto; }
   .sunlit-home-services { margin-block: clamp(5rem, 10vw, 9rem); }
@@ -991,17 +991,14 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
   .sunlit-system-map > header span { grid-column: 1; font-size: .78rem; font-weight: 780; text-transform: uppercase; }
   .sunlit-system-map > header h2 { grid-column: 1; margin: 0; font-size: var(--text-h2); line-height: 1; }
   .sunlit-system-map > header p { grid-row: 1 / 3; grid-column: 2; max-width: 58ch; margin: 0; color: var(--color-muted); }
-  .sunlit-system-layers { position: relative; display: grid; grid-template-columns: repeat(12, 1fr); gap: 2rem 1.2rem; margin: 0; padding: 1.5rem 0; list-style: none; }
+  .sunlit-system-layers { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; gap: 2rem 1.2rem; margin: 0; padding: 1.5rem 0; list-style: none; }
   .sunlit-system-layers::before { content: ""; position: absolute; top: 50%; right: 3%; left: 3%; z-index: -1; height: 3px; background: var(--color-ink); }
-  .sunlit-system-layers > li { position: relative; grid-column: span 4; }
-  .sunlit-system-layers > li:nth-child(4) { grid-column: 2 / span 4; }
-  .sunlit-system-layers > li:nth-child(5) { grid-column: 6 / span 4; }
-  .sunlit-system-layers > li:nth-child(6) { grid-column: 10 / span 3; }
+  .sunlit-system-layers > li, .sunlit-system-layers > li:nth-child(n) { position: relative; display: grid; grid-column: auto; }
   .sunlit-system-layers > li::before { content: ""; position: absolute; top: 50%; left: -.7rem; z-index: 2; width: .9rem; height: .9rem; transform: translate(-50%, -50%); border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-primary); }
   .sunlit-system-layers > li:nth-child(3n + 2)::before { background: var(--color-secondary); }
   .sunlit-system-layers > li:nth-child(3n)::before { background: var(--color-accent); }
-  .sunlit-system-layers article { min-height: 14rem; padding: 1.3rem 1.4rem; border-top: 2px solid var(--color-ink); border-bottom: 2px solid var(--color-ink); background: var(--color-bg); }
-  .sunlit-system-layers > li:nth-child(2) article, .sunlit-system-layers > li:nth-child(5) article { transform: translateY(1rem); background: color-mix(in oklch, var(--color-secondary), white 68%); }
+  .sunlit-system-layers article { box-sizing: border-box; width: 100%; height: 100%; min-height: 14rem; padding: 1.3rem 1.4rem; border-top: 2px solid var(--color-ink); border-bottom: 2px solid var(--color-ink); background: var(--color-bg); }
+  .sunlit-system-layers > li:nth-child(2) article, .sunlit-system-layers > li:nth-child(5) article { transform: none; background: color-mix(in oklch, var(--color-secondary), white 68%); }
   .sunlit-system-layers > li:nth-child(3) article, .sunlit-system-layers > li:nth-child(4) article { background: color-mix(in oklch, var(--color-primary), white 70%); }
   .sunlit-system-layers h3 { margin: 1.6rem 0 .5rem; font-size: 1.65rem; }
   .sunlit-system-layers p { margin: 0; color: var(--color-muted); }
@@ -1048,21 +1045,31 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
   .sunlit-contact-layout label small { display: block; margin-top: .2rem; color: var(--color-muted); font-size: .78rem; font-weight: 520; }
   .sunlit-contact-layout fieldset p { margin: .7rem 0 0; color: var(--color-muted); font-size: .8rem; line-height: 1.35; }
 
+  @media (max-width: 74rem) {
+    .sunlit-studio-hero {
+      min-height: auto;
+      grid-template-columns: minmax(0, 1fr);
+      gap: clamp(3.75rem, 6vw, 5rem);
+      padding-block: clamp(3rem, 6vw, 4.5rem);
+    }
+    .sunlit-studio-hero .sunlit-hero-copy { max-width: 50rem; }
+    .sunlit-studio-hero h1 { max-width: 12ch; }
+    .sunlit-studio-hero :global(.sunlit-project-stage--hero) { min-width: 0; }
+  }
   @media (max-width: 980px) {
-    .sunlit-studio-hero { min-height: auto; grid-template-columns: 1fr; }
-    .sunlit-studio-hero .sunlit-hero-copy { max-width: 44rem; }
     .sunlit-home-services > div { grid-template-columns: 1fr; }
     .sunlit-home-services article { min-height: 0; }
-    .sunlit-system-layers { grid-template-columns: repeat(2, 1fr); }
-    .sunlit-system-layers > li, .sunlit-system-layers > li:nth-child(n) { grid-column: auto; }
-    .sunlit-system-layers > li:nth-child(2) article, .sunlit-system-layers > li:nth-child(5) article { transform: none; }
+    .sunlit-system-layers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .sunlit-service-process > div { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 700px) {
-    .sunlit-studio-hero { padding-top: 2rem; }
     .sunlit-home-services > header, .sunlit-system-map > header, .sunlit-service-process > header, .sunlit-service-deliverables { grid-template-columns: 1fr; }
     .sunlit-home-services > header p, .sunlit-system-map > header p { grid-row: auto; grid-column: 1; }
-    .sunlit-home-services > div, .sunlit-system-layers, .sunlit-service-process > div { grid-template-columns: 1fr; }
+    .sunlit-home-services > div, .sunlit-service-process > div { grid-template-columns: 1fr; }
+    .sunlit-system-layers { grid-template-columns: minmax(0, 1fr); gap: 1rem; padding-left: 1.5rem; }
+    .sunlit-system-layers::before { top: 1.5rem; right: auto; bottom: 1.5rem; left: .45rem; width: 3px; height: auto; }
+    .sunlit-system-layers > li::before { top: 50%; left: -.5rem; }
+    .sunlit-system-layers article { height: auto; min-height: 0; }
     .sunlit-service-offer { grid-template-columns: 1fr; padding: 2rem 1.1rem; }
     .sunlit-service-offer > header,
     .sunlit-service-offer .sunlit-service-signal,
@@ -1088,13 +1095,13 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
     .sunlit-architecture-tradeoffs > ol > li > strong { grid-column: 2; }
     .sunlit-architecture-notes { grid-template-columns: 1fr; }
     .sunlit-case-rail > section,
-    .sunlit-case-rail [data-case-beat="outcome"],
+    .sunlit-case-rail [data-case-beat="project"],
     .sunlit-case-rail [data-case-beat="role-system"],
     .sunlit-case-rail [data-case-beat="decisions"],
-    .sunlit-case-rail [data-case-beat="delivery"] { grid-template-columns: 1fr; padding: 2rem 1.1rem; }
+    .sunlit-case-rail [data-case-beat="delivery-quality"] { grid-template-columns: 1fr; padding: 2rem 1.1rem; }
     .sunlit-case-rail [data-case-beat="role-system"] > header,
     .sunlit-case-rail [data-case-beat="role-system"] > div { grid-row: auto; grid-column: 1; }
-    .sunlit-case-rail [data-case-beat="outcome"] > div, .sunlit-case-rail [data-case-beat="delivery"] > div { grid-template-columns: 1fr; }
+    .sunlit-case-rail [data-case-beat="project"] > div, .sunlit-case-rail [data-case-beat="delivery-quality"] > div { grid-template-columns: 1fr; }
     .sunlit-service-deliverables nav { grid-column: 1; }
     .sunlit-source-links { align-items: flex-start; flex-direction: column; gap: .75rem; }
     .sunlit-contact-visual { min-height: 0; padding: 1rem; }

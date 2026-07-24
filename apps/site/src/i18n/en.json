@@ -12,15 +12,15 @@
     "menuClose": "Close menu",
     "nav": {
       "solutions": "Work",
-      "agents": "Services",
-      "pricing": "About",
+      "agents": "Practice",
+      "pricing": "Experience",
       "docs": "Architecture",
-      "blog": "Let's talk",
+      "blog": "Contact",
       "caseStudies": "Work",
       "architecture": "Architecture",
-      "practice": "Services",
-      "resume": "About",
-      "contact": "Let's talk"
+      "practice": "Practice",
+      "resume": "Experience",
+      "contact": "Contact"
     }
   },
   "footer": {
@@ -29,10 +29,10 @@
     "boundary": "Public code can be reviewed here. Client work and operational data stay private.",
     "privacy": "Privacy",
     "architecture": "Architecture",
-    "practice": "Services",
+    "practice": "Practice",
     "systemNotes": "System notes",
     "work": "Selected work",
-    "resume": "About",
+    "resume": "Experience",
     "contact": "Let's talk",
     "dashboard": "Open dashboard",
     "brandName": "AOHYS",
@@ -92,24 +92,24 @@
     "publicContent": {
       "available": "Product systems · AI-native delivery",
       "work": "Work",
-      "practice": "Services",
+      "practice": "Practice",
       "architecture": "Architecture",
-      "about": "About",
+      "about": "Experience",
       "talk": "Let's talk",
       "viewWork": "View work",
       "viewProject": "Open case",
       "publicProof": "Selected system",
       "selectedStage": "Selected work, ordered by evidence.",
-      "selectedStageIntro": "Client production work, AI-native delivery practice, enterprise systems, and products moving deliberately toward release.",
+      "selectedStageIntro": "Six systems showing the result, the product or operational capability, and my role in the work.",
       "process": "Great outcomes start with clear systems.",
       "workArchive": "Work archive",
-      "workArchiveBody": "Live systems, active products, and enterprise work told through results and the decisions behind them.",
+      "workArchiveBody": "Six systems told through business context, what was built, what each enables, and the role behind the result.",
       "evidence": "Project links",
       "readCase": "Read case",
       "source": "Public source",
       "role": "Role",
       "constraints": "Constraints",
-      "opportunity": "Opportunity",
+      "businessNeed": "Business need",
       "considerations": "Design considerations",
       "related": "Related work",
       "profile": "Delivery profile",
@@ -127,24 +127,41 @@
       "casePath": "Case path",
       "architectureNotes": "Operating notes",
       "architectureNotesIntro": "The seams that keep the topology connected.",
-      "caseBeats": ["Opportunity & outcome", "Role & system", "Decisions", "Delivery"],
-      "serviceMode": "Ways to collaborate",
+      "caseBeats": [
+        "Project",
+        "Role & system",
+        "Decisions",
+        "Delivery & quality"
+      ],
+      "serviceMode": "Contribution patterns",
       "serviceFit": "When it fits",
       "serviceResult": "What changes",
-      "serviceCollaboration": "How we work",
+      "serviceCollaboration": "How I contribute",
       "serviceOutputs": "What you get",
       "architectureLiveSystem": "AOHYS production system",
       "architectureFlow": "A signal enters. The system keeps its context and reaches production with a visible release record.",
       "contactBriefTitle": "A useful first note can be short.",
       "contactBriefReply": "I reply with useful questions and a concrete next step.",
       "contactBriefLabel": "Your project brief",
-      "seeServices": "See services",
+      "seeServices": "See practice",
       "architectureSceneLabel": "Kinetic depth behind the system map",
       "contactSceneLabel": "Soft depth behind the project brief",
       "serviceModes": [
-        { "kicker": "New product", "note": "Website · web app · mobile app", "symbol": "↗" },
-        { "kicker": "Defined project", "note": "Product · engineering · release", "symbol": "+" },
-        { "kicker": "Existing system", "note": "AI · data · cloud · delivery", "symbol": "→" }
+        {
+          "kicker": "New product",
+          "note": "Website · web app · mobile app",
+          "symbol": "↗"
+        },
+        {
+          "kicker": "Defined project",
+          "note": "Product · engineering · release",
+          "symbol": "+"
+        },
+        {
+          "kicker": "Existing system",
+          "note": "AI · data · cloud · delivery",
+          "symbol": "→"
+        }
       ],
       "serviceSignals": [
         { "items": ["www", "app", "mobile"], "emphasisIndex": -1 },
@@ -152,11 +169,36 @@
         { "items": ["now", "AI · DATA · CLOUD", "next"], "emphasisIndex": 1 }
       ],
       "architectureHeroNodes": [
-        { "id": "public", "title": "Public experience", "detail": "Bilingual site, cases, services, and accessible interaction", "meta": "Astro · EN / ES" },
-        { "id": "content", "title": "Content, dashboard, and data", "detail": "Publishing, ownership, and shared content contracts", "meta": "Content Graph · Convex" },
-        { "id": "media", "title": "Media and edge", "detail": "Published images, versioned fallbacks, and fast delivery", "meta": "Cloudflare" },
-        { "id": "signals", "title": "Signals and contact", "detail": "Requests, analytics, and errors with explicit boundaries", "meta": "Form · PostHog" },
-        { "id": "release", "title": "Release train", "detail": "Preview, checks, promotion, and production smoke", "meta": "develop → main" }
+        {
+          "id": "public",
+          "title": "Public experience",
+          "detail": "Bilingual site, cases, services, and accessible interaction",
+          "meta": "Astro · EN / ES"
+        },
+        {
+          "id": "content",
+          "title": "Content, dashboard, and data",
+          "detail": "Publishing, ownership, and shared content contracts",
+          "meta": "Content Graph · Convex"
+        },
+        {
+          "id": "media",
+          "title": "Media and edge",
+          "detail": "Published images, versioned fallbacks, and fast delivery",
+          "meta": "Cloudflare"
+        },
+        {
+          "id": "signals",
+          "title": "Signals and contact",
+          "detail": "Requests, analytics, and errors with explicit boundaries",
+          "meta": "Form · PostHog"
+        },
+        {
+          "id": "release",
+          "title": "Release train",
+          "detail": "Preview, checks, promotion, and production smoke",
+          "meta": "develop → main"
+        }
       ],
       "contactBriefPrompts": [
         ["What you want to make possible", "Create, evolve, or launch"],
@@ -254,10 +296,7 @@
       "scaleQuestion": "What can this work help your team create next?",
       "planLabel": "Plan",
       "recommended": "Recommended",
-      "planNames": [
-        "Technical review",
-        "Product delivery"
-      ],
+      "planNames": ["Technical review", "Product delivery"],
       "featureColumn": "Feature",
       "included": "Included",
       "faqKicker": "FAQs",
