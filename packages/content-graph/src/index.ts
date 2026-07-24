@@ -64,7 +64,11 @@ export interface LocaleVariant {
 export interface EvidenceAsset {
   label: string;
   altText: string;
-  kind: "public-site" | "development-preview" | "private-system" | "architecture-note";
+  kind:
+    | "public-site"
+    | "development-preview"
+    | "private-system"
+    | "architecture-note";
   publicSafe: boolean;
   src?: string;
 }
@@ -76,7 +80,10 @@ export interface StaticEvidenceImageAsset {
   kind: "site" | "landing" | "dashboard" | "diagram";
 }
 
-export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<string, StaticEvidenceImageAsset> = {
+export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<
+  string,
+  StaticEvidenceImageAsset
+> = {
   home: {
     src: "/images/proof/eteria-garden-blue-table-og.jpg",
     alt: "ETERIA outdoor celebration table styled with blue textiles, ivory flowers, and layered place settings",
@@ -226,7 +233,13 @@ export interface ArchitectureSection {
 }
 
 export interface ArchitectureLayer {
-  id: "experience" | "edge" | "product-data" | "communication" | "observability" | "delivery";
+  id:
+    | "experience"
+    | "edge"
+    | "product-data"
+    | "communication"
+    | "observability"
+    | "delivery";
   label: string;
   technologies: string[];
   body: string;
@@ -253,7 +266,10 @@ export interface ArchitecturePageContent {
 }
 
 export interface PracticeService {
-  id: "product-systems" | "architecture-modernization" | "delivery-acceleration";
+  id:
+    | "product-systems"
+    | "architecture-modernization"
+    | "delivery-acceleration";
   title: string;
   problem: string;
   result: string;
@@ -436,6 +452,9 @@ export interface SeoMetadata {
 export interface SocialImageMetadata {
   url: string;
   alt: string;
+  type: "image/jpeg" | "image/png";
+  width?: number;
+  height?: number;
 }
 
 export interface WebsiteStructuredData {
@@ -465,7 +484,9 @@ export interface ProfilePageStructuredData {
   };
 }
 
-export type SeoStructuredData = WebsiteStructuredData | ProfilePageStructuredData;
+export type SeoStructuredData =
+  | WebsiteStructuredData
+  | ProfilePageStructuredData;
 
 export interface SitemapEntry {
   url: string;
@@ -487,11 +508,18 @@ interface LocalizedContentEntry {
   homeContent?: Omit<HomePageContent, "selectedOutcomes"> & {
     selectedOutcomes: Array<Omit<HomeOutcome, "path">>;
   };
-  publicNavigation?: Omit<PublicNavigation, "items" | "actions" | "dropdown"> & {
+  publicNavigation?: Omit<
+    PublicNavigation,
+    "items" | "actions" | "dropdown"
+  > & {
     items: Array<Omit<PublicNavigationItem, "href">>;
     actions: Array<Omit<PublicNavigationAction, "href"> & { href?: string }>;
     dropdown: Omit<PublicNavigation["dropdown"], "items"> & {
-      items: Array<Omit<PublicNavigationDropdownItem, "href"> & { contentId: ContentId | string }>;
+      items: Array<
+        Omit<PublicNavigationDropdownItem, "href"> & {
+          contentId: ContentId | string;
+        }
+      >;
     };
   };
   architectureContent?: ArchitecturePageContent;
@@ -502,11 +530,15 @@ interface LocalizedContentEntry {
 }
 
 type ContentDictionary = Record<string, LocalizedContentEntry>;
-type BaseContentNode = Omit<PublicContentNode, "id" | "variants"> & { id: ContentId | string };
+type BaseContentNode = Omit<PublicContentNode, "id" | "variants"> & {
+  id: ContentId | string;
+};
 
 export class MissingLocaleVariantError extends Error {
   constructor(contentId: string, locale: Locale) {
-    super(`Content node "${contentId}" is missing the "${locale}" locale variant.`);
+    super(
+      `Content node "${contentId}" is missing the "${locale}" locale variant.`,
+    );
     this.name = "MissingLocaleVariantError";
   }
 }
@@ -536,13 +568,18 @@ const STATIC_CONTENT_IDS = [
   "privacy",
 ] as const satisfies readonly ContentId[];
 
-function isCaseStudyContentId(contentId: string): contentId is `case-study:${string}` {
+function isCaseStudyContentId(
+  contentId: string,
+): contentId is `case-study:${string}` {
   return /^case-study:[a-z0-9]+(?:-[a-z0-9]+)*$/.test(contentId);
 }
 
-function staticActionContentId(contentId: ContentId | string | undefined): ContentId | undefined {
-  return typeof contentId === "string" && STATIC_CONTENT_IDS.includes(contentId as ContentId)
-    ? contentId as ContentId
+function staticActionContentId(
+  contentId: ContentId | string | undefined,
+): ContentId | undefined {
+  return typeof contentId === "string" &&
+    STATIC_CONTENT_IDS.includes(contentId as ContentId)
+    ? (contentId as ContentId)
     : undefined;
 }
 
@@ -562,7 +599,9 @@ function dashboardCaseStudyIds(projectIds: readonly string[]): string[] {
   return caseStudyIds;
 }
 
-const DASHBOARD_CASE_STUDY_IDS = dashboardCaseStudyIds(DASHBOARD_PUBLIC_PROJECT_IDS);
+const DASHBOARD_CASE_STUDY_IDS = dashboardCaseStudyIds(
+  DASHBOARD_PUBLIC_PROJECT_IDS,
+);
 const CASE_STUDY_IDS: readonly (ContentId | string)[] = [
   ...STATIC_CASE_STUDY_IDS,
   ...DASHBOARD_CASE_STUDY_IDS,
@@ -649,16 +688,18 @@ const staticBaseNodes = [
   },
 ] as const satisfies readonly BaseContentNode[];
 
-const dashboardCaseStudyNodes: BaseContentNode[] = DASHBOARD_CASE_STUDY_IDS.map((contentId, index) => ({
-  id: contentId,
-  type: "case-study",
-  status: "published",
-  sitemap: {
-    include: true,
-    changefreq: "monthly",
-    priority: Math.max(0.6, 0.7 - index * 0.01),
-  },
-}));
+const dashboardCaseStudyNodes: BaseContentNode[] = DASHBOARD_CASE_STUDY_IDS.map(
+  (contentId, index) => ({
+    id: contentId,
+    type: "case-study",
+    status: "published",
+    sitemap: {
+      include: true,
+      changefreq: "monthly",
+      priority: Math.max(0.6, 0.7 - index * 0.01),
+    },
+  }),
+);
 
 const baseNodes: readonly BaseContentNode[] = [
   ...staticBaseNodes,
@@ -671,7 +712,10 @@ function assertLocale(locale: string): asserts locale is Locale {
   }
 }
 
-function getDictionaryEntry(contentId: ContentId | string, locale: Locale): LocalizedContentEntry {
+function getDictionaryEntry(
+  contentId: ContentId | string,
+  locale: Locale,
+): LocalizedContentEntry {
   assertLocale(locale);
   const entry = contentByLocale[locale][contentId as ContentId];
 
@@ -682,7 +726,10 @@ function getDictionaryEntry(contentId: ContentId | string, locale: Locale): Loca
   return entry;
 }
 
-function variantFromDictionary(contentId: ContentId | string, locale: Locale): LocaleVariant {
+function variantFromDictionary(
+  contentId: ContentId | string,
+  locale: Locale,
+): LocaleVariant {
   const entry = getDictionaryEntry(contentId, locale);
 
   return {
@@ -695,7 +742,9 @@ function variantFromDictionary(contentId: ContentId | string, locale: Locale): L
     primaryActionLabel: entry.primaryActionLabel,
     primaryActionContentId: staticActionContentId(entry.primaryActionContentId),
     secondaryActionLabel: entry.secondaryActionLabel,
-    secondaryActionContentId: staticActionContentId(entry.secondaryActionContentId),
+    secondaryActionContentId: staticActionContentId(
+      entry.secondaryActionContentId,
+    ),
   };
 }
 
@@ -708,7 +757,9 @@ const nodes = baseNodes.map((node) => ({
 
 export const PUBLIC_CONTENT_NODES: readonly PublicContentNode[] = nodes;
 
-const contentById = new Map(PUBLIC_CONTENT_NODES.map((node) => [node.id, node]));
+const contentById = new Map(
+  PUBLIC_CONTENT_NODES.map((node) => [node.id, node]),
+);
 
 function normalizePath(pathname: string): string {
   let path = pathname;
@@ -740,10 +791,14 @@ function toAbsoluteUrl(path: string): string {
 
 export function isPrivateRoute(pathname: string): boolean {
   const path = normalizePath(pathname);
-  return PRIVATE_ROUTE_PREFIXES.some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
+  return PRIVATE_ROUTE_PREFIXES.some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`),
+  );
 }
 
-export function getContentNode(contentId: ContentId | string): PublicContentNode {
+export function getContentNode(
+  contentId: ContentId | string,
+): PublicContentNode {
   const node = contentById.get(contentId);
 
   if (!node) {
@@ -758,7 +813,8 @@ export function getLocaleVariant(
   locale: Locale,
 ): LocaleVariant {
   assertLocale(locale);
-  const node = typeof nodeOrId === "string" ? getContentNode(nodeOrId) : nodeOrId;
+  const node =
+    typeof nodeOrId === "string" ? getContentNode(nodeOrId) : nodeOrId;
   const variantForLocale = node.variants[locale];
 
   if (!variantForLocale) {
@@ -768,7 +824,10 @@ export function getLocaleVariant(
   return variantForLocale;
 }
 
-export function getLocalizedPath(contentId: ContentId | string, locale: Locale): string {
+export function getLocalizedPath(
+  contentId: ContentId | string,
+  locale: Locale,
+): string {
   return getLocaleVariant(contentId, locale).path;
 }
 
@@ -783,17 +842,16 @@ export function getHomePageContent(locale: Locale): HomePageContent {
     ...outcome,
     path: getLocalizedPath(outcome.contentId, locale),
   }));
-  const selectedOutcomeIds = new Set(selectedOutcomes.map((outcome) => outcome.contentId));
-  const dashboardOutcomes = DASHBOARD_CASE_STUDY_IDS
-    .filter((contentId) => !selectedOutcomeIds.has(contentId))
-    .map((contentId) => homeOutcomeFromCaseStudy(contentId, locale));
+  const selectedOutcomeIds = new Set(
+    selectedOutcomes.map((outcome) => outcome.contentId),
+  );
+  const dashboardOutcomes = DASHBOARD_CASE_STUDY_IDS.filter(
+    (contentId) => !selectedOutcomeIds.has(contentId),
+  ).map((contentId) => homeOutcomeFromCaseStudy(contentId, locale));
 
   return {
     ...home.homeContent,
-    selectedOutcomes: [
-      ...selectedOutcomes,
-      ...dashboardOutcomes,
-    ],
+    selectedOutcomes: [...selectedOutcomes, ...dashboardOutcomes],
   };
 }
 
@@ -812,7 +870,9 @@ export function getPublicNavigation(locale: Locale): PublicNavigation {
     })),
     actions: home.publicNavigation.actions.map((action) => ({
       ...action,
-      href: action.href ?? (action.contentId ? getLocalizedPath(action.contentId, locale) : "#"),
+      href:
+        action.href ??
+        (action.contentId ? getLocalizedPath(action.contentId, locale) : "#"),
     })),
     dropdown: {
       ...home.publicNavigation.dropdown,
@@ -828,7 +888,9 @@ export function getPublicNavigation(locale: Locale): PublicNavigation {
   };
 }
 
-export function getArchitecturePageContent(locale: Locale): ArchitecturePageContent {
+export function getArchitecturePageContent(
+  locale: Locale,
+): ArchitecturePageContent {
   const architecture = getDictionaryEntry("architecture", locale);
 
   if (!architecture.architectureContent) {
@@ -848,7 +910,10 @@ export function getPracticePageContent(locale: Locale): PracticePageContent {
   return practice.practiceContent;
 }
 
-export function getCaseStudyPageContent(contentId: ContentId | string, locale: Locale): CaseStudyPageContent | undefined {
+export function getCaseStudyPageContent(
+  contentId: ContentId | string,
+  locale: Locale,
+): CaseStudyPageContent | undefined {
   const node = getContentNode(contentId);
 
   if (node.type !== "case-study") {
@@ -860,13 +925,18 @@ export function getCaseStudyPageContent(contentId: ContentId | string, locale: L
   return caseStudy.caseStudyContent;
 }
 
-function homeOutcomeFromCaseStudy(contentId: ContentId | string, locale: Locale): HomeOutcome {
+function homeOutcomeFromCaseStudy(
+  contentId: ContentId | string,
+  locale: Locale,
+): HomeOutcome {
   const variant = getLocaleVariant(contentId, locale);
   const caseStudyContent = getCaseStudyPageContent(contentId, locale);
   const i18n = getSharedI18n(locale);
 
   if (!caseStudyContent) {
-    throw new Error(`Home selected outcome "${contentId}" is missing detail content in locale "${locale}".`);
+    throw new Error(
+      `Home selected outcome "${contentId}" is missing detail content in locale "${locale}".`,
+    );
   }
 
   return {
@@ -885,7 +955,9 @@ function homeOutcomeFromCaseStudy(contentId: ContentId | string, locale: Locale)
   };
 }
 
-export function getCaseStudyIndexContent(locale: Locale): CaseStudyIndexContent {
+export function getCaseStudyIndexContent(
+  locale: Locale,
+): CaseStudyIndexContent {
   const indexVariant = getLocaleVariant("case-studies", locale);
 
   return {
@@ -896,7 +968,9 @@ export function getCaseStudyIndexContent(locale: Locale): CaseStudyIndexContent 
       const caseStudyContent = getCaseStudyPageContent(contentId, locale);
 
       if (!caseStudyContent) {
-        throw new Error(`Case study index entry "${contentId}" is missing detail content in locale "${locale}".`);
+        throw new Error(
+          `Case study index entry "${contentId}" is missing detail content in locale "${locale}".`,
+        );
       }
 
       return {
@@ -905,7 +979,9 @@ export function getCaseStudyIndexContent(locale: Locale): CaseStudyIndexContent 
         title: variant.title,
         summary: variant.summary,
         statusLabel: caseStudyContent.statusLabel,
-        evidenceLabel: caseStudyContent.publicEvidence[0]?.label ?? caseStudyContent.publicEvidenceTitle,
+        evidenceLabel:
+          caseStudyContent.publicEvidence[0]?.label ??
+          caseStudyContent.publicEvidenceTitle,
       };
     }),
   };
@@ -931,9 +1007,14 @@ export function getPrivacyPageContent(locale: Locale): PrivacyPageContent {
   return privacy.privacyContent;
 }
 
-export function getLanguageAlternates(contentId: ContentId | string): Record<Locale | "x-default", string> {
+export function getLanguageAlternates(
+  contentId: ContentId | string,
+): Record<Locale | "x-default", string> {
   const alternates = Object.fromEntries(
-    LOCALES.map((locale) => [locale, toAbsoluteUrl(getLocalizedPath(contentId, locale))]),
+    LOCALES.map((locale) => [
+      locale,
+      toAbsoluteUrl(getLocalizedPath(contentId, locale)),
+    ]),
   ) as Record<Locale, string>;
 
   return {
@@ -966,10 +1047,16 @@ export function resolvePublicPath(pathname: string): PublicRoute | null {
     return null;
   }
 
-  return getPublicRouteMap().find((route) => normalizePath(route.path) === path) ?? null;
+  return (
+    getPublicRouteMap().find((route) => normalizePath(route.path) === path) ??
+    null
+  );
 }
 
-export function getSeoMetadata(contentId: ContentId | string, locale: Locale): SeoMetadata {
+export function getSeoMetadata(
+  contentId: ContentId | string,
+  locale: Locale,
+): SeoMetadata {
   const node = getContentNode(contentId);
   const localizedVariant = getLocaleVariant(node, locale);
   const i18n = getSharedI18n(locale);
@@ -977,9 +1064,11 @@ export function getSeoMetadata(contentId: ContentId | string, locale: Locale): S
   const staticEvidence = STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID[contentId];
   const evidencePath = staticEvidence?.thumbSrc ?? staticEvidence?.src;
   const socialImagePath =
-    contentId !== "home" && evidencePath && /\.(?:jpe?g|png)$/i.test(evidencePath)
+    contentId !== "home" &&
+    evidencePath &&
+    /\.(?:jpe?g|png)$/i.test(evidencePath)
       ? evidencePath
-      : "/images/generated/aohys-hero-system-map.png";
+      : "/images/social/aohys-social-preview-v1.png";
   const usesEvidenceImage = socialImagePath === evidencePath;
   const socialImageAlt = usesEvidenceImage
     ? formatI18n(i18n.seo.evidencePreviewAlt, { title: localizedVariant.title })
@@ -1009,7 +1098,10 @@ export function getSeoMetadata(contentId: ContentId | string, locale: Locale): S
               name: "Alejandro Ortiz Corro",
               url: `${SITE_URL}/resume`,
               jobTitle: i18n.seo.resumeJobTitle,
-              sameAs: ["https://www.linkedin.com/in/alejandrortizcrr/", "https://github.com/corrortiz"],
+              sameAs: [
+                "https://www.linkedin.com/in/alejandrortizcrr/",
+                "https://github.com/corrortiz",
+              ],
             },
           }
         : undefined;
@@ -1020,10 +1112,15 @@ export function getSeoMetadata(contentId: ContentId | string, locale: Locale): S
     description: localizedVariant.seoDescription,
     canonicalUrl,
     alternates: getLanguageAlternates(contentId),
-    robots: node.status === "published" && node.sitemap.include ? "index,follow" : "noindex,nofollow",
+    robots:
+      node.status === "published" && node.sitemap.include
+        ? "index,follow"
+        : "noindex,nofollow",
     socialImage: {
       url: toAbsoluteUrl(socialImagePath),
       alt: socialImageAlt,
+      type: /\.png$/i.test(socialImagePath) ? "image/png" : "image/jpeg",
+      ...(usesEvidenceImage ? {} : { width: 1200, height: 630 }),
     },
     structuredData,
   };
@@ -1031,7 +1128,10 @@ export function getSeoMetadata(contentId: ContentId | string, locale: Locale): S
 
 export function getSitemapEntries(): SitemapEntry[] {
   return getPublicRouteMap()
-    .filter((route) => route.node.status === "published" && route.node.sitemap.include)
+    .filter(
+      (route) =>
+        route.node.status === "published" && route.node.sitemap.include,
+    )
     .map((route) => ({
       url: route.canonicalUrl,
       alternates: getLanguageAlternates(route.id),

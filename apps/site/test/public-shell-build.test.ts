@@ -21,7 +21,10 @@ function listFiles(dir: string): string[] {
 describe("built public shell", () => {
   it("renders the Sunlit Product Stage with graph content and the approved palette", () => {
     const indexPath = path.join(distRoot, "index.html");
-    expect(existsSync(indexPath), "dist/index.html must exist after build").toBe(true);
+    expect(
+      existsSync(indexPath),
+      "dist/index.html must exist after build",
+    ).toBe(true);
 
     const html = readFileSync(indexPath, "utf8");
     const css = listFiles(path.join(distRoot, "_astro"))
@@ -31,7 +34,9 @@ describe("built public shell", () => {
     const styleClasses = read("src/styles/classes.ts");
     const stageSource = read("src/components/sunlit/SunlitProjectStage.astro");
     const proofMediaSource = read("src/components/sunlit/proof-media.ts");
-    const proofImageSource = read("src/components/sunlit/SunlitProofImage.astro");
+    const proofImageSource = read(
+      "src/components/sunlit/SunlitProofImage.astro",
+    );
     const outcomes = getHomePageContent("en").selectedOutcomes;
 
     expect(html).toContain('<html lang="en"');
@@ -41,16 +46,16 @@ describe("built public shell", () => {
     expect(html).toContain('href="/resume"');
     expect(html).toContain('href="/contact"');
     expect(html).toContain(">Work<");
-    expect(html).toContain(">Services<");
+    expect(html).toContain(">Practice<");
     expect(html).toContain(">Architecture<");
-    expect(html).toContain(">About<");
+    expect(html).toContain(">Experience<");
     expect(html).toContain(">Let&#39;s talk<");
-    expect(html).toContain('data-project-stage');
+    expect(html).toContain("data-project-stage");
     expect(html).toContain('role="tablist"');
     expect(html).toContain('aria-orientation="vertical"');
     expect(html).not.toContain('aria-orientation="horizontal"');
-    expect(html).toContain('data-project-menu-trigger');
-    expect(html).toContain('<dialog');
+    expect(html).toContain("data-project-menu-trigger");
+    expect(html).toContain("<dialog");
     expect(html).toContain('role="tabpanel"');
     expect(html).toContain('data-stage-door="left"');
     expect(html).toContain('data-stage-door="right"');
@@ -62,18 +67,26 @@ describe("built public shell", () => {
       expect(html).toContain(`data-content-id="${outcome.contentId}"`);
       expect(html).toContain(`href="${outcome.path}"`);
     }
-    expect(html).not.toMatch(/aohys-pixel|pixel-product-landscape|pixel-hills|pixel-lake/i);
+    expect(html).not.toMatch(
+      /aohys-pixel|pixel-product-landscape|pixel-hills|pixel-lake/i,
+    );
     expect(html).not.toMatch(/>Solutions<|>Agents<|>Pricing<|>Docs<|>Blog</);
     expect(styleClasses).toContain("[--color-primary:oklch(0.8623_0.129_80)]");
-    expect(styleClasses).toContain("[--color-secondary:oklch(0.7779_0.1104_121.8)]");
-    expect(styleClasses).toContain("[--color-accent:oklch(0.8008_0.1283_55.5)]");
+    expect(styleClasses).toContain(
+      "[--color-secondary:oklch(0.7779_0.1104_121.8)]",
+    );
+    expect(styleClasses).toContain(
+      "[--color-accent:oklch(0.8008_0.1283_55.5)]",
+    );
     expect(styleClasses).toContain("[--color-ink:oklch(0.3649_0.0215_61.4)]");
     expect(styleClasses).toContain("[--color-focus:oklch(0.3649_0.0215_61.4)]");
     expect(styleClasses).not.toMatch(/--color-(?:mint|sky|coral|lilac|aqua)/);
     expect(styleClasses).toContain("overflow-x-clip");
     expect(styleClasses).not.toContain("overflow-x-hidden");
     expect(css).toMatch(/Mona Sans Variable|Mona_Sans_Variable/);
-    expect(css).toMatch(/Atkinson Hyperlegible Next Variable|Atkinson_Hyperlegible_Next_Variable/);
+    expect(css).toMatch(
+      /Atkinson Hyperlegible Next Variable|Atkinson_Hyperlegible_Next_Variable/,
+    );
     expect(css).toContain("prefers-reduced-motion");
     expect(proofMediaSource).toContain("preferFull");
     expect(proofMediaSource).toContain("dashboardMedia?.thumbSrc");
@@ -81,7 +94,9 @@ describe("built public shell", () => {
     expect(proofMediaSource).toContain("evidenceSrc");
     expect(proofImageSource).toContain('candidate.addEventListener("error"');
     expect(proofImageSource).toContain("currentIndex + 1");
-    expect(proofImageSource).toContain('candidate.dataset.fallbackExhausted = "true"');
+    expect(proofImageSource).toContain(
+      'candidate.dataset.fallbackExhausted = "true"',
+    );
     expect(stageSource).toContain("resolveProofMedia");
     expect(stageSource).toContain("SunlitProofImage");
     expect(stageSource).toContain("requestedIndex");
@@ -90,8 +105,12 @@ describe("built public shell", () => {
     expect(stageSource).toContain("stage.dataset.activeTone");
     expect(stageSource).toContain("object-fit: contain");
     expect(stageSource).toContain("grid-area: 1 / 1");
-    expect(stageSource).not.toContain(".sunlit-project-panel { position: absolute");
-    expect(stageSource).not.toContain(".sunlit-stage-scene { min-height: 34rem");
+    expect(stageSource).not.toContain(
+      ".sunlit-project-panel { position: absolute",
+    );
+    expect(stageSource).not.toContain(
+      ".sunlit-stage-scene { min-height: 34rem",
+    );
     expect(stageSource).toContain('figure[data-media-kind="site"]');
     expect(stageSource).toContain("sunlit-project-switchboard");
     expect(stageSource).toContain("sunlit-project-index");
