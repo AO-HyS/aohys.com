@@ -165,6 +165,7 @@ describe("public site source quality", () => {
     expect(sitePackage).not.toMatch(/"(?:@types\/)?three"/);
     expect(publicContentPage).toContain(".sunlit-architecture-hero > div > p:last-of-type { color: var(--color-ink); }");
     expect(publicContentPage).toContain("SunlitProjectStage");
+    expect(publicContentPage).toContain("font-size: clamp(3.5rem, 4.8vw, 5rem)");
     expect(publicContentPage).toContain("getPracticePageContent");
     expect(publicContentPage).toContain("SunlitWebGLScene");
     expect(publicContentPage).toContain("SunlitCtaBand");
