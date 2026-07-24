@@ -314,6 +314,8 @@ describe("Public Content Graph", () => {
       url: "https://aohys.com/images/social/enterprise-systems-preview-v1.png",
       alt: "Enterprise product systems under operational pressure preview on AOHYS",
       type: "image/png",
+      width: 1200,
+      height: 630,
     });
     expect(
       getSeoMetadata("case-study:engineering-practice", "en").socialImage,
@@ -321,6 +323,8 @@ describe("Public Content Graph", () => {
       url: "https://aohys.com/images/social/engineering-practice-preview-v1.png",
       alt: "AI-native development practice with human accountability preview on AOHYS",
       type: "image/png",
+      width: 1200,
+      height: 630,
     });
 
     const homeSeo = getSeoMetadata("home", "en");

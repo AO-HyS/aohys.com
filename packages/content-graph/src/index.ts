@@ -1074,6 +1074,7 @@ export function getSeoMetadata(
       ? evidencePath
       : "/images/social/aohys-social-preview-v1.png";
   const usesEvidenceImage = socialImagePath === evidencePath;
+  const usesSocialPreview = socialImagePath === staticEvidence?.socialSrc;
   const socialImageAlt = usesEvidenceImage
     ? formatI18n(i18n.seo.evidencePreviewAlt, { title: localizedVariant.title })
     : i18n.seo.defaultImageAlt;
@@ -1124,7 +1125,9 @@ export function getSeoMetadata(
       url: toAbsoluteUrl(socialImagePath),
       alt: socialImageAlt,
       type: /\.png$/i.test(socialImagePath) ? "image/png" : "image/jpeg",
-      ...(usesEvidenceImage ? {} : { width: 1200, height: 630 }),
+      ...(usesEvidenceImage && !usesSocialPreview
+        ? {}
+        : { width: 1200, height: 630 }),
     },
     structuredData,
   };
