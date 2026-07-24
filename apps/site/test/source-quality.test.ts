@@ -184,6 +184,8 @@ describe("public site source quality", () => {
       "public/images/proof/barber-central-hero-v2.jpg",
       "public/images/proof/nutri-plan-dashboard-v2.png",
       "public/images/proof/eteria-garden-blue-table-og.jpg",
+      "public/images/social/engineering-practice-preview-v1.png",
+      "public/images/social/enterprise-systems-preview-v1.png",
       "public/images/brand/aohys-connections-wordmark-v3.svg",
       "public/images/brand/aohys-connections-mark-v3.svg",
       "public/images/brand/aohys-connections-mono-v3.svg",

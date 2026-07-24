@@ -76,6 +76,7 @@ export interface EvidenceAsset {
 export interface StaticEvidenceImageAsset {
   src: string;
   thumbSrc?: string;
+  socialSrc?: string;
   alt?: string;
   kind: "site" | "landing" | "dashboard" | "diagram";
 }
@@ -122,10 +123,12 @@ export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<
   },
   "case-study:enterprise-systems": {
     src: "/images/proof/enterprise-systems-map-v2.svg",
+    socialSrc: "/images/social/enterprise-systems-preview-v1.png",
     kind: "diagram",
   },
   "case-study:engineering-practice": {
     src: "/images/proof/engineering-practice-release-cycle.svg",
+    socialSrc: "/images/social/engineering-practice-preview-v1.png",
     kind: "diagram",
   },
   practice: {
@@ -1062,7 +1065,8 @@ export function getSeoMetadata(
   const i18n = getSharedI18n(locale);
   const canonicalUrl = toAbsoluteUrl(localizedVariant.path);
   const staticEvidence = STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID[contentId];
-  const evidencePath = staticEvidence?.thumbSrc ?? staticEvidence?.src;
+  const evidencePath =
+    staticEvidence?.socialSrc ?? staticEvidence?.thumbSrc ?? staticEvidence?.src;
   const socialImagePath =
     contentId !== "home" &&
     evidencePath &&

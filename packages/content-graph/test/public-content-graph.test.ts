@@ -209,6 +209,7 @@ describe("Public Content Graph", () => {
       STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID["case-study:engineering-practice"],
     ).toEqual({
       src: "/images/proof/engineering-practice-release-cycle.svg",
+      socialSrc: "/images/social/engineering-practice-preview-v1.png",
       kind: "diagram",
     });
     expect(
@@ -305,6 +306,21 @@ describe("Public Content Graph", () => {
       url: "https://aohys.com/images/proof/casa-roca-value-v2.jpg",
       alt: "Casa Roca guest experience and conversion path preview on AOHYS",
       type: "image/jpeg",
+    });
+
+    expect(
+      getSeoMetadata("case-study:enterprise-systems", "en").socialImage,
+    ).toEqual({
+      url: "https://aohys.com/images/social/enterprise-systems-preview-v1.png",
+      alt: "Enterprise product systems under operational pressure preview on AOHYS",
+      type: "image/png",
+    });
+    expect(
+      getSeoMetadata("case-study:engineering-practice", "en").socialImage,
+    ).toEqual({
+      url: "https://aohys.com/images/social/engineering-practice-preview-v1.png",
+      alt: "AI-native development practice with human accountability preview on AOHYS",
+      type: "image/png",
     });
 
     const homeSeo = getSeoMetadata("home", "en");
