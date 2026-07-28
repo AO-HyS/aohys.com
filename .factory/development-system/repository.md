@@ -1,6 +1,6 @@
 # Development System repository adapter
 
-Contract version: `0.8.0`
+Contract version: `0.9.1`
 Product: `aohys.com`
 Harness: `factory`
 
@@ -26,6 +26,14 @@ Explicit phase commands:
 
 Commit, push, pull-request, preview, and deploy state changes occur only when the request and repository policy authorize them. Merge, release, and production remain separate exact human authorizations. Neither automatic nor explicit phase routing grants promotion authority.
 
+## Delivery policy
+
+- Ordinary implementation and pre-push feedback use the changed-validation command. A full repository suite is never implicit.
+- Full certification runs once for the integrated candidate when explicitly requested or required by the repository release policy.
+- QA is selected by observable risk. Documentation, labels, copy, icons, and internal-only changes do not inherit browser or E2E work without a mapped surface.
+- Parallel or sequential implementation lanes converge into one candidate before `develop`; certify that candidate once, merge it once, and produce one shared preview for the exact SHA.
+- Provider readiness for auth, data migrations, seeds, roles, and environment contracts is proven before the shared preview merge when those surfaces changed.
+
 ## Operational prerequisite
 
 Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.2.0` and verify that the active Codex or Factory harness discovers these commands plus `drive-development-flow`. T3Code shares the Codex adapter structurally but has no independent live command proof in this release.
@@ -41,9 +49,21 @@ Review
 
 - pnpm run lint
 
-Validation
+Changed validation
 
-- pnpm run verify:ci
+- pnpm run quality:changed
+
+Candidate certification
+
+- pnpm run quality:certify
+
+Provider readiness
+
+- pnpm run quality:provider-readiness
+
+Legacy validation alias
+
+- pnpm run verify:changed
 
 QA
 

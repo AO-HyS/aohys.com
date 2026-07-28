@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "0.8.0",
+  "contractVersion": "0.9.1",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [
@@ -17,16 +17,31 @@
   },
   "preserved": {
     "releasePolicyFiles": [".github/workflows/release-train.yml"],
-    "designFiles": ["apps/dashboard/src/styles.css"]
+    "designFiles": [
+      ".agents/skills/impeccable/scripts/detector/design-system.mjs",
+      "apps/dashboard/src/styles.css"
+    ]
   },
   "commands": {
     "review": {
       "script": "lint",
       "command": "pnpm run lint"
     },
+    "changedValidation": {
+      "script": "quality:changed",
+      "command": "pnpm run quality:changed"
+    },
+    "certification": {
+      "script": "quality:certify",
+      "command": "pnpm run quality:certify"
+    },
+    "providerReadiness": {
+      "script": "quality:provider-readiness",
+      "command": "pnpm run quality:provider-readiness"
+    },
     "validation": {
-      "script": "verify:ci",
-      "command": "pnpm run verify:ci"
+      "script": "verify:changed",
+      "command": "pnpm run verify:changed"
     },
     "qa": {
       "script": "test",
@@ -97,6 +112,13 @@
       "operations": ["merge", "release", "production"],
       "authorization": "separate-exact-human-request"
     }
+  },
+  "deliveryPolicy": {
+    "ordinaryPush": "changed-validation",
+    "fullCertification": "once-per-candidate",
+    "qaSelection": "observable-risk",
+    "sharedPreview": "once-per-candidate",
+    "providerReadiness": "before-shared-preview-when-affected"
   },
   "operatorPrerequisites": {
     "skillCatalogVersion": "0.2.0",
