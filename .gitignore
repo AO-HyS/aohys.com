@@ -15,6 +15,12 @@ coverage/
 .agents/
 .claude/
 .codex/
+!.codex/
+.codex/*
+!.codex/hooks.json
+!.codex/development-system/
+.codex/development-system/*
+!.codex/development-system/repository.md
 .cursor/
 .expect/
 .playwright-cli/

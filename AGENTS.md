@@ -14,6 +14,14 @@ Visual planning and visual recap are separate artifacts. Do not run them as part
 
 Agents may push branches, open pull requests, and resolve or close review threads as part of normal execution. Do not merge any PR or branch into `develop`, `main`, or production release branches unless the user explicitly approves that merge after reviewing the result. General instructions like "avanza", "haz todo", or "continua" are not merge approval.
 
+## Delivery quality
+
+- Use `pnpm quality:changed` for ordinary implementation and pre-push feedback.
+- Run `pnpm quality:certify` once for the integrated candidate, not once per implementation lane.
+- Select E2E and Browser QA from observable risk. Documentation, copy, labels, icons, and internal-only changes do not require browser ceremony without a mapped user surface.
+- Parallel or sequential lanes converge into one candidate before `develop`; certify that exact SHA once and produce one shared preview.
+- Prove provider readiness before the shared preview when auth, data migrations, seeds, roles, or environment contracts changed.
+
 ## Tool routing
 
 - Use the bundled Browser plugin for browser and visual QA.
