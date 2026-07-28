@@ -26,23 +26,26 @@ Feature branches should target `develop`. Production promotion should target `ma
 1. Create a feature branch from `develop`.
 2. Implement the vertical slice using the TDD plan.
 3. Open a pull request into `develop`.
-4. Let Husky run the staged pre-commit checks and the complete pre-push gate.
-5. Open the pull request only after local verification passes; GitHub validates
+4. Let Husky run staged pre-commit checks and changed validation at pre-push.
+5. Integrate the implementation lanes and run `pnpm run quality:certify` once
+   for that exact candidate SHA.
+6. Open the pull request only after local verification passes; GitHub validates
    release policy but does not repeat the repository suite.
-6. Let `.github/workflows/release-train.yml` deploy the `develop` build to Cloudflare Pages with branch `develop`.
-7. Run preview smoke checks against the preview site.
-8. Open a promotion pull request from `develop` to `main`.
-9. Verify production readiness checks before merge.
-10. Merge to protected `main`.
-11. Let the workflow deploy the `main` build to Cloudflare Pages with branch `main`.
-12. Run production smoke checks against `aohys.com`.
+7. Let `.github/workflows/release-train.yml` deploy the `develop` build to Cloudflare Pages with branch `develop`.
+8. Run preview smoke checks against the preview site.
+9. Open a promotion pull request from `develop` to `main`.
+10. Verify production readiness checks before merge.
+11. Merge to protected `main`.
+12. Let the workflow deploy the `main` build to Cloudflare Pages with branch `main`.
+13. Run production smoke checks against `aohys.com`.
 
 ## Commands
 
 | Command                                        | Purpose                                                                                                                                                                                                                                                                                                                           |
 | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `pnpm run verify:precommit`                    | Fast Husky pre-commit gate: staged formatting, foundation checks, and React Doctor CLI.                                                                                                                                                                                                                                           |
-| `pnpm run quality:push`                        | Full local pre-push gate: foundation, lint, typecheck, tests, build, and React Doctor CLI.                                                                                                                                                                                                                                        |
+| `pnpm run quality:push`                        | Incremental pre-push gate: foundation, affected workspace checks, mapped visual checks, and React Doctor against the branch delta.                                                                                                                                                                                                |
+| `pnpm run quality:certify`                     | Full local candidate gate: foundation, lint, typecheck, tests, build, Impeccable, and React Doctor. Run once for the integrated SHA before `develop`.                                                                                                                                                                             |
 | `pnpm verify`                                  | Full local and CI quality gate: foundation, lint, typecheck, tests, build.                                                                                                                                                                                                                                                        |
 | `pnpm run cloudflare:local`                    | Build the Astro site and serve `apps/site/dist` with Wrangler Pages dev.                                                                                                                                                                                                                                                          |
 | `pnpm run release:env:preview`                 | Validate GitHub Environment values for preview deploys without printing secrets.                                                                                                                                                                                                                                                  |
@@ -89,7 +92,10 @@ remains available through manual dispatch.
 Husky owns both local boundaries. `.husky/pre-commit` formats staged files and
 runs the fast foundation plus React Doctor checks. `.husky/pre-push` rejects a
 dirty worktree and runs `pnpm run quality:push`, so the pushed commit is the
-exact tree that passed the full repository suite.
+exact tree that passed changed validation. Parallel or sequential lanes converge
+into one candidate; that SHA passes `pnpm run quality:certify` once and receives
+one shared preview. Provider readiness is proven before the preview merge when
+auth, data migrations, seeds, roles, or environment contracts changed.
 
 The workflow expects GitHub Environment secrets for `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_IMAGES_API_TOKEN`, `CONVEX_DEPLOY_KEY`, `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, and `GOOGLE_CLIENT_SECRET`. The production Cloudflare token needs Pages Write. The current topology explicitly marks the `aohys.com` zone as external to the Pages account, so the release never calls Zone or DNS APIs with that token and only retries Pages validation. The reusable same-account mode requires Zone Read and DNS Write and creates only a missing, conflict-free apex record. Public or policy values such as `PUBLIC_SITE_URL`, `PUBLIC_POSTHOG_HOST`, `RESEND_FROM`, `BETTER_AUTH_TRUSTED_ORIGINS`, `GOOGLE_CLIENT_ID`, `CLOUDFLARE_PROJECT_NAME`, `CLOUDFLARE_IMAGES_ACCOUNT_HASH`, `CONVEX_URL`, and `CONVEX_SITE_URL` are read from GitHub Environment variables.
 

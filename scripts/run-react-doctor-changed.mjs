@@ -4,11 +4,16 @@ import { execFileSync, spawnSync } from "node:child_process";
 
 const baseRef = "origin/develop";
 const reactProjects = ["apps/dashboard"];
-const changedFiles = execFileSync(
-  "git",
-  ["diff", "--name-only", "--diff-filter=ACMR", `${baseRef}...HEAD`],
-  { encoding: "utf8" },
-)
+const changedOutput = process.env.CHANGED_FILES
+  ? process.env.CHANGED_FILES.replaceAll(",", "\n")
+  : [
+      ["diff", "--name-only", "--diff-filter=ACMR"],
+      ["diff", "--name-only", "--cached", "--diff-filter=ACMR"],
+      ["diff", "--name-only", "--diff-filter=ACMR", `${baseRef}...HEAD`],
+    ]
+      .map((args) => execFileSync("git", args, { encoding: "utf8" }))
+      .join("\n");
+const changedFiles = changedOutput
   .split("\n")
   .map((file) => file.trim())
   .filter((file) => /^(?:apps|packages)\/.+\.[cm]?[jt]sx?$/.test(file));
