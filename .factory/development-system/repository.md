@@ -1,6 +1,6 @@
 # Development System repository adapter
 
-Contract version: `0.9.1`
+Contract version: `1.1.1`
 Product: `aohys.com`
 Harness: `factory`
 
@@ -12,17 +12,19 @@ Preserve this product's domain language, stack, commands, release policy, and vi
 
 Both operator styles are supported:
 
-- Automatic routing: describe the software goal normally. `drive-development-flow` infers, loads, and runs the smallest fitting stage as far as the request authorizes. Recommendation-only requests remain read-only, and the router never approves a human gate or expands authority.
+- Automatic routing: describe directly requested implementation, review, diagnosis, research, or QA normally. `drive-development-flow` loads only that matching flow and never infers a special planning stage or expands authority. Recommendation-only requests remain read-only.
 - Explicit routing: invoke the exact phase command when you want direct control.
 
 Explicit phase commands:
 
 - `/wayfinder`: optional discovery outside the normal lifecycle; explicit invocation only.
-- `/grill-with-docs`: requirements; stop for human approval.
-- `/to-spec`: spec plus Local Visual Plan; stop for human approval.
-- `/to-tickets`: executable slices; stop for human approval.
+- `/grill-with-docs`: requirements; explicit invocation only and stop for human approval.
+- `/to-spec`: spec plus Local Visual Plan; explicit invocation only and stop for human approval.
+- `/to-tickets`: executable slices; explicit invocation only and stop for human approval.
 - `/flow-implement`: one named terminal slice; run the autonomous development loop only inside the request's existing authority and stop at the pinned human boundary. Tests, validation, review, correction, and proportional QA are development substeps and grant no external-state authority.
 - `/flow-code-review`: independent review of an existing branch or pull request.
+
+Before implementation, pin one objective, constraints, exact scope, required evidence and validation, a verifiable stop condition, and every human or external-state boundary. A native goal is created only on explicit request; its persistence never expands authority or scope.
 
 Commit, push, pull-request, preview, and deploy state changes occur only when the request and repository policy authorize them. Merge, release, and production remain separate exact human authorizations. Neither automatic nor explicit phase routing grants promotion authority.
 
@@ -36,7 +38,9 @@ Commit, push, pull-request, preview, and deploy state changes occur only when th
 
 ## Operational prerequisite
 
-Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.2.0` and verify that the active Codex or Factory harness discovers these commands plus `drive-development-flow`. T3Code shares the Codex adapter structurally but has no independent live command proof in this release.
+Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.5.1` and verify that the active Codex or Factory harness discovers these commands plus `drive-development-flow`. T3Code shares the Codex adapter structurally but has no independent live command proof in this release.
+
+Global `exa-search` is paid public-web retrieval and must receive no secrets, private source, customer data, PHI, PII, private URLs, or private identifiers. Global `global-agent-guardrails` must be enabled and audited separately; it is defense in depth, not authorization or a sandbox.
 
 ## Stack rules
 
