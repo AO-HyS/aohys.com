@@ -1,12 +1,12 @@
 # Development System repository adapter
 
-Contract version: `1.1.1`
+Contract version: `1.1.2`
 Product: `aohys.com`
 Harness: `factory`
 
 Factory uses this documented equivalent when a native Codex-only capability is unavailable.
 
-Preserve this product's domain language, stack, commands, release policy, and visual design. Do not import another product's vocabulary or activate paid services.
+Preserve this product's domain language, stack, commands, release policy, and visual design. Do not import another product's vocabulary. Generating or normalizing this adapter never activates a paid service; later use of declared paid agent tooling still requires repository opt-in or an explicit user invocation.
 
 ## Lifecycle interface
 
@@ -40,7 +40,7 @@ Commit, push, pull-request, preview, and deploy state changes occur only when th
 
 Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.5.1` and verify that the active Codex or Factory harness discovers these commands plus `drive-development-flow`. T3Code shares the Codex adapter structurally but has no independent live command proof in this release.
 
-Global `exa-search` is paid public-web retrieval and must receive no secrets, private source, customer data, PHI, PII, private URLs, or private identifiers. Global `global-agent-guardrails` must be enabled and audited separately; it is defense in depth, not authorization or a sandbox.
+Global `exa-search` is paid public-web retrieval. This adapter only declares its availability and never calls or activates it. A repository opt-in or explicit user invocation is required, and every request must receive no secrets, private source, customer data, PHI, PII, private URLs, or private identifiers. Global `global-agent-guardrails` must be enabled and audited separately; it is defense in depth, not authorization or a sandbox.
 
 ## Stack rules
 

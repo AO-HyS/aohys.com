@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "1.1.1",
+  "contractVersion": "1.1.2",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [
@@ -151,6 +151,20 @@
       "global-agent-guardrails"
     ]
   },
+  "conditionalCapabilities": {
+    "providerReadiness": {
+      "configured": true,
+      "requiredWhen": [
+        "auth",
+        "data",
+        "migration",
+        "seeds",
+        "roles",
+        "provider-config",
+        "environment"
+      ]
+    }
+  },
   "rules": {
     "react": true,
     "convex": true,
@@ -167,6 +181,7 @@
     ]
   },
   "services": {
-    "paidActivation": false
+    "paidActivation": false,
+    "paidActivationMeaning": "adapter-generation-does-not-call-or-enable-paid-services"
   }
 }
