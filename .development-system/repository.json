@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "0.9.1",
+  "contractVersion": "1.1.1",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [
@@ -70,9 +70,24 @@
   "lifecycle": {
     "automatic": {
       "router": "drive-development-flow",
-      "stageSelection": "infer-load-and-run",
+      "stageSelection": "requested-flow-only",
+      "specialStages": "explicit-user-invocation-only",
       "progressLimit": "request-authority-and-human-gates",
       "recommendationEffect": "read-only"
+    },
+    "terminalSliceContract": {
+      "objectives": 1,
+      "required": [
+        "constraints",
+        "exact-scope",
+        "evidence-and-validation",
+        "verifiable-stop-condition",
+        "authorization-boundaries"
+      ]
+    },
+    "nativeGoal": {
+      "creation": "explicit-user-request-only",
+      "persistenceEffect": "no-scope-or-authorization-expansion"
     },
     "explicitCommands": {
       "codex": [
@@ -121,7 +136,7 @@
     "providerReadiness": "before-shared-preview-when-affected"
   },
   "operatorPrerequisites": {
-    "skillCatalogVersion": "0.2.0",
+    "skillCatalogVersion": "0.5.1",
     "installationScope": "global",
     "readinessScope": "repository-adapter-only",
     "requiredSkills": [
@@ -131,7 +146,9 @@
       "to-spec",
       "to-tickets",
       "flow-implement",
-      "flow-code-review"
+      "flow-code-review",
+      "exa-search",
+      "global-agent-guardrails"
     ]
   },
   "rules": {
