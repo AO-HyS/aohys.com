@@ -114,7 +114,8 @@ def build_pdf() -> None:
   add_heading(story, resume["experienceTitle"], heading)
   for index, job in enumerate(resume["experience"]):
     story.append(paragraph(f"{job['role']} | {job['company']} | {job['period']}", body_bold))
-    add_bullets(story, job["bullets"][:3 if index == 0 else 1], body)
+    bullet_limit = 3 if index == 0 else 2 if job["company"] == "AOHYS" else 1
+    add_bullets(story, job["bullets"][:bullet_limit], body)
 
   add_heading(story, resume["skillsTitle"], heading)
   for skill_group in resume["skills"]:

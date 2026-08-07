@@ -20,7 +20,7 @@
       "proofBoardTitle": "La intención de negocio se convierte en software funcional.",
       "proofBoardBody": "Trabajo con clientes y stakeholders, doy forma al producto y al dominio, construyo a través del sistema y conservo la responsabilidad sobre verificación y release.",
       "selectedOutcomesHeading": "Trabajo seleccionado, ordenado por evidencia.",
-      "selectedOutcomesIntro": "Trabajo de cliente en producción, práctica AI-native, sistemas enterprise y productos que avanzan deliberadamente hacia release.",
+      "selectedOutcomesIntro": "Seis sistemas que muestran el resultado, la capacidad de producto u operación y mi rol en el trabajo.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:eteria",
@@ -131,24 +131,24 @@
           "text": "Límites claros, observabilidad, rutas de release y superficies operativas permiten evolucionar el producto sin perder responsabilidad."
         }
       ],
-      "practiceHeading": "Cuéntame qué estás construyendo.",
-      "practiceBody": "Puedo integrarme a un equipo, dar forma a un producto nuevo, modernizar un sistema en movimiento o ayudar a convertir un delivery difícil en software funcional.",
+      "practiceHeading": "Cómo trabajo y aporto.",
+      "practiceBody": "Conecto criterio de producto, arquitectura, implementación y delivery responsable en sistemas completos, frentes enfocados dentro de equipos y modernizaciones que ya están en marcha.",
       "practicePoints": [
         {
           "label": "Sistemas de producto",
-        "text": "Dar forma a la idea, interfaz, workflows, datos y modelo operativo como una experiencia coherente."
+          "text": "Dar forma a la idea, interfaz, workflows, datos y modelo operativo como una experiencia coherente."
         },
         {
           "label": "Arquitectura y modernización",
-        "text": "Evolucionar un sistema existente con límites más claros, capacidades modernas y espacio para crecer."
+          "text": "Evolucionar un sistema existente con límites más claros, capacidades modernas y espacio para crecer."
         },
         {
           "label": "Aceleración de delivery",
-        "text": "Integrar IA avanzada, previews, quality gates, observabilidad y operación cloud al trabajo diario."
+          "text": "Integrar IA avanzada, previews, quality gates, observabilidad y operación cloud al trabajo diario."
         }
       ],
-      "contactHeading": "Cuéntame qué estás construyendo.",
-      "contactBody": "Cuéntame qué estás construyendo, a quién debe servir y qué lo está frenando. Leeré el contexto personalmente y responderé con preguntas útiles y un siguiente paso práctico.",
+      "contactHeading": "Empieza por el contexto.",
+      "contactBody": "Comparte el producto, rol, sistema o pregunta técnica que quieres hacer avanzar. Leeré el contexto personalmente y responderé con preguntas útiles y un siguiente paso práctico.",
       "emailLabel": "Escribir a Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",
       "whatsappLabel": "WhatsApp",
@@ -169,12 +169,12 @@
         },
         {
           "slotId": "agents",
-          "label": "Servicios",
+          "label": "Práctica",
           "contentId": "practice"
         },
         {
           "slotId": "pricing",
-          "label": "Sobre mí",
+          "label": "Experiencia",
           "contentId": "resume"
         },
         {
@@ -184,7 +184,7 @@
         },
         {
           "slotId": "blog",
-          "label": "Hablemos",
+          "label": "Contacto",
           "contentId": "contact"
         }
       ],
@@ -232,14 +232,23 @@
           {
             "id": "entrega",
             "contentId": "practice",
-            "label": "Servicios",
-            "text": "Sistemas de producto, modernización y aceleración de delivery.",
+            "label": "Práctica",
+            "text": "Sistemas de producto, colaboración integrada y modernización.",
             "icon": "practice",
             "tone": 3
           }
         ],
         "preview": {
-          "tabs": ["cURL", "NodeJS", "Rust", "Go", "PHP", "C#", "Java", "Python"],
+          "tabs": [
+            "cURL",
+            "NodeJS",
+            "Rust",
+            "Go",
+            "PHP",
+            "C#",
+            "Java",
+            "Python"
+          ],
           "codeLines": [
             "const system = await aohys.publish({",
             "  publicSite: \"ETERIA\",",
@@ -254,16 +263,16 @@
   "case-studies": {
     "path": "/es/casos",
     "title": "Trabajo seleccionado",
-    "summary": "Sitios en vivo, productos activos, sistemas enterprise y las decisiones de ingeniería detrás de cada resultado.",
-    "seoDescription": "Trabajo seleccionado de Alejandro Ortiz Corro en sitios en producción, productos activos, sistemas de negocio, entrega enterprise e ingeniería moderna de producto.",
+    "summary": "Seis historias de sistemas y delivery que explican qué se construyó, qué permite cada sistema y el rol de Alejandro.",
+    "seoDescription": "Trabajo seleccionado de Alejandro Ortiz Corro: sitios en producción, productos activos, sistemas enterprise y delivery AI-native, con contexto, resultados, rol y evidencia pública.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
     "secondaryActionContentId": "architecture"
   },
   "case-study:eteria": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "c5e566552902b47aa42f223e9cbb6400c2db6d76924c65f8f70c026708945976",
+    "approvedAt": "2026-07-24T05:15:00.000Z",
+    "approvedHash": "783c3cccbebfb30c23dd6127480ac074d5addfe971372c8ab387b939e1a3bcc7",
     "path": "/es/casos/eteria",
     "title": "ETERIA: sistema de producto para un negocio de eventos",
     "summary": "Un proyecto de cliente en producción que conecta descubrimiento público, captura de leads, propuestas, operación privada y un cliente interno SwiftUI.",
@@ -276,11 +285,11 @@
       "statusLabel": "Proyecto de cliente · En producción",
       "overview": "ETERIA es un proyecto de cliente en producción para un negocio de eventos. Conecta una landing pública y rutas reales de leads con propuestas y workflows operativos privados.",
       "problem": {
-        "title": "Oportunidad",
+        "title": "Necesidad del negocio",
         "body": "El negocio necesitaba una ruta coherente desde el primer contacto público hasta una propuesta y el trabajo cotidiano necesario para entregar un evento."
       },
       "businessOutcome": {
-        "title": "Resultado de negocio",
+        "title": "Qué se construyó y qué permite",
         "body": "El sistema en producción da al equipo un espacio público para generar confianza, capturar leads por formulario y WhatsApp, compartir propuestas versionadas y coordinar el trabajo dentro de límites autenticados."
       },
       "role": {
@@ -322,8 +331,8 @@
     }
   },
   "case-study:casa-roca": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "79205bc4e4549aed34f2ad9ceb5622936a5aa3340f1f273564d524d7fcabd073",
+    "approvedAt": "2026-07-24T02:00:00.000Z",
+    "approvedHash": "e5345b1f60e1cb848eed6882740d6a24f6366f3623e9d300284b6c2cc34c3b31",
     "path": "/es/casos/casa-roca",
     "title": "Casa Roca: experiencia de huéspedes y contacto directo",
     "summary": "Una experiencia pública de hospitalidad en producción con historia clara, contacto directo y releases disciplinados.",
@@ -336,12 +345,12 @@
       "statusLabel": "Experiencia de hospitalidad en producción",
       "overview": "Casa Roca es el punto de llegada digital de una estancia boutique en Roca Partida, Veracruz. Ayuda a que los huéspedes entiendan rápido el lugar, decidan si encaja con su viaje y contacten al negocio directamente.",
       "problem": {
-        "title": "Oportunidad",
-        "body": "Casa Roca tenía la oportunidad de convertir su lugar, experiencia y credibilidad en una llegada digital clara, con un siguiente paso directo para sus huéspedes."
+        "title": "Necesidad del negocio",
+        "body": "El negocio necesitaba un destino público bilingüe donde los huéspedes pudieran entender el lugar, decidir si encajaba con su viaje y contactar directamente a Casa Roca."
       },
       "businessOutcome": {
-        "title": "Resultado de negocio",
-        "body": "El sitio en producción le da a Casa Roca un destino claro para huéspedes, tráfico de búsqueda, confianza de marca y contacto directo."
+        "title": "Qué se construyó y qué permite",
+        "body": "Un sitio de hospitalidad en producción reúne la historia del lugar, páginas localizadas para huéspedes, metadata de búsqueda, media responsive y una ruta de contacto directo. Permite que los huéspedes entiendan la estancia y contacten al negocio desde un mismo destino público."
       },
       "role": {
         "title": "Rol",
@@ -381,8 +390,8 @@
     }
   },
   "case-study:the-barber-central": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "f6a1c4c95a2634e4b21d937de55686ebdadd6cf2edff3d67d6fea40a3cac6b58",
+    "approvedAt": "2026-07-24T05:25:00.000Z",
+    "approvedHash": "ae259d61e907f60bc639f482ea67b451a17a52ec2088e17631329c2f4fa0013e",
     "path": "/es/casos/the-barber-central",
     "title": "The Barber Central: reservas y operación",
     "summary": "SaaS para negocios de servicios acercándose a producción con reservas, clientes, staff, inventario, reporting, analíticas y retención.",
@@ -395,12 +404,12 @@
       "statusLabel": "Acercándose a producción",
       "overview": "The Barber Central es un SaaS acercándose a producción para barberías, salones y estudios. Reservas, clientes, staff, inventario, reporting, analíticas y retención funcionan como un sistema operativo en vez de herramientas pegadas.",
       "problem": {
-        "title": "Oportunidad",
-        "body": "Los negocios de servicios pueden reunir reservas, recordatorios, personal y pagos en un solo workflow diario que dé más espacio al crecimiento."
+        "title": "Necesidad del negocio",
+        "body": "Barberías, salones y estudios necesitaban un workflow diario confiable para reservas, clientes, disponibilidad del equipo, recordatorios, pagos y la operación detrás de cada cita."
       },
       "businessOutcome": {
-        "title": "Resultado de negocio",
-        "body": "La dirección de producto se centra en el workflow diario: reservar clientes, administrar disponibilidad, comunicar con claridad y mover el negocio sin unir herramientas a mano."
+        "title": "Qué se construyó y qué permite",
+        "body": "Un SaaS para negocios de servicios reúne reservas, clientes, disponibilidad del equipo, recordatorios, inventario, reportes, analytics y retención en un solo sistema operativo. Permite manejar el día sin unir herramientas separadas a mano."
       },
       "role": {
         "title": "Rol",
@@ -440,8 +449,8 @@
     }
   },
   "case-study:nutri-plan": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "b26f1c554a4e3954007d3af7dd23af1a25d1343ab892699ae73f74115b2fc0f0",
+    "approvedAt": "2026-07-24T05:25:00.000Z",
+    "approvedHash": "f3c8764ac674dfe80badab501a3df515ccc8b53efaffb0445ae2b80f0ea92035",
     "path": "/es/casos/nutri-plan",
     "title": "NutriPlan Digital: sistema de producto clínico",
     "summary": "SaaS clínico multi-superficie en testing y preparación para producción, con workflows protegidos para profesionales, administración y móvil.",
@@ -454,12 +463,12 @@
       "statusLabel": "Testing y preparación para producción",
       "overview": "NutriPlan Digital es un SaaS clínico multi-superficie en testing y preparación para producción. Conecta workflows profesionales, administración, acceso móvil, contenido educativo y claridad operativa mediante estado backend compartido.",
       "problem": {
-        "title": "Oportunidad",
-        "body": "Los equipos de nutrición pueden conectar expedientes, planes, dashboards y experiencias móviles mediante un modelo compartido de producto."
+        "title": "Necesidad del negocio",
+        "body": "Los equipos de nutrición necesitaban que los workflows profesionales, administrativos y móviles compartieran estado consistente sin sacar los registros relacionados con salud de límites claros de rol y acceso."
       },
       "businessOutcome": {
-        "title": "Resultado de negocio",
-        "body": "El build organiza el producto alrededor de roles operativos reales y backend compartido para que el trabajo con clientes, administración y móvil salgan del mismo modelo."
+        "title": "Qué se construyó y qué permite",
+        "body": "Un producto clínico multi-superficie conecta workflows profesionales, administración, acceso móvil, contenido educativo y estado backend compartido. Permite que esas superficies operen desde el mismo modelo de producto mientras preservan límites de rol y acceso."
       },
       "role": {
         "title": "Rol",
@@ -499,8 +508,8 @@
     }
   },
   "case-study:enterprise-systems": {
-    "approvedAt": "2026-07-20T17:51:17.000Z",
-    "approvedHash": "1cb6d5c496e76f52ace7340cfdc5dd35728fc7bf88fa09fd89fd3978353e8928",
+    "approvedAt": "2026-07-24T05:15:00.000Z",
+    "approvedHash": "e0a69dd7d05dfb59646c2ea7ccdc44ff8c3abd6288e9df41e4c88ea840ce0e66",
     "path": "/es/casos/sistemas-enterprise",
     "title": "Sistemas de producto enterprise bajo presión operativa",
     "summary": "Una plataforma interna de operaciones de atención al cliente y recuperación de cuentas y software mission-critical de respuesta a emergencias muestran criterio de producto, performance y delivery confiable dentro de organizaciones complejas.",
@@ -513,12 +522,12 @@
       "statusLabel": "Sistemas de producto enterprise",
       "overview": "Una plataforma interna de operaciones de atención al cliente y recuperación de cuentas y software mission-critical de respuesta a emergencias para una gran ciudad de Estados Unidos muestran cómo operan producto, performance, observabilidad y delivery dentro de organizaciones complejas.",
       "problem": {
-        "title": "Oportunidad",
-        "body": "Los sistemas grandes abren oportunidades valiosas cuando ownership, integraciones, workflows operativos y caminos de soporte se vuelven visibles."
+        "title": "Necesidad del negocio",
+        "body": "Los equipos de atención a clientes, recuperación de cuentas y respuesta a emergencias necesitaban workflows confiables entre ownership, integraciones, handoffs operativos y caminos de soporte de alto riesgo."
       },
       "businessOutcome": {
-        "title": "Resultado de negocio",
-        "body": "La plataforma de atención al cliente y recuperación de cuentas mejoró de aproximadamente 3–5 segundos a menos de 1 segundo. Los workflows de respuesta a emergencias soportaron dispatch de alto riesgo donde importaban la confiabilidad y la precisión."
+        "title": "Qué se construyó y qué permite",
+        "body": "Una plataforma interna de atención a clientes y recuperación de cuentas aceleró workflows complejos, mejorando cargas clave de aproximadamente 3–5 segundos a menos de 1 segundo. Software mission-critical de respuesta a emergencias soportó dispatch de alto riesgo donde importaban la confiabilidad y la precisión."
       },
       "role": {
         "title": "Rol",
@@ -558,8 +567,8 @@
     }
   },
   "case-study:engineering-practice": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "02e64053ecbbcb827e879579004c4d246a34ff0f4acc68c23a4c77b0cf33a882",
+    "approvedAt": "2026-07-24T05:15:00.000Z",
+    "approvedHash": "05539ec0ab6b87303066f0eb028c9995b11579225d961438effbf97dc096c009",
     "path": "/es/casos/practica-de-ingenieria",
     "title": "Práctica de desarrollo AI-native con responsabilidad humana",
     "summary": "Los agentes trabajan en requisitos, dominio, specs, tickets, implementación, revisión, QA, preview y release mientras el criterio humano conserva la responsabilidad.",
@@ -572,12 +581,12 @@
       "statusLabel": "Práctica de desarrollo AI-native",
       "overview": "Desarrollo AI-native significa que los agentes ejecutan trabajo en requisitos, modelado de dominio, specs, tickets, implementación, revisión, QA, preview y release mientras yo conservo responsabilidad por decisiones, calidad y autoridad de release.",
       "problem": {
-        "title": "Oportunidad",
-        "body": "El software moderno se mueve rápido; arquitectura, pruebas, revisión y checks de producción convierten esa energía en impulso con confianza."
+        "title": "Necesidad del negocio",
+        "body": "Los equipos de producto necesitan aprovechar agentes especializados a lo largo del delivery sin perder ownership de decisiones, calidad de revisión ni autoridad humana de release."
       },
       "businessOutcome": {
-        "title": "Resultado de negocio",
-        "body": "Un proceso repetible permite avanzar más rápido mientras produce decisiones inspeccionables, releases más seguros, mejores handoffs y más confianza para stakeholders."
+        "title": "Qué se construyó y qué permite",
+        "body": "Una práctica de delivery repetible y revisable conecta requisitos, dominio, specs, tickets, implementación, revisión, QA, preview y release. Permite ejecutar más rápido manteniendo decisiones inspeccionables y responsabilidad humana por calidad y release."
       },
       "role": {
         "title": "Rol",
@@ -618,52 +627,85 @@
   },
   "practice": {
     "path": "/es/practica",
-    "title": "Tres formas de hacer avanzar un producto.",
-    "summary": "Construye un producto completo, suma capacidad senior a un proyecto definido o moderniza el sistema que ya sostiene al negocio.",
-    "seoDescription": "Trabaja con AOHYS para construir desde cero un sitio, aplicación web o app móvil; sumar un ingeniero de producto senior a tu equipo; o modernizar un producto con IA, datos, cloud y mejores capacidades de delivery.",
+    "title": "Cómo trabajo y aporto.",
+    "summary": "Sistemas de producto, colaboración integrada y modernización son tres contextos donde el criterio senior de producto e ingeniería puede hacer avanzar el trabajo.",
+    "seoDescription": "Cómo aporta Alejandro Ortiz Corro mediante sistemas de producto end-to-end, colaboración senior integrada, arquitectura, modernización y delivery AI-native responsable.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver la arquitectura",
     "secondaryActionContentId": "architecture",
     "practiceContent": {
-      "heading": "Trae la ambición de producto. Elige cómo trabajamos.",
-      "deck": "Desde un primer boceto hasta un producto listo para su siguiente etapa, me sumo donde el criterio senior de producto e ingeniería puede crear impulso. Cada colaboración tiene un ritmo claro, entregables concretos y un sistema que tu equipo puede seguir mejorando.",
+      "heading": "Ingeniería de producto senior, aplicada donde aporta.",
+      "deck": "Contribuyo en decisiones de producto, arquitectura, implementación, verificación y release. La forma cambia con el contexto: un sistema de producto completo, un frente enfocado dentro de un equipo o una modernización que ya está en marcha.",
       "services": [
         {
           "id": "product-systems",
-          "title": "Construir un producto completo desde cero",
-          "problem": "Tienes una audiencia real y una idea valiosa, pero todavía hace falta definir el camino de producto entre experiencia, operación, datos, arquitectura y release.",
-          "result": "Un sitio, aplicación web o app móvil listo para producción, con un recorrido coherente, workflows confiables, comportamiento medible y espacio para crecer.",
-          "engagement": "Lidero la ruta de producto e ingeniería desde el encuadre y diseño del sistema hasta la implementación, lanzamiento y handoff operativo que tu equipo puede tomar.",
-          "deliverables": ["Brief de producto y mapa de recorrido", "Sitio, web app o app móvil funcionando", "Backend, datos y workflows operativos", "Lanzamiento a producción y handoff de ownership"]
+          "title": "Sistemas de producto end-to-end",
+          "problem": "Un producto necesita un camino coherente entre experiencia, operación, datos, arquitectura y release.",
+          "result": "Un sitio, aplicación web o app móvil funcionando, con workflows confiables, comportamiento medible y espacio para evolucionar.",
+          "engagement": "Conecto el encuadre de producto y el diseño del sistema con implementación, verificación, release y un handoff operativo que el equipo puede asumir.",
+          "deliverables": [
+            "Brief de producto y mapa de recorrido",
+            "Sitio, web app o app móvil funcionando",
+            "Backend, datos y workflows operativos",
+            "Lanzamiento a producción y handoff de ownership"
+          ]
         },
         {
           "id": "architecture-modernization",
-          "title": "Sumar un colaborador senior a tu equipo",
-          "problem": "El proyecto y el destino ya están definidos, y el equipo quiere experiencia práctica para acelerar decisiones de producto y arquitectura y convertir el plan en software confiable.",
-          "result": "Más capacidad sin una larga curva de entrada: decisiones claras, implementación más fuerte, menos puntos ciegos y un colaborador senior que mejora el trabajo alrededor del código.",
-          "engagement": "Me integro a tu equipo de producto e ingeniería durante una fase enfocada, con ownership de un frente relevante y participación en su ritmo de planeación, revisión, QA y release.",
-          "deliverables": ["Un frente de delivery con ownership claro", "Código de producción y decisiones de producto", "Revisiones de arquitectura e implementación", "Pruebas, evidencia de release y handoff al equipo"]
+          "title": "Colaboración senior integrada",
+          "problem": "La dirección está definida y un equipo necesita ownership con experiencia en un frente relevante de producto o ingeniería.",
+          "result": "Decisiones más claras, implementación más fuerte, menos puntos ciegos y delivery más confiable alrededor del código.",
+          "engagement": "Trabajo dentro del ritmo existente de planeación, revisión, QA y release del equipo mientras asumo un área enfocada de delivery.",
+          "deliverables": [
+            "Un frente de delivery con ownership claro",
+            "Código de producción y decisiones de producto",
+            "Revisiones de arquitectura e implementación",
+            "Pruebas, evidencia de release y handoff al equipo"
+          ]
         },
         {
           "id": "delivery-acceleration",
-          "title": "Modernizar lo que ya está en movimiento",
-          "problem": "Un producto o proceso existente ya genera valor, y el negocio está listo para ampliarlo con límites más claros, datos conectados, workflows modernos y una mejor práctica de delivery.",
-          "result": "Un sistema más seguro y capaz que conserva el comportamiento útil mientras integra las capacidades correctas de IA, datos, cloud, observabilidad y delivery.",
-          "engagement": "Mapeamos el sistema actual, elegimos el límite con mayor impacto y entregamos la modernización en incrementos verificados para que el negocio siga avanzando mientras mejora la base.",
-          "deliverables": ["Mapa de estado actual y oportunidades", "Arquitectura objetivo con tradeoffs explícitos", "Integración de IA, datos, cloud o workflows", "Rollout incremental, verificación y playbook operativo"]
+          "title": "Arquitectura y modernización",
+          "problem": "Un producto o proceso ya genera valor y necesita límites más claros, datos conectados, workflows modernos o una mejor ruta de delivery.",
+          "result": "Un sistema más seguro y capaz que conserva el comportamiento útil mientras mejora las partes que limitan al producto.",
+          "engagement": "Mapeo el sistema actual, hago explícitos los tradeoffs y entrego incrementos verificados para que el trabajo continúe mientras mejora la base.",
+          "deliverables": [
+            "Mapa de estado actual y oportunidades",
+            "Arquitectura objetivo con tradeoffs explícitos",
+            "Integración de IA, datos, cloud o workflows",
+            "Rollout incremental, verificación y playbook operativo"
+          ]
         }
       ],
-      "processHeading": "Claridad desde la primera sesión de trabajo.",
+      "processHeading": "Una forma de trabajo visible y responsable.",
       "process": [
-        {"label": "Alinear", "text": "Confirmar el resultado, la audiencia, restricciones, responsables de decisión y evidencia que definirá el avance."},
-        {"label": "Hacer visible el sistema", "text": "Mapear experiencia, workflows, datos, límites, riesgos y tradeoffs antes de que el esfuerzo desaparezca en la implementación."},
-        {"label": "Entregar porciones útiles", "text": "Lanzar incrementos completos y revisables con estados reales, instrumentación, QA y checks de producción."},
-        {"label": "Dejar claridad operativa", "text": "Entregar software funcionando, decisiones explícitas, evidencia de release y un plan práctico para lo siguiente."}
+        {
+          "label": "Alinear",
+          "text": "Confirmar el resultado, la audiencia, restricciones, responsables de decisión y evidencia que definirá el avance."
+        },
+        {
+          "label": "Hacer visible el sistema",
+          "text": "Mapear experiencia, workflows, datos, límites, riesgos y tradeoffs antes de que el esfuerzo desaparezca en la implementación."
+        },
+        {
+          "label": "Entregar porciones útiles",
+          "text": "Lanzar incrementos completos y revisables con estados reales, instrumentación, QA y checks de producción."
+        },
+        {
+          "label": "Dejar claridad operativa",
+          "text": "Entregar software funcionando, decisiones explícitas, evidencia de release y un plan práctico para lo siguiente."
+        }
       ],
-      "deliverablesHeading": "Trabajo que puedes seguir usando después de la colaboración.",
-      "deliverables": ["Un mapa compartido de producto y sistema", "Incrementos de software listos para producción", "Registros de arquitectura y decisiones", "Evidencia de calidad, observabilidad y release", "Un handoff operativo y práctico"],
-      "relatedHeading": "Revisa el trabajo y el sistema detrás.",
+      "deliverablesHeading": "Resultados duraderos, no solo implementación.",
+      "deliverables": [
+        "Un mapa compartido de producto y sistema",
+        "Incrementos de software listos para producción",
+        "Registros de arquitectura y decisiones",
+        "Evidencia de calidad, observabilidad y release",
+        "Un handoff operativo y práctico"
+      ],
+      "relatedHeading": "Revisa el trabajo y el sistema que lo sostiene.",
       "relatedContentIds": ["architecture", "case-studies"]
     }
   },
@@ -682,18 +724,91 @@
       "systemHeading": "Un lifecycle, seis etapas con responsabilidad.",
       "systemBody": "La secuencia hace visibles decisiones, dependencias, verificación y límites de release. AOHYS es una implementación pública de esta práctica, no el límite de la arquitectura ni un mapa del Development System privado.",
       "layers": [
-        {"id": "experience", "label": "Intención de negocio", "body": "Escuchar al negocio, aclarar el resultado de usuario, revelar restricciones y hacer grilling del lenguaje ambiguo antes de elegir un camino técnico.", "technologies": ["Intención de negocio", "Contexto de stakeholders", "Grilling", "Definición de resultados"]},
-        {"id": "edge", "label": "Dominio y decisiones", "body": "Modelar el dominio, nombrar conceptos estables, comparar tradeoffs y registrar decisiones que dan forma al producto y al sistema.", "technologies": ["Modelado de dominio", "Decisiones de arquitectura", "Límites de producto", "Tradeoffs"]},
-        {"id": "product-data", "label": "Specs y grafo de dependencias", "body": "Convertir la dirección acordada en specs, tickets ejecutables, ownership, seams de aceptación y dependencias que conservan el orden correcto.", "technologies": ["Specs y tickets", "Grafo de dependencias", "Criterios de aceptación", "Límite de release"]},
-        {"id": "communication", "label": "Implementación con agentes", "body": "Agentes especializados investigan, implementan, prueban y revisan trabajo acotado. El orquestador humano integra evidencia y resuelve decisiones que las herramientas no pueden asumir.", "technologies": ["Implementación con agentes", "Revisión especializada", "Ingeniería de contexto", "Orquestación humana"]},
-        {"id": "observability", "label": "Verificación y browser QA", "body": "Usar TDD proporcional, linting, type checks, pruebas de comportamiento, revisión independiente y browser QA para verificar el resultado real y visible.", "technologies": ["TDD", "Code review", "Browser QA", "Evidencia visual", "Observabilidad"]},
-        {"id": "delivery", "label": "De preview a producción", "body": "Construir un Preview Deployment, reunir revisión humana, promover mediante Release Train, verificar el Production Deployment y ejecutar smoke checks.", "technologies": ["Preview Deployment", "Release Train", "Production Deployment", "Smoke checks"]}
+        {
+          "id": "experience",
+          "label": "Intención de negocio",
+          "body": "Escuchar al negocio, aclarar el resultado de usuario, revelar restricciones y hacer grilling del lenguaje ambiguo antes de elegir un camino técnico.",
+          "technologies": [
+            "Intención de negocio",
+            "Contexto de stakeholders",
+            "Grilling",
+            "Definición de resultados"
+          ]
+        },
+        {
+          "id": "edge",
+          "label": "Dominio y decisiones",
+          "body": "Modelar el dominio, nombrar conceptos estables, comparar tradeoffs y registrar decisiones que dan forma al producto y al sistema.",
+          "technologies": [
+            "Modelado de dominio",
+            "Decisiones de arquitectura",
+            "Límites de producto",
+            "Tradeoffs"
+          ]
+        },
+        {
+          "id": "product-data",
+          "label": "Specs y grafo de dependencias",
+          "body": "Convertir la dirección acordada en specs, tickets ejecutables, ownership, seams de aceptación y dependencias que conservan el orden correcto.",
+          "technologies": [
+            "Specs y tickets",
+            "Grafo de dependencias",
+            "Criterios de aceptación",
+            "Límite de release"
+          ]
+        },
+        {
+          "id": "communication",
+          "label": "Implementación con agentes",
+          "body": "Agentes especializados investigan, implementan, prueban y revisan trabajo acotado. El orquestador humano integra evidencia y resuelve decisiones que las herramientas no pueden asumir.",
+          "technologies": [
+            "Implementación con agentes",
+            "Revisión especializada",
+            "Ingeniería de contexto",
+            "Orquestación humana"
+          ]
+        },
+        {
+          "id": "observability",
+          "label": "Verificación y browser QA",
+          "body": "Usar TDD proporcional, linting, type checks, pruebas de comportamiento, revisión independiente y browser QA para verificar el resultado real y visible.",
+          "technologies": [
+            "TDD",
+            "Code review",
+            "Browser QA",
+            "Evidencia visual",
+            "Observabilidad"
+          ]
+        },
+        {
+          "id": "delivery",
+          "label": "De preview a producción",
+          "body": "Construir un Preview Deployment, reunir revisión humana, promover mediante Release Train, verificar el Production Deployment y ejecutar smoke checks.",
+          "technologies": [
+            "Preview Deployment",
+            "Release Train",
+            "Production Deployment",
+            "Smoke checks"
+          ]
+        }
       ],
       "tradeoffsHeading": "La arquitectura es una secuencia de tradeoffs.",
       "tradeoffs": [
-        {"title": "Ejecución de agentes con responsabilidad humana", "reason": "Los agentes amplían la capacidad de ejecución, pero no pueden asumir intención de negocio, aceptación de riesgo ni autoridad de release.", "result": "Sigo siendo responsable de lo que se construye, cómo se verifica y si está listo para release."},
-        {"title": "Explicación pública sin publicar la herramienta privada", "reason": "El lifecycle debe ser inspeccionable sin exponer instrucciones privadas, métodos operativos ni detalles de entrega.", "result": "El Development System permanece privado y adaptable; productos entregados y artefactos sanitizados aportan la evidencia."},
-        {"title": "Preview antes que producción", "reason": "Un build verde no demuestra que un release funciona en su ambiente real.", "result": "Promoción protegida, Preview Deployment, revisión humana y smoke checks vuelven producción una decisión separada."}
+        {
+          "title": "Ejecución de agentes con responsabilidad humana",
+          "reason": "Los agentes amplían la capacidad de ejecución, pero no pueden asumir intención de negocio, aceptación de riesgo ni autoridad de release.",
+          "result": "Sigo siendo responsable de lo que se construye, cómo se verifica y si está listo para release."
+        },
+        {
+          "title": "Explicación pública sin publicar la herramienta privada",
+          "reason": "El lifecycle debe ser inspeccionable sin exponer instrucciones privadas, métodos operativos ni detalles de entrega.",
+          "result": "El Development System permanece privado y adaptable; productos entregados y artefactos sanitizados aportan la evidencia."
+        },
+        {
+          "title": "Preview antes que producción",
+          "reason": "Un build verde no demuestra que un release funciona en su ambiente real.",
+          "result": "Promoción protegida, Preview Deployment, revisión humana y smoke checks vuelven producción una decisión separada."
+        }
       ],
       "sourceLabel": "Revisar el source",
       "sourceLinks": [
@@ -744,12 +859,12 @@
           "body": "Observabilidad, analíticas, errores, smoke checks y feedback de stakeholders regresan el comportamiento real a la siguiente decisión de producto; release no es el final del lifecycle."
         }
       ],
-    "boundaryNote": "Este repositorio es una muestra pública funcional. No vuelve públicos código de clientes, código de producto, credenciales, capturas privadas ni datos operativos."
+      "boundaryNote": "Este repositorio es una muestra pública funcional. No vuelve públicos código de clientes, código de producto, credenciales, capturas privadas ni datos operativos."
     }
   },
   "resume": {
-    "approvedAt": "2026-07-20T18:11:32.000Z",
-    "approvedHash": "cd3bb46c9b593d7826e787eab337d21109f297bf2622c63c49259a339e18b165",
+    "approvedAt": "2026-07-24T04:59:12.000Z",
+    "approvedHash": "d303c26a5fc57a1171cbd0753d274fa8c908f511ca4ce558922a971d40d7e890",
     "path": "/es/curriculum",
     "title": "Sobre Alejandro",
     "summary": "Experiencia canónica de un Senior Software Engineer que trabaja en sistemas de producto, profundidad frontend, workflows backend y delivery AI-native.",
@@ -903,6 +1018,15 @@
           ]
         },
         {
+          "role": "Founder",
+          "company": "AOHYS",
+          "period": "2015 - Presente",
+          "bullets": [
+            "Construí una práctica continua desde automatización Excel/VBA hacia Java, React y trabajo enterprise, productos completos y desarrollo AI-native.",
+            "Los sistemas actuales incluyen ETERIA, The Barber Central, NutriPlan Digital, Casa Roca y AOHYS."
+          ]
+        },
+        {
           "role": "Senior Frontend Developer",
           "company": "Drift",
           "period": "2022 - 2023",
@@ -945,42 +1069,69 @@
           "bullets": [
             "Contribuí a una superficie de facturación dentro de CEMEX GO y crecí dentro de un producto distribuido entre muchos equipos."
           ]
-        },
-        {
-          "role": "Ingeniero de software independiente",
-          "company": "AOHYS",
-          "period": "2015 - Presente",
-          "bullets": [
-            "Construí una práctica continua desde automatización Excel/VBA hacia Java, React y trabajo enterprise, productos completos y desarrollo AI-native.",
-            "Los sistemas actuales incluyen ETERIA, The Barber Central, NutriPlan Digital, Casa Roca y AOHYS."
-          ]
         }
       ],
       "skillsTitle": "Capacidades técnicas",
       "skills": [
         {
           "label": "Negocio e ingeniería de producto",
-          "items": ["Comunicación con stakeholders", "Workflows de dominio", "Arquitectura de producto", "Requisitos y specs", "Ownership de delivery"]
+          "items": [
+            "Comunicación con stakeholders",
+            "Workflows de dominio",
+            "Arquitectura de producto",
+            "Requisitos y specs",
+            "Ownership de delivery"
+          ]
         },
         {
           "label": "Sistemas front-end",
-          "items": ["Interfaces responsivas", "React y TypeScript", "Arquitectura de componentes", "Performance", "Movimiento y WebGL"]
+          "items": [
+            "Interfaces responsivas",
+            "React y TypeScript",
+            "Arquitectura de componentes",
+            "Performance",
+            "Movimiento y WebGL"
+          ]
         },
         {
           "label": "Workflows backend y datos",
-          "items": ["Next.js server-side", "Integración de APIs", "Convex", "SQL y PostgreSQL", "Java en crecimiento"]
+          "items": [
+            "Next.js server-side",
+            "Integración de APIs",
+            "Convex",
+            "SQL y PostgreSQL",
+            "Java en crecimiento"
+          ]
         },
         {
           "label": "Cloud y operación",
-          "items": ["Dashboards de AWS", "Entrega edge", "Operación Cloudflare y Vercel", "Pipelines de media", "Observabilidad"]
+          "items": [
+            "Dashboards de AWS",
+            "Entrega edge",
+            "Operación Cloudflare y Vercel",
+            "Pipelines de media",
+            "Observabilidad"
+          ]
         },
         {
           "label": "Calidad y delivery",
-          "items": ["TDD", "Browser QA", "CI/CD", "Verificación de releases", "Documentación"]
+          "items": [
+            "TDD",
+            "Browser QA",
+            "CI/CD",
+            "Verificación de releases",
+            "Documentación"
+          ]
         },
         {
           "label": "Desarrollo AI-native",
-          "items": ["Orquestación de agentes", "Dominio y specs", "TDD", "Revisión independiente", "Browser QA y release"]
+          "items": [
+            "Orquestación de agentes",
+            "Dominio y specs",
+            "TDD",
+            "Revisión independiente",
+            "Browser QA y release"
+          ]
         }
       ],
       "educationTitle": "Educación",
@@ -1033,7 +1184,7 @@
         },
         {
           "title": "Límites de proyectos privados",
-        "body": "Este repositorio es público para revisión. El código privado de clientes, credenciales, registros operativos y datos del dashboard no son públicos."
+          "body": "Este repositorio es público para revisión. El código privado de clientes, credenciales, registros operativos y datos del dashboard no son públicos."
         }
       ],
       "boundaryNote": "El dashboard privado bajo /dashboard está autenticado, noindex, excluido del sitemap y separado de las páginas públicas SEO."

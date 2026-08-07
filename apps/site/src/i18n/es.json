@@ -12,15 +12,15 @@
     "menuClose": "Cerrar menú",
     "nav": {
       "solutions": "Trabajo",
-      "agents": "Servicios",
-      "pricing": "Sobre mí",
+      "agents": "Práctica",
+      "pricing": "Experiencia",
       "docs": "Arquitectura",
-      "blog": "Hablemos",
+      "blog": "Contacto",
       "caseStudies": "Casos",
       "architecture": "Arquitectura",
-      "practice": "Servicios",
-      "resume": "Sobre mí",
-      "contact": "Hablemos"
+      "practice": "Práctica",
+      "resume": "Experiencia",
+      "contact": "Contacto"
     }
   },
   "footer": {
@@ -29,10 +29,10 @@
     "boundary": "El código público se puede revisar aquí. El trabajo de clientes y los datos operativos permanecen privados.",
     "privacy": "Privacidad",
     "architecture": "Arquitectura",
-    "practice": "Servicios",
+    "practice": "Práctica",
     "systemNotes": "Notas del sistema",
     "work": "Trabajo seleccionado",
-    "resume": "Sobre mí",
+    "resume": "Experiencia",
     "contact": "Hablemos",
     "dashboard": "Abrir dashboard",
     "brandName": "AOHYS",
@@ -92,24 +92,24 @@
     "publicContent": {
       "available": "Sistemas de producto · Delivery AI-native",
       "work": "Trabajo",
-      "practice": "Servicios",
+      "practice": "Práctica",
       "architecture": "Arquitectura",
-      "about": "Sobre mí",
+      "about": "Experiencia",
       "talk": "Hablemos",
       "viewWork": "Ver trabajo",
       "viewProject": "Abrir caso",
       "publicProof": "Sistema seleccionado",
       "selectedStage": "Trabajo seleccionado, ordenado por evidencia.",
-      "selectedStageIntro": "Trabajo de cliente en producción, práctica de delivery AI-native, sistemas enterprise y productos avanzando deliberadamente hacia release.",
+      "selectedStageIntro": "Seis sistemas que muestran el resultado, la capacidad de producto u operación y mi rol en el trabajo.",
       "process": "Los buenos resultados nacen de sistemas claros.",
       "workArchive": "Archivo de trabajo",
-      "workArchiveBody": "Sistemas en producción, productos activos y experiencia enterprise contados por el resultado y las decisiones detrás.",
+      "workArchiveBody": "Seis sistemas contados desde el contexto de negocio, qué se construyó, qué permite y el rol detrás del resultado.",
       "evidence": "Enlaces del proyecto",
       "readCase": "Leer caso",
       "source": "Fuente pública",
       "role": "Rol",
       "constraints": "Restricciones",
-      "opportunity": "Oportunidad",
+      "businessNeed": "Necesidad del negocio",
       "considerations": "Consideraciones de diseño",
       "related": "Trabajo relacionado",
       "profile": "Perfil de entrega",
@@ -127,24 +127,41 @@
       "casePath": "Ruta del caso",
       "architectureNotes": "Notas de operación",
       "architectureNotesIntro": "Los seams que mantienen conectada la topología.",
-      "caseBeats": ["Oportunidad y resultado", "Rol y sistema", "Decisiones", "Entrega"],
-      "serviceMode": "Formas de colaborar",
+      "caseBeats": [
+        "Proyecto",
+        "Rol y sistema",
+        "Decisiones",
+        "Entrega y calidad"
+      ],
+      "serviceMode": "Formas de aportar",
       "serviceFit": "Cuándo encaja",
       "serviceResult": "Lo que cambia",
-      "serviceCollaboration": "Cómo colaboramos",
+      "serviceCollaboration": "Cómo aporto",
       "serviceOutputs": "Lo que recibes",
       "architectureLiveSystem": "Sistema AOHYS en producción",
       "architectureFlow": "Una señal entra. El sistema conserva el contexto y llega a producción con un release visible.",
       "contactBriefTitle": "Un buen primer mensaje puede ser breve.",
       "contactBriefReply": "Yo respondo con preguntas útiles y un siguiente paso concreto.",
       "contactBriefLabel": "Tu brief de proyecto",
-      "seeServices": "Ver servicios",
+      "seeServices": "Ver práctica",
       "architectureSceneLabel": "Profundidad cinética detrás del mapa del sistema",
       "contactSceneLabel": "Profundidad suave detrás del brief de proyecto",
       "serviceModes": [
-        { "kicker": "Producto nuevo", "note": "Sitio · web app · app móvil", "symbol": "↗" },
-        { "kicker": "Proyecto definido", "note": "Producto · ingeniería · release", "symbol": "+" },
-        { "kicker": "Sistema existente", "note": "IA · datos · cloud · delivery", "symbol": "→" }
+        {
+          "kicker": "Producto nuevo",
+          "note": "Sitio · web app · app móvil",
+          "symbol": "↗"
+        },
+        {
+          "kicker": "Proyecto definido",
+          "note": "Producto · ingeniería · release",
+          "symbol": "+"
+        },
+        {
+          "kicker": "Sistema existente",
+          "note": "IA · datos · cloud · delivery",
+          "symbol": "→"
+        }
       ],
       "serviceSignals": [
         { "items": ["www", "app", "mobile"], "emphasisIndex": -1 },
@@ -152,11 +169,36 @@
         { "items": ["now", "AI · DATA · CLOUD", "next"], "emphasisIndex": 1 }
       ],
       "architectureHeroNodes": [
-        { "id": "public", "title": "Experiencia pública", "detail": "Sitio bilingüe, casos, servicios y accesibilidad", "meta": "Astro · EN / ES" },
-        { "id": "content", "title": "Contenido, dashboard y datos", "detail": "Publicación, ownership y contratos compartidos", "meta": "Content Graph · Convex" },
-        { "id": "media", "title": "Media y edge", "detail": "Imágenes publicadas, fallbacks versionados y entrega rápida", "meta": "Cloudflare" },
-        { "id": "signals", "title": "Señales y contacto", "detail": "Solicitudes, analíticas y errores con límites explícitos", "meta": "Formulario · PostHog" },
-        { "id": "release", "title": "Tren de release", "detail": "Preview, checks, promoción y smoke de producción", "meta": "develop → main" }
+        {
+          "id": "public",
+          "title": "Experiencia pública",
+          "detail": "Sitio bilingüe, casos, servicios y accesibilidad",
+          "meta": "Astro · EN / ES"
+        },
+        {
+          "id": "content",
+          "title": "Contenido, dashboard y datos",
+          "detail": "Publicación, ownership y contratos compartidos",
+          "meta": "Content Graph · Convex"
+        },
+        {
+          "id": "media",
+          "title": "Media y edge",
+          "detail": "Imágenes publicadas, fallbacks versionados y entrega rápida",
+          "meta": "Cloudflare"
+        },
+        {
+          "id": "signals",
+          "title": "Señales y contacto",
+          "detail": "Solicitudes, analíticas y errores con límites explícitos",
+          "meta": "Formulario · PostHog"
+        },
+        {
+          "id": "release",
+          "title": "Tren de release",
+          "detail": "Preview, checks, promoción y smoke de producción",
+          "meta": "develop → main"
+        }
       ],
       "contactBriefPrompts": [
         ["Qué quieres hacer posible", "Crear, evolucionar o lanzar"],
@@ -254,10 +296,7 @@
       "scaleQuestion": "¿Qué puede ayudar a crear después este trabajo?",
       "planLabel": "Plan",
       "recommended": "Recomendado",
-      "planNames": [
-        "Revisión técnica",
-        "Entrega de producto"
-      ],
+      "planNames": ["Revisión técnica", "Entrega de producto"],
       "featureColumn": "Feature",
       "included": "Incluido",
       "faqKicker": "FAQs",

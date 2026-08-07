@@ -1,16 +1,26 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { findForbiddenPublicClaims, getPublicRouteMap, getSeoMetadata, getSitemapEntries } from "@aohys/content-graph";
+import {
+  findForbiddenPublicClaims,
+  getPublicRouteMap,
+  getSeoMetadata,
+  getSitemapEntries,
+} from "@aohys/content-graph";
 import { PDFParse } from "pdf-parse";
 import { describe, expect, it } from "vitest";
-import { CONTENT_SECURITY_POLICY, renderCloudflarePagesStaticHeaders } from "../src/security-headers.js";
+import {
+  CONTENT_SECURITY_POLICY,
+  renderCloudflarePagesStaticHeaders,
+} from "../src/security-headers.js";
 
 const siteRoot = process.cwd();
 const distRoot = path.join(siteRoot, "dist");
 
 function readDist(relativePath: string) {
   const absolutePath = path.join(distRoot, relativePath);
-  expect(existsSync(absolutePath), `${relativePath} must exist in dist`).toBe(true);
+  expect(existsSync(absolutePath), `${relativePath} must exist in dist`).toBe(
+    true,
+  );
   return readFileSync(absolutePath, "utf8");
 }
 
@@ -26,6 +36,15 @@ function includesAlternate(html: string, hreflang: string, href: string) {
   return html.includes(`rel="alternate" hreflang="${hreflang}" href="${href}"`);
 }
 
+function readPngDimensions(relativePath: string) {
+  const image = readFileSync(path.join(distRoot, relativePath));
+  expect(image.subarray(1, 4).toString("ascii")).toBe("PNG");
+  return {
+    width: image.readUInt32BE(16),
+    height: image.readUInt32BE(20),
+  };
+}
+
 describe("built public routes", () => {
   it("renders every graph route with canonical SEO and language alternates", () => {
     const routes = getPublicRouteMap();
@@ -36,28 +55,86 @@ describe("built public routes", () => {
       const seo = getSeoMetadata(route.id, route.locale);
 
       expect(html).toContain(`<html lang="${route.locale}"`);
-      expect(html).toContain('class="overflow-x-clip scroll-smooth motion-reduce:scroll-auto"');
+      expect(html).toContain(
+        'class="overflow-x-clip scroll-smooth motion-reduce:scroll-auto"',
+      );
       expect(html).toContain(`name="description" content="${seo.description}"`);
       expect(html).toContain(`rel="canonical" href="${seo.canonicalUrl}"`);
       expect(includesAlternate(html, "en", seo.alternates.en)).toBe(true);
       expect(includesAlternate(html, "es", seo.alternates.es)).toBe(true);
-      expect(includesAlternate(html, "x-default", seo.alternates["x-default"])).toBe(true);
+      expect(
+        includesAlternate(html, "x-default", seo.alternates["x-default"]),
+      ).toBe(true);
       expect(html).toContain(`<title>${seo.title}</title>`);
       expect(html).toContain(`property="og:title" content="${seo.title}"`);
-      expect(html).toContain(`property="og:description" content="${seo.description}"`);
+      expect(html).toContain(
+        `property="og:description" content="${seo.description}"`,
+      );
       expect(html).toContain(`property="og:url" content="${seo.canonicalUrl}"`);
-      expect(html).toContain(`property="og:image" content="${seo.socialImage.url}"`);
-      expect(html).toContain(`property="og:image:alt" content="${seo.socialImage.alt}"`);
+      expect(html).toContain(
+        `property="og:image" content="${seo.socialImage.url}"`,
+      );
+      expect(html).toContain(
+        `property="og:image:alt" content="${seo.socialImage.alt}"`,
+      );
+      expect(html).toContain(
+        `property="og:image:type" content="${seo.socialImage.type}"`,
+      );
+      expect(html).toContain(
+        'name="twitter:card" content="summary_large_image"',
+      );
+      expect(html).toContain(`name="twitter:title" content="${seo.title}"`);
+      expect(html).toContain(
+        `name="twitter:description" content="${seo.description}"`,
+      );
+      expect(html).toContain(
+        `name="twitter:image" content="${seo.socialImage.url}"`,
+      );
+      expect(html).toContain(
+        `name="twitter:image:alt" content="${seo.socialImage.alt}"`,
+      );
+      if (seo.socialImage.width && seo.socialImage.height) {
+        expect(html).toContain(
+          `property="og:image:width" content="${seo.socialImage.width}"`,
+        );
+        expect(html).toContain(
+          `property="og:image:height" content="${seo.socialImage.height}"`,
+        );
+      }
 
-      const structuredDataMatch = html.match(/<script type="application\/ld\+json">(.+?)<\/script>/);
+      const structuredDataMatch = html.match(
+        /<script type="application\/ld\+json">(.+?)<\/script>/,
+      );
       if (seo.structuredData) {
         expect(structuredDataMatch).not.toBeNull();
-        expect(JSON.parse(structuredDataMatch?.[1] ?? "{}")).toEqual(seo.structuredData);
+        expect(JSON.parse(structuredDataMatch?.[1] ?? "{}")).toEqual(
+          seo.structuredData,
+        );
       } else {
         expect(structuredDataMatch).toBeNull();
       }
       expect(html).not.toMatch(/lorem ipsum/i);
       expect(html).not.toMatch(/\bTODO(?:\s|:|$)/);
+    }
+  });
+
+  it("publishes the stable AOHYS social preview at the declared dimensions", () => {
+    expect(
+      readPngDimensions("images/social/aohys-social-preview-v1.png"),
+    ).toEqual({
+      width: 1200,
+      height: 630,
+    });
+
+    const homeHtml = readDist("index.html");
+    const spanishHomeHtml = readDist("es/index.html");
+    for (const html of [homeHtml, spanishHomeHtml]) {
+      expect(html).toContain(
+        'property="og:image" content="https://aohys.com/images/social/aohys-social-preview-v1.png"',
+      );
+      expect(html).toContain('property="og:image:width" content="1200"');
+      expect(html).toContain('property="og:image:height" content="630"');
+      expect(html).not.toContain("/images/generated/aohys-hero-system-map.png");
     }
   });
 
@@ -72,8 +149,12 @@ describe("built public routes", () => {
     expect(spanishHomeHtml).not.toContain('href="/case-studies"');
     expect(spanishHomeHtml).toContain('href="/es/casos"');
     expect(spanishHomeHtml).toContain('href="/dashboard"');
-    expect(homeHtml).toContain('class="sunlit-mobile-language" href="/es/" hreflang="es"');
-    expect(spanishHomeHtml).toContain('class="sunlit-mobile-language" href="/" hreflang="en"');
+    expect(homeHtml).toContain(
+      'class="sunlit-mobile-language" href="/es/" hreflang="es"',
+    );
+    expect(spanishHomeHtml).toContain(
+      'class="sunlit-mobile-language" href="/" hreflang="en"',
+    );
   });
 
   it("renders the graph-backed Sunlit Systems Studio home in both languages", () => {
@@ -81,18 +162,22 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain('data-home-content-id="home"');
-    expect(homeHtml).toContain("Senior Software Engineer · AI-Native Product Development");
+    expect(homeHtml).toContain(
+      "Senior Software Engineer · AI-Native Product Development",
+    );
     expect(homeHtml).toContain('class="sunlit-studio-hero"');
-    expect(homeHtml).toContain("Tell me what you are building.");
+    expect(homeHtml).toContain("How I work and contribute.");
     expect(homeHtml).toContain("Business goals become production systems.");
     expect(homeHtml).toContain("/images/proof/enterprise-systems-map-v2.svg");
-    expect(homeHtml).toContain('data-project-stage');
+    expect(homeHtml).toContain("data-project-stage");
     expect(homeHtml).toContain('data-stage-door="left"');
     expect(homeHtml).toContain('data-stage-door="right"');
-    expect(homeHtml).toContain("Client production work, AI-native delivery practice, enterprise systems");
-    expect(homeHtml).toContain("Tell me what you&#39;re building.");
+    expect(homeHtml).toContain("Six systems showing the result");
+    expect(homeHtml).toContain("Start with the context.");
     expect(homeHtml).not.toContain("Talk about a product or role");
-    expect(homeHtml).toContain("Independent product engineering by Alejandro Ortiz Corro.");
+    expect(homeHtml).toContain(
+      "Independent product engineering by Alejandro Ortiz Corro.",
+    );
     expect(homeHtml).not.toContain("Public code can be reviewed here");
     expect(homeHtml).not.toContain("Still deciding?");
     expect(homeHtml).toContain('href="/case-studies/eteria"');
@@ -102,26 +187,42 @@ describe("built public routes", () => {
     expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
     expect(homeHtml).toContain('href="/case-studies/casa-roca"');
     expect(homeHtml).toContain("/images/proof/eteria-garden-blue-table-og.jpg");
-    expect(homeHtml).toContain('alt="ETERIA outdoor celebration table styled with blue textiles, ivory flowers, and layered place settings"');
+    expect(homeHtml).toContain(
+      'alt="ETERIA outdoor celebration table styled with blue textiles, ivory flowers, and layered place settings"',
+    );
     expect(homeHtml).toContain("/images/proof/barber-central-hero-v2.jpg");
     expect(homeHtml).toContain("WhatsApp");
     expect(homeHtml).not.toContain("Cloudflare · Convex · PostHog · Resend");
     expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain("Senior Software Engineer · Desarrollo de producto AI-native");
+    expect(spanishHomeHtml).toContain(
+      "Senior Software Engineer · Desarrollo de producto AI-native",
+    );
     expect(spanishHomeHtml).toContain('class="sunlit-studio-hero"');
-    expect(spanishHomeHtml).toContain("Cuéntame qué estás construyendo.");
-    expect(spanishHomeHtml).toContain("Los objetivos de negocio se convierten en sistemas en producción.");
-    expect(spanishHomeHtml).toContain("Trabajo de cliente en producción, práctica de delivery AI-native, sistemas enterprise");
-    expect(spanishHomeHtml).toContain("Cuéntame qué estás construyendo.");
+    expect(spanishHomeHtml).toContain("Cómo trabajo y aporto.");
+    expect(spanishHomeHtml).toContain(
+      "Los objetivos de negocio se convierten en sistemas en producción.",
+    );
+    expect(spanishHomeHtml).toContain(
+      "Seis sistemas que muestran el resultado",
+    );
+    expect(spanishHomeHtml).toContain("Empieza por el contexto.");
     expect(spanishHomeHtml).not.toContain("Hablemos de un producto o un rol");
-    expect(spanishHomeHtml).toContain("Ingeniería de producto independiente por Alejandro Ortiz Corro.");
-    expect(spanishHomeHtml).not.toContain("El código público se puede revisar aquí");
+    expect(spanishHomeHtml).toContain(
+      "Ingeniería de producto independiente por Alejandro Ortiz Corro.",
+    );
+    expect(spanishHomeHtml).not.toContain(
+      "El código público se puede revisar aquí",
+    );
     expect(spanishHomeHtml).not.toContain("¿Todavía evaluando?");
     expect(spanishHomeHtml).toContain('href="/es/casos/eteria"');
-    expect(spanishHomeHtml).toContain("/images/proof/eteria-garden-blue-table-og.jpg");
-    expect(spanishHomeHtml).toContain('alt="Mesa de celebración al aire libre de ETERIA con textiles azules, flores marfil y lugares montados"');
+    expect(spanishHomeHtml).toContain(
+      "/images/proof/eteria-garden-blue-table-og.jpg",
+    );
+    expect(spanishHomeHtml).toContain(
+      'alt="Mesa de celebración al aire libre de ETERIA con textiles azules, flores marfil y lugares montados"',
+    );
     expect(spanishHomeHtml).toContain("WhatsApp");
   });
 
@@ -129,15 +230,21 @@ describe("built public routes", () => {
     const architectureHtml = readDist("architecture/index.html");
     const spanishArchitectureHtml = readDist("es/arquitectura/index.html");
 
-    expect(architectureHtml).toContain('data-architecture-content-id="architecture"');
+    expect(architectureHtml).toContain(
+      'data-architecture-content-id="architecture"',
+    );
     expect(architectureHtml).toContain("From business intent to production.");
-    expect(architectureHtml).toContain("One lifecycle, six accountable stages.");
+    expect(architectureHtml).toContain(
+      "One lifecycle, six accountable stages.",
+    );
     expect(architectureHtml).toContain("Business intent");
     expect(architectureHtml).toContain("Domain modeling");
     expect(architectureHtml).toContain("Specs &amp; tickets");
     expect(architectureHtml).toContain("Agent implementation");
     expect(architectureHtml).toContain("Browser QA");
-    expect(architectureHtml).toContain("Architecture is a sequence of tradeoffs.");
+    expect(architectureHtml).toContain(
+      "Architecture is a sequence of tradeoffs.",
+    );
     expect(architectureHtml.match(/<canvas/g)).toHaveLength(1);
     expect(architectureHtml).toContain("Release Train");
     expect(architectureHtml).toContain("Human accountability");
@@ -147,59 +254,116 @@ describe("built public routes", () => {
     expect(architectureHtml).toContain('class="sunlit-system-layers"');
     expect(architectureHtml).toContain('class="sunlit-architecture-notes"');
     expect(architectureHtml).not.toContain("<details");
-    expect(architectureHtml).toContain('href="https://github.com/AO-HyS/aohys.com"');
-    expect(architectureHtml).toContain('href="https://github.com/AO-HyS/aohys.com/blob/develop/docs/release-train.md"');
-    expect(architectureHtml).not.toMatch(/manifest|adapter|universal template|open.source development system/i);
+    expect(architectureHtml).toContain(
+      'href="https://github.com/AO-HyS/aohys.com"',
+    );
+    expect(architectureHtml).toContain(
+      'href="https://github.com/AO-HyS/aohys.com/blob/develop/docs/release-train.md"',
+    );
+    expect(architectureHtml).not.toMatch(
+      /manifest|adapter|universal template|open.source development system/i,
+    );
 
-    expect(spanishArchitectureHtml).toContain('data-architecture-content-id="architecture"');
-    expect(spanishArchitectureHtml).toContain("De la intención de negocio a producción.");
-    expect(spanishArchitectureHtml).toContain("Un lifecycle, seis etapas con responsabilidad.");
-    expect(spanishArchitectureHtml).toContain("La arquitectura es una secuencia de tradeoffs.");
+    expect(spanishArchitectureHtml).toContain(
+      'data-architecture-content-id="architecture"',
+    );
+    expect(spanishArchitectureHtml).toContain(
+      "De la intención de negocio a producción.",
+    );
+    expect(spanishArchitectureHtml).toContain(
+      "Un lifecycle, seis etapas con responsabilidad.",
+    );
+    expect(spanishArchitectureHtml).toContain(
+      "La arquitectura es una secuencia de tradeoffs.",
+    );
     expect(spanishArchitectureHtml).toContain("Release Train");
     expect(spanishArchitectureHtml).toContain("Environment Contract");
     expect(spanishArchitectureHtml).toContain("Public Content Graph");
-    expect(spanishArchitectureHtml).toContain('href="https://github.com/AO-HyS/aohys.com"');
+    expect(spanishArchitectureHtml).toContain(
+      'href="https://github.com/AO-HyS/aohys.com"',
+    );
   });
 
-  it("renders typed Services stories and deliverables in both languages", () => {
+  it("renders neutral Practice stories and durable outputs in both languages", () => {
     const servicesHtml = readDist("practice/index.html");
     const spanishServicesHtml = readDist("es/practica/index.html");
 
     expect(servicesHtml).toContain('data-practice-content-id="practice"');
-    expect(servicesHtml).toContain("Build a complete product from zero");
-    expect(servicesHtml).toContain("Add a senior collaborator to your team");
-    expect(servicesHtml).toContain("Modernize what is already in motion");
+    expect(servicesHtml).toContain("End-to-end product systems");
+    expect(servicesHtml).toContain("Embedded senior collaboration");
+    expect(servicesHtml).toContain("Architecture and modernization");
     expect(servicesHtml).toContain("When it fits");
     expect(servicesHtml).toContain("What changes");
-    expect(servicesHtml).toContain("How we work");
-    expect(servicesHtml).toContain("Clear from the first working session.");
-    expect(servicesHtml).toContain("Work you can keep using after the engagement.");
+    expect(servicesHtml).toContain("How I contribute");
+    expect(servicesHtml).toContain("A visible, accountable way of working.");
+    expect(servicesHtml).toContain("Durable outputs, not just implementation.");
+    expect(servicesHtml).not.toMatch(
+      /choose how we work|open to work|availability|rates/i,
+    );
     expect(servicesHtml).toContain('data-service-pattern="new"');
     expect(servicesHtml).toContain('data-service-pattern="team"');
     expect(servicesHtml).toContain('data-service-pattern="modernize"');
 
-    expect(spanishServicesHtml).toContain('data-practice-content-id="practice"');
-    expect(spanishServicesHtml).toContain("Construir un producto completo desde cero");
-    expect(spanishServicesHtml).toContain("Sumar un colaborador senior a tu equipo");
-    expect(spanishServicesHtml).toContain("Modernizar lo que ya está en movimiento");
+    expect(spanishServicesHtml).toContain(
+      'data-practice-content-id="practice"',
+    );
+    expect(spanishServicesHtml).toContain("Sistemas de producto end-to-end");
+    expect(spanishServicesHtml).toContain("Colaboración senior integrada");
+    expect(spanishServicesHtml).toContain("Arquitectura y modernización");
     expect(spanishServicesHtml).toContain("Cuándo encaja");
     expect(spanishServicesHtml).toContain("Lo que cambia");
-    expect(spanishServicesHtml).toContain("Cómo colaboramos");
+    expect(spanishServicesHtml).toContain("Cómo aporto");
+    expect(spanishServicesHtml).not.toMatch(
+      /elige cómo trabajamos|open to work|disponibilidad|tarifas/i,
+    );
   });
 
   it("renders the Casa Roca complete case-study structure in both languages", () => {
     const casaRocaHtml = readDist("case-studies/casa-roca/index.html");
     const spanishCasaRocaHtml = readDist("es/casos/casa-roca/index.html");
+    const expectHeadingSequence = (
+      html: string,
+      headings: Array<{ level: 2 | 3; text: string }>,
+    ) => {
+      const positions = headings.map(({ level, text }) =>
+        html.search(new RegExp(`<h${level}[^>]*>${text}</h${level}>`)),
+      );
 
-    expect(casaRocaHtml).toContain('data-case-study-content-id="case-study:casa-roca"');
+      expect(positions).not.toContain(-1);
+      expect(positions).toEqual(
+        [...positions].sort((left, right) => left - right),
+      );
+    };
+
+    expect(casaRocaHtml).toContain(
+      'data-case-study-content-id="case-study:casa-roca"',
+    );
     expect(casaRocaHtml).toContain("Casa Roca");
     expect(casaRocaHtml).toContain("Live hospitality experience");
-    expect(casaRocaHtml).toContain("Opportunity");
-    expect(casaRocaHtml).toContain("Opportunity &amp; outcome");
+    expect(casaRocaHtml).toContain(
+      "Casa Roca is the digital arrival point for a boutique stay in Roca Partida, Veracruz.",
+    );
+    expect(casaRocaHtml).toContain('data-case-beat="project"');
+    expect(casaRocaHtml).toContain("Project");
+    expect(casaRocaHtml).toContain("Business need");
+    expect(casaRocaHtml).toContain("What was built and what it enables");
     expect(casaRocaHtml).toContain("Role &amp; system");
     expect(casaRocaHtml).toContain("Decisions");
-    expect(casaRocaHtml).toContain("Delivery");
+    expect(casaRocaHtml).toContain("Delivery &amp; quality");
+    expect(casaRocaHtml).not.toContain("Opportunity &amp; outcome");
+    expect(casaRocaHtml).not.toMatch(/<h[23][^>]*>Opportunity<\/h[23]>/);
     expect(casaRocaHtml.match(/data-case-beat=/g)).toHaveLength(4);
+    expect(
+      casaRocaHtml.indexOf("Casa Roca is the digital arrival point"),
+    ).toBeLessThan(casaRocaHtml.indexOf('data-case-beat="project"'));
+    expectHeadingSequence(casaRocaHtml, [
+      { level: 2, text: "Project" },
+      { level: 3, text: "Business need" },
+      { level: 3, text: "What was built and what it enables" },
+      { level: 2, text: "Role &amp; system" },
+      { level: 2, text: "Decisions" },
+      { level: 2, text: "Delivery &amp; quality" },
+    ]);
     expect(casaRocaHtml).toContain("Project links");
     expect(casaRocaHtml).not.toContain("Confidentiality note");
     expect(casaRocaHtml).toContain("/images/proof/casa-roca-gallery-v2.jpg");
@@ -207,23 +371,51 @@ describe("built public routes", () => {
     expect(casaRocaHtml).toContain('aria-label="Casa Roca production website"');
     expect(casaRocaHtml).toContain('class="sunlit-case-hero-links"');
     expect(casaRocaHtml).not.toContain('class="sunlit-case-links"');
-    expect(casaRocaHtml.indexOf('class="sunlit-case-hero-links"')).toBeLessThan(casaRocaHtml.indexOf('class="sunlit-case-rail"'));
+    expect(casaRocaHtml.indexOf('class="sunlit-case-hero-links"')).toBeLessThan(
+      casaRocaHtml.indexOf('class="sunlit-case-rail"'),
+    );
 
-    expect(spanishCasaRocaHtml).toContain('data-case-study-content-id="case-study:casa-roca"');
-    expect(spanishCasaRocaHtml).toContain("Experiencia de hospitalidad en producción");
-    expect(spanishCasaRocaHtml).toContain("Oportunidad");
-    expect(spanishCasaRocaHtml).toContain("Resultado");
+    expect(spanishCasaRocaHtml).toContain(
+      'data-case-study-content-id="case-study:casa-roca"',
+    );
+    expect(spanishCasaRocaHtml).toContain(
+      "Experiencia de hospitalidad en producción",
+    );
+    expect(spanishCasaRocaHtml).toContain(
+      "Casa Roca es el punto de llegada digital de una estancia boutique en Roca Partida, Veracruz.",
+    );
+    expect(spanishCasaRocaHtml).toContain('data-case-beat="project"');
+    expect(spanishCasaRocaHtml).toContain("Proyecto");
+    expect(spanishCasaRocaHtml).toContain("Necesidad del negocio");
+    expect(spanishCasaRocaHtml).toContain("Qué se construyó y qué permite");
     expect(spanishCasaRocaHtml).toContain("Rol y sistema");
     expect(spanishCasaRocaHtml).toContain("Decisiones");
-    expect(spanishCasaRocaHtml).toContain("Entrega");
+    expect(spanishCasaRocaHtml).toContain("Entrega y calidad");
+    expect(spanishCasaRocaHtml).not.toContain("Oportunidad y resultado");
+    expect(spanishCasaRocaHtml).not.toMatch(/<h[23][^>]*>Oportunidad<\/h[23]>/);
     expect(spanishCasaRocaHtml.match(/data-case-beat=/g)).toHaveLength(4);
+    expect(
+      spanishCasaRocaHtml.indexOf("Casa Roca es el punto de llegada digital"),
+    ).toBeLessThan(spanishCasaRocaHtml.indexOf('data-case-beat="project"'));
+    expectHeadingSequence(spanishCasaRocaHtml, [
+      { level: 2, text: "Proyecto" },
+      { level: 3, text: "Necesidad del negocio" },
+      { level: 3, text: "Qué se construyó y qué permite" },
+      { level: 2, text: "Rol y sistema" },
+      { level: 2, text: "Decisiones" },
+      { level: 2, text: "Entrega y calidad" },
+    ]);
     expect(spanishCasaRocaHtml).toContain("Enlaces del proyecto");
     expect(spanishCasaRocaHtml).not.toContain("Nota de confidencialidad");
     expect(spanishCasaRocaHtml).toContain('href="https://casa-roca.mx"');
-    expect(spanishCasaRocaHtml).toContain('aria-label="Sitio Casa Roca en producción"');
+    expect(spanishCasaRocaHtml).toContain(
+      'aria-label="Sitio Casa Roca en producción"',
+    );
     expect(spanishCasaRocaHtml).toContain('class="sunlit-case-hero-links"');
     expect(spanishCasaRocaHtml).not.toContain('class="sunlit-case-links"');
-    expect(spanishCasaRocaHtml.indexOf('class="sunlit-case-hero-links"')).toBeLessThan(spanishCasaRocaHtml.indexOf('class="sunlit-case-rail"'));
+    expect(
+      spanishCasaRocaHtml.indexOf('class="sunlit-case-hero-links"'),
+    ).toBeLessThan(spanishCasaRocaHtml.indexOf('class="sunlit-case-rail"'));
   });
 
   it("renders the selected work index and remaining case-study statuses from the graph", () => {
@@ -231,12 +423,18 @@ describe("built public routes", () => {
     const spanishIndexHtml = readDist("es/casos/index.html");
     const barberHtml = readDist("case-studies/the-barber-central/index.html");
     const nutriPlanHtml = readDist("case-studies/nutri-plan/index.html");
-    const enterpriseHtml = readDist("case-studies/enterprise-systems/index.html");
-    const engineeringPracticeHtml = readDist("case-studies/engineering-practice/index.html");
+    const enterpriseHtml = readDist(
+      "case-studies/enterprise-systems/index.html",
+    );
+    const engineeringPracticeHtml = readDist(
+      "case-studies/engineering-practice/index.html",
+    );
     const eteriaHtml = readDist("case-studies/eteria/index.html");
     const spanishEteriaHtml = readDist("es/casos/eteria/index.html");
 
-    expect(indexHtml).toContain('data-case-study-index-content-id="case-studies"');
+    expect(indexHtml).toContain(
+      'data-case-study-index-content-id="case-studies"',
+    );
     expect(indexHtml).not.toContain('class="sunlit-work-program"');
     expect(indexHtml).not.toContain('class="sunlit-archive-ticket"');
     expect(indexHtml).toContain('href="/case-studies/eteria"');
@@ -251,12 +449,22 @@ describe("built public routes", () => {
     expect(indexHtml).toContain("Approaching production");
     expect(indexHtml).toContain("Testing &amp; production preparation");
     expect(indexHtml).toContain("Live hospitality experience");
-    expect(indexHtml.indexOf('href="/case-studies/eteria"')).toBeLessThan(indexHtml.indexOf('href="/case-studies/engineering-practice"'));
-    expect(indexHtml.indexOf('href="/case-studies/engineering-practice"')).toBeLessThan(indexHtml.indexOf('href="/case-studies/enterprise-systems"'));
+    expect(indexHtml.indexOf('href="/case-studies/eteria"')).toBeLessThan(
+      indexHtml.indexOf('href="/case-studies/engineering-practice"'),
+    );
+    expect(
+      indexHtml.indexOf('href="/case-studies/engineering-practice"'),
+    ).toBeLessThan(
+      indexHtml.indexOf('href="/case-studies/enterprise-systems"'),
+    );
 
-    expect(spanishIndexHtml).toContain('data-case-study-index-content-id="case-studies"');
+    expect(spanishIndexHtml).toContain(
+      'data-case-study-index-content-id="case-studies"',
+    );
     expect(spanishIndexHtml).toContain('href="/es/casos/eteria"');
-    expect(spanishIndexHtml).toContain('href="/es/casos/practica-de-ingenieria"');
+    expect(spanishIndexHtml).toContain(
+      'href="/es/casos/practica-de-ingenieria"',
+    );
     expect(spanishIndexHtml).toContain('href="/es/casos/sistemas-enterprise"');
     expect(spanishIndexHtml).toContain('href="/es/casos/the-barber-central"');
     expect(spanishIndexHtml).toContain('href="/es/casos/nutri-plan"');
@@ -266,34 +474,56 @@ describe("built public routes", () => {
     expect(spanishIndexHtml).toContain("Sistemas de producto enterprise");
     expect(spanishIndexHtml).toContain("Acercándose a producción");
     expect(spanishIndexHtml).toContain("Testing y preparación para producción");
-    expect(spanishIndexHtml).toContain("Experiencia de hospitalidad en producción");
+    expect(spanishIndexHtml).toContain(
+      "Experiencia de hospitalidad en producción",
+    );
 
-    expect(barberHtml).toContain('data-case-study-content-id="case-study:the-barber-central"');
+    expect(barberHtml).toContain(
+      'data-case-study-content-id="case-study:the-barber-central"',
+    );
     expect(barberHtml).toContain("Approaching production");
     expect(barberHtml).toContain("Development preview");
-    expect(nutriPlanHtml).toContain('data-case-study-content-id="case-study:nutri-plan"');
+    expect(nutriPlanHtml).toContain(
+      'data-case-study-content-id="case-study:nutri-plan"',
+    );
     expect(barberHtml).toContain("/images/proof/barber-central-hero-v2.jpg");
     expect(nutriPlanHtml).toContain("Testing &amp; production preparation");
-    expect(nutriPlanHtml).toContain("/images/proof/nutri-plan-dashboard-v2.png");
-    expect(enterpriseHtml).toContain('data-case-study-content-id="case-study:enterprise-systems"');
+    expect(nutriPlanHtml).toContain(
+      "/images/proof/nutri-plan-dashboard-v2.png",
+    );
+    expect(enterpriseHtml).toContain(
+      'data-case-study-content-id="case-study:enterprise-systems"',
+    );
     expect(enterpriseHtml).toContain("Enterprise product systems");
     expect(enterpriseHtml).toContain("3–5 seconds to under 1 second");
     expect(enterpriseHtml).toContain("Client details remain private.");
-    expect(enterpriseHtml.match(/Client details remain private\./g)).toHaveLength(1);
+    expect(
+      enterpriseHtml.match(/Client details remain private\./g),
+    ).toHaveLength(1);
     expect(enterpriseHtml).not.toMatch(/confidential/i);
-    expect(engineeringPracticeHtml).toContain('data-case-study-content-id="case-study:engineering-practice"');
+    expect(engineeringPracticeHtml).toContain(
+      'data-case-study-content-id="case-study:engineering-practice"',
+    );
     expect(engineeringPracticeHtml).toContain("AI-native development practice");
     expect(engineeringPracticeHtml).toContain("Source and process");
-    expect(eteriaHtml).toContain('data-case-study-content-id="case-study:eteria"');
+    expect(eteriaHtml).toContain(
+      'data-case-study-content-id="case-study:eteria"',
+    );
     expect(eteriaHtml).toContain("Client project · In production");
     expect(eteriaHtml).toContain("Convex");
     expect(eteriaHtml).toContain("PostHog");
     expect(eteriaHtml).toContain("SwiftUI");
     expect(eteriaHtml).toContain("Release Train");
     expect(eteriaHtml).toContain('href="https://momentos-eteria.com"');
-    expect(eteriaHtml).toContain("/images/proof/eteria-garden-blue-table-og.jpg");
-    expect(eteriaHtml).not.toMatch(/App Store|customer data|private route|credential/i);
-    expect(spanishEteriaHtml).toContain('data-case-study-content-id="case-study:eteria"');
+    expect(eteriaHtml).toContain(
+      "/images/proof/eteria-garden-blue-table-og.jpg",
+    );
+    expect(eteriaHtml).not.toMatch(
+      /App Store|customer data|private route|credential/i,
+    );
+    expect(spanishEteriaHtml).toContain(
+      'data-case-study-content-id="case-study:eteria"',
+    );
     expect(spanishEteriaHtml).toContain("Proyecto de cliente · En producción");
     expect(spanishEteriaHtml).toContain('href="https://momentos-eteria.com"');
   });
@@ -301,46 +531,86 @@ describe("built public routes", () => {
   it("renders the graph-backed About page and keeps an ATS-readable resume PDF aligned", async () => {
     const resumeHtml = readDist("resume/index.html");
     const spanishResumeHtml = readDist("es/curriculum/index.html");
-    const pdfPath = path.join(distRoot, "downloads", "alejandro-ortiz-corro-resume.pdf");
+    const pdfPath = path.join(
+      distRoot,
+      "downloads",
+      "alejandro-ortiz-corro-resume.pdf",
+    );
 
     expect(resumeHtml).toContain('data-resume-content-id="resume"');
     expect(resumeHtml).toContain("About Alejandro");
-    expect(resumeHtml).toContain("Senior Software Engineer · AI-Native Product Development");
+    expect(resumeHtml).toContain(
+      "Senior Software Engineer · AI-Native Product Development",
+    );
     expect(resumeHtml).toContain("Professional summary");
     expect(resumeHtml).toContain("Selected Systems");
     expect(resumeHtml).toContain("Professional experience");
     expect(resumeHtml).toContain("Technical capabilities");
-    expect(resumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
+    expect(resumeHtml).toContain(
+      'href="/downloads/alejandro-ortiz-corro-resume.pdf"',
+    );
     expect(resumeHtml).toContain("Open resume PDF");
     expect(resumeHtml).not.toContain("Download ATS PDF");
     expect(resumeHtml).toContain('href="/case-studies"');
     expect(resumeHtml).toContain('href="/architecture"');
-    expect(resumeHtml.indexOf("Selected Systems")).toBeLessThan(resumeHtml.indexOf("Professional experience"));
+    expect(resumeHtml.indexOf("Selected Systems")).toBeLessThan(
+      resumeHtml.indexOf("Professional experience"),
+    );
     expect(resumeHtml).toContain("Senior Frontend Developer");
     expect(resumeHtml).toContain("Tala Mobile · 2023 - Present");
+    expect(resumeHtml).toContain("Founder");
+    expect(resumeHtml).toContain("AOHYS · 2015 - Present");
+    expect(resumeHtml.indexOf("Tala Mobile · 2023 - Present")).toBeLessThan(
+      resumeHtml.indexOf("AOHYS · 2015 - Present"),
+    );
     expect(resumeHtml.match(/\bTala(?: Mobile)?\b/gi) ?? []).toHaveLength(1);
     expect(resumeHtml).toContain("3–5 seconds to under 1 second");
     expect(resumeHtml).toContain("Java work in progress");
-    expect(resumeHtml.slice(resumeHtml.indexOf('id="projects-title"'), resumeHtml.indexOf('id="experience-title"'))).not.toMatch(/\bTala(?: Mobile)?\b/i);
+    expect(
+      resumeHtml.slice(
+        resumeHtml.indexOf('id="projects-title"'),
+        resumeHtml.indexOf('id="experience-title"'),
+      ),
+    ).not.toMatch(/\bTala(?: Mobile)?\b/i);
 
     expect(spanishResumeHtml).toContain('data-resume-content-id="resume"');
     expect(spanishResumeHtml).toContain("Sobre Alejandro");
-    expect(spanishResumeHtml).toContain("Senior Software Engineer · Desarrollo de producto AI-native");
+    expect(spanishResumeHtml).toContain(
+      "Senior Software Engineer · Desarrollo de producto AI-native",
+    );
     expect(spanishResumeHtml).toContain("Resumen profesional");
     expect(spanishResumeHtml).toContain("Sistemas seleccionados");
     expect(spanishResumeHtml).toContain("Experiencia profesional");
     expect(spanishResumeHtml).toContain("Capacidades técnicas");
-    expect(spanishResumeHtml).toContain('href="/downloads/alejandro-ortiz-corro-resume.pdf"');
+    expect(spanishResumeHtml).toContain(
+      'href="/downloads/alejandro-ortiz-corro-resume.pdf"',
+    );
     expect(spanishResumeHtml).toContain("Abrir CV en PDF");
     expect(spanishResumeHtml).not.toContain("Descargar PDF ATS");
     expect(spanishResumeHtml).toContain('href="/es/casos"');
     expect(spanishResumeHtml).toContain('href="/es/arquitectura"');
-    expect(spanishResumeHtml.indexOf("Sistemas seleccionados")).toBeLessThan(spanishResumeHtml.indexOf("Experiencia profesional"));
+    expect(spanishResumeHtml.indexOf("Sistemas seleccionados")).toBeLessThan(
+      spanishResumeHtml.indexOf("Experiencia profesional"),
+    );
     expect(spanishResumeHtml).toContain("Tala Mobile · 2023 - Presente");
-    expect(spanishResumeHtml.match(/\bTala(?: Mobile)?\b/gi) ?? []).toHaveLength(1);
-    expect(spanishResumeHtml.slice(spanishResumeHtml.indexOf('id="projects-title"'), spanishResumeHtml.indexOf('id="experience-title"'))).not.toMatch(/\bTala(?: Mobile)?\b/i);
+    expect(spanishResumeHtml).toContain("Founder");
+    expect(spanishResumeHtml).toContain("AOHYS · 2015 - Presente");
+    expect(
+      spanishResumeHtml.indexOf("Tala Mobile · 2023 - Presente"),
+    ).toBeLessThan(spanishResumeHtml.indexOf("AOHYS · 2015 - Presente"));
+    expect(
+      spanishResumeHtml.match(/\bTala(?: Mobile)?\b/gi) ?? [],
+    ).toHaveLength(1);
+    expect(
+      spanishResumeHtml.slice(
+        spanishResumeHtml.indexOf('id="projects-title"'),
+        spanishResumeHtml.indexOf('id="experience-title"'),
+      ),
+    ).not.toMatch(/\bTala(?: Mobile)?\b/i);
 
-    expect(existsSync(pdfPath), "resume PDF must be copied into dist").toBe(true);
+    expect(existsSync(pdfPath), "resume PDF must be copied into dist").toBe(
+      true,
+    );
     const pdfBytes = readFileSync(pdfPath);
     const pdfSource = pdfBytes.toString("latin1");
 
@@ -365,22 +635,41 @@ describe("built public routes", () => {
       ];
 
       expect(pdfInfo.total).toBe(2);
-      expect(expectedOrder.every((heading) => atsText.includes(heading))).toBe(true);
-      expect(expectedOrder.map((heading) => atsText.indexOf(heading))).toEqual(
-        [...expectedOrder.map((heading) => atsText.indexOf(heading))].sort((a, b) => a - b),
+      expect(expectedOrder.every((heading) => atsText.includes(heading))).toBe(
+        true,
       );
-      expect(atsText).toContain("Senior Frontend Developer | Tala Mobile | 2023 - Present");
+      expect(expectedOrder.map((heading) => atsText.indexOf(heading))).toEqual(
+        [...expectedOrder.map((heading) => atsText.indexOf(heading))].sort(
+          (a, b) => a - b,
+        ),
+      );
+      expect(atsText).toContain(
+        "Senior Frontend Developer | Tala Mobile | 2023 - Present",
+      );
+      expect(atsText).toContain("Founder | AOHYS | 2015 - Present");
+      expect(atsText).toContain(
+        "Current systems include ETERIA, The Barber Central, NutriPlan Digital, Casa Roca, and AOHYS.",
+      );
+      expect(
+        atsText.indexOf(
+          "Senior Frontend Developer | Tala Mobile | 2023 - Present",
+        ),
+      ).toBeLessThan(atsText.indexOf("Founder | AOHYS | 2015 - Present"));
       expect(atsText.match(/\bTala(?: Mobile)?\b/gi) ?? []).toHaveLength(1);
       expect(atsText).toMatch(/approximately 3–5 seconds to under 1 second/i);
       expect(atsText).not.toMatch(/\bCARE\b/);
-      expect(atsText).not.toMatch(/80%|Open[- ]to[- ]Work|Available for selected projects|AI[\/-]ML Engineer|\bRAG\b|fine-tuning|model eval(?:s|uations)|New York|App Store/i);
+      expect(atsText).not.toMatch(
+        /80%|Open[- ]to[- ]Work|Available for selected projects|AI[\/-]ML Engineer|\bRAG\b|fine-tuning|model eval(?:s|uations)|New York|App Store/i,
+      );
     } finally {
       await parser.destroy();
     }
   });
 
   it("keeps prohibited positioning and private-work claims out of built public output", () => {
-    const publicHtml = getPublicRouteMap().map((route) => readDist(routeHtmlPath(route.path))).join("\n");
+    const publicHtml = getPublicRouteMap()
+      .map((route) => readDist(routeHtmlPath(route.path)))
+      .join("\n");
     const nonResumeHtml = getPublicRouteMap()
       .filter((route) => route.id !== "resume")
       .map((route) => readDist(routeHtmlPath(route.path)))
@@ -400,9 +689,9 @@ describe("built public routes", () => {
     expect(contactHtml).toContain("What you want to make possible");
     expect(contactHtml).toContain("Who it should serve");
     expect(contactHtml).toContain("What matters now");
-    expect(contactHtml).toContain('data-contact-form');
+    expect(contactHtml).toContain("data-contact-form");
     expect(contactHtml).toContain('name="preferredContactPath"');
-    expect(contactHtml).toContain('data-contact-phone');
+    expect(contactHtml).toContain("data-contact-phone");
     expect(contactHtml).toContain('aria-required="false"');
     expect(contactHtml).toContain("Optional unless WhatsApp is selected");
     expect(contactHtml).toContain("Email is required to confirm your request.");
@@ -410,17 +699,25 @@ describe("built public routes", () => {
     expect(contactHtml).toContain('name="website"');
     expect(contactHtml).toContain('name="formStartedAt"');
     expect(contactHtml).toContain('name="message"');
-    expect(contactHtml).toContain('data-validation-message=');
-    expect(contactHtml).toContain('data-email-error-message=');
-    expect(contactHtml).toContain('data-backend-error-message=');
-    expect(contactHtml).toContain('data-degraded-success-message=');
-    expect(contactHtml).toContain('data-retry-label=');
-    expect(contactHtml).toContain("Please review the highlighted fields before retrying.");
+    expect(contactHtml).toContain("data-validation-message=");
+    expect(contactHtml).toContain("data-email-error-message=");
+    expect(contactHtml).toContain("data-backend-error-message=");
+    expect(contactHtml).toContain("data-degraded-success-message=");
+    expect(contactHtml).toContain("data-retry-label=");
+    expect(contactHtml).toContain(
+      "Please review the highlighted fields before retrying.",
+    );
     expect(contactHtml).toContain("The notification email could not be sent.");
-    expect(contactHtml).toContain("Message saved. I can see it in the dashboard even if the email notification is delayed.");
-    expect(contactHtml).toContain("Try again, or use WhatsApp or email directly.");
+    expect(contactHtml).toContain(
+      "Message saved. I can see it in the dashboard even if the email notification is delayed.",
+    );
+    expect(contactHtml).toContain(
+      "Try again, or use WhatsApp or email directly.",
+    );
     expect(contactHtml).toContain("WhatsApp");
-    expect(contactHtml).toContain("I understand AOHYS will use this information to respond to my request.");
+    expect(contactHtml).toContain(
+      "I understand AOHYS will use this information to respond to my request.",
+    );
     expect(contactHtml).toMatch(/failure_reason:[`"]validation_failed/);
     expect(contactHtml).toMatch(/failure_reason:\w/);
     expect(contactHtml).toContain("contact_form_submit_succeeded");
@@ -434,24 +731,38 @@ describe("built public routes", () => {
     expect(spanishContactHtml).toContain("Qué quieres hacer posible");
     expect(spanishContactHtml).toContain("A quién debe servir");
     expect(spanishContactHtml).toContain("Qué importa ahora");
-    expect(spanishContactHtml).toContain('data-contact-form');
+    expect(spanishContactHtml).toContain("data-contact-form");
     expect(spanishContactHtml).toContain('name="preferredContactPath"');
-    expect(spanishContactHtml).toContain("Opcional, excepto al elegir WhatsApp");
-    expect(spanishContactHtml).toContain("El correo es necesario para confirmar tu solicitud.");
+    expect(spanishContactHtml).toContain(
+      "Opcional, excepto al elegir WhatsApp",
+    );
+    expect(spanishContactHtml).toContain(
+      "El correo es necesario para confirmar tu solicitud.",
+    );
     expect(spanishContactHtml).toContain('name="consentToContact"');
     expect(spanishContactHtml).toContain('name="website"');
     expect(spanishContactHtml).toContain('name="formStartedAt"');
-    expect(spanishContactHtml).toContain('data-validation-message=');
-    expect(spanishContactHtml).toContain('data-email-error-message=');
-    expect(spanishContactHtml).toContain('data-backend-error-message=');
-    expect(spanishContactHtml).toContain('data-degraded-success-message=');
-    expect(spanishContactHtml).toContain('data-retry-label=');
-    expect(spanishContactHtml).toContain("Revisa los campos marcados antes de intentar de nuevo.");
-    expect(spanishContactHtml).toContain("No se pudo enviar el correo de notificación.");
-    expect(spanishContactHtml).toContain("Mensaje guardado. Puedo verlo en el dashboard aunque la notificación por correo se retrase.");
-    expect(spanishContactHtml).toContain("Intenta de nuevo o usa WhatsApp/correo directo.");
+    expect(spanishContactHtml).toContain("data-validation-message=");
+    expect(spanishContactHtml).toContain("data-email-error-message=");
+    expect(spanishContactHtml).toContain("data-backend-error-message=");
+    expect(spanishContactHtml).toContain("data-degraded-success-message=");
+    expect(spanishContactHtml).toContain("data-retry-label=");
+    expect(spanishContactHtml).toContain(
+      "Revisa los campos marcados antes de intentar de nuevo.",
+    );
+    expect(spanishContactHtml).toContain(
+      "No se pudo enviar el correo de notificación.",
+    );
+    expect(spanishContactHtml).toContain(
+      "Mensaje guardado. Puedo verlo en el dashboard aunque la notificación por correo se retrase.",
+    );
+    expect(spanishContactHtml).toContain(
+      "Intenta de nuevo o usa WhatsApp/correo directo.",
+    );
     expect(spanishContactHtml).toContain("WhatsApp");
-    expect(spanishContactHtml).toContain("Entiendo que AOHYS usará esta información para responder mi solicitud.");
+    expect(spanishContactHtml).toContain(
+      "Entiendo que AOHYS usará esta información para responder mi solicitud.",
+    );
   });
 
   it("renders explicit analytics hooks without relying on autocapture", () => {
@@ -464,14 +775,26 @@ describe("built public routes", () => {
       `"environment":"${process.env.AOHYS_ENV ?? "local"}"`,
     );
     expect(contactHtml).toContain('data-analytics-view="contact_form_viewed"');
-    expect(contactHtml).toContain('data-analytics-submit="contact_form_submit_attempted"');
+    expect(contactHtml).toContain(
+      'data-analytics-submit="contact_form_submit_attempted"',
+    );
     expect(contactHtml).toContain("contact_form_submit_succeeded");
-    expect(contactHtml).toContain('data-analytics-event="whatsapp_cta_clicked"');
+    expect(contactHtml).toContain(
+      'data-analytics-event="whatsapp_cta_clicked"',
+    );
     expect(contactHtml).toContain('data-analytics-event="email_cta_clicked"');
-    expect(contactHtml).toContain('data-analytics-target="contact_direct_panel"');
-    expect(contactHtml).toContain('data-analytics-target="contact_form_error_fallback"');
-    expect(contactHtml.match(/data-analytics-event="whatsapp_cta_clicked"/g)?.length).toBeGreaterThanOrEqual(3);
-    expect(contactHtml.match(/data-analytics-event="email_cta_clicked"/g)?.length).toBeGreaterThanOrEqual(2);
+    expect(contactHtml).toContain(
+      'data-analytics-target="contact_direct_panel"',
+    );
+    expect(contactHtml).toContain(
+      'data-analytics-target="contact_form_error_fallback"',
+    );
+    expect(
+      contactHtml.match(/data-analytics-event="whatsapp_cta_clicked"/g)?.length,
+    ).toBeGreaterThanOrEqual(3);
+    expect(
+      contactHtml.match(/data-analytics-event="email_cta_clicked"/g)?.length,
+    ).toBeGreaterThanOrEqual(2);
     expect(contactHtml).not.toContain("autocapture:true");
   });
 
@@ -486,7 +809,9 @@ describe("built public routes", () => {
     expect(redirects).toContain("/es/agentes /es/practica 301");
     expect(redirects).toContain("/es/precios /es/curriculum 301");
     expect(existsSync(path.join(distRoot, "blog", "index.html"))).toBe(false);
-    expect(existsSync(path.join(distRoot, "pricing", "index.html"))).toBe(false);
+    expect(existsSync(path.join(distRoot, "pricing", "index.html"))).toBe(
+      false,
+    );
   });
 
   it("renders accurate bilingual privacy copy without private-source claims", () => {
@@ -496,16 +821,28 @@ describe("built public routes", () => {
     expect(privacyHtml).toContain('data-privacy-content-id="privacy"');
     expect(privacyHtml).toContain("Contact requests");
     expect(privacyHtml).toContain("PostHog");
-    expect(privacyHtml).toContain("contact message text is not sent to analytics");
-    expect(privacyHtml).toMatch(/private client code, credentials, operational records, and dashboard data are not public/i);
-    expect(privacyHtml).not.toMatch(/private client code is public|open source lab/i);
+    expect(privacyHtml).toContain(
+      "contact message text is not sent to analytics",
+    );
+    expect(privacyHtml).toMatch(
+      /private client code, credentials, operational records, and dashboard data are not public/i,
+    );
+    expect(privacyHtml).not.toMatch(
+      /private client code is public|open source lab/i,
+    );
 
     expect(spanishPrivacyHtml).toContain('data-privacy-content-id="privacy"');
     expect(spanishPrivacyHtml).toContain("Solicitudes de contacto");
     expect(spanishPrivacyHtml).toContain("PostHog");
-    expect(spanishPrivacyHtml).toContain("el texto del mensaje no se envía a analíticas");
-    expect(spanishPrivacyHtml).toContain("código privado de clientes, credenciales, registros operativos y datos del dashboard no son públicos");
-    expect(spanishPrivacyHtml).not.toMatch(/código privado.*es público|open source lab/i);
+    expect(spanishPrivacyHtml).toContain(
+      "el texto del mensaje no se envía a analíticas",
+    );
+    expect(spanishPrivacyHtml).toContain(
+      "código privado de clientes, credenciales, registros operativos y datos del dashboard no son públicos",
+    );
+    expect(spanishPrivacyHtml).not.toMatch(
+      /código privado.*es público|open source lab/i,
+    );
   });
 
   it("emits sitemap and robots behavior from the public graph", () => {
@@ -527,14 +864,26 @@ describe("built public routes", () => {
 
     expect(headers).toBe(renderCloudflarePagesStaticHeaders());
     expect(headers).toContain("X-Content-Type-Options: nosniff");
-    expect(headers).toContain("Referrer-Policy: strict-origin-when-cross-origin");
+    expect(headers).toContain(
+      "Referrer-Policy: strict-origin-when-cross-origin",
+    );
     expect(headers).toContain("X-Frame-Options: DENY");
-    expect(headers).toContain("Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()");
-    expect(headers).toContain(`Content-Security-Policy: ${CONTENT_SECURITY_POLICY}`);
+    expect(headers).toContain(
+      "Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()",
+    );
+    expect(headers).toContain(
+      `Content-Security-Policy: ${CONTENT_SECURITY_POLICY}`,
+    );
     expect(headers).toContain("frame-ancestors 'none'");
-    expect(headers).toContain("script-src 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
-    expect(headers).toContain("script-src-elem 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
-    expect(headers).toContain("connect-src 'self' https://*.convex.site https://*.convex.cloud wss://*.convex.cloud https://upload.imagedelivery.net https://us.i.posthog.com https://us.posthog.com https://us-assets.i.posthog.com");
+    expect(headers).toContain(
+      "script-src 'self' 'unsafe-inline' https://us-assets.i.posthog.com",
+    );
+    expect(headers).toContain(
+      "script-src-elem 'self' 'unsafe-inline' https://us-assets.i.posthog.com",
+    );
+    expect(headers).toContain(
+      "connect-src 'self' https://*.convex.site https://*.convex.cloud wss://*.convex.cloud https://upload.imagedelivery.net https://us.i.posthog.com https://us.posthog.com https://us-assets.i.posthog.com",
+    );
     expect(headers).toContain("report-uri /observability/csp");
   });
 });

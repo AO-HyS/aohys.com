@@ -165,6 +165,7 @@ describe("public site source quality", () => {
     expect(sitePackage).not.toMatch(/"(?:@types\/)?three"/);
     expect(publicContentPage).toContain(".sunlit-architecture-hero > div > p:last-of-type { color: var(--color-ink); }");
     expect(publicContentPage).toContain("SunlitProjectStage");
+    expect(publicContentPage).toContain("font-size: clamp(3.5rem, 4.8vw, 5rem)");
     expect(publicContentPage).toContain("getPracticePageContent");
     expect(publicContentPage).toContain("SunlitWebGLScene");
     expect(publicContentPage).toContain("SunlitCtaBand");
@@ -183,6 +184,8 @@ describe("public site source quality", () => {
       "public/images/proof/barber-central-hero-v2.jpg",
       "public/images/proof/nutri-plan-dashboard-v2.png",
       "public/images/proof/eteria-garden-blue-table-og.jpg",
+      "public/images/social/engineering-practice-preview-v1.png",
+      "public/images/social/enterprise-systems-preview-v1.png",
       "public/images/brand/aohys-connections-wordmark-v3.svg",
       "public/images/brand/aohys-connections-mark-v3.svg",
       "public/images/brand/aohys-connections-mono-v3.svg",
