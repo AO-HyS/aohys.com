@@ -20,7 +20,7 @@
       "proofBoardTitle": "Business intent becomes working software.",
       "proofBoardBody": "I work with clients and stakeholders, shape product and domain decisions, build across the system, and remain responsible for verification and release.",
       "selectedOutcomesHeading": "Selected work, ordered by evidence.",
-      "selectedOutcomesIntro": "Client production work, AI-native delivery practice, enterprise systems, and products moving deliberately toward release.",
+      "selectedOutcomesIntro": "Six systems showing the result, the product or operational capability, and my role in the work.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:eteria",
@@ -131,24 +131,24 @@
           "text": "Clear boundaries, observability, release paths, and operational surfaces let the product evolve without losing accountability."
         }
       ],
-      "practiceHeading": "Tell me what you are building.",
-      "practiceBody": "I can join a team, shape a new product, modernize a system already in motion, or help turn a difficult delivery path into working software.",
+      "practiceHeading": "How I work and contribute.",
+      "practiceBody": "I connect product judgment, architecture, implementation, and accountable delivery across complete systems, focused team workstreams, and modernization already in motion.",
       "practicePoints": [
         {
           "label": "Product systems",
-        "text": "Shape the product idea, interface, workflows, data, and operating model into one coherent experience."
+          "text": "Shape the product idea, interface, workflows, data, and operating model into one coherent experience."
         },
         {
           "label": "Architecture & modernization",
-        "text": "Evolve an existing system with clearer boundaries, modern capabilities, and room for the product to grow."
+          "text": "Evolve an existing system with clearer boundaries, modern capabilities, and room for the product to grow."
         },
         {
           "label": "Delivery acceleration",
-        "text": "Combine advanced AI workflows, previews, quality gates, observability, and cloud operations into everyday delivery."
+          "text": "Combine advanced AI workflows, previews, quality gates, observability, and cloud operations into everyday delivery."
         }
       ],
-      "contactHeading": "Tell me what you're building.",
-      "contactBody": "Tell me what you are building, who it should serve, and what is getting in the way. I will read the context myself and reply with useful questions and a practical next step.",
+      "contactHeading": "Start with the context.",
+      "contactBody": "Share the product, role, system, or technical question you want to move forward. I will read the context myself and reply with useful questions and a practical next step.",
       "emailLabel": "Email Alejandro",
       "emailHref": "mailto:alejandro.ortiz@aohys.com",
       "whatsappLabel": "WhatsApp",
@@ -169,12 +169,12 @@
         },
         {
           "slotId": "agents",
-          "label": "Services",
+          "label": "Practice",
           "contentId": "practice"
         },
         {
           "slotId": "pricing",
-          "label": "About",
+          "label": "Experience",
           "contentId": "resume"
         },
         {
@@ -184,7 +184,7 @@
         },
         {
           "slotId": "blog",
-          "label": "Let's talk",
+          "label": "Contact",
           "contentId": "contact"
         }
       ],
@@ -232,14 +232,23 @@
           {
             "id": "delivery",
             "contentId": "practice",
-            "label": "Services",
-            "text": "Product systems, modernization, and delivery acceleration.",
+            "label": "Practice",
+            "text": "Product systems, embedded collaboration, and modernization.",
             "icon": "practice",
             "tone": 3
           }
         ],
         "preview": {
-          "tabs": ["cURL", "NodeJS", "Rust", "Go", "PHP", "C#", "Java", "Python"],
+          "tabs": [
+            "cURL",
+            "NodeJS",
+            "Rust",
+            "Go",
+            "PHP",
+            "C#",
+            "Java",
+            "Python"
+          ],
           "codeLines": [
             "const system = await aohys.publish({",
             "  publicSite: \"ETERIA\",",
@@ -254,16 +263,16 @@
   "case-studies": {
     "path": "/case-studies",
     "title": "Selected work",
-    "summary": "Live sites, active product builds, enterprise systems, and the engineering decisions behind each result.",
-    "seoDescription": "Selected work by Alejandro Ortiz Corro across production websites, active product builds, business systems, enterprise delivery, and modern product engineering.",
+    "summary": "Six systems and delivery stories showing what was built, what each system enables, and Alejandro's role in the work.",
+    "seoDescription": "Selected work by Alejandro Ortiz Corro across production websites, active product builds, enterprise systems, and AI-native delivery, with context, outcomes, role, and public evidence.",
     "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Read architecture notes",
     "secondaryActionContentId": "architecture"
   },
   "case-study:eteria": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "200c79b7c82f7588d1cbb8e0c571114e3e036e1c8c4a8c36f68110b296689758",
+    "approvedAt": "2026-07-24T05:15:00.000Z",
+    "approvedHash": "c8f4a3c98d90aaeb4b8b8575a93c461fad3312ed94337b3e33e7c47b3a6e113c",
     "path": "/case-studies/eteria",
     "title": "ETERIA event-business product system",
     "summary": "A client project in production connecting public discovery, lead capture, proposals, private operations, and an internal SwiftUI client.",
@@ -276,11 +285,11 @@
       "statusLabel": "Client project · In production",
       "overview": "ETERIA is a client project in production for an event business. It connects a public landing and real lead paths with proposals and private operational workflows.",
       "problem": {
-        "title": "Opportunity",
+        "title": "Business need",
         "body": "The business needed one coherent path from first public contact through a proposal and into the day-to-day work required to deliver an event."
       },
       "businessOutcome": {
-        "title": "Business outcome",
+        "title": "What was built and what it enables",
         "body": "The production system gives the team a public place to earn trust, capture leads through forms and WhatsApp, share versioned proposals, and coordinate work behind authenticated boundaries."
       },
       "role": {
@@ -322,8 +331,8 @@
     }
   },
   "case-study:casa-roca": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "770969dabdc4540086a1a87752d8b3c3f8e7604d03a48be3f4f2e9a402e53b17",
+    "approvedAt": "2026-07-24T02:00:00.000Z",
+    "approvedHash": "0ca4e5c49afee48b8b00c490b895b021948cf02530390be1f44c6fc479d827fe",
     "path": "/case-studies/casa-roca",
     "title": "Casa Roca guest experience and conversion path",
     "summary": "A public hospitality experience in production with a clear story, direct contact path, and disciplined releases.",
@@ -336,12 +345,12 @@
       "statusLabel": "Live hospitality experience",
       "overview": "Casa Roca is the digital arrival point for a boutique stay in Roca Partida, Veracruz. It helps guests understand the place quickly, decide whether it fits their trip, and contact the business directly.",
       "problem": {
-        "title": "Opportunity",
-        "body": "Casa Roca had the opportunity to turn its place, experience, and credibility into a clear digital arrival with a direct next step for guests."
+        "title": "Business need",
+        "body": "The business needed a bilingual public destination where guests could understand the place, decide whether it fit their trip, and contact Casa Roca directly."
       },
       "businessOutcome": {
-        "title": "Business outcome",
-        "body": "The production site gives Casa Roca a clear destination for guests, search traffic, brand trust, and direct inquiries."
+        "title": "What was built and what it enables",
+        "body": "A production hospitality site brings together place storytelling, localized guest pages, search metadata, responsive media, and a direct contact path. It lets guests understand the stay and contact the business from one public destination."
       },
       "role": {
         "title": "Role",
@@ -381,8 +390,8 @@
     }
   },
   "case-study:the-barber-central": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "b3881e07088c2bf675460fea64e2658ce98e40f1d32143523e0c4b97e641eccb",
+    "approvedAt": "2026-07-24T05:25:00.000Z",
+    "approvedHash": "eb5a029c61fe2bfc3bd1199a347a0315d3f24ca7dd57f97535821966626410b8",
     "path": "/case-studies/the-barber-central",
     "title": "The Barber Central booking and operations system",
     "summary": "A service-business SaaS approaching production across booking, customers, staff, inventory, reporting, analytics, and retention.",
@@ -395,12 +404,12 @@
       "statusLabel": "Approaching production",
       "overview": "The Barber Central is a SaaS product approaching production for barbershops, salons, and studios. Booking, customers, staff, inventory, reporting, analytics, and retention work as one operating system instead of a pile of tools.",
       "problem": {
-        "title": "Opportunity",
-        "body": "Service businesses can bring bookings, reminders, staff operations, and payments into one generous daily workflow that gives growth more room."
+        "title": "Business need",
+        "body": "Barbershops, salons, and studios needed one dependable daily workflow for bookings, customer records, staff availability, reminders, payments, and the operations behind each appointment."
       },
       "businessOutcome": {
-        "title": "Business outcome",
-        "body": "The product direction centers the daily operating workflow: book clients, manage availability, communicate clearly, and keep the business moving without stitching tools together by hand."
+        "title": "What was built and what it enables",
+        "body": "A service-business SaaS brings booking, customer records, staff availability, reminders, inventory, reporting, analytics, and retention into one operating system. It lets teams run the day without stitching separate tools together by hand."
       },
       "role": {
         "title": "Role",
@@ -440,8 +449,8 @@
     }
   },
   "case-study:nutri-plan": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "7a9c0e79953f4034efba0a6f0a7deb08ad40a960f3e9fe361ab967fc11bf6be9",
+    "approvedAt": "2026-07-24T05:25:00.000Z",
+    "approvedHash": "184548cd811cbc6f0406f200100d675a026534421dab02042bc64d8b50e795aa",
     "path": "/case-studies/nutri-plan",
     "title": "NutriPlan Digital clinical product system",
     "summary": "A multi-surface clinical SaaS in testing and production preparation, with protected practitioner, administration, and mobile workflows.",
@@ -454,12 +463,12 @@
       "statusLabel": "Testing & production preparation",
       "overview": "NutriPlan Digital is a multi-surface clinical SaaS in testing and production preparation. It connects practitioner workflows, administration, mobile access, educational content, and operational clarity through shared backend state.",
       "problem": {
-        "title": "Opportunity",
-        "body": "Nutrition teams can connect client records, plans, dashboards, and mobile experiences through one shared product model."
+        "title": "Business need",
+        "body": "Nutrition teams needed practitioner, administration, and mobile workflows to share consistent product state while keeping health-related records behind clear role and access boundaries."
       },
       "businessOutcome": {
-        "title": "Business outcome",
-        "body": "The build organizes the product around real operational roles and shared backend state so client work, admin work, and mobile access can come from one model."
+        "title": "What was built and what it enables",
+        "body": "A multi-surface clinical product connects practitioner workflows, administration, mobile access, educational content, and shared backend state. It lets those surfaces operate from the same product model while preserving role and access boundaries."
       },
       "role": {
         "title": "Role",
@@ -499,8 +508,8 @@
     }
   },
   "case-study:enterprise-systems": {
-    "approvedAt": "2026-07-20T17:51:17.000Z",
-    "approvedHash": "434c072959bf4d204db2722dc3da5e8f1cd889053b704e974afe515d55c4d2a1",
+    "approvedAt": "2026-07-24T05:15:00.000Z",
+    "approvedHash": "8fe9a55e29a20174eedf4b65ba8c43bdfd87b0d2a50914e2c30f07e929383401",
     "path": "/case-studies/enterprise-systems",
     "title": "Enterprise product systems under operational pressure",
     "summary": "An internal customer-support and account-recovery operations platform and mission-critical emergency-response software show product judgment, performance work, and dependable delivery inside complex organizations.",
@@ -513,12 +522,12 @@
       "statusLabel": "Enterprise product systems",
       "overview": "An internal customer-support and account-recovery operations platform and mission-critical emergency-response software for a large US city show how product workflows, performance, observability, and delivery operate inside complex organizations.",
       "problem": {
-        "title": "Opportunity",
-        "body": "Large systems create meaningful opportunities when ownership, integrations, operational workflows, and support paths are made visible."
+        "title": "Business need",
+        "body": "Customer-support, account-recovery, and emergency-response teams needed reliable workflows across ownership, integrations, operational handoffs, and high-risk support paths."
       },
       "businessOutcome": {
-        "title": "Business outcome",
-        "body": "The customer-support and account-recovery platform improved from approximately 3–5 seconds to under 1 second. Emergency-response workflows supported high-stakes dispatch where reliability and precise interaction mattered."
+        "title": "What was built and what it enables",
+        "body": "An internal customer-support and account-recovery platform made complex service workflows faster, improving key loads from approximately 3–5 seconds to under 1 second. Mission-critical emergency-response software supported high-stakes dispatch where reliability and precise interaction mattered."
       },
       "role": {
         "title": "Role",
@@ -558,8 +567,8 @@
     }
   },
   "case-study:engineering-practice": {
-    "approvedAt": "2026-07-20T14:57:01.000Z",
-    "approvedHash": "9c3e4f2f39b76e414ced8ae40b2ddda9fd1e27cb4e13ecf31a2ed0955ab85436",
+    "approvedAt": "2026-07-24T05:15:00.000Z",
+    "approvedHash": "1232aeef3a906525b895940566ef39525fc14edb8964e2e1736108285ff998c2",
     "path": "/case-studies/engineering-practice",
     "title": "AI-native development practice with human accountability",
     "summary": "Agents work across requirements, domain, specs, tickets, implementation, review, QA, preview, and release while human judgment remains responsible.",
@@ -572,12 +581,12 @@
       "statusLabel": "AI-native development practice",
       "overview": "AI-native development means agents execute work across requirements, domain modeling, specs, tickets, implementation, review, QA, preview, and release while I remain accountable for decisions, quality, and release authority.",
       "problem": {
-        "title": "Opportunity",
-        "body": "Modern software work moves quickly; strong architecture, tests, review, and production checks turn that energy into confident momentum."
+        "title": "Business need",
+        "body": "Product teams need a way to use specialized agents across the delivery lifecycle without losing decision ownership, review quality, or human release authority."
       },
       "businessOutcome": {
-        "title": "Business outcome",
-        "body": "A repeatable engineering process lets projects move faster while still producing inspectable decisions, safer releases, better handoffs, and stronger confidence for business stakeholders."
+        "title": "What was built and what it enables",
+        "body": "A repeatable, reviewable delivery practice connects requirements, domain work, specs, tickets, implementation, review, QA, preview, and release. It enables faster execution while keeping decisions inspectable and a human accountable for quality and release."
       },
       "role": {
         "title": "Role",
@@ -618,52 +627,85 @@
   },
   "practice": {
     "path": "/practice",
-    "title": "Three ways to move a product forward.",
-    "summary": "Build a complete product, add senior product-engineering capacity to a defined project, or modernize the system already carrying the business.",
-    "seoDescription": "Work with AOHYS to build a website, web app, or mobile app from zero; add a senior product engineer to a delivery team; or modernize an existing product with AI, data, cloud, and delivery capabilities.",
+    "title": "How I work and contribute.",
+    "summary": "Product systems, embedded collaboration, and modernization are three contexts where senior product-engineering judgment can move work forward.",
+    "seoDescription": "How Alejandro Ortiz Corro contributes through end-to-end product systems, embedded senior collaboration, architecture, modernization, and accountable AI-native delivery.",
     "primaryActionLabel": "Let's talk",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "See the architecture",
     "secondaryActionContentId": "architecture",
     "practiceContent": {
-      "heading": "Bring the product ambition. Choose how we work.",
-      "deck": "From a first sketch to a product ready for its next chapter, I join where senior product and engineering judgment can create momentum. Every engagement has a clear working rhythm, tangible outputs, and a system your team can keep improving.",
+      "heading": "Senior product engineering, applied where it helps.",
+      "deck": "I contribute across product decisions, architecture, implementation, verification, and release. The shape changes with the context: a complete product system, a focused workstream inside a team, or a modernization effort already in motion.",
       "services": [
         {
           "id": "product-systems",
-          "title": "Build a complete product from zero",
-          "problem": "You have a real audience and a valuable idea, but the product path still needs to be shaped across experience, operations, data, architecture, and release.",
-          "result": "A production-ready website, web application, or mobile application with a coherent customer journey, dependable workflows, measurable behavior, and room to grow.",
-          "engagement": "I lead the product and engineering path from framing and system design through implementation, production launch, and an operating handoff your team can own.",
-          "deliverables": ["Product brief and journey map", "Working website, web app, or mobile app", "Backend, data, and operational workflows", "Production launch and ownership handoff"]
+          "title": "End-to-end product systems",
+          "problem": "A product needs one coherent path across experience, operations, data, architecture, and release.",
+          "result": "A working website, web application, or mobile application with dependable workflows, measurable behavior, and room to evolve.",
+          "engagement": "I connect product framing and system design with implementation, verification, release, and an operating handoff the team can own.",
+          "deliverables": [
+            "Product brief and journey map",
+            "Working website, web app, or mobile app",
+            "Backend, data, and operational workflows",
+            "Production launch and ownership handoff"
+          ]
         },
         {
           "id": "architecture-modernization",
-          "title": "Add a senior collaborator to your team",
-          "problem": "The project and destination are defined, and the team wants experienced hands to accelerate product and architecture decisions and turn the plan into dependable software.",
-          "result": "More delivery capacity without a long ramp-up: clearer decisions, stronger implementation, fewer blind spots, and a senior collaborator who improves the work around the code.",
-          "engagement": "I embed with your existing product and engineering team for a focused phase, owning a meaningful workstream while collaborating in your planning, review, QA, and release rhythm.",
-          "deliverables": ["A clearly owned delivery workstream", "Production code and product decisions", "Architecture and implementation reviews", "Tests, release evidence, and team handoff"]
+          "title": "Embedded senior collaboration",
+          "problem": "The direction is defined and a team needs experienced ownership on a meaningful product or engineering workstream.",
+          "result": "Clearer decisions, stronger implementation, fewer blind spots, and more reliable delivery around the code.",
+          "engagement": "I work inside the team’s existing planning, review, QA, and release rhythm while owning a focused area of delivery.",
+          "deliverables": [
+            "A clearly owned delivery workstream",
+            "Production code and product decisions",
+            "Architecture and implementation reviews",
+            "Tests, release evidence, and team handoff"
+          ]
         },
         {
           "id": "delivery-acceleration",
-          "title": "Modernize what is already in motion",
-          "problem": "An existing product or process already creates value, and the business is ready to expand it with clearer boundaries, connected data, modern workflows, and a stronger delivery path.",
-          "result": "A safer, more capable system that preserves useful behavior while adding the right AI, data, cloud, observability, and delivery capabilities around it.",
-          "engagement": "We map the current system, choose the highest-leverage boundary, and ship modernization in verified increments so the business keeps moving while the foundation improves.",
-          "deliverables": ["Current-state and opportunity map", "Target architecture with explicit tradeoffs", "AI, data, cloud, or workflow integration", "Incremental rollout, verification, and operating playbook"]
+          "title": "Architecture and modernization",
+          "problem": "An existing product or process already creates value and needs clearer boundaries, connected data, modern workflows, or a stronger delivery path.",
+          "result": "A safer, more capable system that preserves useful behavior while improving the parts that constrain the product.",
+          "engagement": "I map the current system, make tradeoffs explicit, and deliver verified increments so work can continue while the foundation improves.",
+          "deliverables": [
+            "Current-state and opportunity map",
+            "Target architecture with explicit tradeoffs",
+            "AI, data, cloud, or workflow integration",
+            "Incremental rollout, verification, and operating playbook"
+          ]
         }
       ],
-      "processHeading": "Clear from the first working session.",
+      "processHeading": "A visible, accountable way of working.",
       "process": [
-        {"label": "Align", "text": "Confirm the outcome, audience, constraints, decision owners, and the evidence that will define progress."},
-        {"label": "Make the system visible", "text": "Map the experience, workflows, data, boundaries, risks, and tradeoffs before effort disappears into implementation."},
-        {"label": "Ship useful slices", "text": "Deliver complete, reviewable increments with real states, instrumentation, QA, and production checks."},
-        {"label": "Leave operating clarity", "text": "Hand over working software, explicit decisions, release evidence, and a practical next-step plan."}
+        {
+          "label": "Align",
+          "text": "Confirm the outcome, audience, constraints, decision owners, and the evidence that will define progress."
+        },
+        {
+          "label": "Make the system visible",
+          "text": "Map the experience, workflows, data, boundaries, risks, and tradeoffs before effort disappears into implementation."
+        },
+        {
+          "label": "Ship useful slices",
+          "text": "Deliver complete, reviewable increments with real states, instrumentation, QA, and production checks."
+        },
+        {
+          "label": "Leave operating clarity",
+          "text": "Hand over working software, explicit decisions, release evidence, and a practical next-step plan."
+        }
       ],
-      "deliverablesHeading": "Work you can keep using after the engagement.",
-      "deliverables": ["A shared product and system map", "Production-ready software increments", "Architecture and decision records", "Quality, observability, and release evidence", "A practical operating handoff"],
-      "relatedHeading": "Inspect the work and the system behind it.",
+      "deliverablesHeading": "Durable outputs, not just implementation.",
+      "deliverables": [
+        "A shared product and system map",
+        "Production-ready software increments",
+        "Architecture and decision records",
+        "Quality, observability, and release evidence",
+        "A practical operating handoff"
+      ],
+      "relatedHeading": "See the work and the system behind it.",
       "relatedContentIds": ["architecture", "case-studies"]
     }
   },
@@ -682,18 +724,91 @@
       "systemHeading": "One lifecycle, six accountable stages.",
       "systemBody": "The sequence makes decisions, dependencies, verification, and release boundaries visible. AOHYS is one public implementation of this practice—not the limit of the architecture or a map of the private Development System.",
       "layers": [
-        {"id": "experience", "label": "Business intent", "body": "Listen to the business, clarify the user outcome, surface constraints, and grill ambiguous language before choosing a technical path.", "technologies": ["Business intent", "Stakeholder context", "Grilling", "Outcome definition"]},
-        {"id": "edge", "label": "Domain & decisions", "body": "Model the domain, name stable concepts, compare tradeoffs, and record the decisions that shape the product and system.", "technologies": ["Domain modeling", "Architecture decisions", "Product boundaries", "Tradeoffs"]},
-        {"id": "product-data", "label": "Specs & dependency graph", "body": "Turn the agreed direction into specs, executable tickets, ownership, acceptance seams, and dependencies that preserve the right order.", "technologies": ["Specs & tickets", "Dependency graph", "Acceptance criteria", "Release boundary"]},
-        {"id": "communication", "label": "Agent implementation", "body": "Specialized agents research, implement, test, and review bounded work. The human orchestrator integrates evidence and resolves the decisions tools cannot own.", "technologies": ["Agent implementation", "Specialized review", "Context engineering", "Human orchestration"]},
-        {"id": "observability", "label": "Verification & browser QA", "body": "Use proportional TDD, linting, type checks, behavior tests, independent review, and browser QA to verify the real user-visible result.", "technologies": ["TDD", "Code review", "Browser QA", "Visual evidence", "Observability"]},
-        {"id": "delivery", "label": "Preview to production", "body": "Build a Preview Deployment, collect human review, promote through the Release Train, verify the Production Deployment, and run smoke checks.", "technologies": ["Preview Deployment", "Release Train", "Production Deployment", "Smoke checks"]}
+        {
+          "id": "experience",
+          "label": "Business intent",
+          "body": "Listen to the business, clarify the user outcome, surface constraints, and grill ambiguous language before choosing a technical path.",
+          "technologies": [
+            "Business intent",
+            "Stakeholder context",
+            "Grilling",
+            "Outcome definition"
+          ]
+        },
+        {
+          "id": "edge",
+          "label": "Domain & decisions",
+          "body": "Model the domain, name stable concepts, compare tradeoffs, and record the decisions that shape the product and system.",
+          "technologies": [
+            "Domain modeling",
+            "Architecture decisions",
+            "Product boundaries",
+            "Tradeoffs"
+          ]
+        },
+        {
+          "id": "product-data",
+          "label": "Specs & dependency graph",
+          "body": "Turn the agreed direction into specs, executable tickets, ownership, acceptance seams, and dependencies that preserve the right order.",
+          "technologies": [
+            "Specs & tickets",
+            "Dependency graph",
+            "Acceptance criteria",
+            "Release boundary"
+          ]
+        },
+        {
+          "id": "communication",
+          "label": "Agent implementation",
+          "body": "Specialized agents research, implement, test, and review bounded work. The human orchestrator integrates evidence and resolves the decisions tools cannot own.",
+          "technologies": [
+            "Agent implementation",
+            "Specialized review",
+            "Context engineering",
+            "Human orchestration"
+          ]
+        },
+        {
+          "id": "observability",
+          "label": "Verification & browser QA",
+          "body": "Use proportional TDD, linting, type checks, behavior tests, independent review, and browser QA to verify the real user-visible result.",
+          "technologies": [
+            "TDD",
+            "Code review",
+            "Browser QA",
+            "Visual evidence",
+            "Observability"
+          ]
+        },
+        {
+          "id": "delivery",
+          "label": "Preview to production",
+          "body": "Build a Preview Deployment, collect human review, promote through the Release Train, verify the Production Deployment, and run smoke checks.",
+          "technologies": [
+            "Preview Deployment",
+            "Release Train",
+            "Production Deployment",
+            "Smoke checks"
+          ]
+        }
       ],
       "tradeoffsHeading": "Architecture is a sequence of tradeoffs.",
       "tradeoffs": [
-        {"title": "Agent execution with human accountability", "reason": "Agents can expand execution capacity, but they cannot own business intent, risk acceptance, or release authority.", "result": "I remain responsible for what gets built, how it is verified, and whether it is ready to ship."},
-        {"title": "Public explanation without publishing the private tool", "reason": "The lifecycle should be inspectable without exposing private instructions, operating methods, or delivery details.", "result": "The Development System remains private and adaptable; shipped products and sanitized artifacts provide the evidence."},
-        {"title": "Preview before production", "reason": "A green build does not prove that a release works in its real environment.", "result": "Protected promotion, a Preview Deployment, human review, and smoke checks make production a separate decision."}
+        {
+          "title": "Agent execution with human accountability",
+          "reason": "Agents can expand execution capacity, but they cannot own business intent, risk acceptance, or release authority.",
+          "result": "I remain responsible for what gets built, how it is verified, and whether it is ready to ship."
+        },
+        {
+          "title": "Public explanation without publishing the private tool",
+          "reason": "The lifecycle should be inspectable without exposing private instructions, operating methods, or delivery details.",
+          "result": "The Development System remains private and adaptable; shipped products and sanitized artifacts provide the evidence."
+        },
+        {
+          "title": "Preview before production",
+          "reason": "A green build does not prove that a release works in its real environment.",
+          "result": "Protected promotion, a Preview Deployment, human review, and smoke checks make production a separate decision."
+        }
       ],
       "sourceLabel": "Inspect the source",
       "sourceLinks": [
@@ -729,7 +844,7 @@
         },
         {
           "title": "Release Train",
-        "body": "A Preview Deployment is built and reviewed first. Production moves through a separate promotion with explicit authority, environment checks, deployment verification, and smoke checks on the canonical domain."
+          "body": "A Preview Deployment is built and reviewed first. Production moves through a separate promotion with explicit authority, environment checks, deployment verification, and smoke checks on the canonical domain."
         },
         {
           "title": "AOHYS as a visible implementation",
@@ -748,8 +863,8 @@
     }
   },
   "resume": {
-    "approvedAt": "2026-07-20T18:11:32.000Z",
-    "approvedHash": "aae09620b9335d07ad3154f26dece792f20fa06ac22896364af581291a4d6000",
+    "approvedAt": "2026-07-24T04:59:12.000Z",
+    "approvedHash": "8608e871986ab0d45053aea65c1bfb552f0e9c2d23ace14f68017f118848e92c",
     "path": "/resume",
     "title": "About Alejandro",
     "summary": "Canonical experience for a Senior Software Engineer working across product systems, frontend depth, backend workflows, and AI-native delivery.",
@@ -903,6 +1018,15 @@
           ]
         },
         {
+          "role": "Founder",
+          "company": "AOHYS",
+          "period": "2015 - Present",
+          "bullets": [
+            "Built a continuous independent practice from Excel/VBA automation to Java, React and enterprise work, complete products, and AI-native development.",
+            "Current systems include ETERIA, The Barber Central, NutriPlan Digital, Casa Roca, and AOHYS."
+          ]
+        },
+        {
           "role": "Senior Frontend Developer",
           "company": "Drift",
           "period": "2022 - 2023",
@@ -945,42 +1069,69 @@
           "bullets": [
             "Contributed to a billing surface within CEMEX GO and grew through a product distributed across many teams."
           ]
-        },
-        {
-          "role": "Independent Software Engineer",
-          "company": "AOHYS",
-          "period": "2015 - Present",
-          "bullets": [
-            "Built a continuous independent practice from Excel/VBA automation to Java, React and enterprise work, complete products, and AI-native development.",
-            "Current systems include ETERIA, The Barber Central, NutriPlan Digital, Casa Roca, and AOHYS."
-          ]
         }
       ],
       "skillsTitle": "Technical capabilities",
       "skills": [
         {
           "label": "Business & product engineering",
-          "items": ["Stakeholder communication", "Domain workflows", "Product architecture", "Requirements & specs", "Delivery ownership"]
+          "items": [
+            "Stakeholder communication",
+            "Domain workflows",
+            "Product architecture",
+            "Requirements & specs",
+            "Delivery ownership"
+          ]
         },
         {
           "label": "Front-end systems",
-          "items": ["Responsive interfaces", "React & TypeScript", "Component architecture", "Performance", "Motion & WebGL"]
+          "items": [
+            "Responsive interfaces",
+            "React & TypeScript",
+            "Component architecture",
+            "Performance",
+            "Motion & WebGL"
+          ]
         },
         {
           "label": "Backend workflows & data",
-          "items": ["Server-side Next.js", "API integration", "Convex", "SQL & PostgreSQL", "Java in progress"]
+          "items": [
+            "Server-side Next.js",
+            "API integration",
+            "Convex",
+            "SQL & PostgreSQL",
+            "Java in progress"
+          ]
         },
         {
           "label": "Cloud & operations",
-          "items": ["AWS dashboards", "Edge delivery", "Cloudflare & Vercel operations", "Media pipelines", "Observability"]
+          "items": [
+            "AWS dashboards",
+            "Edge delivery",
+            "Cloudflare & Vercel operations",
+            "Media pipelines",
+            "Observability"
+          ]
         },
         {
           "label": "Quality & delivery",
-          "items": ["TDD", "Browser QA", "CI/CD", "Release verification", "Documentation"]
+          "items": [
+            "TDD",
+            "Browser QA",
+            "CI/CD",
+            "Release verification",
+            "Documentation"
+          ]
         },
         {
           "label": "AI-native development",
-          "items": ["Agent orchestration", "Domain & spec workflows", "TDD", "Independent review", "Browser QA & release"]
+          "items": [
+            "Agent orchestration",
+            "Domain & spec workflows",
+            "TDD",
+            "Independent review",
+            "Browser QA & release"
+          ]
         }
       ],
       "educationTitle": "Education",
@@ -1033,7 +1184,7 @@
         },
         {
           "title": "Private project boundaries",
-        "body": "This repository is public for review. Private client code, credentials, operational records, and dashboard data are not public."
+          "body": "This repository is public for review. Private client code, credentials, operational records, and dashboard data are not public."
         }
       ],
       "boundaryNote": "The private dashboard under /dashboard is authenticated, noindexed, excluded from the sitemap, and separate from public SEO pages."
