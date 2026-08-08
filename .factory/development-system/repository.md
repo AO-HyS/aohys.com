@@ -1,6 +1,6 @@
 # Development System repository adapter
 
-Contract version: `1.1.2`
+Contract version: `1.2.0`
 Product: `aohys.com`
 Harness: `factory`
 
@@ -23,6 +23,7 @@ Explicit phase commands:
 - `/to-tickets`: executable slices; explicit invocation only and stop for human approval.
 - `/flow-implement`: one named terminal slice; run the autonomous development loop only inside the request's existing authority and stop at the pinned human boundary. Tests, validation, review, correction, and proportional QA are development substeps and grant no external-state authority.
 - `/flow-code-review`: independent review of an existing branch or pull request.
+- `/working-backwards`: customer-first feature definition through the three persisted approval gates; it produces an implementation map but never authorizes implementation.
 
 Before implementation, pin one objective, constraints, exact scope, required evidence and validation, a verifiable stop condition, and every human or external-state boundary. A native goal is created only on explicit request; its persistence never expands authority or scope.
 
@@ -38,7 +39,7 @@ Commit, push, pull-request, preview, and deploy state changes occur only when th
 
 ## Operational prerequisite
 
-Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.5.1` and verify that the active Codex or Factory harness discovers these commands plus `drive-development-flow`. T3Code shares the Codex adapter structurally but has no independent live command proof in this release.
+Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.6.0` and verify that the active Codex or Factory harness discovers these commands plus `drive-development-flow` and `working-backwards`. T3Code shares the Codex adapter structurally but has no independent live command proof in this release.
 
 Global `exa-search` is paid public-web retrieval. This adapter only declares its availability and never calls or activates it. A repository opt-in or explicit user invocation is required, and every request must receive no secrets, private source, customer data, PHI, PII, private URLs, or private identifiers. Global `global-agent-guardrails` must be enabled and audited separately; it is defense in depth, not authorization or a sandbox.
 
