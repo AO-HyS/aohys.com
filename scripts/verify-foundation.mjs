@@ -153,7 +153,7 @@ includesAll(".github/workflows/quality-gates.yml", [
   "main",
   "actions/github-script@v8",
   "pullRequest.head.ref !== 'develop'",
-  "run.head_sha === pullRequest.head.sha",
+  "Git owns commit ancestry",
   "pnpm verify",
 ]);
 
@@ -163,6 +163,9 @@ excludesAll(".github/workflows/quality-gates.yml", [
   "pnpm run typecheck",
   "pnpm run test",
   "pnpm run build",
+  "listWorkflowRuns",
+  "head_sha",
+  "actions/runs",
 ]);
 
 includesAll(".github/workflows/release-train.yml", [

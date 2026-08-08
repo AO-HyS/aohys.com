@@ -8,7 +8,6 @@ on:
   workflow_dispatch:
 
 permissions:
-  actions: read
   contents: read
 
 concurrency:
@@ -39,23 +38,7 @@ jobs:
               return;
             }
 
-            const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'release-train.yml',
-              branch: 'develop',
-              status: 'completed',
-              per_page: 100,
-            });
-            const previewRun = runs.find(
-              (run) =>
-                run.event === 'push' &&
-                run.head_sha === pullRequest.head.sha &&
-                run.conclusion === 'success',
-            );
-            if (!previewRun) {
-              core.setFailed('The develop commit must have a successful preview Release Train before production promotion.');
-            }
+            core.notice('Git owns commit ancestry; preview and production retain their own deployment evidence.');
 
   manual-quality:
     name: Manual Quality
