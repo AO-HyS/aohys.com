@@ -33,7 +33,7 @@ Commit, push, pull-request, preview, and deploy state changes occur only when th
 - Ordinary implementation and pre-push feedback use the changed-validation command. A full repository suite is never implicit.
 - Full certification runs once for the integrated candidate when explicitly requested or required by the repository release policy.
 - QA is selected by observable risk. Documentation, labels, copy, icons, and internal-only changes do not inherit browser or E2E work without a mapped surface.
-- Parallel or sequential implementation lanes converge into one candidate before `develop`; certify that candidate once, merge it once, and produce one shared preview for the exact SHA.
+- Parallel or sequential implementation lanes converge before `develop`; Git owns commit continuity and the branch produces one shared preview without manual SHA bookkeeping.
 - Provider readiness for auth, data migrations, seeds, roles, and environment contracts is proven before the shared preview merge when those surfaces changed.
 
 ## Operational prerequisite
