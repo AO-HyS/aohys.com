@@ -19,7 +19,7 @@ Agents may push branches, open pull requests, and resolve or close review thread
 - Use `pnpm quality:changed` for ordinary implementation and pre-push feedback.
 - Run `pnpm quality:certify` once for the integrated candidate, not once per implementation lane.
 - Select E2E and Browser QA from observable risk. Documentation, copy, labels, icons, and internal-only changes do not require browser ceremony without a mapped user surface.
-- Parallel or sequential lanes converge into one candidate before `develop`; certify that exact SHA once and produce one shared preview.
+- Parallel or sequential lanes converge before `develop`; Git owns commit continuity and the branch produces one shared preview without manual SHA bookkeeping.
 - Prove provider readiness before the shared preview when auth, data migrations, seeds, roles, or environment contracts changed.
 
 ## Tool routing
