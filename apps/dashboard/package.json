@@ -24,7 +24,7 @@
     "better-auth": "^1.6.22",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "convex": "^1.42.0",
+    "convex": "^1.43.0",
     "lucide-react": "^1.22.0",
     "posthog-js": "^1.395.0",
     "radix-ui": "^1.6.0",
