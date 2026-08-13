@@ -1,6 +1,6 @@
 # Development System repository adapter
 
-Contract version: `1.4.0`
+Contract version: `1.4.1`
 Product: `aohys.com`
 Harness: `codex`
 

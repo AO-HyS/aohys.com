@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "1.4.0",
+  "contractVersion": "1.4.1",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [
@@ -70,8 +70,8 @@
   "lifecycle": {
     "automatic": {
       "router": "drive-development-flow",
-      "stageSelection": "requested-flow-only",
-      "specialStages": "explicit-user-invocation-only",
+      "stageSelection": "requested-flow-or-working-backwards-intent",
+      "specialStages": "working-backwards-intent-aware-others-explicit-user-invocation-only",
       "progressLimit": "request-authority-and-human-gates",
       "recommendationEffect": "read-only"
     },
@@ -96,7 +96,8 @@
         "to-spec",
         "to-tickets",
         "flow-implement",
-        "flow-code-review"
+        "flow-code-review",
+        "working-backwards"
       ],
       "factory": [
         "wayfinder",
@@ -104,7 +105,8 @@
         "to-spec",
         "to-tickets",
         "flow-implement",
-        "flow-code-review"
+        "flow-code-review",
+        "working-backwards"
       ]
     },
     "implementPreview": {
