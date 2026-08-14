@@ -6,13 +6,25 @@ import {
 const RELEASE_ENVIRONMENTS = ["preview", "production"] as const;
 const MAX_FETCH_ATTEMPTS = 6;
 const FETCH_RETRY_DELAY_MS = 5_000;
+const PUBLIC_ROUTE_SMOKE_CASES = [
+  ["/", "en"],
+  ["/resume/", "en"],
+  ["/case-studies/", "en"],
+  ["/es/", "es"],
+  ["/es/curriculum/", "es"],
+  ["/es/casos/", "es"],
+] as const;
 
-function parseEnvironment(input: string | undefined): ReleaseDeploymentEnvironment {
+function parseEnvironment(
+  input: string | undefined,
+): ReleaseDeploymentEnvironment {
   if (RELEASE_ENVIRONMENTS.includes(input as ReleaseDeploymentEnvironment)) {
     return input as ReleaseDeploymentEnvironment;
   }
 
-  throw new Error("Usage: tsx scripts/smoke-release-url.ts <preview|production>");
+  throw new Error(
+    "Usage: tsx scripts/smoke-release-url.ts <preview|production>",
+  );
 }
 
 function normalizeUrl(value: string): string {
@@ -21,7 +33,9 @@ function normalizeUrl(value: string): string {
 
 function formatFetchError(error: unknown): string {
   if (error instanceof Error) {
-    return error.cause instanceof Error ? `${error.message}: ${error.cause.message}` : error.message;
+    return error.cause instanceof Error
+      ? `${error.message}: ${error.cause.message}`
+      : error.message;
   }
 
   return String(error);
@@ -33,7 +47,10 @@ function wait(milliseconds: number): Promise<void> {
   });
 }
 
-async function fetchWithRetries(url: string, init: RequestInit): Promise<Response> {
+async function fetchWithRetries(
+  url: string,
+  init: RequestInit,
+): Promise<Response> {
   let lastError: unknown;
 
   for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt += 1) {
@@ -53,7 +70,10 @@ async function fetchWithRetries(url: string, init: RequestInit): Promise<Respons
   );
 }
 
-async function assertWithRetries(description: string, assertion: () => Promise<void>): Promise<void> {
+async function assertWithRetries(
+  description: string,
+  assertion: () => Promise<void>,
+): Promise<void> {
   let lastError: unknown;
 
   for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt += 1) {
@@ -69,7 +89,9 @@ async function assertWithRetries(description: string, assertion: () => Promise<v
     }
   }
 
-  throw new Error(`${description} did not pass after ${MAX_FETCH_ATTEMPTS} attempts. ${formatFetchError(lastError)}`);
+  throw new Error(
+    `${description} did not pass after ${MAX_FETCH_ATTEMPTS} attempts. ${formatFetchError(lastError)}`,
+  );
 }
 
 async function fetchText(url: string): Promise<{
@@ -97,11 +119,17 @@ function urlFor(baseUrl: string, pathname: string): string {
   return new URL(pathname, normalizeUrl(baseUrl)).toString();
 }
 
-function assertHeaderContains(headers: Headers, name: string, fragment: string): void {
+function assertHeaderContains(
+  headers: Headers,
+  name: string,
+  fragment: string,
+): void {
   const value = headers.get(name) ?? "";
 
   if (!value.includes(fragment)) {
-    throw new Error(`Expected ${name} to include ${fragment}. Received ${value || "empty header"}.`);
+    throw new Error(
+      `Expected ${name} to include ${fragment}. Received ${value || "empty header"}.`,
+    );
   }
 }
 
@@ -119,7 +147,10 @@ async function assertDashboardBoundary(baseUrl: string): Promise<void> {
   });
   const location = response.headers.get("location") ?? "";
 
-  if (![302, 303, 307, 308].includes(response.status) || !location.startsWith("/dashboard/sign-in")) {
+  if (
+    ![302, 303, 307, 308].includes(response.status) ||
+    !location.startsWith("/dashboard/sign-in")
+  ) {
     throw new Error(
       `Expected ${dashboardUrl} to redirect anonymous visitors to /dashboard/sign-in. Received ${response.status} ${location || "without Location header"}.`,
     );
@@ -128,11 +159,15 @@ async function assertDashboardBoundary(baseUrl: string): Promise<void> {
   const signIn = await fetchText(urlFor(baseUrl, "/dashboard/sign-in"));
 
   if (signIn.status < 200 || signIn.status >= 300) {
-    throw new Error(`Expected /dashboard/sign-in to return 2xx. Received ${signIn.status}.`);
+    throw new Error(
+      `Expected /dashboard/sign-in to return 2xx. Received ${signIn.status}.`,
+    );
   }
 
   if (!signIn.body.includes('data-dashboard-shell="sign-in"')) {
-    throw new Error("Expected /dashboard/sign-in to render the private dashboard sign-in shell.");
+    throw new Error(
+      "Expected /dashboard/sign-in to render the private dashboard sign-in shell.",
+    );
   }
 
   assertHeaderContains(signIn.headers, "x-robots-tag", "noindex");
@@ -144,7 +179,11 @@ function extractContactEndpoint(body: string): string {
   return match?.[1] ?? "";
 }
 
-async function assertContactSubmission(baseUrl: string, endpoint: string, environment: ReleaseDeploymentEnvironment): Promise<void> {
+async function assertContactSubmission(
+  baseUrl: string,
+  endpoint: string,
+  environment: ReleaseDeploymentEnvironment,
+): Promise<void> {
   const response = await fetchWithRetries(endpoint, {
     method: "POST",
     headers: {
@@ -169,21 +208,54 @@ async function assertContactSubmission(baseUrl: string, endpoint: string, enviro
   });
 
   if (response.status < 200 || response.status >= 300) {
-    throw new Error(`Expected contact submission smoke to return 2xx. Received ${response.status}.`);
+    throw new Error(
+      `Expected contact submission smoke to return 2xx. Received ${response.status}.`,
+    );
   }
 }
 
-async function assertContactBoundary(baseUrl: string, environment: ReleaseDeploymentEnvironment): Promise<void> {
+async function assertContactRejection(endpoint: string): Promise<void> {
+  const response = await fetchWithRetries(endpoint, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "user-agent": "aohys-release-smoke/1.0",
+    },
+    body: "{",
+  });
+  const body = (await response.json().catch(() => null)) as {
+    code?: string;
+  } | null;
+
+  if (response.status !== 400 || body?.code !== "validation_error") {
+    throw new Error(
+      `Expected malformed contact smoke to return a validation_error 400. Received ${response.status}.`,
+    );
+  }
+}
+
+async function assertContactBoundary(
+  baseUrl: string,
+  environment: ReleaseDeploymentEnvironment,
+): Promise<void> {
   const contact = await fetchText(urlFor(baseUrl, "/contact/"));
 
   if (contact.status < 200 || contact.status >= 300) {
-    throw new Error(`Expected /contact/ to return 2xx. Received ${contact.status}.`);
+    throw new Error(
+      `Expected /contact/ to return 2xx. Received ${contact.status}.`,
+    );
   }
 
   const contactEndpoint = extractContactEndpoint(contact.body);
 
   if (!contactEndpoint) {
-    throw new Error("Expected /contact/ to expose the environment-specific contact endpoint.");
+    throw new Error(
+      "Expected /contact/ to expose the environment-specific contact endpoint.",
+    );
+  }
+
+  if (environment === "preview") {
+    await assertContactRejection(contactEndpoint);
   }
 
   if (isEnabled(process.env.SMOKE_CONTACT_SUBMIT)) {
@@ -191,52 +263,152 @@ async function assertContactBoundary(baseUrl: string, environment: ReleaseDeploy
   }
 }
 
-async function assertCspReportBoundary(baseUrl: string): Promise<void> {
-  const optionsResponse = await fetchWithRetries(urlFor(baseUrl, "/observability/csp"), {
-    method: "OPTIONS",
-    headers: {
-      "user-agent": "aohys-release-smoke/1.0",
-    },
-    redirect: "manual",
-  });
+async function assertPublicSeoBoundaries(
+  baseUrl: string,
+  canonicalUrl: string,
+): Promise<void> {
+  for (const [pathname, locale] of PUBLIC_ROUTE_SMOKE_CASES) {
+    const result = await fetchText(urlFor(baseUrl, pathname));
+    const expectedCanonical = urlFor(canonicalUrl, pathname);
 
-  if (optionsResponse.status !== 204) {
-    throw new Error(`Expected CSP report preflight endpoint to return 204. Received ${optionsResponse.status}.`);
+    if (result.status !== 200) {
+      throw new Error(
+        `Expected ${pathname} to return 200. Received ${result.status}.`,
+      );
+    }
+    if (!result.body.includes(`<html lang="${locale}"`)) {
+      throw new Error(
+        `Expected ${pathname} to declare ${locale} as its document language.`,
+      );
+    }
+    if (!result.body.includes(`rel="canonical" href="${expectedCanonical}"`)) {
+      throw new Error(
+        `Expected ${pathname} to publish canonical ${expectedCanonical}.`,
+      );
+    }
+    if (
+      !result.body.includes('hreflang="en"') ||
+      !result.body.includes('hreflang="es"')
+    ) {
+      throw new Error(
+        `Expected ${pathname} to publish English and Spanish alternates.`,
+      );
+    }
   }
 
-  const response = await fetchWithRetries(urlFor(baseUrl, "/observability/csp"), {
-    method: "POST",
-    headers: {
-      "content-type": "application/csp-report",
-      "user-agent": "aohys-release-smoke/1.0",
-    },
-    body: JSON.stringify({
-      "csp-report": {
-        "document-uri": urlFor(baseUrl, "/contact/"),
-        "violated-directive": "script-src-elem",
-        "effective-directive": "script-src-elem",
-        "blocked-uri": "https://example.invalid/config.js",
-        disposition: "enforce",
-      },
-    }),
-    redirect: "manual",
-  });
+  const sitemap = await fetchText(urlFor(baseUrl, "/sitemap.xml"));
+  if (sitemap.status !== 200 || !sitemap.body.includes("<urlset")) {
+    throw new Error(
+      `Expected /sitemap.xml to return an XML sitemap. Received ${sitemap.status}.`,
+    );
+  }
 
-  if (response.status !== 204) {
-    throw new Error(`Expected CSP report endpoint to return 204. Received ${response.status}.`);
+  const missing = await fetchText(
+    urlFor(baseUrl, "/release-smoke-missing-page"),
+  );
+  if (
+    missing.status !== 404 ||
+    !missing.body.includes('name="robots" content="noindex,nofollow"')
+  ) {
+    throw new Error(
+      `Expected an unknown public path to return a noindex 404. Received ${missing.status}.`,
+    );
   }
 }
 
-async function assertPostHogProxyBoundary(baseUrl: string, environment: ReleaseDeploymentEnvironment): Promise<void> {
-  const response = await fetchWithRetries(urlFor(baseUrl, "/ingest/static/array.js"), {
-    headers: { "user-agent": "aohys-release-smoke/1.0" },
-    redirect: "manual",
-  });
-  if (environment === "preview" && response.status !== 404) {
-    throw new Error(`Expected preview /ingest proxy to return 404. Received ${response.status}.`);
+async function assertCspReportBoundary(baseUrl: string): Promise<void> {
+  const optionsResponse = await fetchWithRetries(
+    urlFor(baseUrl, "/observability/csp"),
+    {
+      method: "OPTIONS",
+      headers: {
+        "user-agent": "aohys-release-smoke/1.0",
+      },
+      redirect: "manual",
+    },
+  );
+
+  if (optionsResponse.status !== 204) {
+    throw new Error(
+      `Expected CSP report preflight endpoint to return 204. Received ${optionsResponse.status}.`,
+    );
   }
-  if (environment === "production" && (response.status < 200 || response.status >= 300)) {
-    throw new Error(`Expected production /ingest proxy asset to return 2xx. Received ${response.status}.`);
+
+  const response = await fetchWithRetries(
+    urlFor(baseUrl, "/observability/csp"),
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/csp-report",
+        "user-agent": "aohys-release-smoke/1.0",
+      },
+      body: JSON.stringify({
+        "csp-report": {
+          "document-uri": urlFor(baseUrl, "/contact/"),
+          "violated-directive": "script-src-elem",
+          "effective-directive": "script-src-elem",
+          "blocked-uri": "https://example.invalid/config.js",
+          disposition: "enforce",
+        },
+      }),
+      redirect: "manual",
+    },
+  );
+
+  if (response.status !== 204) {
+    throw new Error(
+      `Expected CSP report endpoint to return 204. Received ${response.status}.`,
+    );
+  }
+}
+
+async function assertPostHogProxyBoundary(
+  baseUrl: string,
+  environment: ReleaseDeploymentEnvironment,
+): Promise<void> {
+  const response = await fetchWithRetries(
+    urlFor(baseUrl, "/ingest/static/array.js"),
+    {
+      headers: { "user-agent": "aohys-release-smoke/1.0" },
+      redirect: "manual",
+    },
+  );
+  if (environment === "preview" && response.status !== 404) {
+    throw new Error(
+      `Expected preview /ingest proxy to return 404. Received ${response.status}.`,
+    );
+  }
+  if (
+    environment === "production" &&
+    (response.status < 200 || response.status >= 300)
+  ) {
+    throw new Error(
+      `Expected production /ingest proxy asset to return 2xx. Received ${response.status}.`,
+    );
+  }
+}
+
+async function assertAnalyticsBootstrapBoundary(
+  baseUrl: string,
+  environment: ReleaseDeploymentEnvironment,
+): Promise<void> {
+  const home = await fetchText(baseUrl);
+  const hasConfig = home.body.includes('"config":{');
+
+  if (environment === "preview" && hasConfig) {
+    throw new Error("Expected preview HTML to omit the PostHog client config.");
+  }
+
+  if (
+    environment === "production" &&
+    (!hasConfig ||
+      !home.body.includes('"persistence":"localStorage"') ||
+      !home.body.includes('"disable_persistence":false') ||
+      !home.body.includes('"web_vitals_allowed_metrics":["LCP","INP","CLS"]'))
+  ) {
+    throw new Error(
+      "Expected production HTML to expose the durable anonymous identity and LCP/INP/CLS PostHog contract.",
+    );
   }
 }
 
@@ -249,7 +421,10 @@ async function assertCanonicalRedirect(sourceUrl: string): Promise<void> {
   });
   const location = response.headers.get("location");
 
-  if (![301, 302, 308].includes(response.status) || !location?.startsWith("https://aohys.com/")) {
+  if (
+    ![301, 302, 308].includes(response.status) ||
+    !location?.startsWith("https://aohys.com/")
+  ) {
     throw new Error(
       `Expected ${sourceUrl} to redirect to https://aohys.com/. Received ${response.status} ${location ?? "without Location header"}.`,
     );
@@ -259,7 +434,11 @@ async function assertCanonicalRedirect(sourceUrl: string): Promise<void> {
 try {
   const environment = parseEnvironment(process.argv[2]);
   const plan = buildCloudflarePagesDeployPlan(environment);
-  const baseUrl = normalizeUrl(process.env.SMOKE_BASE_URL?.trim() || process.env.PUBLIC_SITE_URL?.trim() || plan.siteUrl);
+  const baseUrl = normalizeUrl(
+    process.env.SMOKE_BASE_URL?.trim() ||
+      process.env.PUBLIC_SITE_URL?.trim() ||
+      plan.siteUrl,
+  );
   let smokeResultUrl = baseUrl;
 
   await assertWithRetries("Public preview shell", async () => {
@@ -267,26 +446,58 @@ try {
     smokeResultUrl = result.url;
 
     if (result.status < 200 || result.status >= 300) {
-      throw new Error(`Expected ${baseUrl} to return a 2xx response. Received ${result.status}.`);
+      throw new Error(
+        `Expected ${baseUrl} to return a 2xx response. Received ${result.status}.`,
+      );
     }
 
     if (!result.body.includes('data-site-shell="public"')) {
       throw new Error(`Expected ${baseUrl} to render the public site shell.`);
     }
 
-    if (!result.body.includes(`rel="canonical" href="${normalizeUrl(plan.canonicalUrl)}"`)) {
-      throw new Error(`Expected ${baseUrl} to render the ${plan.canonicalUrl} canonical URL.`);
+    if (
+      !result.body.includes(
+        `rel="canonical" href="${normalizeUrl(plan.canonicalUrl)}"`,
+      )
+    ) {
+      throw new Error(
+        `Expected ${baseUrl} to render the ${plan.canonicalUrl} canonical URL.`,
+      );
     }
 
-    assertHeaderContains(result.headers, "content-security-policy", "script-src-elem 'self' 'unsafe-inline'");
-    assertHeaderContains(result.headers, "content-security-policy", "https://*.convex.site");
-    assertHeaderContains(result.headers, "content-security-policy", "report-uri /observability/csp");
+    assertHeaderContains(
+      result.headers,
+      "content-security-policy",
+      "script-src-elem 'self' 'unsafe-inline'",
+    );
+    assertHeaderContains(
+      result.headers,
+      "content-security-policy",
+      "https://*.convex.site",
+    );
+    assertHeaderContains(
+      result.headers,
+      "content-security-policy",
+      "report-uri /observability/csp",
+    );
   });
 
-  await assertWithRetries("Dashboard boundary", async () => assertDashboardBoundary(baseUrl));
+  await assertWithRetries("Dashboard boundary", async () =>
+    assertDashboardBoundary(baseUrl),
+  );
+  await assertWithRetries("Public route and SEO boundaries", async () =>
+    assertPublicSeoBoundaries(baseUrl, plan.canonicalUrl),
+  );
   await assertContactBoundary(baseUrl, environment);
-  await assertWithRetries("CSP report boundary", async () => assertCspReportBoundary(baseUrl));
-  await assertWithRetries("PostHog proxy boundary", async () => assertPostHogProxyBoundary(baseUrl, environment));
+  await assertWithRetries("CSP report boundary", async () =>
+    assertCspReportBoundary(baseUrl),
+  );
+  await assertWithRetries("PostHog proxy boundary", async () =>
+    assertPostHogProxyBoundary(baseUrl, environment),
+  );
+  await assertWithRetries("PostHog bootstrap boundary", async () =>
+    assertAnalyticsBootstrapBoundary(baseUrl, environment),
+  );
 
   const redirectUrl = process.env.SMOKE_CANONICAL_REDIRECT_URL?.trim();
   if (redirectUrl) {

@@ -10,7 +10,8 @@ export const SELECTED_CONVERSION_EVENTS = [
   "email_cta_clicked",
 ] as const;
 
-export type SelectedConversionEvent = (typeof SELECTED_CONVERSION_EVENTS)[number];
+export type SelectedConversionEvent =
+  (typeof SELECTED_CONVERSION_EVENTS)[number];
 
 export interface AnalyticsContext {
   contentId: ContentId | string;
@@ -34,11 +35,20 @@ export interface PostHogClientConfig {
   capture_pageview: false;
   capture_pageleave: false;
   capture_exceptions: false;
-  capture_performance: false;
-  disable_persistence: true;
+  capture_performance: {
+    web_vitals: true;
+    web_vitals_allowed_metrics: ["LCP", "INP", "CLS"];
+  };
+  persistence: "localStorage";
+  disable_persistence: false;
   disable_session_recording: true;
+  disable_surveys: true;
+  disable_product_tours: true;
+  capture_dead_clicks: false;
+  advanced_disable_feature_flags: true;
   person_profiles: "never";
   respect_dnt: true;
+  opt_out_useragent_filter: false;
 }
 
 export interface AnalyticsCapture {
@@ -66,10 +76,22 @@ const SENSITIVE_ANALYTICS_KEYS = [
   "website",
   "current_url",
 ] as const;
-const SAFE_ERROR_TYPES = new Set(["AggregateError", "Error", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError", "UnhandledRejection", "UnknownError"]);
+const SAFE_ERROR_TYPES = new Set([
+  "AggregateError",
+  "Error",
+  "RangeError",
+  "ReferenceError",
+  "SyntaxError",
+  "TypeError",
+  "URIError",
+  "UnhandledRejection",
+  "UnknownError",
+]);
 
 export function normalizeAnalyticsErrorType(value: unknown): string {
-  return typeof value === "string" && SAFE_ERROR_TYPES.has(value) ? value : "UnknownError";
+  return typeof value === "string" && SAFE_ERROR_TYPES.has(value)
+    ? value
+    : "UnknownError";
 }
 
 function normalizePath(path: string): string {
@@ -77,21 +99,51 @@ function normalizePath(path: string): string {
   return normalized.startsWith("/") ? normalized : `/${normalized}`;
 }
 
-function baseProperties(context: AnalyticsContext): Record<string, string | boolean> {
+function baseProperties(context: AnalyticsContext): Record<string, string> {
+  const canonicalUrl = new URL(context.canonicalUrl);
+
   return {
+    $current_url: `${canonicalUrl.origin}${canonicalUrl.pathname}`,
+    $host: canonicalUrl.hostname,
+    $pathname: canonicalUrl.pathname,
     content_id: String(context.contentId),
     locale: String(context.locale),
     path: normalizePath(context.path),
     canonical_url: context.canonicalUrl,
     environment: context.environment,
-    $geoip_disable: true,
   };
 }
 
 function isSensitiveAnalyticsKey(key: string): boolean {
   const normalizedKey = key.toLowerCase().replaceAll("-", "_");
   if (normalizedKey === "canonical_url") return false;
-  return SENSITIVE_ANALYTICS_KEYS.some((sensitiveKey) => normalizedKey.includes(sensitiveKey));
+  return SENSITIVE_ANALYTICS_KEYS.some((sensitiveKey) =>
+    normalizedKey.includes(sensitiveKey),
+  );
+}
+
+function sanitizeCurrentUrl(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+
+  try {
+    const url = new URL(value);
+    return url.hostname === "aohys.com"
+      ? `${url.origin}${url.pathname}`
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function isAnalyticsEntry(
+  entry: [string, unknown],
+): entry is [string, string | number | boolean] {
+  const value = entry[1];
+  return (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  );
 }
 
 export function sanitizeAnalyticsProperties(
@@ -99,13 +151,17 @@ export function sanitizeAnalyticsProperties(
 ): Record<string, string | number | boolean> {
   return Object.fromEntries(
     Object.entries(properties)
-      .filter(([key]) => !isSensitiveAnalyticsKey(key))
-      .filter(([, value]) => (
-        typeof value === "string" ||
-        typeof value === "number" ||
-        typeof value === "boolean"
-      ))
-      .map(([key, value]) => [
+      .map(([key, value]): [string, unknown] => [
+        key,
+        key.toLowerCase().replaceAll("-", "_") === "$current_url"
+          ? sanitizeCurrentUrl(value)
+          : value,
+      ])
+      .filter(
+        ([key]) => !isSensitiveAnalyticsKey(key) || key === "$current_url",
+      )
+      .filter(isAnalyticsEntry)
+      .map(([key, value]): [string, string | number | boolean] => [
         key,
         key.toLowerCase().replaceAll("-", "_") === "error_type"
           ? normalizeAnalyticsErrorType(value)
@@ -126,7 +182,11 @@ export function buildPostHogClientConfig(
     hostname = undefined;
   }
 
-  if (!key || settings.environment !== "production" || hostname !== "aohys.com") {
+  if (
+    !key ||
+    settings.environment !== "production" ||
+    hostname !== "aohys.com"
+  ) {
     return undefined;
   }
 
@@ -138,15 +198,26 @@ export function buildPostHogClientConfig(
     capture_pageview: false,
     capture_pageleave: false,
     capture_exceptions: false,
-    capture_performance: false,
-    disable_persistence: true,
+    capture_performance: {
+      web_vitals: true,
+      web_vitals_allowed_metrics: ["LCP", "INP", "CLS"],
+    },
+    persistence: "localStorage",
+    disable_persistence: false,
     disable_session_recording: true,
+    disable_surveys: true,
+    disable_product_tours: true,
+    capture_dead_clicks: false,
+    advanced_disable_feature_flags: true,
     person_profiles: "never",
     respect_dnt: true,
+    opt_out_useragent_filter: false,
   };
 }
 
-export function buildExplicitPageviewEvent(context: AnalyticsContext): AnalyticsCapture {
+export function buildExplicitPageviewEvent(
+  context: AnalyticsContext,
+): AnalyticsCapture {
   return {
     name: "$pageview",
     properties: baseProperties(context),
@@ -163,8 +234,8 @@ export function buildExplicitConversionEvent(
   return {
     name: eventName,
     properties: {
-      ...baseProperties(context),
       ...sanitizeAnalyticsProperties(properties),
+      ...baseProperties(context),
     },
   };
 }
@@ -174,8 +245,8 @@ export function buildManualExceptionProperties(
   properties: Record<string, unknown> = {},
 ): Record<string, string | number | boolean> {
   return {
-    ...baseProperties(context),
     ...sanitizeAnalyticsProperties(properties),
+    ...baseProperties(context),
   };
 }
 

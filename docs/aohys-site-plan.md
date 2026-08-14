@@ -1,6 +1,7 @@
 # AOHYS Site Plan
 
 ## Understanding
+
 We are creating a new public source website for Alejandro Ortiz Corro and AOH&S at `aohys.com`. The site is a working sample of engineering standards, not a community open-source project and not a promise that client/product code is public. Alejandro is the primary subject; AOH&S is the professional company/brand behind the work.
 
 The site should help with job search and client acquisition by focusing on business outcomes, architecture, reliability, security, quality, and scalability. The public experience should not lead with stack names, though the architecture can show modern engineering choices as evidence.
@@ -10,6 +11,7 @@ The old React portfolio remains untouched. The new repo will be `AO-HyS/aohys.co
 The Impeccable design direction is now resolved enough to begin implementation. The site should combine a spacious architecture-stage feeling with proof-ledger sections: large evidence surfaces, restrained pastel color, strong typography, and visible system decisions without becoming a developer-terminal portfolio or a generic SaaS landing page.
 
 ## Decisions
+
 - Primary audience: Hiring managers, tech leads, and technical founders first; clients second.
 - Positioning: Business outcomes plus reliable architecture.
 - Identity: Alejandro first, AOH&S second.
@@ -103,7 +105,7 @@ Use OKLCH tokens as the starting palette. These may be tuned after browser revie
   --color-ink: oklch(0.18 0.012 260);
   --color-muted: oklch(0.42 0.018 250);
   --color-rule: oklch(0.88 0.006 260);
-  --color-primary: oklch(0.70 0.145 78);
+  --color-primary: oklch(0.7 0.145 78);
   --color-primary-ink: oklch(0.15 0.015 80);
   --color-mint: oklch(0.78 0.105 160);
   --color-mint-ink: oklch(0.18 0.04 165);
@@ -127,8 +129,11 @@ Starter tokens:
 
 ```css
 :root {
-  --font-display: "Mona Sans", "Mona Sans Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible Next Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    "Mona Sans", "Mona Sans Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-body:
+    "Atkinson Hyperlegible Next", "Atkinson Hyperlegible Next Fallback",
+    ui-sans-serif, system-ui, sans-serif;
 
   --text-caption: 0.8125rem;
   --text-small: 0.875rem;
@@ -207,8 +212,8 @@ Resume pages should balance two jobs: the dynamic route can carry the authored p
 9. Implement the first real home page with the approved visual system.
 10. Run browser QA for desktop and mobile, then use Impeccable polish on the visible public home.
 11. Add case study detail content and resume content.
-12. Add contact form integration with Convex and Resend. Current status: implemented with Convex HTTP action, provider adapters, PostHog safe conversion metadata, and sanitized `lead_intake_failed` events for pre-persistence backend failures.
-13. Add PostHog analytics and error capture. Current status: implemented for production-only manual pageviews, pageleaves, web vitals, selected CTA/form and friction events, fixed-shape browser errors, disabled autocapture/replay, and a first-party `/ingest` proxy restricted to `aohys.com`.
+12. Add contact form integration with Convex and Resend. Current status: implemented with Convex HTTP action, provider adapters, PostHog safe conversion metadata, sanitized `lead_intake_rejected` events for expected rejection/abuse, and `lead_intake_failed` only for real pre-persistence backend failures.
+13. Add PostHog analytics and error capture. Current status: implemented for production-only explicit pageviews/pageleaves and conversions, SDK LCP/INP/CLS capture, durable anonymous identity, fixed-shape browser errors, disabled DOM autocapture/replay/person profiles, and a first-party `/ingest` proxy restricted to `aohys.com`.
 14. Add Cloudflare/Wrangler release path. Current status: implemented with Convex deploy before Cloudflare Pages Direct Upload, GitHub Actions release workflow, preview/production Environment Contract validation, Cloudflare Pages project naming, smoke commands that verify CSP/dashboard/contact boundaries, and a versioned Cloudflare Redirect Rules manifest for canonical host redirects.
 15. Add dashboard, Better Auth, media management, and private workflows after the public shell proves the design and content direction. Current status: Cloudflare Pages functions protect `/dashboard`, serve the Vite React dashboard app, bridge Google sign-in through Convex Better Auth, enforce the admin allowlist, keep private responses noindex/no-store, inject Convex runtime config, store project/resume drafts in Convex, upload media through Cloudflare Images direct upload URLs, and publish reviewed drafts through the Release Train.
 16. Harden privacy, security, and launch readiness. Current status: privacy routes now explain contact data, PostHog analytics/errors, and private project boundaries; Cloudflare Pages `_headers` applies security headers; contact form states distinguish validation, endpoint missing, email/provider, backend, and retry paths; launch QA is documented in `docs/launch-hardening.md`.
@@ -222,6 +227,7 @@ $impeccable critique AOHYS public site home
 ```
 
 ## Open Questions
+
 - Exact Cloudflare product choice for media originals versus variants: Cloudflare Images, R2, or both.
 - Cloudflare Images activation/account hash for generated media delivery.
 - Final business WhatsApp number after Meta verification is complete.

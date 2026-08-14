@@ -13,12 +13,12 @@ The interface stays small: list variable definitions, validate the current envir
 
 The current contract classifies these Convex values:
 
-| Variable | Class | Exposure |
-| --- | --- | --- |
-| `CONVEX_URL` | Provider output | Public browser |
-| `CONVEX_SITE_URL` | Provider output | Server-only |
-| `CONVEX_DEPLOYMENT` | Provider output | Server-only |
-| `CONVEX_DEPLOY_KEY` | Server secret | Server-only |
+| Variable            | Class           | Exposure       |
+| ------------------- | --------------- | -------------- |
+| `CONVEX_URL`        | Provider output | Public browser |
+| `CONVEX_SITE_URL`   | Provider output | Server-only    |
+| `CONVEX_DEPLOYMENT` | Provider output | Server-only    |
+| `CONVEX_DEPLOY_KEY` | Server secret   | Server-only    |
 
 No Convex variable is currently exposed through a `PUBLIC_` browser prefix. Dashboard/client exposure should be introduced deliberately in a later dashboard issue if needed.
 
@@ -28,14 +28,14 @@ No Convex variable is currently exposed through a `PUBLIC_` browser prefix. Dash
 
 The private dashboard uses Cloudflare Pages functions for route protection and Convex Better Auth routes for Google sign-in/session verification.
 
-| Variable | Class | Exposure | Runtime target |
-| --- | --- | --- | --- |
-| `BETTER_AUTH_SECRET` | Server secret | Server-only | auth-runtime |
-| `BETTER_AUTH_URL` | Provider output | Public browser | dashboard-runtime and auth-runtime |
-| `BETTER_AUTH_TRUSTED_ORIGINS` | Policy value | Server-only | dashboard-runtime and auth-runtime |
-| `ADMIN_EMAIL` | Policy value | Server-only | dashboard-runtime and auth-runtime |
-| `GOOGLE_CLIENT_ID` | Provider output | Server-only | auth-runtime |
-| `GOOGLE_CLIENT_SECRET` | Server secret | Server-only | auth-runtime |
+| Variable                      | Class           | Exposure       | Runtime target                     |
+| ----------------------------- | --------------- | -------------- | ---------------------------------- |
+| `BETTER_AUTH_SECRET`          | Server secret   | Server-only    | auth-runtime                       |
+| `BETTER_AUTH_URL`             | Provider output | Public browser | dashboard-runtime and auth-runtime |
+| `BETTER_AUTH_TRUSTED_ORIGINS` | Policy value    | Server-only    | dashboard-runtime and auth-runtime |
+| `ADMIN_EMAIL`                 | Policy value    | Server-only    | dashboard-runtime and auth-runtime |
+| `GOOGLE_CLIENT_ID`            | Provider output | Server-only    | auth-runtime                       |
+| `GOOGLE_CLIENT_SECRET`        | Server secret   | Server-only    | auth-runtime                       |
 
 `dashboard-runtime` intentionally does not require contact, Resend, PostHog, Google OAuth credentials, or the Better Auth signing secret. It only needs enough configuration to redirect, call the Convex session endpoint, enforce the admin allowlist, and inject browser runtime config for direct Convex dashboard access. `auth-runtime` requires the Google OAuth credentials and Better Auth secret because Convex serves `/api/auth/*` behind the Cloudflare proxy.
 
@@ -43,28 +43,28 @@ The private dashboard uses Cloudflare Pages functions for route protection and C
 
 The public contact form uses `PUBLIC_CONTACT_ENDPOINT` as a browser-safe build value. That value points at the Convex HTTP action for the active environment; Resend, PostHog, and Convex deploy secrets stay server-only.
 
-| Variable | Class | Exposure |
-| --- | --- | --- |
+| Variable                  | Class              | Exposure       |
+| ------------------------- | ------------------ | -------------- |
 | `PUBLIC_CONTACT_ENDPOINT` | Public build value | Public browser |
-| `RESEND_API_KEY` | Server secret | Server-only |
-| `PUBLIC_POSTHOG_KEY` | Public build value | Public browser |
+| `RESEND_API_KEY`          | Server secret      | Server-only    |
+| `PUBLIC_POSTHOG_KEY`      | Public build value | Public browser |
 
 ## PostHog Coverage
 
-The public site uses PostHog through explicit, sanitized production events only. `PUBLIC_POSTHOG_KEY` is required only in production; local and preview omit it. All browser and server delivery uses the canonical first-party `/ingest` proxy, with autocapture and replay disabled in code.
+The public site uses PostHog through explicit, sanitized production events only. `PUBLIC_POSTHOG_KEY` is required only in production; local and preview omit it. All browser and server delivery uses the canonical first-party `/ingest` proxy. DOM autocapture, replay, surveys, tours, dead-click capture, and person profiles stay disabled; the SDK keeps an anonymous local-storage identifier and captures only LCP, INP, and CLS automatically.
 
-Preview and production values belong in separate GitHub Environments and should point to separate PostHog project keys. The browser client sends `$pageview`, selected CTA/form events, and fixed-shape error metadata without contact message text or contact identity. The Convex contact workflow separately emits `lead_submitted` with safe conversion metadata after a valid submission, `lead_provider_failed` when Resend/PostHog provider delivery fails after persistence, and `lead_intake_failed` when the backend rejects or cannot persist a submission.
+Preview and production values belong in separate GitHub Environments, but only production receives a PostHog project key. The browser client sends `$pageview`, `$pageleave`, SDK `$web_vitals`, selected CTA/form events, and fixed-shape error metadata without contact message text or contact identity. The Convex contact workflow separately emits `lead_submitted` after a valid submission, `lead_provider_failed` when Resend/PostHog delivery fails after persistence, `lead_intake_rejected` for malformed, invalid, abusive, or rate-limited traffic, and `lead_intake_failed` only when a real backend failure prevents intake.
 
 ## Cloudflare Coverage
 
 Cloudflare release variables are release-only unless a runtime feature needs them. Dashboard media upload is a runtime feature: Convex needs the account ID, Images delivery hash, and a narrow Images API token to create one-time upload URLs. The browser receives only the Images delivery hash so existing media records can derive public delivery URLs; it never receives Cloudflare API credentials.
 
-| Variable | Class | Exposure |
-| --- | --- | --- |
-| `CLOUDFLARE_ACCOUNT_ID` | Provider output | Server-only |
-| `CLOUDFLARE_API_TOKEN` | Server secret | Server-only |
-| `CLOUDFLARE_PROJECT_NAME` | Provider output | Server-only |
+| Variable                         | Class           | Exposure       |
+| -------------------------------- | --------------- | -------------- |
+| `CLOUDFLARE_ACCOUNT_ID`          | Provider output | Server-only    |
+| `CLOUDFLARE_API_TOKEN`           | Server secret   | Server-only    |
+| `CLOUDFLARE_PROJECT_NAME`        | Provider output | Server-only    |
 | `CLOUDFLARE_IMAGES_ACCOUNT_HASH` | Provider output | Public browser |
-| `CLOUDFLARE_IMAGES_API_TOKEN` | Server secret | Server-only |
+| `CLOUDFLARE_IMAGES_API_TOKEN`    | Server secret   | Server-only    |
 
 The deploy path uses the broad `CLOUDFLARE_API_TOKEN` through GitHub Environment secrets. The dashboard upload path uses `CLOUDFLARE_IMAGES_API_TOKEN` in Convex only. `CLOUDFLARE_IMAGES_ACCOUNT_HASH` is required for the dashboard shell and release validation; `CLOUDFLARE_IMAGES_API_TOKEN` is required for release validation and is synced to Convex so `contentActions.createMediaUploadUrl` can create direct upload slots.
