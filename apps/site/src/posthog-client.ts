@@ -4,6 +4,7 @@ import {
   sanitizeAnalyticsProperties,
   type AnalyticsBootstrapPayload,
 } from "./analytics";
+import { onCLS, onINP, onLCP, type Metric } from "web-vitals";
 
 const PAYLOAD_ELEMENT_ID = "aohys-posthog-config";
 
@@ -134,32 +135,18 @@ function bindLifecycleSignals(documentRef: Document, posthog: PostHogBrowserClie
     posthog.capture("$pageleave", payload.pageview.properties, { transport: "sendBeacon" });
   });
 
-  if (typeof PerformanceObserver === "undefined") return;
-  const supported = PerformanceObserver.supportedEntryTypes ?? [];
-  for (const entryType of ["largest-contentful-paint", "layout-shift", "first-input"] as const) {
-    if (!supported.includes(entryType)) continue;
-    try {
-      const observer = new PerformanceObserver((list: PerformanceObserverEntryList) => {
-        const entry = list.getEntries().at(-1);
-        if (!entry) return;
-        const metricEntry = entry as PerformanceEntry & { value?: number; processingStart?: number };
-        const metricValue = entry.entryType === "layout-shift"
-          ? metricEntry.value ?? 0
-          : entry.entryType === "first-input"
-            ? Math.max(0, (metricEntry.processingStart ?? entry.startTime) - entry.startTime)
-            : entry.startTime;
-        posthog.capture("$web_vitals", {
-          ...payload.pageview.properties,
-          metric_name: entry.entryType,
-          metric_value: Number(metricValue.toFixed(3)),
-        });
-        observer.disconnect();
-      });
-      observer.observe({ type: entryType, buffered: true });
-    } catch {
-      // Unsupported performance entry types are ignored.
-    }
-  }
+  const captureMetric = (property: string) => (metric: Metric) => {
+    posthog.capture("$web_vitals", {
+      ...payload.pageview.properties,
+      [property]: Number(metric.value.toFixed(3)),
+      metric_name: metric.name,
+      metric_rating: metric.rating,
+    });
+  };
+
+  onCLS(captureMetric("$web_vitals_CLS_value"));
+  onINP(captureMetric("$web_vitals_INP_value"));
+  onLCP(captureMetric("$web_vitals_LCP_value"));
 }
 
 export function bootPostHogFromDocument(documentRef = document, windowRef = window): void {
