@@ -469,6 +469,45 @@ export interface WebsiteStructuredData {
   inLanguage: Locale[];
 }
 
+export interface HomeStructuredData {
+  "@context": "https://schema.org";
+  "@graph": Array<
+    | Omit<WebsiteStructuredData, "@context">
+    | {
+        "@type": "Organization";
+        "@id": string;
+        name: "AOHYS";
+        url: string;
+        logo: string;
+        founder: { "@id": string };
+      }
+    | {
+        "@type": "Person";
+        "@id": string;
+        name: "Alejandro Ortiz Corro";
+        url: string;
+        jobTitle: string;
+        sameAs: [string, string];
+      }
+  >;
+}
+
+export interface ServiceStructuredData {
+  "@context": "https://schema.org";
+  "@type": "Service";
+  "@id": string;
+  url: string;
+  name: string;
+  description: string;
+  inLanguage: Locale;
+  provider: {
+    "@type": "Organization";
+    "@id": string;
+    name: "AOHYS";
+    url: string;
+  };
+}
+
 export interface ProfilePageStructuredData {
   "@context": "https://schema.org";
   "@type": "ProfilePage";
@@ -488,7 +527,8 @@ export interface ProfilePageStructuredData {
 }
 
 export type SeoStructuredData =
-  | WebsiteStructuredData
+  | HomeStructuredData
+  | ServiceStructuredData
   | ProfilePageStructuredData;
 
 export interface SitemapEntry {
@@ -792,6 +832,15 @@ function toAbsoluteUrl(path: string): string {
   return path === "/" ? `${SITE_URL}/` : `${SITE_URL}${path}`;
 }
 
+function toCanonicalPath(path: string): string {
+  const normalized = normalizePath(path);
+  return normalized === "/" ? normalized : `${normalized}/`;
+}
+
+function toCanonicalUrl(path: string): string {
+  return toAbsoluteUrl(toCanonicalPath(path));
+}
+
 export function isPrivateRoute(pathname: string): boolean {
   const path = normalizePath(pathname);
   return PRIVATE_ROUTE_PREFIXES.some(
@@ -831,7 +880,7 @@ export function getLocalizedPath(
   contentId: ContentId | string,
   locale: Locale,
 ): string {
-  return getLocaleVariant(contentId, locale).path;
+  return toCanonicalPath(getLocaleVariant(contentId, locale).path);
 }
 
 export function getHomePageContent(locale: Locale): HomePageContent {
@@ -944,7 +993,7 @@ function homeOutcomeFromCaseStudy(
 
   return {
     contentId,
-    path: variant.path,
+    path: getLocalizedPath(contentId, locale),
     label: caseStudyContent.statusLabel,
     title: variant.title,
     outcome: variant.summary,
@@ -978,7 +1027,7 @@ export function getCaseStudyIndexContent(
 
       return {
         contentId,
-        path: variant.path,
+        path: getLocalizedPath(contentId, locale),
         title: variant.title,
         summary: variant.summary,
         statusLabel: caseStudyContent.statusLabel,
@@ -997,7 +1046,13 @@ export function getResumePageContent(locale: Locale): ResumePageContent {
     throw new Error(`Resume content is missing for locale "${locale}".`);
   }
 
-  return resume.resumeContent;
+  return {
+    ...resume.resumeContent,
+    contextLinks: resume.resumeContent.contextLinks.map((link) => ({
+      ...link,
+      href: toCanonicalPath(link.href),
+    })),
+  };
 }
 
 export function getPrivacyPageContent(locale: Locale): PrivacyPageContent {
@@ -1030,14 +1085,15 @@ export function getPublicRouteMap(): PublicRoute[] {
   return PUBLIC_CONTENT_NODES.flatMap((node) =>
     LOCALES.map((locale) => {
       const localizedVariant = getLocaleVariant(node, locale);
+      const path = getLocalizedPath(node.id, locale);
 
       return {
         id: node.id,
         locale,
         node,
         variant: localizedVariant,
-        path: localizedVariant.path,
-        canonicalUrl: toAbsoluteUrl(localizedVariant.path),
+        path,
+        canonicalUrl: toCanonicalUrl(localizedVariant.path),
       };
     }),
   );
@@ -1063,10 +1119,12 @@ export function getSeoMetadata(
   const node = getContentNode(contentId);
   const localizedVariant = getLocaleVariant(node, locale);
   const i18n = getSharedI18n(locale);
-  const canonicalUrl = toAbsoluteUrl(localizedVariant.path);
+  const canonicalUrl = toCanonicalUrl(localizedVariant.path);
   const staticEvidence = STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID[contentId];
   const evidencePath =
-    staticEvidence?.socialSrc ?? staticEvidence?.thumbSrc ?? staticEvidence?.src;
+    staticEvidence?.socialSrc ??
+    staticEvidence?.thumbSrc ??
+    staticEvidence?.src;
   const socialImagePath =
     contentId !== "home" &&
     evidencePath &&
@@ -1078,38 +1136,77 @@ export function getSeoMetadata(
   const socialImageAlt = usesEvidenceImage
     ? formatI18n(i18n.seo.evidencePreviewAlt, { title: localizedVariant.title })
     : i18n.seo.defaultImageAlt;
+  const personId = `${SITE_URL}/#alejandro-ortiz-corro`;
+  const organizationId = `${SITE_URL}/#organization`;
+  const linkedProfiles: [string, string] = [
+    "https://www.linkedin.com/in/alejandrortizcrr/",
+    "https://github.com/corrortiz",
+  ];
   const structuredData: SeoStructuredData | undefined =
     contentId === "home"
       ? {
           "@context": "https://schema.org",
-          "@type": "WebSite",
-          "@id": `${SITE_URL}/#website`,
-          url: `${SITE_URL}/`,
-          name: "AOHYS",
-          inLanguage: [...LOCALES],
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": `${SITE_URL}/#website`,
+              url: `${SITE_URL}/`,
+              name: "AOHYS",
+              inLanguage: [...LOCALES],
+            },
+            {
+              "@type": "Organization",
+              "@id": organizationId,
+              name: "AOHYS",
+              url: `${SITE_URL}/`,
+              logo: `${SITE_URL}/images/brand/aohys-connections-mark-v3.svg`,
+              founder: { "@id": personId },
+            },
+            {
+              "@type": "Person",
+              "@id": personId,
+              name: "Alejandro Ortiz Corro",
+              url: `${SITE_URL}/resume/`,
+              jobTitle: i18n.seo.resumeJobTitle,
+              sameAs: linkedProfiles,
+            },
+          ],
         }
-      : contentId === "resume"
+      : contentId === "practice"
         ? {
             "@context": "https://schema.org",
-            "@type": "ProfilePage",
-            "@id": `${canonicalUrl}#profile-page`,
+            "@type": "Service",
+            "@id": `${canonicalUrl}#service`,
             url: canonicalUrl,
-            name: localizedVariant.seoTitle,
+            name: localizedVariant.title,
             description: localizedVariant.seoDescription,
             inLanguage: locale,
-            mainEntity: {
-              "@type": "Person",
-              "@id": `${SITE_URL}/#alejandro-ortiz-corro`,
-              name: "Alejandro Ortiz Corro",
-              url: `${SITE_URL}/resume`,
-              jobTitle: i18n.seo.resumeJobTitle,
-              sameAs: [
-                "https://www.linkedin.com/in/alejandrortizcrr/",
-                "https://github.com/corrortiz",
-              ],
+            provider: {
+              "@type": "Organization",
+              "@id": organizationId,
+              name: "AOHYS",
+              url: `${SITE_URL}/`,
             },
           }
-        : undefined;
+        : contentId === "resume"
+          ? {
+              "@context": "https://schema.org",
+              "@type": "ProfilePage",
+              "@id": `${canonicalUrl}#profile-page`,
+              url: canonicalUrl,
+              name: localizedVariant.seoTitle,
+              description: localizedVariant.seoDescription,
+              inLanguage: locale,
+              mainEntity: {
+                "@type": "Person",
+                "@id": personId,
+                name: "Alejandro Ortiz Corro",
+                url: `${SITE_URL}/resume/`,
+                jobTitle: i18n.seo.resumeJobTitle,
+                sameAs: linkedProfiles,
+              },
+            }
+          : undefined;
 
   return {
     lang: locale,

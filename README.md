@@ -153,14 +153,14 @@ The PostHog audit requires no preview key and exactly one retained production ke
 
 ## Provider Responsibilities
 
-| Provider    | Responsibility in this repo                                                                                                                                                                            |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Cloudflare  | DNS, `aohys.com` hosting, `aohys.net` redirect rules, Pages deploys through Wrangler, preview/production surfaces, security headers, Cloudflare Images delivery                                        |
-| Convex      | Application state, contact leads, content/media metadata, project and resume drafts, site settings, resume versions, Better Auth integration, private dashboard endpoints                              |
-| PostHog     | Production-only project through `/ingest`, manual pageview/pageleave/web-vitals, selected conversion and friction events, sanitized browser/dashboard errors |
-| Resend      | Lead notification email from the institutional sender once provider credentials and DNS are ready                                                                                                      |
-| Better Auth | Google sign-in, session handling through Convex, trusted origins, admin allowlist integration                                                                                                          |
-| GitHub      | Public source hosting, protected `develop` and `main`, GitHub Environments, pull-request checks, Release Train workflow, dashboard-triggered `workflow_dispatch` publishes                             |
+| Provider    | Responsibility in this repo                                                                                                                                                                        |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cloudflare  | DNS, `aohys.com` hosting, `aohys.net` redirect rules, Pages deploys through Wrangler, preview/production surfaces, security headers, Cloudflare Images delivery                                    |
+| Convex      | Application state, contact leads, content/media metadata, project and resume drafts, site settings, resume versions, Better Auth integration, private dashboard endpoints                          |
+| PostHog     | Production-only project through `/ingest`, explicit pageview/pageleave/conversions, SDK Core Web Vitals, durable anonymous browser identity, bot filtering, and sanitized browser/dashboard errors |
+| Resend      | Lead notification email from the institutional sender once provider credentials and DNS are ready                                                                                                  |
+| Better Auth | Google sign-in, session handling through Convex, trusted origins, admin allowlist integration                                                                                                      |
+| GitHub      | Public source hosting, protected `develop` and `main`, GitHub Environments, pull-request checks, Release Train workflow, dashboard-triggered `workflow_dispatch` publishes                         |
 
 Cloudflare Images owns dashboard media delivery. Convex creates short-lived direct upload URLs with a narrow Images token, stores only metadata and delivery URLs, and never stores image originals.
 
@@ -191,6 +191,8 @@ Current protections:
 - contact leads are persisted before optional provider delivery so Resend/PostHog drift does not lose a request;
 - contact analytics never send name, email, phone, company, or message body to PostHog;
 - browser PostHog autocapture starts disabled;
+- the public site keeps an anonymous first-party browser identifier in local storage so repeat visits and sessions are measurable without creating person profiles;
+- the PostHog SDK emits real LCP, INP, and CLS measurements; field percentiles are reported only with their sample size;
 - local and preview emit zero PostHog events; only the canonical production domain receives the production key;
 - dashboard runtime exceptions are caught at the Cloudflare Pages boundary and reported as sanitized PostHog events before a private unavailable state is returned;
 - Cloudflare Pages `_headers` is generated from the shared security header module and applies security headers for static public pages; Pages Functions use that same module directly for private dashboard and observability responses;

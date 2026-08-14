@@ -49,7 +49,11 @@ export interface LeadNotification {
 }
 
 export interface LeadAnalyticsEvent {
-  event: "lead_submitted" | "lead_provider_failed" | "lead_intake_failed";
+  event:
+    | "lead_submitted"
+    | "lead_provider_failed"
+    | "lead_intake_rejected"
+    | "lead_intake_failed";
   distinctId: string;
   properties: Record<string, string | number | boolean>;
 }
@@ -83,23 +87,30 @@ const REQUIRED_NOTIFICATION_SETTINGS = [
   "LEAD_NOTIFICATION_EMAIL",
 ] as const;
 
-const REQUIRED_ANALYTICS_SETTINGS = [
-  "PUBLIC_POSTHOG_KEY",
-] as const;
+const REQUIRED_ANALYTICS_SETTINGS = ["PUBLIC_POSTHOG_KEY"] as const;
 
 function hasAllSettings(
   values: Record<string, string | undefined>,
   settingNames: readonly string[],
 ): boolean {
-  return settingNames.every((settingName) => Boolean(values[settingName]?.trim()));
+  return settingNames.every((settingName) =>
+    Boolean(values[settingName]?.trim()),
+  );
 }
 
-function hasNotificationSettings(values: Record<string, string | undefined>): boolean {
+function hasNotificationSettings(
+  values: Record<string, string | undefined>,
+): boolean {
   return hasAllSettings(values, REQUIRED_NOTIFICATION_SETTINGS);
 }
 
-function hasAnalyticsSettings(values: Record<string, string | undefined>): boolean {
-  return values.AOHYS_ENV === "production" && hasAllSettings(values, REQUIRED_ANALYTICS_SETTINGS);
+function hasAnalyticsSettings(
+  values: Record<string, string | undefined>,
+): boolean {
+  return (
+    values.AOHYS_ENV === "production" &&
+    hasAllSettings(values, REQUIRED_ANALYTICS_SETTINGS)
+  );
 }
 
 function buildProviderFailureEvent(
@@ -108,8 +119,17 @@ function buildProviderFailureEvent(
   operation: "lead_analytics" | "lead_notification",
   error: unknown,
 ): LeadAnalyticsEvent {
-  const candidateErrorType = error instanceof Error ? error.name : "UnknownError";
-  const errorType = ["AggregateError", "Error", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError"].includes(candidateErrorType)
+  const candidateErrorType =
+    error instanceof Error ? error.name : "UnknownError";
+  const errorType = [
+    "AggregateError",
+    "Error",
+    "RangeError",
+    "ReferenceError",
+    "SyntaxError",
+    "TypeError",
+    "URIError",
+  ].includes(candidateErrorType)
     ? candidateErrorType
     : "UnknownError";
 
@@ -259,12 +279,16 @@ function renderLeadNotificationEmail({
     lead.referrer ? ["Referrer", lead.referrer] : undefined,
   ].filter(Boolean) as Array<[string, string]>;
 
-  const metadataRows = rows.map(([label, value]) => `
+  const metadataRows = rows
+    .map(
+      ([label, value]) => `
     <tr>
       <td style="padding: 10px 0; color: #4b5f64; font-size: 12px; font-weight: 700; text-transform: uppercase;">${escapeHtml(label)}</td>
       <td style="padding: 10px 0; color: #102126; font-size: 14px;">${escapeHtml(value)}</td>
     </tr>
-  `).join("");
+  `,
+    )
+    .join("");
 
   const dashboardLink = dashboardUrl
     ? `<a href="${escapeHtml(dashboardUrl)}" style="display: inline-block; padding: 12px 16px; background: #0f8a73; color: #ffffff; font-size: 14px; font-weight: 700; text-decoration: none;">Open lead inbox</a>`
@@ -346,7 +370,9 @@ export async function submitContactLead(
 
   if (hasAnalyticsSettings(context.values)) {
     try {
-      await context.adapters.captureAnalyticsEvent(buildLeadAnalyticsEvent(lead, context.environment));
+      await context.adapters.captureAnalyticsEvent(
+        buildLeadAnalyticsEvent(lead, context.environment),
+      );
       analyticsStatus = "captured";
     } catch (error) {
       analyticsStatus = "failed";
@@ -365,7 +391,12 @@ export async function submitContactLead(
   if (hasNotificationSettings(context.values)) {
     try {
       const notification = await context.adapters.sendNotification(
-        buildLeadNotification(leadId, lead, context.values, context.environment),
+        buildLeadNotification(
+          leadId,
+          lead,
+          context.values,
+          context.environment,
+        ),
       );
       notificationId = notification.notificationId;
       notificationStatus = "sent";

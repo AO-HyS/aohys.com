@@ -146,8 +146,8 @@ describe("built public routes", () => {
     expect(homeHtml).toContain('href="/dashboard"');
     expect(homeHtml).toContain("Open dashboard");
     expect(spanishHomeHtml).toContain("Hablemos");
-    expect(spanishHomeHtml).not.toContain('href="/case-studies"');
-    expect(spanishHomeHtml).toContain('href="/es/casos"');
+    expect(spanishHomeHtml).not.toContain('href="/case-studies/"');
+    expect(spanishHomeHtml).toContain('href="/es/casos/"');
     expect(spanishHomeHtml).toContain('href="/dashboard"');
     expect(homeHtml).toContain(
       'class="sunlit-mobile-language" href="/es/" hreflang="es"',
@@ -180,12 +180,12 @@ describe("built public routes", () => {
     );
     expect(homeHtml).not.toContain("Public code can be reviewed here");
     expect(homeHtml).not.toContain("Still deciding?");
-    expect(homeHtml).toContain('href="/case-studies/eteria"');
-    expect(homeHtml).toContain('href="/case-studies/engineering-practice"');
-    expect(homeHtml).toContain('href="/case-studies/enterprise-systems"');
-    expect(homeHtml).toContain('href="/case-studies/the-barber-central"');
-    expect(homeHtml).toContain('href="/case-studies/nutri-plan"');
-    expect(homeHtml).toContain('href="/case-studies/casa-roca"');
+    expect(homeHtml).toContain('href="/case-studies/eteria/"');
+    expect(homeHtml).toContain('href="/case-studies/engineering-practice/"');
+    expect(homeHtml).toContain('href="/case-studies/enterprise-systems/"');
+    expect(homeHtml).toContain('href="/case-studies/the-barber-central/"');
+    expect(homeHtml).toContain('href="/case-studies/nutri-plan/"');
+    expect(homeHtml).toContain('href="/case-studies/casa-roca/"');
     expect(homeHtml).toContain("/images/proof/eteria-garden-blue-table-og.jpg");
     expect(homeHtml).toContain(
       'alt="ETERIA outdoor celebration table styled with blue textiles, ivory flowers, and layered place settings"',
@@ -216,7 +216,7 @@ describe("built public routes", () => {
       "El código público se puede revisar aquí",
     );
     expect(spanishHomeHtml).not.toContain("¿Todavía evaluando?");
-    expect(spanishHomeHtml).toContain('href="/es/casos/eteria"');
+    expect(spanishHomeHtml).toContain('href="/es/casos/eteria/"');
     expect(spanishHomeHtml).toContain(
       "/images/proof/eteria-garden-blue-table-og.jpg",
     );
@@ -437,38 +437,38 @@ describe("built public routes", () => {
     );
     expect(indexHtml).not.toContain('class="sunlit-work-program"');
     expect(indexHtml).not.toContain('class="sunlit-archive-ticket"');
-    expect(indexHtml).toContain('href="/case-studies/eteria"');
-    expect(indexHtml).toContain('href="/case-studies/engineering-practice"');
-    expect(indexHtml).toContain('href="/case-studies/enterprise-systems"');
-    expect(indexHtml).toContain('href="/case-studies/the-barber-central"');
-    expect(indexHtml).toContain('href="/case-studies/nutri-plan"');
-    expect(indexHtml).toContain('href="/case-studies/casa-roca"');
+    expect(indexHtml).toContain('href="/case-studies/eteria/"');
+    expect(indexHtml).toContain('href="/case-studies/engineering-practice/"');
+    expect(indexHtml).toContain('href="/case-studies/enterprise-systems/"');
+    expect(indexHtml).toContain('href="/case-studies/the-barber-central/"');
+    expect(indexHtml).toContain('href="/case-studies/nutri-plan/"');
+    expect(indexHtml).toContain('href="/case-studies/casa-roca/"');
     expect(indexHtml).toContain("Client project · In production");
     expect(indexHtml).toContain("AI-native development practice");
     expect(indexHtml).toContain("Enterprise product systems");
     expect(indexHtml).toContain("Approaching production");
     expect(indexHtml).toContain("Testing &amp; production preparation");
     expect(indexHtml).toContain("Live hospitality experience");
-    expect(indexHtml.indexOf('href="/case-studies/eteria"')).toBeLessThan(
-      indexHtml.indexOf('href="/case-studies/engineering-practice"'),
+    expect(indexHtml.indexOf('href="/case-studies/eteria/"')).toBeLessThan(
+      indexHtml.indexOf('href="/case-studies/engineering-practice/"'),
     );
     expect(
-      indexHtml.indexOf('href="/case-studies/engineering-practice"'),
+      indexHtml.indexOf('href="/case-studies/engineering-practice/"'),
     ).toBeLessThan(
-      indexHtml.indexOf('href="/case-studies/enterprise-systems"'),
+      indexHtml.indexOf('href="/case-studies/enterprise-systems/"'),
     );
 
     expect(spanishIndexHtml).toContain(
       'data-case-study-index-content-id="case-studies"',
     );
-    expect(spanishIndexHtml).toContain('href="/es/casos/eteria"');
+    expect(spanishIndexHtml).toContain('href="/es/casos/eteria/"');
     expect(spanishIndexHtml).toContain(
-      'href="/es/casos/practica-de-ingenieria"',
+      'href="/es/casos/practica-de-ingenieria/"',
     );
-    expect(spanishIndexHtml).toContain('href="/es/casos/sistemas-enterprise"');
-    expect(spanishIndexHtml).toContain('href="/es/casos/the-barber-central"');
-    expect(spanishIndexHtml).toContain('href="/es/casos/nutri-plan"');
-    expect(spanishIndexHtml).toContain('href="/es/casos/casa-roca"');
+    expect(spanishIndexHtml).toContain('href="/es/casos/sistemas-enterprise/"');
+    expect(spanishIndexHtml).toContain('href="/es/casos/the-barber-central/"');
+    expect(spanishIndexHtml).toContain('href="/es/casos/nutri-plan/"');
+    expect(spanishIndexHtml).toContain('href="/es/casos/casa-roca/"');
     expect(spanishIndexHtml).toContain("Proyecto de cliente · En producción");
     expect(spanishIndexHtml).toContain("Práctica de desarrollo AI-native");
     expect(spanishIndexHtml).toContain("Sistemas de producto enterprise");
@@ -551,8 +551,8 @@ describe("built public routes", () => {
     );
     expect(resumeHtml).toContain("Open resume PDF");
     expect(resumeHtml).not.toContain("Download ATS PDF");
-    expect(resumeHtml).toContain('href="/case-studies"');
-    expect(resumeHtml).toContain('href="/architecture"');
+    expect(resumeHtml).toContain('href="/case-studies/"');
+    expect(resumeHtml).toContain('href="/architecture/"');
     expect(resumeHtml.indexOf("Selected Systems")).toBeLessThan(
       resumeHtml.indexOf("Professional experience"),
     );
@@ -587,8 +587,8 @@ describe("built public routes", () => {
     );
     expect(spanishResumeHtml).toContain("Abrir CV en PDF");
     expect(spanishResumeHtml).not.toContain("Descargar PDF ATS");
-    expect(spanishResumeHtml).toContain('href="/es/casos"');
-    expect(spanishResumeHtml).toContain('href="/es/arquitectura"');
+    expect(spanishResumeHtml).toContain('href="/es/casos/"');
+    expect(spanishResumeHtml).toContain('href="/es/arquitectura/"');
     expect(spanishResumeHtml.indexOf("Sistemas seleccionados")).toBeLessThan(
       spanishResumeHtml.indexOf("Experiencia profesional"),
     );
@@ -801,17 +801,28 @@ describe("built public routes", () => {
   it("publishes only canonical public pages and redirects legacy aliases", () => {
     const redirects = readDist("_redirects");
 
-    expect(redirects).toContain("/blog /case-studies 301");
-    expect(redirects).toContain("/blog/* /case-studies/:splat 301");
-    expect(redirects).toContain("/agents /practice 301");
-    expect(redirects).toContain("/pricing /resume 301");
-    expect(redirects).toContain("/es/blog /es/casos 301");
-    expect(redirects).toContain("/es/agentes /es/practica 301");
-    expect(redirects).toContain("/es/precios /es/curriculum 301");
+    expect(redirects).toContain("/blog /case-studies/ 301");
+    expect(redirects).toContain("/blog/* /case-studies/:splat/ 301");
+    expect(redirects).toContain("/agents /practice/ 301");
+    expect(redirects).toContain("/pricing /resume/ 301");
+    expect(redirects).toContain("/es/blog /es/casos/ 301");
+    expect(redirects).toContain("/es/agentes /es/practica/ 301");
+    expect(redirects).toContain("/es/precios /es/curriculum/ 301");
     expect(existsSync(path.join(distRoot, "blog", "index.html"))).toBe(false);
     expect(existsSync(path.join(distRoot, "pricing", "index.html"))).toBe(
       false,
     );
+  });
+
+  it("publishes a noindex 404 document instead of a homepage soft 404", () => {
+    const notFoundHtml = readDist("404.html");
+
+    expect(notFoundHtml).toContain(
+      '<meta name="robots" content="noindex,nofollow"',
+    );
+    expect(notFoundHtml).toContain("Page not found");
+    expect(notFoundHtml).not.toContain('rel="canonical"');
+    expect(notFoundHtml).not.toContain("aohys-posthog-config");
   });
 
   it("renders accurate bilingual privacy copy without private-source claims", () => {

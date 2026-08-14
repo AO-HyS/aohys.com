@@ -29,13 +29,26 @@ const {
   height = 1000,
 } = Astro.props;
 const media = resolveProofMedia(contentId, evidenceSrc, alt, evidenceKind, preferFull);
+const eteriaResponsiveSource = "/images/proof/eteria-garden-blue-table-og.jpg";
+const isResponsiveEteriaImage = media.src === eteriaResponsiveSource;
+const srcset = isResponsiveEteriaImage
+  ? [
+      "/images/proof/eteria-garden-blue-table-480.webp 480w",
+      "/images/proof/eteria-garden-blue-table-800.webp 800w",
+      `${eteriaResponsiveSource} 1200w`,
+    ].join(", ")
+  : undefined;
+const renderedWidth = isResponsiveEteriaImage ? 1200 : width;
+const renderedHeight = isResponsiveEteriaImage ? 630 : height;
 ---
 
 <img
   src={media.src}
+  srcset={srcset}
+  sizes={srcset ? "(max-width: 900px) calc(100vw - 4.5rem), 38rem" : undefined}
   alt={media.alt}
-  width={width}
-  height={height}
+  width={renderedWidth}
+  height={renderedHeight}
   loading={loading}
   decoding={decoding}
   class={className}
@@ -61,6 +74,8 @@ const media = resolveProofMedia(contentId, evidenceSrc, alt, evidenceKind, prefe
         return;
       }
       candidate.dataset.candidateIndex = String(nextIndex);
+      candidate.removeAttribute("srcset");
+      candidate.removeAttribute("sizes");
       candidate.src = nextSrc;
     });
   }

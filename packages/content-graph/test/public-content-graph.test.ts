@@ -231,25 +231,25 @@ describe("Public Content Graph", () => {
   it("resolves stable content IDs to localized public routes", () => {
     expect(getLocalizedPath("home", "en")).toBe("/");
     expect(getLocalizedPath("home", "es")).toBe("/es/");
-    expect(getLocalizedPath("architecture", "en")).toBe("/architecture");
-    expect(getLocalizedPath("architecture", "es")).toBe("/es/arquitectura");
+    expect(getLocalizedPath("architecture", "en")).toBe("/architecture/");
+    expect(getLocalizedPath("architecture", "es")).toBe("/es/arquitectura/");
     expect(getLocalizedPath("case-study:eteria", "en")).toBe(
-      "/case-studies/eteria",
+      "/case-studies/eteria/",
     );
     expect(getLocalizedPath("case-study:eteria", "es")).toBe(
-      "/es/casos/eteria",
+      "/es/casos/eteria/",
     );
     expect(getLocalizedPath("case-study:enterprise-systems", "en")).toBe(
-      "/case-studies/enterprise-systems",
+      "/case-studies/enterprise-systems/",
     );
     expect(getLocalizedPath("case-study:enterprise-systems", "es")).toBe(
-      "/es/casos/sistemas-enterprise",
+      "/es/casos/sistemas-enterprise/",
     );
     expect(getLocalizedPath("case-study:engineering-practice", "en")).toBe(
-      "/case-studies/engineering-practice",
+      "/case-studies/engineering-practice/",
     );
     expect(getLocalizedPath("case-study:engineering-practice", "es")).toBe(
-      "/es/casos/practica-de-ingenieria",
+      "/es/casos/practica-de-ingenieria/",
     );
   });
 
@@ -278,16 +278,16 @@ describe("Public Content Graph", () => {
 
   it("returns canonical SEO metadata and language alternates", () => {
     expect(getLanguageAlternates("resume")).toEqual({
-      en: "https://aohys.com/resume",
-      es: "https://aohys.com/es/curriculum",
-      "x-default": "https://aohys.com/resume",
+      en: "https://aohys.com/resume/",
+      es: "https://aohys.com/es/curriculum/",
+      "x-default": "https://aohys.com/resume/",
     });
 
     const seo = getSeoMetadata("contact", "es");
     expect(seo.lang).toBe("es");
-    expect(seo.canonicalUrl).toBe("https://aohys.com/es/contacto");
-    expect(seo.alternates.en).toBe("https://aohys.com/contact");
-    expect(seo.alternates.es).toBe("https://aohys.com/es/contacto");
+    expect(seo.canonicalUrl).toBe("https://aohys.com/es/contacto/");
+    expect(seo.alternates.en).toBe("https://aohys.com/contact/");
+    expect(seo.alternates.es).toBe("https://aohys.com/es/contacto/");
     expect(seo.title).toMatch(/AOHYS|Alejandro/);
     expect(seo.description).toMatch(
       /WhatsApp|correo|proyecto|conversaci[oó]n/i,
@@ -330,16 +330,32 @@ describe("Public Content Graph", () => {
     const homeSeo = getSeoMetadata("home", "en");
     expect(homeSeo.structuredData).toMatchObject({
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      url: "https://aohys.com/",
-      name: "AOHYS",
+      "@graph": expect.arrayContaining([
+        expect.objectContaining({
+          "@type": "WebSite",
+          url: "https://aohys.com/",
+          name: "AOHYS",
+        }),
+        expect.objectContaining({ "@type": "Organization", name: "AOHYS" }),
+        expect.objectContaining({
+          "@type": "Person",
+          name: "Alejandro Ortiz Corro",
+        }),
+      ]),
+    });
+
+    expect(getSeoMetadata("practice", "en").structuredData).toMatchObject({
+      "@context": "https://schema.org",
+      "@type": "Service",
+      url: "https://aohys.com/practice/",
+      provider: { "@type": "Organization", name: "AOHYS" },
     });
 
     const resumeSeo = getSeoMetadata("resume", "es");
     expect(resumeSeo.structuredData).toMatchObject({
       "@context": "https://schema.org",
       "@type": "ProfilePage",
-      url: "https://aohys.com/es/curriculum",
+      url: "https://aohys.com/es/curriculum/",
       inLanguage: "es",
       mainEntity: {
         "@type": "Person",
@@ -372,7 +388,7 @@ describe("Public Content Graph", () => {
     expect(sitemapUrls).toContain("https://aohys.com/");
     expect(sitemapUrls).toContain("https://aohys.com/es/");
     expect(sitemapUrls).toContain(
-      "https://aohys.com/es/casos/sistemas-enterprise",
+      "https://aohys.com/es/casos/sistemas-enterprise/",
     );
     expect(sitemapUrls.some((url) => url.includes("/dashboard"))).toBe(false);
   });
@@ -408,12 +424,12 @@ describe("Public Content Graph", () => {
     expect(englishHome.selectedOutcomes).toHaveLength(6);
     expect(englishHome.selectedOutcomes.map((outcome) => outcome.path)).toEqual(
       [
-        "/case-studies/eteria",
-        "/case-studies/engineering-practice",
-        "/case-studies/enterprise-systems",
-        "/case-studies/the-barber-central",
-        "/case-studies/nutri-plan",
-        "/case-studies/casa-roca",
+        "/case-studies/eteria/",
+        "/case-studies/engineering-practice/",
+        "/case-studies/enterprise-systems/",
+        "/case-studies/the-barber-central/",
+        "/case-studies/nutri-plan/",
+        "/case-studies/casa-roca/",
       ],
     );
     expect(
@@ -426,7 +442,7 @@ describe("Public Content Graph", () => {
         (outcome) => outcome.evidence.altText.length > 20,
       ),
     ).toBe(true);
-    expect(spanishHome.selectedOutcomes[0]?.path).toBe("/es/casos/eteria");
+    expect(spanishHome.selectedOutcomes[0]?.path).toBe("/es/casos/eteria/");
     expect(spanishHome.whatsappHref).toMatch(/^https:\/\/wa\.me\/52/);
   });
 
@@ -449,31 +465,31 @@ describe("Public Content Graph", () => {
       "Contact",
     ]);
     expect(englishNavigation.items.map((item) => item.href)).toEqual([
-      "/case-studies",
-      "/practice",
-      "/resume",
-      "/architecture",
-      "/contact",
+      "/case-studies/",
+      "/practice/",
+      "/resume/",
+      "/architecture/",
+      "/contact/",
     ]);
     expect(spanishNavigation.items.map((item) => item.href)).toEqual([
-      "/es/casos",
-      "/es/practica",
-      "/es/curriculum",
-      "/es/arquitectura",
-      "/es/contacto",
+      "/es/casos/",
+      "/es/practica/",
+      "/es/curriculum/",
+      "/es/arquitectura/",
+      "/es/contacto/",
     ]);
     expect(
       englishNavigation.actions.map((action) => [action.slotId, action.href]),
     ).toEqual([
       ["login", "/dashboard"],
-      ["signup", "/contact"],
+      ["signup", "/contact/"],
     ]);
     expect(englishNavigation.dropdown.items).toHaveLength(4);
     expect(englishNavigation.dropdown.items.map((item) => item.href)).toEqual([
-      "/case-studies/eteria",
-      "/case-studies/engineering-practice",
-      "/architecture",
-      "/practice",
+      "/case-studies/eteria/",
+      "/case-studies/engineering-practice/",
+      "/architecture/",
+      "/practice/",
     ]);
     expect(englishNavigation.dropdown.preview.codeLines.join("\n")).toContain(
       "aohys.publish",
@@ -897,10 +913,10 @@ describe("Public Content Graph", () => {
       const dynamicGraph = await import("../src/index.js");
 
       expect(dynamicGraph.getLocalizedPath(contentId, "en")).toBe(
-        "/case-studies/dashboard-alpha",
+        "/case-studies/dashboard-alpha/",
       );
       expect(dynamicGraph.getLocalizedPath(contentId, "es")).toBe(
-        "/es/casos/dashboard-alpha",
+        "/es/casos/dashboard-alpha/",
       );
       expect(
         dynamicGraph.resolvePublicPath("/case-studies/dashboard-alpha")?.id,
@@ -912,7 +928,7 @@ describe("Public Content Graph", () => {
       ).toHaveLength(2);
       expect(
         dynamicGraph.getSitemapEntries().map((entry) => entry.url),
-      ).toContain("https://aohys.com/case-studies/dashboard-alpha");
+      ).toContain("https://aohys.com/case-studies/dashboard-alpha/");
 
       expect(
         dynamicGraph
@@ -923,7 +939,7 @@ describe("Public Content Graph", () => {
         dynamicGraph.getHomePageContent("en").selectedOutcomes.at(-1),
       ).toMatchObject({
         contentId,
-        path: "/case-studies/dashboard-alpha",
+        path: "/case-studies/dashboard-alpha/",
         evidence: {
           href: "https://example.com/dashboard-alpha",
           publicSafe: true,
@@ -1011,12 +1027,12 @@ describe("Public Content Graph", () => {
       "Live hospitality experience",
     ]);
     expect(spanishIndex.entries.map((entry) => entry.path)).toEqual([
-      "/es/casos/eteria",
-      "/es/casos/practica-de-ingenieria",
-      "/es/casos/sistemas-enterprise",
-      "/es/casos/the-barber-central",
-      "/es/casos/nutri-plan",
-      "/es/casos/casa-roca",
+      "/es/casos/eteria/",
+      "/es/casos/practica-de-ingenieria/",
+      "/es/casos/sistemas-enterprise/",
+      "/es/casos/the-barber-central/",
+      "/es/casos/nutri-plan/",
+      "/es/casos/casa-roca/",
     ]);
     expect(
       spanishIndex.entries.every((entry) => entry.evidenceLabel.length > 6),
@@ -1047,9 +1063,9 @@ describe("Public Content Graph", () => {
       /business|frontend|backend|agents|human accountability/i,
     );
     expect(englishResume.contextLinks.map((link) => link.href)).toEqual([
-      "/case-studies",
-      "/architecture",
-      "/contact",
+      "/case-studies/",
+      "/architecture/",
+      "/contact/",
     ]);
     expect(
       englishResume.experience.slice(0, 2).map(({ company, role, period }) => ({
@@ -1079,9 +1095,9 @@ describe("Public Content Graph", () => {
     );
     expect(spanishResume.contextTitle).toBe("Más contexto en línea");
     expect(spanishResume.contextLinks.map((link) => link.href)).toEqual([
-      "/es/casos",
-      "/es/arquitectura",
-      "/es/contacto",
+      "/es/casos/",
+      "/es/arquitectura/",
+      "/es/contacto/",
     ]);
     expect(
       spanishResume.experience.slice(0, 2).map(({ company, role, period }) => ({

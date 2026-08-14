@@ -12,7 +12,7 @@
     "sync:headers": "tsx ../../scripts/sync-site-static-headers.ts",
     "sync:headers:check": "tsx ../../scripts/sync-site-static-headers.ts --check",
     "typecheck": "astro check && tsc --noEmit -p tsconfig.functions.json",
-    "test": "pnpm run sync:headers:check && vitest run test/analytics.test.ts test/csp-reporting.test.ts test/dashboard-access.test.ts test/auth-proxy.test.ts test/posthog-proxy.test.ts && astro build && vitest run test/public-shell-build.test.ts test/public-routes-build.test.ts"
+    "test": "pnpm run sync:headers:check && vitest run test/analytics.test.ts test/posthog-client.test.ts test/csp-reporting.test.ts test/dashboard-access.test.ts test/auth-proxy.test.ts test/posthog-proxy.test.ts && astro build && vitest run test/public-shell-build.test.ts test/public-routes-build.test.ts"
   },
   "dependencies": {
     "@aohys/content-graph": "workspace:*",

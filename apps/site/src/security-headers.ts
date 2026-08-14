@@ -32,7 +32,21 @@ export const CLOUDFLARE_PAGES_STATIC_HEADERS = [
 export function renderCloudflarePagesStaticHeaders(): string {
   return [
     "/*",
-    ...CLOUDFLARE_PAGES_STATIC_HEADERS.map(([name, value]) => `  ${name}: ${value}`),
+    ...CLOUDFLARE_PAGES_STATIC_HEADERS.map(
+      ([name, value]) => `  ${name}: ${value}`,
+    ),
+    "",
+    "/_astro/*",
+    "  Cache-Control: public, max-age=31536000, immutable",
+    "",
+    "/images/*",
+    "  Cache-Control: public, max-age=604800, stale-while-revalidate=86400",
+    "",
+    "/sitemap.xml",
+    "  Cache-Control: public, max-age=3600, stale-while-revalidate=86400",
+    "",
+    "/robots.txt",
+    "  Cache-Control: public, max-age=3600, stale-while-revalidate=86400",
     "",
   ].join("\n");
 }
