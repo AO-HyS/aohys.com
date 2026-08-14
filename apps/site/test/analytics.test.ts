@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   SELECTED_CONVERSION_EVENTS,
@@ -16,6 +18,18 @@ const context = {
 } as const;
 
 describe("public site analytics contract", () => {
+  it("captures the current Core Web Vitals with PostHog-compatible properties", () => {
+    const clientSource = readFileSync(resolve(process.cwd(), "src/posthog-client.ts"), "utf8");
+
+    for (const callback of ["onCLS", "onINP", "onLCP"]) {
+      expect(clientSource).toContain(callback);
+    }
+    for (const metric of ["CLS", "INP", "LCP"]) {
+      expect(clientSource).toContain(`$web_vitals_${metric}_value`);
+    }
+    expect(clientSource).not.toContain('"first-input"');
+  });
+
   it("builds explicit environment-aware pageviews with autocapture disabled", () => {
     const config = buildPostHogClientConfig({
       key: "phc_production",
