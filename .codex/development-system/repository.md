@@ -1,10 +1,10 @@
 # Development System repository adapter
 
-Contract version: `1.4.1`
+Contract version: `1.5.1`
 Product: `aohys.com`
 Harness: `codex`
 
-Codex uses the native repository adapter; T3Code shares this Codex contract and state namespace.
+Codex uses the native repository adapter; T3 Code shares this Codex contract and state namespace.
 
 Preserve this product's domain language, stack, commands, release policy, and visual design. Do not import another product's vocabulary. Generating or normalizing this adapter never activates a paid service; later use of declared paid agent tooling still requires repository opt-in or an explicit user invocation.
 
@@ -12,7 +12,7 @@ Preserve this product's domain language, stack, commands, release policy, and vi
 
 Both operator styles are supported:
 
-- Automatic routing: describe the software goal normally. In T3 Code, an explicit skill invocation routes to `working-backwards`; future customer story, Amazon Working Backwards, PRFAQ, and progressive planning requests route there in every harness. Direct implementation, review, diagnosis, research, and QA route to their matching flows. `drive-development-flow` never expands authority. Recommendation-only requests remain read-only.
+- Automatic routing: describe the software goal normally. In T3 Code, an explicit skill invocation routes to `working-backwards`; future customer story, Amazon Working Backwards, PRFAQ, and progressive planning requests route there. Direct implementation, review, diagnosis, research, and QA route to their matching flows. `drive-development-flow` never expands authority. Recommendation-only requests remain read-only.
 - Explicit routing: invoke the exact phase command when you want direct control.
 
 Explicit phase commands:
@@ -39,7 +39,7 @@ Commit, push, pull-request, preview, and deploy state changes occur only when th
 
 ## Operational prerequisite
 
-Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.8.0` and verify that the active Codex or Factory harness discovers these commands plus `drive-development-flow` and `working-backwards`. T3Code shares the Codex adapter structurally but has no independent live command proof in this release.
+Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.10.0` and verify that Codex discovers these commands plus `drive-development-flow`, `working-backwards`, `parallel-work`, and `check-in`. T3 Code consumes the Codex-compatible surface. T3 Code shares the Codex adapter structurally but has no independent live command proof in this release.
 
 Global `exa-search` is paid public-web retrieval. This adapter only declares its availability and never calls or activates it. A repository opt-in or explicit user invocation is required, and every request must receive no secrets, private source, customer data, PHI, PII, private URLs, or private identifiers. Global `global-agent-guardrails` must be enabled and audited separately; it is defense in depth, not authorization or a sandbox.
 
