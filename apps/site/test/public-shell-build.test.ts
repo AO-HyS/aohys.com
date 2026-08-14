@@ -41,10 +41,10 @@ describe("built public shell", () => {
 
     expect(html).toContain('<html lang="en"');
     expect(html).toContain('data-site-shell="public"');
-    expect(html).toContain('href="/case-studies"');
-    expect(html).toContain('href="/architecture"');
-    expect(html).toContain('href="/resume"');
-    expect(html).toContain('href="/contact"');
+    expect(html).toContain('href="/case-studies/"');
+    expect(html).toContain('href="/architecture/"');
+    expect(html).toContain('href="/resume/"');
+    expect(html).toContain('href="/contact/"');
     expect(html).toContain(">Work<");
     expect(html).toContain(">Practice<");
     expect(html).toContain(">Architecture<");

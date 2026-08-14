@@ -19,7 +19,7 @@ What these cover:
 - Contact form visible states for validation failure, email/provider failure, backend failure, endpoint missing, and retry copy.
 - Analytics sanitization so contact message text, email, phone, company, and form data do not enter PostHog browser events.
 - Contact lead intake persists before optional Resend/PostHog provider delivery, and provider failures produce sanitized operational events when PostHog is configured.
-- Contact intake failures before persistence emit sanitized `lead_intake_failed` events when PostHog is configured.
+- Malformed, invalid, abusive, or rate-limited intake emits sanitized `lead_intake_rejected` events; `lead_intake_failed` is reserved for real backend failures before persistence.
 - Dashboard runtime exceptions are caught by the Cloudflare Pages boundary and return a private unavailable state instead of a raw Worker 1101 page.
 - Environment Contract separation for local, preview, production, release, contact runtime, and dashboard runtime targets.
 - React dashboard app state surfaces for loading, empty, saved, validation, unauthorized, configuration, and Environment Contract failures.

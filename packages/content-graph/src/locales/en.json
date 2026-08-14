@@ -1180,7 +1180,7 @@
         },
         {
           "title": "Analytics and errors",
-          "body": "PostHog is used for explicit pageviews, selected CTA/form events, and browser error signals. Autocapture is disabled, and contact message text is not sent to analytics."
+          "body": "PostHog is used only on aohys.com for explicit pageviews, selected CTA/form events, Core Web Vitals, coarse country/device context, and browser error signals. An anonymous identifier is kept in local storage so repeat pageviews are not counted as new people; known automation is filtered. Autocapture and session replay are disabled, and contact message text is not sent to analytics."
         },
         {
           "title": "Private project boundaries",

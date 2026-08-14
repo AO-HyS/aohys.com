@@ -18,7 +18,9 @@ const PRODUCTION_HOSTNAME = "aohys.com";
 
 let hasBooted = false;
 
-function readPayload(documentRef: Document): AnalyticsBootstrapPayload | undefined {
+function readPayload(
+  documentRef: Document,
+): AnalyticsBootstrapPayload | undefined {
   const payloadElement = documentRef.getElementById(PAYLOAD_ELEMENT_ID);
   const payloadText = payloadElement?.textContent;
 
@@ -34,8 +36,10 @@ function getElementTarget(element: Element): string | undefined {
 }
 
 function getCustomEventDetail(event: Event): AnalyticsDetail | undefined {
-  return event instanceof CustomEvent && typeof event.detail === "object" && event.detail
-    ? event.detail as AnalyticsDetail
+  return event instanceof CustomEvent &&
+    typeof event.detail === "object" &&
+    event.detail
+    ? (event.detail as AnalyticsDetail)
     : undefined;
 }
 
@@ -50,7 +54,11 @@ function captureConversion(
   }
 
   try {
-    const event = buildExplicitConversionEvent(eventName, payload.context, properties);
+    const event = buildExplicitConversionEvent(
+      eventName,
+      payload.context,
+      properties,
+    );
     posthog.capture(event.name, event.properties);
   } catch {
     // Unsupported analytics events are ignored in the browser instead of breaking UX.
@@ -71,46 +79,72 @@ function captureException(
   posthog.capture("$exception", properties);
 }
 
-function bindViewHooks(documentRef: Document, posthog: PostHogBrowserClient, payload: AnalyticsBootstrapPayload): void {
+function bindViewHooks(
+  documentRef: Document,
+  posthog: PostHogBrowserClient,
+  payload: AnalyticsBootstrapPayload,
+): void {
   for (const element of documentRef.querySelectorAll("[data-analytics-view]")) {
-    captureConversion(posthog, payload, element.getAttribute("data-analytics-view"), {
-      target: getElementTarget(element),
-    });
+    captureConversion(
+      posthog,
+      payload,
+      element.getAttribute("data-analytics-view"),
+      {
+        target: getElementTarget(element),
+      },
+    );
   }
 }
 
-function bindInteractionHooks(windowRef: Window, documentRef: Document, posthog: PostHogBrowserClient, payload: AnalyticsBootstrapPayload): void {
+function bindInteractionHooks(
+  windowRef: Window,
+  documentRef: Document,
+  posthog: PostHogBrowserClient,
+  payload: AnalyticsBootstrapPayload,
+): void {
   documentRef.addEventListener("click", (event) => {
-    const target = event.target instanceof Element
-      ? event.target.closest("[data-analytics-event]")
-      : null;
+    const target =
+      event.target instanceof Element
+        ? event.target.closest("[data-analytics-event]")
+        : null;
 
     if (!target) {
       return;
     }
 
-    captureConversion(posthog, payload, target.getAttribute("data-analytics-event"), {
-      target: getElementTarget(target),
-    });
+    captureConversion(
+      posthog,
+      payload,
+      target.getAttribute("data-analytics-event"),
+      {
+        target: getElementTarget(target),
+      },
+    );
   });
 
-  documentRef.addEventListener("submit", (event) => {
-    const form = event.target instanceof HTMLFormElement ? event.target : null;
+  documentRef.addEventListener(
+    "submit",
+    (event) => {
+      const form =
+        event.target instanceof HTMLFormElement ? event.target : null;
 
-    if (!form?.dataset.analyticsSubmit) {
-      return;
-    }
+      if (!form?.dataset.analyticsSubmit) {
+        return;
+      }
 
-    captureConversion(posthog, payload, form.dataset.analyticsSubmit, {
-      target: getElementTarget(form),
-    });
-  }, { capture: true });
+      captureConversion(posthog, payload, form.dataset.analyticsSubmit, {
+        target: getElementTarget(form),
+      });
+    },
+    { capture: true },
+  );
 
   windowRef.addEventListener("aohys:analytics", (event) => {
     const detail = getCustomEventDetail(event);
-    const properties = typeof detail?.properties === "object" && detail.properties
-      ? detail.properties as Record<string, unknown>
-      : {};
+    const properties =
+      typeof detail?.properties === "object" && detail.properties
+        ? (detail.properties as Record<string, unknown>)
+        : {};
 
     captureConversion(posthog, payload, detail?.event, properties);
   });
@@ -121,48 +155,32 @@ function bindInteractionHooks(windowRef: Window, documentRef: Document, posthog:
   });
 
   windowRef.addEventListener("unhandledrejection", (event) => {
-    const errorType = event.reason instanceof Error ? event.reason.name : "UnhandledRejection";
+    const errorType =
+      event.reason instanceof Error ? event.reason.name : "UnhandledRejection";
     captureException(posthog, payload, "unhandled_rejection", errorType);
   });
 }
 
-function bindLifecycleSignals(documentRef: Document, posthog: PostHogBrowserClient, payload: AnalyticsBootstrapPayload): void {
+function bindPageleaveSignal(
+  documentRef: Document,
+  posthog: PostHogBrowserClient,
+  payload: AnalyticsBootstrapPayload,
+): void {
   let hasCapturedPageleave = false;
   documentRef.addEventListener("visibilitychange", () => {
-    if (documentRef.visibilityState !== "hidden" || hasCapturedPageleave) return;
+    if (documentRef.visibilityState !== "hidden" || hasCapturedPageleave)
+      return;
     hasCapturedPageleave = true;
-    posthog.capture("$pageleave", payload.pageview.properties, { transport: "sendBeacon" });
+    posthog.capture("$pageleave", payload.pageview.properties, {
+      transport: "sendBeacon",
+    });
   });
-
-  if (typeof PerformanceObserver === "undefined") return;
-  const supported = PerformanceObserver.supportedEntryTypes ?? [];
-  for (const entryType of ["largest-contentful-paint", "layout-shift", "first-input"] as const) {
-    if (!supported.includes(entryType)) continue;
-    try {
-      const observer = new PerformanceObserver((list: PerformanceObserverEntryList) => {
-        const entry = list.getEntries().at(-1);
-        if (!entry) return;
-        const metricEntry = entry as PerformanceEntry & { value?: number; processingStart?: number };
-        const metricValue = entry.entryType === "layout-shift"
-          ? metricEntry.value ?? 0
-          : entry.entryType === "first-input"
-            ? Math.max(0, (metricEntry.processingStart ?? entry.startTime) - entry.startTime)
-            : entry.startTime;
-        posthog.capture("$web_vitals", {
-          ...payload.pageview.properties,
-          metric_name: entry.entryType,
-          metric_value: Number(metricValue.toFixed(3)),
-        });
-        observer.disconnect();
-      });
-      observer.observe({ type: entryType, buffered: true });
-    } catch {
-      // Unsupported performance entry types are ignored.
-    }
-  }
 }
 
-export function bootPostHogFromDocument(documentRef = document, windowRef = window): void {
+export function bootPostHogFromDocument(
+  documentRef: Document = document,
+  windowRef: Window = window,
+): void {
   if (hasBooted) {
     return;
   }
@@ -172,7 +190,11 @@ export function bootPostHogFromDocument(documentRef = document, windowRef = wind
   void (async () => {
     const payload = readPayload(documentRef);
 
-    if (!payload?.config || windowRef.location.hostname !== PRODUCTION_HOSTNAME) {
+    if (
+      !payload?.config ||
+      windowRef.location.hostname !== PRODUCTION_HOSTNAME ||
+      windowRef.navigator.webdriver
+    ) {
       return;
     }
 
@@ -187,18 +209,30 @@ export function bootPostHogFromDocument(documentRef = document, windowRef = wind
       capture_pageleave: payload.config.capture_pageleave,
       capture_exceptions: payload.config.capture_exceptions,
       capture_performance: payload.config.capture_performance,
+      persistence: payload.config.persistence,
       disable_persistence: payload.config.disable_persistence,
       disable_session_recording: payload.config.disable_session_recording,
+      disable_surveys: payload.config.disable_surveys,
+      disable_product_tours: payload.config.disable_product_tours,
+      capture_dead_clicks: payload.config.capture_dead_clicks,
+      advanced_disable_feature_flags:
+        payload.config.advanced_disable_feature_flags,
       person_profiles: payload.config.person_profiles,
       respect_dnt: payload.config.respect_dnt,
-      before_send: (event) => event
-        ? { ...event, properties: sanitizeAnalyticsProperties(event.properties ?? {}) }
-        : null,
+      opt_out_useragent_filter: payload.config.opt_out_useragent_filter,
+      before_send: (event) =>
+        event
+          ? {
+              ...event,
+              properties: sanitizeAnalyticsProperties(event.properties ?? {}),
+            }
+          : null,
     });
 
+    client.register(payload.pageview.properties);
     client.capture(payload.pageview.name, payload.pageview.properties);
     bindViewHooks(documentRef, client, payload);
     bindInteractionHooks(windowRef, documentRef, client, payload);
-    bindLifecycleSignals(documentRef, client, payload);
+    bindPageleaveSignal(documentRef, client, payload);
   })();
 }

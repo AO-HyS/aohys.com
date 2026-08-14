@@ -1,0 +1,60 @@
+---
+const homeHref = "/";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Page not found | AOHYS</title>
+  </head>
+  <body>
+    <main>
+      <p>AOHYS · 404</p>
+      <h1>Page not found</h1>
+      <p>The address may have changed, or the page may no longer exist.</p>
+      <nav aria-label="Recovery links">
+        <a href={homeHref}>Back home</a>
+        <a href="/case-studies/">View selected work</a>
+        <a href="/es/" hreflang="es">Ver el sitio en español</a>
+      </nav>
+    </main>
+  </body>
+</html>
+
+<style>
+  :global(body) {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: #fffdf7;
+    color: #473c33;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+
+  main {
+    width: min(42rem, calc(100% - 2rem));
+    padding: 3rem 0;
+  }
+
+  h1 {
+    margin: .3rem 0 1rem;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    line-height: 1;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+    margin-top: 2rem;
+  }
+
+  a {
+    color: inherit;
+    font-weight: 700;
+  }
+</style>

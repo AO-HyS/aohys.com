@@ -1180,7 +1180,7 @@
         },
         {
           "title": "Analíticas y errores",
-          "body": "PostHog se usa para pageviews explícitos, eventos seleccionados de CTAs/formulario y señales de errores del navegador. Autocapture está desactivado y el texto del mensaje no se envía a analíticas."
+          "body": "PostHog se usa sólo en aohys.com para pageviews explícitos, eventos seleccionados de CTAs/formulario, Core Web Vitals, contexto general de país/dispositivo y señales de errores del navegador. Un identificador anónimo se conserva en el almacenamiento local para no contar cada pageview como una persona nueva; la automatización conocida se filtra. Autocapture y session replay están desactivados, y el texto del mensaje no se envía a analíticas."
         },
         {
           "title": "Límites de proyectos privados",

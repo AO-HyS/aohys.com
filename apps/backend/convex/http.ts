@@ -7,8 +7,9 @@ import {
   sendLeadNotificationWithResend,
 } from "../src/contact-providers.js";
 import {
-  buildContactIntakeFailureEvent,
+  buildContactIntakeTelemetryEvent,
   buildPublicContactError,
+  parseContactInput,
 } from "../src/contact-http.js";
 import {
   submitContactLead,
@@ -25,10 +26,11 @@ const http = httpRouter();
 authComponent.registerRoutesLazy(http, createAuth, {
   basePath: "/api/auth",
   cors: true,
-  trustedOrigins: () => (process.env.BETTER_AUTH_TRUSTED_ORIGINS ?? "")
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean),
+  trustedOrigins: () =>
+    (process.env.BETTER_AUTH_TRUSTED_ORIGINS ?? "")
+      .split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean),
 });
 
 const corsHeaders = {
@@ -100,7 +102,7 @@ async function captureContactIntakeFailure(
 
   try {
     await captureLeadAnalyticsWithPostHog(
-      buildContactIntakeFailureEvent({
+      buildContactIntakeTelemetryEvent({
         environment,
         input,
         publicError,
@@ -114,12 +116,6 @@ async function captureContactIntakeFailure(
   } catch {
     // Intake failure telemetry is best-effort and must not change the public response.
   }
-}
-
-async function parseContactInput(request: Request): Promise<ContactLeadInput> {
-  const payload = await request.json() as ContactLeadInput;
-
-  return payload;
 }
 
 http.route({
@@ -137,7 +133,9 @@ http.route({
     try {
       input = await parseContactInput(request);
     } catch (error) {
-      const publicError = buildPublicContactError(new Error("Invalid contact payload."));
+      const publicError = buildPublicContactError(
+        new Error("Invalid contact payload."),
+      );
       await captureContactIntakeFailure(undefined, publicError, error);
 
       return jsonResponse(publicError.body, { status: publicError.status });
@@ -148,21 +146,17 @@ http.route({
         environment: getContactEnvironment(),
         values: getContactEnvironmentValues(),
         adapters: {
-          persistLead: async (lead: PreparedContactLead) => ctx.runMutation(
-            internal.leads.createFromContact,
-            lead,
-          ),
-          sendNotification: async (notification) => sendLeadNotificationWithResend(
-            notification,
-            { apiKey: process.env.RESEND_API_KEY ?? "" },
-          ),
-          captureAnalyticsEvent: async (event) => captureLeadAnalyticsWithPostHog(
-            event,
-            {
+          persistLead: async (lead: PreparedContactLead) =>
+            ctx.runMutation(internal.leads.createFromContact, lead),
+          sendNotification: async (notification) =>
+            sendLeadNotificationWithResend(notification, {
+              apiKey: process.env.RESEND_API_KEY ?? "",
+            }),
+          captureAnalyticsEvent: async (event) =>
+            captureLeadAnalyticsWithPostHog(event, {
               apiKey: process.env.PUBLIC_POSTHOG_KEY ?? "",
               host: "https://aohys.com/ingest",
-            },
-          ),
+            }),
         },
       });
 
