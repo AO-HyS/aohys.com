@@ -129,7 +129,7 @@ Current implementation status: contact submissions now persist the lead before o
 
 Wire explicit PostHog pageviews, selected conversion events, Environment Contract separation, disabled autocapture, and frontend error capture. Verify that sensitive contact message content is not captured.
 
-Current implementation status: public pages emit explicit pageview/conversion/error events with an `environment` property. Cloudflare CSP allows the PostHog asset/config host, and server-side operational events cover lead provider failures plus dashboard runtime exceptions without sending cookies, tokens, exception messages, contact identity, or message text.
+Current implementation status: only canonical production pages emit manual pageview/pageleave/web-vitals, conversion/friction, and fixed-shape exception events. Browser and server delivery uses the first-party `/ingest` proxy; local and preview emit zero events. Server-side operational events cover lead provider failures and dashboard runtime exceptions without cookies, tokens, exception messages, contact identity, or message text.
 
 ### 12. Cloudflare and Wrangler Deployment Path
 

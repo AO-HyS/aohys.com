@@ -128,24 +128,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "posthog",
     classification: "public-build-value",
     exposure: "public-browser",
-    requiredIn: ["preview", "production"],
-    description: "PostHog public browser key for analytics capture.",
-  },
-  {
-    name: "PUBLIC_POSTHOG_HOST",
-    provider: "posthog",
-    classification: "public-build-value",
-    exposure: "public-browser",
-    requiredIn: ["local", "preview", "production"],
-    description: "PostHog ingestion host.",
-  },
-  {
-    name: "PUBLIC_POSTHOG_AUTOCAPTURE",
-    provider: "posthog",
-    classification: "policy-value",
-    exposure: "public-browser",
-    requiredIn: ["local", "preview", "production"],
-    description: "Explicit autocapture policy for the current environment.",
+    requiredIn: ["production"],
+    description: "Production-only PostHog public key; browser traffic uses the first-party /ingest proxy.",
   },
   {
     name: "RESEND_API_KEY",
@@ -347,7 +331,11 @@ export function validateEnvironmentContract(
   }
 
   const publicSiteUrl = values.PUBLIC_SITE_URL;
-  if (environment === "production" && publicSiteUrl && !publicSiteUrl.startsWith("https://aohys.com")) {
+  if (
+    environment === "production" &&
+    publicSiteUrl &&
+    !hasExactOrigin(publicSiteUrl, "https://aohys.com")
+  ) {
     errors.push("PUBLIC_SITE_URL must point to https://aohys.com in production.");
   }
 
@@ -372,6 +360,14 @@ export function validateEnvironmentContract(
   }
 
   return { ok: errors.length === 0, errors };
+}
+
+function hasExactOrigin(value: string, expectedOrigin: string): boolean {
+  try {
+    return new URL(value).origin === expectedOrigin;
+  } catch {
+    return false;
+  }
 }
 
 function parseCommaSeparatedOrigins(value: string | undefined): string[] {

@@ -875,15 +875,12 @@ describe("built public routes", () => {
       `Content-Security-Policy: ${CONTENT_SECURITY_POLICY}`,
     );
     expect(headers).toContain("frame-ancestors 'none'");
+    expect(headers).toContain("script-src 'self' 'unsafe-inline'");
+    expect(headers).toContain("script-src-elem 'self' 'unsafe-inline'");
     expect(headers).toContain(
-      "script-src 'self' 'unsafe-inline' https://us-assets.i.posthog.com",
+      "connect-src 'self' https://*.convex.site https://*.convex.cloud wss://*.convex.cloud https://upload.imagedelivery.net",
     );
-    expect(headers).toContain(
-      "script-src-elem 'self' 'unsafe-inline' https://us-assets.i.posthog.com",
-    );
-    expect(headers).toContain(
-      "connect-src 'self' https://*.convex.site https://*.convex.cloud wss://*.convex.cloud https://upload.imagedelivery.net https://us.i.posthog.com https://us.posthog.com https://us-assets.i.posthog.com",
-    );
+    expect(headers).not.toContain("posthog.com");
     expect(headers).toContain("report-uri /observability/csp");
   });
 });

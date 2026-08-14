@@ -214,12 +214,12 @@ describe("public site source quality", () => {
     expect(styleClasses).not.toMatch(/--text-[^:]+:\s*clamp\([^;]*vw/i);
     expect(source).not.toMatch(/lorem/i);
     expect(securityHeaders).toContain("script-src-elem");
-    expect(securityHeaders).toContain("https://*.i.posthog.com");
-    expect(securityHeaders).toContain("https://*.posthog.com");
+    expect(securityHeaders).not.toContain("posthog.com");
+    expect(securityHeaders).toContain("connect-src 'self'");
     expect(securityHeaders).toContain("report-uri /observability/csp");
     expect(staticHeaders).toContain("script-src-elem");
-    expect(staticHeaders).toContain("https://*.i.posthog.com");
-    expect(staticHeaders).toContain("https://*.posthog.com");
+    expect(staticHeaders).not.toContain("posthog.com");
+    expect(staticHeaders).toContain("connect-src 'self'");
     expect(staticHeaders).toContain("report-uri /observability/csp");
     expect(staticHeaders).toBe(renderCloudflarePagesStaticHeaders());
     expect(dashboardFunction).not.toMatch(/^import\s+\{[^}]+\}\s+from/m);

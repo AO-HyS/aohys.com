@@ -227,6 +227,19 @@ async function assertCspReportBoundary(baseUrl: string): Promise<void> {
   }
 }
 
+async function assertPostHogProxyBoundary(baseUrl: string, environment: ReleaseDeploymentEnvironment): Promise<void> {
+  const response = await fetchWithRetries(urlFor(baseUrl, "/ingest/static/array.js"), {
+    headers: { "user-agent": "aohys-release-smoke/1.0" },
+    redirect: "manual",
+  });
+  if (environment === "preview" && response.status !== 404) {
+    throw new Error(`Expected preview /ingest proxy to return 404. Received ${response.status}.`);
+  }
+  if (environment === "production" && (response.status < 200 || response.status >= 300)) {
+    throw new Error(`Expected production /ingest proxy asset to return 2xx. Received ${response.status}.`);
+  }
+}
+
 async function assertCanonicalRedirect(sourceUrl: string): Promise<void> {
   const response = await fetchWithRetries(sourceUrl, {
     headers: {
@@ -265,9 +278,7 @@ try {
       throw new Error(`Expected ${baseUrl} to render the ${plan.canonicalUrl} canonical URL.`);
     }
 
-    assertHeaderContains(result.headers, "content-security-policy", "https://us-assets.i.posthog.com");
-    assertHeaderContains(result.headers, "content-security-policy", "script-src-elem 'self' 'unsafe-inline' https://us-assets.i.posthog.com");
-    assertHeaderContains(result.headers, "content-security-policy", "https://us.i.posthog.com");
+    assertHeaderContains(result.headers, "content-security-policy", "script-src-elem 'self' 'unsafe-inline'");
     assertHeaderContains(result.headers, "content-security-policy", "https://*.convex.site");
     assertHeaderContains(result.headers, "content-security-policy", "report-uri /observability/csp");
   });
@@ -275,6 +286,7 @@ try {
   await assertWithRetries("Dashboard boundary", async () => assertDashboardBoundary(baseUrl));
   await assertContactBoundary(baseUrl, environment);
   await assertWithRetries("CSP report boundary", async () => assertCspReportBoundary(baseUrl));
+  await assertWithRetries("PostHog proxy boundary", async () => assertPostHogProxyBoundary(baseUrl, environment));
 
   const redirectUrl = process.env.SMOKE_CANONICAL_REDIRECT_URL?.trim();
   if (redirectUrl) {

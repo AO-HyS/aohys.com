@@ -103,6 +103,9 @@ export async function handleCspReportRequest(
   const blockedUri = stringValue(payload["blocked-uri"]);
 
   try {
+    if (reportEnvironment !== "production" || url.hostname !== "aohys.com") {
+      return new Response(null, { status: 204, headers: CSP_REPORT_HEADERS });
+    }
     await capturePostHogServerEvent(
       environment,
       {

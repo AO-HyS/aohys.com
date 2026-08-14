@@ -64,7 +64,7 @@ export async function captureLeadAnalyticsWithPostHog(
       api_key: settings.apiKey,
       event: event.event,
       distinct_id: event.distinctId,
-      properties: event.properties,
+      properties: { $geoip_disable: true, ...event.properties },
     }),
   });
 

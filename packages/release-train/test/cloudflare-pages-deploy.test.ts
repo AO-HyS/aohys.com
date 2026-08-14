@@ -25,8 +25,6 @@ const validPreviewReleaseValues = {
   CONVEX_SITE_URL: "https://aohys-preview.convex.site",
   CONVEX_DEPLOY_KEY: "preview-deploy-key",
   PUBLIC_POSTHOG_KEY: "phc_preview",
-  PUBLIC_POSTHOG_HOST: "https://us.i.posthog.com",
-  PUBLIC_POSTHOG_AUTOCAPTURE: "false",
   RESEND_API_KEY: "re_preview",
   RESEND_FROM: "Alejandro Ortiz <contact@aohys.com>",
   LEAD_NOTIFICATION_EMAIL: "alejandro.ortiz@aohys.com",

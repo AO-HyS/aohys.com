@@ -31,7 +31,10 @@ function safeString(value: unknown): string | undefined {
 }
 
 function errorTypeFor(error: unknown): string {
-  return error instanceof Error ? error.name : "UnknownError";
+  const name = error instanceof Error ? error.name : "UnknownError";
+  return ["AggregateError", "Error", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError"].includes(name)
+    ? name
+    : "UnknownError";
 }
 
 export function buildContactIntakeFailureEvent({
