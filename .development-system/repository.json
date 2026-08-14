@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "1.4.1",
+  "contractVersion": "1.5.1",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [
@@ -61,10 +61,6 @@
       "adapter": "codex",
       "contract": ".codex/development-system/repository.md",
       "operationalEvidence": "structural-inheritance-not-independently-probed"
-    },
-    "factory": {
-      "adapter": "documented-equivalent",
-      "contract": ".factory/development-system/repository.md"
     }
   },
   "lifecycle": {
@@ -97,16 +93,9 @@
         "to-tickets",
         "flow-implement",
         "flow-code-review",
-        "working-backwards"
-      ],
-      "factory": [
-        "wayfinder",
-        "grill-with-docs",
-        "to-spec",
-        "to-tickets",
-        "flow-implement",
-        "flow-code-review",
-        "working-backwards"
+        "working-backwards",
+        "parallel-work",
+        "check-in"
       ]
     },
     "implementPreview": {
@@ -138,7 +127,7 @@
     "providerReadiness": "before-shared-preview-when-affected"
   },
   "operatorPrerequisites": {
-    "skillCatalogVersion": "0.8.0",
+    "skillCatalogVersion": "0.10.0",
     "installationScope": "global",
     "readinessScope": "repository-adapter-only",
     "requiredSkills": [
@@ -150,6 +139,13 @@
       "flow-implement",
       "flow-code-review",
       "working-backwards",
+      "parallel-work",
+      "check-in",
+      "release-train",
+      "convex-guardian",
+      "posthog-observability",
+      "linear-hygiene",
+      "development-steward",
       "exa-search",
       "global-agent-guardrails"
     ]
