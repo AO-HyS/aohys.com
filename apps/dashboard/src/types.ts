@@ -17,7 +17,6 @@ export interface DashboardRuntimeConfig {
   betterAuthUrl: string;
   imagesAccountHash?: string;
   posthogKey?: string;
-  posthogHost?: string;
 }
 
 export interface DashboardProjectDraft {

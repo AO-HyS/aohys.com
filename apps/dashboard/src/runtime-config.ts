@@ -7,7 +7,6 @@ const fallbackRuntimeConfig: DashboardRuntimeConfig = {
   betterAuthUrl: import.meta.env.VITE_BETTER_AUTH_URL ?? "http://localhost:4321",
   imagesAccountHash: import.meta.env.VITE_CLOUDFLARE_IMAGES_ACCOUNT_HASH || undefined,
   posthogKey: import.meta.env.VITE_PUBLIC_POSTHOG_KEY || undefined,
-  posthogHost: import.meta.env.VITE_PUBLIC_POSTHOG_HOST || undefined,
 };
 
 export const dashboardRuntimeConfig = typeof window === "undefined"

@@ -12,7 +12,6 @@ export interface DashboardAccessEnvironment extends Record<string, string | unde
   BETTER_AUTH_TRUSTED_ORIGINS: string;
   ADMIN_EMAIL: string;
   PUBLIC_POSTHOG_KEY?: string;
-  PUBLIC_POSTHOG_HOST?: string;
   CLOUDFLARE_IMAGES_ACCOUNT_HASH?: string;
 }
 
@@ -44,7 +43,6 @@ export interface DashboardAppShellConfig {
   betterAuthUrl: string;
   imagesAccountHash?: string;
   posthogKey?: string;
-  posthogHost?: string;
 }
 
 export async function safeHandleDashboardRequest(
@@ -54,7 +52,7 @@ export async function safeHandleDashboardRequest(
   reporter?: DashboardRuntimeErrorReporter,
 ): Promise<Response> {
   const environment = normalizeDashboardEnvironment(request, environmentInput);
-  const runtimeReporter = reporter ?? createPostHogDashboardErrorReporter(environment);
+  const runtimeReporter = reporter ?? createPostHogDashboardErrorReporter(environment, request);
 
   try {
     return await handleDashboardRequest(request, environment, fetchSession);
@@ -70,13 +68,20 @@ export async function safeHandleDashboardRequest(
           environment: environment.AOHYS_ENV,
           source: "cloudflare_pages_dashboard",
           path: normalizeDashboardPath(url.pathname),
-          errorType: error instanceof Error ? error.name : "UnknownError",
+          errorType: normalizeErrorType(error),
         },
       },
     );
 
     return htmlResponse(renderDashboardState("unavailable"), 502);
   }
+}
+
+function normalizeErrorType(error: unknown): string {
+  const name = error instanceof Error ? error.name : "UnknownError";
+  return ["AggregateError", "Error", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError"].includes(name)
+    ? name
+    : "UnknownError";
 }
 
 export async function handleDashboardRequest(
@@ -137,8 +142,7 @@ export async function handleDashboardRequest(
     convexUrl: environment.CONVEX_URL,
     betterAuthUrl: url.origin,
     imagesAccountHash: environment.CLOUDFLARE_IMAGES_ACCOUNT_HASH?.trim() || undefined,
-    posthogKey: environment.PUBLIC_POSTHOG_KEY?.trim() || undefined,
-    posthogHost: environment.PUBLIC_POSTHOG_HOST?.trim() || undefined,
+    posthogKey: environment.AOHYS_ENV === "production" ? environment.PUBLIC_POSTHOG_KEY?.trim() || undefined : undefined,
   }));
 }
 
@@ -177,10 +181,12 @@ function normalizeEnvironmentName(
 
 function createPostHogDashboardErrorReporter(
   environment: DashboardAccessEnvironment,
+  request: Request,
   reporterFetch: DashboardFetch = fetch,
 ): DashboardRuntimeErrorReporter {
   return {
     capture: async (event) => {
+      if (environment.AOHYS_ENV !== "production" || new URL(request.url).hostname !== "aohys.com") return;
       await capturePostHogServerEvent(environment, {
         event: event.event,
         distinctId: event.distinctId,

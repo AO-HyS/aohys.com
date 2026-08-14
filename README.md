@@ -124,7 +124,7 @@ Copy `.env.example` to `.env.local` for local development. Real local secrets st
 | Environment  | Purpose                                        | Source of truth                  | Credential expectation                                                                                  |
 | ------------ | ---------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | `local`      | Developer machine and public-source evaluation | `.env.local` plus `.env.example` | Public pages and tests run without private provider secrets; live provider workflows need local secrets |
-| `preview`    | `develop` branch verification                  | GitHub Environment `preview`     | Non-production Cloudflare, Convex, PostHog, Resend, Better Auth, and Google OAuth values                |
+| `preview`    | `develop` branch verification                  | GitHub Environment `preview`     | Non-production Cloudflare, Convex, Resend, Better Auth, and Google OAuth values; no PostHog key         |
 | `production` | `main` branch and `aohys.com`                  | GitHub Environment `production`  | Production Cloudflare, Convex, PostHog, Resend, Better Auth, and Google OAuth values                    |
 
 The repository distinguishes browser-safe values from server-only secrets. Public build values use explicit `PUBLIC_` names, while a small set of provider outputs such as Convex client URL and Cloudflare Images delivery hash may enter the dashboard shell when they are not credentials. Secret values such as `RESEND_API_KEY`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_SECRET`, `CONVEX_DEPLOY_KEY`, `CLOUDFLARE_API_TOKEN`, and `CLOUDFLARE_IMAGES_API_TOKEN` must never be committed or exposed through the public site bundle.
@@ -147,9 +147,9 @@ pnpm run deploy:production
 pnpm run smoke:production
 ```
 
-Release deploys validate GitHub Environment values, audit PostHog project separation, sync the Convex runtime environment from those values, push Convex, then deploy Cloudflare Pages. The canonical host redirect from `aohys.net` to `aohys.com` is represented in `cloudflare/redirect-rules.json` because Cloudflare Pages `_redirects` does not support domain-level redirects.
+Release deploys validate GitHub Environment values, audit the production-only PostHog boundary, sync the Convex runtime environment from those values, push Convex, then deploy Cloudflare Pages. The canonical host redirect from `aohys.net` to `aohys.com` is represented in `cloudflare/redirect-rules.json` because Cloudflare Pages `_redirects` does not support domain-level redirects.
 
-The PostHog audit compares GitHub Environment `preview` and `production` public analytics values and fails if both environments use the same project key. Smoke commands also verify served CSP, anonymous dashboard redirect/sign-in behavior, and the configured contact endpoint.
+The PostHog audit requires no preview key and exactly one retained production key. Production browser traffic uses the first-party `/ingest` proxy; local and preview produce no PostHog traffic. Smoke commands verify that boundary alongside CSP, dashboard access, and contact routing.
 
 ## Provider Responsibilities
 
@@ -157,7 +157,7 @@ The PostHog audit compares GitHub Environment `preview` and `production` public 
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Cloudflare  | DNS, `aohys.com` hosting, `aohys.net` redirect rules, Pages deploys through Wrangler, preview/production surfaces, security headers, Cloudflare Images delivery                                        |
 | Convex      | Application state, contact leads, content/media metadata, project and resume drafts, site settings, resume versions, Better Auth integration, private dashboard endpoints                              |
-| PostHog     | Separate preview/production projects, explicit pageviews, selected conversion events, browser error capture, sanitized contact/dashboard operational events, dashboard/error analysis outside the repo |
+| PostHog     | Production-only project through `/ingest`, manual pageview/pageleave/web-vitals, selected conversion and friction events, sanitized browser/dashboard errors |
 | Resend      | Lead notification email from the institutional sender once provider credentials and DNS are ready                                                                                                      |
 | Better Auth | Google sign-in, session handling through Convex, trusted origins, admin allowlist integration                                                                                                          |
 | GitHub      | Public source hosting, protected `develop` and `main`, GitHub Environments, pull-request checks, Release Train workflow, dashboard-triggered `workflow_dispatch` publishes                             |
@@ -191,7 +191,7 @@ Current protections:
 - contact leads are persisted before optional provider delivery so Resend/PostHog drift does not lose a request;
 - contact analytics never send name, email, phone, company, or message body to PostHog;
 - browser PostHog autocapture starts disabled;
-- preview and production PostHog projects stay separated through environment-specific public keys plus an `environment` event property;
+- local and preview emit zero PostHog events; only the canonical production domain receives the production key;
 - dashboard runtime exceptions are caught at the Cloudflare Pages boundary and reported as sanitized PostHog events before a private unavailable state is returned;
 - Cloudflare Pages `_headers` is generated from the shared security header module and applies security headers for static public pages; Pages Functions use that same module directly for private dashboard and observability responses;
 - `/dashboard` is omitted from sitemap and returns private-cache/robot headers;

@@ -11,14 +11,14 @@ describe("CSP reporting boundary", () => {
     });
 
     const response = await handleCspReportRequest(
-      new Request("https://develop.aohys-com.pages.dev/observability/csp", {
+      new Request("https://aohys.com/observability/csp", {
         method: "POST",
         headers: {
           "content-type": "application/csp-report",
         },
         body: JSON.stringify({
           "csp-report": {
-            "document-uri": "https://develop.aohys-com.pages.dev/contact/?lead=private",
+            "document-uri": "https://aohys.com/contact/?lead=private",
             "violated-directive": "script-src-elem",
             "effective-directive": "script-src-elem",
             "blocked-uri": "https://us-assets.i.posthog.com/array/phc_private/config.js?t=1",
@@ -27,22 +27,23 @@ describe("CSP reporting boundary", () => {
         }),
       }),
       {
-        AOHYS_ENV: "preview",
-        PUBLIC_POSTHOG_KEY: "phc_preview",
-        PUBLIC_POSTHOG_HOST: "https://us.i.posthog.com",
+        AOHYS_ENV: "production",
+        PUBLIC_SITE_URL: "https://aohys.com",
+        PUBLIC_POSTHOG_KEY: "phc_production",
       },
       transport,
     );
 
     expect(response.status).toBe(204);
     expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
-    expect(requests[0]?.url).toBe("https://us.i.posthog.com/capture/");
+    expect(requests[0]?.url).toBe("https://aohys.com/ingest/capture/");
     expect(JSON.parse(String(requests[0]?.init.body))).toEqual({
-      api_key: "phc_preview",
+      api_key: "phc_production",
       event: "csp_violation_reported",
-      distinct_id: "csp:preview",
+      distinct_id: "csp:production",
       properties: {
-        environment: "preview",
+        $geoip_disable: true,
+        environment: "production",
         source: "cloudflare_pages_csp_report",
         path: "/observability/csp",
         documentPath: "/contact/",
@@ -69,6 +70,17 @@ describe("CSP reporting boundary", () => {
 
     expect(response.status).toBe(204);
     expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
+    expect(transport).not.toHaveBeenCalled();
+  });
+
+  it("emits no CSP telemetry in preview even if a stale key exists", async () => {
+    const transport = vi.fn();
+    const response = await handleCspReportRequest(
+      new Request("https://preview.aohys.com/observability/csp", { method: "POST", body: "{}" }),
+      { AOHYS_ENV: "preview", PUBLIC_POSTHOG_KEY: "phc_stale" },
+      transport,
+    );
+    expect(response.status).toBe(204);
     expect(transport).not.toHaveBeenCalled();
   });
 

@@ -99,7 +99,7 @@ function hasNotificationSettings(values: Record<string, string | undefined>): bo
 }
 
 function hasAnalyticsSettings(values: Record<string, string | undefined>): boolean {
-  return hasAllSettings(values, REQUIRED_ANALYTICS_SETTINGS);
+  return values.AOHYS_ENV === "production" && hasAllSettings(values, REQUIRED_ANALYTICS_SETTINGS);
 }
 
 function buildProviderFailureEvent(
@@ -108,7 +108,10 @@ function buildProviderFailureEvent(
   operation: "lead_analytics" | "lead_notification",
   error: unknown,
 ): LeadAnalyticsEvent {
-  const errorType = error instanceof Error ? error.name : "UnknownError";
+  const candidateErrorType = error instanceof Error ? error.name : "UnknownError";
+  const errorType = ["AggregateError", "Error", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError"].includes(candidateErrorType)
+    ? candidateErrorType
+    : "UnknownError";
 
   return {
     event: "lead_provider_failed",

@@ -29,8 +29,6 @@ const REQUIRED_RUNTIME_BINDINGS = [
   "CONVEX_SITE_URL",
   "CONVEX_URL",
   "CLOUDFLARE_IMAGES_ACCOUNT_HASH",
-  "PUBLIC_POSTHOG_HOST",
-  "PUBLIC_POSTHOG_KEY",
   "PUBLIC_SITE_URL",
 ] as const;
 
@@ -129,19 +127,14 @@ function assertRuntimeBindings(project: CloudflarePagesProject): void {
     }
   }
 
-  const previewPostHogKey = readPlainVariable(project, "preview", "PUBLIC_POSTHOG_KEY");
   const productionPostHogKey = readPlainVariable(project, "production", "PUBLIC_POSTHOG_KEY");
 
-  if (!previewPostHogKey) {
-    errors.push("Cloudflare Pages preview PUBLIC_POSTHOG_KEY must be a non-empty plain env var.");
+  if (readPlainVariable(project, "preview", "PUBLIC_POSTHOG_KEY")) {
+    errors.push("Cloudflare Pages preview must not define PUBLIC_POSTHOG_KEY.");
   }
 
   if (!productionPostHogKey) {
     errors.push("Cloudflare Pages production PUBLIC_POSTHOG_KEY must be a non-empty plain env var.");
-  }
-
-  if (previewPostHogKey && productionPostHogKey && previewPostHogKey === productionPostHogKey) {
-    errors.push("Cloudflare Pages preview and production use the same PUBLIC_POSTHOG_KEY.");
   }
 
   if (errors.length > 0) {

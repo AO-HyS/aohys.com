@@ -22,16 +22,19 @@ export interface AnalyticsContext {
 
 export interface PostHogClientSettings {
   key: string | undefined;
-  host: string | undefined;
-  autocapturePolicy: string | undefined;
+  environment: string;
+  canonicalUrl: string;
 }
 
 export interface PostHogClientConfig {
   key: string;
   host: string;
+  ui_host: "https://us.posthog.com";
   autocapture: false;
   capture_pageview: false;
   capture_pageleave: false;
+  capture_exceptions: false;
+  capture_performance: false;
   disable_persistence: true;
   disable_session_recording: true;
   person_profiles: "never";
@@ -61,11 +64,12 @@ const SENSITIVE_ANALYTICS_KEYS = [
   "phone",
   "referrer",
   "website",
+  "current_url",
 ] as const;
+const SAFE_ERROR_TYPES = new Set(["AggregateError", "Error", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError", "UnhandledRejection", "UnknownError"]);
 
-function normalizePostHogHost(host: string | undefined): string {
-  const normalized = host?.trim().replace(/\/+$/, "");
-  return normalized || "https://us.i.posthog.com";
+export function normalizeAnalyticsErrorType(value: unknown): string {
+  return typeof value === "string" && SAFE_ERROR_TYPES.has(value) ? value : "UnknownError";
 }
 
 function normalizePath(path: string): string {
@@ -73,18 +77,20 @@ function normalizePath(path: string): string {
   return normalized.startsWith("/") ? normalized : `/${normalized}`;
 }
 
-function baseProperties(context: AnalyticsContext): Record<string, string> {
+function baseProperties(context: AnalyticsContext): Record<string, string | boolean> {
   return {
     content_id: String(context.contentId),
     locale: String(context.locale),
     path: normalizePath(context.path),
     canonical_url: context.canonicalUrl,
     environment: context.environment,
+    $geoip_disable: true,
   };
 }
 
 function isSensitiveAnalyticsKey(key: string): boolean {
   const normalizedKey = key.toLowerCase().replaceAll("-", "_");
+  if (normalizedKey === "canonical_url") return false;
   return SENSITIVE_ANALYTICS_KEYS.some((sensitiveKey) => normalizedKey.includes(sensitiveKey));
 }
 
@@ -98,7 +104,13 @@ export function sanitizeAnalyticsProperties(
         typeof value === "string" ||
         typeof value === "number" ||
         typeof value === "boolean"
-      )),
+      ))
+      .map(([key, value]) => [
+        key,
+        key.toLowerCase().replaceAll("-", "_") === "error_type"
+          ? normalizeAnalyticsErrorType(value)
+          : value,
+      ]),
   ) as Record<string, string | number | boolean>;
 }
 
@@ -106,17 +118,27 @@ export function buildPostHogClientConfig(
   settings: PostHogClientSettings,
 ): PostHogClientConfig | undefined {
   const key = settings.key?.trim();
+  let hostname: string | undefined;
 
-  if (!key) {
+  try {
+    hostname = new URL(settings.canonicalUrl).hostname;
+  } catch {
+    hostname = undefined;
+  }
+
+  if (!key || settings.environment !== "production" || hostname !== "aohys.com") {
     return undefined;
   }
 
   return {
     key,
-    host: normalizePostHogHost(settings.host),
+    host: "/ingest",
+    ui_host: "https://us.posthog.com",
     autocapture: false,
     capture_pageview: false,
     capture_pageleave: false,
+    capture_exceptions: false,
+    capture_performance: false,
     disable_persistence: true,
     disable_session_recording: true,
     person_profiles: "never",

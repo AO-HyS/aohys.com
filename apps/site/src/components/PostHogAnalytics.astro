@@ -30,8 +30,8 @@ const context: AnalyticsContext = {
 
 const payload = buildAnalyticsBootstrapPayload({
   key: import.meta.env.PUBLIC_POSTHOG_KEY,
-  host: import.meta.env.PUBLIC_POSTHOG_HOST,
-  autocapturePolicy: import.meta.env.PUBLIC_POSTHOG_AUTOCAPTURE,
+  environment,
+  canonicalUrl,
 }, context);
 const payloadJson = JSON.stringify(payload).replaceAll("<", "\\u003c");
 ---
