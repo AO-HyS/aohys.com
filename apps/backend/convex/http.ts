@@ -15,6 +15,10 @@ import {
   type ContactLeadInput,
   type PreparedContactLead,
 } from "../src/contact-workflow.js";
+import {
+  resolveContactEnvironment,
+  shouldCaptureContactIntakeFailure,
+} from "../src/contact-environment.js";
 
 const http = httpRouter();
 
@@ -57,8 +61,6 @@ function getContactEnvironmentValues(): Record<string, string | undefined> {
     CONVEX_SITE_URL: process.env.CONVEX_SITE_URL,
     CONVEX_DEPLOY_KEY: process.env.CONVEX_DEPLOY_KEY,
     PUBLIC_POSTHOG_KEY: process.env.PUBLIC_POSTHOG_KEY,
-    PUBLIC_POSTHOG_HOST: process.env.PUBLIC_POSTHOG_HOST,
-    PUBLIC_POSTHOG_AUTOCAPTURE: process.env.PUBLIC_POSTHOG_AUTOCAPTURE,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     RESEND_FROM: process.env.RESEND_FROM,
     LEAD_NOTIFICATION_EMAIL: process.env.LEAD_NOTIFICATION_EMAIL,
@@ -81,17 +83,7 @@ function getContactEnvironmentValues(): Record<string, string | undefined> {
 }
 
 function getContactEnvironment(): "local" | "preview" | "production" {
-  const environment = process.env.AOHYS_ENV;
-
-  if (
-    environment === "local" ||
-    environment === "preview" ||
-    environment === "production"
-  ) {
-    return environment;
-  }
-
-  return "production";
+  return resolveContactEnvironment(process.env.AOHYS_ENV);
 }
 
 async function captureContactIntakeFailure(
@@ -100,22 +92,23 @@ async function captureContactIntakeFailure(
   error: unknown,
 ): Promise<void> {
   const apiKey = process.env.PUBLIC_POSTHOG_KEY?.trim();
+  const environment = getContactEnvironment();
 
-  if (!apiKey) {
+  if (!apiKey || !shouldCaptureContactIntakeFailure(environment, apiKey)) {
     return;
   }
 
   try {
     await captureLeadAnalyticsWithPostHog(
       buildContactIntakeFailureEvent({
-        environment: getContactEnvironment(),
+        environment,
         input,
         publicError,
         error,
       }),
       {
         apiKey,
-        host: process.env.PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
+        host: "https://aohys.com/ingest",
       },
     );
   } catch {
@@ -167,7 +160,7 @@ http.route({
             event,
             {
               apiKey: process.env.PUBLIC_POSTHOG_KEY ?? "",
-              host: process.env.PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
+              host: "https://aohys.com/ingest",
             },
           ),
         },

@@ -2,6 +2,9 @@ import type { DashboardRuntimeConfig } from "@/types";
 import { matchDashboardNavigationItem } from "@/app/navigation";
 
 export const DASHBOARD_ANALYTICS_EVENTS = [
+  "$pageview",
+  "$pageleave",
+  "$web_vitals",
   "dashboard_surface_viewed",
   "dashboard_action_succeeded",
   "dashboard_action_failed",
@@ -39,13 +42,18 @@ export interface DashboardAnalyticsProperties {
   source?: string;
   to_status?: string;
   workflow_status?: string;
+  metric_name?: string;
+  metric_value?: number;
 }
 
 export interface DashboardPostHogConfig {
   api_host: string;
+  ui_host: "https://us.posthog.com";
   autocapture: false;
   capture_pageleave: false;
   capture_pageview: false;
+  capture_exceptions: false;
+  capture_performance: false;
   disable_persistence: true;
   disable_session_recording: true;
   person_profiles: "never";
@@ -53,7 +61,7 @@ export interface DashboardPostHogConfig {
 }
 
 interface PostHogClient {
-  capture: (event: string, properties: Record<string, string | number | boolean>) => void;
+  capture: (event: string, properties: Record<string, string | number | boolean>, options?: { transport: "sendBeacon" }) => void;
   init: (key: string, config: DashboardPostHogConfig & {
     before_send: (event: { properties?: Record<string, unknown> } | null) => { properties?: Record<string, unknown> } | null;
   }) => void;
@@ -61,7 +69,6 @@ interface PostHogClient {
 
 type PostHogImporter = () => Promise<{ default: PostHogClient }>;
 
-const DEFAULT_POSTHOG_HOST = "https://us.i.posthog.com";
 const SENSITIVE_PROPERTY_PARTS = [
   "admin",
   "company",
@@ -74,14 +81,11 @@ const SENSITIVE_PROPERTY_PARTS = [
   "token",
   "url",
 ] as const;
+const SAFE_ERROR_TYPES = new Set(["AggregateError", "Error", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError", "UnhandledRejection", "UnknownError"]);
 
 let analyticsClientPromise: Promise<PostHogClient | undefined> | undefined;
 let activeRuntimeConfig: DashboardRuntimeConfig | undefined;
 let hasBoundErrorSignals = false;
-
-function normalizeHost(value: string | undefined): string {
-  return (value?.trim() || DEFAULT_POSTHOG_HOST).replace(/\/+$/, "");
-}
 
 function isSensitiveProperty(key: string): boolean {
   const normalized = key.toLowerCase().replaceAll("-", "_");
@@ -91,15 +95,16 @@ function isSensitiveProperty(key: string): boolean {
 export function sanitizeDashboardAnalyticsProperties(
   properties: object,
 ): Record<string, string | number | boolean> {
-  return Object.fromEntries(
-    Object.entries(properties)
-      .filter(([key]) => !isSensitiveProperty(key))
-      .filter(([, value]) => (
-        typeof value === "string" ||
-        typeof value === "number" ||
-        typeof value === "boolean"
-      )),
-  ) as Record<string, string | number | boolean>;
+  const sanitized: Record<string, string | number | boolean> = {};
+
+  for (const [key, value] of Object.entries(properties)) {
+    if (isSensitiveProperty(key) || !["string", "number", "boolean"].includes(typeof value)) continue;
+    sanitized[key] = key.toLowerCase().replaceAll("-", "_") === "error_type" && typeof value === "string" && !SAFE_ERROR_TYPES.has(value)
+      ? "UnknownError"
+      : value as string | number | boolean;
+  }
+
+  return sanitized;
 }
 
 export function sanitizeDashboardPostHogEnvelopeProperties(
@@ -118,15 +123,18 @@ export function sanitizeDashboardPostHogEnvelopeProperties(
 export function buildDashboardPostHogConfig(
   runtimeConfig: DashboardRuntimeConfig,
 ): DashboardPostHogConfig | undefined {
-  if (!runtimeConfig.posthogKey?.trim()) {
+  if (runtimeConfig.environment !== "production" || !runtimeConfig.posthogKey?.trim()) {
     return undefined;
   }
 
   return {
-    api_host: normalizeHost(runtimeConfig.posthogHost),
+    api_host: "/ingest",
+    ui_host: "https://us.posthog.com",
     autocapture: false,
     capture_pageleave: false,
     capture_pageview: false,
+    capture_exceptions: false,
+    capture_performance: false,
     disable_persistence: true,
     disable_session_recording: true,
     person_profiles: "never",
@@ -167,6 +175,10 @@ export function initializeDashboardAnalytics(
     return;
   }
 
+  if (runtimeConfig.environment !== "production" || (typeof window !== "undefined" && window.location.hostname !== "aohys.com")) {
+    return;
+  }
+
   activeRuntimeConfig = runtimeConfig;
   const posthogConfig = buildDashboardPostHogConfig(runtimeConfig);
 
@@ -183,6 +195,7 @@ export function initializeDashboardAnalytics(
     : Promise.resolve(undefined);
 
   bindDashboardErrorSignals();
+  bindDashboardLifecycleSignals();
 }
 
 export function captureDashboardEvent(
@@ -235,6 +248,49 @@ function bindDashboardErrorSignals(): void {
       event.reason instanceof Error ? event.reason.name : "UnhandledRejection",
     );
   });
+}
+
+function bindDashboardLifecycleSignals(): void {
+  if (typeof window === "undefined" || !activeRuntimeConfig) return;
+  let hasCapturedPageleave = false;
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "hidden" || hasCapturedPageleave || !activeRuntimeConfig) return;
+    hasCapturedPageleave = true;
+    void analyticsClientPromise?.then((client) => client?.capture("$pageleave", {
+      $geoip_disable: true,
+      environment: activeRuntimeConfig!.environment,
+      surface: dashboardSurfaceFromPath(window.location.pathname),
+      path: window.location.pathname,
+    }, { transport: "sendBeacon" }));
+  });
+
+  if (typeof PerformanceObserver === "undefined") return;
+  for (const entryType of ["largest-contentful-paint", "layout-shift", "first-input"] as const) {
+    if (!(PerformanceObserver.supportedEntryTypes ?? []).includes(entryType)) continue;
+    try {
+      const observer = new PerformanceObserver((list) => {
+        const entry = list.getEntries().at(-1);
+        if (!entry || !activeRuntimeConfig) return;
+        const metricEntry = entry as PerformanceEntry & { value?: number; processingStart?: number };
+        const metricValue = entry.entryType === "layout-shift"
+          ? metricEntry.value ?? 0
+          : entry.entryType === "first-input"
+            ? Math.max(0, (metricEntry.processingStart ?? entry.startTime) - entry.startTime)
+            : entry.startTime;
+        captureDashboardEvent("$web_vitals", {
+          environment: activeRuntimeConfig.environment,
+          surface: dashboardSurfaceFromPath(window.location.pathname),
+          path: window.location.pathname,
+          metric_name: entry.entryType,
+          metric_value: Number(metricValue.toFixed(3)),
+        });
+        observer.disconnect();
+      });
+      observer.observe({ type: entryType, buffered: true });
+    } catch {
+      // Unsupported performance entry types are ignored.
+    }
+  }
 }
 
 function captureDashboardClientException(source: string, errorType: string): void {

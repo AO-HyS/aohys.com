@@ -34,25 +34,19 @@ pnpm run audit:posthog-env
 SMOKE_BASE_URL=https://develop.aohys-com.pages.dev pnpm run smoke:preview
 ```
 
-If `pnpm run audit:posthog-env` fails, create or select a separate PostHog project for preview and update only the GitHub Environment `preview` public key:
+If `pnpm run audit:posthog-env` fails, remove any preview key and set only the retained production project key:
 
 ```sh
-gh variable set PUBLIC_POSTHOG_KEY --env preview --repo AO-HyS/aohys.com --body "<preview-posthog-project-key>"
+gh variable delete PUBLIC_POSTHOG_KEY --env preview --repo AO-HyS/aohys.com
+gh variable set PUBLIC_POSTHOG_KEY --env production --repo AO-HyS/aohys.com --body "<production-posthog-project-key>"
 pnpm run audit:posthog-env
 ```
 
 If the GitHub Environment audit passes but the Release Train fails at `pnpm run audit:cloudflare-pages-runtime`, update the matching Cloudflare Pages runtime binding as well. GitHub remains the release source of truth, but Pages Functions execute with the Cloudflare deployment config values already stored on the Pages project.
 
-Production should keep the production PostHog project key. The `environment` event property is a secondary filter, not the isolation boundary.
+Production keeps the retained production project key. Preview and local have no PostHog project/key and must emit zero events. Cloudflare Pages and Convex preview runtimes must also omit the key.
 
-When checking PostHog from the MCP or UI, the expected shape is two AOHYS projects:
-
-- `AOHYS Public Site - Preview`: GitHub Environment `preview`, Cloudflare Pages preview runtime, and Convex preview runtime.
-- `AOHYS Public Site - Production`: GitHub Environment `production`, Cloudflare Pages production runtime, and Convex production runtime.
-
-Do not reuse the same `PUBLIC_POSTHOG_KEY` across these two environments. If preview and production use the same key, errors still include `environment` metadata, but they land in the same PostHog project and should be treated as an incident before promotion.
-
-Set GitHub Environment variable `SMOKE_CONTACT_SUBMIT=true` in `preview` when the release train should submit one synthetic lead through the real Convex/Resend/PostHog path. Leave it unset in production unless you deliberately want a live notification smoke.
+Set GitHub Environment variable `SMOKE_CONTACT_SUBMIT=true` in `preview` only to exercise Convex/Resend; it must not produce a PostHog event. Leave it unset in production unless you deliberately want live notification and analytics smoke.
 
 Manual preview probes:
 
@@ -71,12 +65,12 @@ Expected results:
 - `/dashboard` and all private dashboard paths redirect anonymous visitors to `/dashboard/sign-in`.
 - Dashboard responses include `x-robots-tag: noindex, nofollow` and `cache-control: no-store`.
 - Public pages and Pages Functions responses include the Cloudflare Pages security headers once served by Cloudflare.
-- `pnpm run smoke:preview` checks that the served CSP allows PostHog script/config and ingest hosts plus Convex contact endpoints.
-- `pnpm run smoke:preview` also checks the `/observability/csp` report endpoint so future CSP blocks can still reach PostHog even when `posthog-js` is blocked.
+- `pnpm run smoke:preview` checks that CSP needs no third-party PostHog origins and that `/ingest` returns `404` in preview.
+- `pnpm run smoke:preview` checks `/observability/csp`; preview accepts the report but emits no PostHog event.
 - Contact page renders direct WhatsApp/email fallback and does not expose private dashboard data.
-- Contact submission should return success once the lead is persisted; Resend/PostHog provider drift should not reject the visitor request, and provider drift should appear as sanitized PostHog operational events.
-- Browser console should not show CSP violations for `us-assets.i.posthog.com`.
-- GitHub Environment `preview` and `production` should use different PostHog project keys. If they match, preview and production events are filterable by `environment` but still land in the same PostHog project.
+- Contact submission should return success once the lead is persisted; preview may use Resend but always reports analytics as skipped.
+- Browser network inspection should show no PostHog request in preview.
+- GitHub Environment and Cloudflare Pages preview must not define `PUBLIC_POSTHOG_KEY`; production must define it.
 
 ## Production promotion checks
 
@@ -93,6 +87,7 @@ After production deploy:
 - Confirm `https://aohys.com/sitemap.xml` contains public graph routes and no dashboard URL.
 - Confirm `https://aohys.net/` redirects canonically to `https://aohys.com/` when Cloudflare redirect rules are active.
 - Confirm `/privacy` and `/es/privacidad` explain contact data, analytics/errors, and private project boundaries without implying private client/product code is public.
+- Confirm public and authenticated dashboard events use `https://aohys.com/ingest/*`, and decode accepted payloads to verify `$pageview`, `$pageleave`, `$web_vitals`, fixed-shape exceptions, and business/friction events without PII.
 
 ## Browser QA
 

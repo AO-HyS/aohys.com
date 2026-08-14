@@ -23,6 +23,11 @@ const convex = new ConvexReactClient(runtimeConfig.convexUrl, {
 });
 
 function captureDashboardSurface(path: string) {
+  captureDashboardEvent("$pageview", {
+    environment: runtimeConfig.environment,
+    surface: dashboardSurfaceFromPath(path),
+    path,
+  });
   captureDashboardEvent("dashboard_surface_viewed", {
     environment: runtimeConfig.environment,
     surface: dashboardSurfaceFromPath(path),

@@ -1,8 +1,9 @@
 export type PostHogServerProperty = string | number | boolean;
 
 export interface PostHogServerEnvironment {
+  AOHYS_ENV?: string;
+  PUBLIC_SITE_URL?: string;
   PUBLIC_POSTHOG_KEY?: string;
-  PUBLIC_POSTHOG_HOST?: string;
 }
 
 export interface PostHogServerEvent {
@@ -18,13 +19,7 @@ export type PostHogServerTransport = (
 
 export interface PostHogServerCaptureResult {
   captured: boolean;
-  skippedReason?: "missing-key";
-}
-
-const DEFAULT_POSTHOG_HOST = "https://us.i.posthog.com";
-
-function normalizePostHogHost(value: string | undefined): string {
-  return (value?.trim() || DEFAULT_POSTHOG_HOST).replace(/\/+$/, "");
+  skippedReason?: "missing-key" | "non-production";
 }
 
 function definedProperties(
@@ -44,11 +39,17 @@ export async function capturePostHogServerEvent(
 ): Promise<PostHogServerCaptureResult> {
   const apiKey = environment.PUBLIC_POSTHOG_KEY?.trim();
 
+  if (environment.AOHYS_ENV !== "production") {
+    return { captured: false, skippedReason: "non-production" };
+  }
+
   if (!apiKey) {
     return { captured: false, skippedReason: "missing-key" };
   }
 
-  const response = await transport(`${normalizePostHogHost(environment.PUBLIC_POSTHOG_HOST)}/capture/`, {
+  const siteUrl = environment.PUBLIC_SITE_URL?.trim() || "https://aohys.com";
+
+  const response = await transport(`${siteUrl.replace(/\/+$/, "")}/ingest/capture/`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -57,7 +58,7 @@ export async function capturePostHogServerEvent(
       api_key: apiKey,
       event: event.event,
       distinct_id: event.distinctId,
-      properties: definedProperties(event.properties),
+      properties: { $geoip_disable: true, ...definedProperties(event.properties) },
     }),
   });
 

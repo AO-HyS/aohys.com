@@ -55,9 +55,9 @@ describe("contact provider adapters", () => {
     await captureLeadAnalyticsWithPostHog(
       {
         event: "lead_submitted",
-        distinctId: "contact:preview",
+        distinctId: "contact:production",
         properties: {
-          environment: "preview",
+          environment: "production",
           intent: "project",
           preferred_contact_path: "email",
           locale: "en",
@@ -67,21 +67,22 @@ describe("contact provider adapters", () => {
         },
       },
       {
-        apiKey: "phc_preview",
-        host: "https://us.i.posthog.com/",
+        apiKey: "phc_production",
+        host: "https://aohys.com/ingest",
         transport,
       },
     );
 
     const payload = JSON.parse(String(requests[0]?.init.body));
 
-    expect(requests[0]?.url).toBe("https://us.i.posthog.com/capture/");
+    expect(requests[0]?.url).toBe("https://aohys.com/ingest/capture/");
     expect(payload).toMatchObject({
-      api_key: "phc_preview",
+      api_key: "phc_production",
       event: "lead_submitted",
-      distinct_id: "contact:preview",
+      distinct_id: "contact:production",
       properties: {
-        environment: "preview",
+        $geoip_disable: true,
+        environment: "production",
         intent: "project",
         preferred_contact_path: "email",
         locale: "en",

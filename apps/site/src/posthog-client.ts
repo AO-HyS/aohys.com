@@ -12,9 +12,9 @@ interface AnalyticsDetail {
   properties?: unknown;
 }
 
-type PostHogBrowserClient = typeof import("posthog-js").default & {
-  captureException?: (error: Error, properties?: Record<string, unknown>) => void;
-};
+type PostHogBrowserClient = typeof import("posthog-js").default;
+
+const PRODUCTION_HOSTNAME = "aohys.com";
 
 let hasBooted = false;
 
@@ -67,11 +67,6 @@ function captureException(
     source,
     error_type: errorType,
   });
-
-  if (typeof posthog.captureException === "function") {
-    posthog.captureException(new Error(source), properties);
-    return;
-  }
 
   posthog.capture("$exception", properties);
 }
@@ -131,6 +126,42 @@ function bindInteractionHooks(windowRef: Window, documentRef: Document, posthog:
   });
 }
 
+function bindLifecycleSignals(documentRef: Document, posthog: PostHogBrowserClient, payload: AnalyticsBootstrapPayload): void {
+  let hasCapturedPageleave = false;
+  documentRef.addEventListener("visibilitychange", () => {
+    if (documentRef.visibilityState !== "hidden" || hasCapturedPageleave) return;
+    hasCapturedPageleave = true;
+    posthog.capture("$pageleave", payload.pageview.properties, { transport: "sendBeacon" });
+  });
+
+  if (typeof PerformanceObserver === "undefined") return;
+  const supported = PerformanceObserver.supportedEntryTypes ?? [];
+  for (const entryType of ["largest-contentful-paint", "layout-shift", "first-input"] as const) {
+    if (!supported.includes(entryType)) continue;
+    try {
+      const observer = new PerformanceObserver((list: PerformanceObserverEntryList) => {
+        const entry = list.getEntries().at(-1);
+        if (!entry) return;
+        const metricEntry = entry as PerformanceEntry & { value?: number; processingStart?: number };
+        const metricValue = entry.entryType === "layout-shift"
+          ? metricEntry.value ?? 0
+          : entry.entryType === "first-input"
+            ? Math.max(0, (metricEntry.processingStart ?? entry.startTime) - entry.startTime)
+            : entry.startTime;
+        posthog.capture("$web_vitals", {
+          ...payload.pageview.properties,
+          metric_name: entry.entryType,
+          metric_value: Number(metricValue.toFixed(3)),
+        });
+        observer.disconnect();
+      });
+      observer.observe({ type: entryType, buffered: true });
+    } catch {
+      // Unsupported performance entry types are ignored.
+    }
+  }
+}
+
 export function bootPostHogFromDocument(documentRef = document, windowRef = window): void {
   if (hasBooted) {
     return;
@@ -141,7 +172,7 @@ export function bootPostHogFromDocument(documentRef = document, windowRef = wind
   void (async () => {
     const payload = readPayload(documentRef);
 
-    if (!payload?.config) {
+    if (!payload?.config || windowRef.location.hostname !== PRODUCTION_HOSTNAME) {
       return;
     }
 
@@ -150,9 +181,12 @@ export function bootPostHogFromDocument(documentRef = document, windowRef = wind
 
     client.init(payload.config.key, {
       api_host: payload.config.host,
+      ui_host: payload.config.ui_host,
       autocapture: payload.config.autocapture,
       capture_pageview: payload.config.capture_pageview,
       capture_pageleave: payload.config.capture_pageleave,
+      capture_exceptions: payload.config.capture_exceptions,
+      capture_performance: payload.config.capture_performance,
       disable_persistence: payload.config.disable_persistence,
       disable_session_recording: payload.config.disable_session_recording,
       person_profiles: payload.config.person_profiles,
@@ -165,5 +199,6 @@ export function bootPostHogFromDocument(documentRef = document, windowRef = wind
     client.capture(payload.pageview.name, payload.pageview.properties);
     bindViewHooks(documentRef, client, payload);
     bindInteractionHooks(windowRef, documentRef, client, payload);
+    bindLifecycleSignals(documentRef, client, payload);
   })();
 }
