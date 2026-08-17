@@ -1,6 +1,6 @@
 # Development System repository adapter
 
-Contract version: `1.5.4`
+Contract version: `1.5.7`
 Product: `aohys.com`
 Harness: `codex`
 
@@ -24,6 +24,7 @@ Explicit phase commands:
 - `$flow-implement`: one named terminal slice; run the autonomous development loop only inside the request's existing authority and stop at the pinned human boundary. Tests, validation, review, correction, and proportional QA are development substeps and grant no external-state authority.
 - `$flow-code-review`: independent review of an existing branch or pull request.
 - `$working-backwards`: customer-first feature definition through the three persisted approval gates; it produces an implementation map but never authorizes implementation.
+- `$orchestration-pilot`: read-only five-run-or-five-day evaluation of direct, sequential, and delegated development work.
 
 Before implementation, pin one objective, constraints, exact scope, required evidence and validation, a verifiable stop condition, and every human or external-state boundary. A native goal is created only on explicit request; its persistence never expands authority or scope.
 
@@ -39,7 +40,7 @@ Commit, push, pull-request, preview, and deploy state changes occur only when th
 
 ## Operational prerequisite
 
-Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.11.0` and verify that Codex discovers these commands plus `drive-development-flow`, `working-backwards`, `parallel-work`, and `check-in`. T3 Code consumes the Codex-compatible surface. T3 Code shares the Codex adapter structurally but has no independent live command proof in this release.
+Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.14.0` and verify that Codex discovers these commands plus `drive-development-flow`, `coding-orchestration`, `working-backwards`, `parallel-work`, `orchestration-pilot`, and `check-in`. T3 Code consumes the Codex-compatible surface. T3 Code shares the Codex adapter structurally but has no independent live command proof in this release.
 
 Global `exa-search` is paid public-web retrieval. This adapter only declares its availability and never calls or activates it. A repository opt-in or explicit user invocation is required, and every request must receive no secrets, private source, customer data, PHI, PII, private URLs, or private identifiers. Global `global-agent-guardrails` must be enabled and audited separately; it is defense in depth, not authorization or a sandbox.
 

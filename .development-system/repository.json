@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "1.5.4",
+  "contractVersion": "1.5.7",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [
@@ -95,6 +95,7 @@
         "flow-code-review",
         "working-backwards",
         "parallel-work",
+        "orchestration-pilot",
         "check-in"
       ]
     },
@@ -127,11 +128,12 @@
     "providerReadiness": "before-shared-preview-when-affected"
   },
   "operatorPrerequisites": {
-    "skillCatalogVersion": "0.11.0",
+    "skillCatalogVersion": "0.14.0",
     "installationScope": "global",
     "readinessScope": "repository-adapter-only",
     "requiredSkills": [
       "drive-development-flow",
+      "coding-orchestration",
       "wayfinder",
       "grill-with-docs",
       "to-spec",
@@ -140,6 +142,7 @@
       "flow-code-review",
       "working-backwards",
       "parallel-work",
+      "orchestration-pilot",
       "check-in",
       "release-train",
       "convex-guardian",
