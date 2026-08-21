@@ -1,6 +1,6 @@
 # Development System repository adapter
 
-Contract version: `1.5.7`
+Contract version: `1.5.9`
 Product: `aohys.com`
 Harness: `codex`
 
@@ -40,9 +40,22 @@ Commit, push, pull-request, preview, and deploy state changes occur only when th
 
 ## Operational prerequisite
 
-Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.14.0` and verify that Codex discovers these commands plus `drive-development-flow`, `coding-orchestration`, `working-backwards`, `parallel-work`, `orchestration-pilot`, and `check-in`. T3 Code consumes the Codex-compatible surface. T3 Code shares the Codex adapter structurally but has no independent live command proof in this release.
+Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.16.0` and verify that Codex discovers these commands plus `drive-development-flow`, `coding-orchestration`, `working-backwards`, `parallel-work`, `orchestration-pilot`, and `check-in`. T3 Code consumes the Codex-compatible surface. T3 Code shares the Codex adapter structurally but has no independent live command proof in this release.
 
 Global `exa-search` is paid public-web retrieval. This adapter only declares its availability and never calls or activates it. A repository opt-in or explicit user invocation is required, and every request must receive no secrets, private source, customer data, PHI, PII, private URLs, or private identifiers. Global `global-agent-guardrails` must be enabled and audited separately; it is defense in depth, not authorization or a sandbox.
+
+## Product architecture baseline
+
+- Map domain and capability ownership before moving files. Keep code, tests, documentation, adapters, and generated artifacts discoverable beside the boundary they explain.
+- Make dependency direction and public Interfaces explicit. Prefer cohesive deep modules over pass-through abstractions, duplicate contracts, or historical dumping grounds.
+- Define component boundaries by cohesion, responsibility, state ownership, composition, and public API—not by an arbitrary line count.
+- Keep backend contracts typed end to end. For Convex, require explicit authorization, validators, indexed bounded reads, and deliberate storage/migration boundaries.
+- Select fast checks from changed surfaces: architecture rules, strict typecheck, focused behavior tests, performance/security checks, and visual review when UI changed.
+- Use the installed architecture reference pack at `~/.codex/development-system/architecture-reference-pack.md` for product-convergence work. It is comparative evidence, not a universal folder template.
+
+## Development System-owned capabilities
+
+Agent guardrails, global anti-slop policy, and Release Train design are supplied and evolved by the Development System. A product architecture migration must not duplicate or redesign them. The repository remains responsible for exposing real changed-validation, certification, QA, preview, and provider-readiness commands that those global capabilities consume.
 
 ## Stack rules
 
