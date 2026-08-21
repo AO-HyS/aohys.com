@@ -25,10 +25,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  release-plan:
+    name: Plan Release
+    runs-on: ubuntu-latest
+    outputs:
+      deploy_runtime: ${{ steps.plan.outputs.deploy_runtime }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Classify changed surfaces
+        id: plan
+        env:
+          RELEASE_EVENT_NAME: ${{ github.event_name }}
+          RELEASE_BASE_SHA: ${{ github.event.before }}
+          RELEASE_HEAD_SHA: ${{ github.sha }}
+        run: node scripts/quality/release-plan.mjs
+
   deploy-preview:
     name: Deploy Preview
+    needs: release-plan
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/develop') || (github.event_name == 'workflow_dispatch' && inputs.target_environment == 'preview')
+    if: needs.release-plan.outputs.deploy_runtime == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/develop') || (github.event_name == 'workflow_dispatch' && inputs.target_environment == 'preview'))
     environment: preview
     env:
       AOHYS_ENV: preview
@@ -106,8 +126,9 @@ jobs:
 
   deploy-production:
     name: Deploy Production
+    needs: release-plan
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.target_environment == 'production')
+    if: needs.release-plan.outputs.deploy_runtime == 'true' && ((github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.target_environment == 'production'))
     environment: production
     env:
       AOHYS_ENV: production
