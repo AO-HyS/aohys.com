@@ -1,6 +1,6 @@
 # Development System repository adapter
 
-Contract version: `1.5.9`
+Contract version: `1.5.10`
 Product: `aohys.com`
 Harness: `codex`
 
@@ -40,7 +40,7 @@ Commit, push, pull-request, preview, and deploy state changes occur only when th
 
 ## Operational prerequisite
 
-Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.16.0` and verify that Codex discovers these commands plus `drive-development-flow`, `coding-orchestration`, `working-backwards`, `parallel-work`, `orchestration-pilot`, and `check-in`. T3 Code consumes the Codex-compatible surface. T3 Code shares the Codex adapter structurally but has no independent live command proof in this release.
+Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.17.0` and verify that Codex discovers these commands plus `drive-development-flow`, `coding-orchestration`, `working-backwards`, `parallel-work`, `orchestration-pilot`, and `check-in`. T3 Code consumes the Codex-compatible surface. T3 Code shares the Codex adapter structurally but has no independent live command proof in this release.
 
 Global `exa-search` is paid public-web retrieval. This adapter only declares its availability and never calls or activates it. A repository opt-in or explicit user invocation is required, and every request must receive no secrets, private source, customer data, PHI, PII, private URLs, or private identifiers. Global `global-agent-guardrails` must be enabled and audited separately; it is defense in depth, not authorization or a sandbox.
 
