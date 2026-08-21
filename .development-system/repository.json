@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "1.5.7",
+  "contractVersion": "1.5.9",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [
@@ -128,7 +128,7 @@
     "providerReadiness": "before-shared-preview-when-affected"
   },
   "operatorPrerequisites": {
-    "skillCatalogVersion": "0.14.0",
+    "skillCatalogVersion": "0.16.0",
     "installationScope": "global",
     "readinessScope": "repository-adapter-only",
     "requiredSkills": [
@@ -171,6 +171,31 @@
     "react": true,
     "convex": true,
     "preserveProductIdentity": true
+  },
+  "architectureBaseline": {
+    "reference": "~/.codex/development-system/architecture-reference-pack.md",
+    "productDimensions": [
+      "repository-map",
+      "module-boundaries",
+      "dependency-direction",
+      "file-placement",
+      "frontend-composition",
+      "component-design",
+      "backend-contracts",
+      "type-contracts",
+      "testing-strategy",
+      "documentation",
+      "performance-security",
+      "observability",
+      "migration-sequencing"
+    ],
+    "developmentSystemManaged": [
+      "agent-guardrails",
+      "anti-slop-policy",
+      "release-train"
+    ],
+    "componentBoundary": "cohesion-responsibility-state-ownership-public-interface-not-line-count",
+    "migrationEffect": "baseline-only-no-product-refactor"
   },
   "architectureDiagnostic": {
     "id": "improve-codebase-architecture",
