@@ -449,6 +449,126 @@ describe("publication acknowledgement and receipts", () => {
     });
   });
 
+  it("keeps deployed monotonic across late failure, cancellation, and completion", async () => {
+    const key = "a".repeat(64);
+    const attemptKey = `${key}.1`;
+    const fixture = publicationDatabase({
+      publicationRequests: [
+        {
+          _id: "request_1",
+          _creationTime: 1,
+          requestKey: key,
+          targetEnvironment: "preview",
+          state: "release-requested",
+        },
+      ],
+      publicationAttempts: [
+        {
+          _id: "attempt_1",
+          _creationTime: 1,
+          requestId: "request_1",
+          publicationAttemptId: attemptKey,
+          state: "dispatching",
+        },
+      ],
+      publicationReceipts: [],
+    });
+    const correlation = {
+      publicationRequestKey: key,
+      publicationAttemptId: attemptKey,
+      targetEnvironment: "preview",
+      gitRef: "refs/heads/develop",
+      runId: "123",
+      runUrl: "https://github.com/AO-HyS/aohys.com/actions/runs/123",
+    };
+    await (recordReceipt as never as { _handler: Function })._handler(
+      fixture.ctx,
+      {
+        ...correlation,
+        sha: "b".repeat(40),
+        smokePassed: true,
+      },
+    );
+    const writesAfterReceipt = fixture.writes.length;
+    const outcomeHandler = (
+      reconcileWorkflowOutcome as never as { _handler: Function }
+    )._handler;
+
+    await expect(
+      outcomeHandler(fixture.ctx, { ...correlation, outcome: "failure" }),
+    ).resolves.toMatchObject({ state: "deployed", duplicate: true });
+    await expect(
+      outcomeHandler(fixture.ctx, { ...correlation, outcome: "cancelled" }),
+    ).resolves.toMatchObject({ state: "deployed", duplicate: true });
+    await (completeAttempt as never as { _handler: Function })._handler(
+      fixture.ctx,
+      {
+        attemptId: "attempt_1",
+        result: { status: "acknowledged", runId: "123" },
+      },
+    );
+
+    expect(fixture.writes).toHaveLength(writesAfterReceipt);
+    expect(fixture.rows.get("publicationRequests")?.[0]?.state).toBe(
+      "deployed",
+    );
+    expect(fixture.rows.get("publicationAttempts")?.[0]?.state).toBe(
+      "acknowledged",
+    );
+  });
+
+  it("does not let a late dispatcher completion downgrade a deployed request", async () => {
+    const key = "a".repeat(64);
+    const fixture = publicationDatabase({
+      publicationRequests: [
+        {
+          _id: "request_1",
+          _creationTime: 1,
+          requestKey: key,
+          targetEnvironment: "preview",
+          state: "deployed",
+        },
+      ],
+      publicationAttempts: [
+        {
+          _id: "attempt_1",
+          _creationTime: 1,
+          requestId: "request_1",
+          publicationAttemptId: `${key}.1`,
+          state: "dispatching",
+        },
+      ],
+      publicationReceipts: [
+        {
+          _id: "receipt_1",
+          _creationTime: 1,
+          publicationAttemptId: `${key}.1`,
+        },
+      ],
+    });
+
+    await (completeAttempt as never as { _handler: Function })._handler(
+      fixture.ctx,
+      {
+        attemptId: "attempt_1",
+        result: {
+          status: "failed",
+          retryable: true,
+          code: "late-provider-result",
+          message: "Late result.",
+        },
+      },
+    );
+
+    expect(fixture.writes).toEqual([]);
+    expect(fixture.rows.get("publicationRequests")?.[0]?.state).toBe(
+      "deployed",
+    );
+    expect(fixture.rows.get("publicationAttempts")?.[0]?.state).toBe(
+      "dispatching",
+    );
+  });
+
   it("reconciles an accepted workflow failure idempotently", async () => {
     const key = "a".repeat(64);
     const fixture = publicationDatabase({

@@ -20,7 +20,9 @@ if (outcome !== "failure" && outcome !== "cancelled") {
   throw new Error("PUBLICATION_WORKFLOW_OUTCOME must be failure or cancelled.");
 }
 
-const result = runConvexFunction<{ state: "release-failed" }>(
+const result = runConvexFunction<{
+  state: "release-failed" | "deployed";
+}>(
   "publication:reconcileWorkflowOutcome",
   {
     publicationRequestKey: required("PUBLICATION_REQUEST_KEY"),
@@ -36,16 +38,16 @@ const result = runConvexFunction<{ state: "release-failed" }>(
       typeof value !== "object" ||
       value === null ||
       !("state" in value) ||
-      value.state !== "release-failed"
+      (value.state !== "release-failed" && value.state !== "deployed")
     ) {
       throw new Error("Convex returned an invalid publication outcome result.");
     }
-    return { state: "release-failed" };
+    return { state: value.state };
   },
 );
 
-if (result.state !== "release-failed") {
-  throw new Error("Convex did not confirm the failed publication outcome.");
+if (result.state === "deployed") {
+  console.log("Publication was already deployed; late outcome ignored.");
+} else {
+  console.log("Terminal publication workflow outcome recorded.");
 }
-
-console.log("Terminal publication workflow outcome recorded.");

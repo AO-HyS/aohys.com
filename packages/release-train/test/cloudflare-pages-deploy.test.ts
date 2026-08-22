@@ -815,9 +815,13 @@ describe("Cloudflare Pages release plan", () => {
     expect(workflow).toContain(
       "if: success() && github.event_name == 'workflow_dispatch' && inputs.publication_attempt_id != ''",
     );
-    expect(workflow).toContain(
-      "if: always() && github.event_name == 'workflow_dispatch' && inputs.publication_attempt_id != '' && (failure() || cancelled())",
-    );
+    expect(workflow).toContain("reconcile-publication-outcome:");
+    expect(workflow).toContain("needs.release-plan.result == 'failure'");
+    expect(workflow).toContain("needs.release-plan.result == 'cancelled'");
+    expect(workflow).toContain("needs.deploy-preview.result == 'failure'");
+    expect(workflow).toContain("needs.deploy-preview.result == 'cancelled'");
+    expect(workflow).toContain("needs.deploy-production.result == 'failure'");
+    expect(workflow).toContain("needs.deploy-production.result == 'cancelled'");
     expect(workflow).toContain(
       "run: pnpm exec tsx scripts/record-publication-receipt.ts",
     );
@@ -826,26 +830,25 @@ describe("Cloudflare Pages release plan", () => {
     );
     expect(
       workflow.match(/PUBLICATION_GIT_REF: \$\{\{ github\.ref \}\}/g),
-    ).toHaveLength(4);
+    ).toHaveLength(3);
     expect(workflow).toContain(
       "PUBLICATION_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
     );
-    expect(
-      workflow.indexOf("- name: Record verified preview publication receipt"),
-    ).toBeGreaterThan(
-      workflow.indexOf(
-        "- name: Record unsuccessful preview publication outcome",
-      ),
+    expect(workflow).not.toContain(
+      "- name: Record unsuccessful preview publication outcome",
+    );
+    expect(workflow).not.toContain(
+      "- name: Record unsuccessful production publication outcome",
+    );
+    expect(workflow).toContain(
+      "PUBLICATION_TARGET_ENVIRONMENT: ${{ inputs.target_environment }}",
     );
     expect(
-      workflow.indexOf(
-        "- name: Record verified production publication receipt",
-      ),
-    ).toBeGreaterThan(
-      workflow.indexOf(
-        "- name: Record unsuccessful production publication outcome",
-      ),
-    );
+      workflow.match(/PUBLIC_RELEASE_SHA: \$\{\{ github\.sha \}\}/g),
+    ).toHaveLength(2);
+    expect(
+      workflow.match(/VITE_RELEASE_SHA: \$\{\{ github\.sha \}\}/g),
+    ).toHaveLength(2);
     expect(workflow).toContain(
       "GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}",
     );
@@ -867,7 +870,7 @@ describe("Cloudflare Pages release plan", () => {
     expect(workflow).toContain(
       "github.event_name == 'workflow_dispatch' && inputs.target_environment == 'production' && github.ref == 'refs/heads/main'",
     );
-    expect(workflow.match(/ref: \$\{\{ github\.sha \}\}/g)).toHaveLength(3);
+    expect(workflow.match(/ref: \$\{\{ github\.sha \}\}/g)).toHaveLength(4);
 
     const permitted = (target: "preview" | "production", ref: string) =>
       (target === "preview" && ref === "refs/heads/develop") ||
@@ -876,6 +879,81 @@ describe("Cloudflare Pages release plan", () => {
     expect(permitted("production", "refs/heads/main")).toBe(true);
     expect(permitted("preview", "refs/heads/main")).toBe(false);
     expect(permitted("production", "refs/heads/develop")).toBe(false);
+  });
+
+  it("reconciles plan and pre-deploy terminal outcomes without blind retry", () => {
+    type Result = "success" | "failure" | "cancelled" | "skipped";
+    const shouldReconcile = ({
+      target,
+      ref,
+      plan,
+      preview,
+      production,
+    }: {
+      target: "preview" | "production";
+      ref: string;
+      plan: Result;
+      preview: Result;
+      production: Result;
+    }) =>
+      (target === "preview" &&
+        ref === "refs/heads/develop" &&
+        (plan === "failure" ||
+          plan === "cancelled" ||
+          preview === "failure" ||
+          preview === "cancelled")) ||
+      (target === "production" &&
+        ref === "refs/heads/main" &&
+        (plan === "failure" ||
+          plan === "cancelled" ||
+          production === "failure" ||
+          production === "cancelled"));
+
+    expect(
+      shouldReconcile({
+        target: "preview",
+        ref: "refs/heads/develop",
+        plan: "failure",
+        preview: "skipped",
+        production: "skipped",
+      }),
+    ).toBe(true);
+    expect(
+      shouldReconcile({
+        target: "preview",
+        ref: "refs/heads/develop",
+        plan: "cancelled",
+        preview: "skipped",
+        production: "skipped",
+      }),
+    ).toBe(true);
+    expect(
+      shouldReconcile({
+        target: "production",
+        ref: "refs/heads/main",
+        plan: "success",
+        preview: "skipped",
+        production: "cancelled",
+      }),
+    ).toBe(true);
+    expect(
+      shouldReconcile({
+        target: "preview",
+        ref: "refs/heads/develop",
+        plan: "success",
+        preview: "success",
+        production: "skipped",
+      }),
+    ).toBe(false);
+    expect(
+      shouldReconcile({
+        target: "production",
+        ref: "refs/heads/develop",
+        plan: "failure",
+        preview: "skipped",
+        production: "skipped",
+      }),
+    ).toBe(false);
   });
 
   it("keeps preview cancellation isolated from non-cancelable production releases", () => {

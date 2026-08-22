@@ -138,6 +138,14 @@ export const completeAttempt = internalMutation({
     if (!attempt || attempt.state !== "dispatching") return null;
     const request = await ctx.db.get("publicationRequests", attempt.requestId);
     if (!request) throw new Error("Publication request is missing.");
+    if (request.state === "deployed") return null;
+    const receipt = await ctx.db
+      .query("publicationReceipts")
+      .withIndex("by_publication_attempt_id", (query) =>
+        query.eq("publicationAttemptId", attempt.publicationAttemptId),
+      )
+      .unique();
+    if (receipt) return null;
     const now = Date.now();
     if (args.result.status === "acknowledged") {
       await Promise.all([
@@ -338,7 +346,7 @@ export const reconcileWorkflowOutcome = internalMutation({
   },
   returns: v.object({
     requestKey: v.string(),
-    state: v.literal("release-failed"),
+    state: v.union(v.literal("release-failed"), v.literal("deployed")),
     duplicate: v.boolean(),
   }),
   handler: async (ctx, args) => {
@@ -361,6 +369,19 @@ export const reconcileWorkflowOutcome = internalMutation({
       .unique();
     if (!attempt || attempt.requestId !== request._id) {
       throw new Error("Publication outcome attempt correlation is invalid.");
+    }
+    const receipt = await ctx.db
+      .query("publicationReceipts")
+      .withIndex("by_publication_attempt_id", (query) =>
+        query.eq("publicationAttemptId", args.publicationAttemptId),
+      )
+      .unique();
+    if (request.state === "deployed" || receipt) {
+      return {
+        requestKey: request.requestKey,
+        state: "deployed" as const,
+        duplicate: true,
+      };
     }
     if (attempt.workflowOutcome) {
       if (
