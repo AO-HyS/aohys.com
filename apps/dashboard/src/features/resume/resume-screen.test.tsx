@@ -74,10 +74,14 @@ vi.mock("@/lib/analytics", () => ({ captureDashboardAction: vi.fn() }));
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe("ResumeScreen journey", () => {
   it("preserves row identity through remove/add and saves the serialized draft", async () => {
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
     mocks.saveResumeDraft.mockResolvedValue({ updatedAt: 2 });
     render(<ResumeScreen />);
 
@@ -85,6 +89,7 @@ describe("ResumeScreen journey", () => {
       screen.getByRole("heading", { name: "Resume publishing workspace" }),
     ).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Summary" }));
+    const eliminatedFirst = screen.getByLabelText("Item 1");
     const formerSecond = screen.getByLabelText("Item 2");
     fireEvent.click(screen.getAllByRole("button", { name: "Remove" })[0]!);
     fireEvent.click(screen.getByRole("button", { name: "Remove item" }));
@@ -93,7 +98,14 @@ describe("ResumeScreen journey", () => {
       expect(screen.getByLabelText("Item 1")).toBe(formerSecond),
     );
     fireEvent.click(screen.getByRole("button", { name: "Add item" }));
-    expect(screen.getByLabelText("Item 2")).toBeTruthy();
+    const addedSecond = screen.getByLabelText("Item 2");
+    expect(addedSecond).not.toBe(formerSecond);
+    expect(addedSecond).not.toBe(eliminatedFirst);
+    expect(
+      consoleError.mock.calls.filter((call) =>
+        call.some((value) => String(value).includes("same key")),
+      ),
+    ).toEqual([]);
     expect(screen.getByText("Unsaved changes")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: /Save changes/ }));
