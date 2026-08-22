@@ -87,10 +87,19 @@ test("dashboard aliases are the two approved legacy project surfaces", () => {
     entriesOfKind("dashboard-alias").map((entry) => [
       entry.surface,
       entry.canonicalSurface,
+      entry.source,
     ]),
     [
-      ["/dashboard/case-studies", "/dashboard/projects"],
-      ["/dashboard/media", "/dashboard/projects"],
+      [
+        "/dashboard/case-studies",
+        "/dashboard/projects",
+        "apps/dashboard/src/navigation.ts",
+      ],
+      [
+        "/dashboard/media",
+        "/dashboard/projects",
+        "apps/dashboard/src/navigation.ts",
+      ],
     ],
   );
 });

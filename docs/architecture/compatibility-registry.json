@@ -8,7 +8,7 @@
       "kind": "dashboard-alias",
       "surface": "/dashboard/case-studies",
       "canonicalSurface": "/dashboard/projects",
-      "source": "apps/dashboard/src/app/navigation.ts",
+      "source": "apps/dashboard/src/navigation.ts",
       "owner": "apps/dashboard",
       "rq04Evidence": "RQ-04: dashboardNavigation declares /case-studies as a Projects alias, and the dashboard router mounts aliases under /dashboard.",
       "retirementCondition": "Retire when inbound links and saved bookmarks no longer require the legacy case-studies path and a reviewed redirect or migration has replaced it."
@@ -18,7 +18,7 @@
       "kind": "dashboard-alias",
       "surface": "/dashboard/media",
       "canonicalSurface": "/dashboard/projects",
-      "source": "apps/dashboard/src/app/navigation.ts",
+      "source": "apps/dashboard/src/navigation.ts",
       "owner": "apps/dashboard",
       "rq04Evidence": "RQ-04: dashboardNavigation declares /media as a Projects alias, and the dashboard router mounts aliases under /dashboard.",
       "retirementCondition": "Retire when inbound links and saved bookmarks no longer require the legacy media path and a reviewed redirect or migration has replaced it."
