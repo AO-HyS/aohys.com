@@ -801,6 +801,25 @@ describe("Cloudflare Pages release plan", () => {
       "BETTER_AUTH_TRUSTED_ORIGINS: ${{ vars.BETTER_AUTH_TRUSTED_ORIGINS }}",
     );
     expect(workflow).not.toContain("DASHBOARD_API_TOKEN");
+    expect(workflow).toContain("publication_request_key:");
+    expect(workflow).toContain("publication_attempt_id:");
+    expect(workflow).toContain(
+      "if: success() && github.event_name == 'workflow_dispatch' && inputs.publication_attempt_id != ''",
+    );
+    expect(workflow).toContain(
+      "run: pnpm exec tsx scripts/record-publication-receipt.ts",
+    );
+    expect(workflow).toContain(
+      "PUBLICATION_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+    );
+    expect(
+      workflow.indexOf("- name: Record verified preview publication receipt"),
+    ).toBeGreaterThan(workflow.indexOf("- name: Smoke preview"));
+    expect(
+      workflow.indexOf(
+        "- name: Record verified production publication receipt",
+      ),
+    ).toBeGreaterThan(workflow.indexOf("- name: Smoke production"));
     expect(workflow).toContain(
       "GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}",
     );
@@ -811,9 +830,16 @@ describe("Cloudflare Pages release plan", () => {
 
   it("keeps preview cancellation isolated from non-cancelable production releases", () => {
     const repoRoot = path.resolve(process.cwd(), "../..");
-    const workflowPath = path.join(repoRoot, ".github", "workflows", "release-train.yml");
+    const workflowPath = path.join(
+      repoRoot,
+      ".github",
+      "workflows",
+      "release-train.yml",
+    );
     const workflow = readFileSync(workflowPath, "utf8");
-    const concurrency = workflow.match(/^concurrency:\n(?:  .*(?:\n|$)){2}/m)?.[0];
+    const concurrency = workflow.match(
+      /^concurrency:\n(?:  .*(?:\n|$)){2}/m,
+    )?.[0];
 
     expect(concurrency).toBe(
       "concurrency:\n" +
@@ -822,10 +848,34 @@ describe("Cloudflare Pages release plan", () => {
     );
 
     const fixtures = [
-      { event: "push", ref: "refs/heads/develop", input: undefined, group: "preview", cancel: true },
-      { event: "push", ref: "refs/heads/main", input: undefined, group: "production", cancel: false },
-      { event: "workflow_dispatch", ref: "refs/heads/develop", input: "preview", group: "preview", cancel: true },
-      { event: "workflow_dispatch", ref: "refs/heads/develop", input: "production", group: "production", cancel: false },
+      {
+        event: "push",
+        ref: "refs/heads/develop",
+        input: undefined,
+        group: "preview",
+        cancel: true,
+      },
+      {
+        event: "push",
+        ref: "refs/heads/main",
+        input: undefined,
+        group: "production",
+        cancel: false,
+      },
+      {
+        event: "workflow_dispatch",
+        ref: "refs/heads/develop",
+        input: "preview",
+        group: "preview",
+        cancel: true,
+      },
+      {
+        event: "workflow_dispatch",
+        ref: "refs/heads/develop",
+        input: "production",
+        group: "production",
+        cancel: false,
+      },
     ] as const;
 
     expect(

@@ -18,9 +18,10 @@ function dashboardDatabase(rowsByTable: Record<string, unknown[]>) {
       (rowsByTable[table] ?? []).slice(0, limit),
     );
     const order = vi.fn(() => ({ take }));
+    const withIndex = vi.fn(() => ({ order, take }));
     takes.set(table, take);
     orders.set(table, order);
-    return { take, order };
+    return { take, order, withIndex };
   });
   return { db: { query }, orders, takes };
 }

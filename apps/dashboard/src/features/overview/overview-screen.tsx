@@ -17,6 +17,10 @@ import {
   type StatusTone,
 } from "@/components/dashboard/status-badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  publicationLabel,
+  type DashboardPublicationState,
+} from "@/lib/publication-state";
 
 type DashboardOverview = NonNullable<ReturnType<typeof useDashboardOverview>>;
 type OverviewGate = DashboardOverview["gates"][number];
@@ -132,10 +136,30 @@ export function DashboardOverviewContent({
         />
         <TruthCell
           label="Workflow request"
-          value="Not requested"
-          tone="neutral"
+          value={
+            overview.publication
+              ? publicationLabel(overview.publication)
+              : "Not requested"
+          }
+          tone={publicationTone(overview.publication?.state)}
         />
-        <TruthCell label="Deployment proof" value="Unknown" tone="neutral" />
+        <TruthCell
+          label="Deployment proof"
+          value={
+            overview.release.deploymentState === "deployed"
+              ? "Deployed · smoke verified"
+              : overview.release.deploymentState === "rollback-needed"
+                ? "Rollback needed"
+                : "Unknown"
+          }
+          tone={
+            overview.release.deploymentState === "deployed"
+              ? "success"
+              : overview.release.deploymentState === "rollback-needed"
+                ? "danger"
+                : "neutral"
+          }
+        />
       </section>
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.75fr)] xl:items-start">
@@ -196,6 +220,18 @@ export function DashboardOverviewContent({
       </div>
     </div>
   );
+}
+
+function publicationTone(
+  state: DashboardPublicationState | undefined,
+): StatusTone {
+  if (state === "deployed") return "success";
+  if (state === "release-failed" || state === "rollback-needed")
+    return "danger";
+  if (state === "release-requested" || state === "release-acknowledged") {
+    return "attention";
+  }
+  return "neutral";
 }
 
 function TruthCell({

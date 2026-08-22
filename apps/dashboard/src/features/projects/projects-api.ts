@@ -58,6 +58,7 @@ export function useProjectsContent(): ProjectsContent | undefined {
               content.media ?? [],
               imagesAccountHash,
             ),
+            publications: content.publications ?? [],
           }
         : undefined,
     [content, imagesAccountHash],

@@ -15,6 +15,14 @@ on:
         options:
           - preview
           - production
+      publication_request_key:
+        description: Durable publication request correlation key.
+        required: false
+        type: string
+      publication_attempt_id:
+        description: Durable publication attempt correlation id.
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -124,6 +132,17 @@ jobs:
           SMOKE_BASE_URL: ${{ steps.deploy-preview.outputs.smoke_base_url }}
         run: pnpm run smoke:preview
 
+      - name: Record verified preview publication receipt
+        if: success() && github.event_name == 'workflow_dispatch' && inputs.publication_attempt_id != ''
+        env:
+          PUBLICATION_REQUEST_KEY: ${{ inputs.publication_request_key }}
+          PUBLICATION_ATTEMPT_ID: ${{ inputs.publication_attempt_id }}
+          PUBLICATION_TARGET_ENVIRONMENT: preview
+          PUBLICATION_RUN_ID: ${{ github.run_id }}
+          PUBLICATION_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          PUBLICATION_RELEASE_SHA: ${{ github.sha }}
+        run: pnpm exec tsx scripts/record-publication-receipt.ts
+
   deploy-production:
     name: Deploy Production
     needs: release-plan
@@ -195,3 +214,14 @@ jobs:
 
       - name: Smoke production
         run: pnpm run smoke:production
+
+      - name: Record verified production publication receipt
+        if: success() && github.event_name == 'workflow_dispatch' && inputs.publication_attempt_id != ''
+        env:
+          PUBLICATION_REQUEST_KEY: ${{ inputs.publication_request_key }}
+          PUBLICATION_ATTEMPT_ID: ${{ inputs.publication_attempt_id }}
+          PUBLICATION_TARGET_ENVIRONMENT: production
+          PUBLICATION_RUN_ID: ${{ github.run_id }}
+          PUBLICATION_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          PUBLICATION_RELEASE_SHA: ${{ github.sha }}
+        run: pnpm exec tsx scripts/record-publication-receipt.ts

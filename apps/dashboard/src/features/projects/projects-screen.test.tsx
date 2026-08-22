@@ -79,11 +79,27 @@ afterEach(() => {
 
 describe("ProjectsScreen journey", () => {
   it("publishes the active project and exposes the pending action", () => {
-    mocks.content = { projects: [project] };
+    mocks.content = {
+      projects: [project],
+      publications: [
+        {
+          requestKey: "a".repeat(64),
+          scope: "project",
+          contentId: project.contentId,
+          targetEnvironment: "preview",
+          state: "release-failed",
+          retryable: true,
+          updatedAt: 1,
+        },
+      ],
+    };
     const view = render(<ProjectsScreen />);
 
     expect(
       screen.getByRole("heading", { name: "Project workspace" }),
+    ).toBeTruthy();
+    expect(
+      screen.getByText("Release: Release failed · retryable"),
     ).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Publish" }));
     expect(mocks.workflow.publishProject).toHaveBeenCalledWith(project);

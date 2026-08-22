@@ -38,6 +38,23 @@ export interface DashboardOverviewInput {
     classification: "public-build-value" | "provider-output" | "policy-value";
   }>;
   releaseProviderConfigured: boolean;
+  publication?: {
+    requestKey: string;
+    publicationAttemptId?: string;
+    scope: "project" | "resume" | "all";
+    contentId?: string;
+    locale?: DashboardLocale;
+    targetEnvironment: "preview" | "production";
+    state:
+      | "published-locally"
+      | "release-requested"
+      | "release-acknowledged"
+      | "release-failed"
+      | "deployed"
+      | "rollback-needed";
+    retryable: boolean;
+    updatedAt: number;
+  };
 }
 
 export interface DashboardOverviewGate {
@@ -80,9 +97,10 @@ export interface DashboardOverview {
   };
   release: {
     providerState: "configured" | "unavailable";
-    workflowState: "not-requested";
-    deploymentState: "unknown";
+    workflowState: "not-requested" | "requested" | "acknowledged" | "failed";
+    deploymentState: "unknown" | "deployed" | "rollback-needed";
   };
+  publication?: NonNullable<DashboardOverviewInput["publication"]>;
 }
 
 const REQUIRED_LOCALES = ["en", "es"] as const;
@@ -280,6 +298,24 @@ export function buildDashboardOverview(
   const hasPendingContent =
     pendingProjectIds.length > 0 || pendingResumeDrafts.length > 0;
 
+  const publication = input.publication;
+  const workflowState =
+    publication?.state === "release-requested"
+      ? "requested"
+      : publication?.state === "release-acknowledged" ||
+          publication?.state === "deployed"
+        ? "acknowledged"
+        : publication?.state === "release-failed" ||
+            publication?.state === "rollback-needed"
+          ? "failed"
+          : "not-requested";
+  const deploymentState =
+    publication?.state === "deployed"
+      ? "deployed"
+      : publication?.state === "rollback-needed"
+        ? "rollback-needed"
+        : "unknown";
+
   return {
     environment: input.environment,
     state: input.truncated
@@ -304,9 +340,10 @@ export function buildDashboardOverview(
       providerState: input.releaseProviderConfigured
         ? "configured"
         : "unavailable",
-      workflowState: "not-requested",
-      deploymentState: "unknown",
+      workflowState,
+      deploymentState,
     },
+    ...(publication ? { publication } : {}),
   };
 }
 

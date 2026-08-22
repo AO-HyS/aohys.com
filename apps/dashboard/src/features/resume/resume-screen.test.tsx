@@ -56,6 +56,17 @@ vi.mock("./resume-api", () => ({
     resumeContent: { en: baseline, es: baseline },
     resumeDrafts: [],
     resumeVersions: [],
+    publications: [
+      {
+        requestKey: "a".repeat(64),
+        scope: "resume",
+        locale: "en",
+        targetEnvironment: "preview",
+        state: "deployed",
+        retryable: false,
+        updatedAt: 1,
+      },
+    ],
   }),
   usePublishResume: () => vi.fn(),
   useSaveResumeDraft: () => mocks.saveResumeDraft,
@@ -88,6 +99,7 @@ describe("ResumeScreen journey", () => {
     expect(
       screen.getByRole("heading", { name: "Resume publishing workspace" }),
     ).toBeTruthy();
+    expect(screen.getByText("Deployed · smoke verified")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Summary" }));
     const eliminatedFirst = screen.getByLabelText("Item 1");
     const formerSecond = screen.getByLabelText("Item 2");

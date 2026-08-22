@@ -88,5 +88,6 @@ export interface ResumeContent {
   resumeContent: Record<DashboardLocale, DashboardResumeContent>;
   resumeDrafts: DashboardResumeDraft[];
   resumeVersions: DashboardResumeVersion[];
+  publications?: import("@/lib/publication-state").DashboardPublication[];
 }
 import type { Id } from "@aohys/backend/convex/_generated/dataModel";

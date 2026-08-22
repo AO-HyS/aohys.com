@@ -1,4 +1,4 @@
-// Frozen behavioral contract from content.ts at 0107521, before IM-06 extraction.
+// Frozen facade contract from IM-06 plus the additive IM-08 publication fields.
 type Validator = { type: string; value?: unknown; tableName?: string };
 type OptionalField = { optional: true; fieldType: Validator };
 type Field = Validator | OptionalField;
@@ -143,6 +143,26 @@ const publicationReturns = object({
   resumeDraftsPublished: number(),
   mediaPublished: number(),
 });
+const publicationTarget = union(literal("preview"), literal("production"));
+const publicationState = union(
+  literal("published-locally"),
+  literal("release-requested"),
+  literal("release-acknowledged"),
+  literal("release-failed"),
+  literal("deployed"),
+  literal("rollback-needed"),
+);
+const publicationSummary = object({
+  requestKey: string(),
+  publicationAttemptId: optional(string()),
+  scope: union(literal("project"), literal("resume"), literal("all")),
+  contentId: optional(string()),
+  locale: optional(locale),
+  targetEnvironment: publicationTarget,
+  state: publicationState,
+  retryable: boolean(),
+  updatedAt: number(),
+});
 
 const dashboardOverviewReturns = object({
   environment,
@@ -189,9 +209,19 @@ const dashboardOverviewReturns = object({
   ),
   release: object({
     providerState: union(literal("configured"), literal("unavailable")),
-    workflowState: literal("not-requested"),
-    deploymentState: literal("unknown"),
+    workflowState: union(
+      literal("not-requested"),
+      literal("requested"),
+      literal("acknowledged"),
+      literal("failed"),
+    ),
+    deploymentState: union(
+      literal("unknown"),
+      literal("deployed"),
+      literal("rollback-needed"),
+    ),
   }),
+  publication: optional(publicationSummary),
 });
 
 const listForDashboardReturns = object({
@@ -254,6 +284,7 @@ const listForDashboardReturns = object({
       publishedAt: optional(number()),
     }),
   ),
+  publications: array(publicationSummary),
 });
 
 export const contentContract = {

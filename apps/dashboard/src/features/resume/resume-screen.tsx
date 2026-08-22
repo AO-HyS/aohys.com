@@ -75,6 +75,7 @@ import type {
 } from "./resume-types";
 import { parseDashboardResumeContent } from "./resume-boundary";
 import { useEditorListKeys } from "./use-editor-list-keys";
+import { publicationLabel } from "@/lib/publication-state";
 
 const resumeDateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
@@ -149,6 +150,11 @@ function ResumeWorkspace({
   const saveResumeVersion = useSaveResumeVersion();
   const activeDraft = payload.resumeDrafts.find(
     (item) => item.locale === selectedLocale,
+  );
+  const publication = payload.publications?.find(
+    (item) =>
+      item.scope === "all" ||
+      (item.scope === "resume" && item.locale === selectedLocale),
   );
   const baselineVersion = activeDraft?.updatedAt ?? 0;
   const [editor, dispatch] = useReducer(
@@ -245,16 +251,23 @@ function ResumeWorkspace({
         locale: selectedLocale,
         workflow_status: result.workflow.status,
       });
-      const description =
-        result.workflow.status === "queued"
-          ? `GitHub Actions is rebuilding ${result.workflow.ref ?? "develop"} with the ${selectedLocale.toUpperCase()} resume.`
-          : (result.workflow.reason ??
-            "The publish workflow token is not configured.");
+      const description = `${selectedLocale.toUpperCase()} resume: ${publicationLabel(result.publication)}.`;
 
-      if (result.workflow.status === "queued") {
-        toast.success("Resume publish queued", { id: toastId, description });
+      if (
+        result.publication.state === "release-failed" ||
+        result.publication.state === "rollback-needed"
+      ) {
+        toast.error("Resume publication needs attention", {
+          id: toastId,
+          description,
+        });
+      } else if (result.publication.state === "published-locally") {
+        toast.message("Resume published locally", { id: toastId, description });
       } else {
-        toast.message("Resume marked published", { id: toastId, description });
+        toast.success(publicationLabel(result.publication), {
+          id: toastId,
+          description,
+        });
       }
     } catch (publishError) {
       captureDashboardAction("failed", "resume", "publish_resume", {
@@ -313,6 +326,7 @@ function ResumeWorkspace({
       <ResumeWorkspaceStatus
         selectedLocale={selectedLocale}
         activeDraft={activeDraft}
+        {...(publication ? { publication } : {})}
         validationErrors={validationErrors}
         hasRemoteBaseline={hasRemoteBaseline}
         onRequestLocale={(nextLocale) => {
@@ -469,6 +483,7 @@ function ResumeArtifactsSection({
 function ResumeWorkspaceStatus({
   selectedLocale,
   activeDraft,
+  publication,
   validationErrors,
   hasRemoteBaseline,
   onRequestLocale,
@@ -476,6 +491,7 @@ function ResumeWorkspaceStatus({
 }: {
   selectedLocale: DashboardLocale;
   activeDraft: ResumeContent["resumeDrafts"][number] | undefined;
+  publication?: import("@/lib/publication-state").DashboardPublication;
   validationErrors: string[];
   hasRemoteBaseline: boolean;
   onRequestLocale: (locale: DashboardLocale) => void;
@@ -525,6 +541,12 @@ function ResumeWorkspaceStatus({
             {validationErrors.length === 0
               ? "Ready"
               : `${validationErrors.length} issue${validationErrors.length === 1 ? "" : "s"}`}
+          </strong>
+        </span>
+        <span>
+          Release:{" "}
+          <strong className="text-foreground">
+            {publication ? publicationLabel(publication) : "Not requested"}
           </strong>
         </span>
       </section>

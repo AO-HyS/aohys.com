@@ -95,5 +95,6 @@ export interface DashboardMediaMetadata {
 
 export interface ProjectsContent {
   projects: DashboardProject[];
+  publications?: import("@/lib/publication-state").DashboardPublication[];
 }
 import type { Id } from "@aohys/backend/convex/_generated/dataModel";

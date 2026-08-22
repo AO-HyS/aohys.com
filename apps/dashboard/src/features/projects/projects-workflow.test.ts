@@ -105,6 +105,15 @@ describe("Projects workflow", () => {
       projectDraftsPublished: 2,
       resumeDraftsPublished: 0,
       mediaPublished: 1,
+      publication: {
+        requestKey: "a".repeat(64),
+        scope: "project" as const,
+        contentId: "case-study:aohys",
+        targetEnvironment: "preview" as const,
+        state: "published-locally" as const,
+        retryable: false,
+        updatedAt: 1,
+      },
       workflow: { status: "not-configured" as const, reason: "Missing token" },
     }));
 

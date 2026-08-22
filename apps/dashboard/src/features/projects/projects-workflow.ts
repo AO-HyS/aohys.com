@@ -22,6 +22,7 @@ import {
   type PublishContentResponse,
 } from "./projects-api";
 import { toast } from "@/components/ui/toast";
+import { publicationLabel } from "@/lib/publication-state";
 import { captureDashboardAction } from "@/lib/analytics";
 import { validateCloudflareImagesCustomId } from "./media-upload";
 import type {
@@ -335,13 +336,23 @@ export function useProjectsWorkflow({
       captureDashboardAction("succeeded", "projects", "publish_project", {
         workflow_status: result.workflow.status,
       });
-      const description =
-        result.workflow.status === "queued"
-          ? `GitHub Actions is rebuilding ${result.workflow.ref ?? "develop"} for ${project.title}.`
-          : `${project.title} was marked published, but ${result.workflow.reason ?? "the workflow token is not configured."}`;
-      if (result.workflow.status === "queued")
-        toast.success("Publish queued", { id: toastId, description });
-      else toast.message("Published in Convex", { id: toastId, description });
+      const description = `${project.title}: ${publicationLabel(result.publication)}.`;
+      if (
+        result.publication.state === "release-failed" ||
+        result.publication.state === "rollback-needed"
+      ) {
+        toast.error("Publication needs attention", {
+          id: toastId,
+          description,
+        });
+      } else if (result.publication.state === "published-locally") {
+        toast.message("Published locally", { id: toastId, description });
+      } else {
+        toast.success(publicationLabel(result.publication), {
+          id: toastId,
+          description,
+        });
+      }
     } catch (error) {
       captureDashboardAction(
         "failed",

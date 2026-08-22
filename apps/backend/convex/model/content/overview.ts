@@ -18,6 +18,7 @@ import {
   withinLimit,
 } from "./shared.js";
 import { settingClassificationValidator } from "./settings.js";
+import { publicationSummaryValidator } from "../publication.js";
 
 const overviewPathValidator = v.union(
   v.literal("/projects"),
@@ -83,9 +84,19 @@ export const dashboardOverviewReturns = v.object({
   ),
   release: v.object({
     providerState: v.union(v.literal("configured"), v.literal("unavailable")),
-    workflowState: v.literal("not-requested"),
-    deploymentState: v.literal("unknown"),
+    workflowState: v.union(
+      v.literal("not-requested"),
+      v.literal("requested"),
+      v.literal("acknowledged"),
+      v.literal("failed"),
+    ),
+    deploymentState: v.union(
+      v.literal("unknown"),
+      v.literal("deployed"),
+      v.literal("rollback-needed"),
+    ),
   }),
+  publication: v.optional(publicationSummaryValidator),
 });
 
 export const listForDashboardReturns = v.object({
@@ -142,6 +153,7 @@ export const listForDashboardReturns = v.object({
       publishedAt: v.optional(v.number()),
     }),
   ),
+  publications: v.array(publicationSummaryValidator),
 });
 
 export async function listForDashboardHandler(ctx: QueryCtx) {
@@ -152,6 +164,7 @@ export async function listForDashboardHandler(ctx: QueryCtx) {
     media,
     settings,
     resumeVersions,
+    publicationRequests,
   ] = await Promise.all([
     ctx.db.query("caseStudyMetadata").take(101),
     ctx.db.query("projectDrafts").take(201),
@@ -159,6 +172,11 @@ export async function listForDashboardHandler(ctx: QueryCtx) {
     ctx.db.query("mediaMetadata").order("desc").take(100),
     ctx.db.query("siteSettings").order("desc").take(100),
     ctx.db.query("resumeVersions").order("desc").take(50),
+    ctx.db
+      .query("publicationRequests")
+      .withIndex("by_updated_at")
+      .order("desc")
+      .take(51),
   ]);
 
   return {
@@ -238,6 +256,20 @@ export async function listForDashboardHandler(ctx: QueryCtx) {
         ? { publishedAt: item.publishedAt }
         : {}),
     })),
+    publications: withinLimit(
+      publicationRequests,
+      50,
+      "Publication requests",
+    ).map((item) => ({
+      requestKey: item.requestKey,
+      scope: item.scope,
+      ...(item.contentId ? { contentId: item.contentId } : {}),
+      ...(item.locale ? { locale: item.locale } : {}),
+      targetEnvironment: item.targetEnvironment,
+      state: item.state,
+      retryable: item.retryable === true,
+      updatedAt: item.updatedAt,
+    })),
   };
 }
 
@@ -245,6 +277,10 @@ export async function getDashboardOverviewHandler(
   ctx: QueryCtx,
   args: ObjectType<typeof dashboardOverviewArgs>,
 ) {
+  const publicationTarget =
+    args.environment === "preview" || args.environment === "production"
+      ? args.environment
+      : undefined;
   const [
     caseStudies,
     projectDrafts,
@@ -252,6 +288,7 @@ export async function getDashboardOverviewHandler(
     draftMedia,
     publishedMedia,
     settings,
+    latestPublicationRows,
   ] = await Promise.all([
     ctx.db.query("caseStudyMetadata").order("desc").take(101),
     ctx.db.query("projectDrafts").order("desc").take(201),
@@ -277,6 +314,15 @@ export async function getDashboardOverviewHandler(
       )
       .order("desc")
       .take(101),
+    publicationTarget
+      ? ctx.db
+          .query("publicationRequests")
+          .withIndex("by_target_environment_and_updated_at", (query) =>
+            query.eq("targetEnvironment", publicationTarget),
+          )
+          .order("desc")
+          .take(1)
+      : Promise.resolve([]),
   ]);
 
   return buildDashboardOverview({
@@ -337,5 +383,23 @@ export async function getDashboardOverviewHandler(
     releaseProviderConfigured: Boolean(
       process.env.PUBLISH_GITHUB_TOKEN?.trim(),
     ),
+    ...(latestPublicationRows[0]
+      ? {
+          publication: {
+            requestKey: latestPublicationRows[0].requestKey,
+            scope: latestPublicationRows[0].scope,
+            ...(latestPublicationRows[0].contentId
+              ? { contentId: latestPublicationRows[0].contentId }
+              : {}),
+            ...(latestPublicationRows[0].locale
+              ? { locale: latestPublicationRows[0].locale }
+              : {}),
+            targetEnvironment: latestPublicationRows[0].targetEnvironment,
+            state: latestPublicationRows[0].state,
+            retryable: latestPublicationRows[0].retryable === true,
+            updatedAt: latestPublicationRows[0].updatedAt,
+          },
+        }
+      : {}),
   });
 }

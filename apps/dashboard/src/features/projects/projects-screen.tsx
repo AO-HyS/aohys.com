@@ -81,6 +81,10 @@ import type {
   ProjectsContent,
 } from "./projects-types";
 import { useFilePreviewUrl } from "./use-file-preview-url";
+import {
+  publicationLabel,
+  type DashboardPublication,
+} from "@/lib/publication-state";
 
 const caseStudyStatuses: DashboardCaseStudyStatus[] = [
   "production-proof",
@@ -186,26 +190,35 @@ function ProjectsWorkspace({ content }: { content: ProjectsContent }) {
       >
         <ProjectTabs projects={content.projects} />
         <div className="min-w-0">
-          {content.projects.map((project) => (
-            <TabsContent
-              key={project.contentId}
-              value={project.contentId}
-              className="mt-0"
-            >
-              <ProjectEditor
-                project={project}
-                isPublishing={publishingKey === project.contentId}
-                savingKey={savingKey}
-                onPublish={() => handlePublishProject(project)}
-                onArchiveMedia={handleArchiveMedia}
-                onDeleteMedia={handleDeleteMedia}
-                onSelectMedia={handleSelectMedia}
-                onSaveExternalMedia={handleSaveExternalMedia}
-                onSaveMedia={handleUploadMedia}
-                onSaveProject={handleSaveProject}
-              />
-            </TabsContent>
-          ))}
+          {content.projects.map((project) => {
+            const publication = (content.publications ?? []).find(
+              (item) =>
+                item.scope === "all" ||
+                (item.scope === "project" &&
+                  item.contentId === project.contentId),
+            );
+            return (
+              <TabsContent
+                key={project.contentId}
+                value={project.contentId}
+                className="mt-0"
+              >
+                <ProjectEditor
+                  project={project}
+                  {...(publication ? { publication } : {})}
+                  isPublishing={publishingKey === project.contentId}
+                  savingKey={savingKey}
+                  onPublish={() => handlePublishProject(project)}
+                  onArchiveMedia={handleArchiveMedia}
+                  onDeleteMedia={handleDeleteMedia}
+                  onSelectMedia={handleSelectMedia}
+                  onSaveExternalMedia={handleSaveExternalMedia}
+                  onSaveMedia={handleUploadMedia}
+                  onSaveProject={handleSaveProject}
+                />
+              </TabsContent>
+            );
+          })}
         </div>
       </Tabs>
       <MediaUploadIssueDialog
@@ -497,6 +510,7 @@ function NewProjectCard({
 
 function ProjectEditor({
   project,
+  publication,
   isPublishing,
   savingKey,
   onPublish,
@@ -508,6 +522,7 @@ function ProjectEditor({
   onDeleteMedia,
 }: {
   project: DashboardProject;
+  publication?: DashboardPublication;
   isPublishing: boolean;
   savingKey: string | null;
   onPublish: () => void | Promise<void>;
@@ -526,6 +541,7 @@ function ProjectEditor({
       <div className={dashboardClass.projectColumn}>
         <ProjectSummaryCard
           project={project}
+          {...(publication ? { publication } : {})}
           isPublishing={isPublishing}
           onPublish={onPublish}
         />
@@ -601,10 +617,12 @@ function ProjectEditor({
 
 function ProjectSummaryCard({
   project,
+  publication,
   isPublishing,
   onPublish,
 }: {
   project: DashboardProject;
+  publication?: DashboardPublication;
   isPublishing: boolean;
   onPublish: () => void | Promise<void>;
 }) {
@@ -677,6 +695,10 @@ function ProjectSummaryCard({
             <span>
               Published{" "}
               {latestPublished ? formatDate(latestPublished) : "never"}
+            </span>
+            <span>
+              Release:{" "}
+              {publication ? publicationLabel(publication) : "Not requested"}
             </span>
           </div>
           <Action

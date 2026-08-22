@@ -28,6 +28,7 @@ export function useResumeContent(): ResumeContent | undefined {
             },
             resumeDrafts: content.resumeDrafts ?? [],
             resumeVersions: content.resumeVersions ?? [],
+            publications: content.publications ?? [],
           }
         : undefined,
     [content],
