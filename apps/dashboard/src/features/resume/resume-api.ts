@@ -2,18 +2,19 @@ import { useCallback, useMemo } from "react";
 import { api as convexApi } from "@aohys/backend/convex/_generated/api";
 import { getResumePageContent } from "@aohys/content-graph";
 import { useAction, useMutation, useQuery } from "convex/react";
+import type { FunctionArgs } from "convex/server";
 import type {
   DashboardLocale,
   DashboardResumeContent,
   ResumeContent,
 } from "./resume-types";
 
-export interface ResumeVersionRequest {
-  locale: DashboardLocale;
-  version: string;
-  pdfPath: string;
-  isPublished: boolean;
-}
+export type ResumeVersionRequest = FunctionArgs<
+  typeof convexApi.content.createResumeVersion
+>;
+export type ResumeDraftRequest = FunctionArgs<
+  typeof convexApi.content.upsertResumeDraft
+>;
 
 export function useResumeContent(): ResumeContent | undefined {
   const content = useQuery(convexApi.content.listForDashboard, {});
@@ -44,8 +45,7 @@ export function useSaveResumeVersion() {
 export function useSaveResumeDraft() {
   const mutation = useMutation(convexApi.content.upsertResumeDraft);
   return useCallback(
-    (payload: { locale: DashboardLocale; contentJson: string }) =>
-      mutation(payload),
+    (payload: ResumeDraftRequest) => mutation(payload),
     [mutation],
   );
 }

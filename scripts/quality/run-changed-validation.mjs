@@ -10,7 +10,10 @@ const baseRef = process.env.QUALITY_BASE_REF ?? "origin/develop";
 const plan = buildChangedValidationPlan({
   changedFiles: resolveChangedFiles({ baseRef }),
   baseRef,
-  baseCommands: [["node", ["scripts/verify-foundation.mjs"]]],
+  baseCommands: [
+    ["node", ["scripts/verify-foundation.mjs"]],
+    ["pnpm", ["run", "strict:boundaries"]],
+  ],
   fullCommands: [
     ["pnpm", ["run", "lint"]],
     ["pnpm", ["run", "typecheck"]],

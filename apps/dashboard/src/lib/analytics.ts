@@ -86,6 +86,17 @@ interface PostHogClient {
 
 type PostHogImporter = () => Promise<{ default: PostHogClient }>;
 
+function isPostHogClient(value: unknown): value is PostHogClient {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "capture" in value &&
+    typeof value.capture === "function" &&
+    "init" in value &&
+    typeof value.init === "function"
+  );
+}
+
 const SENSITIVE_PROPERTY_PARTS = [
   "admin",
   "company",
@@ -207,7 +218,11 @@ export function initializeDashboardAnalytics(
   runtimeConfig: DashboardRuntimeConfig,
   importPostHog: PostHogImporter = async () => {
     const module = await import("posthog-js");
-    return { default: module.default as unknown as PostHogClient };
+    const client: unknown = module.default;
+    if (!isPostHogClient(client)) {
+      throw new Error("PostHog client module has an invalid runtime shape.");
+    }
+    return { default: client };
   },
 ): void {
   if (analyticsClientPromise) {

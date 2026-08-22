@@ -73,6 +73,7 @@ import type {
   ResumeSkillGroup,
   ResumeContent,
 } from "./resume-types";
+import { parseDashboardResumeContent } from "./resume-boundary";
 import { useEditorListKeys } from "./use-editor-list-keys";
 
 const resumeDateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -101,11 +102,10 @@ export function ResumeScreen() {
     );
 
     if (draft) {
-      try {
-        return JSON.parse(draft.contentJson) as DashboardResumeContent;
-      } catch {
-        return payload.resumeContent[selectedLocale];
-      }
+      return (
+        parseDashboardResumeContent(draft.contentJson) ??
+        payload.resumeContent[selectedLocale]
+      );
     }
 
     return payload.resumeContent[selectedLocale];

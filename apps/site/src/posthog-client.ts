@@ -4,13 +4,13 @@ import {
   sanitizeAnalyticsProperties,
   type AnalyticsBootstrapPayload,
 } from "./analytics";
+import {
+  isJsonRecord,
+  parseAnalyticsBootstrapPayload,
+  parseAnalyticsEventDetail,
+} from "./runtime-boundaries";
 
 const PAYLOAD_ELEMENT_ID = "aohys-posthog-config";
-
-interface AnalyticsDetail {
-  event?: unknown;
-  properties?: unknown;
-}
 
 type PostHogBrowserClient = typeof import("posthog-js").default;
 
@@ -28,18 +28,20 @@ function readPayload(
     return undefined;
   }
 
-  return JSON.parse(payloadText) as AnalyticsBootstrapPayload;
+  try {
+    return parseAnalyticsBootstrapPayload(payloadText);
+  } catch {
+    return undefined;
+  }
 }
 
 function getElementTarget(element: Element): string | undefined {
   return element.getAttribute("data-analytics-target") ?? undefined;
 }
 
-function getCustomEventDetail(event: Event): AnalyticsDetail | undefined {
-  return event instanceof CustomEvent &&
-    typeof event.detail === "object" &&
-    event.detail
-    ? (event.detail as AnalyticsDetail)
+function getCustomEventDetail(event: Event) {
+  return event instanceof CustomEvent
+    ? parseAnalyticsEventDetail(event.detail)
     : undefined;
 }
 
@@ -141,10 +143,9 @@ function bindInteractionHooks(
 
   windowRef.addEventListener("aohys:analytics", (event) => {
     const detail = getCustomEventDetail(event);
-    const properties =
-      typeof detail?.properties === "object" && detail.properties
-        ? (detail.properties as Record<string, unknown>)
-        : {};
+    const properties = isJsonRecord(detail?.properties)
+      ? detail.properties
+      : {};
 
     captureConversion(posthog, payload, detail?.event, properties);
   });

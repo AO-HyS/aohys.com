@@ -175,9 +175,13 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
               <figure data-media-kind={entryMedia.kind}>
                 <SunlitProofImage
                   contentId={String(entry.contentId)}
-                  evidenceSrc={entryDetail?.publicEvidence[0]?.src}
+                  {...(entryDetail?.publicEvidence[0]?.src
+                    ? { evidenceSrc: entryDetail.publicEvidence[0].src }
+                    : {})}
                   alt={entryDetail?.publicEvidence[0]?.altText ?? entry.evidenceLabel}
-                  evidenceKind={entryDetail?.publicEvidence[0]?.kind}
+                  {...(entryDetail?.publicEvidence[0]?.kind
+                    ? { evidenceKind: entryDetail.publicEvidence[0].kind }
+                    : {})}
                   loading="eager"
                 />
               </figure>
@@ -358,9 +362,15 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
           <span class="sunlit-hanger" aria-hidden="true"></span>
           <SunlitProofImage
             contentId={String(id)}
-            evidenceSrc={caseStudyContent.publicEvidence[0]?.src}
-            alt={caseStudyContent.publicEvidence[0]?.altText}
-            evidenceKind={caseStudyContent.publicEvidence[0]?.kind}
+            {...(caseStudyContent.publicEvidence[0]?.src
+              ? { evidenceSrc: caseStudyContent.publicEvidence[0].src }
+              : {})}
+            {...(caseStudyContent.publicEvidence[0]?.altText
+              ? { alt: caseStudyContent.publicEvidence[0].altText }
+              : {})}
+            {...(caseStudyContent.publicEvidence[0]?.kind
+              ? { evidenceKind: caseStudyContent.publicEvidence[0].kind }
+              : {})}
             loading="eager"
             preferFull
           />
@@ -520,7 +530,14 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
         window.dispatchEvent(new CustomEvent("aohys:analytics", { detail: { event, properties } }));
       };
       const messageWithRetry = (message: string | undefined, retry: string | undefined) => [message, retry].filter(Boolean).join(" ");
-      const readJson = async (response: Response) => { try { return await response.json(); } catch { return {}; } };
+      const readJson = async (response: Response): Promise<Record<string, unknown>> => {
+        try {
+          const value: unknown = await response.json();
+          return typeof value === "object" && value !== null && !Array.isArray(value)
+            ? value as Record<string, unknown>
+            : {};
+        } catch { return {}; }
+      };
       const stringStatus = (payload: unknown, key: string, fallback: string) => {
         if (!payload || typeof payload !== "object") return fallback;
         const value = (payload as Record<string, unknown>)[key];

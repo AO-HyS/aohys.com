@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { Id } from "@aohys/backend/convex/_generated/dataModel";
 import {
   buildDashboardProjectRows,
   resolveProjectMediaPreview,
@@ -31,7 +32,7 @@ describe("projects capability", () => {
   it("previews committed evidence while a legacy Astro selection awaits review", () => {
     const result = resolveProjectMediaPreview([
       {
-        id: "legacy-selection",
+        id: "legacy-selection" as Id<"mediaMetadata">,
         label: "Legacy selection",
         altText: "Legacy dashboard media.",
         source: "media-metadata",
@@ -197,15 +198,14 @@ describe("projects capability", () => {
     );
 
     for (const index of unsafeStorageKeys.keys()) {
-      expect(
-        casaRoca?.images.find(
-          (image) => image.id === `unsafe-media-id-${index}`,
-        ),
-      ).toMatchObject({
-        src: undefined,
-        href: undefined,
+      const image = casaRoca?.images.find(
+        (candidate) => candidate.id === `unsafe-media-id-${index}`,
+      );
+      expect(image).toMatchObject({
         previewStatus: "invalid-reference",
       });
+      expect(image).not.toHaveProperty("src");
+      expect(image).not.toHaveProperty("href");
     }
   });
 
@@ -234,12 +234,12 @@ describe("projects capability", () => {
     );
 
     expect(legacyMedia).toMatchObject({
-      src: undefined,
-      href: undefined,
       previewStatus: "provider-unavailable",
       selectedForPublic: true,
-      selectedForPublicAt: undefined,
     });
+    expect(legacyMedia).not.toHaveProperty("src");
+    expect(legacyMedia).not.toHaveProperty("href");
+    expect(legacyMedia).not.toHaveProperty("selectedForPublicAt");
   });
 
   it("surfaces legacy R2 rows as unsupported instead of inventing a public URL", () => {
@@ -263,15 +263,16 @@ describe("projects capability", () => {
       (project) => project.contentId === "case-study:casa-roca",
     );
 
-    expect(
-      casaRoca?.images.find((image) => image.id === "legacy-r2-media-id"),
-    ).toMatchObject({
-      src: undefined,
-      href: undefined,
+    const legacyR2 = casaRoca?.images.find(
+      (image) => image.id === "legacy-r2-media-id",
+    );
+    expect(legacyR2).toMatchObject({
       previewStatus: "unsupported-provider",
       previewIssue:
         "Cloudflare R2 has no public delivery adapter in the AOHYS media policy.",
     });
+    expect(legacyR2).not.toHaveProperty("src");
+    expect(legacyR2).not.toHaveProperty("href");
   });
 
   it("omits archived media rows from project image lists", () => {

@@ -23,7 +23,12 @@ export function publicMediaUrl(media: {
   publicUrl?: string;
 }): string | undefined {
   const resolution = resolvePublicMediaUrl(media, {
-    cloudflareImagesAccountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
+    ...(process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
+      ? {
+          cloudflareImagesAccountHash:
+            process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
+        }
+      : {}),
   });
   return resolution.status === "resolved" ? resolution.url : undefined;
 }

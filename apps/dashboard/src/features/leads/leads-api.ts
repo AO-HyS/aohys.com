@@ -1,8 +1,9 @@
 import { useCallback } from "react";
 import { api as convexApi } from "@aohys/backend/convex/_generated/api";
-import type { Id } from "@aohys/backend/convex/_generated/dataModel";
 import { useMutation, usePaginatedQuery } from "convex/react";
-import type { DashboardLeadStatus } from "./leads-types";
+import type { FunctionArgs } from "convex/server";
+
+type UpdateLeadStatusArgs = FunctionArgs<typeof convexApi.leads.updateStatus>;
 
 export function useDashboardLeads() {
   return usePaginatedQuery(
@@ -15,8 +16,10 @@ export function useDashboardLeads() {
 export function useSaveLeadStatus() {
   const mutation = useMutation(convexApi.leads.updateStatus);
   return useCallback(
-    (leadId: string, status: DashboardLeadStatus) =>
-      mutation({ leadId: leadId as Id<"leads">, status }),
+    (
+      leadId: UpdateLeadStatusArgs["leadId"],
+      status: UpdateLeadStatusArgs["status"],
+    ) => mutation({ leadId, status }),
     [mutation],
   );
 }

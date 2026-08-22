@@ -174,17 +174,19 @@ export async function listForDashboardHandler(ctx: QueryCtx) {
       (item) => ({
         contentId: item.contentId,
         locale: item.locale,
-        localizedSlug: item.localizedSlug,
+        ...(item.localizedSlug ? { localizedSlug: item.localizedSlug } : {}),
         title: item.title,
         summary: item.summary,
         seoDescription: item.seoDescription,
-        projectUrl: item.projectUrl,
+        ...(item.projectUrl ? { projectUrl: item.projectUrl } : {}),
         ctaLabel: item.ctaLabel,
         ctaHref: item.ctaHref,
         achievements: item.achievements,
         structureNotes: item.structureNotes,
         updatedAt: item.updatedAt,
-        publishedAt: item.publishedAt,
+        ...(item.publishedAt !== undefined
+          ? { publishedAt: item.publishedAt }
+          : {}),
       }),
     ),
     resumeDrafts: withinLimit(resumeDrafts, 10, "Resume drafts").map(
@@ -192,23 +194,32 @@ export async function listForDashboardHandler(ctx: QueryCtx) {
         locale: item.locale,
         contentJson: item.contentJson,
         updatedAt: item.updatedAt,
-        publishedAt: item.publishedAt,
+        ...(item.publishedAt !== undefined
+          ? { publishedAt: item.publishedAt }
+          : {}),
       }),
     ),
-    media: media.map((item) => ({
-      id: item._id,
-      storageProvider: item.storageProvider,
-      storageKey: item.storageKey,
-      publicUrl: publicMediaUrl(item),
-      altText: item.altText,
-      contentId: item.contentId,
-      usage: item.usage,
-      status: item.status,
-      locale: item.locale,
-      selectedForPublic: item.selectedForPublic,
-      selectedForPublicAt: item.selectedForPublicAt,
-      updatedAt: item.updatedAt,
-    })),
+    media: media.map((item) => {
+      const resolvedPublicUrl = publicMediaUrl(item);
+      return {
+        id: item._id,
+        storageProvider: item.storageProvider,
+        storageKey: item.storageKey,
+        ...(resolvedPublicUrl ? { publicUrl: resolvedPublicUrl } : {}),
+        altText: item.altText,
+        ...(item.contentId ? { contentId: item.contentId } : {}),
+        usage: item.usage,
+        status: item.status,
+        ...(item.locale ? { locale: item.locale } : {}),
+        ...(item.selectedForPublic !== undefined
+          ? { selectedForPublic: item.selectedForPublic }
+          : {}),
+        ...(item.selectedForPublicAt !== undefined
+          ? { selectedForPublicAt: item.selectedForPublicAt }
+          : {}),
+        updatedAt: item.updatedAt,
+      };
+    }),
     settings: settings.map((item) => ({
       key: item.key,
       environment: item.environment,
@@ -223,7 +234,9 @@ export async function listForDashboardHandler(ctx: QueryCtx) {
       pdfPath: item.pdfPath,
       isPublished: item.isPublished,
       createdAt: item.createdAt,
-      publishedAt: item.publishedAt,
+      ...(item.publishedAt !== undefined
+        ? { publishedAt: item.publishedAt }
+        : {}),
     })),
   };
 }
@@ -289,24 +302,32 @@ export async function getDashboardOverviewHandler(
       ctaHref: item.ctaHref,
       achievements: item.achievements,
       structureNotes: item.structureNotes,
-      publishedAt: item.publishedAt,
+      ...(item.publishedAt !== undefined
+        ? { publishedAt: item.publishedAt }
+        : {}),
     })),
     media: [
       ...draftMedia.slice(0, 100).map((item) => ({
-        contentId: item.contentId,
+        ...(item.contentId ? { contentId: item.contentId } : {}),
         status: "draft" as const,
-        selectedForPublic: item.selectedForPublic,
+        ...(item.selectedForPublic !== undefined
+          ? { selectedForPublic: item.selectedForPublic }
+          : {}),
       })),
       ...publishedMedia.slice(0, 100).map((item) => ({
-        contentId: item.contentId,
+        ...(item.contentId ? { contentId: item.contentId } : {}),
         status: "published" as const,
-        selectedForPublic: item.selectedForPublic,
+        ...(item.selectedForPublic !== undefined
+          ? { selectedForPublic: item.selectedForPublic }
+          : {}),
       })),
     ],
     resumeDrafts: resumeDrafts.slice(0, 10).map((item) => ({
       locale: item.locale,
       contentJson: item.contentJson,
-      publishedAt: item.publishedAt,
+      ...(item.publishedAt !== undefined
+        ? { publishedAt: item.publishedAt }
+        : {}),
     })),
     settings: settings.slice(0, 100).map((item) => ({
       key: item.key,

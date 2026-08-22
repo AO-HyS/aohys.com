@@ -8,9 +8,10 @@ export interface PostHogProxyEnvironment {
 
 function targetUrl(requestUrl: URL): URL {
   const upstreamPath = requestUrl.pathname.replace(/^\/ingest/, "") || "/";
-  const origin = upstreamPath.startsWith("/static/") || upstreamPath.startsWith("/array/")
-    ? POSTHOG_ASSET_ORIGIN
-    : POSTHOG_INGEST_ORIGIN;
+  const origin =
+    upstreamPath.startsWith("/static/") || upstreamPath.startsWith("/array/")
+      ? POSTHOG_ASSET_ORIGIN
+      : POSTHOG_INGEST_ORIGIN;
   return new URL(`${upstreamPath}${requestUrl.search}`, origin);
 }
 
@@ -21,12 +22,18 @@ export async function handlePostHogProxyRequest(
 ): Promise<Response> {
   const requestUrl = new URL(request.url);
 
-  if (environment.AOHYS_ENV !== "production" || requestUrl.hostname !== "aohys.com") {
+  if (
+    environment.AOHYS_ENV !== "production" ||
+    requestUrl.hostname !== "aohys.com"
+  ) {
     return new Response(null, { status: 404 });
   }
 
   if (!ALLOWED_METHODS.has(request.method)) {
-    return new Response(null, { status: 405, headers: { allow: "GET, POST, OPTIONS" } });
+    return new Response(null, {
+      status: 405,
+      headers: { allow: "GET, POST, OPTIONS" },
+    });
   }
 
   const headers = new Headers(request.headers);
@@ -38,12 +45,17 @@ export async function handlePostHogProxyRequest(
   const upstream = await transport(targetUrl(requestUrl), {
     method: request.method,
     headers,
-    body: request.method === "GET" || request.method === "OPTIONS" ? undefined : request.body,
+    ...(request.method === "GET" || request.method === "OPTIONS"
+      ? {}
+      : { body: request.body }),
     redirect: "manual",
   });
   const responseHeaders = new Headers(upstream.headers);
   responseHeaders.delete("set-cookie");
-  responseHeaders.set("cache-control", request.method === "GET" ? "public, max-age=300" : "no-store");
+  responseHeaders.set(
+    "cache-control",
+    request.method === "GET" ? "public, max-age=300" : "no-store",
+  );
 
   return new Response(upstream.body, {
     status: upstream.status,

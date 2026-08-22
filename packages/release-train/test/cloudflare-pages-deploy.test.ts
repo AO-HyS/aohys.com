@@ -8,13 +8,40 @@ import {
   parseCloudflareProductionDomainEnvironment,
   validateReleaseEnvironment,
 } from "../src/index.js";
+import { parseCloudflareApiEnvelope } from "../src/cloudflare-pages-domain.js";
 
 function cloudflareResponse<T>(result: T, init?: ResponseInit): Response {
-  return new Response(JSON.stringify({ success: init?.status ? init.status < 400 : true, result }), {
-    status: init?.status ?? 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  return new Response(
+    JSON.stringify({
+      success: init?.status ? init.status < 400 : true,
+      result,
+    }),
+    {
+      status: init?.status ?? 200,
+      headers: { "Content-Type": "application/json" },
+    },
+  );
 }
+
+describe("Cloudflare response boundary", () => {
+  it("requires a valid envelope before parsing its result", () => {
+    expect(
+      parseCloudflareApiEnvelope(
+        '{"success":true,"result":{"name":"aohys.com"}}',
+        (value) => value,
+      ),
+    ).toEqual({
+      success: true,
+      result: { name: "aohys.com" },
+    });
+    expect(() =>
+      parseCloudflareApiEnvelope('{"result":{}}', (value) => value),
+    ).toThrow("invalid response envelope");
+    expect(() =>
+      parseCloudflareApiEnvelope("not-json", (value) => value),
+    ).toThrow("malformed JSON");
+  });
+});
 
 const validPreviewReleaseValues = {
   AOHYS_ENV: "preview",
@@ -30,7 +57,8 @@ const validPreviewReleaseValues = {
   LEAD_NOTIFICATION_EMAIL: "alejandro.ortiz@aohys.com",
   BETTER_AUTH_SECRET: "preview-secret",
   BETTER_AUTH_URL: "https://preview.aohys.com",
-  BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+  BETTER_AUTH_TRUSTED_ORIGINS:
+    "https://preview.aohys.com,http://localhost:4321",
   ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
   GOOGLE_CLIENT_ID: "google-client-id.apps.googleusercontent.com",
   GOOGLE_CLIENT_SECRET: "google-client-secret",
@@ -47,8 +75,11 @@ const validPreviewReleaseValues = {
 describe("Cloudflare Pages release plan", () => {
   it("leaves an active production domain unchanged", async () => {
     const requests: Array<{ input: string; init?: RequestInit }> = [];
-    const fetchImpl = async (input: string | URL | Request, init?: RequestInit) => {
-      requests.push({ input: String(input), init });
+    const fetchImpl = async (
+      input: string | URL | Request,
+      init?: RequestInit,
+    ) => {
+      requests.push({ input: String(input), ...(init ? { init } : {}) });
       return cloudflareResponse([{ name: "aohys.com", status: "active" }]);
     };
 
@@ -66,13 +97,17 @@ describe("Cloudflare Pages release plan", () => {
     });
     expect(requests).toHaveLength(1);
     expect(requests[0]?.init?.method).toBe("GET");
-    expect(requests[0]?.init?.headers).toMatchObject({ Authorization: "Bearer secret-token" });
+    expect(requests[0]?.init?.headers).toMatchObject({
+      Authorization: "Bearer secret-token",
+    });
   });
 
   it("still verifies apex DNS when Pages already reports the domain active", async () => {
     const responses = [
       cloudflareResponse([{ name: "aohys.com", status: "active" }]),
-      cloudflareResponse([{ id: "zone-id", name: "aohys.com", status: "active" }]),
+      cloudflareResponse([
+        { id: "zone-id", name: "aohys.com", status: "active" },
+      ]),
       cloudflareResponse([
         {
           id: "record-id",
@@ -110,7 +145,10 @@ describe("Cloudflare Pages release plan", () => {
       cloudflareResponse({ name: "aohys.com", status: "active" }),
     ];
     const requests: RequestInit[] = [];
-    const fetchImpl = async (_input: string | URL | Request, init?: RequestInit) => {
+    const fetchImpl = async (
+      _input: string | URL | Request,
+      init?: RequestInit,
+    ) => {
       requests.push(init ?? {});
       const response = responses.shift();
       if (!response) throw new Error("Unexpected request");
@@ -132,14 +170,21 @@ describe("Cloudflare Pages release plan", () => {
       created: true,
       domain: { name: "aohys.com", status: "active" },
     });
-    expect(requests.map((request) => request.method)).toEqual(["GET", "POST", "GET", "GET"]);
+    expect(requests.map((request) => request.method)).toEqual([
+      "GET",
+      "POST",
+      "GET",
+      "GET",
+    ]);
     expect(requests[1]?.body).toBe(JSON.stringify({ name: "aohys.com" }));
   });
 
   it("creates the proxied apex CNAME only when no routing record exists", async () => {
     const responses = [
       cloudflareResponse([{ name: "aohys.com", status: "pending" }]),
-      cloudflareResponse([{ id: "zone-id", name: "aohys.com", status: "active" }]),
+      cloudflareResponse([
+        { id: "zone-id", name: "aohys.com", status: "active" },
+      ]),
       cloudflareResponse([]),
       cloudflareResponse({
         id: "record-id",
@@ -151,8 +196,11 @@ describe("Cloudflare Pages release plan", () => {
       cloudflareResponse({ name: "aohys.com", status: "active" }),
     ];
     const requests: Array<{ input: string; init?: RequestInit }> = [];
-    const fetchImpl = async (input: string | URL | Request, init?: RequestInit) => {
-      requests.push({ input: String(input), init });
+    const fetchImpl = async (
+      input: string | URL | Request,
+      init?: RequestInit,
+    ) => {
+      requests.push({ input: String(input), ...(init ? { init } : {}) });
       const response = responses.shift();
       if (!response) throw new Error("Unexpected request");
       return response;
@@ -196,7 +244,10 @@ describe("Cloudflare Pages release plan", () => {
     ];
     const methods: Array<string | undefined> = [];
     const urls: string[] = [];
-    const fetchImpl = async (input: string | URL | Request, init?: RequestInit) => {
+    const fetchImpl = async (
+      input: string | URL | Request,
+      init?: RequestInit,
+    ) => {
       urls.push(String(input));
       methods.push(init?.method);
       const response = responses.shift();
@@ -225,7 +276,10 @@ describe("Cloudflare Pages release plan", () => {
       cloudflareResponse([]),
     ];
     const methods: Array<string | undefined> = [];
-    const fetchImpl = async (_input: string | URL | Request, init?: RequestInit) => {
+    const fetchImpl = async (
+      _input: string | URL | Request,
+      init?: RequestInit,
+    ) => {
       methods.push(init?.method);
       const response = responses.shift();
       if (!response) throw new Error("Unexpected request");
@@ -249,9 +303,17 @@ describe("Cloudflare Pages release plan", () => {
   it("refuses to overwrite conflicting apex DNS records", async () => {
     const responses = [
       cloudflareResponse([{ name: "aohys.com", status: "pending" }]),
-      cloudflareResponse([{ id: "zone-id", name: "aohys.com", status: "active" }]),
       cloudflareResponse([
-        { id: "record-id", name: "aohys.com", type: "A", content: "192.0.2.1", proxied: true },
+        { id: "zone-id", name: "aohys.com", status: "active" },
+      ]),
+      cloudflareResponse([
+        {
+          id: "record-id",
+          name: "aohys.com",
+          type: "A",
+          content: "192.0.2.1",
+          proxied: true,
+        },
       ]),
     ];
     const fetchImpl = async () => {
@@ -275,7 +337,9 @@ describe("Cloudflare Pages release plan", () => {
   it("recovers an ambiguous DNS create when the expected record now exists", async () => {
     const responses: Array<Response | Error> = [
       cloudflareResponse([{ name: "aohys.com", status: "pending" }]),
-      cloudflareResponse([{ id: "zone-id", name: "aohys.com", status: "active" }]),
+      cloudflareResponse([
+        { id: "zone-id", name: "aohys.com", status: "active" },
+      ]),
       cloudflareResponse([]),
       new Error("connection closed after upload"),
       cloudflareResponse([
@@ -317,7 +381,10 @@ describe("Cloudflare Pages release plan", () => {
         {
           name: "aohys.com",
           status: "blocked",
-          validation_data: { status: "error", error_message: "DNS validation failed" },
+          validation_data: {
+            status: "error",
+            error_message: "DNS validation failed",
+          },
         },
       ]);
 
@@ -339,7 +406,10 @@ describe("Cloudflare Pages release plan", () => {
       cloudflareResponse({ name: "aohys.com", status: "active" }),
     ];
     const methods: Array<string | undefined> = [];
-    const fetchImpl = async (_input: string | URL | Request, init?: RequestInit) => {
+    const fetchImpl = async (
+      _input: string | URL | Request,
+      init?: RequestInit,
+    ) => {
       methods.push(init?.method);
       const response = responses.shift();
       if (!response) throw new Error("Unexpected request");
@@ -363,7 +433,9 @@ describe("Cloudflare Pages release plan", () => {
   it("repairs missing DNS before retrying a stale Pages validation", async () => {
     const responses = [
       cloudflareResponse([{ name: "aohys.com", status: "error" }]),
-      cloudflareResponse([{ id: "zone-id", name: "aohys.com", status: "active" }]),
+      cloudflareResponse([
+        { id: "zone-id", name: "aohys.com", status: "active" },
+      ]),
       cloudflareResponse([]),
       cloudflareResponse({
         id: "record-id",
@@ -376,7 +448,10 @@ describe("Cloudflare Pages release plan", () => {
       cloudflareResponse({ name: "aohys.com", status: "active" }),
     ];
     const methods: Array<string | undefined> = [];
-    const fetchImpl = async (_input: string | URL | Request, init?: RequestInit) => {
+    const fetchImpl = async (
+      _input: string | URL | Request,
+      init?: RequestInit,
+    ) => {
       methods.push(init?.method);
       const response = responses.shift();
       if (!response) throw new Error("Unexpected request");
@@ -436,9 +511,14 @@ describe("Cloudflare Pages release plan", () => {
   });
 
   it("bounds individual requests and reports malformed provider responses safely", async () => {
-    const fetchImpl = async (_input: string | URL | Request, init?: RequestInit): Promise<Response> =>
+    const fetchImpl = async (
+      _input: string | URL | Request,
+      init?: RequestInit,
+    ): Promise<Response> =>
       new Promise((_resolve, reject) => {
-        init?.signal?.addEventListener("abort", () => reject(new Error("request aborted")));
+        init?.signal?.addEventListener("abort", () =>
+          reject(new Error("request aborted")),
+        );
       });
 
     await expect(
@@ -505,7 +585,11 @@ describe("Cloudflare Pages release plan", () => {
     const responses = [
       cloudflareResponse([]),
       new Response(
-        JSON.stringify({ success: false, result: null, errors: [{ message: "Domain already exists" }] }),
+        JSON.stringify({
+          success: false,
+          result: null,
+          errors: [{ message: "Domain already exists" }],
+        }),
         { status: 409, headers: { "Content-Type": "application/json" } },
       ),
       cloudflareResponse([{ name: "aohys.com", status: "active" }]),
@@ -573,7 +657,9 @@ describe("Cloudflare Pages release plan", () => {
   });
 
   it("validates deploy-time environment values before Wrangler runs", () => {
-    expect(validateReleaseEnvironment("preview", validPreviewReleaseValues)).toEqual({
+    expect(
+      validateReleaseEnvironment("preview", validPreviewReleaseValues),
+    ).toEqual({
       ok: true,
       errors: [],
     });
@@ -602,11 +688,14 @@ describe("Cloudflare Pages release plan", () => {
       "CLOUDFLARE_IMAGES_API_TOKEN is required for preview release.",
     );
 
-    const productionWithPreviewTargets = validateReleaseEnvironment("production", {
-      ...validPreviewReleaseValues,
-      AOHYS_ENV: "production",
-      PUBLIC_SITE_URL: "https://preview.aohys.com",
-    });
+    const productionWithPreviewTargets = validateReleaseEnvironment(
+      "production",
+      {
+        ...validPreviewReleaseValues,
+        AOHYS_ENV: "production",
+        PUBLIC_SITE_URL: "https://preview.aohys.com",
+      },
+    );
 
     expect(productionWithPreviewTargets.ok).toBe(false);
     expect(productionWithPreviewTargets.errors).toContain(
@@ -626,17 +715,26 @@ describe("Cloudflare Pages release plan", () => {
       `),
     ).toBe("https://ff7ed5fa.aohys-com.pages.dev");
 
-    expect(extractCloudflarePagesDeploymentUrl("Deployment failed before Pages returned a URL.")).toBe(
-      undefined,
-    );
+    expect(
+      extractCloudflarePagesDeploymentUrl(
+        "Deployment failed before Pages returned a URL.",
+      ),
+    ).toBe(undefined);
   });
 
   it("exposes repository release scripts and a protected GitHub Actions workflow", () => {
     const repoRoot = path.resolve(process.cwd(), "../..");
-    const rootPackage = JSON.parse(readFileSync(path.join(repoRoot, "package.json"), "utf8")) as {
+    const rootPackage = JSON.parse(
+      readFileSync(path.join(repoRoot, "package.json"), "utf8"),
+    ) as {
       scripts: Record<string, string>;
     };
-    const workflowPath = path.join(repoRoot, ".github", "workflows", "release-train.yml");
+    const workflowPath = path.join(
+      repoRoot,
+      ".github",
+      "workflows",
+      "release-train.yml",
+    );
 
     expect(rootPackage.scripts["release:env:preview"]).toBe(
       "tsx scripts/validate-release-env.ts preview",
@@ -663,10 +761,10 @@ describe("Cloudflare Pages release plan", () => {
       "tsx scripts/apply-dashboard-published-content.ts",
     );
     expect(rootPackage.scripts["deploy:preview"]).toBe(
-      "pnpm run release:env:preview && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:preview && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"preview release\" && pnpm run seed:dashboard:preview && pnpm run publish:content:build && AOHYS_DASHBOARD_CONTENT_APPLIED=1 pnpm run verify:published-content && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop",
+      'pnpm run release:env:preview && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:preview && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message "preview release" && pnpm run seed:dashboard:preview && pnpm run publish:content:build && AOHYS_DASHBOARD_CONTENT_APPLIED=1 pnpm run verify:published-content && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch develop',
     );
     expect(rootPackage.scripts["deploy:production"]).toBe(
-      "pnpm run release:env:production && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:production && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message \"production release\" && pnpm run publish:content:build && AOHYS_DASHBOARD_CONTENT_APPLIED=1 pnpm run verify:published-content && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main && pnpm run ensure:cloudflare-production-domain",
+      'pnpm run release:env:production && pnpm run audit:posthog-env && pnpm run audit:cloudflare-pages-runtime && pnpm run sync:convex-env:production && env -u CONVEX_DEPLOYMENT pnpm --filter @aohys/backend exec convex deploy --typecheck enable --codegen enable --message "production release" && pnpm run publish:content:build && AOHYS_DASHBOARD_CONTENT_APPLIED=1 pnpm run verify:published-content && pnpm exec wrangler pages deploy apps/site/dist --project-name aohys-com --branch main && pnpm run ensure:cloudflare-production-domain',
     );
     expect(rootPackage.scripts["ensure:cloudflare-production-domain"]).toBe(
       "tsx scripts/ensure-cloudflare-pages-domain.ts",
@@ -681,23 +779,47 @@ describe("Cloudflare Pages release plan", () => {
     expect(workflow).toContain("pnpm run deploy:production");
     expect(workflow).toContain("pnpm run audit:cloudflare-pages-runtime");
     expect(workflow).toContain("sync:convex-env");
-    expect(workflow).toContain("scripts/extract-cloudflare-pages-deployment-url.ts");
-    expect(workflow).toContain("SMOKE_BASE_URL: ${{ steps.deploy-preview.outputs.smoke_base_url }}");
-    expect(workflow).toContain("CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}");
-    expect(workflow).toContain("CLOUDFLARE_IMAGES_ACCOUNT_HASH: ${{ vars.CLOUDFLARE_IMAGES_ACCOUNT_HASH }}");
-    expect(workflow).toContain("CLOUDFLARE_IMAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_IMAGES_API_TOKEN }}");
-    expect(workflow).toContain("CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}");
-    expect(workflow).toContain("BETTER_AUTH_TRUSTED_ORIGINS: ${{ vars.BETTER_AUTH_TRUSTED_ORIGINS }}");
+    expect(workflow).toContain(
+      "scripts/extract-cloudflare-pages-deployment-url.ts",
+    );
+    expect(workflow).toContain(
+      "SMOKE_BASE_URL: ${{ steps.deploy-preview.outputs.smoke_base_url }}",
+    );
+    expect(workflow).toContain(
+      "CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}",
+    );
+    expect(workflow).toContain(
+      "CLOUDFLARE_IMAGES_ACCOUNT_HASH: ${{ vars.CLOUDFLARE_IMAGES_ACCOUNT_HASH }}",
+    );
+    expect(workflow).toContain(
+      "CLOUDFLARE_IMAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_IMAGES_API_TOKEN }}",
+    );
+    expect(workflow).toContain(
+      "CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}",
+    );
+    expect(workflow).toContain(
+      "BETTER_AUTH_TRUSTED_ORIGINS: ${{ vars.BETTER_AUTH_TRUSTED_ORIGINS }}",
+    );
     expect(workflow).not.toContain("DASHBOARD_API_TOKEN");
-    expect(workflow).toContain("GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}");
-    expect(workflow).toContain("GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}");
+    expect(workflow).toContain(
+      "GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}",
+    );
+    expect(workflow).toContain(
+      "GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}",
+    );
   });
 
   it("documents the Cloudflare redirect rule for aohys.net and www canonicalization", () => {
     const repoRoot = path.resolve(process.cwd(), "../..");
-    const redirectsPath = path.join(repoRoot, "cloudflare", "redirect-rules.json");
+    const redirectsPath = path.join(
+      repoRoot,
+      "cloudflare",
+      "redirect-rules.json",
+    );
 
-    expect(existsSync(redirectsPath), "redirect-rules.json must exist").toBe(true);
+    expect(existsSync(redirectsPath), "redirect-rules.json must exist").toBe(
+      true,
+    );
     const redirects = JSON.parse(readFileSync(redirectsPath, "utf8")) as {
       phase: string;
       rules: Array<{
@@ -722,9 +844,11 @@ describe("Cloudflare Pages release plan", () => {
     expect(canonicalRule?.expression).toContain("www.aohys.net");
     expect(canonicalRule?.expression).toContain("www.aohys.com");
     expect(canonicalRule?.action_parameters.from_value.status_code).toBe(301);
-    expect(canonicalRule?.action_parameters.from_value.target_url.expression).toBe(
-      'concat("https://aohys.com", http.request.uri.path)',
-    );
-    expect(canonicalRule?.action_parameters.from_value.preserve_query_string).toBe(true);
+    expect(
+      canonicalRule?.action_parameters.from_value.target_url.expression,
+    ).toBe('concat("https://aohys.com", http.request.uri.path)');
+    expect(
+      canonicalRule?.action_parameters.from_value.preserve_query_string,
+    ).toBe(true);
   });
 });

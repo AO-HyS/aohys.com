@@ -179,7 +179,7 @@ function ProjectsWorkspace({ content }: { content: ProjectsContent }) {
       ) : null}
 
       <Tabs
-        value={selectedProjectId}
+        {...(selectedProjectId ? { value: selectedProjectId } : {})}
         onValueChange={setRequestedProjectId}
         orientation="vertical"
         className={dashboardClass.projectShell}
@@ -445,7 +445,7 @@ function NewProjectCard({
                   ? "This content key already exists."
                   : `Creates case-study:${contentKey || "project-key"}.`
               }
-              error={slugExists ? "Choose a unique content key." : undefined}
+              {...(slugExists ? { error: "Choose a unique content key." } : {})}
               onValueChange={(value) =>
                 update("contentKey", slugifyProjectTitle(value))
               }
@@ -902,14 +902,16 @@ function ProjectImagesCard({
       <CardContent className={dashboardClass.mediaList}>
         <div className={dashboardClass.mediaSelectedPreview}>
           <MediaImage
-            src={previewImage?.src}
+            {...(previewImage?.src ? { src: previewImage.src } : {})}
             alt={previewImage?.altText ?? "No project image"}
             className={dashboardClass.mediaPreviewFrame}
-            missingLabel={
-              selectedImageHasPreviewIssue
-                ? mediaPreviewIssueLabel(selectedImagePreviewStatus)
-                : undefined
-            }
+            {...(selectedImageHasPreviewIssue
+              ? {
+                  missingLabel: mediaPreviewIssueLabel(
+                    selectedImagePreviewStatus,
+                  ),
+                }
+              : {})}
           />
           <div className={dashboardClass.mediaPreviewCopy}>
             <span
@@ -947,14 +949,14 @@ function ProjectImagesCard({
               )}
             >
               <MediaImage
-                src={image.src}
+                {...(image.src ? { src: image.src } : {})}
                 alt={image.altText}
                 className={dashboardClass.mediaThumb}
-                missingLabel={
-                  image.previewStatus && image.previewStatus !== "ready"
-                    ? mediaPreviewIssueLabel(image.previewStatus)
-                    : undefined
-                }
+                {...(image.previewStatus && image.previewStatus !== "ready"
+                  ? {
+                      missingLabel: mediaPreviewIssueLabel(image.previewStatus),
+                    }
+                  : {})}
               />
               <div className={dashboardClass.mediaRowBody}>
                 <div className={dashboardClass.mediaRowTitle}>

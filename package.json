@@ -38,6 +38,7 @@
     "sync:convex-env:production": "tsx scripts/sync-convex-env.ts production",
     "smoke:preview": "tsx scripts/smoke-release-url.ts preview",
     "smoke:production": "tsx scripts/smoke-release-url.ts production",
+    "strict:boundaries": "node --test scripts/quality/strict-boundaries.test.mjs scripts/quality/strict-canaries.test.mjs && node scripts/quality/strict-boundaries.mjs",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm run architecture:fitness && pnpm -r --if-present test",
     "verify": "pnpm run verify:ci",

@@ -55,7 +55,9 @@ export interface DashboardMediaMetadata {
   updatedAt: number;
 }
 
-type PublicDashboardMediaMetadata = DashboardMediaMetadata & { publicUrl: string };
+type PublicDashboardMediaMetadata = DashboardMediaMetadata & {
+  publicUrl: string;
+};
 
 interface DashboardSiteSetting {
   key: string;
@@ -110,17 +112,32 @@ interface LocalizedEntry {
 
 type LocaleDictionary = Record<string, LocalizedEntry>;
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const repoRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+);
 
 const localeFiles: Record<Locale, string> = {
   en: path.join(repoRoot, "packages/content-graph/src/locales/en.json"),
   es: path.join(repoRoot, "packages/content-graph/src/locales/es.json"),
 };
-const generatedContentGraphDir = path.join(repoRoot, "packages/content-graph/src/generated");
-const generatedPublicProjectsFile = path.join(generatedContentGraphDir, "dashboard-public-projects.ts");
+const generatedContentGraphDir = path.join(
+  repoRoot,
+  "packages/content-graph/src/generated",
+);
+const generatedPublicProjectsFile = path.join(
+  generatedContentGraphDir,
+  "dashboard-public-projects.ts",
+);
 const generatedSiteDir = path.join(repoRoot, "apps/site/src/generated");
-const generatedMediaFile = path.join(generatedSiteDir, "dashboard-public-media.ts");
-const generatedSettingsFile = path.join(generatedSiteDir, "dashboard-public-settings.ts");
+const generatedMediaFile = path.join(
+  generatedSiteDir,
+  "dashboard-public-media.ts",
+);
+const generatedSettingsFile = path.join(
+  generatedSiteDir,
+  "dashboard-public-settings.ts",
+);
 
 const STATIC_CASE_STUDY_IDS = new Set([
   "case-study:eteria",
@@ -147,7 +164,9 @@ export function shouldApplyDashboardDraft(
   const approvedAt = Date.parse(entry.approvedAt);
 
   if (!Number.isFinite(approvedAt)) {
-    throw new Error(`Invalid approvedAt value "${entry.approvedAt}" in public content.`);
+    throw new Error(
+      `Invalid approvedAt value "${entry.approvedAt}" in public content.`,
+    );
   }
 
   return Boolean(updatedAt && updatedAt > approvedAt);
@@ -155,19 +174,152 @@ export function shouldApplyDashboardDraft(
 
 async function loadDashboardContent(): Promise<DashboardContentPayload | null> {
   if (!hasConvexDeploymentAccess()) {
-    console.log("Dashboard published content bridge skipped: CONVEX_DEPLOY_KEY and CONVEX_DEPLOYMENT are missing.");
+    console.log(
+      "Dashboard published content bridge skipped: CONVEX_DEPLOY_KEY and CONVEX_DEPLOYMENT are missing.",
+    );
     return null;
   }
 
-  return runConvexFunction<DashboardContentPayload>("content:listForDashboardInternal", {});
+  return runConvexFunction<DashboardContentPayload>(
+    "content:listForDashboardInternal",
+    {},
+  );
 }
 
 function readLocaleFile(locale: Locale): LocaleDictionary {
-  return JSON.parse(readFileSync(localeFiles[locale], "utf8")) as LocaleDictionary;
+  return parseLocaleDictionary(
+    readFileSync(localeFiles[locale], "utf8"),
+    localeFiles[locale],
+  );
+}
+
+function isJsonRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function hasStringFields(
+  value: unknown,
+  fields: readonly string[],
+): value is Record<string, unknown> {
+  return (
+    isJsonRecord(value) &&
+    fields.every((field) => typeof value[field] === "string")
+  );
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) && value.every((item) => typeof item === "string")
+  );
+}
+
+function isArrayOf(
+  value: unknown,
+  predicate: (item: unknown) => boolean,
+): boolean {
+  return Array.isArray(value) && value.every(predicate);
+}
+
+export function parseLocaleDictionary(
+  serialized: string,
+  source = "locale JSON",
+): LocaleDictionary {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(serialized);
+  } catch {
+    throw new Error(`${source} must contain valid JSON.`);
+  }
+  if (
+    !isJsonRecord(parsed) ||
+    Object.values(parsed).some(
+      (entry) =>
+        !isJsonRecord(entry) ||
+        !["path", "title", "summary", "seoDescription"].every(
+          (field) => typeof entry[field] === "string",
+        ),
+    )
+  ) {
+    throw new Error(
+      `${source} must contain an object of localized content entries.`,
+    );
+  }
+  return parsed as LocaleDictionary;
+}
+
+export function parseResumeContent(
+  serialized: string,
+): Record<string, unknown> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(serialized);
+  } catch {
+    throw new Error("Published resume content must contain valid JSON.");
+  }
+  const stringFields = [
+    "name",
+    "role",
+    "location",
+    "intro",
+    "contextTitle",
+    "summaryTitle",
+    "highlightsTitle",
+    "projectsTitle",
+    "experienceTitle",
+    "skillsTitle",
+    "educationTitle",
+    "languagesTitle",
+  ];
+  const isLink = (value: unknown) =>
+    hasStringFields(value, ["label", "href", "text"]);
+  if (
+    !hasStringFields(parsed, stringFields) ||
+    !hasStringFields(parsed.pdf, [
+      "label",
+      "href",
+      "fileName",
+      "description",
+    ]) ||
+    !hasStringFields(parsed.proof, ["label", "title", "body"]) ||
+    !isArrayOf(parsed.contactLinks, isLink) ||
+    !isArrayOf(parsed.contextLinks, isLink) ||
+    !isStringArray(parsed.summary) ||
+    !isArrayOf(parsed.highlights, (item) =>
+      hasStringFields(item, ["label", "text"]),
+    ) ||
+    !isArrayOf(
+      parsed.projects,
+      (item) =>
+        hasStringFields(item, ["title", "summary"]) &&
+        isStringArray(item.bullets),
+    ) ||
+    !isArrayOf(
+      parsed.experience,
+      (item) =>
+        hasStringFields(item, ["role", "company", "period"]) &&
+        isStringArray(item.bullets),
+    ) ||
+    !isArrayOf(
+      parsed.skills,
+      (item) => hasStringFields(item, ["label"]) && isStringArray(item.items),
+    ) ||
+    !isArrayOf(parsed.education, (item) =>
+      hasStringFields(item, ["degree", "institution", "period"]),
+    ) ||
+    !isStringArray(parsed.languages)
+  ) {
+    throw new Error(
+      "Published resume content must match the resume JSON object contract.",
+    );
+  }
+  return parsed;
 }
 
 function writeLocaleFile(locale: Locale, dictionary: LocaleDictionary): void {
-  writeFileSync(localeFiles[locale], `${JSON.stringify(dictionary, null, 2)}\n`);
+  writeFileSync(
+    localeFiles[locale],
+    `${JSON.stringify(dictionary, null, 2)}\n`,
+  );
 }
 
 function paragraphs(value: string): string[] {
@@ -196,9 +348,11 @@ function slugFromContentId(contentId: string): string {
 }
 
 function projectPath(draft: DashboardProjectDraft): string {
-  const slug = draft.localizedSlug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(draft.localizedSlug)
-    ? draft.localizedSlug
-    : slugFromContentId(draft.contentId);
+  const slug =
+    draft.localizedSlug &&
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(draft.localizedSlug)
+      ? draft.localizedSlug
+      : slugFromContentId(draft.contentId);
 
   return getLocalizedCaseStudyPath(draft.locale, slug);
 }
@@ -215,14 +369,20 @@ function restParagraphsOrFallback(value: string, fallback: string): string {
   return fallbackText(restParagraphs(value), fallback);
 }
 
-function contentIdFromPath(dictionary: LocaleDictionary, href: string): string | undefined {
+function contentIdFromPath(
+  dictionary: LocaleDictionary,
+  href: string,
+): string | undefined {
   const normalized = href.replace(/\/$/, "");
-  return Object.entries(dictionary).find(([, entry]) => entry.path?.replace(/\/$/, "") === normalized)?.[0];
+  return Object.entries(dictionary).find(
+    ([, entry]) => entry.path?.replace(/\/$/, "") === normalized,
+  )?.[0];
 }
 
 function publicHrefForDraft(draft: DashboardProjectDraft): string | undefined {
-  const candidate = draft.projectUrl?.trim()
-    || (/^https?:/i.test(draft.ctaHref) ? draft.ctaHref.trim() : undefined);
+  const candidate =
+    draft.projectUrl?.trim() ||
+    (/^https?:/i.test(draft.ctaHref) ? draft.ctaHref.trim() : undefined);
 
   if (!candidate) return undefined;
 
@@ -233,18 +393,23 @@ function publicHrefForDraft(draft: DashboardProjectDraft): string | undefined {
     throw new Error(`Invalid public project URL for ${draft.contentId}.`);
   }
 
-  const hostname = parsed.hostname.toLowerCase().replace(/^\[|\]$/g, "").replace(/\.$/, "");
-  if (parsed.protocol !== "https:"
-    || parsed.username
-    || parsed.password
-    || isIP(hostname) !== 0
-    || !hostname.includes(".")
-    || hostname === "localhost"
-    || hostname.endsWith(".localhost")
-    || hostname.endsWith(".local")
-    || hostname.endsWith(".internal")
-    || hostname === "home.arpa"
-    || hostname.endsWith(".home.arpa")) {
+  const hostname = parsed.hostname
+    .toLowerCase()
+    .replace(/^\[|\]$/g, "")
+    .replace(/\.$/, "");
+  if (
+    parsed.protocol !== "https:" ||
+    parsed.username ||
+    parsed.password ||
+    isIP(hostname) !== 0 ||
+    !hostname.includes(".") ||
+    hostname === "localhost" ||
+    hostname.endsWith(".localhost") ||
+    hostname.endsWith(".local") ||
+    hostname.endsWith(".internal") ||
+    hostname === "home.arpa" ||
+    hostname.endsWith(".home.arpa")
+  ) {
     throw new Error(`Unsafe public project URL for ${draft.contentId}.`);
   }
 
@@ -252,11 +417,15 @@ function publicHrefForDraft(draft: DashboardProjectDraft): string | undefined {
 }
 
 function achievementFallbackForDraft(draft: DashboardProjectDraft): string {
-  return formatI18n(getSharedI18n(draft.locale).caseStudy.achievementFallback, { title: draft.title });
+  return formatI18n(getSharedI18n(draft.locale).caseStudy.achievementFallback, {
+    title: draft.title,
+  });
 }
 
 function structureFallbackForDraft(draft: DashboardProjectDraft): string {
-  return formatI18n(getSharedI18n(draft.locale).caseStudy.structureFallback, { title: draft.title });
+  return formatI18n(getSharedI18n(draft.locale).caseStudy.structureFallback, {
+    title: draft.title,
+  });
 }
 
 function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
@@ -327,11 +496,19 @@ function createProjectEntry(draft: DashboardProjectDraft): LocalizedEntry {
   };
 }
 
-export function applyProjectDraft(dictionary: LocaleDictionary, draft: DashboardProjectDraft): boolean {
+export function applyProjectDraft(
+  dictionary: LocaleDictionary,
+  draft: DashboardProjectDraft,
+): boolean {
   let entry = dictionary[draft.contentId];
 
-  if (entry && !shouldApplyDashboardDraft(entry, draft.publishedAt, draft.updatedAt)) {
-    console.log(`Skipping stale published project draft ${draft.contentId} (${draft.locale}).`);
+  if (
+    entry &&
+    !shouldApplyDashboardDraft(entry, draft.publishedAt, draft.updatedAt)
+  ) {
+    console.log(
+      `Skipping stale published project draft ${draft.contentId} (${draft.locale}).`,
+    );
     return false;
   }
 
@@ -341,7 +518,9 @@ export function applyProjectDraft(dictionary: LocaleDictionary, draft: Dashboard
     }
 
     if (!isCaseStudyContentId(draft.contentId)) {
-      console.log(`Skipping unknown content entry ${draft.contentId} (${draft.locale}).`);
+      console.log(
+        `Skipping unknown content entry ${draft.contentId} (${draft.locale}).`,
+      );
       return false;
     }
 
@@ -369,19 +548,25 @@ export function applyProjectDraft(dictionary: LocaleDictionary, draft: Dashboard
     entry.caseStudyContent.overview = draft.summary;
 
     if (entry.caseStudyContent.businessOutcome) {
-      entry.caseStudyContent.businessOutcome.body = firstParagraphOrFallback(draft.achievements, achievementFallback);
+      entry.caseStudyContent.businessOutcome.body = firstParagraphOrFallback(
+        draft.achievements,
+        achievementFallback,
+      );
     }
 
     if (entry.caseStudyContent.executionHighlights) {
-      entry.caseStudyContent.executionHighlights.body = restParagraphsOrFallback(draft.achievements, achievementFallback);
+      entry.caseStudyContent.executionHighlights.body =
+        restParagraphsOrFallback(draft.achievements, achievementFallback);
     }
 
     if (entry.caseStudyContent.architectureDecisions) {
-      entry.caseStudyContent.architectureDecisions.body = firstParagraphOrFallback(draft.structureNotes, structureFallback);
+      entry.caseStudyContent.architectureDecisions.body =
+        firstParagraphOrFallback(draft.structureNotes, structureFallback);
     }
 
     if (entry.caseStudyContent.qualitySecurityPerformance) {
-      entry.caseStudyContent.qualitySecurityPerformance.body = restParagraphsOrFallback(draft.structureNotes, structureFallback);
+      entry.caseStudyContent.qualitySecurityPerformance.body =
+        restParagraphsOrFallback(draft.structureNotes, structureFallback);
     }
 
     entry.caseStudyContent.publicEvidenceTitle = i18n.projectLinksTitle;
@@ -405,7 +590,10 @@ export function applyProjectDraft(dictionary: LocaleDictionary, draft: Dashboard
   return true;
 }
 
-export function applyResumeDraft(dictionary: LocaleDictionary, draft: DashboardResumeDraft): boolean {
+export function applyResumeDraft(
+  dictionary: LocaleDictionary,
+  draft: DashboardResumeDraft,
+): boolean {
   const resume = dictionary.resume;
 
   if (!resume) {
@@ -417,18 +605,24 @@ export function applyResumeDraft(dictionary: LocaleDictionary, draft: DashboardR
     return false;
   }
 
-  resume.resumeContent = JSON.parse(draft.contentJson) as unknown;
+  resume.resumeContent = parseResumeContent(draft.contentJson);
   return true;
 }
 
 function generatedMediaKind(item: DashboardMediaMetadata): string {
   const normalizedStorageKey = item.storageKey.toLowerCase();
 
-  if (normalizedStorageKey.includes("dashboard") || normalizedStorageKey.includes("admin")) {
+  if (
+    normalizedStorageKey.includes("dashboard") ||
+    normalizedStorageKey.includes("admin")
+  ) {
     return "dashboard";
   }
 
-  if (normalizedStorageKey.includes("diagram") || item.usage === "architecture") {
+  if (
+    normalizedStorageKey.includes("diagram") ||
+    item.usage === "architecture"
+  ) {
     return "diagram";
   }
 
@@ -439,96 +633,144 @@ function generatedMediaKind(item: DashboardMediaMetadata): string {
   return "site";
 }
 
-export function publicMediaItemsByContentId(mediaItems: DashboardMediaMetadata[]): Map<string, PublicDashboardMediaMetadata> {
-  const resolvedItems = mediaItems.flatMap((item, index): Array<PublicDashboardMediaMetadata & { id: string }> => {
-    // A curated case study can only replace its committed evidence after an
-    // explicit media selection made later than the code-reviewed copy boundary.
-    // Publication may update `updatedAt`; `selectedForPublicAt` is the stable,
-    // per-asset review signal.
-    if (item.contentId && STATIC_CASE_STUDY_IDS.has(item.contentId)) {
-      const sourceDictionary = JSON.parse(readFileSync(localeFiles.en, "utf8")) as LocaleDictionary;
-      const approvedAt = Date.parse(sourceDictionary[item.contentId]?.approvedAt ?? "");
-      if (!Number.isFinite(approvedAt)
-        || !item.selectedForPublicAt
-        || item.selectedForPublicAt <= approvedAt) {
-        return [];
+export function publicMediaItemsByContentId(
+  mediaItems: DashboardMediaMetadata[],
+): Map<string, PublicDashboardMediaMetadata> {
+  const resolvedItems = mediaItems.flatMap(
+    (item, index): Array<PublicDashboardMediaMetadata & { id: string }> => {
+      // A curated case study can only replace its committed evidence after an
+      // explicit media selection made later than the code-reviewed copy boundary.
+      // Publication may update `updatedAt`; `selectedForPublicAt` is the stable,
+      // per-asset review signal.
+      if (item.contentId && STATIC_CASE_STUDY_IDS.has(item.contentId)) {
+        const sourceDictionary = readLocaleFile("en");
+        const approvedAt = Date.parse(
+          sourceDictionary[item.contentId]?.approvedAt ?? "",
+        );
+        if (
+          !Number.isFinite(approvedAt) ||
+          !item.selectedForPublicAt ||
+          item.selectedForPublicAt <= approvedAt
+        ) {
+          return [];
+        }
       }
-    }
 
-    const resolution = resolvePublicMediaUrl({
-      storageProvider: item.storageProvider ?? "external",
-      storageKey: item.storageKey,
-      publicUrl: item.publicUrl,
-    }, {
-      cloudflareImagesAccountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
-    });
-
-    if (item.status === "published" && item.selectedForPublic === true && resolution.status !== "resolved") {
-      throw new Error(
-        `Selected public media for ${item.contentId ?? "an unscoped asset"} is invalid: ${resolution.reason}`,
+      const resolution = resolvePublicMediaUrl(
+        {
+          storageProvider: item.storageProvider ?? "external",
+          storageKey: item.storageKey,
+          ...(item.publicUrl ? { publicUrl: item.publicUrl } : {}),
+        },
+        {
+          ...(process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
+            ? {
+                cloudflareImagesAccountHash:
+                  process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
+              }
+            : {}),
+        },
       );
-    }
 
-    if (resolution.status !== "resolved") return [];
+      if (
+        item.status === "published" &&
+        item.selectedForPublic === true &&
+        resolution.status !== "resolved"
+      ) {
+        throw new Error(
+          `Selected public media for ${item.contentId ?? "an unscoped asset"} is invalid: ${resolution.reason}`,
+        );
+      }
 
-    return [{
-      ...item,
-      id: item.id ?? `${item.contentId ?? "unscoped"}:${item.usage}:${item.updatedAt}:${index}`,
-      storageProvider: item.storageProvider ?? "external",
-      publicUrl: resolution.url,
-    }];
-  });
+      if (resolution.status !== "resolved") return [];
+
+      return [
+        {
+          ...item,
+          id:
+            item.id ??
+            `${item.contentId ?? "unscoped"}:${item.usage}:${item.updatedAt}:${index}`,
+          storageProvider: item.storageProvider ?? "external",
+          publicUrl: resolution.url,
+        },
+      ];
+    },
+  );
   const decision = selectPublicationMedia(resolvedItems, "public-build");
 
-  return new Map(decision.selected.flatMap((item) =>
-    item.contentId ? [[item.contentId, item] as const] : []
-  ));
+  return new Map(
+    decision.selected.flatMap((item) =>
+      item.contentId ? [[item.contentId, item] as const] : [],
+    ),
+  );
 }
 
-export function buildGeneratedPublicMedia(mediaItems: DashboardMediaMetadata[]): Record<string, {
-  src: string;
-  alt: string;
-  kind: string;
-}> {
+export function buildGeneratedPublicMedia(
+  mediaItems: DashboardMediaMetadata[],
+): Record<
+  string,
+  {
+    src: string;
+    alt: string;
+    kind: string;
+  }
+> {
   const mediaByContentId = publicMediaItemsByContentId(mediaItems);
-  const entries = [...mediaByContentId.entries()].sort(([left], [right]) => left.localeCompare(right));
+  const entries = [...mediaByContentId.entries()].sort(([left], [right]) =>
+    left.localeCompare(right),
+  );
 
-  return Object.fromEntries(entries.map(([contentId, item]) => [
-    contentId,
-    {
-      src: item.publicUrl,
-      alt: item.altText,
-      kind: generatedMediaKind(item),
-    },
-  ]));
+  return Object.fromEntries(
+    entries.map(([contentId, item]) => [
+      contentId,
+      {
+        src: item.publicUrl,
+        alt: item.altText,
+        kind: generatedMediaKind(item),
+      },
+    ]),
+  );
 }
 
-function writeGeneratedPublicMedia(mediaItems: DashboardMediaMetadata[]): number {
+function writeGeneratedPublicMedia(
+  mediaItems: DashboardMediaMetadata[],
+): number {
   const mediaLiteral = buildGeneratedPublicMedia(mediaItems);
 
   mkdirSync(generatedSiteDir, { recursive: true });
-  writeFileSync(generatedMediaFile, [
-    "export interface DashboardPublicMediaAsset {",
-    "  src: string;",
-    "  thumbSrc?: string;",
-    "  alt: string;",
-    "  kind: string;",
-    "}",
-    "",
-    `export const DASHBOARD_PUBLIC_MEDIA_BY_CONTENT_ID: Record<string, DashboardPublicMediaAsset> = ${JSON.stringify(mediaLiteral, null, 2)};`,
-    "",
-  ].join("\n"));
+  writeFileSync(
+    generatedMediaFile,
+    [
+      "export interface DashboardPublicMediaAsset {",
+      "  src: string;",
+      "  thumbSrc?: string;",
+      "  alt: string;",
+      "  kind: string;",
+      "}",
+      "",
+      `export const DASHBOARD_PUBLIC_MEDIA_BY_CONTENT_ID: Record<string, DashboardPublicMediaAsset> = ${JSON.stringify(mediaLiteral, null, 2)};`,
+      "",
+    ].join("\n"),
+  );
 
   return Object.keys(mediaLiteral).length;
 }
 
-function writeGeneratedPublicSettings(settings: DashboardSiteSetting[]): number {
-  const activeEnvironment = process.env.AOHYS_ENV === "production" ? "production" : "preview";
-  const publicSettings = settings.filter((setting) => setting.classification === "public-build-value");
-  const whatsappSetting = publicSettings.find((setting) =>
-    setting.environment === activeEnvironment &&
-    setting.key === "PUBLIC_WHATSAPP_URL",
-  ) ?? publicSettings.find((setting) => setting.key === "PUBLIC_WHATSAPP_URL");
+function writeGeneratedPublicSettings(
+  settings: DashboardSiteSetting[],
+): number {
+  const activeEnvironment =
+    process.env.AOHYS_ENV === "production" ? "production" : "preview";
+  const publicSettings = settings.filter(
+    (setting) => setting.classification === "public-build-value",
+  );
+  const whatsappSetting =
+    publicSettings.find(
+      (setting) =>
+        setting.environment === activeEnvironment &&
+        setting.key === "PUBLIC_WHATSAPP_URL",
+    ) ??
+    publicSettings.find((setting) => setting.key === "PUBLIC_WHATSAPP_URL");
   const normalizedWhatsappUrl = whatsappSetting?.value
     ? normalizePublicWhatsappUrl(whatsappSetting.value)
     : undefined;
@@ -537,17 +779,23 @@ function writeGeneratedPublicSettings(settings: DashboardSiteSetting[]): number 
     : {};
 
   mkdirSync(generatedSiteDir, { recursive: true });
-  writeFileSync(generatedSettingsFile, [
-    "export const DASHBOARD_PUBLIC_SETTINGS: {",
-    "  PUBLIC_WHATSAPP_URL?: string;",
-    `} = ${JSON.stringify(settingsLiteral, null, 2)};`,
-    "",
-  ].join("\n"));
+  writeFileSync(
+    generatedSettingsFile,
+    [
+      "export const DASHBOARD_PUBLIC_SETTINGS: {",
+      "  PUBLIC_WHATSAPP_URL?: string;",
+      `} = ${JSON.stringify(settingsLiteral, null, 2)};`,
+      "",
+    ].join("\n"),
+  );
 
   return Object.keys(settingsLiteral).length;
 }
 
-function hasPublicCaseStudyEntry(dictionary: LocaleDictionary, contentId: string): boolean {
+function hasPublicCaseStudyEntry(
+  dictionary: LocaleDictionary,
+  contentId: string,
+): boolean {
   const entry = dictionary[contentId];
   const caseStudy = entry?.caseStudyContent;
 
@@ -570,19 +818,24 @@ function hasPublicCaseStudyEntry(dictionary: LocaleDictionary, contentId: string
   );
 }
 
-function hasPublicEvidence(caseStudy: LocalizedEntry["caseStudyContent"]): boolean {
+function hasPublicEvidence(
+  caseStudy: LocalizedEntry["caseStudyContent"],
+): boolean {
   return Boolean(
-    caseStudy?.publicEvidence?.some((evidence) => (
-      evidence.publicSafe === true &&
-      /^https?:\/\//.test(evidence.href)
-    )),
+    caseStudy?.publicEvidence?.some(
+      (evidence) =>
+        evidence.publicSafe === true && /^https?:\/\//.test(evidence.href),
+    ),
   );
 }
 
 export function publicProjectIdsFromDictionaries(
   dictionaries: Record<Locale, LocaleDictionary>,
   candidateContentIds: readonly string[],
-  publicMediaByContentId: ReadonlyMap<string, DashboardMediaMetadata> = new Map(),
+  publicMediaByContentId: ReadonlyMap<
+    string,
+    DashboardMediaMetadata
+  > = new Map(),
 ): string[] {
   const seen = new Set<string>();
   const projectIds: string[] = [];
@@ -612,13 +865,16 @@ export function publicProjectIdsFromDictionaries(
 
 function writeGeneratedPublicProjectIds(projectIds: readonly string[]): number {
   mkdirSync(generatedContentGraphDir, { recursive: true });
-  writeFileSync(generatedPublicProjectsFile, [
-    "// Generated by scripts/apply-dashboard-published-content.ts.",
-    "export const DASHBOARD_PUBLIC_PROJECT_IDS: readonly string[] = [",
-    ...projectIds.map((projectId) => `  ${JSON.stringify(projectId)},`),
-    "];",
-    "",
-  ].join("\n"));
+  writeFileSync(
+    generatedPublicProjectsFile,
+    [
+      "// Generated by scripts/apply-dashboard-published-content.ts.",
+      "export const DASHBOARD_PUBLIC_PROJECT_IDS: readonly string[] = [",
+      ...projectIds.map((projectId) => `  ${JSON.stringify(projectId)},`),
+      "];",
+      "",
+    ].join("\n"),
+  );
 
   return projectIds.length;
 }
@@ -660,22 +916,33 @@ async function main(): Promise<void> {
     }
   }
 
-  assertPublicClaimsSafe(dictionaries.en, "dashboard-applied English public content");
-  assertPublicClaimsSafe(dictionaries.es, "dashboard-applied Spanish public content");
+  assertPublicClaimsSafe(
+    dictionaries.en,
+    "dashboard-applied English public content",
+  );
+  assertPublicClaimsSafe(
+    dictionaries.es,
+    "dashboard-applied Spanish public content",
+  );
 
   writeLocaleFile("en", dictionaries.en);
   writeLocaleFile("es", dictionaries.es);
-  const publicMediaByContentId = publicMediaItemsByContentId(content.media ?? []);
+  const publicMediaByContentId = publicMediaItemsByContentId(
+    content.media ?? [],
+  );
   const publicProjectIds = publicProjectIdsFromDictionaries(
     dictionaries,
     publishedProjectContentIds,
     publicMediaByContentId,
   );
-  const generatedPublicProjects = writeGeneratedPublicProjectIds(publicProjectIds);
+  const generatedPublicProjects =
+    writeGeneratedPublicProjectIds(publicProjectIds);
   const appliedMedia = writeGeneratedPublicMedia(content.media ?? []);
   const appliedSettings = writeGeneratedPublicSettings(content.settings ?? []);
 
-  console.log(`Applied ${appliedProjects} published project draft(s), ${appliedResumes} published resume draft(s), ${appliedMedia} media asset(s), ${appliedSettings} public setting(s), and ${generatedPublicProjects} generated public project id(s).`);
+  console.log(
+    `Applied ${appliedProjects} published project draft(s), ${appliedResumes} published resume draft(s), ${appliedMedia} media asset(s), ${appliedSettings} public setting(s), and ${generatedPublicProjects} generated public project id(s).`,
+  );
 }
 
 const invokedScriptUrl = process.argv[1]

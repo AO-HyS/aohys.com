@@ -1,7 +1,7 @@
 export type DashboardLeadStatus = "new" | "reviewing" | "closed";
 
 export interface DashboardLead {
-  id: string;
+  id: Id<"leads">;
   name: string;
   email: string;
   company?: string;
@@ -17,3 +17,4 @@ export interface DashboardLead {
   createdAt: number;
   updatedAt: number;
 }
+import type { Id } from "@aohys/backend/convex/_generated/dataModel";

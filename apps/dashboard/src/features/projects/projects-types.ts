@@ -44,7 +44,7 @@ export interface DashboardProjectLocaleContent {
 }
 
 export interface DashboardProjectImage {
-  id?: string;
+  id?: Id<"mediaMetadata">;
   label: string;
   altText: string;
   source: "content-graph" | "media-metadata";
@@ -79,7 +79,7 @@ export interface DashboardProject {
 }
 
 export interface DashboardMediaMetadata {
-  id: string;
+  id: Id<"mediaMetadata">;
   storageProvider: "cloudflare-images" | "cloudflare-r2" | "external";
   storageKey: string;
   publicUrl?: string;
@@ -96,3 +96,4 @@ export interface DashboardMediaMetadata {
 export interface ProjectsContent {
   projects: DashboardProject[];
 }
+import type { Id } from "@aohys/backend/convex/_generated/dataModel";

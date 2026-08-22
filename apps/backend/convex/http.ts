@@ -104,7 +104,7 @@ async function captureContactIntakeFailure(
     await captureLeadAnalyticsWithPostHog(
       buildContactIntakeTelemetryEvent({
         environment,
-        input,
+        ...(input ? { input } : {}),
         publicError,
         error,
       }),

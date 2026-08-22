@@ -75,7 +75,7 @@ export interface DashboardResumeDraft {
 }
 
 export interface DashboardResumeVersion {
-  id: string;
+  id: Id<"resumeVersions">;
   locale: DashboardLocale;
   version: string;
   pdfPath: string;
@@ -89,3 +89,4 @@ export interface ResumeContent {
   resumeDrafts: DashboardResumeDraft[];
   resumeVersions: DashboardResumeVersion[];
 }
+import type { Id } from "@aohys/backend/convex/_generated/dataModel";

@@ -69,9 +69,15 @@ export const createMediaUploadUrl = action({
     await requireAdmin(ctx);
 
     return createCloudflareImagesDirectUpload(args, {
-      accountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
-      accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
-      apiToken: process.env.CLOUDFLARE_IMAGES_API_TOKEN,
+      ...(process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
+        ? { accountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH }
+        : {}),
+      ...(process.env.CLOUDFLARE_ACCOUNT_ID
+        ? { accountId: process.env.CLOUDFLARE_ACCOUNT_ID }
+        : {}),
+      ...(process.env.CLOUDFLARE_IMAGES_API_TOKEN
+        ? { apiToken: process.env.CLOUDFLARE_IMAGES_API_TOKEN }
+        : {}),
     });
   },
 });
@@ -89,7 +95,12 @@ export const publishContent = action({
     mediaPublished: v.number(),
     workflow: publishWorkflowValidator,
   }),
-  handler: async (ctx, args): Promise<PublishContentMutationResult & { workflow: PublishWorkflowResult }> => {
+  handler: async (
+    ctx,
+    args,
+  ): Promise<
+    PublishContentMutationResult & { workflow: PublishWorkflowResult }
+  > => {
     await requireAdmin(ctx);
 
     const result: PublishContentMutationResult = await ctx.runMutation(
@@ -98,9 +109,15 @@ export const publishContent = action({
     );
     const workflow = await triggerGitHubPublishWorkflow({
       environment: getPublishEnvironment(),
-      repository: process.env.PUBLISH_GITHUB_REPOSITORY,
-      token: process.env.PUBLISH_GITHUB_TOKEN,
-      workflowId: process.env.PUBLISH_GITHUB_WORKFLOW_ID,
+      ...(process.env.PUBLISH_GITHUB_REPOSITORY
+        ? { repository: process.env.PUBLISH_GITHUB_REPOSITORY }
+        : {}),
+      ...(process.env.PUBLISH_GITHUB_TOKEN
+        ? { token: process.env.PUBLISH_GITHUB_TOKEN }
+        : {}),
+      ...(process.env.PUBLISH_GITHUB_WORKFLOW_ID
+        ? { workflowId: process.env.PUBLISH_GITHUB_WORKFLOW_ID }
+        : {}),
     });
 
     return {

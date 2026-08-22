@@ -196,7 +196,7 @@ function prepareContactLead(
     preferredContactPath: input.preferredContactPath,
     consentToContact: true,
     spamSignals: {
-      elapsedMs: input.formStartedAt ? now - input.formStartedAt : undefined,
+      ...(input.formStartedAt ? { elapsedMs: now - input.formStartedAt } : {}),
     },
   };
 }
@@ -239,7 +239,7 @@ function buildLeadNotification(
   const html = renderLeadNotificationEmail({
     leadId,
     lead,
-    dashboardUrl,
+    ...(dashboardUrl ? { dashboardUrl } : {}),
     environment,
   });
 
@@ -416,7 +416,7 @@ export async function submitContactLead(
 
   return {
     leadId,
-    notificationId,
+    ...(notificationId ? { notificationId } : {}),
     notificationStatus,
     analyticsStatus,
     status: lead.status,

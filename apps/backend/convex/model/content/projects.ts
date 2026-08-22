@@ -165,21 +165,23 @@ export async function upsertProjectDraftHandler(
   const projectDraft = {
     contentId: args.contentId,
     locale: args.locale,
-    localizedSlug: args.localizedSlug,
+    ...(args.localizedSlug ? { localizedSlug: args.localizedSlug } : {}),
     title: args.title,
     summary: args.summary,
     seoDescription: args.seoDescription,
-    projectUrl: args.projectUrl,
+    ...(args.projectUrl ? { projectUrl: args.projectUrl } : {}),
     ctaLabel: args.ctaLabel,
     ctaHref: args.ctaHref,
     achievements: args.achievements,
     structureNotes: args.structureNotes,
     updatedAt,
-    publishedAt: undefined,
   };
 
   if (existingProjectDraft) {
-    await ctx.db.patch(existingProjectDraft._id, projectDraft);
+    await ctx.db.patch(existingProjectDraft._id, {
+      ...projectDraft,
+      publishedAt: undefined,
+    });
   } else {
     await ctx.db.insert("projectDrafts", projectDraft);
   }

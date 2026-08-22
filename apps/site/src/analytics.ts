@@ -254,8 +254,9 @@ export function buildAnalyticsBootstrapPayload(
   settings: PostHogClientSettings,
   context: AnalyticsContext,
 ): AnalyticsBootstrapPayload {
+  const config = buildPostHogClientConfig(settings);
   return {
-    config: buildPostHogClientConfig(settings),
+    ...(config ? { config } : {}),
     context: {
       ...context,
       path: normalizePath(context.path),

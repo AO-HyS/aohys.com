@@ -128,6 +128,7 @@ export function buildDashboardProjectRows(
     const firstDraftUrl = (content.projectDrafts ?? []).find(
       (draft) => draft.contentId === contentId && draft.projectUrl,
     )?.projectUrl;
+    const projectUrl = firstDraftUrl ?? firstProjectUrl;
 
     return {
       contentId,
@@ -139,7 +140,7 @@ export function buildDashboardProjectRows(
         : true,
       status: metadata?.status ?? "active-build",
       evidenceStatus: metadata?.evidenceStatus ?? "missing",
-      projectUrl: firstDraftUrl ?? firstProjectUrl,
+      ...(projectUrl ? { projectUrl } : {}),
       updatedAt: metadata?.updatedAt ?? 0,
       locales: (["en", "es"] as const).map((locale) => {
         const draft = draftsByContentIdAndLocale.get(`${contentId}:${locale}`);
@@ -178,24 +179,29 @@ export function buildDashboardProjectRows(
             ]
               .filter(Boolean)
               .join("\n\n") || variant.summary,
-          draft,
+          ...(draft ? { draft } : {}),
         };
       }),
       images: [
-        ...publicEvidence.map((asset, index) => ({
-          label: asset.label,
-          altText: asset.altText,
-          source: "content-graph" as const,
-          href: asset.href,
-          src: isImageHref(asset.href)
+        ...publicEvidence.map((asset, index) => {
+          const source = isImageHref(asset.href)
             ? asset.href
             : index === 0
               ? (staticEvidenceImage?.thumbSrc ?? staticEvidenceImage?.src)
-              : undefined,
-        })),
+              : undefined;
+          return {
+            label: asset.label,
+            altText: asset.altText,
+            source: "content-graph" as const,
+            href: asset.href,
+            ...(source ? { src: source } : {}),
+          };
+        }),
         ...media.map((item) => {
           const resolution = resolvePublicMediaUrl(item, {
-            cloudflareImagesAccountHash: imagesAccountHash,
+            ...(imagesAccountHash
+              ? { cloudflareImagesAccountHash: imagesAccountHash }
+              : {}),
           });
           const deliveryUrl =
             resolution.status === "resolved" ? resolution.url : undefined;
@@ -205,21 +211,25 @@ export function buildDashboardProjectRows(
             label: item.storageKey,
             altText: item.altText,
             source: "media-metadata" as const,
-            href: deliveryUrl,
-            src: deliveryUrl,
+            ...(deliveryUrl ? { href: deliveryUrl, src: deliveryUrl } : {}),
             previewStatus:
               resolution.status === "resolved"
                 ? ("ready" as const)
                 : resolution.status === "invalid"
                   ? ("invalid-reference" as const)
                   : resolution.status,
-            previewIssue:
-              resolution.status === "resolved" ? undefined : resolution.reason,
+            ...(resolution.status === "resolved"
+              ? {}
+              : { previewIssue: resolution.reason }),
             storageKey: item.storageKey,
             status: item.status,
             usage: item.usage,
-            selectedForPublic: item.selectedForPublic,
-            selectedForPublicAt: item.selectedForPublicAt,
+            ...(item.selectedForPublic !== undefined
+              ? { selectedForPublic: item.selectedForPublic }
+              : {}),
+            ...(item.selectedForPublicAt !== undefined
+              ? { selectedForPublicAt: item.selectedForPublicAt }
+              : {}),
           };
         }),
       ],

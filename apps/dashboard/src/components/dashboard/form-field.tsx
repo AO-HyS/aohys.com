@@ -1,5 +1,10 @@
 import { useId, type ReactNode } from "react";
-import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 
 export interface FormFieldControlProps {
   id: string;
@@ -38,20 +43,27 @@ export function FormField({
   const controlId = id ?? `field-${generatedId}`;
   const descriptionId = description ? `${controlId}-description` : undefined;
   const errorId = error ? `${controlId}-error` : undefined;
-  const describedBy = [descriptionId, errorId].filter(Boolean).join(" ") || undefined;
+  const describedBy =
+    [descriptionId, errorId].filter(Boolean).join(" ") || undefined;
 
   return (
-    <Field data-invalid={Boolean(error) || undefined} data-disabled={disabled || undefined}>
-      <FieldLabel htmlFor={controlId} className={labelHidden ? "sr-only" : undefined}>
+    <Field
+      data-invalid={Boolean(error) || undefined}
+      data-disabled={disabled || undefined}
+    >
+      <FieldLabel
+        htmlFor={controlId}
+        className={labelHidden ? "sr-only" : undefined}
+      >
         {label}
         {required ? <span aria-hidden="true">*</span> : null}
       </FieldLabel>
       {renderControl({
         id: controlId,
-        name,
-        "aria-describedby": describedBy,
-        "aria-errormessage": errorId,
-        "aria-invalid": error ? true : undefined,
+        ...(name ? { name } : {}),
+        ...(describedBy ? { "aria-describedby": describedBy } : {}),
+        ...(errorId ? { "aria-errormessage": errorId } : {}),
+        ...(error ? { "aria-invalid": true } : {}),
         disabled,
         required,
       })}

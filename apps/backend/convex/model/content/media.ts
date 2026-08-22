@@ -88,7 +88,7 @@ export async function createMediaMetadataHandler(
 
   const mediaId = await ctx.db.insert("mediaMetadata", {
     ...args,
-    selectedForPublicAt: args.selectedForPublic ? now : undefined,
+    ...(args.selectedForPublic ? { selectedForPublicAt: now } : {}),
     createdAt: now,
     updatedAt: now,
   });

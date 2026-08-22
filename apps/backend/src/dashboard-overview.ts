@@ -41,7 +41,12 @@ export interface DashboardOverviewInput {
 }
 
 export interface DashboardOverviewGate {
-  id: "project-copy" | "evidence" | "resume" | "public-contact" | "release-provider";
+  id:
+    | "project-copy"
+    | "evidence"
+    | "resume"
+    | "public-contact"
+    | "release-provider";
   label: string;
   status: DashboardGateStatus;
   reason: string;
@@ -83,80 +88,197 @@ export interface DashboardOverview {
 const REQUIRED_LOCALES = ["en", "es"] as const;
 const MAX_BLOCKERS = 8;
 
-export function buildDashboardOverview(input: DashboardOverviewInput): DashboardOverview {
-  const pendingProjectDrafts = input.projectDrafts.filter((draft) => draft.publishedAt === undefined);
-  const pendingProjectIds = unique(pendingProjectDrafts.map((draft) => draft.contentId));
-  const pendingResumeDrafts = input.resumeDrafts.filter((draft) => draft.publishedAt === undefined);
+export function buildDashboardOverview(
+  input: DashboardOverviewInput,
+): DashboardOverview {
+  const pendingProjectDrafts = input.projectDrafts.filter(
+    (draft) => draft.publishedAt === undefined,
+  );
+  const pendingProjectIds = unique(
+    pendingProjectDrafts.map((draft) => draft.contentId),
+  );
+  const pendingResumeDrafts = input.resumeDrafts.filter(
+    (draft) => draft.publishedAt === undefined,
+  );
 
   const projectCopyComplete = pendingProjectIds.every((contentId) =>
     REQUIRED_LOCALES.every((locale) => {
-      const draft = pendingProjectDrafts.find((candidate) =>
-        candidate.contentId === contentId && candidate.locale === locale
+      const draft = pendingProjectDrafts.find(
+        (candidate) =>
+          candidate.contentId === contentId && candidate.locale === locale,
       );
       return draft !== undefined && projectDraftHasRequiredCopy(draft);
-    })
+    }),
   );
   const evidenceComplete = pendingProjectIds.every((contentId) => {
-    const metadata = input.caseStudies.find((candidate) => candidate.contentId === contentId);
-    const hasSelectedMedia = input.media.some((candidate) =>
-      candidate.contentId === contentId && candidate.selectedForPublic === true
+    const metadata = input.caseStudies.find(
+      (candidate) => candidate.contentId === contentId,
     );
-    return metadata?.evidenceStatus !== "missing" && metadata !== undefined && hasSelectedMedia;
+    const hasSelectedMedia = input.media.some(
+      (candidate) =>
+        candidate.contentId === contentId &&
+        candidate.selectedForPublic === true,
+    );
+    return (
+      metadata?.evidenceStatus !== "missing" &&
+      metadata !== undefined &&
+      hasSelectedMedia
+    );
   });
-  const resumeComplete = pendingResumeDrafts.length === 0 || REQUIRED_LOCALES.every((locale) => {
-    const draft = pendingResumeDrafts.find((candidate) => candidate.locale === locale);
-    return draft !== undefined && isJsonObject(draft.contentJson);
-  });
-  const publicContact = input.settings.find((setting) =>
-    setting.key === "PUBLIC_WHATSAPP_URL" && setting.classification === "public-build-value"
+  const resumeComplete =
+    pendingResumeDrafts.length === 0 ||
+    REQUIRED_LOCALES.every((locale) => {
+      const draft = pendingResumeDrafts.find(
+        (candidate) => candidate.locale === locale,
+      );
+      return draft !== undefined && isJsonObject(draft.contentJson);
+    });
+  const publicContact = input.settings.find(
+    (setting) =>
+      setting.key === "PUBLIC_WHATSAPP_URL" &&
+      setting.classification === "public-build-value",
   );
-  const publicContactValid = publicContact !== undefined && isPublicWhatsappUrl(publicContact.value);
+  const publicContactValid =
+    publicContact !== undefined && isPublicWhatsappUrl(publicContact.value);
 
   const gates: DashboardOverviewGate[] = [
     pendingProjectIds.length === 0
-      ? gate("project-copy", "Project copy", "clear", "No unpublished project copy is waiting for review.")
+      ? gate(
+          "project-copy",
+          "Project copy",
+          "clear",
+          "No unpublished project copy is waiting for review.",
+        )
       : projectCopyComplete
-        ? gate("project-copy", "Project copy", "ready", "Every pending project has complete English and Spanish release copy.", "Review projects", "/projects")
-        : gate("project-copy", "Project copy", "blocked", "At least one pending project is missing a locale or required release field.", "Complete project copy", "/projects"),
+        ? gate(
+            "project-copy",
+            "Project copy",
+            "ready",
+            "Every pending project has complete English and Spanish release copy.",
+            "Review projects",
+            "/projects",
+          )
+        : gate(
+            "project-copy",
+            "Project copy",
+            "blocked",
+            "At least one pending project is missing a locale or required release field.",
+            "Complete project copy",
+            "/projects",
+          ),
     pendingProjectIds.length === 0
-      ? gate("evidence", "Project evidence", "clear", "No unpublished project evidence is waiting for review.")
+      ? gate(
+          "evidence",
+          "Project evidence",
+          "clear",
+          "No unpublished project evidence is waiting for review.",
+        )
       : evidenceComplete
-        ? gate("evidence", "Project evidence", "ready", "Every pending project has reviewed evidence metadata and one selected public asset.", "Review evidence", "/projects")
-        : gate("evidence", "Project evidence", "blocked", "At least one pending project is missing reviewed evidence or a selected public asset.", "Complete project evidence", "/projects"),
+        ? gate(
+            "evidence",
+            "Project evidence",
+            "ready",
+            "Every pending project has reviewed evidence metadata and one selected public asset.",
+            "Review evidence",
+            "/projects",
+          )
+        : gate(
+            "evidence",
+            "Project evidence",
+            "blocked",
+            "At least one pending project is missing reviewed evidence or a selected public asset.",
+            "Complete project evidence",
+            "/projects",
+          ),
     pendingResumeDrafts.length === 0
-      ? gate("resume", "Resume", "clear", "No unpublished resume draft is waiting for review.")
+      ? gate(
+          "resume",
+          "Resume",
+          "clear",
+          "No unpublished resume draft is waiting for review.",
+        )
       : resumeComplete
-        ? gate("resume", "Resume", "ready", "English and Spanish resume drafts are valid and ready for deliberate publication.", "Review resume", "/resume")
-        : gate("resume", "Resume", "blocked", "Resume publication needs valid English and Spanish drafts.", "Complete resume", "/resume"),
+        ? gate(
+            "resume",
+            "Resume",
+            "ready",
+            "English and Spanish resume drafts are valid and ready for deliberate publication.",
+            "Review resume",
+            "/resume",
+          )
+        : gate(
+            "resume",
+            "Resume",
+            "blocked",
+            "Resume publication needs valid English and Spanish drafts.",
+            "Complete resume",
+            "/resume",
+          ),
     publicContactValid
-      ? gate("public-contact", "Public contact", "clear", "The public WhatsApp destination is a valid wa.me URL.", "Review settings", "/settings")
-      : gate("public-contact", "Public contact", "blocked", "PUBLIC_WHATSAPP_URL is missing or is not a valid public wa.me URL.", "Fix public contact", "/settings"),
+      ? gate(
+          "public-contact",
+          "Public contact",
+          "clear",
+          "The public WhatsApp destination is a valid wa.me URL.",
+          "Review settings",
+          "/settings",
+        )
+      : gate(
+          "public-contact",
+          "Public contact",
+          "blocked",
+          "PUBLIC_WHATSAPP_URL is missing or is not a valid public wa.me URL.",
+          "Fix public contact",
+          "/settings",
+        ),
     input.releaseProviderConfigured
-      ? gate("release-provider", "Release provider", "ready", "The Convex release dispatcher has the required GitHub provider configuration.")
-      : gate("release-provider", "Release provider", "unavailable", "The release dispatcher is not configured. Dashboard publication cannot queue the Release Train."),
+      ? gate(
+          "release-provider",
+          "Release provider",
+          "ready",
+          "The Convex release dispatcher has the required GitHub provider configuration.",
+        )
+      : gate(
+          "release-provider",
+          "Release provider",
+          "unavailable",
+          "The release dispatcher is not configured. Dashboard publication cannot queue the Release Train.",
+        ),
   ];
 
   const blockers = [
-    ...(input.truncated ? [{
-      code: "data-limit-reached" as const,
-      title: "Readiness is partial",
-      reason: "The bounded overview query reached a safety limit. Review the source surfaces before publication.",
-    }] : []),
+    ...(input.truncated
+      ? [
+          {
+            code: "data-limit-reached" as const,
+            title: "Readiness is partial",
+            reason:
+              "The bounded overview query reached a safety limit. Review the source surfaces before publication.",
+          },
+        ]
+      : []),
     ...gates.flatMap((item): DashboardOverviewBlocker[] => {
       if (item.status !== "blocked" && item.status !== "unavailable") return [];
-      return [{
-        code: blockerCodeByGate[item.id],
-        title: item.label,
-        reason: item.reason,
-        actionLabel: item.actionLabel,
-        actionPath: item.actionPath,
-      }];
+      return [
+        {
+          code: blockerCodeByGate[item.id],
+          title: item.label,
+          reason: item.reason,
+          ...(item.actionLabel ? { actionLabel: item.actionLabel } : {}),
+          ...(item.actionPath ? { actionPath: item.actionPath } : {}),
+        },
+      ];
     }),
   ].slice(0, MAX_BLOCKERS);
-  const firstActionable = blockers.find((blocker) => blocker.actionPath && blocker.actionLabel);
-  const readyGate = gates.find((item) => item.status === "ready" && item.actionPath && item.actionLabel);
+  const firstActionable = blockers.find(
+    (blocker) => blocker.actionPath && blocker.actionLabel,
+  );
+  const readyGate = gates.find(
+    (item) => item.status === "ready" && item.actionPath && item.actionLabel,
+  );
   const nextSource = firstActionable ?? readyGate;
-  const hasPendingContent = pendingProjectIds.length > 0 || pendingResumeDrafts.length > 0;
+  const hasPendingContent =
+    pendingProjectIds.length > 0 || pendingResumeDrafts.length > 0;
 
   return {
     environment: input.environment,
@@ -169,11 +291,19 @@ export function buildDashboardOverview(input: DashboardOverviewInput): Dashboard
           : "clear",
     gates,
     blockers,
-    nextAction: nextSource?.actionPath && nextSource.actionLabel
-      ? { label: nextSource.actionLabel, path: nextSource.actionPath, reason: nextSource.reason }
-      : undefined,
+    ...(nextSource?.actionPath && nextSource.actionLabel
+      ? {
+          nextAction: {
+            label: nextSource.actionLabel,
+            path: nextSource.actionPath,
+            reason: nextSource.reason,
+          },
+        }
+      : {}),
     release: {
-      providerState: input.releaseProviderConfigured ? "configured" : "unavailable",
+      providerState: input.releaseProviderConfigured
+        ? "configured"
+        : "unavailable",
       workflowState: "not-requested",
       deploymentState: "unknown",
     },
@@ -186,7 +316,10 @@ const blockerCodeByGate = {
   resume: "resume-incomplete",
   "public-contact": "public-contact-invalid",
   "release-provider": "release-provider-unavailable",
-} as const satisfies Record<DashboardOverviewGate["id"], DashboardOverviewBlocker["code"]>;
+} as const satisfies Record<
+  DashboardOverviewGate["id"],
+  DashboardOverviewBlocker["code"]
+>;
 
 function gate(
   id: DashboardOverviewGate["id"],
@@ -196,10 +329,19 @@ function gate(
   actionLabel?: string,
   actionPath?: DashboardOverviewPath,
 ): DashboardOverviewGate {
-  return { id, label, status, reason, actionLabel, actionPath };
+  return {
+    id,
+    label,
+    status,
+    reason,
+    ...(actionLabel ? { actionLabel } : {}),
+    ...(actionPath ? { actionPath } : {}),
+  };
 }
 
-function projectDraftHasRequiredCopy(draft: DashboardOverviewInput["projectDrafts"][number]): boolean {
+function projectDraftHasRequiredCopy(
+  draft: DashboardOverviewInput["projectDrafts"][number],
+): boolean {
   return [
     draft.title,
     draft.summary,
@@ -214,7 +356,9 @@ function projectDraftHasRequiredCopy(draft: DashboardOverviewInput["projectDraft
 function isJsonObject(value: string): boolean {
   try {
     const parsed: unknown = JSON.parse(value);
-    return typeof parsed === "object" && parsed !== null && !Array.isArray(parsed);
+    return (
+      typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)
+    );
   } catch {
     return false;
   }
@@ -223,7 +367,11 @@ function isJsonObject(value: string): boolean {
 function isPublicWhatsappUrl(value: string): boolean {
   try {
     const url = new URL(value);
-    return url.protocol === "https:" && url.hostname === "wa.me" && /^\/\d+$/.test(url.pathname);
+    return (
+      url.protocol === "https:" &&
+      url.hostname === "wa.me" &&
+      /^\/\d+$/.test(url.pathname)
+    );
   } catch {
     return false;
   }

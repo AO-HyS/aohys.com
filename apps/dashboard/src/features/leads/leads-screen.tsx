@@ -82,17 +82,24 @@ function LeadsWorkspace({
     | "Exhausted";
   loadMore: (count: number) => void;
   saveLeadStatus: (
-    leadId: string,
+    leadId: DashboardLead["id"],
     status: DashboardLeadStatus,
   ) => Promise<unknown>;
 }) {
-  const [savingLeadId, setSavingLeadId] = useState<string | null>(null);
-  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+  const [savingLeadId, setSavingLeadId] = useState<DashboardLead["id"] | null>(
+    null,
+  );
+  const [selectedLeadId, setSelectedLeadId] = useState<
+    DashboardLead["id"] | null
+  >(null);
   const selectedLead =
     leads.find((lead) => lead.id === selectedLeadId) ?? leads[0];
   const isFirstPageLoading = paginationStatus === "LoadingFirstPage";
 
-  async function updateStatus(leadId: string, status: DashboardLeadStatus) {
+  async function updateStatus(
+    leadId: DashboardLead["id"],
+    status: DashboardLeadStatus,
+  ) {
     const previousStatus = leads.find((lead) => lead.id === leadId)?.status;
     setSavingLeadId(leadId);
     const toastId = toast.loading("Saving lead status", {
@@ -155,7 +162,7 @@ function LeadsWorkspace({
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(22rem,0.75fr)]">
             <LeadCollection
               leads={leads}
-              selectedLeadId={selectedLead?.id}
+              {...(selectedLead ? { selectedLeadId: selectedLead.id } : {})}
               onSelect={setSelectedLeadId}
             />
             {selectedLead ? (
@@ -199,8 +206,8 @@ function LeadCollection({
   onSelect,
 }: {
   leads: DashboardLead[];
-  selectedLeadId?: string;
-  onSelect: (leadId: string) => void;
+  selectedLeadId?: DashboardLead["id"];
+  onSelect: (leadId: DashboardLead["id"]) => void;
 }) {
   return (
     <>
@@ -240,7 +247,7 @@ function LeadCollection({
       <div className="hidden md:block">
         <LeadTable
           leads={leads}
-          selectedLeadId={selectedLeadId}
+          {...(selectedLeadId ? { selectedLeadId } : {})}
           onSelect={onSelect}
         />
       </div>
@@ -254,8 +261,8 @@ function LeadTable({
   onSelect,
 }: {
   leads: DashboardLead[];
-  selectedLeadId?: string;
-  onSelect: (leadId: string) => void;
+  selectedLeadId?: DashboardLead["id"];
+  onSelect: (leadId: DashboardLead["id"]) => void;
 }) {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "createdAt", desc: true },
@@ -414,7 +421,10 @@ function LeadDetail({
 }: {
   lead: DashboardLead;
   isSaving: boolean;
-  onSave: (leadId: string, status: DashboardLeadStatus) => void | Promise<void>;
+  onSave: (
+    leadId: DashboardLead["id"],
+    status: DashboardLeadStatus,
+  ) => void | Promise<void>;
 }) {
   const [status, setStatus] = useState<DashboardLeadStatus>(lead.status);
 

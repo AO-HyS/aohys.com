@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { api as convexApi } from "@aohys/backend/convex/_generated/api";
-import type { Id } from "@aohys/backend/convex/_generated/dataModel";
 import { useAction, useMutation, useQuery } from "convex/react";
+import type { FunctionArgs, FunctionReturnType } from "convex/server";
 import { buildDashboardProjectRows } from "./projects-model";
 import type {
   DashboardCaseStudyStatus,
@@ -12,78 +12,39 @@ import type {
 } from "./projects-types";
 import { dashboardRuntimeConfig } from "@/runtime-config";
 
-export interface ProjectDraftRequest {
-  contentId: string;
-  locale: DashboardLocale;
-  localizedSlug?: string;
-  status: DashboardCaseStudyStatus;
-  evidenceStatus: DashboardEvidenceStatus;
-  title: string;
-  summary: string;
-  seoDescription: string;
-  projectUrl?: string;
-  ctaLabel: string;
-  ctaHref: string;
-  achievements: string;
-  structureNotes: string;
-}
+export type ProjectDraftRequest = FunctionArgs<
+  typeof convexApi.content.upsertProjectDraft
+>;
+export type CreateProjectRequest = FunctionArgs<
+  typeof convexApi.content.createProject
+>;
 
-export interface CreateProjectRequest {
-  contentKey: string;
-  status: DashboardCaseStudyStatus;
-  evidenceStatus: DashboardEvidenceStatus;
-  en: Omit<
-    ProjectDraftRequest,
-    "contentId" | "locale" | "status" | "evidenceStatus" | "ctaHref"
-  > & { localizedSlug: string };
-  es: Omit<
-    ProjectDraftRequest,
-    "contentId" | "locale" | "status" | "evidenceStatus" | "ctaHref"
-  > & { localizedSlug: string };
-}
-
-export interface MediaMetadataRequest {
-  storageProvider?: "cloudflare-images" | "external";
-  storageKey: string;
-  publicUrl?: string;
-  altText: string;
+type CreateMediaMetadataArgs = FunctionArgs<
+  typeof convexApi.content.createMediaMetadata
+>;
+export type MediaMetadataRequest = Omit<
+  CreateMediaMetadataArgs,
+  "contentId" | "status" | "storageProvider"
+> & {
   contentId: string;
-  usage: DashboardMediaUsage;
-  locale?: DashboardLocale;
-  selectedForPublic?: boolean;
-}
-
-export interface MediaUploadRequest {
-  storageKey: string;
-  altText: string;
+  storageProvider?: CreateMediaMetadataArgs["storageProvider"];
+};
+type CreateMediaUploadArgs = FunctionArgs<
+  typeof convexApi.contentActions.createMediaUploadUrl
+>;
+export type MediaUploadRequest = Omit<CreateMediaUploadArgs, "contentId"> & {
   contentId: string;
-  usage: DashboardMediaUsage;
-  locale?: DashboardLocale;
-  selectedForPublic?: boolean;
-}
+};
 
-export interface MediaSelectionRequest {
-  mediaId: string;
-  contentId: string;
-}
-export interface MediaUploadResponse {
-  imageId: string;
-  publicUrl: string;
-  uploadURL: string;
-}
-export interface PublishContentResponse {
-  publishedAt: number;
-  projectDraftsPublished: number;
-  resumeDraftsPublished: number;
-  mediaPublished: number;
-  workflow: {
-    status: "queued" | "not-configured";
-    repository?: string;
-    workflowId?: string;
-    ref?: string;
-    reason?: string;
-  };
-}
+export type MediaSelectionRequest = FunctionArgs<
+  typeof convexApi.content.selectMediaForPublic
+>;
+export type MediaUploadResponse = FunctionReturnType<
+  typeof convexApi.contentActions.createMediaUploadUrl
+>;
+export type PublishContentResponse = FunctionReturnType<
+  typeof convexApi.contentActions.publishContent
+>;
 
 export function useProjectsContent(): ProjectsContent | undefined {
   const content = useQuery(convexApi.content.listForDashboard, {});
@@ -135,11 +96,7 @@ export function useSaveMediaMetadata() {
 export function useSelectProjectMedia() {
   const mutation = useMutation(convexApi.content.selectMediaForPublic);
   return useCallback(
-    (payload: MediaSelectionRequest) =>
-      mutation({
-        mediaId: payload.mediaId as Id<"mediaMetadata">,
-        contentId: payload.contentId,
-      }),
+    (payload: MediaSelectionRequest) => mutation(payload),
     [mutation],
   );
 }
@@ -147,11 +104,7 @@ export function useSelectProjectMedia() {
 export function useArchiveProjectMedia() {
   const mutation = useMutation(convexApi.content.archiveMedia);
   return useCallback(
-    (payload: MediaSelectionRequest) =>
-      mutation({
-        mediaId: payload.mediaId as Id<"mediaMetadata">,
-        contentId: payload.contentId,
-      }),
+    (payload: MediaSelectionRequest) => mutation(payload),
     [mutation],
   );
 }
@@ -159,11 +112,7 @@ export function useArchiveProjectMedia() {
 export function useDeleteProjectMedia() {
   const mutation = useMutation(convexApi.content.deleteMedia);
   return useCallback(
-    (payload: MediaSelectionRequest) =>
-      mutation({
-        mediaId: payload.mediaId as Id<"mediaMetadata">,
-        contentId: payload.contentId,
-      }),
+    (payload: MediaSelectionRequest) => mutation(payload),
     [mutation],
   );
 }

@@ -13,7 +13,11 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
 
   return betterAuth({
     appName: "AOHYS",
-    baseURL: createBetterAuthBaseUrl(authBaseUrl, siteUrl, process.env.AOHYS_ENV),
+    baseURL: createBetterAuthBaseUrl(
+      authBaseUrl,
+      siteUrl,
+      process.env.AOHYS_ENV,
+    ),
     secret: requireEnvironmentValue("BETTER_AUTH_SECRET"),
     trustedOrigins: parseTrustedOrigins(),
     database: authComponent.adapter(ctx),
@@ -30,10 +34,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
       useSecureCookies: siteUrl.startsWith("https://"),
       trustedProxyHeaders: true,
     },
-    plugins: [
-      crossDomain({ siteUrl }),
-      convex({ authConfig }),
-    ],
+    plugins: [crossDomain({ siteUrl }), convex({ authConfig })],
   } satisfies BetterAuthOptions);
 };
 
@@ -55,7 +56,10 @@ export async function requireAdmin(ctx: GenericCtx<DataModel>) {
 
   const adminEmails = parseAdminEmails(process.env.ADMIN_EMAIL);
 
-  if (adminEmails.length === 0 || !adminEmails.includes(user.email.toLowerCase())) {
+  if (
+    adminEmails.length === 0 ||
+    !adminEmails.includes(user.email.toLowerCase())
+  ) {
     throw new Error("This account is not allowed to use the dashboard.");
   }
 
@@ -66,19 +70,21 @@ export function createBetterAuthBaseUrl(
   authBaseUrl: string,
   siteUrl: string,
   environment: string | undefined,
-): BetterAuthOptions["baseURL"] {
+): Exclude<BetterAuthOptions["baseURL"], undefined> {
   if (environment !== "preview" && environment !== "local") {
     return authBaseUrl;
   }
 
   return {
-    allowedHosts: uniqueStrings([
-      hostnameFromUrl(authBaseUrl),
-      hostnameFromUrl(siteUrl),
-      "localhost",
-      "127.0.0.1",
-      "*.aohys-com.pages.dev",
-    ].filter(isDefinedString)),
+    allowedHosts: uniqueStrings(
+      [
+        hostnameFromUrl(authBaseUrl),
+        hostnameFromUrl(siteUrl),
+        "localhost",
+        "127.0.0.1",
+        "*.aohys-com.pages.dev",
+      ].filter(isDefinedString),
+    ),
     fallback: authBaseUrl,
     protocol: "auto",
   };

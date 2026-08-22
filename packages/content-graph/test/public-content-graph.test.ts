@@ -1304,7 +1304,10 @@ describe("Public Content Graph", () => {
     expect(
       applyResumeDraft(dictionary, {
         locale: "en",
-        contentJson: JSON.stringify({ role: "Newer reviewed resume role" }),
+        contentJson: JSON.stringify({
+          ...dictionary.resume.resumeContent,
+          role: "Newer reviewed resume role",
+        }),
         updatedAt: resumeApprovedAt + 1,
         publishedAt: resumeApprovedAt + 1,
       }),
@@ -1312,6 +1315,39 @@ describe("Public Content Graph", () => {
     expect(dictionary.resume.resumeContent.role).toBe(
       "Newer reviewed resume role",
     );
+  });
+
+  it("validates publication locale and resume JSON before applying it", async () => {
+    const { parseLocaleDictionary, parseResumeContent } =
+      await import("../../../scripts/apply-dashboard-published-content.js");
+    expect(
+      parseLocaleDictionary(
+        '{"home":{"path":"/","title":"Home","summary":"Summary","seoDescription":"SEO"}}',
+      ),
+    ).toEqual({
+      home: {
+        path: "/",
+        title: "Home",
+        summary: "Summary",
+        seoDescription: "SEO",
+      },
+    });
+    expect(() => parseLocaleDictionary("[]")).toThrow(
+      "localized content entries",
+    );
+    const validResume = enContent.resume.resumeContent;
+    expect(parseResumeContent(JSON.stringify(validResume))).toEqual(
+      validResume,
+    );
+    expect(() =>
+      parseResumeContent(
+        JSON.stringify({
+          ...validResume,
+          projects: [{ title: "Missing nested fields" }],
+        }),
+      ),
+    ).toThrow("resume JSON object contract");
+    expect(() => parseResumeContent("[]")).toThrow("JSON object");
   });
 
   it("does not treat republishing an old locale revision as a fresh review", async () => {

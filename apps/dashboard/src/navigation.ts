@@ -55,7 +55,8 @@ export const dashboardNavigation = [
 export type DashboardNavigationId = (typeof dashboardNavigation)[number]["id"];
 
 export function normalizeDashboardPath(path: string): string {
-  const normalized = path.replace(/^\/dashboard\/?/, "/").split(/[?#]/, 1)[0];
+  const normalized =
+    path.replace(/^\/dashboard\/?/, "/").split(/[?#]/, 1)[0] ?? "/";
   return normalized === "" ? "/" : normalized.replace(/\/$/, "") || "/";
 }
 

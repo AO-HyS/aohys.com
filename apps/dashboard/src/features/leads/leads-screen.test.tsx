@@ -8,12 +8,13 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { Id } from "@aohys/backend/convex/_generated/dataModel";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { LeadsScreen } from "./leads-screen";
 import type { DashboardLead } from "./leads-types";
 
 const lead: DashboardLead = {
-  id: "lead-1",
+  id: "lead-1" as Id<"leads">,
   name: "Ada Lovelace",
   email: "ada@example.com",
   preferredContactPath: "email",

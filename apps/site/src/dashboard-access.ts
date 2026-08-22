@@ -1,9 +1,26 @@
-import { renderDashboardSignIn, renderDashboardState } from "./dashboard-access-states.js";
-import { validateEnvironmentContract, type EnvironmentName } from "@aohys/environment";
+import {
+  renderDashboardSignIn,
+  renderDashboardState,
+} from "./dashboard-access-states.js";
+import {
+  validateEnvironmentContract,
+  type EnvironmentName,
+} from "@aohys/environment";
 import { capturePostHogServerEvent } from "./posthog-server.js";
-import { PRIVATE_HTML_HEADERS, PRIVATE_NO_STORE_HEADERS } from "./security-headers.js";
+import {
+  PRIVATE_HTML_HEADERS,
+  PRIVATE_NO_STORE_HEADERS,
+} from "./security-headers.js";
+import {
+  parseBetterAuthRedirect,
+  parseBetterAuthRedirectLocation,
+  parseBetterAuthSession,
+} from "./runtime-boundaries.js";
 
-export interface DashboardAccessEnvironment extends Record<string, string | undefined> {
+export interface DashboardAccessEnvironment extends Record<
+  string,
+  string | undefined
+> {
   AOHYS_ENV: EnvironmentName;
   PUBLIC_SITE_URL: string;
   CONVEX_URL: string;
@@ -15,8 +32,7 @@ export interface DashboardAccessEnvironment extends Record<string, string | unde
   CLOUDFLARE_IMAGES_ACCOUNT_HASH?: string;
 }
 
-type DashboardAccessEnvironmentInput =
-  Partial<DashboardAccessEnvironment> &
+type DashboardAccessEnvironmentInput = Partial<DashboardAccessEnvironment> &
   Record<string, string | undefined>;
 
 export type DashboardFetch = typeof fetch;
@@ -52,26 +68,24 @@ export async function safeHandleDashboardRequest(
   reporter?: DashboardRuntimeErrorReporter,
 ): Promise<Response> {
   const environment = normalizeDashboardEnvironment(request, environmentInput);
-  const runtimeReporter = reporter ?? createPostHogDashboardErrorReporter(environment, request);
+  const runtimeReporter =
+    reporter ?? createPostHogDashboardErrorReporter(environment, request);
 
   try {
     return await handleDashboardRequest(request, environment, fetchSession);
   } catch (error) {
     const url = new URL(request.url);
 
-    await reportDashboardRuntimeError(
-      runtimeReporter,
-      {
-        event: "dashboard_runtime_exception",
-        distinctId: `dashboard:${environment.AOHYS_ENV}`,
-        properties: {
-          environment: environment.AOHYS_ENV,
-          source: "cloudflare_pages_dashboard",
-          path: normalizeDashboardPath(url.pathname),
-          errorType: normalizeErrorType(error),
-        },
+    await reportDashboardRuntimeError(runtimeReporter, {
+      event: "dashboard_runtime_exception",
+      distinctId: `dashboard:${environment.AOHYS_ENV}`,
+      properties: {
+        environment: environment.AOHYS_ENV,
+        source: "cloudflare_pages_dashboard",
+        path: normalizeDashboardPath(url.pathname),
+        errorType: normalizeErrorType(error),
       },
-    );
+    });
 
     return htmlResponse(renderDashboardState("unavailable"), 502);
   }
@@ -79,7 +93,15 @@ export async function safeHandleDashboardRequest(
 
 function normalizeErrorType(error: unknown): string {
   const name = error instanceof Error ? error.name : "UnknownError";
-  return ["AggregateError", "Error", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError"].includes(name)
+  return [
+    "AggregateError",
+    "Error",
+    "RangeError",
+    "ReferenceError",
+    "SyntaxError",
+    "TypeError",
+    "URIError",
+  ].includes(name)
     ? name
     : "UnknownError";
 }
@@ -97,26 +119,39 @@ export async function handleDashboardRequest(
     return signOutDashboard();
   }
 
-  const contract = validateEnvironmentContract(environment.AOHYS_ENV, environment, {
-    target: "dashboard-runtime",
-  });
+  const contract = validateEnvironmentContract(
+    environment.AOHYS_ENV,
+    environment,
+    {
+      target: "dashboard-runtime",
+    },
+  );
 
   if (!contract.ok) {
     return htmlResponse(renderDashboardState("configuration-error"), 503);
   }
 
   if (path === "/dashboard/sign-in/google") {
-    return beginGoogleSignIn(request, environment, url.searchParams.get("callbackURL"), fetchSession);
+    return beginGoogleSignIn(
+      request,
+      environment,
+      url.searchParams.get("callbackURL"),
+      fetchSession,
+    );
   }
 
   if (path === "/dashboard/sign-in") {
-    const callbackPath = normalizeCallbackPath(url.searchParams.get("callbackURL"));
+    const callbackPath = normalizeCallbackPath(
+      url.searchParams.get("callbackURL"),
+    );
     const signInUrl = new URL("/dashboard/sign-in/google", url.origin);
     signInUrl.searchParams.set("callbackURL", callbackPath);
 
-    return htmlResponse(renderDashboardSignIn({
-      signInUrl: `${signInUrl.pathname}${signInUrl.search}`,
-    }));
+    return htmlResponse(
+      renderDashboardSignIn({
+        signInUrl: `${signInUrl.pathname}${signInUrl.search}`,
+      }),
+    );
   }
 
   const cookie = request.headers.get("cookie");
@@ -124,7 +159,11 @@ export async function handleDashboardRequest(
     return redirectToSignIn(path);
   }
 
-  const session = await readBetterAuthSession(environment, cookie, fetchSession);
+  const session = await readBetterAuthSession(
+    environment,
+    cookie,
+    fetchSession,
+  );
   if (!session) {
     return redirectToSignIn(path);
   }
@@ -136,14 +175,21 @@ export async function handleDashboardRequest(
     return htmlResponse(renderDashboardState("unauthorized"), 403);
   }
 
-  return htmlResponse(renderDashboardAppShell({
-    adminEmail: session.user.email,
-    environment: environment.AOHYS_ENV,
-    convexUrl: environment.CONVEX_URL,
-    betterAuthUrl: url.origin,
-    imagesAccountHash: environment.CLOUDFLARE_IMAGES_ACCOUNT_HASH?.trim() || undefined,
-    posthogKey: environment.AOHYS_ENV === "production" ? environment.PUBLIC_POSTHOG_KEY?.trim() || undefined : undefined,
-  }));
+  const imagesAccountHash = environment.CLOUDFLARE_IMAGES_ACCOUNT_HASH?.trim();
+  const posthogKey =
+    environment.AOHYS_ENV === "production"
+      ? environment.PUBLIC_POSTHOG_KEY?.trim()
+      : undefined;
+  return htmlResponse(
+    renderDashboardAppShell({
+      adminEmail: session.user.email,
+      environment: environment.AOHYS_ENV,
+      convexUrl: environment.CONVEX_URL,
+      betterAuthUrl: url.origin,
+      ...(imagesAccountHash ? { imagesAccountHash } : {}),
+      ...(posthogKey ? { posthogKey } : {}),
+    }),
+  );
 }
 
 function normalizeDashboardEnvironment(
@@ -186,12 +232,20 @@ function createPostHogDashboardErrorReporter(
 ): DashboardRuntimeErrorReporter {
   return {
     capture: async (event) => {
-      if (environment.AOHYS_ENV !== "production" || new URL(request.url).hostname !== "aohys.com") return;
-      await capturePostHogServerEvent(environment, {
-        event: event.event,
-        distinctId: event.distinctId,
-        properties: event.properties,
-      }, reporterFetch);
+      if (
+        environment.AOHYS_ENV !== "production" ||
+        new URL(request.url).hostname !== "aohys.com"
+      )
+        return;
+      await capturePostHogServerEvent(
+        environment,
+        {
+          event: event.event,
+          distinctId: event.distinctId,
+          properties: event.properties,
+        },
+        reporterFetch,
+      );
     },
   };
 }
@@ -215,7 +269,10 @@ async function beginGoogleSignIn(
 ): Promise<Response> {
   const incomingUrl = new URL(request.url);
   const forwardedProto = incomingUrl.protocol.replace(":", "");
-  const callbackUrl = new URL(normalizeCallbackPath(callbackPath), incomingUrl.origin);
+  const callbackUrl = new URL(
+    normalizeCallbackPath(callbackPath),
+    incomingUrl.origin,
+  );
   const response = await authFetch(
     `${environment.CONVEX_SITE_URL.replace(/\/$/, "")}/api/auth/sign-in/social`,
     {
@@ -239,7 +296,9 @@ async function beginGoogleSignIn(
     return htmlResponse(renderDashboardState("unavailable"), 502);
   }
 
-  const location = response.headers.get("location") ?? await readRedirectUrl(response);
+  const location =
+    parseBetterAuthRedirectLocation(response.headers.get("location")) ??
+    (await readRedirectUrl(response));
 
   if (!location) {
     return htmlResponse(renderDashboardState("unavailable"), 502);
@@ -261,8 +320,7 @@ async function beginGoogleSignIn(
 
 async function readRedirectUrl(response: Response): Promise<string | null> {
   try {
-    const payload = await response.json() as { url?: string | null };
-    return payload.url ?? null;
+    return parseBetterAuthRedirect(await response.json());
   } catch {
     return null;
   }
@@ -288,15 +346,7 @@ async function readBetterAuthSession(
       return null;
     }
 
-    const payload = await response.json() as {
-      user?: { email?: string | null } | null;
-    };
-
-    if (!payload.user?.email) {
-      return null;
-    }
-
-    return { user: { email: payload.user.email } };
+    return parseBetterAuthSession(await response.json());
   } catch {
     return null;
   }
@@ -324,7 +374,10 @@ function signOutDashboard(): Response {
   headers.set("location", "/dashboard/sign-in");
 
   for (const cookieName of DASHBOARD_AUTH_COOKIE_NAMES) {
-    headers.append("set-cookie", expireCookie(cookieName, cookieName.startsWith("__Secure-")));
+    headers.append(
+      "set-cookie",
+      expireCookie(cookieName, cookieName.startsWith("__Secure-")),
+    );
   }
 
   return new Response(null, {
@@ -366,7 +419,10 @@ function renderDashboardAppShell(config: DashboardAppShellConfig): string {
 }
 
 function normalizeDashboardPath(pathname: string): string {
-  const normalized = pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
+  const normalized =
+    pathname.endsWith("/") && pathname !== "/"
+      ? pathname.slice(0, -1)
+      : pathname;
   return normalized || "/dashboard";
 }
 

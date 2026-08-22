@@ -81,7 +81,10 @@ export async function createResumeVersionHandler(
     pdfPath: args.pdfPath,
     isPublished: args.isPublished,
     createdAt: now,
-    publishedAt,
+    ...(publishedAt !== undefined ? { publishedAt } : {}),
   });
-  return { resumeVersionId, publishedAt };
+  return {
+    resumeVersionId,
+    ...(publishedAt !== undefined ? { publishedAt } : {}),
+  };
 }

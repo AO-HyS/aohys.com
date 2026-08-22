@@ -83,7 +83,7 @@ export async function runProjectMediaUpload(
     altText: normalizedPayload.altText,
     contentId: payload.contentId,
     usage: payload.usage,
-    locale: payload.locale,
+    ...(payload.locale ? { locale: payload.locale } : {}),
     selectedForPublic: payload.selectedForPublic ?? true,
   });
 }
@@ -192,7 +192,7 @@ export function useProjectsWorkflow({
         saveMetadata: saveMediaMetadata,
       });
       captureDashboardAction("succeeded", "projects", "upload_media", {
-        locale: payload.locale,
+        ...(payload.locale ? { locale: payload.locale } : {}),
       });
       toast.success("Image uploaded", {
         id: toastId,
@@ -227,7 +227,7 @@ export function useProjectsWorkflow({
       failure: "Media reference failed",
       fallbackError: "Media reference could not be saved.",
       action: "save_external_media",
-      locale: payload.locale,
+      ...(payload.locale ? { locale: payload.locale } : {}),
       operation: () => saveMediaMetadata(payload),
     });
   }
