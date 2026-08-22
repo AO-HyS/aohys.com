@@ -750,8 +750,11 @@ describe("Cloudflare Pages release plan", () => {
     expect(rootPackage.scripts["audit:cloudflare-pages-runtime"]).toBe(
       "tsx scripts/audit-cloudflare-pages-runtime.ts",
     );
-    expect(rootPackage.scripts["observability:check"]).toContain(
-      "scripts/observability",
+    expect(rootPackage.scripts["observability:check"]).toBe(
+      "pnpm run observability:validate",
+    );
+    expect(rootPackage.scripts["observability:validate"]).toContain(
+      "scripts/observability/validate-signal-catalog.mjs",
     );
     expect(rootPackage.scripts["observability:audit:deploy"]).toBe(
       "node scripts/observability/audit-environment.mjs",
@@ -846,6 +849,7 @@ describe("Cloudflare Pages release plan", () => {
     expect(
       workflow.match(/PUBLIC_RELEASE_SHA: \$\{\{ github\.sha \}\}/g),
     ).toHaveLength(2);
+    expect(workflow).toContain("PUBLICATION_RELEASE_SHA: ${{ github.sha }}");
     expect(
       workflow.match(/VITE_RELEASE_SHA: \$\{\{ github\.sha \}\}/g),
     ).toHaveLength(2);
@@ -881,7 +885,7 @@ describe("Cloudflare Pages release plan", () => {
     expect(permitted("production", "refs/heads/develop")).toBe(false);
   });
 
-  it("reconciles plan and pre-deploy terminal outcomes without blind retry", () => {
+  it("reconciles failures and only reconciles cancellation when the job starts", () => {
     type Result = "success" | "failure" | "cancelled" | "skipped";
     const shouldReconcile = ({
       target,
@@ -889,25 +893,28 @@ describe("Cloudflare Pages release plan", () => {
       plan,
       preview,
       production,
+      jobStarted,
     }: {
       target: "preview" | "production";
       ref: string;
       plan: Result;
       preview: Result;
       production: Result;
+      jobStarted: boolean;
     }) =>
-      (target === "preview" &&
+      jobStarted &&
+      ((target === "preview" &&
         ref === "refs/heads/develop" &&
         (plan === "failure" ||
           plan === "cancelled" ||
           preview === "failure" ||
           preview === "cancelled")) ||
-      (target === "production" &&
-        ref === "refs/heads/main" &&
-        (plan === "failure" ||
-          plan === "cancelled" ||
-          production === "failure" ||
-          production === "cancelled"));
+        (target === "production" &&
+          ref === "refs/heads/main" &&
+          (plan === "failure" ||
+            plan === "cancelled" ||
+            production === "failure" ||
+            production === "cancelled")));
 
     expect(
       shouldReconcile({
@@ -916,6 +923,7 @@ describe("Cloudflare Pages release plan", () => {
         plan: "failure",
         preview: "skipped",
         production: "skipped",
+        jobStarted: true,
       }),
     ).toBe(true);
     expect(
@@ -925,8 +933,9 @@ describe("Cloudflare Pages release plan", () => {
         plan: "cancelled",
         preview: "skipped",
         production: "skipped",
+        jobStarted: false,
       }),
-    ).toBe(true);
+    ).toBe(false);
     expect(
       shouldReconcile({
         target: "production",
@@ -934,6 +943,7 @@ describe("Cloudflare Pages release plan", () => {
         plan: "success",
         preview: "skipped",
         production: "cancelled",
+        jobStarted: true,
       }),
     ).toBe(true);
     expect(
@@ -943,6 +953,7 @@ describe("Cloudflare Pages release plan", () => {
         plan: "success",
         preview: "success",
         production: "skipped",
+        jobStarted: true,
       }),
     ).toBe(false);
     expect(
@@ -952,6 +963,7 @@ describe("Cloudflare Pages release plan", () => {
         plan: "failure",
         preview: "skipped",
         production: "skipped",
+        jobStarted: true,
       }),
     ).toBe(false);
   });

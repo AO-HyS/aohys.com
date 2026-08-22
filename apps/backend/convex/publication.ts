@@ -314,17 +314,16 @@ export const recordReceipt = internalMutation({
         retryable: undefined,
         updatedAt: now,
       }),
-      ...(attempt.state === "acknowledged"
-        ? []
-        : [
-            ctx.db.patch("publicationAttempts", attempt._id, {
-              state: "acknowledged",
-              retryable: false,
-              providerRunId: args.runId,
-              providerRunUrl: args.runUrl,
-              updatedAt: now,
-            }),
-          ]),
+      ctx.db.patch("publicationAttempts", attempt._id, {
+        ...(attempt.state === "acknowledged"
+          ? {}
+          : { state: "acknowledged" as const, retryable: false }),
+        providerRunId: args.runId,
+        providerRunUrl: args.runUrl,
+        providerGitRef: args.gitRef,
+        providerReleaseSha: args.sha,
+        updatedAt: now,
+      }),
     ]);
     return {
       requestKey: request.requestKey,
@@ -342,6 +341,7 @@ export const reconcileWorkflowOutcome = internalMutation({
     gitRef: v.string(),
     runId: v.string(),
     runUrl: v.string(),
+    releaseSha: v.string(),
     outcome: v.union(v.literal("failure"), v.literal("cancelled")),
   },
   returns: v.object({
@@ -350,7 +350,7 @@ export const reconcileWorkflowOutcome = internalMutation({
     duplicate: v.boolean(),
   }),
   handler: async (ctx, args) => {
-    validateReceiptStrings({ ...args, sha: "a".repeat(40) });
+    validateReceiptStrings({ ...args, sha: args.releaseSha });
     validateTargetGitRef(args.targetEnvironment, args.gitRef);
     const request = await ctx.db
       .query("publicationRequests")
@@ -377,6 +377,32 @@ export const reconcileWorkflowOutcome = internalMutation({
       )
       .unique();
     if (request.state === "deployed" || receipt) {
+      if (!receipt) {
+        throw new Error(
+          "Deployed publication outcome requires receipt evidence.",
+        );
+      }
+      if (
+        receipt.requestId !== request._id ||
+        receipt.attemptId !== attempt._id ||
+        receipt.requestKey !== args.publicationRequestKey ||
+        receipt.publicationAttemptId !== args.publicationAttemptId ||
+        receipt.targetEnvironment !== args.targetEnvironment ||
+        receipt.gitRef !== args.gitRef ||
+        receipt.runId !== args.runId ||
+        receipt.runUrl !== args.runUrl ||
+        receipt.sha !== args.releaseSha ||
+        receipt.smokePassed !== true ||
+        attempt.providerRunId !== args.runId ||
+        attempt.providerRunUrl !== args.runUrl ||
+        attempt.providerGitRef !== args.gitRef ||
+        attempt.providerReleaseSha !== args.releaseSha ||
+        attempt.workflowOutcome !== args.outcome
+      ) {
+        throw new Error(
+          "Publication outcome conflicts with deployed receipt evidence.",
+        );
+      }
       return {
         requestKey: request.requestKey,
         state: "deployed" as const,
@@ -387,7 +413,9 @@ export const reconcileWorkflowOutcome = internalMutation({
       if (
         attempt.workflowOutcome !== args.outcome ||
         attempt.providerRunId !== args.runId ||
-        attempt.providerRunUrl !== args.runUrl
+        attempt.providerRunUrl !== args.runUrl ||
+        attempt.providerGitRef !== args.gitRef ||
+        attempt.providerReleaseSha !== args.releaseSha
       ) {
         throw new Error("Conflicting publication workflow outcome rejected.");
       }
@@ -419,6 +447,8 @@ export const reconcileWorkflowOutcome = internalMutation({
         retryable: true,
         providerRunId: args.runId,
         providerRunUrl: args.runUrl,
+        providerGitRef: args.gitRef,
+        providerReleaseSha: args.releaseSha,
         workflowOutcome: args.outcome,
         workflowOutcomeAt: now,
         failureCode: `workflow-${args.outcome}`,

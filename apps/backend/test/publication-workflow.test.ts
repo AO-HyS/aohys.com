@@ -449,7 +449,7 @@ describe("publication acknowledgement and receipts", () => {
     });
   });
 
-  it("keeps deployed monotonic across late failure, cancellation, and completion", async () => {
+  it("no-ops only an exactly correlated late outcome after a receipt", async () => {
     const key = "a".repeat(64);
     const attemptKey = `${key}.1`;
     const fixture = publicationDatabase({
@@ -459,7 +459,7 @@ describe("publication acknowledgement and receipts", () => {
           _creationTime: 1,
           requestKey: key,
           targetEnvironment: "preview",
-          state: "release-requested",
+          state: "deployed",
         },
       ],
       publicationAttempts: [
@@ -468,10 +468,31 @@ describe("publication acknowledgement and receipts", () => {
           _creationTime: 1,
           requestId: "request_1",
           publicationAttemptId: attemptKey,
-          state: "dispatching",
+          state: "acknowledged",
+          providerRunId: "123",
+          providerRunUrl:
+            "https://github.com/AO-HyS/aohys.com/actions/runs/123",
+          providerGitRef: "refs/heads/develop",
+          providerReleaseSha: "b".repeat(40),
+          workflowOutcome: "failure",
         },
       ],
-      publicationReceipts: [],
+      publicationReceipts: [
+        {
+          _id: "receipt_1",
+          _creationTime: 1,
+          requestId: "request_1",
+          attemptId: "attempt_1",
+          publicationAttemptId: attemptKey,
+          requestKey: key,
+          targetEnvironment: "preview",
+          gitRef: "refs/heads/develop",
+          runId: "123",
+          runUrl: "https://github.com/AO-HyS/aohys.com/actions/runs/123",
+          sha: "b".repeat(40),
+          smokePassed: true,
+        },
+      ],
     });
     const correlation = {
       publicationRequestKey: key,
@@ -480,26 +501,38 @@ describe("publication acknowledgement and receipts", () => {
       gitRef: "refs/heads/develop",
       runId: "123",
       runUrl: "https://github.com/AO-HyS/aohys.com/actions/runs/123",
+      releaseSha: "b".repeat(40),
+      outcome: "failure",
     };
-    await (recordReceipt as never as { _handler: Function })._handler(
-      fixture.ctx,
-      {
-        ...correlation,
-        sha: "b".repeat(40),
-        smokePassed: true,
-      },
-    );
-    const writesAfterReceipt = fixture.writes.length;
     const outcomeHandler = (
       reconcileWorkflowOutcome as never as { _handler: Function }
     )._handler;
 
     await expect(
-      outcomeHandler(fixture.ctx, { ...correlation, outcome: "failure" }),
+      outcomeHandler(fixture.ctx, correlation),
     ).resolves.toMatchObject({ state: "deployed", duplicate: true });
     await expect(
       outcomeHandler(fixture.ctx, { ...correlation, outcome: "cancelled" }),
-    ).resolves.toMatchObject({ state: "deployed", duplicate: true });
+    ).rejects.toThrow("conflicts with deployed receipt evidence");
+    await expect(
+      outcomeHandler(fixture.ctx, {
+        ...correlation,
+        runId: "456",
+        runUrl: "https://github.com/AO-HyS/aohys.com/actions/runs/456",
+      }),
+    ).rejects.toThrow("conflicts with deployed receipt evidence");
+    await expect(
+      outcomeHandler(fixture.ctx, {
+        ...correlation,
+        runUrl: "https://github.com/Other/repository/actions/runs/123",
+      }),
+    ).rejects.toThrow("conflicts with deployed receipt evidence");
+    await expect(
+      outcomeHandler(fixture.ctx, {
+        ...correlation,
+        releaseSha: "c".repeat(40),
+      }),
+    ).rejects.toThrow("conflicts with deployed receipt evidence");
     await (completeAttempt as never as { _handler: Function })._handler(
       fixture.ctx,
       {
@@ -508,7 +541,7 @@ describe("publication acknowledgement and receipts", () => {
       },
     );
 
-    expect(fixture.writes).toHaveLength(writesAfterReceipt);
+    expect(fixture.writes).toEqual([]);
     expect(fixture.rows.get("publicationRequests")?.[0]?.state).toBe(
       "deployed",
     );
@@ -599,6 +632,7 @@ describe("publication acknowledgement and receipts", () => {
       gitRef: "refs/heads/develop",
       runId: "123",
       runUrl: "https://github.com/AO-HyS/aohys.com/actions/runs/123",
+      releaseSha: "b".repeat(40),
       outcome: "failure",
     };
     const handler = (

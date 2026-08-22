@@ -217,6 +217,8 @@ export default defineSchema({
     claimedAt: v.optional(v.number()),
     providerRunId: v.optional(v.string()),
     providerRunUrl: v.optional(v.string()),
+    providerGitRef: v.optional(v.string()),
+    providerReleaseSha: v.optional(v.string()),
     workflowOutcome: v.optional(
       v.union(v.literal("failure"), v.literal("cancelled")),
     ),

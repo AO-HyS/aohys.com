@@ -31,6 +31,7 @@ const result = runConvexFunction<{
     gitRef: required("PUBLICATION_GIT_REF"),
     runId: required("PUBLICATION_RUN_ID"),
     runUrl: required("PUBLICATION_RUN_URL"),
+    releaseSha: required("PUBLICATION_RELEASE_SHA"),
     outcome,
   },
   (value) => {
