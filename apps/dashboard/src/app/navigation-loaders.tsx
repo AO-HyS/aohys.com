@@ -18,35 +18,35 @@ export const dashboardNavigationLoaders = {
   overview: {
     icon: LayoutDashboardIcon,
     component: lazyRouteComponent(
-      () => import("@/screens/dashboard-home"),
+      () => import("@/features/overview"),
       "DashboardHome",
     ),
   },
   projects: {
     icon: BriefcaseBusinessIcon,
     component: lazyRouteComponent(
-      () => import("@/screens/projects-screen"),
+      () => import("@/features/projects"),
       "ProjectsScreen",
     ),
   },
   leads: {
     icon: InboxIcon,
     component: lazyRouteComponent(
-      () => import("@/screens/leads-screen"),
+      () => import("@/features/leads"),
       "LeadsScreen",
     ),
   },
   resume: {
     icon: FileTextIcon,
     component: lazyRouteComponent(
-      () => import("@/screens/resume-screen"),
+      () => import("@/features/resume"),
       "ResumeScreen",
     ),
   },
   settings: {
     icon: SettingsIcon,
     component: lazyRouteComponent(
-      () => import("@/screens/settings-screen"),
+      () => import("@/features/settings"),
       "SettingsScreen",
     ),
   },

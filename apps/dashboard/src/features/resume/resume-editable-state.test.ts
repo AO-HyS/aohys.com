@@ -4,8 +4,8 @@ import {
   reduceResumeEditableState,
   resumeHasChanges,
   validateResumeContent,
-} from "@/lib/resume-editable-state";
-import type { DashboardResumeContent } from "@/types";
+} from "./resume-editable-state";
+import type { DashboardResumeContent } from "./resume-types";
 
 const baseline = {
   name: "Alejandro",
@@ -47,16 +47,26 @@ describe("resume editable state", () => {
     });
 
     expect(resumeHasChanges(edited)).toBe(true);
-    expect(resumeHasChanges(reduceResumeEditableState(edited, { type: "reset" }))).toBe(false);
-    expect(reduceResumeEditableState(edited, { type: "commit" }).baseline.role).toBe("Senior product engineer");
-    expect(reduceResumeEditableState(edited, {
-      type: "rebase",
-      baseline: { ...baseline, role: "Externally updated role" },
-    }).draft.role).toBe("Externally updated role");
+    expect(
+      resumeHasChanges(reduceResumeEditableState(edited, { type: "reset" })),
+    ).toBe(false);
+    expect(
+      reduceResumeEditableState(edited, { type: "commit" }).baseline.role,
+    ).toBe("Senior product engineer");
+    expect(
+      reduceResumeEditableState(edited, {
+        type: "rebase",
+        baseline: { ...baseline, role: "Externally updated role" },
+      }).draft.role,
+    ).toBe("Externally updated role");
   });
 
   it("returns fixed validation messages without draft content", () => {
-    const errors = validateResumeContent({ ...baseline, name: "", pdf: { ...baseline.pdf, href: "" } });
+    const errors = validateResumeContent({
+      ...baseline,
+      name: "",
+      pdf: { ...baseline.pdf, href: "" },
+    });
 
     expect(errors).toEqual(["Name is required.", "PDF href is required."]);
     expect(JSON.stringify(errors)).not.toContain("Alejandro");

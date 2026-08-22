@@ -8,8 +8,14 @@ import {
   type ColumnDef,
   type SortingState,
 } from "@tanstack/react-table";
-import { useDashboardLeads, useSaveLeadStatus } from "@/api";
-import { Action, AsyncSurface, PageHeader, SectionPanel, StatusBadge } from "@/components/dashboard";
+import { useDashboardLeads, useSaveLeadStatus } from "./leads-api";
+import {
+  Action,
+  AsyncSurface,
+  PageHeader,
+  SectionPanel,
+  StatusBadge,
+} from "@/components/dashboard";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -20,9 +26,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/sonner";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { captureDashboardAction } from "@/lib/analytics";
-import type { DashboardLead, DashboardLeadStatus } from "@/types";
+import type { DashboardLead, DashboardLeadStatus } from "./leads-types";
+import {
+  formatLeadIntent,
+  formatLeadStatus,
+  leadStatusTone,
+} from "./leads-view-model";
 
 const statuses: DashboardLeadStatus[] = ["new", "reviewing", "closed"];
 
@@ -51,13 +69,21 @@ function LeadsWorkspace({
   saveLeadStatus,
 }: {
   leads: DashboardLead[];
-  paginationStatus: "LoadingFirstPage" | "CanLoadMore" | "LoadingMore" | "Exhausted";
+  paginationStatus:
+    | "LoadingFirstPage"
+    | "CanLoadMore"
+    | "LoadingMore"
+    | "Exhausted";
   loadMore: (count: number) => void;
-  saveLeadStatus: (leadId: string, status: DashboardLeadStatus) => Promise<unknown>;
+  saveLeadStatus: (
+    leadId: string,
+    status: DashboardLeadStatus,
+  ) => Promise<unknown>;
 }) {
   const [savingLeadId, setSavingLeadId] = useState<string | null>(null);
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
-  const selectedLead = leads.find((lead) => lead.id === selectedLeadId) ?? leads[0];
+  const selectedLead =
+    leads.find((lead) => lead.id === selectedLeadId) ?? leads[0];
   const isFirstPageLoading = paginationStatus === "LoadingFirstPage";
 
   async function updateStatus(leadId: string, status: DashboardLeadStatus) {
@@ -73,16 +99,23 @@ function LeadsWorkspace({
         ...(previousStatus ? { from_status: previousStatus } : {}),
         to_status: status,
       });
-      toast.success("Lead status saved", { id: toastId, description: "The inbox is up to date." });
+      toast.success("Lead status saved", {
+        id: toastId,
+        description: "The inbox is up to date.",
+      });
     } catch (saveError) {
       captureDashboardAction("failed", "leads", "update_lead_status", {
-        error_type: saveError instanceof Error ? saveError.name : "UnknownError",
+        error_type:
+          saveError instanceof Error ? saveError.name : "UnknownError",
         ...(previousStatus ? { from_status: previousStatus } : {}),
         to_status: status,
       });
       toast.error("Lead status failed", {
         id: toastId,
-        description: saveError instanceof Error ? saveError.message : "Lead status could not be saved.",
+        description:
+          saveError instanceof Error
+            ? saveError.message
+            : "Lead status could not be saved.",
       });
     } finally {
       setSavingLeadId(null);
@@ -98,9 +131,11 @@ function LeadsWorkspace({
 
       <SectionPanel
         title="Incoming leads"
-        description={isFirstPageLoading
-          ? "Loading the first server page."
-          : `${leads.length} lead${leads.length === 1 ? "" : "s"} loaded${paginationStatus === "Exhausted" ? " · all records reached" : " · more may be available"}.`}
+        description={
+          isFirstPageLoading
+            ? "Loading the first server page."
+            : `${leads.length} lead${leads.length === 1 ? "" : "s"} loaded${paginationStatus === "Exhausted" ? " · all records reached" : " · more may be available"}.`
+        }
       >
         {isFirstPageLoading ? (
           <AsyncSurface state="loading" title="Loading lead inbox" />
@@ -172,13 +207,23 @@ function LeadCollection({
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="truncate font-semibold">{lead.name}</p>
-                <p className="truncate text-sm text-muted-foreground">{lead.email}</p>
+                <p className="truncate text-sm text-muted-foreground">
+                  {lead.email}
+                </p>
               </div>
-              <StatusBadge tone={leadStatusTone(lead.status)}>{formatLeadStatus(lead.status)}</StatusBadge>
+              <StatusBadge tone={leadStatusTone(lead.status)}>
+                {formatLeadStatus(lead.status)}
+              </StatusBadge>
             </div>
             <div className="mt-4 flex items-center justify-between gap-3">
-              <p className="text-xs text-muted-foreground">{formatDate(lead.createdAt)}</p>
-              <Action variant="secondary" onClick={() => onSelect(lead.id)} aria-label={`Review lead from ${lead.name}`}>
+              <p className="text-xs text-muted-foreground">
+                {formatDate(lead.createdAt)}
+              </p>
+              <Action
+                variant="secondary"
+                onClick={() => onSelect(lead.id)}
+                aria-label={`Review lead from ${lead.name}`}
+              >
                 <EyeIcon data-icon="inline-start" />
                 Review
               </Action>
@@ -187,7 +232,11 @@ function LeadCollection({
         ))}
       </div>
       <div className="hidden md:block">
-        <LeadTable leads={leads} selectedLeadId={selectedLeadId} onSelect={onSelect} />
+        <LeadTable
+          leads={leads}
+          selectedLeadId={selectedLeadId}
+          onSelect={onSelect}
+        />
       </div>
     </>
   );
@@ -202,47 +251,68 @@ function LeadTable({
   selectedLeadId?: string;
   onSelect: (leadId: string) => void;
 }) {
-  const [sorting, setSorting] = useState<SortingState>([{ id: "createdAt", desc: true }]);
-  const columns = useMemo<ColumnDef<DashboardLead>[]>(() => [
-    {
-      id: "createdAt",
-      accessorKey: "createdAt",
-      header: "Created",
-      cell: ({ row }) => <span className="text-xs text-muted-foreground">{formatDate(row.original.createdAt)}</span>,
-    },
-    {
-      accessorKey: "name",
-      header: "Lead",
-      cell: ({ row }) => (
-        <div className="flex min-w-0 flex-col gap-1">
-          <span className="truncate font-medium">{row.original.name}</span>
-          <span className="truncate text-xs text-muted-foreground">{row.original.email}</span>
-        </div>
-      ),
-    },
-    {
-      accessorKey: "intent",
-      header: "Intent",
-      cell: ({ row }) => <Badge variant="secondary">{formatIntent(row.original.intent)}</Badge>,
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => (
-        <StatusBadge tone={leadStatusTone(row.original.status)}>{formatLeadStatus(row.original.status)}</StatusBadge>
-      ),
-    },
-    {
-      id: "review",
-      enableSorting: false,
-      header: "Action",
-      cell: ({ row }) => (
-        <Action variant="secondary" onClick={() => onSelect(row.original.id)} aria-label={`Review lead from ${row.original.name}`}>
-          Review
-        </Action>
-      ),
-    },
-  ], [onSelect]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "createdAt", desc: true },
+  ]);
+  const columns = useMemo<ColumnDef<DashboardLead>[]>(
+    () => [
+      {
+        id: "createdAt",
+        accessorKey: "createdAt",
+        header: "Created",
+        cell: ({ row }) => (
+          <span className="text-xs text-muted-foreground">
+            {formatDate(row.original.createdAt)}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "name",
+        header: "Lead",
+        cell: ({ row }) => (
+          <div className="flex min-w-0 flex-col gap-1">
+            <span className="truncate font-medium">{row.original.name}</span>
+            <span className="truncate text-xs text-muted-foreground">
+              {row.original.email}
+            </span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "intent",
+        header: "Intent",
+        cell: ({ row }) => (
+          <Badge variant="secondary">
+            {formatLeadIntent(row.original.intent)}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => (
+          <StatusBadge tone={leadStatusTone(row.original.status)}>
+            {formatLeadStatus(row.original.status)}
+          </StatusBadge>
+        ),
+      },
+      {
+        id: "review",
+        enableSorting: false,
+        header: "Action",
+        cell: ({ row }) => (
+          <Action
+            variant="secondary"
+            onClick={() => onSelect(row.original.id)}
+            aria-label={`Review lead from ${row.original.name}`}
+          >
+            Review
+          </Action>
+        ),
+      },
+    ],
+    [onSelect],
+  );
   const table = useReactTable({
     data: leads,
     columns,
@@ -264,7 +334,13 @@ function LeadTable({
                   <TableHead
                     key={header.id}
                     className={leadColumnClass(header.id)}
-                    aria-sort={sorted === "asc" ? "ascending" : sorted === "desc" ? "descending" : "none"}
+                    aria-sort={
+                      sorted === "asc"
+                        ? "ascending"
+                        : sorted === "desc"
+                          ? "descending"
+                          : "none"
+                    }
                   >
                     {header.isPlaceholder ? null : header.column.getCanSort() ? (
                       <button
@@ -272,11 +348,29 @@ function LeadTable({
                         type="button"
                         onClick={header.column.getToggleSortingHandler()}
                       >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {sorted === "asc" ? <ArrowUpIcon className="size-3.5" aria-hidden="true" /> : null}
-                        {sorted === "desc" ? <ArrowDownIcon className="size-3.5" aria-hidden="true" /> : null}
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                        {sorted === "asc" ? (
+                          <ArrowUpIcon
+                            className="size-3.5"
+                            aria-hidden="true"
+                          />
+                        ) : null}
+                        {sorted === "desc" ? (
+                          <ArrowDownIcon
+                            className="size-3.5"
+                            aria-hidden="true"
+                          />
+                        ) : null}
                       </button>
-                    ) : flexRender(header.column.columnDef.header, header.getContext())}
+                    ) : (
+                      flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )
+                    )}
                   </TableHead>
                 );
               })}
@@ -285,9 +379,17 @@ function LeadTable({
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id} data-state={row.original.id === selectedLeadId ? "selected" : undefined}>
+            <TableRow
+              key={row.id}
+              data-state={
+                row.original.id === selectedLeadId ? "selected" : undefined
+              }
+            >
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className={leadColumnClass(cell.column.id)}>
+                <TableCell
+                  key={cell.id}
+                  className={leadColumnClass(cell.column.id)}
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
               ))}
@@ -311,38 +413,88 @@ function LeadDetail({
   const [status, setStatus] = useState<DashboardLeadStatus>(lead.status);
 
   return (
-    <aside className="h-fit rounded-xl border bg-card p-5 xl:sticky xl:top-6" aria-labelledby="lead-detail-title">
+    <aside
+      className="h-fit rounded-xl border bg-card p-5 xl:sticky xl:top-6"
+      aria-labelledby="lead-detail-title"
+    >
       <div className="flex flex-col gap-1">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Focused review</p>
-        <h2 id="lead-detail-title" className="text-xl font-semibold">{lead.name}</h2>
-        <a className="break-all text-sm underline decoration-primary decoration-2 underline-offset-4" href={`mailto:${lead.email}`}>
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          Focused review
+        </p>
+        <h2 id="lead-detail-title" className="text-xl font-semibold">
+          {lead.name}
+        </h2>
+        <a
+          className="break-all text-sm underline decoration-primary decoration-2 underline-offset-4"
+          href={`mailto:${lead.email}`}
+        >
           {lead.email}
         </a>
-        {lead.phone ? <a className="text-sm underline underline-offset-4" href={`tel:${lead.phone}`}>{lead.phone}</a> : null}
+        {lead.phone ? (
+          <a
+            className="text-sm underline underline-offset-4"
+            href={`tel:${lead.phone}`}
+          >
+            {lead.phone}
+          </a>
+        ) : null}
       </div>
 
       <dl className="mt-5 grid grid-cols-2 gap-4 text-sm">
-        <div><dt className="text-muted-foreground">Intent</dt><dd className="font-medium">{formatIntent(lead.intent)}</dd></div>
-        <div><dt className="text-muted-foreground">Locale</dt><dd className="font-medium uppercase">{lead.locale}</dd></div>
-        <div><dt className="text-muted-foreground">Contact path</dt><dd className="font-medium">{lead.preferredContactPath ?? "Not set"}</dd></div>
-        <div><dt className="text-muted-foreground">Received</dt><dd className="font-medium">{formatDate(lead.createdAt)}</dd></div>
+        <div>
+          <dt className="text-muted-foreground">Intent</dt>
+          <dd className="font-medium">{formatLeadIntent(lead.intent)}</dd>
+        </div>
+        <div>
+          <dt className="text-muted-foreground">Locale</dt>
+          <dd className="font-medium uppercase">{lead.locale}</dd>
+        </div>
+        <div>
+          <dt className="text-muted-foreground">Contact path</dt>
+          <dd className="font-medium">
+            {lead.preferredContactPath ?? "Not set"}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-muted-foreground">Received</dt>
+          <dd className="font-medium">{formatDate(lead.createdAt)}</dd>
+        </div>
       </dl>
 
       <div className="mt-5 rounded-lg bg-muted/60 p-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Message</p>
-        <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{lead.message}</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          Message
+        </p>
+        <p className="mt-2 whitespace-pre-wrap text-sm leading-6">
+          {lead.message}
+        </p>
       </div>
 
       <div className="mt-5 flex flex-col gap-2 border-t pt-5">
-        <label className="text-sm font-medium" htmlFor={`lead-status-${lead.id}`}>Follow-up status</label>
+        <label
+          className="text-sm font-medium"
+          htmlFor={`lead-status-${lead.id}`}
+        >
+          Follow-up status
+        </label>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Select value={status} onValueChange={(value) => setStatus(value as DashboardLeadStatus)}>
-            <SelectTrigger id={`lead-status-${lead.id}`} className="min-h-11 flex-1">
+          <Select
+            value={status}
+            onValueChange={(value) => setStatus(value as DashboardLeadStatus)}
+          >
+            <SelectTrigger
+              id={`lead-status-${lead.id}`}
+              className="min-h-11 flex-1"
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {statuses.map((item) => <SelectItem key={item} value={item}>{formatLeadStatus(item)}</SelectItem>)}
+                {statuses.map((item) => (
+                  <SelectItem key={item} value={item}>
+                    {formatLeadStatus(item)}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -363,12 +515,18 @@ function LeadDetail({
 
 function leadColumnClass(columnId: string): string {
   switch (columnId) {
-    case "createdAt": return "w-32";
-    case "name": return "w-[34%]";
-    case "intent": return "w-36";
-    case "status": return "w-28";
-    case "review": return "w-24";
-    default: return "w-auto";
+    case "createdAt":
+      return "w-32";
+    case "name":
+      return "w-[34%]";
+    case "intent":
+      return "w-36";
+    case "status":
+      return "w-28";
+    case "review":
+      return "w-24";
+    default:
+      return "w-auto";
   }
 }
 
@@ -379,16 +537,4 @@ function formatDate(timestamp: number): string {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(timestamp));
-}
-
-function formatLeadStatus(value: DashboardLeadStatus): string {
-  return { new: "New", reviewing: "Reviewing", closed: "Closed" }[value];
-}
-
-function leadStatusTone(value: DashboardLeadStatus): "neutral" | "attention" | "success" {
-  return { new: "attention", reviewing: "neutral", closed: "success" }[value] as "neutral" | "attention" | "success";
-}
-
-function formatIntent(value: string): string {
-  return value.split("-").map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`).join(" ");
 }

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-  buildDashboardContentPayload,
+  buildDashboardProjectRows,
   resolveProjectMediaPreview,
   type DashboardConvexContentPayload,
-} from "./projects";
+} from "./projects-model";
 
 const emptyDashboardContent = {
   caseStudies: [],
@@ -14,7 +14,20 @@ const emptyDashboardContent = {
   resumeVersions: [],
 } as unknown as DashboardConvexContentPayload;
 
-describe("buildDashboardContentPayload", () => {
+function buildDashboardContentPayload(
+  content: DashboardConvexContentPayload,
+  imagesAccountHash?: string,
+) {
+  return {
+    projects: buildDashboardProjectRows(
+      content,
+      content.media ?? [],
+      imagesAccountHash,
+    ),
+  };
+}
+
+describe("projects capability", () => {
   it("previews committed evidence while a legacy Astro selection awaits review", () => {
     const result = resolveProjectMediaPreview([
       {
@@ -43,9 +56,13 @@ describe("buildDashboardContentPayload", () => {
   });
 
   it("uses the Astro evidence image for content-graph project media previews", () => {
-    const payload = buildDashboardContentPayload(emptyDashboardContent);
-    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
-    const contentGraphImage = casaRoca?.images.find((image) => image.source === "content-graph");
+    const projects = buildDashboardProjectRows(emptyDashboardContent, []);
+    const casaRoca = projects.find(
+      (project) => project.contentId === "case-study:casa-roca",
+    );
+    const contentGraphImage = casaRoca?.images.find(
+      (image) => image.source === "content-graph",
+    );
 
     expect(contentGraphImage).toMatchObject({
       href: "https://casa-roca.mx",
@@ -55,25 +72,32 @@ describe("buildDashboardContentPayload", () => {
   });
 
   it("derives Cloudflare Images preview URLs from the browser-safe account hash", () => {
-    const payload = buildDashboardContentPayload({
-      ...emptyDashboardContent,
-      media: [
-        {
-          id: "media-id",
-          storageProvider: "cloudflare-images",
-          storageKey: "media/casa-roca/selected",
-          altText: "Selected Casa Roca screenshot.",
-          contentId: "case-study:casa-roca",
-          usage: "case-study",
-          status: "draft",
-          selectedForPublic: true,
-          selectedForPublicAt: 122,
-          updatedAt: 123,
-        },
-      ],
-    } as unknown as DashboardConvexContentPayload, "cloudflare-hash");
-    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
-    const selectedMedia = casaRoca?.images.find((image) => image.source === "media-metadata");
+    const payload = buildDashboardContentPayload(
+      {
+        ...emptyDashboardContent,
+        media: [
+          {
+            id: "media-id",
+            storageProvider: "cloudflare-images",
+            storageKey: "media/casa-roca/selected",
+            altText: "Selected Casa Roca screenshot.",
+            contentId: "case-study:casa-roca",
+            usage: "case-study",
+            status: "draft",
+            selectedForPublic: true,
+            selectedForPublicAt: 122,
+            updatedAt: 123,
+          },
+        ],
+      } as unknown as DashboardConvexContentPayload,
+      "cloudflare-hash",
+    );
+    const casaRoca = payload.projects.find(
+      (project) => project.contentId === "case-study:casa-roca",
+    );
+    const selectedMedia = casaRoca?.images.find(
+      (image) => image.source === "media-metadata",
+    );
 
     expect(selectedMedia).toMatchObject({
       src: "https://imagedelivery.net/cloudflare-hash/media/casa-roca/selected/public",
@@ -101,8 +125,12 @@ describe("buildDashboardContentPayload", () => {
         },
       ],
     } as unknown as DashboardConvexContentPayload);
-    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
-    const legacyMedia = casaRoca?.images.find((image) => image.id === "legacy-external-media-id");
+    const casaRoca = payload.projects.find(
+      (project) => project.contentId === "case-study:casa-roca",
+    );
+    const legacyMedia = casaRoca?.images.find(
+      (image) => image.id === "legacy-external-media-id",
+    );
 
     expect(legacyMedia).toMatchObject({
       src: legacyUrl,
@@ -112,7 +140,8 @@ describe("buildDashboardContentPayload", () => {
   });
 
   it("uses a public image asset path stored as the storage key", () => {
-    const publicAssetPath = "images/proof/casa-roca-production.png?variant=dashboard#hero";
+    const publicAssetPath =
+      "images/proof/casa-roca-production.png?variant=dashboard#hero";
     const payload = buildDashboardContentPayload({
       ...emptyDashboardContent,
       media: [
@@ -128,8 +157,12 @@ describe("buildDashboardContentPayload", () => {
         },
       ],
     } as unknown as DashboardConvexContentPayload);
-    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
-    const publicAssetMedia = casaRoca?.images.find((image) => image.id === "public-asset-media-id");
+    const casaRoca = payload.projects.find(
+      (project) => project.contentId === "case-study:casa-roca",
+    );
+    const publicAssetMedia = casaRoca?.images.find(
+      (image) => image.id === "public-asset-media-id",
+    );
 
     expect(publicAssetMedia).toMatchObject({
       src: "/images/proof/casa-roca-production.png?variant=dashboard#hero",
@@ -159,10 +192,16 @@ describe("buildDashboardContentPayload", () => {
         updatedAt: 500 + index,
       })),
     } as unknown as DashboardConvexContentPayload);
-    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
+    const casaRoca = payload.projects.find(
+      (project) => project.contentId === "case-study:casa-roca",
+    );
 
     for (const index of unsafeStorageKeys.keys()) {
-      expect(casaRoca?.images.find((image) => image.id === `unsafe-media-id-${index}`)).toMatchObject({
+      expect(
+        casaRoca?.images.find(
+          (image) => image.id === `unsafe-media-id-${index}`,
+        ),
+      ).toMatchObject({
         src: undefined,
         href: undefined,
         previewStatus: "invalid-reference",
@@ -187,8 +226,12 @@ describe("buildDashboardContentPayload", () => {
         },
       ],
     } as unknown as DashboardConvexContentPayload);
-    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
-    const legacyMedia = casaRoca?.images.find((image) => image.id === "legacy-cloudflare-media-id");
+    const casaRoca = payload.projects.find(
+      (project) => project.contentId === "case-study:casa-roca",
+    );
+    const legacyMedia = casaRoca?.images.find(
+      (image) => image.id === "legacy-cloudflare-media-id",
+    );
 
     expect(legacyMedia).toMatchObject({
       src: undefined,
@@ -202,25 +245,32 @@ describe("buildDashboardContentPayload", () => {
   it("surfaces legacy R2 rows as unsupported instead of inventing a public URL", () => {
     const payload = buildDashboardContentPayload({
       ...emptyDashboardContent,
-      media: [{
-        id: "legacy-r2-media-id",
-        storageProvider: "cloudflare-r2",
-        storageKey: "media/casa-roca/legacy-proof",
-        altText: "Legacy R2 proof.",
-        contentId: "case-study:casa-roca",
-        usage: "case-study",
-        status: "draft",
-        selectedForPublic: true,
-        updatedAt: 900,
-      }],
+      media: [
+        {
+          id: "legacy-r2-media-id",
+          storageProvider: "cloudflare-r2",
+          storageKey: "media/casa-roca/legacy-proof",
+          altText: "Legacy R2 proof.",
+          contentId: "case-study:casa-roca",
+          usage: "case-study",
+          status: "draft",
+          selectedForPublic: true,
+          updatedAt: 900,
+        },
+      ],
     } as unknown as DashboardConvexContentPayload);
-    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
+    const casaRoca = payload.projects.find(
+      (project) => project.contentId === "case-study:casa-roca",
+    );
 
-    expect(casaRoca?.images.find((image) => image.id === "legacy-r2-media-id")).toMatchObject({
+    expect(
+      casaRoca?.images.find((image) => image.id === "legacy-r2-media-id"),
+    ).toMatchObject({
       src: undefined,
       href: undefined,
       previewStatus: "unsupported-provider",
-      previewIssue: "Cloudflare R2 has no public delivery adapter in the AOHYS media policy.",
+      previewIssue:
+        "Cloudflare R2 has no public delivery adapter in the AOHYS media policy.",
     });
   });
 
@@ -240,8 +290,12 @@ describe("buildDashboardContentPayload", () => {
         },
       ],
     } as unknown as DashboardConvexContentPayload);
-    const casaRoca = payload.projects.find((project) => project.contentId === "case-study:casa-roca");
+    const casaRoca = payload.projects.find(
+      (project) => project.contentId === "case-study:casa-roca",
+    );
 
-    expect(casaRoca?.images.some((image) => image.id === "archived-media-id")).toBe(false);
+    expect(
+      casaRoca?.images.some((image) => image.id === "archived-media-id"),
+    ).toBe(false);
   });
 });

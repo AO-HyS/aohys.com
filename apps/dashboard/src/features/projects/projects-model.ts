@@ -6,21 +6,20 @@ import {
   getCaseStudyPageContent,
   getLocaleVariant,
   getLocalizedCaseStudyPath,
-  getResumePageContent,
   getSharedI18n,
 } from "@aohys/content-graph";
 import type { FunctionReturnType } from "convex/server";
 import type {
-  DashboardContentPayload,
   DashboardMediaMetadata,
   DashboardProject,
   DashboardProjectDraft,
   DashboardProjectImage,
-  DashboardResumeContent,
-} from "@/types";
-import { resolvePublicMediaUrl } from "@/lib/media-upload";
+} from "./projects-types";
+import { resolvePublicMediaUrl } from "./media-upload";
 
-export type DashboardConvexContentPayload = FunctionReturnType<typeof convexApi.content.listForDashboard>;
+export type DashboardConvexContentPayload = FunctionReturnType<
+  typeof convexApi.content.listForDashboard
+>;
 
 type DashboardCaseStudyMetadata = Pick<
   DashboardProject,
@@ -28,22 +27,36 @@ type DashboardCaseStudyMetadata = Pick<
 >;
 
 export function resolveProjectMediaPreview(images: DashboardProjectImage[]) {
-  const mediaImages = images.filter((image) => image.source === "media-metadata");
+  const mediaImages = images.filter(
+    (image) => image.source === "media-metadata",
+  );
   const selectedImageCandidate = mediaImages.find(
     (image) => image.selectedForPublic && image.status !== "archived",
   );
-  const selectedImageNeedsReview = Boolean(selectedImageCandidate && !selectedImageCandidate.selectedForPublicAt);
-  const selectedImage = selectedImageNeedsReview ? undefined : selectedImageCandidate;
-  const contentGraphImage = images.find((image) => image.source === "content-graph");
+  const selectedImageNeedsReview = Boolean(
+    selectedImageCandidate && !selectedImageCandidate.selectedForPublicAt,
+  );
+  const selectedImage = selectedImageNeedsReview
+    ? undefined
+    : selectedImageCandidate;
+  const contentGraphImage = images.find(
+    (image) => image.source === "content-graph",
+  );
   const fallbackImage = selectedImage
     ? undefined
     : selectedImageNeedsReview
-      ? contentGraphImage
-        ?? mediaImages.find((image) => image.status === "published" && image !== selectedImageCandidate)
-        ?? mediaImages.find((image) => image.status !== "archived" && image !== selectedImageCandidate)
-      : mediaImages.find((image) => image.status === "published")
-        ?? mediaImages.find((image) => image.status !== "archived")
-        ?? contentGraphImage;
+      ? (contentGraphImage ??
+        mediaImages.find(
+          (image) =>
+            image.status === "published" && image !== selectedImageCandidate,
+        ) ??
+        mediaImages.find(
+          (image) =>
+            image.status !== "archived" && image !== selectedImageCandidate,
+        ))
+      : (mediaImages.find((image) => image.status === "published") ??
+        mediaImages.find((image) => image.status !== "archived") ??
+        contentGraphImage);
 
   return {
     previewImage: selectedImage ?? fallbackImage,
@@ -53,26 +66,7 @@ export function resolveProjectMediaPreview(images: DashboardProjectImage[]) {
   };
 }
 
-export function buildDashboardContentPayload(
-  content: DashboardConvexContentPayload,
-  imagesAccountHash?: string,
-): DashboardContentPayload {
-  const media = content.media ?? [];
-
-  return {
-    projects: buildDashboardProjectRows(content, media, imagesAccountHash),
-    media,
-    settings: content.settings ?? [],
-    resumeContent: {
-      en: getResumePageContent("en") as DashboardResumeContent,
-      es: getResumePageContent("es") as DashboardResumeContent,
-    },
-    resumeDrafts: content.resumeDrafts ?? [],
-    resumeVersions: content.resumeVersions ?? [],
-  };
-}
-
-function buildDashboardProjectRows(
+export function buildDashboardProjectRows(
   content: DashboardConvexContentPayload,
   mediaRows: DashboardMediaMetadata[],
   imagesAccountHash?: string,
@@ -89,15 +83,24 @@ function buildDashboardProjectRows(
   }
 
   const draftsByContentIdAndLocale = new Map(
-    (content.projectDrafts ?? []).map((draft) => [`${draft.contentId}:${draft.locale}`, draft]),
+    (content.projectDrafts ?? []).map((draft) => [
+      `${draft.contentId}:${draft.locale}`,
+      draft,
+    ]),
   );
-  const staticCaseStudyNodes = PUBLIC_CONTENT_NODES.filter((node) => node.type === "case-study");
+  const staticCaseStudyNodes = PUBLIC_CONTENT_NODES.filter(
+    (node) => node.type === "case-study",
+  );
   const staticContentIds = staticCaseStudyNodes.map((node) => node.id);
-  const activeMediaRows = mediaRows.filter((item) => item.status !== "archived");
+  const activeMediaRows = mediaRows.filter(
+    (item) => item.status !== "archived",
+  );
   const dynamicContentIds = [
     ...(content.caseStudies ?? []).map((row) => row.contentId),
     ...(content.projectDrafts ?? []).map((draft) => draft.contentId),
-    ...activeMediaRows.map((item) => item.contentId).filter((contentId): contentId is string => Boolean(contentId)),
+    ...activeMediaRows
+      .map((item) => item.contentId)
+      .filter((contentId): contentId is string => Boolean(contentId)),
   ].filter((contentId) => isCaseStudyContentId(contentId));
   const projectContentIds = unique([...staticContentIds, ...dynamicContentIds]);
 
@@ -112,30 +115,43 @@ function buildDashboardProjectRows(
     const spanishVariant = node
       ? getLocaleVariant(node, "es")
       : fallbackProjectVariant(contentId, "es", spanishDraft ?? englishDraft);
-    const publicEvidence = node ? getCaseStudyPageContent(node.id, "en")?.publicEvidence ?? [] : [];
+    const publicEvidence = node
+      ? (getCaseStudyPageContent(node.id, "en")?.publicEvidence ?? [])
+      : [];
     const staticEvidenceImage = STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID[contentId];
-    const media = activeMediaRows.filter((item) => item.contentId === contentId);
-    const firstProjectUrl = publicEvidence.find((item) => isHttpUrl(item.href))?.href;
-    const firstDraftUrl = (content.projectDrafts ?? [])
-      .find((draft) => draft.contentId === contentId && draft.projectUrl)?.projectUrl;
+    const media = activeMediaRows.filter(
+      (item) => item.contentId === contentId,
+    );
+    const firstProjectUrl = publicEvidence.find((item) =>
+      isHttpUrl(item.href),
+    )?.href;
+    const firstDraftUrl = (content.projectDrafts ?? []).find(
+      (draft) => draft.contentId === contentId && draft.projectUrl,
+    )?.projectUrl;
 
     return {
       contentId,
       title: englishVariant.title,
       englishPath: englishVariant.path,
       spanishPath: spanishVariant.path,
-      sitemapIncluded: node ? node.status === "published" && node.sitemap.include : true,
+      sitemapIncluded: node
+        ? node.status === "published" && node.sitemap.include
+        : true,
       status: metadata?.status ?? "active-build",
       evidenceStatus: metadata?.evidenceStatus ?? "missing",
       projectUrl: firstDraftUrl ?? firstProjectUrl,
       updatedAt: metadata?.updatedAt ?? 0,
       locales: (["en", "es"] as const).map((locale) => {
         const draft = draftsByContentIdAndLocale.get(`${contentId}:${locale}`);
-        const oppositeDraft = draftsByContentIdAndLocale.get(`${contentId}:${getAlternateLocale(locale)}`);
+        const oppositeDraft = draftsByContentIdAndLocale.get(
+          `${contentId}:${getAlternateLocale(locale)}`,
+        );
         const variant = node
           ? getLocaleVariant(node, locale)
           : fallbackProjectVariant(contentId, locale, draft ?? oppositeDraft);
-        const pageContent = node ? getCaseStudyPageContent(node.id, locale) : undefined;
+        const pageContent = node
+          ? getCaseStudyPageContent(node.id, locale)
+          : undefined;
 
         return {
           locale,
@@ -148,14 +164,20 @@ function buildDashboardProjectRows(
             ? getLocaleVariant(variant.primaryActionContentId, locale).path
             : variant.path,
           overview: pageContent?.overview ?? variant.summary,
-          achievements: [
-            pageContent?.businessOutcome.body,
-            pageContent?.executionHighlights.body,
-          ].filter(Boolean).join("\n\n") || variant.summary,
-          structureNotes: [
-            pageContent?.architectureDecisions.body,
-            pageContent?.qualitySecurityPerformance.body,
-          ].filter(Boolean).join("\n\n") || variant.summary,
+          achievements:
+            [
+              pageContent?.businessOutcome.body,
+              pageContent?.executionHighlights.body,
+            ]
+              .filter(Boolean)
+              .join("\n\n") || variant.summary,
+          structureNotes:
+            [
+              pageContent?.architectureDecisions.body,
+              pageContent?.qualitySecurityPerformance.body,
+            ]
+              .filter(Boolean)
+              .join("\n\n") || variant.summary,
           draft,
         };
       }),
@@ -168,14 +190,15 @@ function buildDashboardProjectRows(
           src: isImageHref(asset.href)
             ? asset.href
             : index === 0
-              ? staticEvidenceImage?.thumbSrc ?? staticEvidenceImage?.src
+              ? (staticEvidenceImage?.thumbSrc ?? staticEvidenceImage?.src)
               : undefined,
         })),
         ...media.map((item) => {
           const resolution = resolvePublicMediaUrl(item, {
             cloudflareImagesAccountHash: imagesAccountHash,
           });
-          const deliveryUrl = resolution.status === "resolved" ? resolution.url : undefined;
+          const deliveryUrl =
+            resolution.status === "resolved" ? resolution.url : undefined;
 
           return {
             id: item.id,
@@ -184,12 +207,14 @@ function buildDashboardProjectRows(
             source: "media-metadata" as const,
             href: deliveryUrl,
             src: deliveryUrl,
-            previewStatus: resolution.status === "resolved"
-              ? "ready" as const
-              : resolution.status === "invalid"
-                ? "invalid-reference" as const
-                : resolution.status,
-            previewIssue: resolution.status === "resolved" ? undefined : resolution.reason,
+            previewStatus:
+              resolution.status === "resolved"
+                ? ("ready" as const)
+                : resolution.status === "invalid"
+                  ? ("invalid-reference" as const)
+                  : resolution.status,
+            previewIssue:
+              resolution.status === "resolved" ? undefined : resolution.reason,
             storageKey: item.storageKey,
             status: item.status,
             usage: item.usage,
@@ -204,12 +229,19 @@ function buildDashboardProjectRows(
 
 function buildDashboardCaseStudyRows(
   metadataRows: DashboardConvexContentPayload["caseStudies"],
-): Array<DashboardCaseStudyMetadata & Pick<DashboardProject, "title" | "englishPath" | "spanishPath" | "sitemapIncluded">> {
-  const metadataByContentId = new Map(metadataRows.map((row) => [row.contentId, row]));
+): Array<
+  DashboardCaseStudyMetadata &
+    Pick<
+      DashboardProject,
+      "title" | "englishPath" | "spanishPath" | "sitemapIncluded"
+    >
+> {
+  const metadataByContentId = new Map(
+    metadataRows.map((row) => [row.contentId, row]),
+  );
 
-  return PUBLIC_CONTENT_NODES
-    .filter((node) => node.type === "case-study")
-    .map((node) => {
+  return PUBLIC_CONTENT_NODES.filter((node) => node.type === "case-study").map(
+    (node) => {
       const englishVariant = getLocaleVariant(node, "en");
       const spanishVariant = getLocaleVariant(node, "es");
       const metadata = metadataByContentId.get(node.id);
@@ -224,7 +256,8 @@ function buildDashboardCaseStudyRows(
         evidenceStatus: metadata?.evidenceStatus ?? "missing",
         updatedAt: metadata?.updatedAt ?? 0,
       };
-    });
+    },
+  );
 }
 
 function fallbackProjectVariant(

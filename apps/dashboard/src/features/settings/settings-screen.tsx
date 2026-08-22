@@ -1,20 +1,31 @@
 import { useState } from "react";
 import { ExternalLinkIcon, SaveIcon, ShieldCheckIcon } from "lucide-react";
-import { validatePublicWhatsappUrl } from "@aohys/core";
-import { useDashboardContent, useSaveSiteSetting } from "@/api";
-import { Action, AsyncSurface, PageHeader, SectionPanel, StatusBadge } from "@/components/dashboard";
-import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
+import { useSaveSiteSetting, useSettingsContent } from "./settings-api";
+import {
+  Action,
+  AsyncSurface,
+  PageHeader,
+  SectionPanel,
+  StatusBadge,
+} from "@/components/dashboard";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/sonner";
 import { captureDashboardAction } from "@/lib/analytics";
+import { getPublicWhatsappSettingViewModel } from "./settings-view-model";
 
 export function SettingsScreen() {
-  const content = useDashboardContent();
+  const settings = useSettingsContent();
   const saveSiteSetting = useSaveSiteSetting();
   const [isSaving, setIsSaving] = useState(false);
 
   async function handleSaveContact(value: string) {
-    const validation = validatePublicWhatsappUrl(value);
+    const { validation } = getPublicWhatsappSettingViewModel(value, "");
     if (!validation.normalized) return;
 
     const toastId = toast.loading("Saving public contact setting");
@@ -29,7 +40,8 @@ export function SettingsScreen() {
       captureDashboardAction("succeeded", "settings", "save_setting");
       toast.success("Public contact setting saved", {
         id: toastId,
-        description: "The normalized URL is ready for the next reviewed content build.",
+        description:
+          "The normalized URL is ready for the next reviewed content build.",
       });
     } catch (error) {
       captureDashboardAction("failed", "settings", "save_setting", {
@@ -37,18 +49,23 @@ export function SettingsScreen() {
       });
       toast.error("Setting save failed", {
         id: toastId,
-        description: error instanceof Error ? error.message : "The site setting could not be saved.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "The site setting could not be saved.",
       });
     } finally {
       setIsSaving(false);
     }
   }
 
-  if (!content) {
+  if (!settings) {
     return <AsyncSurface state="loading" title="Loading site settings" />;
   }
 
-  const whatsappSetting = content.settings.find((setting) => setting.key === "PUBLIC_WHATSAPP_URL");
+  const whatsappSetting = settings.find(
+    (setting) => setting.key === "PUBLIC_WHATSAPP_URL",
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -82,9 +99,10 @@ function PublicWhatsappSetting({
   onSave: (value: string) => void | Promise<void>;
 }) {
   const [value, setValue] = useState(initialValue);
-  const validation = validatePublicWhatsappUrl(value);
-  const isDirty = value.trim() !== initialValue;
-  const canSave = isDirty && validation.ok;
+  const { validation, canSave } = getPublicWhatsappSettingViewModel(
+    value,
+    initialValue,
+  );
 
   return (
     <form
@@ -94,41 +112,65 @@ function PublicWhatsappSetting({
         if (validation.normalized) void onSave(validation.normalized);
       }}
     >
-      <Field data-invalid={value.length > 0 && !validation.ok || undefined}>
-        <FieldLabel htmlFor="public-whatsapp-url">WhatsApp public URL</FieldLabel>
+      <Field data-invalid={(value.length > 0 && !validation.ok) || undefined}>
+        <FieldLabel htmlFor="public-whatsapp-url">
+          WhatsApp public URL
+        </FieldLabel>
         <Input
           id="public-whatsapp-url"
           name="publicWhatsappUrl"
           inputMode="url"
           autoComplete="url"
-          aria-invalid={value.length > 0 && !validation.ok || undefined}
+          aria-invalid={(value.length > 0 && !validation.ok) || undefined}
           aria-describedby="public-whatsapp-description public-whatsapp-error"
           placeholder="https://wa.me/522299020825"
           value={value}
           onChange={(event) => setValue(event.target.value)}
         />
         <FieldDescription id="public-whatsapp-description">
-          Use a direct <code>https://wa.me/</code> URL with 8–15 digits and no query parameters.
+          Use a direct <code>https://wa.me/</code> URL with 8–15 digits and no
+          query parameters.
         </FieldDescription>
         {value.length > 0 && !validation.ok ? (
-          <FieldError id="public-whatsapp-error">{validation.reason}</FieldError>
+          <FieldError id="public-whatsapp-error">
+            {validation.reason}
+          </FieldError>
         ) : null}
         <div className="mt-2 flex flex-wrap items-center gap-3">
-          <Action type="submit" pending={isSaving} pendingLabel="Saving…" disabled={!canSave}>
+          <Action
+            type="submit"
+            pending={isSaving}
+            pendingLabel="Saving…"
+            disabled={!canSave}
+          >
             <SaveIcon data-icon="inline-start" />
             Save setting
           </Action>
-          <StatusBadge tone={canSave ? "attention" : validation.ok ? "success" : "neutral"}>
-            {canSave ? "Unsaved change" : validation.ok ? "Valid value" : "Waiting for value"}
+          <StatusBadge
+            tone={canSave ? "attention" : validation.ok ? "success" : "neutral"}
+          >
+            {canSave
+              ? "Unsaved change"
+              : validation.ok
+                ? "Valid value"
+                : "Waiting for value"}
           </StatusBadge>
         </div>
       </Field>
 
-      <aside className="rounded-xl border bg-muted/55 p-5" aria-label="Public value safety contract">
-        <ShieldCheckIcon className="size-6 text-success-foreground" aria-hidden="true" />
+      <aside
+        className="rounded-xl border bg-muted/55 p-5"
+        aria-label="Public value safety contract"
+      >
+        <ShieldCheckIcon
+          className="size-6 text-success-foreground"
+          aria-hidden="true"
+        />
         <h2 className="mt-3 font-semibold">Public by design</h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          The browser and Convex apply the same strict allowlist. Invalid protocols, alternate hosts, credentials, fragments, and query strings are rejected.
+          The browser and Convex apply the same strict allowlist. Invalid
+          protocols, alternate hosts, credentials, fragments, and query strings
+          are rejected.
         </p>
         {validation.normalized ? (
           <a

@@ -1,4 +1,4 @@
-import type { DashboardRuntimeConfig } from "@/types";
+import type { DashboardRuntimeConfig } from "@/runtime-config";
 import { matchDashboardNavigationItem } from "@/app/navigation";
 
 export const DASHBOARD_ANALYTICS_EVENTS = [
@@ -27,9 +27,17 @@ export const DASHBOARD_ANALYTICS_ACTIONS = [
   "upload_media",
 ] as const;
 
-export type DashboardAnalyticsEvent = (typeof DASHBOARD_ANALYTICS_EVENTS)[number];
-export type DashboardAnalyticsAction = (typeof DASHBOARD_ANALYTICS_ACTIONS)[number];
-export type DashboardAnalyticsSurface = "overview" | "projects" | "leads" | "resume" | "settings" | "unknown";
+export type DashboardAnalyticsEvent =
+  (typeof DASHBOARD_ANALYTICS_EVENTS)[number];
+export type DashboardAnalyticsAction =
+  (typeof DASHBOARD_ANALYTICS_ACTIONS)[number];
+export type DashboardAnalyticsSurface =
+  | "overview"
+  | "projects"
+  | "leads"
+  | "resume"
+  | "settings"
+  | "unknown";
 
 export interface DashboardAnalyticsProperties {
   environment: DashboardRuntimeConfig["environment"];
@@ -61,10 +69,19 @@ export interface DashboardPostHogConfig {
 }
 
 interface PostHogClient {
-  capture: (event: string, properties: Record<string, string | number | boolean>, options?: { transport: "sendBeacon" }) => void;
-  init: (key: string, config: DashboardPostHogConfig & {
-    before_send: (event: { properties?: Record<string, unknown> } | null) => { properties?: Record<string, unknown> } | null;
-  }) => void;
+  capture: (
+    event: string,
+    properties: Record<string, string | number | boolean>,
+    options?: { transport: "sendBeacon" },
+  ) => void;
+  init: (
+    key: string,
+    config: DashboardPostHogConfig & {
+      before_send: (
+        event: { properties?: Record<string, unknown> } | null,
+      ) => { properties?: Record<string, unknown> } | null;
+    },
+  ) => void;
 }
 
 type PostHogImporter = () => Promise<{ default: PostHogClient }>;
@@ -81,7 +98,17 @@ const SENSITIVE_PROPERTY_PARTS = [
   "token",
   "url",
 ] as const;
-const SAFE_ERROR_TYPES = new Set(["AggregateError", "Error", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError", "UnhandledRejection", "UnknownError"]);
+const SAFE_ERROR_TYPES = new Set([
+  "AggregateError",
+  "Error",
+  "RangeError",
+  "ReferenceError",
+  "SyntaxError",
+  "TypeError",
+  "URIError",
+  "UnhandledRejection",
+  "UnknownError",
+]);
 
 let analyticsClientPromise: Promise<PostHogClient | undefined> | undefined;
 let activeRuntimeConfig: DashboardRuntimeConfig | undefined;
@@ -98,10 +125,17 @@ export function sanitizeDashboardAnalyticsProperties(
   const sanitized: Record<string, string | number | boolean> = {};
 
   for (const [key, value] of Object.entries(properties)) {
-    if (isSensitiveProperty(key) || !["string", "number", "boolean"].includes(typeof value)) continue;
-    sanitized[key] = key.toLowerCase().replaceAll("-", "_") === "error_type" && typeof value === "string" && !SAFE_ERROR_TYPES.has(value)
-      ? "UnknownError"
-      : value as string | number | boolean;
+    if (
+      isSensitiveProperty(key) ||
+      !["string", "number", "boolean"].includes(typeof value)
+    )
+      continue;
+    sanitized[key] =
+      key.toLowerCase().replaceAll("-", "_") === "error_type" &&
+      typeof value === "string" &&
+      !SAFE_ERROR_TYPES.has(value)
+        ? "UnknownError"
+        : (value as string | number | boolean);
   }
 
   return sanitized;
@@ -123,7 +157,10 @@ export function sanitizeDashboardPostHogEnvelopeProperties(
 export function buildDashboardPostHogConfig(
   runtimeConfig: DashboardRuntimeConfig,
 ): DashboardPostHogConfig | undefined {
-  if (runtimeConfig.environment !== "production" || !runtimeConfig.posthogKey?.trim()) {
+  if (
+    runtimeConfig.environment !== "production" ||
+    !runtimeConfig.posthogKey?.trim()
+  ) {
     return undefined;
   }
 
@@ -142,7 +179,9 @@ export function buildDashboardPostHogConfig(
   };
 }
 
-export function dashboardSurfaceFromPath(path: string): DashboardAnalyticsSurface {
+export function dashboardSurfaceFromPath(
+  path: string,
+): DashboardAnalyticsSurface {
   return matchDashboardNavigationItem(path)?.id ?? "unknown";
 }
 
@@ -175,7 +214,10 @@ export function initializeDashboardAnalytics(
     return;
   }
 
-  if (runtimeConfig.environment !== "production" || (typeof window !== "undefined" && window.location.hostname !== "aohys.com")) {
+  if (
+    runtimeConfig.environment !== "production" ||
+    (typeof window !== "undefined" && window.location.hostname !== "aohys.com")
+  ) {
     return;
   }
 
@@ -183,15 +225,23 @@ export function initializeDashboardAnalytics(
   const posthogConfig = buildDashboardPostHogConfig(runtimeConfig);
 
   analyticsClientPromise = posthogConfig
-    ? importPostHog().then(({ default: client }) => {
-      client.init(runtimeConfig.posthogKey!.trim(), {
-        ...posthogConfig,
-        before_send: (event) => event
-          ? { ...event, properties: sanitizeDashboardPostHogEnvelopeProperties(event.properties ?? {}) }
-          : null,
-      });
-      return client;
-    }).catch(() => undefined)
+    ? importPostHog()
+        .then(({ default: client }) => {
+          client.init(runtimeConfig.posthogKey!.trim(), {
+            ...posthogConfig,
+            before_send: (event) =>
+              event
+                ? {
+                    ...event,
+                    properties: sanitizeDashboardPostHogEnvelopeProperties(
+                      event.properties ?? {},
+                    ),
+                  }
+                : null,
+          });
+          return client;
+        })
+        .catch(() => undefined)
     : Promise.resolve(undefined);
 
   bindDashboardErrorSignals();
@@ -214,7 +264,10 @@ export function captureDashboardAction(
   outcome: "succeeded" | "failed",
   surface: DashboardAnalyticsSurface,
   action: DashboardAnalyticsAction,
-  properties: Omit<DashboardAnalyticsProperties, "action" | "environment" | "surface"> = {},
+  properties: Omit<
+    DashboardAnalyticsProperties,
+    "action" | "environment" | "surface"
+  > = {},
 ): void {
   if (!activeRuntimeConfig) {
     return;
@@ -254,29 +307,53 @@ function bindDashboardLifecycleSignals(): void {
   if (typeof window === "undefined" || !activeRuntimeConfig) return;
   let hasCapturedPageleave = false;
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState !== "hidden" || hasCapturedPageleave || !activeRuntimeConfig) return;
+    if (
+      document.visibilityState !== "hidden" ||
+      hasCapturedPageleave ||
+      !activeRuntimeConfig
+    )
+      return;
     hasCapturedPageleave = true;
-    void analyticsClientPromise?.then((client) => client?.capture("$pageleave", {
-      $geoip_disable: true,
-      environment: activeRuntimeConfig!.environment,
-      surface: dashboardSurfaceFromPath(window.location.pathname),
-      path: window.location.pathname,
-    }, { transport: "sendBeacon" }));
+    void analyticsClientPromise?.then((client) =>
+      client?.capture(
+        "$pageleave",
+        {
+          $geoip_disable: true,
+          environment: activeRuntimeConfig!.environment,
+          surface: dashboardSurfaceFromPath(window.location.pathname),
+          path: window.location.pathname,
+        },
+        { transport: "sendBeacon" },
+      ),
+    );
   });
 
   if (typeof PerformanceObserver === "undefined") return;
-  for (const entryType of ["largest-contentful-paint", "layout-shift", "first-input"] as const) {
-    if (!(PerformanceObserver.supportedEntryTypes ?? []).includes(entryType)) continue;
+  for (const entryType of [
+    "largest-contentful-paint",
+    "layout-shift",
+    "first-input",
+  ] as const) {
+    if (!(PerformanceObserver.supportedEntryTypes ?? []).includes(entryType))
+      continue;
     try {
       const observer = new PerformanceObserver((list) => {
         const entry = list.getEntries().at(-1);
         if (!entry || !activeRuntimeConfig) return;
-        const metricEntry = entry as PerformanceEntry & { value?: number; processingStart?: number };
-        const metricValue = entry.entryType === "layout-shift"
-          ? metricEntry.value ?? 0
-          : entry.entryType === "first-input"
-            ? Math.max(0, (metricEntry.processingStart ?? entry.startTime) - entry.startTime)
-            : entry.startTime;
+        const metricEntry = entry as PerformanceEntry & {
+          value?: number;
+          processingStart?: number;
+        };
+        const metricValue =
+          entry.entryType === "layout-shift"
+            ? (metricEntry.value ?? 0)
+            : entry.entryType === "first-input"
+              ? Math.max(
+                  0,
+                  (metricEntry.processingStart ?? entry.startTime) -
+                    entry.startTime,
+                )
+              : entry.startTime;
         captureDashboardEvent("$web_vitals", {
           environment: activeRuntimeConfig.environment,
           surface: dashboardSurfaceFromPath(window.location.pathname),
@@ -293,7 +370,10 @@ function bindDashboardLifecycleSignals(): void {
   }
 }
 
-function captureDashboardClientException(source: string, errorType: string): void {
+function captureDashboardClientException(
+  source: string,
+  errorType: string,
+): void {
   if (!activeRuntimeConfig || typeof window === "undefined") {
     return;
   }

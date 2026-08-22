@@ -1,4 +1,4 @@
-import type { DashboardResumeContent } from "@/types";
+import type { DashboardResumeContent } from "./resume-types";
 
 export interface ResumeEditableState {
   baseline: DashboardResumeContent;
@@ -11,7 +11,9 @@ export type ResumeEditableAction =
   | { type: "commit" }
   | { type: "reset" };
 
-export function createResumeEditableState(baseline: DashboardResumeContent): ResumeEditableState {
+export function createResumeEditableState(
+  baseline: DashboardResumeContent,
+): ResumeEditableState {
   return {
     baseline: cloneResumeContent(baseline),
     draft: cloneResumeContent(baseline),
@@ -38,7 +40,9 @@ export function resumeHasChanges(state: ResumeEditableState): boolean {
   return !structurallyEqual(state.baseline, state.draft);
 }
 
-export function validateResumeContent(content: DashboardResumeContent): string[] {
+export function validateResumeContent(
+  content: DashboardResumeContent,
+): string[] {
   const errors = [
     required(content.name, "Name"),
     required(content.role, "Role"),
@@ -63,10 +67,16 @@ function required(value: string, label: string): string | undefined {
 
 function structurallyEqual(left: unknown, right: unknown): boolean {
   if (Object.is(left, right)) return true;
-  if (typeof left !== typeof right || left === null || right === null) return false;
+  if (typeof left !== typeof right || left === null || right === null)
+    return false;
 
   if (Array.isArray(left) || Array.isArray(right)) {
-    if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return false;
+    if (
+      !Array.isArray(left) ||
+      !Array.isArray(right) ||
+      left.length !== right.length
+    )
+      return false;
     return left.every((value, index) => structurallyEqual(value, right[index]));
   }
 
@@ -76,11 +86,18 @@ function structurallyEqual(left: unknown, right: unknown): boolean {
   const leftKeys = Object.keys(leftRecord);
   const rightKeys = Object.keys(rightRecord);
 
-  return leftKeys.length === rightKeys.length
-    && leftKeys.every((key) => Object.hasOwn(rightRecord, key)
-      && structurallyEqual(leftRecord[key], rightRecord[key]));
+  return (
+    leftKeys.length === rightKeys.length &&
+    leftKeys.every(
+      (key) =>
+        Object.hasOwn(rightRecord, key) &&
+        structurallyEqual(leftRecord[key], rightRecord[key]),
+    )
+  );
 }
 
-function cloneResumeContent(content: DashboardResumeContent): DashboardResumeContent {
+function cloneResumeContent(
+  content: DashboardResumeContent,
+): DashboardResumeContent {
   return structuredClone(content);
 }
