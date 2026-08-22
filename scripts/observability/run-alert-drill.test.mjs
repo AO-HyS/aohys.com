@@ -47,12 +47,61 @@ test("source revision is materialized into the real correlation and dedup fields
 });
 
 test("committed evidence cannot claim success with mismatched correlation", async () => {
+  const catalog = await readJson(
+    "../../docs/observability/alert-catalog.v1.json",
+  );
+  const baseline = await readJson(
+    "../../docs/research/im-12-performance-baseline.json",
+  );
   const evidence = await readJson(
     "../../docs/observability/evidence/im-11-alert-drill.v1.json",
   );
-  assert.doesNotThrow(() => assertCommittedEvidence(evidence));
+  assert.doesNotThrow(() =>
+    assertCommittedEvidence(evidence, catalog, baseline),
+  );
   evidence.correlation.release = "different-revision";
-  assert.throws(() => assertCommittedEvidence(evidence));
+  assert.throws(() => assertCommittedEvidence(evidence, catalog, baseline));
+});
+
+test("committed evidence recalculates adversarial trigger predicates", async () => {
+  const catalog = await readJson(
+    "../../docs/observability/alert-catalog.v1.json",
+  );
+  const baseline = await readJson(
+    "../../docs/research/im-12-performance-baseline.json",
+  );
+  const evidence = await readJson(
+    "../../docs/observability/evidence/im-11-alert-drill.v1.json",
+  );
+
+  const belowThreshold = structuredClone(evidence);
+  belowThreshold.triggerExercise.observed = 0;
+  belowThreshold.triggerExercise.alertWouldFire = false;
+  assert.throws(() =>
+    assertCommittedEvidence(belowThreshold, catalog, baseline),
+  );
+
+  const falseClaim = structuredClone(evidence);
+  falseClaim.triggerExercise.observed = 999;
+  falseClaim.triggerExercise.alertWouldFire = false;
+  assert.throws(() => assertCommittedEvidence(falseClaim, catalog, baseline));
+});
+
+test("committed evidence recalculates verified-fix predicates", async () => {
+  const catalog = await readJson(
+    "../../docs/observability/alert-catalog.v1.json",
+  );
+  const baseline = await readJson(
+    "../../docs/research/im-12-performance-baseline.json",
+  );
+  const evidence = await readJson(
+    "../../docs/observability/evidence/im-11-alert-drill.v1.json",
+  );
+  evidence.verification.observed = 999;
+  evidence.runbookCriteria.metricWithinThreshold = false;
+  evidence.verification.result = "failed";
+  evidence.result = "failed";
+  assert.throws(() => assertCommittedEvidence(evidence, catalog, baseline));
 });
 
 test("a semantic violation cannot be reported as a verified fix", async () => {

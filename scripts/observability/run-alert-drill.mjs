@@ -135,31 +135,92 @@ export async function collectFreshLocalMeasurement() {
   }
 }
 
-export function assertCommittedEvidence(evidence) {
+export function assertCommittedEvidence(evidence, catalog, baseline) {
+  const catalogErrors = validateAlertCatalog(catalog, baseline);
+  assert.deepEqual(catalogErrors, [], catalogErrors.join("\n"));
+  const alert = catalog.alerts.find(({ id }) => id === evidence.alertId);
+  assert.ok(alert, "evidence alert must exist in the catalog");
+  const baselineValue = readJsonPointer(
+    baseline,
+    alert.threshold.derivation.jsonPointer,
+  );
+
   assert.equal(evidence.triggerExercise?.mode, "simulation");
-  assert.equal(evidence.triggerExercise?.alertWouldFire, true);
+  assert.ok(Number.isFinite(evidence.triggerExercise?.observed));
+  assert.equal(evidence.triggerExercise?.threshold, alert.threshold.value);
+  const recalculatedAlertWouldFire = evaluate(
+    alert.threshold.operator,
+    evidence.triggerExercise.observed,
+    alert.threshold.value,
+  );
+  assert.equal(
+    evidence.triggerExercise.alertWouldFire,
+    recalculatedAlertWouldFire,
+  );
+  assert.equal(
+    recalculatedAlertWouldFire,
+    true,
+    "simulation must exercise an actual threshold breach",
+  );
+  assert.equal(
+    alert.threshold.value,
+    baselineValue,
+    "alert threshold must remain anchored to the measured baseline",
+  );
+
   assert.equal(evidence.verification?.mode, "fresh-local");
-  assert.equal(evidence.verification?.result, "passed");
-  assert.equal(evidence.verification?.semanticCheck?.exitCode, 0);
+  assert.match(evidence.verification?.measurementRevision, /^[a-f0-9]{40}$/u);
+  assert.ok(Number.isFinite(evidence.verification?.observed));
+  assert.equal(evidence.verification?.threshold, alert.verifiedFix.value);
+  assert.equal(
+    evidence.verification?.semanticCheck?.command,
+    "pnpm performance:test",
+  );
+  const semanticCheckPassed =
+    evidence.verification?.semanticCheck?.exitCode === 0;
+  const metricWithinThreshold = evaluate(
+    alert.verifiedFix.operator,
+    evidence.verification.observed,
+    alert.verifiedFix.value,
+  );
+  const recalculatedResult =
+    semanticCheckPassed && metricWithinThreshold ? "passed" : "failed";
+  assert.equal(evidence.verification?.result, recalculatedResult);
   assert.equal(evidence.providerWrites, false);
-  assert.equal(
-    evidence.correlation?.release,
-    evidence.verification?.measurementRevision,
+  const sourceMeasurement = {
+    source: { revision: evidence.verification.measurementRevision },
+  };
+  const expectedCorrelation = materializeCorrelation(alert, sourceMeasurement);
+  assert.deepEqual(evidence.correlation, expectedCorrelation);
+  assert.deepEqual(
+    evidence.deduplication,
+    Object.fromEntries(
+      alert.deduplication.keys.map((key) => [
+        key,
+        key === "alertId" ? alert.id : expectedCorrelation[key],
+      ]),
+    ),
   );
   assert.equal(
-    evidence.correlation?.measurementRevision,
-    evidence.verification?.measurementRevision,
+    evidence.quietPeriodMinutes,
+    alert.deduplication.quietPeriodMinutes,
   );
-  assert.equal(evidence.deduplication?.alertId, evidence.alertId);
-  assert.equal(evidence.deduplication?.release, evidence.correlation?.release);
-  assert.equal(
-    evidence.deduplication?.measurementRevision,
-    evidence.correlation?.measurementRevision,
-  );
+  assert.equal(evidence.runbook, alert.runbook);
   assert.equal(evidence.runbookCriteria?.freshMeasurement, true);
-  assert.equal(evidence.runbookCriteria?.semanticCheckPassed, true);
-  assert.equal(evidence.runbookCriteria?.metricWithinThreshold, true);
-  assert.equal(evidence.result, "passed");
+  assert.equal(
+    evidence.runbookCriteria?.semanticCheckPassed,
+    semanticCheckPassed,
+  );
+  assert.equal(
+    evidence.runbookCriteria?.metricWithinThreshold,
+    metricWithinThreshold,
+  );
+  assert.deepEqual(
+    evidence.externalGatesRemain,
+    catalog.externalEvidenceGates.map(({ id, status }) => ({ id, status })),
+  );
+  assert.equal(evidence.result, recalculatedResult);
+  assert.equal(recalculatedResult, "passed");
 }
 
 export async function runAlertDrill({
@@ -180,7 +241,7 @@ export async function runAlertDrill({
     measurementMode: "fresh-local",
     semanticCheck,
   });
-  assertCommittedEvidence(committedEvidence);
+  assertCommittedEvidence(committedEvidence, catalog, baseline);
   assert.equal(actualEvidence.result, "passed");
   assert.ok(Object.values(actualEvidence.runbookCriteria).every(Boolean));
   return actualEvidence;
