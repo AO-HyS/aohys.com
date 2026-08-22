@@ -1,6 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { publishDurablyHandler } from "../convex/model/publication.js";
-import { completeAttempt, recordReceipt } from "../convex/publication.js";
+import {
+  claimAttempt,
+  completeAttempt,
+  reconcileDispatchingAfterStatusCheck,
+  reconcileWorkflowOutcome,
+  recordReceipt,
+} from "../convex/publication.js";
 
 type Row = Record<string, unknown> & { _id: string; _creationTime: number };
 
@@ -98,6 +104,20 @@ function projectDraft(): Row {
   };
 }
 
+/** Models Convex's serialized/OCC retry boundary; this is not a live service test. */
+class AtomicMutationHarness {
+  private tail = Promise.resolve();
+
+  run<T>(mutation: () => Promise<T>): Promise<T> {
+    const result = this.tail.then(mutation);
+    this.tail = result.then(
+      () => undefined,
+      () => undefined,
+    );
+    return result;
+  }
+}
+
 describe("durable publication mutation", () => {
   beforeEach(() => vi.spyOn(Date, "now").mockReturnValue(1_788_000_001_000));
 
@@ -184,6 +204,35 @@ describe("durable publication mutation", () => {
     expect(fixture.scheduler.runAfter).toHaveBeenCalledTimes(2);
   });
 
+  it("models concurrent Convex serialization as one logical request and attempt", async () => {
+    const fixture = publicationDatabase({
+      projectDrafts: [projectDraft()],
+      mediaMetadata: [],
+      siteSettings: [],
+    });
+    const harness = new AtomicMutationHarness();
+    const args = {
+      scope: "project" as const,
+      contentId: "case-study:aohys",
+      targetEnvironment: "preview" as const,
+      requestedBy: "admin_1",
+      providerConfigured: true,
+    };
+
+    const [first, second] = await Promise.all([
+      harness.run(() => publishDurablyHandler(fixture.ctx as never, args)),
+      harness.run(() => publishDurablyHandler(fixture.ctx as never, args)),
+    ]);
+
+    expect(second).toEqual(first);
+    expect(fixture.rows.get("publicationRequests")).toHaveLength(1);
+    expect(fixture.rows.get("publicationAttempts")).toHaveLength(1);
+    expect(fixture.scheduler.runAfter).toHaveBeenCalledTimes(1);
+    expect(
+      fixture.writes.filter((write) => write.table === "projectDrafts"),
+    ).toHaveLength(1);
+  });
+
   it("rejects invalid resume JSON before any write", async () => {
     const fixture = publicationDatabase({
       resumeDrafts: [
@@ -251,6 +300,7 @@ describe("publication acknowledgement and receipts", () => {
       publicationRequestKey: key,
       publicationAttemptId: attemptKey,
       targetEnvironment: "preview",
+      gitRef: "refs/heads/develop",
       runId: "123",
       runUrl: "https://github.com/AO-HyS/aohys.com/actions/runs/123",
       sha: "b".repeat(40),
@@ -315,5 +365,259 @@ describe("publication acknowledgement and receipts", () => {
       state: "rollback-needed",
       retryable: false,
     });
+  });
+
+  it("rejects a receipt whose target is bound to the wrong branch", async () => {
+    const key = "a".repeat(64);
+    const fixture = publicationDatabase({
+      publicationRequests: [
+        {
+          _id: "request_1",
+          _creationTime: 1,
+          requestKey: key,
+          targetEnvironment: "production",
+          state: "release-acknowledged",
+        },
+      ],
+      publicationAttempts: [
+        {
+          _id: "attempt_1",
+          _creationTime: 1,
+          requestId: "request_1",
+          publicationAttemptId: `${key}.1`,
+          state: "acknowledged",
+        },
+      ],
+    });
+
+    await expect(
+      (recordReceipt as never as { _handler: Function })._handler(fixture.ctx, {
+        publicationRequestKey: key,
+        publicationAttemptId: `${key}.1`,
+        targetEnvironment: "production",
+        gitRef: "refs/heads/develop",
+        runId: "123",
+        runUrl: "https://github.com/AO-HyS/aohys.com/actions/runs/123",
+        sha: "b".repeat(40),
+        smokePassed: true,
+      }),
+    ).rejects.toThrow("target and Git ref correlation");
+    expect(fixture.rows.get("publicationReceipts") ?? []).toHaveLength(0);
+  });
+
+  it("lets a correlated post-smoke receipt resolve a response-lost ambiguity", async () => {
+    const key = "a".repeat(64);
+    const fixture = publicationDatabase({
+      publicationRequests: [
+        {
+          _id: "request_1",
+          _creationTime: 1,
+          requestKey: key,
+          targetEnvironment: "preview",
+          state: "rollback-needed",
+        },
+      ],
+      publicationAttempts: [
+        {
+          _id: "attempt_1",
+          _creationTime: 1,
+          requestId: "request_1",
+          publicationAttemptId: `${key}.1`,
+          state: "ambiguous",
+        },
+      ],
+    });
+
+    await expect(
+      (recordReceipt as never as { _handler: Function })._handler(fixture.ctx, {
+        publicationRequestKey: key,
+        publicationAttemptId: `${key}.1`,
+        targetEnvironment: "preview",
+        gitRef: "refs/heads/develop",
+        runId: "123",
+        runUrl: "https://github.com/AO-HyS/aohys.com/actions/runs/123",
+        sha: "b".repeat(40),
+        smokePassed: true,
+      }),
+    ).resolves.toMatchObject({ state: "deployed" });
+    expect(fixture.rows.get("publicationRequests")?.[0]?.state).toBe(
+      "deployed",
+    );
+    expect(fixture.rows.get("publicationAttempts")?.[0]).toMatchObject({
+      state: "acknowledged",
+      providerRunId: "123",
+    });
+  });
+
+  it("reconciles an accepted workflow failure idempotently", async () => {
+    const key = "a".repeat(64);
+    const fixture = publicationDatabase({
+      publicationRequests: [
+        {
+          _id: "request_1",
+          _creationTime: 1,
+          requestKey: key,
+          targetEnvironment: "preview",
+          state: "release-acknowledged",
+        },
+      ],
+      publicationAttempts: [
+        {
+          _id: "attempt_1",
+          _creationTime: 1,
+          requestId: "request_1",
+          publicationAttemptId: `${key}.1`,
+          state: "acknowledged",
+          providerRunId: "123",
+        },
+      ],
+    });
+    const args = {
+      publicationRequestKey: key,
+      publicationAttemptId: `${key}.1`,
+      targetEnvironment: "preview",
+      gitRef: "refs/heads/develop",
+      runId: "123",
+      runUrl: "https://github.com/AO-HyS/aohys.com/actions/runs/123",
+      outcome: "failure",
+    };
+    const handler = (
+      reconcileWorkflowOutcome as never as {
+        _handler: Function;
+      }
+    )._handler;
+
+    await expect(handler(fixture.ctx, args)).resolves.toMatchObject({
+      state: "release-failed",
+      duplicate: false,
+    });
+    await expect(handler(fixture.ctx, args)).resolves.toMatchObject({
+      duplicate: true,
+    });
+    await expect(
+      handler(fixture.ctx, { ...args, outcome: "cancelled" }),
+    ).rejects.toThrow("Conflicting publication workflow outcome");
+    expect(fixture.rows.get("publicationRequests")?.[0]).toMatchObject({
+      state: "release-failed",
+      retryable: true,
+    });
+  });
+});
+
+describe("publication claim recovery", () => {
+  it("records the claim lease and only one serialized claimant succeeds", async () => {
+    vi.spyOn(Date, "now").mockReturnValue(1_788_000_000_000);
+    const fixture = publicationDatabase({
+      publicationRequests: [
+        {
+          _id: "request_1",
+          _creationTime: 1,
+          requestKey: "a".repeat(64),
+          targetEnvironment: "preview",
+          state: "release-requested",
+        },
+      ],
+      publicationAttempts: [
+        {
+          _id: "attempt_1",
+          _creationTime: 1,
+          requestId: "request_1",
+          publicationAttemptId: `${"a".repeat(64)}.1`,
+          state: "scheduled",
+        },
+      ],
+    });
+    const handler = (
+      claimAttempt as never as {
+        _handler: (
+          ctx: unknown,
+          args: { attemptId: string },
+        ) => Promise<{ status: "claimed" | "skipped" }>;
+      }
+    )._handler;
+    const harness = new AtomicMutationHarness();
+    const [first, second] = await Promise.all([
+      harness.run(() => handler(fixture.ctx, { attemptId: "attempt_1" })),
+      harness.run(() => handler(fixture.ctx, { attemptId: "attempt_1" })),
+    ]);
+
+    expect(first.status).toBe("claimed");
+    expect(second.status).toBe("skipped");
+    expect(fixture.rows.get("publicationAttempts")?.[0]).toMatchObject({
+      state: "dispatching",
+      claimedAt: 1_788_000_000_000,
+    });
+  });
+
+  it.each([
+    ["not-found", "release-failed", true],
+    ["unknown", "rollback-needed", false],
+  ] as const)(
+    "reconciles a stale dispatching claim with %s evidence",
+    async (providerStatus, state, retryable) => {
+      vi.spyOn(Date, "now").mockReturnValue(1_788_000_600_000);
+      const fixture = publicationDatabase({
+        publicationRequests: [
+          {
+            _id: "request_1",
+            _creationTime: 1,
+            state: "release-requested",
+          },
+        ],
+        publicationAttempts: [
+          {
+            _id: "attempt_1",
+            _creationTime: 1,
+            requestId: "request_1",
+            state: "dispatching",
+            claimedAt: 1_788_000_000_000,
+          },
+        ],
+      });
+      const handler = (
+        reconcileDispatchingAfterStatusCheck as never as {
+          _handler: Function;
+        }
+      )._handler;
+
+      await expect(
+        handler(fixture.ctx, {
+          attemptId: "attempt_1",
+          providerStatus,
+          statusCheckedAt: 1_788_000_600_000,
+        }),
+      ).resolves.toEqual({ state, retryable });
+      expect(fixture.rows.get("publicationRequests")?.[0]).toMatchObject({
+        state,
+        retryable,
+      });
+    },
+  );
+
+  it("rejects status evidence collected before the dispatch lease expires", async () => {
+    vi.spyOn(Date, "now").mockReturnValue(1_788_000_100_000);
+    const fixture = publicationDatabase({
+      publicationAttempts: [
+        {
+          _id: "attempt_1",
+          _creationTime: 1,
+          requestId: "request_1",
+          state: "dispatching",
+          claimedAt: 1_788_000_000_000,
+        },
+      ],
+    });
+
+    await expect(
+      (
+        reconcileDispatchingAfterStatusCheck as never as {
+          _handler: Function;
+        }
+      )._handler(fixture.ctx, {
+        attemptId: "attempt_1",
+        providerStatus: "not-found",
+        statusCheckedAt: 1_788_000_100_000,
+      }),
+    ).rejects.toThrow("stale claim window");
   });
 });

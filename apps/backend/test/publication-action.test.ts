@@ -38,6 +38,7 @@ describe("publishContent action boundary", () => {
       projectDraftsPublished: 2,
       resumeDraftsPublished: 0,
       mediaPublished: 1,
+      workflowPending: true,
       publication,
     }));
     const result = await (
@@ -80,6 +81,7 @@ describe("publishContent action boundary", () => {
       projectDraftsPublished: 0,
       resumeDraftsPublished: 1,
       mediaPublished: 0,
+      workflowPending: false,
       publication: {
         ...publication,
         scope: "resume" as const,
@@ -100,4 +102,31 @@ describe("publishContent action boundary", () => {
       reason: "PUBLISH_GITHUB_TOKEN is missing.",
     });
   });
+
+  it.each(["release-acknowledged", "deployed", "rollback-needed"] as const)(
+    "does not report deduped %s work as queued",
+    async (state) => {
+      const runMutation = vi.fn(async () => ({
+        publishedAt: 1,
+        projectDraftsPublished: 1,
+        resumeDraftsPublished: 0,
+        mediaPublished: 0,
+        workflowPending: false,
+        publication: { ...publication, state },
+      }));
+      const result = await (
+        publishContent as never as { _handler: Function }
+      )._handler(
+        { runMutation },
+        { scope: "project", contentId: "case-study:aohys" },
+      );
+
+      expect(result.workflow).toEqual({
+        status: "not-configured",
+        reason:
+          "No new workflow dispatch is pending for this publication request.",
+      });
+      expect(result).not.toHaveProperty("workflowPending");
+    },
+  );
 });

@@ -50,6 +50,7 @@ export const publishDurablyReturns = v.object({
   projectDraftsPublished: v.number(),
   resumeDraftsPublished: v.number(),
   mediaPublished: v.number(),
+  workflowPending: v.boolean(),
   publication: publicationSummaryValidator,
 });
 
@@ -145,6 +146,7 @@ export async function publishDurablyHandler(
     projectDraftsPublished: request.projectDraftsPublished,
     resumeDraftsPublished: request.resumeDraftsPublished,
     mediaPublished: request.mediaPublished,
+    workflowPending: request.state === "release-requested",
     publication: summarizeRequest(request, publicationAttemptId),
   };
 }

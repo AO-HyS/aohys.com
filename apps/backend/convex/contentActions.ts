@@ -36,6 +36,7 @@ type DurablePublishResult = {
   projectDraftsPublished: number;
   resumeDraftsPublished: number;
   mediaPublished: number;
+  workflowPending: boolean;
   publication: {
     requestKey: string;
     publicationAttemptId?: string;
@@ -115,7 +116,11 @@ export const publishContent = action({
   handler: async (
     ctx,
     args,
-  ): Promise<DurablePublishResult & { workflow: PublishWorkflowResult }> => {
+  ): Promise<
+    Omit<DurablePublishResult, "workflowPending"> & {
+      workflow: PublishWorkflowResult;
+    }
+  > => {
     const user = await requireAdmin(ctx);
     const environment = getPublishEnvironment();
     const providerConfigured = Boolean(
@@ -145,23 +150,28 @@ export const publishContent = action({
         providerConfigured,
       },
     );
-    const workflow: PublishWorkflowResult = providerConfigured
-      ? {
-          status: "queued",
-          repository:
-            process.env.PUBLISH_GITHUB_REPOSITORY?.trim() || "AO-HyS/aohys.com",
-          workflowId:
-            process.env.PUBLISH_GITHUB_WORKFLOW_ID?.trim() ||
-            "release-train.yml",
-          ref: environment === "production" ? "main" : "develop",
-        }
-      : {
-          status: "not-configured",
-          reason: "PUBLISH_GITHUB_TOKEN is missing.",
-        };
+    const workflow: PublishWorkflowResult =
+      providerConfigured && result.workflowPending
+        ? {
+            status: "queued",
+            repository:
+              process.env.PUBLISH_GITHUB_REPOSITORY?.trim() ||
+              "AO-HyS/aohys.com",
+            workflowId:
+              process.env.PUBLISH_GITHUB_WORKFLOW_ID?.trim() ||
+              "release-train.yml",
+            ref: environment === "production" ? "main" : "develop",
+          }
+        : {
+            status: "not-configured",
+            reason: providerConfigured
+              ? "No new workflow dispatch is pending for this publication request."
+              : "PUBLISH_GITHUB_TOKEN is missing.",
+          };
+    const { workflowPending: _workflowPending, ...publicResult } = result;
 
     return {
-      ...result,
+      ...publicResult,
       workflow,
     };
   },

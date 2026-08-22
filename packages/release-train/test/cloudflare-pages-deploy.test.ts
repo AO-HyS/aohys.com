@@ -807,25 +807,66 @@ describe("Cloudflare Pages release plan", () => {
       "if: success() && github.event_name == 'workflow_dispatch' && inputs.publication_attempt_id != ''",
     );
     expect(workflow).toContain(
+      "if: always() && github.event_name == 'workflow_dispatch' && inputs.publication_attempt_id != '' && (failure() || cancelled())",
+    );
+    expect(workflow).toContain(
       "run: pnpm exec tsx scripts/record-publication-receipt.ts",
     );
+    expect(workflow).toContain(
+      "run: pnpm exec tsx scripts/record-publication-outcome.ts",
+    );
+    expect(
+      workflow.match(/PUBLICATION_GIT_REF: \$\{\{ github\.ref \}\}/g),
+    ).toHaveLength(4);
     expect(workflow).toContain(
       "PUBLICATION_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
     );
     expect(
       workflow.indexOf("- name: Record verified preview publication receipt"),
-    ).toBeGreaterThan(workflow.indexOf("- name: Smoke preview"));
+    ).toBeGreaterThan(
+      workflow.indexOf(
+        "- name: Record unsuccessful preview publication outcome",
+      ),
+    );
     expect(
       workflow.indexOf(
         "- name: Record verified production publication receipt",
       ),
-    ).toBeGreaterThan(workflow.indexOf("- name: Smoke production"));
+    ).toBeGreaterThan(
+      workflow.indexOf(
+        "- name: Record unsuccessful production publication outcome",
+      ),
+    );
     expect(workflow).toContain(
       "GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}",
     );
     expect(workflow).toContain(
       "GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}",
     );
+  });
+
+  it("binds manual publication targets to their expected branch and checkout SHA", () => {
+    const repoRoot = path.resolve(process.cwd(), "../..");
+    const workflow = readFileSync(
+      path.join(repoRoot, ".github", "workflows", "release-train.yml"),
+      "utf8",
+    );
+
+    expect(workflow).toContain(
+      "github.event_name == 'workflow_dispatch' && inputs.target_environment == 'preview' && github.ref == 'refs/heads/develop'",
+    );
+    expect(workflow).toContain(
+      "github.event_name == 'workflow_dispatch' && inputs.target_environment == 'production' && github.ref == 'refs/heads/main'",
+    );
+    expect(workflow.match(/ref: \$\{\{ github\.sha \}\}/g)).toHaveLength(3);
+
+    const permitted = (target: "preview" | "production", ref: string) =>
+      (target === "preview" && ref === "refs/heads/develop") ||
+      (target === "production" && ref === "refs/heads/main");
+    expect(permitted("preview", "refs/heads/develop")).toBe(true);
+    expect(permitted("production", "refs/heads/main")).toBe(true);
+    expect(permitted("preview", "refs/heads/main")).toBe(false);
+    expect(permitted("production", "refs/heads/develop")).toBe(false);
   });
 
   it("keeps preview cancellation isolated from non-cancelable production releases", () => {

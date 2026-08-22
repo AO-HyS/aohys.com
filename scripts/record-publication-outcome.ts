@@ -2,8 +2,9 @@ import { runConvexFunction } from "./convex-run.js";
 
 function required(name: string): string {
   const value = process.env[name]?.trim();
-  if (!value)
-    throw new Error(`${name} is required to record a publication receipt.`);
+  if (!value) {
+    throw new Error(`${name} is required to record a publication outcome.`);
+  }
   return value;
 }
 
@@ -14,8 +15,13 @@ if (targetEnvironment !== "preview" && targetEnvironment !== "production") {
   );
 }
 
-const receipt = runConvexFunction<{ state: "deployed" }>(
-  "publication:recordReceipt",
+const outcome = required("PUBLICATION_WORKFLOW_OUTCOME");
+if (outcome !== "failure" && outcome !== "cancelled") {
+  throw new Error("PUBLICATION_WORKFLOW_OUTCOME must be failure or cancelled.");
+}
+
+const result = runConvexFunction<{ state: "release-failed" }>(
+  "publication:reconcileWorkflowOutcome",
   {
     publicationRequestKey: required("PUBLICATION_REQUEST_KEY"),
     publicationAttemptId: required("PUBLICATION_ATTEMPT_ID"),
@@ -23,26 +29,23 @@ const receipt = runConvexFunction<{ state: "deployed" }>(
     gitRef: required("PUBLICATION_GIT_REF"),
     runId: required("PUBLICATION_RUN_ID"),
     runUrl: required("PUBLICATION_RUN_URL"),
-    sha: required("PUBLICATION_RELEASE_SHA"),
-    smokePassed: true,
+    outcome,
   },
   (value) => {
     if (
       typeof value !== "object" ||
       value === null ||
       !("state" in value) ||
-      value.state !== "deployed"
+      value.state !== "release-failed"
     ) {
-      throw new Error("Convex returned an invalid publication receipt result.");
+      throw new Error("Convex returned an invalid publication outcome result.");
     }
-    return { state: "deployed" };
+    return { state: "release-failed" };
   },
 );
 
-if (receipt.state !== "deployed") {
-  throw new Error(
-    "Convex did not confirm the publication receipt as deployed.",
-  );
+if (result.state !== "release-failed") {
+  throw new Error("Convex did not confirm the failed publication outcome.");
 }
 
-console.log("Verified publication receipt recorded.");
+console.log("Terminal publication workflow outcome recorded.");

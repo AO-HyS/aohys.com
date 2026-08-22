@@ -8,6 +8,8 @@ import {
   publishDurablyReturns,
 } from "./model/publication.js";
 
+const DISPATCH_LEASE_MS = 5 * 60 * 1000;
+
 const claimResultValidator = v.union(
   v.object({ status: v.literal("skipped") }),
   v.object({
@@ -36,9 +38,11 @@ export const claimAttempt = internalMutation({
     if (!request || request.state !== "release-requested") {
       return { status: "skipped" as const };
     }
+    const now = Date.now();
     await ctx.db.patch("publicationAttempts", attempt._id, {
       state: "dispatching",
-      updatedAt: Date.now(),
+      claimedAt: now,
+      updatedAt: now,
     });
     return {
       status: "claimed" as const,
@@ -47,6 +51,61 @@ export const claimAttempt = internalMutation({
       publicationRequestKey: request.requestKey,
       targetEnvironment: request.targetEnvironment,
     };
+  },
+});
+
+export const reconcileDispatchingAfterStatusCheck = internalMutation({
+  args: {
+    attemptId: v.id("publicationAttempts"),
+    providerStatus: v.union(v.literal("not-found"), v.literal("unknown")),
+    statusCheckedAt: v.number(),
+  },
+  returns: v.object({
+    state: v.union(v.literal("release-failed"), v.literal("rollback-needed")),
+    retryable: v.boolean(),
+  }),
+  handler: async (ctx, args) => {
+    const attempt = await ctx.db.get("publicationAttempts", args.attemptId);
+    if (!attempt || attempt.state !== "dispatching" || !attempt.claimedAt) {
+      throw new Error("Only a claimed dispatching attempt can be reconciled.");
+    }
+    const now = Date.now();
+    if (
+      args.statusCheckedAt > now ||
+      args.statusCheckedAt < attempt.claimedAt + DISPATCH_LEASE_MS ||
+      now < attempt.claimedAt + DISPATCH_LEASE_MS
+    ) {
+      throw new Error(
+        "Provider status check is outside the stale claim window.",
+      );
+    }
+    const request = await ctx.db.get("publicationRequests", attempt.requestId);
+    if (!request || request.state !== "release-requested") {
+      throw new Error("Publication request is not awaiting dispatch evidence.");
+    }
+    const retryable = args.providerStatus === "not-found";
+    const requestState: "release-failed" | "rollback-needed" = retryable
+      ? "release-failed"
+      : "rollback-needed";
+    await Promise.all([
+      ctx.db.patch("publicationAttempts", attempt._id, {
+        state: retryable ? "failed" : "ambiguous",
+        retryable,
+        failureCode: retryable
+          ? "provider-run-not-found"
+          : "provider-status-unknown",
+        failureMessage: retryable
+          ? "Provider status check confirmed that no workflow run exists."
+          : "Provider status check could not prove whether a workflow run exists.",
+        updatedAt: now,
+      }),
+      ctx.db.patch("publicationRequests", request._id, {
+        state: requestState,
+        retryable,
+        updatedAt: now,
+      }),
+    ]);
+    return { state: requestState, retryable };
   },
 });
 
@@ -156,6 +215,7 @@ export const recordReceipt = internalMutation({
     publicationRequestKey: v.string(),
     publicationAttemptId: v.string(),
     targetEnvironment: publicationTargetValidator,
+    gitRef: v.string(),
     runId: v.string(),
     runUrl: v.string(),
     sha: v.string(),
@@ -168,6 +228,7 @@ export const recordReceipt = internalMutation({
   }),
   handler: async (ctx, args) => {
     validateReceiptStrings(args);
+    validateTargetGitRef(args.targetEnvironment, args.gitRef);
     const request = await ctx.db
       .query("publicationRequests")
       .withIndex("by_request_key", (query) =>
@@ -186,9 +247,13 @@ export const recordReceipt = internalMutation({
     if (!attempt || attempt.requestId !== request._id) {
       throw new Error("Publication receipt attempt correlation is invalid.");
     }
-    if (attempt.state !== "acknowledged") {
+    if (
+      attempt.state !== "acknowledged" &&
+      attempt.state !== "dispatching" &&
+      attempt.state !== "ambiguous"
+    ) {
       throw new Error(
-        "Only an acknowledged publication attempt accepts a receipt.",
+        "Only an accepted or provider-ambiguous publication attempt accepts a receipt.",
       );
     }
     if (attempt.providerRunId && attempt.providerRunId !== args.runId) {
@@ -207,6 +272,7 @@ export const recordReceipt = internalMutation({
       if (
         existing.requestKey !== args.publicationRequestKey ||
         existing.targetEnvironment !== args.targetEnvironment ||
+        existing.gitRef !== args.gitRef ||
         existing.runId !== args.runId ||
         existing.runUrl !== args.runUrl ||
         existing.sha !== args.sha ||
@@ -227,17 +293,31 @@ export const recordReceipt = internalMutation({
       publicationAttemptId: args.publicationAttemptId,
       requestKey: args.publicationRequestKey,
       targetEnvironment: args.targetEnvironment,
+      gitRef: args.gitRef,
       runId: args.runId,
       runUrl: args.runUrl,
       sha: args.sha,
       smokePassed: true,
       receivedAt: now,
     });
-    await ctx.db.patch("publicationRequests", request._id, {
-      state: "deployed",
-      retryable: undefined,
-      updatedAt: now,
-    });
+    await Promise.all([
+      ctx.db.patch("publicationRequests", request._id, {
+        state: "deployed",
+        retryable: undefined,
+        updatedAt: now,
+      }),
+      ...(attempt.state === "acknowledged"
+        ? []
+        : [
+            ctx.db.patch("publicationAttempts", attempt._id, {
+              state: "acknowledged",
+              retryable: false,
+              providerRunId: args.runId,
+              providerRunUrl: args.runUrl,
+              updatedAt: now,
+            }),
+          ]),
+    ]);
     return {
       requestKey: request.requestKey,
       state: "deployed" as const,
@@ -245,6 +325,112 @@ export const recordReceipt = internalMutation({
     };
   },
 });
+
+export const reconcileWorkflowOutcome = internalMutation({
+  args: {
+    publicationRequestKey: v.string(),
+    publicationAttemptId: v.string(),
+    targetEnvironment: publicationTargetValidator,
+    gitRef: v.string(),
+    runId: v.string(),
+    runUrl: v.string(),
+    outcome: v.union(v.literal("failure"), v.literal("cancelled")),
+  },
+  returns: v.object({
+    requestKey: v.string(),
+    state: v.literal("release-failed"),
+    duplicate: v.boolean(),
+  }),
+  handler: async (ctx, args) => {
+    validateReceiptStrings({ ...args, sha: "a".repeat(40) });
+    validateTargetGitRef(args.targetEnvironment, args.gitRef);
+    const request = await ctx.db
+      .query("publicationRequests")
+      .withIndex("by_request_key", (query) =>
+        query.eq("requestKey", args.publicationRequestKey),
+      )
+      .unique();
+    if (!request || request.targetEnvironment !== args.targetEnvironment) {
+      throw new Error("Publication outcome request correlation is invalid.");
+    }
+    const attempt = await ctx.db
+      .query("publicationAttempts")
+      .withIndex("by_publication_attempt_id", (query) =>
+        query.eq("publicationAttemptId", args.publicationAttemptId),
+      )
+      .unique();
+    if (!attempt || attempt.requestId !== request._id) {
+      throw new Error("Publication outcome attempt correlation is invalid.");
+    }
+    if (attempt.workflowOutcome) {
+      if (
+        attempt.workflowOutcome !== args.outcome ||
+        attempt.providerRunId !== args.runId ||
+        attempt.providerRunUrl !== args.runUrl
+      ) {
+        throw new Error("Conflicting publication workflow outcome rejected.");
+      }
+      return {
+        requestKey: request.requestKey,
+        state: "release-failed" as const,
+        duplicate: true,
+      };
+    }
+    if (
+      attempt.state !== "acknowledged" &&
+      attempt.state !== "dispatching" &&
+      attempt.state !== "ambiguous"
+    ) {
+      throw new Error(
+        "Only an accepted publication attempt accepts a workflow outcome.",
+      );
+    }
+    if (attempt.providerRunId && attempt.providerRunId !== args.runId) {
+      throw new Error("Publication outcome run id correlation is invalid.");
+    }
+    if (attempt.providerRunUrl && attempt.providerRunUrl !== args.runUrl) {
+      throw new Error("Publication outcome run URL correlation is invalid.");
+    }
+    const now = Date.now();
+    await Promise.all([
+      ctx.db.patch("publicationAttempts", attempt._id, {
+        state: "failed",
+        retryable: true,
+        providerRunId: args.runId,
+        providerRunUrl: args.runUrl,
+        workflowOutcome: args.outcome,
+        workflowOutcomeAt: now,
+        failureCode: `workflow-${args.outcome}`,
+        failureMessage:
+          "Release workflow reported a terminal unsuccessful outcome.",
+        updatedAt: now,
+      }),
+      ctx.db.patch("publicationRequests", request._id, {
+        state: "release-failed",
+        retryable: true,
+        updatedAt: now,
+      }),
+    ]);
+    return {
+      requestKey: request.requestKey,
+      state: "release-failed" as const,
+      duplicate: false,
+    };
+  },
+});
+
+function validateTargetGitRef(
+  targetEnvironment: "preview" | "production",
+  gitRef: string,
+) {
+  const expected =
+    targetEnvironment === "production"
+      ? "refs/heads/main"
+      : "refs/heads/develop";
+  if (gitRef !== expected) {
+    throw new Error("Publication target and Git ref correlation is invalid.");
+  }
+}
 
 function validateReceiptStrings(args: {
   publicationRequestKey: string;
@@ -261,7 +447,12 @@ function validateReceiptStrings(args: {
   }
   if (!/^\d+$/.test(args.runId))
     throw new Error("Publication run id is invalid.");
-  if (!/^https:\/\/github\.com\//.test(args.runUrl)) {
+  if (
+    !/^https:\/\/github\.com\/[^/]+\/[^/]+\/actions\/runs\/\d+$/.test(
+      args.runUrl,
+    ) ||
+    !args.runUrl.endsWith(`/actions/runs/${args.runId}`)
+  ) {
     throw new Error("Publication run URL is invalid.");
   }
   if (!/^[a-f0-9]{40,64}$/i.test(args.sha)) {
