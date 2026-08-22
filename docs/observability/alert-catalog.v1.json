@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": 1,
+  "mode": "local-definition",
+  "provider": {
+    "activation": "external-gate",
+    "canonicalProjectId": "489978",
+    "historicalConflictingProjectId": "492205",
+    "requiredResolution": "Confirm the canonical project in the provider UI before activating any alert."
+  },
+  "externalEvidenceGates": [
+    {
+      "id": "posthog-alert-activation",
+      "owner": "product-engineering",
+      "status": "unproven",
+      "requiredEvidence": "Provider-side alert rule and one delivery receipt from the resolved canonical project."
+    },
+    {
+      "id": "browser-rum-baseline",
+      "owner": "product-engineering",
+      "status": "unproven",
+      "requiredEvidence": "A representative production RUM window for WebGL and Core Web Vitals."
+    },
+    {
+      "id": "convex-runtime-insights",
+      "owner": "product-engineering",
+      "status": "unproven",
+      "requiredEvidence": "Convex runtime query fanout and mutation contention measurements."
+    }
+  ],
+  "alerts": [
+    {
+      "id": "work-archive-eager-image-regression",
+      "status": "locally-defined",
+      "owner": "product-engineering",
+      "signal": {
+        "source": "performance:measure",
+        "metricPath": "/observations/publicSite/workArchiveEagerImages",
+        "correlationKeys": ["release", "measurementRevision"]
+      },
+      "threshold": {
+        "operator": "greater-than",
+        "value": 1,
+        "unit": "images",
+        "derivation": {
+          "baselineFile": "docs/research/im-12-performance-baseline.json",
+          "jsonPointer": "/budgets/publicSite/workArchiveEagerImages/expected",
+          "kind": "measured-baseline"
+        }
+      },
+      "window": {
+        "kind": "per-measurement",
+        "samples": 1
+      },
+      "deduplication": {
+        "keys": ["alertId", "release", "measurementRevision"],
+        "quietPeriodMinutes": 1440
+      },
+      "runbook": "docs/observability/runbooks/work-archive-eager-image-regression.md",
+      "verifiedFix": {
+        "operator": "less-than-or-equal",
+        "value": 1,
+        "consecutiveMeasurements": 1,
+        "criterion": "A fresh production build measurement reports at most one eager image and its semantic performance checks pass."
+      }
+    }
+  ],
+  "reportOnlySignals": [
+    {
+      "id": "dashboard-bundle-size",
+      "owner": "product-engineering",
+      "status": "unproven",
+      "signal": "dashboard journey raw/gzip bytes",
+      "numericThreshold": null,
+      "reason": "IM-12 records build baselines but explicitly keeps dashboard bundle budgets report-only."
+    },
+    {
+      "id": "public-webgl-runtime",
+      "owner": "product-engineering",
+      "status": "unproven",
+      "signal": "browser WebGL runtime cost",
+      "numericThreshold": null,
+      "reason": "Browser and RUM evidence is not yet available."
+    },
+    {
+      "id": "convex-runtime-fanout-contention",
+      "owner": "product-engineering",
+      "status": "unproven",
+      "signal": "Convex query fanout and mutation contention",
+      "numericThreshold": null,
+      "reason": "Static document envelopes are not runtime fanout or contention measurements."
+    }
+  ]
+}

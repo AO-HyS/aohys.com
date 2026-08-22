@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "drill": "alert-to-runbook-to-simulated-fix-to-verified-fix",
+  "alertId": "work-archive-eager-image-regression",
+  "providerWrites": false,
+  "source": {
+    "baselineRevision": "619ec0df5b08edebbde0f78db248fabbf59971e2",
+    "baselineMetricPath": "/budgets/publicSite/workArchiveEagerImages/expected",
+    "runbook": "docs/observability/runbooks/work-archive-eager-image-regression.md"
+  },
+  "transitions": [
+    {
+      "state": "alerted",
+      "observed": 2,
+      "threshold": 1,
+      "passed": true
+    },
+    {
+      "state": "runbook-selected",
+      "owner": "product-engineering",
+      "correlationKeys": ["release", "measurementRevision"],
+      "deduplicationKeys": ["alertId", "release", "measurementRevision"],
+      "quietPeriodMinutes": 1440,
+      "passed": true
+    },
+    {
+      "state": "simulated-fix",
+      "change": "Restore lazy loading for every work-archive image after the first card.",
+      "observed": 1,
+      "passed": true
+    },
+    {
+      "state": "verified-fix",
+      "observed": 1,
+      "threshold": 1,
+      "consecutiveMeasurements": 1,
+      "passed": true
+    }
+  ],
+  "externalGatesRemain": [
+    { "id": "posthog-alert-activation", "status": "unproven" },
+    { "id": "browser-rum-baseline", "status": "unproven" },
+    { "id": "convex-runtime-insights", "status": "unproven" }
+  ],
+  "result": "passed"
+}
