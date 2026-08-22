@@ -34,14 +34,68 @@ const snapshotPatterns = [
 ];
 
 function markdownLinks(markdown) {
-  return [...markdown.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)].map(
-    (match) => match[1],
-  );
+  const links = [];
+  const pattern =
+    /\[[^\]]+\]\(\s*(?:<([^>\n]+)>|([^\s)\n]+))(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/gu;
+
+  for (const match of markdown.matchAll(pattern)) {
+    links.push(match[1] ?? match[2]);
+  }
+
+  return links;
+}
+
+function decoded(value) {
+  try {
+    return { value: decodeURIComponent(value), error: undefined };
+  } catch {
+    return {
+      value: undefined,
+      error: `malformed local link encoding: ${value}`,
+    };
+  }
 }
 
 function localLinkTarget(link) {
-  const withoutTitle = link.trim().split(/\s+["']/u, 1)[0];
-  return decodeURIComponent(withoutTitle.split("#", 1)[0]);
+  const hashIndex = link.indexOf("#");
+  const rawPath = hashIndex === -1 ? link : link.slice(0, hashIndex);
+  const rawFragment = hashIndex === -1 ? "" : link.slice(hashIndex + 1);
+  const pathResult = decoded(rawPath);
+  const fragmentResult = decoded(rawFragment);
+
+  return {
+    path: pathResult.value,
+    fragment: fragmentResult.value,
+    error: pathResult.error ?? fragmentResult.error,
+  };
+}
+
+function githubHeadingSlug(heading) {
+  return heading
+    .replace(/<[^>]+>/gu, "")
+    .replace(/[`*_~]/gu, "")
+    .toLocaleLowerCase("en-US")
+    .replace(/[^\p{Letter}\p{Number}\s-]/gu, "")
+    .trim()
+    .replace(/\s+/gu, "-");
+}
+
+function markdownFragments(markdown) {
+  const fragments = new Set();
+  const duplicates = new Map();
+
+  for (const match of markdown.matchAll(/^ {0,3}#{1,6}\s+(.+?)\s*#*\s*$/gmu)) {
+    const base = githubHeadingSlug(match[1]);
+    const duplicate = duplicates.get(base) ?? 0;
+    fragments.add(duplicate === 0 ? base : `${base}-${duplicate}`);
+    duplicates.set(base, duplicate + 1);
+  }
+
+  for (const match of markdown.matchAll(/\bid=["']([^"']+)["']/gu)) {
+    fragments.add(match[1]);
+  }
+
+  return fragments;
 }
 
 export function validateWorkspaceGuide(markdown, repositoryRoot) {
@@ -70,15 +124,24 @@ export function validateWorkspaceGuide(markdown, repositoryRoot) {
     }
   }
 
-  const guideDirectory = dirname(resolve(repositoryRoot, workspaceGuidePath));
+  const absoluteGuidePath = resolve(repositoryRoot, workspaceGuidePath);
+  const guideDirectory = dirname(absoluteGuidePath);
   const repositoryPrefix = `${resolve(repositoryRoot)}${sep}`;
 
   for (const link of links) {
-    if (/^(?:https?:|mailto:|#)/u.test(link)) {
+    if (/^(?:https?:|mailto:)/u.test(link)) {
       continue;
     }
 
-    const target = resolve(guideDirectory, localLinkTarget(link));
+    const local = localLinkTarget(link);
+    if (local.error) {
+      issues.push(local.error);
+      continue;
+    }
+
+    const target = local.path
+      ? resolve(guideDirectory, local.path)
+      : absoluteGuidePath;
     if (
       target !== resolve(repositoryRoot) &&
       !target.startsWith(repositoryPrefix)
@@ -86,6 +149,11 @@ export function validateWorkspaceGuide(markdown, repositoryRoot) {
       issues.push(`local link escapes the repository: ${link}`);
     } else if (!existsSync(target)) {
       issues.push(`stale or broken local link: ${link}`);
+    } else if (local.fragment) {
+      const targetMarkdown = readFileSync(target, "utf8");
+      if (!markdownFragments(targetMarkdown).has(local.fragment)) {
+        issues.push(`stale or broken local link fragment: ${link}`);
+      }
     }
   }
 

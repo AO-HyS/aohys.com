@@ -33,6 +33,32 @@ test("World Tree check rejects a stale local reference", () => {
   );
 });
 
+test("World Tree check validates local heading fragments", () => {
+  const badFragmentGuide = `${guide}\n[Bad anchor](agents/domain.md#definitely-not-a-real-heading)\n`;
+
+  assert.ok(
+    validateWorkspaceGuide(badFragmentGuide, repositoryRoot).includes(
+      "stale or broken local link fragment: agents/domain.md#definitely-not-a-real-heading",
+    ),
+  );
+});
+
+test("World Tree check accepts CommonMark angle-bracket destinations", () => {
+  const angleGuide = `${guide}\n[Domain policy](<agents/domain.md>)\n`;
+
+  assert.deepEqual(validateWorkspaceGuide(angleGuide, repositoryRoot), []);
+});
+
+test("World Tree check reports malformed percent encoding without throwing", () => {
+  const malformedGuide = `${guide}\n[Bad encoding](agents/domain%ZZ.md)\n`;
+
+  assert.ok(
+    validateWorkspaceGuide(malformedGuide, repositoryRoot).includes(
+      "malformed local link encoding: agents/domain%ZZ.md",
+    ),
+  );
+});
+
 test("World Tree check rejects synchronized inventory and date freshness claims", () => {
   const snapshotGuide = `${guide}\n## Workspace Layout\n\n| Path | Role |\n| --- | --- |\n| apps/example | Current module |\n\nLast updated: 2026-08-22\n`;
   const issues = validateWorkspaceGuide(snapshotGuide, repositoryRoot);
