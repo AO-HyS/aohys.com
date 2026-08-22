@@ -16,6 +16,14 @@ const { variant, label, class: className } = Astro.props;
 <script>
   type SceneVariant = "home" | "architecture" | "contact";
   type GLContext = WebGLRenderingContext | WebGL2RenderingContext;
+  interface SceneUniforms {
+    resolution: WebGLUniformLocation | null;
+    pointer: WebGLUniformLocation | null;
+    time: WebGLUniformLocation | null;
+    variant: WebGLUniformLocation | null;
+    tone: WebGLUniformLocation | null;
+    transition: WebGLUniformLocation | null;
+  }
 
   const vertexBody = `
     POSITION_QUALIFIER vec2 a_position;
@@ -204,7 +212,7 @@ const { variant, label, class: className } = Astro.props;
     let gl: GLContext | null = null;
     let program: WebGLProgram | null = null;
     let positionBuffer: WebGLBuffer | null = null;
-    let uniforms: Record<string, WebGLUniformLocation | null> = {};
+    let uniforms: SceneUniforms | null = null;
     let resizeObserver: ResizeObserver | null = null;
     let intersectionObserver: IntersectionObserver | null = null;
     let frame = 0;
@@ -251,7 +259,7 @@ const { variant, label, class: className } = Astro.props;
       if (loseContext && gl) gl.getExtension("WEBGL_lose_context")?.loseContext();
       positionBuffer = null;
       program = null;
-      uniforms = {};
+      uniforms = null;
       gl = null;
     };
 
@@ -272,7 +280,7 @@ const { variant, label, class: className } = Astro.props;
 
     const renderFrame = (time: number) => {
       frame = 0;
-      if (!gl || !program || !positionBuffer || !canRender()) return;
+      if (!gl || !program || !positionBuffer || !uniforms || !canRender()) return;
       pointerX += (pointerTargetX - pointerX) * 0.065;
       pointerY += (pointerTargetY - pointerY) * 0.065;
       currentTone += (targetTone - currentTone) * 0.052;
@@ -374,8 +382,12 @@ const { variant, label, class: className } = Astro.props;
     function onVisibilityChange() { schedule(); }
 
     function onProjectChange(event: Event) {
-      const projectEvent = event as CustomEvent<{ index?: number }>;
-      targetTone = Math.abs(Number(projectEvent.detail?.index ?? 0)) % 3;
+      const detail = event instanceof CustomEvent &&
+        typeof event.detail === "object" && event.detail !== null &&
+        "index" in event.detail && typeof event.detail.index === "number"
+        ? event.detail.index
+        : 0;
+      targetTone = Math.abs(detail) % 3;
       transitionEnergy = 1;
       schedule();
     }
@@ -404,7 +416,7 @@ const { variant, label, class: className } = Astro.props;
       stopLoop();
       positionBuffer = null;
       program = null;
-      uniforms = {};
+      uniforms = null;
       gl = null;
       sceneRoot.dataset.webglState = "fallback";
       sceneRoot.dataset.webglFallbackReason = "context-lost";

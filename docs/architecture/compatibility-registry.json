@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "requirement": "RQ-04",
+  "description": "Approved compatibility inventory for routes, renderers, and intentionally retained surfaces.",
+  "entries": [
+    {
+      "id": "dashboard-alias:/dashboard/case-studies",
+      "kind": "dashboard-alias",
+      "surface": "/dashboard/case-studies",
+      "canonicalSurface": "/dashboard/projects",
+      "source": "apps/dashboard/src/navigation.ts",
+      "owner": "apps/dashboard",
+      "rq04Evidence": "RQ-04: dashboardNavigation declares /case-studies as a Projects alias, and the dashboard router mounts aliases under /dashboard.",
+      "retirementCondition": "Retire when inbound links and saved bookmarks no longer require the legacy case-studies path and a reviewed redirect or migration has replaced it."
+    },
+    {
+      "id": "dashboard-alias:/dashboard/media",
+      "kind": "dashboard-alias",
+      "surface": "/dashboard/media",
+      "canonicalSurface": "/dashboard/projects",
+      "source": "apps/dashboard/src/navigation.ts",
+      "owner": "apps/dashboard",
+      "rq04Evidence": "RQ-04: dashboardNavigation declares /media as a Projects alias, and the dashboard router mounts aliases under /dashboard.",
+      "retirementCondition": "Retire when inbound links and saved bookmarks no longer require the legacy media path and a reviewed redirect or migration has replaced it."
+    },
+    {
+      "id": "public-redirect:/blog",
+      "kind": "public-redirect",
+      "surface": "/blog",
+      "target": "/case-studies/",
+      "status": 301,
+      "source": "apps/site/public/_redirects",
+      "owner": "apps/site",
+      "rq04Evidence": "RQ-04: Cloudflare Pages publishes the current permanent redirect from /blog to /case-studies/.",
+      "retirementCondition": "Retire only after the legacy URL has no supported inbound links or SEO obligation and the replacement has been verified in production."
+    },
+    {
+      "id": "public-redirect:/agents",
+      "kind": "public-redirect",
+      "surface": "/agents",
+      "target": "/practice/",
+      "status": 301,
+      "source": "apps/site/public/_redirects",
+      "owner": "apps/site",
+      "rq04Evidence": "RQ-04: Cloudflare Pages publishes the current permanent redirect from /agents to /practice/.",
+      "retirementCondition": "Retire only after the legacy URL has no supported inbound links or SEO obligation and the replacement has been verified in production."
+    },
+    {
+      "id": "public-redirect:/pricing",
+      "kind": "public-redirect",
+      "surface": "/pricing",
+      "target": "/resume/",
+      "status": 301,
+      "source": "apps/site/public/_redirects",
+      "owner": "apps/site",
+      "rq04Evidence": "RQ-04: Cloudflare Pages publishes the current permanent redirect from /pricing to /resume/.",
+      "retirementCondition": "Retire only after the legacy URL has no supported inbound links or SEO obligation and the replacement has been verified in production."
+    },
+    {
+      "id": "public-redirect:/es/blog",
+      "kind": "public-redirect",
+      "surface": "/es/blog",
+      "target": "/es/casos/",
+      "status": 301,
+      "source": "apps/site/public/_redirects",
+      "owner": "apps/site",
+      "rq04Evidence": "RQ-04: Cloudflare Pages publishes the current permanent redirect from /es/blog to /es/casos/.",
+      "retirementCondition": "Retire only after the legacy URL has no supported inbound links or SEO obligation and the replacement has been verified in production."
+    },
+    {
+      "id": "public-redirect:/es/agentes",
+      "kind": "public-redirect",
+      "surface": "/es/agentes",
+      "target": "/es/practica/",
+      "status": 301,
+      "source": "apps/site/public/_redirects",
+      "owner": "apps/site",
+      "rq04Evidence": "RQ-04: Cloudflare Pages publishes the current permanent redirect from /es/agentes to /es/practica/.",
+      "retirementCondition": "Retire only after the legacy URL has no supported inbound links or SEO obligation and the replacement has been verified in production."
+    },
+    {
+      "id": "public-redirect:/es/precios",
+      "kind": "public-redirect",
+      "surface": "/es/precios",
+      "target": "/es/curriculum/",
+      "status": 301,
+      "source": "apps/site/public/_redirects",
+      "owner": "apps/site",
+      "rq04Evidence": "RQ-04: Cloudflare Pages publishes the current permanent redirect from /es/precios to /es/curriculum/.",
+      "retirementCondition": "Retire only after the legacy URL has no supported inbound links or SEO obligation and the replacement has been verified in production."
+    },
+    {
+      "id": "public-redirect:/blog/*",
+      "kind": "public-redirect",
+      "surface": "/blog/*",
+      "target": "/case-studies/:splat/",
+      "status": 301,
+      "source": "apps/site/public/_redirects",
+      "owner": "apps/site",
+      "rq04Evidence": "RQ-04: Cloudflare Pages preserves nested legacy blog URLs by redirecting the splat to /case-studies/:splat.",
+      "retirementCondition": "Retire only after nested legacy URLs have no supported inbound links or SEO obligation and the replacement mapping has been verified in production."
+    },
+    {
+      "id": "public-redirect:/es/blog/*",
+      "kind": "public-redirect",
+      "surface": "/es/blog/*",
+      "target": "/es/casos/:splat/",
+      "status": 301,
+      "source": "apps/site/public/_redirects",
+      "owner": "apps/site",
+      "rq04Evidence": "RQ-04: Cloudflare Pages preserves nested Spanish legacy blog URLs by redirecting the splat to /es/casos/:splat.",
+      "retirementCondition": "Retire only after nested legacy URLs have no supported inbound links or SEO obligation and the replacement mapping has been verified in production."
+    },
+    {
+      "id": "site-renderer:dashboard-sign-in",
+      "kind": "site-renderer",
+      "surface": "dashboard sign-in",
+      "renderer": "renderDashboardSignIn",
+      "source": "apps/site/src/dashboard-access-states.ts",
+      "owner": "apps/site",
+      "rq04Evidence": "RQ-04: the active Pages dashboard guard renders the noindex sign-in shell and links to the server-side Google sign-in entry.",
+      "retirementCondition": "Retire when the dashboard authentication entry is replaced and its privacy, callback, and recovery contract has an approved successor."
+    },
+    {
+      "id": "site-renderer:dashboard-state",
+      "kind": "site-renderer",
+      "surface": "dashboard access states",
+      "renderer": "renderDashboardState",
+      "source": "apps/site/src/dashboard-access-states.ts",
+      "owner": "apps/site",
+      "rq04Evidence": "RQ-04: the active Pages dashboard guard renders loading-independent configuration, unauthorized, and unavailable private states.",
+      "retirementCondition": "Retire when every protected dashboard failure state has an approved replacement that preserves noindex, no-store, and recovery behavior."
+    },
+    {
+      "id": "site-renderer:dashboard-app-shell",
+      "kind": "site-renderer",
+      "surface": "dashboard authenticated app shell",
+      "renderer": "renderDashboardAppShell",
+      "source": "apps/site/src/dashboard-access.ts",
+      "owner": "apps/site",
+      "rq04Evidence": "RQ-04: the active authenticated Pages guard emits the React dashboard root, runtime configuration, noindex metadata, and dashboard assets.",
+      "retirementCondition": "Retire when the authenticated dashboard entry has a reviewed successor with equivalent runtime configuration and private response guarantees."
+    },
+    {
+      "id": "pages-entry:dashboard-renderer",
+      "kind": "pages-entry-renderer",
+      "surface": "/dashboard/*",
+      "renderer": "onRequest",
+      "source": "functions/dashboard/[[path]].ts",
+      "owner": "functions/dashboard",
+      "rq04Evidence": "RQ-04: the Cloudflare Pages entry dynamically invokes safeHandleDashboardRequest for the active private dashboard surface.",
+      "retirementCondition": "Retire when the dashboard Pages Function entry is replaced by an approved equivalent boundary and its auth/runtime contract is covered."
+    },
+    {
+      "id": "pages-entry:dashboard-fallback",
+      "kind": "pages-entry-renderer",
+      "surface": "/dashboard/* fallback",
+      "renderer": "unavailableDashboardHtml",
+      "source": "functions/dashboard/[[path]].ts",
+      "owner": "functions/dashboard",
+      "rq04Evidence": "RQ-04: the Cloudflare Pages entry has a private unavailable fallback that prevents a raw Worker 1101 response when the dashboard boundary fails.",
+      "retirementCondition": "Retire when the Pages entry has an approved failure boundary with the same private unavailable and observability guarantees."
+    },
+    {
+      "id": "package-surface:dashboard-ui-empty",
+      "kind": "package-surface",
+      "surface": "packages/dashboard-ui",
+      "source": "packages/dashboard-ui/tsconfig.json",
+      "owner": "packages/dashboard-ui",
+      "rq04Evidence": "RQ-04: the workspace retains packages/dashboard-ui as an intentionally empty compatibility surface with only its TypeScript boundary.",
+      "retirementCondition": "Retire when the package gains a first shared dashboard UI module or is removed from the workspace through an approved architecture change."
+    }
+  ]
+}

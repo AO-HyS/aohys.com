@@ -6,6 +6,7 @@ import {
   type Locale,
 } from "../packages/content-graph/src/index.ts";
 import { hasConvexDeploymentAccess, runConvexFunction } from "./convex-run.js";
+import { parseDashboardContentPayload } from "./apply-dashboard-published-content.js";
 
 type DashboardCaseStudyStatus =
   | "production-proof"
@@ -89,8 +90,10 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
     projectUrl: "https://casa-roca.mx",
     copy: {
       en: {
-        summary: "Live hospitality site for Casa Roca: a clear place story, direct guest inquiry path, and dependable production delivery.",
-        seoDescription: "Casa Roca is a live hospitality website for a boutique stay in Veracruz, with clear place storytelling, direct guest inquiry paths, search-ready pages, and production release discipline.",
+        summary:
+          "Live hospitality site for Casa Roca: a clear place story, direct guest inquiry path, and dependable production delivery.",
+        seoDescription:
+          "Casa Roca is a live hospitality website for a boutique stay in Veracruz, with clear place storytelling, direct guest inquiry paths, search-ready pages, and production release discipline.",
         ctaLabel: "Open live site",
         ctaHref: "https://casa-roca.mx",
         achievements: [
@@ -105,8 +108,10 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
         ].join("\n"),
       },
       es: {
-        summary: "Sitio de hospitalidad en vivo para Casa Roca: historia clara del lugar, contacto directo y entrega confiable en producción.",
-        seoDescription: "Casa Roca es un sitio de hospitalidad en vivo para una estancia boutique en Veracruz, con historia clara del lugar, contacto directo, páginas listas para búsqueda y disciplina de release.",
+        summary:
+          "Sitio de hospitalidad en vivo para Casa Roca: historia clara del lugar, contacto directo y entrega confiable en producción.",
+        seoDescription:
+          "Casa Roca es un sitio de hospitalidad en vivo para una estancia boutique en Veracruz, con historia clara del lugar, contacto directo, páginas listas para búsqueda y disciplina de release.",
         ctaLabel: "Abrir sitio en vivo",
         ctaHref: "https://casa-roca.mx",
         achievements: [
@@ -128,8 +133,10 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
     projectUrl: "https://the-barber-central-landing.a-ortizcrr.workers.dev",
     copy: {
       en: {
-        summary: "Active service-business product shaped around bookings, availability, client communication, payment readiness, and daily operations.",
-        seoDescription: "The Barber Central shows active product work for service businesses: booking workflows, operations structure, payment readiness, customer communication, and release discipline.",
+        summary:
+          "Active service-business product shaped around bookings, availability, client communication, payment readiness, and daily operations.",
+        seoDescription:
+          "The Barber Central shows active product work for service businesses: booking workflows, operations structure, payment readiness, customer communication, and release discipline.",
         ctaLabel: "Review the build",
         ctaHref: "https://the-barber-central-landing.a-ortizcrr.workers.dev",
         achievements: [
@@ -144,8 +151,10 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
         ].join("\n"),
       },
       es: {
-        summary: "Producto activo para negocios de servicios, diseñado alrededor de reservas, disponibilidad, comunicación con clientes, pagos y operación diaria.",
-        seoDescription: "The Barber Central muestra trabajo de producto activo para negocios de servicios: booking, estructura operativa, preparación de pagos, comunicación con clientes y disciplina de release.",
+        summary:
+          "Producto activo para negocios de servicios, diseñado alrededor de reservas, disponibilidad, comunicación con clientes, pagos y operación diaria.",
+        seoDescription:
+          "The Barber Central muestra trabajo de producto activo para negocios de servicios: booking, estructura operativa, preparación de pagos, comunicación con clientes y disciplina de release.",
         ctaLabel: "Revisar el build",
         ctaHref: "https://the-barber-central-landing.a-ortizcrr.workers.dev",
         achievements: [
@@ -167,8 +176,10 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
     projectUrl: "https://aohys.com/case-studies/nutri-plan",
     copy: {
       en: {
-        summary: "Product system for client workflows, plans, dashboards, mobile access, educational content, and shared backend state.",
-        seoDescription: "Nutri Plan shows product architecture around client workflows, structured plans, dashboards, mobile access, educational content, Convex-backed state, and release quality.",
+        summary:
+          "Product system for client workflows, plans, dashboards, mobile access, educational content, and shared backend state.",
+        seoDescription:
+          "Nutri Plan shows product architecture around client workflows, structured plans, dashboards, mobile access, educational content, Convex-backed state, and release quality.",
         ctaLabel: "Read system summary",
         ctaHref: getLocalizedPath("case-study:nutri-plan", "en"),
         achievements: [
@@ -183,8 +194,10 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
         ].join("\n"),
       },
       es: {
-        summary: "Sistema de producto para flujos de clientes, planes, dashboards, acceso móvil, contenido educativo y estado backend compartido.",
-        seoDescription: "Nutri Plan muestra arquitectura de producto alrededor de flujos de clientes, planes, dashboards, acceso móvil, contenido educativo, estado con Convex y calidad de release.",
+        summary:
+          "Sistema de producto para flujos de clientes, planes, dashboards, acceso móvil, contenido educativo y estado backend compartido.",
+        seoDescription:
+          "Nutri Plan muestra arquitectura de producto alrededor de flujos de clientes, planes, dashboards, acceso móvil, contenido educativo, estado con Convex y calidad de release.",
         ctaLabel: "Leer resumen del sistema",
         ctaHref: getLocalizedPath("case-study:nutri-plan", "es"),
         achievements: [
@@ -206,8 +219,10 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
     projectUrl: "https://aohys.com/case-studies/enterprise-systems",
     copy: {
       en: {
-        summary: "Enterprise delivery across backend work, escalations, payment plans, cashback, customs workflows, and release support.",
-        seoDescription: "Enterprise Systems summarizes software delivery through backend implementation, escalation leadership, payment plans, cashback, customs workflows, release support, and operational reliability.",
+        summary:
+          "Enterprise delivery across backend work, escalations, payment plans, cashback, customs workflows, and release support.",
+        seoDescription:
+          "Enterprise Systems summarizes software delivery through backend implementation, escalation leadership, payment plans, cashback, customs workflows, release support, and operational reliability.",
         ctaLabel: "Read delivery summary",
         ctaHref: getLocalizedPath("case-study:enterprise-systems", "en"),
         achievements: [
@@ -222,8 +237,10 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
         ].join("\n"),
       },
       es: {
-        summary: "Entrega enterprise en backend, escalations, payment plans, cashback, customs workflows y soporte de releases.",
-        seoDescription: "Sistemas enterprise resume entrega de software: backend, liderazgo en escalations, payment plans, cashback, customs workflows, releases y confiabilidad operativa.",
+        summary:
+          "Entrega enterprise en backend, escalations, payment plans, cashback, customs workflows y soporte de releases.",
+        seoDescription:
+          "Sistemas enterprise resume entrega de software: backend, liderazgo en escalations, payment plans, cashback, customs workflows, releases y confiabilidad operativa.",
         ctaLabel: "Leer resumen de entrega",
         ctaHref: getLocalizedPath("case-study:enterprise-systems", "es"),
         achievements: [
@@ -245,8 +262,10 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
     projectUrl: "https://github.com/AO-HyS/aohys.com",
     copy: {
       en: {
-        summary: "Engineering operating system for delivery: content graph, dashboard, Convex, PostHog, release gates, QA, and documentation.",
-        seoDescription: "Engineering Practice explains Alejandro Ortiz Corro's agent-assisted delivery process through planning, TDD, content architecture, dashboard workflows, Convex, PostHog observability, release gates, and QA.",
+        summary:
+          "Engineering operating system for delivery: content graph, dashboard, Convex, PostHog, release gates, QA, and documentation.",
+        seoDescription:
+          "Engineering Practice explains Alejandro Ortiz Corro's agent-assisted delivery process through planning, TDD, content architecture, dashboard workflows, Convex, PostHog observability, release gates, and QA.",
         ctaLabel: "Inspect the repository",
         ctaHref: "https://github.com/AO-HyS/aohys.com",
         achievements: [
@@ -261,8 +280,10 @@ const projectSeedDefinitions: Record<ProjectId, ProjectSeedDefinition> = {
         ].join("\n"),
       },
       es: {
-        summary: "Sistema operativo de ingeniería para delivery: content graph, dashboard, Convex, PostHog, release gates, QA y documentación.",
-        seoDescription: "Práctica de ingeniería explica el proceso de Alejandro Ortiz Corro con agentes: planeación, TDD, arquitectura de contenido, workflows de dashboard, Convex, PostHog, release gates y QA.",
+        summary:
+          "Sistema operativo de ingeniería para delivery: content graph, dashboard, Convex, PostHog, release gates, QA y documentación.",
+        seoDescription:
+          "Práctica de ingeniería explica el proceso de Alejandro Ortiz Corro con agentes: planeación, TDD, arquitectura de contenido, workflows de dashboard, Convex, PostHog, release gates y QA.",
         ctaLabel: "Inspeccionar el repositorio",
         ctaHref: "https://github.com/AO-HyS/aohys.com",
         achievements: [
@@ -308,7 +329,9 @@ function projectPayloads(): DashboardProjectDraftPayload[] {
         structureNotes: [
           copy.structureNotes,
           caseStudy ? `Case-study route: ${variant.path}` : undefined,
-        ].filter(Boolean).join("\n"),
+        ]
+          .filter(Boolean)
+          .join("\n"),
       };
     });
   });
@@ -336,39 +359,65 @@ async function main(): Promise<void> {
   const settings = siteSettingPayloads();
 
   if (dryRun) {
-    console.log(`Dashboard preview seed dry run passed: ${projects.length} project drafts, ${settings.length} settings.`);
+    console.log(
+      `Dashboard preview seed dry run passed: ${projects.length} project drafts, ${settings.length} settings.`,
+    );
     return;
   }
 
   if (!hasConvexDeploymentAccess()) {
-    throw new Error("CONVEX_DEPLOY_KEY or CONVEX_DEPLOYMENT is required to seed the preview dashboard.");
+    throw new Error(
+      "CONVEX_DEPLOY_KEY or CONVEX_DEPLOYMENT is required to seed the preview dashboard.",
+    );
   }
 
-  const existingContent = runConvexFunction<DashboardSeedState>("content:listForDashboardInternal", {});
+  const existingContent: DashboardSeedState = runConvexFunction(
+    "content:listForDashboardInternal",
+    {},
+    parseDashboardContentPayload,
+  );
   const existingProjectsByKey = new Map(
-    (existingContent.projectDrafts ?? []).map((project) => [`${project.contentId}:${project.locale}`, project]),
+    (existingContent.projectDrafts ?? []).map((project) => [
+      `${project.contentId}:${project.locale}`,
+      project,
+    ]),
   );
   const existingSettingKeys = new Set(
-    (existingContent.settings ?? []).map((setting) => `${setting.environment}:${setting.key}`),
+    (existingContent.settings ?? []).map(
+      (setting) => `${setting.environment}:${setting.key}`,
+    ),
   );
   const missingProjects = projects.filter((project) => {
-    const existingProject = existingProjectsByKey.get(`${project.contentId}:${project.locale}`);
+    const existingProject = existingProjectsByKey.get(
+      `${project.contentId}:${project.locale}`,
+    );
 
     return !existingProject || hasRetiredSeedCopy(existingProject);
   });
-  const missingSettings = settings.filter((setting) =>
-    !existingSettingKeys.has(`${setting.environment}:${setting.key}`),
+  const missingSettings = settings.filter(
+    (setting) =>
+      !existingSettingKeys.has(`${setting.environment}:${setting.key}`),
   );
 
   for (const project of missingProjects) {
-    runConvexFunction("content:upsertProjectDraftFromDashboard", project);
+    runConvexFunction(
+      "content:upsertProjectDraftFromDashboard",
+      project,
+      () => undefined,
+    );
   }
 
   for (const setting of missingSettings) {
-    runConvexFunction("content:upsertSiteSettingFromDashboard", setting);
+    runConvexFunction(
+      "content:upsertSiteSettingFromDashboard",
+      setting,
+      () => undefined,
+    );
   }
 
-  console.log(`Seeded dashboard preview content: ${missingProjects.length} missing project drafts, ${missingSettings.length} missing settings. Preserved existing dashboard edits.`);
+  console.log(
+    `Seeded dashboard preview content: ${missingProjects.length} missing project drafts, ${missingSettings.length} missing settings. Preserved existing dashboard edits.`,
+  );
 }
 
 function hasRetiredSeedCopy(project: {
@@ -380,7 +429,10 @@ function hasRetiredSeedCopy(project: {
     project.summary,
     project.achievements,
     project.structureNotes,
-  ].filter(Boolean).join("\n").toLowerCase();
+  ]
+    .filter(Boolean)
+    .join("\n")
+    .toLowerCase();
 
   return [
     "production site with a public url a client or recruiter can inspect",

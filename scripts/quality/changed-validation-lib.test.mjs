@@ -58,3 +58,39 @@ test("root dependency and quality-tooling changes use the repository-wide adapte
   assert.equal(plan.globalQualityChange, true);
   assert.deepEqual(plan.commands, [...baseCommands, ...fullCommands]);
 });
+
+test("source and manifest changes run architecture fitness while docs skip it", () => {
+  const options = {
+    baseCommands,
+    fullCommands,
+    architecturePrefixes: ["apps", "packages"],
+    architectureFiles: ["package.json", "pnpm-workspace.yaml"],
+    architectureCommands: [["pnpm", ["run", "architecture:fitness"]]],
+  };
+  const sourcePlan = buildChangedValidationPlan({
+    ...options,
+    changedFiles: ["apps/dashboard/src/main.tsx"],
+  });
+  const manifestPlan = buildChangedValidationPlan({
+    ...options,
+    changedFiles: ["package.json"],
+  });
+  const docsPlan = buildChangedValidationPlan({
+    ...options,
+    changedFiles: ["docs/workspace.md"],
+  });
+
+  assert.equal(sourcePlan.architectureChanged, true);
+  assert.deepEqual(sourcePlan.commands.slice(0, 2), [
+    ...baseCommands,
+    ["pnpm", ["run", "architecture:fitness"]],
+  ]);
+  assert.equal(manifestPlan.architectureChanged, true);
+  assert.ok(
+    manifestPlan.commands.some(([, args]) =>
+      args.includes("architecture:fitness"),
+    ),
+  );
+  assert.equal(docsPlan.architectureChanged, false);
+  assert.deepEqual(docsPlan.commands, baseCommands);
+});

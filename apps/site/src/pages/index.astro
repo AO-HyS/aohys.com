@@ -20,7 +20,7 @@ const seo = getSeoMetadata(route.id, route.locale);
   alternates={seo.alternates}
   robots={seo.robots}
   socialImage={seo.socialImage}
-  structuredData={seo.structuredData}
+  {...(seo.structuredData ? { structuredData: seo.structuredData } : {})}
   contentId={route.id}
 >
   <PublicContentPage route={route} />

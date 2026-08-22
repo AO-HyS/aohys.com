@@ -5,6 +5,7 @@ import {
   type PostHogServerTransport,
 } from "./posthog-server.js";
 import { PRIVATE_NO_STORE_HEADERS } from "./security-headers.js";
+import { parseCspReportPayload } from "./runtime-boundaries.js";
 
 export interface CspReportEnvironment extends PostHogServerEnvironment {
   AOHYS_ENV?: string;
@@ -65,7 +66,7 @@ function reportBody(payload: CspReportPayload): Record<string, unknown> {
 
 async function readReportPayload(request: Request): Promise<CspReportPayload> {
   try {
-    return await request.json() as CspReportPayload;
+    return parseCspReportPayload(await request.json());
   } catch {
     return {};
   }

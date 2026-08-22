@@ -1,4 +1,8 @@
-import type { LeadAnalyticsEvent, LeadNotification } from "./contact-workflow.js";
+import type {
+  LeadAnalyticsEvent,
+  LeadNotification,
+} from "./contact-workflow.js";
+import { parseResendNotificationResponse } from "./provider-responses.js";
 
 export type ProviderTransport = (
   url: string,
@@ -41,12 +45,12 @@ export async function sendLeadNotificationWithResend(
   });
 
   if (!response.ok) {
-    throw new Error(`Resend notification failed with status ${response.status}.`);
+    throw new Error(
+      `Resend notification failed with status ${response.status}.`,
+    );
   }
 
-  const payload = await response.json() as { id?: string };
-
-  return { notificationId: payload.id };
+  return parseResendNotificationResponse(await response.json());
 }
 
 export async function captureLeadAnalyticsWithPostHog(

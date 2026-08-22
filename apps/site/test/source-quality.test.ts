@@ -20,9 +20,9 @@ describe("public site source quality", () => {
       "src/components/sunlit/SunlitProcessRail.astro",
       "src/components/sunlit/SunlitProjectStage.astro",
       "../../apps/backend/src/project-identity.ts",
-      "../../apps/dashboard/src/lib/projects.ts",
-      "../../apps/dashboard/src/lib/projects-workflow.ts",
-      "../../apps/dashboard/src/screens/projects-screen.tsx",
+      "../../apps/dashboard/src/features/projects/projects-model.ts",
+      "../../apps/dashboard/src/features/projects/projects-workflow.ts",
+      "../../apps/dashboard/src/features/projects/projects-screen.tsx",
       "../../packages/content-graph/src/index.ts",
       "../../packages/content-graph/test/public-content-graph.test.ts",
       "../../scripts/apply-dashboard-published-content.ts",
@@ -137,6 +137,10 @@ describe("public site source quality", () => {
     );
     expect(publicContentPage).toContain("getUiCopy");
     expect(publicContentPage).toContain("SunlitProofImage");
+    expect(publicContentPage).toContain(
+      'loading={index === 0 ? "eager" : "lazy"}',
+    );
+    expect(publicContentPage.match(/loading="eager"/g)).toHaveLength(1);
     expect(proofMedia).toContain("STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID");
     expect(proofMedia).toContain("preferFull");
     expect(proofMedia).toContain("dashboardMedia?.thumbSrc");

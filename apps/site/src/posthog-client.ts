@@ -1,16 +1,16 @@
 import {
   buildExplicitConversionEvent,
   buildManualExceptionProperties,
-  sanitizeAnalyticsProperties,
+  sanitizePostHogEnvelopeProperties,
   type AnalyticsBootstrapPayload,
 } from "./analytics";
+import {
+  isJsonRecord,
+  parseAnalyticsBootstrapPayload,
+  parseAnalyticsEventDetail,
+} from "./runtime-boundaries";
 
 const PAYLOAD_ELEMENT_ID = "aohys-posthog-config";
-
-interface AnalyticsDetail {
-  event?: unknown;
-  properties?: unknown;
-}
 
 type PostHogBrowserClient = typeof import("posthog-js").default;
 
@@ -28,18 +28,20 @@ function readPayload(
     return undefined;
   }
 
-  return JSON.parse(payloadText) as AnalyticsBootstrapPayload;
+  try {
+    return parseAnalyticsBootstrapPayload(payloadText);
+  } catch {
+    return undefined;
+  }
 }
 
 function getElementTarget(element: Element): string | undefined {
   return element.getAttribute("data-analytics-target") ?? undefined;
 }
 
-function getCustomEventDetail(event: Event): AnalyticsDetail | undefined {
-  return event instanceof CustomEvent &&
-    typeof event.detail === "object" &&
-    event.detail
-    ? (event.detail as AnalyticsDetail)
+function getCustomEventDetail(event: Event) {
+  return event instanceof CustomEvent
+    ? parseAnalyticsEventDetail(event.detail)
     : undefined;
 }
 
@@ -69,14 +71,19 @@ function captureException(
   posthog: PostHogBrowserClient,
   payload: AnalyticsBootstrapPayload,
   source: string,
-  errorType: string,
+  error: unknown,
+  fallbackType: string,
 ): void {
+  const structuredError =
+    error instanceof Error
+      ? error
+      : Object.assign(new Error(fallbackType), { name: fallbackType });
   const properties = buildManualExceptionProperties(payload.context, {
     source,
-    error_type: errorType,
+    error_type: structuredError.name,
   });
 
-  posthog.capture("$exception", properties);
+  posthog.captureException(structuredError, properties);
 }
 
 function bindViewHooks(
@@ -141,23 +148,25 @@ function bindInteractionHooks(
 
   windowRef.addEventListener("aohys:analytics", (event) => {
     const detail = getCustomEventDetail(event);
-    const properties =
-      typeof detail?.properties === "object" && detail.properties
-        ? (detail.properties as Record<string, unknown>)
-        : {};
+    const properties = isJsonRecord(detail?.properties)
+      ? detail.properties
+      : {};
 
     captureConversion(posthog, payload, detail?.event, properties);
   });
 
   windowRef.addEventListener("error", (event) => {
-    const errorType = event.error instanceof Error ? event.error.name : "Error";
-    captureException(posthog, payload, "window_error", errorType);
+    captureException(posthog, payload, "window_error", event.error, "Error");
   });
 
   windowRef.addEventListener("unhandledrejection", (event) => {
-    const errorType =
-      event.reason instanceof Error ? event.reason.name : "UnhandledRejection";
-    captureException(posthog, payload, "unhandled_rejection", errorType);
+    captureException(
+      posthog,
+      payload,
+      "unhandled_rejection",
+      event.reason,
+      "UnhandledRejection",
+    );
   });
 }
 
@@ -224,7 +233,9 @@ export function bootPostHogFromDocument(
         event
           ? {
               ...event,
-              properties: sanitizeAnalyticsProperties(event.properties ?? {}),
+              properties: sanitizePostHogEnvelopeProperties(
+                event.properties ?? {},
+              ),
             }
           : null,
     });

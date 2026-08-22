@@ -774,6 +774,12 @@ function variantFromDictionary(
   locale: Locale,
 ): LocaleVariant {
   const entry = getDictionaryEntry(contentId, locale);
+  const primaryActionContentId = staticActionContentId(
+    entry.primaryActionContentId,
+  );
+  const secondaryActionContentId = staticActionContentId(
+    entry.secondaryActionContentId,
+  );
 
   return {
     locale,
@@ -782,12 +788,16 @@ function variantFromDictionary(
     summary: entry.summary,
     seoTitle: entry.seoTitle ?? `${entry.title} | AOHYS`,
     seoDescription: entry.seoDescription,
-    primaryActionLabel: entry.primaryActionLabel,
-    primaryActionContentId: staticActionContentId(entry.primaryActionContentId),
-    secondaryActionLabel: entry.secondaryActionLabel,
-    secondaryActionContentId: staticActionContentId(
-      entry.secondaryActionContentId,
-    ),
+    ...(entry.primaryActionLabel
+      ? { primaryActionLabel: entry.primaryActionLabel }
+      : {}),
+    ...(primaryActionContentId !== undefined ? { primaryActionContentId } : {}),
+    ...(entry.secondaryActionLabel
+      ? { secondaryActionLabel: entry.secondaryActionLabel }
+      : {}),
+    ...(secondaryActionContentId !== undefined
+      ? { secondaryActionContentId }
+      : {}),
   };
 }
 
@@ -1226,7 +1236,7 @@ export function getSeoMetadata(
         ? {}
         : { width: 1200, height: 630 }),
     },
-    structuredData,
+    ...(structuredData ? { structuredData } : {}),
   };
 }
 
@@ -1239,7 +1249,11 @@ export function getSitemapEntries(): SitemapEntry[] {
     .map((route) => ({
       url: route.canonicalUrl,
       alternates: getLanguageAlternates(route.id),
-      changefreq: route.node.sitemap.changefreq,
-      priority: route.node.sitemap.priority,
+      ...(route.node.sitemap.changefreq
+        ? { changefreq: route.node.sitemap.changefreq }
+        : {}),
+      ...(route.node.sitemap.priority !== undefined
+        ? { priority: route.node.sitemap.priority }
+        : {}),
     }));
 }
