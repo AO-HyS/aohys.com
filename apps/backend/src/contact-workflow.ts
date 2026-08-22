@@ -1,5 +1,6 @@
 import { assertOneOf, escapeHtml, trimToUndefined } from "@aohys/core";
 import type { EnvironmentName } from "@aohys/environment";
+import { normalizeContactReleaseSha } from "./contact-environment.js";
 import {
   LEAD_INTENTS,
   LEAD_LOCALES,
@@ -118,6 +119,7 @@ function buildProviderFailureEvent(
   provider: "posthog" | "resend",
   operation: "lead_analytics" | "lead_notification",
   error: unknown,
+  release: string | undefined,
 ): LeadAnalyticsEvent {
   const candidateErrorType =
     error instanceof Error ? error.name : "UnknownError";
@@ -141,6 +143,7 @@ function buildProviderFailureEvent(
       provider,
       operation,
       error_type: errorType,
+      ...(release ? { release } : {}),
     },
   };
 }
@@ -341,6 +344,7 @@ function renderLeadNotificationEmail({
 function buildLeadAnalyticsEvent(
   lead: PreparedContactLead,
   environment: EnvironmentName,
+  release: string | undefined,
 ): LeadAnalyticsEvent {
   return {
     event: "lead_submitted",
@@ -353,6 +357,7 @@ function buildLeadAnalyticsEvent(
       source_path: lead.sourcePath,
       has_company: Boolean(lead.company),
       has_phone: Boolean(lead.phone),
+      ...(release ? { release } : {}),
     },
   };
 }
@@ -371,7 +376,11 @@ export async function submitContactLead(
   if (hasAnalyticsSettings(context.values)) {
     try {
       await context.adapters.captureAnalyticsEvent(
-        buildLeadAnalyticsEvent(lead, context.environment),
+        buildLeadAnalyticsEvent(
+          lead,
+          context.environment,
+          normalizeContactReleaseSha(context.values.PUBLIC_RELEASE_SHA),
+        ),
       );
       analyticsStatus = "captured";
     } catch (error) {
@@ -382,6 +391,7 @@ export async function submitContactLead(
           "posthog",
           "lead_analytics",
           error,
+          normalizeContactReleaseSha(context.values.PUBLIC_RELEASE_SHA),
         ),
         context,
       );
@@ -408,6 +418,7 @@ export async function submitContactLead(
           "resend",
           "lead_notification",
           error,
+          normalizeContactReleaseSha(context.values.PUBLIC_RELEASE_SHA),
         ),
         context,
       );

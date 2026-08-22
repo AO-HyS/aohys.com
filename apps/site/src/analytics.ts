@@ -19,12 +19,14 @@ export interface AnalyticsContext {
   path: string;
   canonicalUrl: string;
   environment: string;
+  release?: string;
 }
 
 export interface PostHogClientSettings {
   key: string | undefined;
   environment: string;
   canonicalUrl: string;
+  releaseSha?: string;
 }
 
 export interface PostHogClientConfig {
@@ -88,10 +90,27 @@ const SAFE_ERROR_TYPES = new Set([
   "UnknownError",
 ]);
 
+const RELEASE_SHA_PATTERN = /^[0-9a-f]{40}$/;
+
 export function normalizeAnalyticsErrorType(value: unknown): string {
   return typeof value === "string" && SAFE_ERROR_TYPES.has(value)
     ? value
     : "UnknownError";
+}
+
+export function normalizeAnalyticsReleaseSha(
+  value: unknown,
+): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const normalized = value.trim().toLowerCase();
+  return RELEASE_SHA_PATTERN.test(normalized) ? normalized : undefined;
+}
+
+function buildEnvironmentReleaseSha(): string | undefined {
+  const metadata = import.meta as ImportMeta & {
+    env?: { PUBLIC_RELEASE_SHA?: string };
+  };
+  return metadata.env?.PUBLIC_RELEASE_SHA;
 }
 
 function normalizePath(path: string): string {
@@ -111,6 +130,7 @@ function baseProperties(context: AnalyticsContext): Record<string, string> {
     path: normalizePath(context.path),
     canonical_url: context.canonicalUrl,
     environment: context.environment,
+    ...(context.release ? { release: context.release } : {}),
   };
 }
 
@@ -168,6 +188,75 @@ export function sanitizeAnalyticsProperties(
           : value,
       ]),
   ) as Record<string, string | number | boolean>;
+}
+
+function sanitizeStackLocation(value: unknown): string | undefined {
+  if (typeof value !== "string" || !value.trim()) return undefined;
+
+  const withoutQuery = value.trim().split(/[?#]/, 1)[0] ?? "";
+  return withoutQuery
+    .replace(/\/Users\/[^/]+\//g, "/Users/[redacted]/")
+    .replace(/\/home\/[^/]+\//g, "/home/[redacted]/")
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]")
+    .slice(0, 500);
+}
+
+function sanitizeExceptionList(value: unknown): unknown[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+
+  const exceptions = value.flatMap((candidate) => {
+    if (!candidate || typeof candidate !== "object") return [];
+    const exception = candidate as Record<string, unknown>;
+    const stacktrace =
+      exception.stacktrace && typeof exception.stacktrace === "object"
+        ? (exception.stacktrace as Record<string, unknown>)
+        : undefined;
+    const frames = Array.isArray(stacktrace?.frames)
+      ? stacktrace.frames.flatMap((frameCandidate) => {
+          if (!frameCandidate || typeof frameCandidate !== "object") return [];
+          const frame = frameCandidate as Record<string, unknown>;
+          const filename = sanitizeStackLocation(frame.filename);
+          const functionName = sanitizeStackLocation(frame.function);
+          const sanitizedFrame = {
+            ...(filename ? { filename } : {}),
+            ...(functionName ? { function: functionName } : {}),
+            ...(typeof frame.lineno === "number"
+              ? { lineno: frame.lineno }
+              : {}),
+            ...(typeof frame.colno === "number" ? { colno: frame.colno } : {}),
+            ...(typeof frame.in_app === "boolean"
+              ? { in_app: frame.in_app }
+              : {}),
+          };
+          return Object.keys(sanitizedFrame).length > 0 ? [sanitizedFrame] : [];
+        })
+      : [];
+    const errorType = normalizeAnalyticsErrorType(exception.type);
+
+    return [
+      {
+        type: errorType,
+        ...(frames.length > 0 ? { stacktrace: { frames } } : {}),
+      },
+    ];
+  });
+
+  return exceptions.length > 0 ? exceptions : undefined;
+}
+
+export function sanitizePostHogEnvelopeProperties(
+  properties: Record<string, unknown> = {},
+): Record<string, unknown> {
+  const sanitized: Record<string, unknown> =
+    sanitizeAnalyticsProperties(properties);
+  const exceptionList = sanitizeExceptionList(properties.$exception_list);
+
+  if (exceptionList) sanitized.$exception_list = exceptionList;
+  if (typeof properties.token === "string" && properties.token.length > 0) {
+    sanitized.token = properties.token;
+  }
+
+  return sanitized;
 }
 
 export function buildPostHogClientConfig(
@@ -255,13 +344,24 @@ export function buildAnalyticsBootstrapPayload(
   context: AnalyticsContext,
 ): AnalyticsBootstrapPayload {
   const config = buildPostHogClientConfig(settings);
+  const release = normalizeAnalyticsReleaseSha(
+    settings.releaseSha ?? context.release ?? buildEnvironmentReleaseSha(),
+  );
+  const releaseContext: AnalyticsContext = {
+    contentId: context.contentId,
+    locale: context.locale,
+    path: context.path,
+    canonicalUrl: context.canonicalUrl,
+    environment: context.environment,
+    ...(release ? { release } : {}),
+  };
   return {
     ...(config ? { config } : {}),
     context: {
-      ...context,
-      path: normalizePath(context.path),
+      ...releaseContext,
+      path: normalizePath(releaseContext.path),
     },
-    pageview: buildExplicitPageviewEvent(context),
+    pageview: buildExplicitPageviewEvent(releaseContext),
     selectedConversionEvents: SELECTED_CONVERSION_EVENTS,
   };
 }

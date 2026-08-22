@@ -29,6 +29,7 @@ export interface DashboardAccessEnvironment extends Record<
   BETTER_AUTH_TRUSTED_ORIGINS: string;
   ADMIN_EMAIL: string;
   PUBLIC_POSTHOG_KEY?: string;
+  PUBLIC_RELEASE_SHA?: string;
   CLOUDFLARE_IMAGES_ACCOUNT_HASH?: string;
 }
 

@@ -15,7 +15,8 @@ const validProviderValues = {
   LEAD_NOTIFICATION_EMAIL: "alejandro.ortiz@aohys.com",
   BETTER_AUTH_SECRET: "preview-secret",
   BETTER_AUTH_URL: "https://preview.aohys.com",
-  BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+  BETTER_AUTH_TRUSTED_ORIGINS:
+    "https://preview.aohys.com,http://localhost:4321",
   ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
   GOOGLE_CLIENT_ID: "google-client-id.apps.googleusercontent.com",
   GOOGLE_CLIENT_SECRET: "google-client-secret",
@@ -30,27 +31,35 @@ describe("contact lead workflow", () => {
   it("requires a phone number when WhatsApp is the preferred contact path", async () => {
     const persistLead = vi.fn();
 
-    await expect(submitContactLead(
-      {
-        name: "Alejandro Ortiz",
-        email: "alejandro.ortiz@aohys.com",
-        preferredContactPath: "whatsapp",
-        intent: "project",
-        message: "I need help shipping a product workflow.",
-        sourcePath: "/contact",
-        locale: "en",
-        consentToContact: true,
-      },
-      {
-        environment: "production",
-        values: { ...validProviderValues, AOHYS_ENV: "production", PUBLIC_SITE_URL: "https://aohys.com", PUBLIC_POSTHOG_KEY: "phc_production" },
-        adapters: {
-          persistLead,
-          sendNotification: vi.fn(),
-          captureAnalyticsEvent: vi.fn(),
+    await expect(
+      submitContactLead(
+        {
+          name: "Alejandro Ortiz",
+          email: "alejandro.ortiz@aohys.com",
+          preferredContactPath: "whatsapp",
+          intent: "project",
+          message: "I need help shipping a product workflow.",
+          sourcePath: "/contact",
+          locale: "en",
+          consentToContact: true,
         },
-      },
-    )).rejects.toThrow("phone is required.");
+        {
+          environment: "production",
+          values: {
+            ...validProviderValues,
+            AOHYS_ENV: "production",
+            PUBLIC_SITE_URL: "https://aohys.com",
+            PUBLIC_POSTHOG_KEY: "phc_production",
+            PUBLIC_RELEASE_SHA: "0123456789abcdef0123456789abcdef01234567",
+          },
+          adapters: {
+            persistLead,
+            sendNotification: vi.fn(),
+            captureAnalyticsEvent: vi.fn(),
+          },
+        },
+      ),
+    ).rejects.toThrow("phone is required.");
     expect(persistLead).not.toHaveBeenCalled();
   });
 
@@ -77,7 +86,13 @@ describe("contact lead workflow", () => {
       },
       {
         environment: "production",
-        values: { ...validProviderValues, AOHYS_ENV: "production", PUBLIC_SITE_URL: "https://aohys.com", PUBLIC_POSTHOG_KEY: "phc_production" },
+        values: {
+          ...validProviderValues,
+          AOHYS_ENV: "production",
+          PUBLIC_SITE_URL: "https://aohys.com",
+          PUBLIC_POSTHOG_KEY: "phc_production",
+          PUBLIC_RELEASE_SHA: "0123456789abcdef0123456789abcdef01234567",
+        },
         now: 1_788_000_003_500,
         adapters: {
           persistLead: async (lead) => {
@@ -120,7 +135,9 @@ describe("contact lead workflow", () => {
     });
     expect(JSON.stringify(notifications[0])).toContain("Open lead inbox");
     expect(JSON.stringify(notifications[0])).toContain("New project request");
-    expect(JSON.stringify(notifications[0])).toContain("https://aohys.com/dashboard/leads");
+    expect(JSON.stringify(notifications[0])).toContain(
+      "https://aohys.com/dashboard/leads",
+    );
     expect(analyticsEvents[0]).toMatchObject({
       event: "lead_submitted",
       distinctId: "contact:production",
@@ -132,6 +149,7 @@ describe("contact lead workflow", () => {
         source_path: "/contact",
         has_company: true,
         has_phone: true,
+        release: "0123456789abcdef0123456789abcdef01234567",
       },
     });
     expect(JSON.stringify(analyticsEvents[0])).not.toContain(
@@ -145,7 +163,9 @@ describe("contact lead workflow", () => {
 
   it("stores a lead even when optional contact provider settings are missing", async () => {
     const persistLead = vi.fn(async () => ({ leadId: "lead_123" }));
-    const sendNotification = vi.fn(async () => ({ notificationId: "email_123" }));
+    const sendNotification = vi.fn(async () => ({
+      notificationId: "email_123",
+    }));
     const captureAnalyticsEvent = vi.fn(async () => undefined);
 
     const result = await submitContactLead(
@@ -201,7 +221,12 @@ describe("contact lead workflow", () => {
       },
       {
         environment: "production",
-        values: { ...validProviderValues, AOHYS_ENV: "production", PUBLIC_SITE_URL: "https://aohys.com", PUBLIC_POSTHOG_KEY: "phc_production" },
+        values: {
+          ...validProviderValues,
+          AOHYS_ENV: "production",
+          PUBLIC_SITE_URL: "https://aohys.com",
+          PUBLIC_POSTHOG_KEY: "phc_production",
+        },
         adapters: {
           persistLead: async () => ({ leadId: "lead_123" }),
           sendNotification: async () => {
@@ -231,7 +256,9 @@ describe("contact lead workflow", () => {
         error_type: "Error",
       },
     });
-    expect(JSON.stringify(analyticsEvents[1])).not.toContain("alejandro.ortiz@aohys.com");
+    expect(JSON.stringify(analyticsEvents[1])).not.toContain(
+      "alejandro.ortiz@aohys.com",
+    );
     expect(JSON.stringify(analyticsEvents[1])).not.toContain("lead_123");
   });
 });

@@ -1,7 +1,7 @@
 import {
   buildExplicitConversionEvent,
   buildManualExceptionProperties,
-  sanitizeAnalyticsProperties,
+  sanitizePostHogEnvelopeProperties,
   type AnalyticsBootstrapPayload,
 } from "./analytics";
 import {
@@ -71,14 +71,19 @@ function captureException(
   posthog: PostHogBrowserClient,
   payload: AnalyticsBootstrapPayload,
   source: string,
-  errorType: string,
+  error: unknown,
+  fallbackType: string,
 ): void {
+  const structuredError =
+    error instanceof Error
+      ? error
+      : Object.assign(new Error(fallbackType), { name: fallbackType });
   const properties = buildManualExceptionProperties(payload.context, {
     source,
-    error_type: errorType,
+    error_type: structuredError.name,
   });
 
-  posthog.capture("$exception", properties);
+  posthog.captureException(structuredError, properties);
 }
 
 function bindViewHooks(
@@ -151,14 +156,17 @@ function bindInteractionHooks(
   });
 
   windowRef.addEventListener("error", (event) => {
-    const errorType = event.error instanceof Error ? event.error.name : "Error";
-    captureException(posthog, payload, "window_error", errorType);
+    captureException(posthog, payload, "window_error", event.error, "Error");
   });
 
   windowRef.addEventListener("unhandledrejection", (event) => {
-    const errorType =
-      event.reason instanceof Error ? event.reason.name : "UnhandledRejection";
-    captureException(posthog, payload, "unhandled_rejection", errorType);
+    captureException(
+      posthog,
+      payload,
+      "unhandled_rejection",
+      event.reason,
+      "UnhandledRejection",
+    );
   });
 }
 
@@ -225,7 +233,9 @@ export function bootPostHogFromDocument(
         event
           ? {
               ...event,
-              properties: sanitizeAnalyticsProperties(event.properties ?? {}),
+              properties: sanitizePostHogEnvelopeProperties(
+                event.properties ?? {},
+              ),
             }
           : null,
     });
