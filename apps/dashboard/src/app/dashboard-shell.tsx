@@ -26,6 +26,7 @@ import {
   findDashboardNavigationItem,
   isDashboardNavigationItemActive,
 } from "@/app/navigation";
+import { dashboardNavigationLoaders } from "@/app/navigation-loaders";
 import { dashboardRuntimeConfig } from "@/runtime-config";
 
 const runtimeConfig = dashboardRuntimeConfig;
@@ -40,7 +41,7 @@ function DashboardAppNav() {
       <SidebarGroupContent>
         <SidebarMenu aria-label="Dashboard navigation">
           {dashboardNavigation.map((item) => {
-            const Icon = item.icon;
+            const Icon = dashboardNavigationLoaders[item.id].icon;
 
             return (
               <SidebarMenuItem key={item.id}>
@@ -70,14 +71,26 @@ function DashboardSidebar() {
       <SidebarHeader className="p-3">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild size="lg" tooltip="AOHYS Operations Desk">
-              <Link to="/" className="h-11" aria-label="AOHYS Operations Desk overview">
+            <SidebarMenuButton
+              asChild
+              size="lg"
+              tooltip="AOHYS Operations Desk"
+            >
+              <Link
+                to="/"
+                className="h-11"
+                aria-label="AOHYS Operations Desk overview"
+              >
                 <span className="grid size-8 shrink-0 place-items-center rounded-md bg-sidebar-primary font-semibold text-sidebar-primary-foreground">
                   AO
                 </span>
                 <span className="flex min-w-0 flex-col gap-0.5">
-                  <strong className="truncate text-sm font-semibold">Operations Desk</strong>
-                  <span className="truncate text-xs text-sidebar-foreground/70">AOHYS publishing</span>
+                  <strong className="truncate text-sm font-semibold">
+                    Operations Desk
+                  </strong>
+                  <span className="truncate text-xs text-sidebar-foreground/70">
+                    AOHYS publishing
+                  </span>
                 </span>
               </Link>
             </SidebarMenuButton>
@@ -91,13 +104,23 @@ function DashboardSidebar() {
       <SidebarSeparator />
       <SidebarFooter className="p-3">
         <div className="flex min-w-0 flex-col gap-1 px-2 py-1 group-data-[collapsible=icon]:hidden">
-          <strong className="truncate text-xs font-medium">{runtimeConfig.adminEmail}</strong>
-          <span className="text-xs text-sidebar-foreground/70">{runtimeConfig.environment} environment</span>
+          <strong className="truncate text-xs font-medium">
+            {runtimeConfig.adminEmail}
+          </strong>
+          <span className="text-xs text-sidebar-foreground/70">
+            {runtimeConfig.environment} environment
+          </span>
         </div>
-        <Action asChild variant="secondary" className="w-full justify-start group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:px-0">
+        <Action
+          asChild
+          variant="secondary"
+          className="w-full justify-start group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:px-0"
+        >
           <a href="/dashboard/sign-out">
             <LogOutIcon data-icon="inline-start" />
-            <span className="group-data-[collapsible=icon]:hidden">Sign out</span>
+            <span className="group-data-[collapsible=icon]:hidden">
+              Sign out
+            </span>
           </a>
         </Action>
       </SidebarFooter>
@@ -111,11 +134,16 @@ function DashboardUtilityBar() {
   const currentItem = findDashboardNavigationItem(path);
 
   return (
-    <header data-slot="dashboard-utility-bar" className="sticky top-0 z-20 flex min-h-14 items-center gap-3 border-b bg-background px-3 sm:px-5">
+    <header
+      data-slot="dashboard-utility-bar"
+      className="sticky top-0 z-20 flex min-h-14 items-center gap-3 border-b bg-background px-3 sm:px-5"
+    >
       <SidebarTrigger className="size-11 md:size-8" />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold">{currentItem.label}</p>
-        <p className="hidden truncate text-xs text-muted-foreground sm:block">{currentItem.description}</p>
+        <p className="hidden truncate text-xs text-muted-foreground sm:block">
+          {currentItem.description}
+        </p>
       </div>
       <span className="hidden rounded-md border px-2 py-1 text-xs text-muted-foreground sm:inline-flex">
         {runtimeConfig.environment}
@@ -137,7 +165,11 @@ export function DashboardShell() {
         <DashboardSidebar />
         <SidebarInset>
           <DashboardUtilityBar />
-          <div id="dashboard-content" tabIndex={-1} className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+          <div
+            id="dashboard-content"
+            tabIndex={-1}
+            className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8"
+          >
             <Outlet />
           </div>
         </SidebarInset>

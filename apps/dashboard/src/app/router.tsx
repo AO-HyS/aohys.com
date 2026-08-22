@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-router";
 import { DashboardShell } from "@/app/dashboard-shell";
 import { dashboardNavigation } from "@/app/navigation";
+import { dashboardNavigationLoaders } from "@/app/navigation-loaders";
 import {
   RouteErrorState,
   RouteNotFoundState,
@@ -15,17 +16,23 @@ const rootRoute = createRootRoute({
   component: DashboardShell,
 });
 
-const canonicalRoutes = dashboardNavigation.map((item) => createRoute({
-  getParentRoute: () => rootRoute,
-  path: item.path,
-  component: item.component,
-}));
+const canonicalRoutes = dashboardNavigation.map((item) =>
+  createRoute({
+    getParentRoute: () => rootRoute,
+    path: item.path,
+    component: dashboardNavigationLoaders[item.id].component,
+  }),
+);
 
-const aliasRoutes = dashboardNavigation.flatMap((item) => item.aliases.map((path) => createRoute({
-  getParentRoute: () => rootRoute,
-  path,
-  component: item.component,
-})));
+const aliasRoutes = dashboardNavigation.flatMap((item) =>
+  item.aliases.map((path) =>
+    createRoute({
+      getParentRoute: () => rootRoute,
+      path,
+      component: dashboardNavigationLoaders[item.id].component,
+    }),
+  ),
+);
 
 const routeTree = rootRoute.addChildren([...canonicalRoutes, ...aliasRoutes]);
 

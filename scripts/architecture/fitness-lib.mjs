@@ -18,21 +18,7 @@ const IGNORED_DIRECTORIES = new Set([
   "node_modules",
 ]);
 
-export const KNOWN_BASELINE = {
-  id: "dashboard-navigation-analytics-cycle",
-  edge: [
-    "apps/dashboard/src/lib/analytics.ts",
-    "apps/dashboard/src/app/navigation.ts",
-  ],
-  cycle: [
-    "apps/dashboard/src/app/navigation.ts",
-    "apps/dashboard/src/screens/projects-screen.tsx",
-    "apps/dashboard/src/lib/projects-workflow.ts",
-    "apps/dashboard/src/lib/analytics.ts",
-    "apps/dashboard/src/app/navigation.ts",
-  ],
-  blocking: false,
-};
+const DASHBOARD_ROUTE_METADATA = "apps/dashboard/src/app/navigation.ts";
 
 function normalize(filePath) {
   return filePath.replaceAll("\\", "/").replace(/^\.\//, "");
@@ -305,6 +291,16 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
       });
       imports.push({ importer, specifier, target });
 
+      if (importer === DASHBOARD_ROUTE_METADATA) {
+        violations.push({
+          id: `dashboard-route-metadata-import:${specifier}`,
+          kind: "dashboard-route-metadata-import",
+          importer,
+          specifier,
+          message: `${DASHBOARD_ROUTE_METADATA} must remain pure route metadata without imports`,
+        });
+      }
+
       if (workspace) {
         const subpath = workspaceSubpath(specifier, workspace);
         if (!workspace.publicExports.some((item) => item.subpath === subpath)) {
@@ -320,16 +316,14 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
 
       if (
         target?.startsWith("apps/dashboard/src/app/") &&
+        target !== DASHBOARD_ROUTE_METADATA &&
         isDashboardFeature(importer)
       ) {
-        const baseline =
-          edgeId(importer, target) === edgeId(...KNOWN_BASELINE.edge);
         violations.push({
           id: `dashboard-feature-to-app:${importer}:${target}`,
           kind: "dashboard-feature-to-app",
           importer,
           target,
-          blocking: !baseline,
           message: `${importer} imports dashboard composition ${target}`,
         });
       }
@@ -356,12 +350,9 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
       ({ importer, target }) =>
         sourceSet.has(importer) && sourceSet.has(target),
     )
-    .map(({ importer, target }) => [importer, target])
-    .filter(
-      ([from, to]) => edgeId(from, to) !== edgeId(...KNOWN_BASELINE.edge),
-    );
-  const newCycles = stronglyConnectedComponents(productionFiles, fileEdges);
-  for (const component of newCycles) {
+    .map(({ importer, target }) => [importer, target]);
+  const fileCycles = stronglyConnectedComponents(productionFiles, fileEdges);
+  for (const component of fileCycles) {
     violations.push({
       id: `dependency-cycle:${component.join("|")}`,
       kind: "dependency-cycle",
@@ -369,17 +360,6 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
       message: `Dependency cycle detected: ${component.join(" -> ")}`,
     });
   }
-
-  const importEdges = new Set(
-    imports
-      .filter(({ target }) => target)
-      .map(({ importer, target }) => edgeId(importer, target)),
-  );
-  const baselinePresent = KNOWN_BASELINE.cycle
-    .slice(0, -1)
-    .every((from, index) =>
-      importEdges.has(edgeId(from, KNOWN_BASELINE.cycle[index + 1])),
-    );
 
   const generatedArtifacts = [
     ...new Set(
@@ -429,14 +409,25 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
       .map((dependency) => [workspace.name, dependency]),
   );
 
-  const baselineViolations = baselinePresent ? [{ ...KNOWN_BASELINE }] : [];
+  const packageCycles = stronglyConnectedComponents(
+    workspaces.map((workspace) => workspace.name),
+    packageEdges,
+  );
+  for (const component of packageCycles) {
+    violations.push({
+      id: `workspace-dependency-cycle:${component.join("|")}`,
+      kind: "workspace-dependency-cycle",
+      packages: component,
+      message: `Workspace dependency cycle detected: ${component.join(" -> ")}`,
+    });
+  }
+
   const blockingViolations = violations.filter(
     (violation) => violation.blocking !== false,
   );
 
   return {
     ok: blockingViolations.length === 0,
-    baselineViolations,
     blockingViolations,
     graph: {
       files: productionFiles,
@@ -463,11 +454,6 @@ export function formatFitnessReport(report) {
     `Generated artifacts: ${report.generatedArtifacts.length} with source-derived producers`,
   ];
 
-  for (const baseline of report.baselineViolations) {
-    lines.push(
-      `BASELINE (non-blocking) ${baseline.id}: ${baseline.cycle.join(" -> ")}`,
-    );
-  }
   for (const violation of report.blockingViolations) {
     lines.push(`BLOCKING ${violation.id}: ${violation.message}`);
   }

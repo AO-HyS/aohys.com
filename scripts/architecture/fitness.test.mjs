@@ -21,17 +21,16 @@ function fixture(files) {
   return root;
 }
 
-test("derives the approved baseline, public exports, and generated producers from the repository", () => {
+test("derives an acyclic source graph, public exports, and generated producers from the repository", () => {
   const report = analyzeArchitecture();
 
   assert.equal(report.ok, true);
+  assert.doesNotMatch(formatFitnessReport(report), /BASELINE|dependency-cycle/);
   assert.deepEqual(
-    report.baselineViolations.map((violation) => violation.id),
-    ["dashboard-navigation-analytics-cycle"],
-  );
-  assert.match(
-    formatFitnessReport(report),
-    /BASELINE \(non-blocking\).*navigation/,
+    report.graph.fileEdges.filter(
+      ([from]) => from === "apps/dashboard/src/app/navigation.ts",
+    ),
+    [],
   );
 
   const backendExports = report.publicExports.find(
@@ -51,6 +50,30 @@ test("derives the approved baseline, public exports, and generated producers fro
   assert.ok(
     producerSets.some((producers) =>
       producers.includes("apps/backend/package.json#scripts.codegen"),
+    ),
+  );
+});
+
+test("blocks every source cycle without a baseline edge exemption", (context) => {
+  const root = fixture({
+    "apps/dashboard/package.json": JSON.stringify({
+      name: "@fixture/dashboard",
+      private: true,
+    }),
+    "apps/dashboard/src/app/navigation.ts":
+      'import { screen } from "@/screens/projects-screen";\nexport const navigation = screen;\n',
+    "apps/dashboard/src/screens/projects-screen.ts":
+      'import { capture } from "@/lib/analytics";\nexport const screen = capture;\n',
+    "apps/dashboard/src/lib/analytics.ts":
+      'import { navigation } from "@/app/navigation";\nexport const capture = navigation;\n',
+  });
+  context.after(() => rmSync(root, { force: true, recursive: true }));
+
+  const report = analyzeArchitecture({ root });
+  assert.equal(report.ok, false);
+  assert.ok(
+    report.blockingViolations.some(
+      (violation) => violation.kind === "dependency-cycle",
     ),
   );
 });
@@ -97,6 +120,34 @@ test("blocks workspace deep imports that are absent from public exports", (conte
   const report = analyzeArchitecture({ root });
   assert.equal(report.ok, false);
   assert.equal(report.blockingViolations[0].kind, "workspace-deep-import");
+});
+
+test("blocks workspace dependency cycles deterministically", (context) => {
+  const root = fixture({
+    "apps/consumer/package.json": JSON.stringify({
+      name: "@fixture/consumer",
+      private: true,
+      dependencies: { "@fixture/library": "workspace:*" },
+    }),
+    "packages/library/package.json": JSON.stringify({
+      name: "@fixture/library",
+      private: true,
+      dependencies: { "@fixture/consumer": "workspace:*" },
+    }),
+  });
+  context.after(() => rmSync(root, { force: true, recursive: true }));
+
+  const report = analyzeArchitecture({ root });
+  assert.equal(report.ok, false);
+  assert.deepEqual(report.blockingViolations, [
+    {
+      id: "workspace-dependency-cycle:@fixture/consumer|@fixture/library",
+      kind: "workspace-dependency-cycle",
+      packages: ["@fixture/consumer", "@fixture/library"],
+      message:
+        "Workspace dependency cycle detected: @fixture/consumer -> @fixture/library",
+    },
+  ]);
 });
 
 test("parses imports only, ignoring cross-app paths read by tests and CSS @source", () => {
