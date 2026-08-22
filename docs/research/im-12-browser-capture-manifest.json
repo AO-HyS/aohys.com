@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "candidateRevision": "598b83c61a51670c0679b3033fdcf0593a640dc5",
+  "measuredRuntimeRevision": "0d88f464d88d3a9c89f7f29cc964687775a00ce4",
+  "capturedAt": "2026-08-22T11:31:44.825Z",
+  "browser": {
+    "devicePixelRatio": 1.2000000476837158,
+    "platform": "MacIntel",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) T3Code(Nightly)/0.0.34-nightly.20260822.1155 Chrome/146.0.7680.216 Safari/537.36"
+  },
+  "execution": {
+    "browser": "T3 collaborative Preview",
+    "siteServer": "Astro preview from integrated production build",
+    "dashboardServer": "Vite local development server with local session",
+    "cacheState": "warm",
+    "enforcement": "report-only"
+  },
+  "captures": [
+    "docs/research/im-12-browser-captures/dashboard-overview.json",
+    "docs/research/im-12-browser-captures/dashboard-projects.json",
+    "docs/research/im-12-browser-captures/dashboard-leads.json",
+    "docs/research/im-12-browser-captures/dashboard-resume.json",
+    "docs/research/im-12-browser-captures/dashboard-settings.json",
+    "docs/research/im-12-browser-captures/architecture-visible.json",
+    "docs/research/im-12-browser-captures/architecture-offscreen.json"
+  ],
+  "limitations": [
+    "hidden was not captured because T3 Preview exposes no document-visibility control",
+    "reduced-motion was not captured because T3 Preview exposes no prefers-reduced-motion emulation",
+    "dashboard captures prove local route and render behavior only; provider-backed Convex data and authenticated Preview smoke remain external gates",
+    "requestAnimationFrame throttling in collaborative Preview affected some dashboard samples and is retained in raw evidence"
+  ]
+}

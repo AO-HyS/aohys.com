@@ -1,0 +1,50 @@
+{
+  "journey": "overview",
+  "longTasks": {
+    "count": 0,
+    "entries": [],
+    "supported": true,
+    "totalDurationMs": 0
+  },
+  "page": {
+    "reducedMotion": false,
+    "url": "http://localhost:5203/dashboard/",
+    "viewport": {
+      "height": 960,
+      "width": 1536
+    },
+    "visibilityState": "visible"
+  },
+  "render": {
+    "droppedFrameEstimate": 0,
+    "framesByContext": {
+      "hidden": 0,
+      "offscreen": 0,
+      "reduced-motion": 0,
+      "visible": 0
+    },
+    "framesOver50Ms": 0,
+    "maximumFrameDeltaMs": null,
+    "medianFrameDeltaMs": null,
+    "p95FrameDeltaMs": null,
+    "sampledFrames": 0
+  },
+  "requestedDurationMs": 1000,
+  "routeLoad": {
+    "domContentLoadedMs": 58,
+    "encodedBodyBytes": 653,
+    "loadEventMs": 59,
+    "paints": {},
+    "resourceCount": 64,
+    "resourceTransferBytes": 12600,
+    "transferBytes": 300,
+    "type": "navigate"
+  },
+  "scenario": "visible",
+  "schemaVersion": 1,
+  "startedAt": "2026-08-22T11:31:24.707Z",
+  "webgl": {
+    "canvasCount": 0,
+    "canvases": []
+  }
+}
