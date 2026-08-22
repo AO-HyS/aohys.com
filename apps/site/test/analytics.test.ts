@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   SELECTED_CONVERSION_EVENTS,
+  buildAnalyticsBootstrapPayload,
   buildExplicitConversionEvent,
   buildExplicitPageviewEvent,
   buildManualExceptionProperties,
   buildPostHogClientConfig,
+  normalizeAnalyticsReleaseSha,
+  sanitizePostHogEnvelopeProperties,
 } from "../src/analytics";
 
 const context = {
@@ -153,5 +156,70 @@ describe("public site analytics contract", () => {
       source: "contact_form",
       error_type: "UnknownError",
     });
+  });
+
+  it("validates the release SHA and preserves only sanitized exception frames", () => {
+    const release = "0123456789ABCDEF0123456789ABCDEF01234567";
+    expect(normalizeAnalyticsReleaseSha(release)).toBe(release.toLowerCase());
+    expect(normalizeAnalyticsReleaseSha("main")).toBeUndefined();
+
+    expect(
+      sanitizePostHogEnvelopeProperties({
+        token: "phc_public_ingestion_key",
+        message: "person@example.com sent private content",
+        $exception_list: [
+          {
+            type: "TypeError",
+            value: "person@example.com sent private content",
+            stacktrace: {
+              frames: [
+                {
+                  filename:
+                    "https://aohys.com/assets/app.js?email=person@example.com",
+                  function: "submitFor-person@example.com",
+                  lineno: 42,
+                  colno: 7,
+                  in_app: true,
+                  vars: { email: "person@example.com" },
+                },
+              ],
+            },
+          },
+        ],
+      }),
+    ).toEqual({
+      token: "phc_public_ingestion_key",
+      $exception_list: [
+        {
+          type: "TypeError",
+          stacktrace: {
+            frames: [
+              {
+                filename: "https://aohys.com/assets/app.js",
+                function: "[redacted-email]",
+                lineno: 42,
+                colno: 7,
+                in_app: true,
+              },
+            ],
+          },
+        },
+      ],
+    });
+  });
+
+  it("adds one validated release identity to browser context", () => {
+    const release = "0123456789abcdef0123456789abcdef01234567";
+    const payload = buildAnalyticsBootstrapPayload(
+      {
+        key: "phc_production",
+        environment: "production",
+        canonicalUrl: "https://aohys.com/contact/",
+        releaseSha: release,
+      },
+      context,
+    );
+    expect(payload.context.release).toBe(release);
+    expect(payload.pageview.properties.release).toBe(release);
   });
 });

@@ -1,6 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
     "types": ["node", "vitest/globals"]
   },
   "include": ["convex/**/*.ts", "src/**/*.ts", "test/**/*.ts"]

@@ -1,0 +1,262 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": 1,
+  "provider": {
+    "name": "posthog",
+    "canonicalProjectId": "489978",
+    "historicalConflictingProjectId": "492205",
+    "ingestPath": "/ingest",
+    "liveVerification": "external-gate"
+  },
+  "journeys": [
+    {
+      "id": "public-discovery",
+      "owner": "growth",
+      "purpose": "Measure anonymous public-page discovery and true Core Web Vitals.",
+      "privacy": "Anonymous, production-only, no autocapture, replay, form values, query strings, or person profiles.",
+      "retention": {
+        "days": 90,
+        "rationale": "Supports release-over-release trend comparison."
+      },
+      "signals": [
+        {
+          "event": "$pageview",
+          "properties": [
+            "content_id",
+            "locale",
+            "path",
+            "environment",
+            "release"
+          ]
+        },
+        {
+          "event": "$pageleave",
+          "properties": [
+            "content_id",
+            "locale",
+            "path",
+            "environment",
+            "release"
+          ]
+        },
+        {
+          "event": "$web_vitals",
+          "properties": [
+            "$web_vitals_LCP_value",
+            "$web_vitals_INP_value",
+            "$web_vitals_CLS_value",
+            "path",
+            "environment",
+            "release"
+          ]
+        },
+        {
+          "event": "$exception",
+          "properties": [
+            "source",
+            "error_type",
+            "$exception_list",
+            "path",
+            "environment",
+            "release"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contact-conversion",
+      "owner": "growth",
+      "purpose": "Measure contact intent, delivery outcomes, and sanitized provider failures.",
+      "privacy": "No names, email addresses, phone numbers, companies, messages, lead IDs, referrers, or raw error messages.",
+      "retention": {
+        "days": 90,
+        "rationale": "Matches the operating review window without retaining contact payloads."
+      },
+      "signals": [
+        {
+          "event": "contact_form_viewed",
+          "properties": [
+            "content_id",
+            "locale",
+            "path",
+            "environment",
+            "release"
+          ]
+        },
+        {
+          "event": "contact_form_submit_attempted",
+          "properties": ["intent", "locale", "path", "environment", "release"]
+        },
+        {
+          "event": "contact_form_submit_succeeded",
+          "properties": ["intent", "locale", "path", "environment", "release"]
+        },
+        {
+          "event": "contact_form_submit_failed",
+          "properties": [
+            "failure_reason",
+            "intent",
+            "locale",
+            "path",
+            "environment",
+            "release"
+          ]
+        },
+        {
+          "event": "whatsapp_cta_clicked",
+          "properties": ["target", "locale", "path", "environment", "release"]
+        },
+        {
+          "event": "email_cta_clicked",
+          "properties": ["target", "locale", "path", "environment", "release"]
+        },
+        {
+          "event": "lead_submitted",
+          "properties": [
+            "intent",
+            "preferred_contact_path",
+            "locale",
+            "source_path",
+            "has_company",
+            "has_phone",
+            "environment",
+            "release"
+          ]
+        },
+        {
+          "event": "lead_provider_failed",
+          "properties": [
+            "provider",
+            "operation",
+            "error_type",
+            "environment",
+            "release"
+          ]
+        },
+        {
+          "event": "lead_intake_rejected",
+          "properties": [
+            "code",
+            "status",
+            "error_type",
+            "reason",
+            "locale",
+            "intent",
+            "preferred_contact_path",
+            "source_path",
+            "has_company",
+            "has_phone",
+            "environment",
+            "release"
+          ]
+        },
+        {
+          "event": "lead_intake_failed",
+          "properties": [
+            "code",
+            "status",
+            "error_type",
+            "reason",
+            "environment",
+            "release"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dashboard-operations",
+      "owner": "product-engineering",
+      "purpose": "Diagnose private dashboard journeys, actions, exceptions, and real LCP/INP/CLS.",
+      "privacy": "Production-only and anonymous; no admin identity, lead identifiers, content bodies, URLs with queries, persistence, or replay.",
+      "retention": {
+        "days": 30,
+        "rationale": "Short operational window for a private single-admin surface."
+      },
+      "signals": [
+        {
+          "event": "dashboard_surface_viewed",
+          "properties": ["surface", "path", "environment", "release"]
+        },
+        {
+          "event": "dashboard_action_succeeded",
+          "properties": [
+            "surface",
+            "action",
+            "workflow_status",
+            "environment",
+            "release"
+          ]
+        },
+        {
+          "event": "dashboard_action_failed",
+          "properties": [
+            "surface",
+            "action",
+            "workflow_status",
+            "error_type",
+            "environment",
+            "release"
+          ]
+        },
+        {
+          "event": "$web_vitals",
+          "properties": [
+            "metric_name",
+            "metric_value",
+            "surface",
+            "path",
+            "environment",
+            "release"
+          ]
+        },
+        {
+          "event": "$exception",
+          "properties": [
+            "source",
+            "error_type",
+            "$exception_list",
+            "surface",
+            "environment",
+            "release"
+          ]
+        },
+        {
+          "event": "dashboard_runtime_exception",
+          "properties": [
+            "source",
+            "errorType",
+            "path",
+            "environment",
+            "release"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "platform-safety",
+      "owner": "product-engineering",
+      "purpose": "Detect sanitized CSP and release-runtime failures without capturing request payloads.",
+      "privacy": "Only directive names, normalized paths, blocked hostnames, environment, and release identity; no query strings or report bodies.",
+      "retention": {
+        "days": 30,
+        "rationale": "Operational troubleshooting window."
+      },
+      "signals": [
+        {
+          "event": "csp_violation_reported",
+          "properties": [
+            "source",
+            "path",
+            "documentPath",
+            "violatedDirective",
+            "effectiveDirective",
+            "blockedHost",
+            "disposition",
+            "environment",
+            "release"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,8 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 
+import { checkWorkspaceGuide } from "./architecture/workspace-docs.mjs";
+
 const root = process.cwd();
 const failures = [];
 
@@ -264,6 +266,10 @@ includesAll("docs/workspace.md", [
   "packages/content-graph",
   "packages/release-train",
 ]);
+
+for (const issue of checkWorkspaceGuide(root)) {
+  failures.push(`docs/workspace.md: ${issue}`);
+}
 
 includesAll(".env.example", [
   "AOHYS_ENV=local",

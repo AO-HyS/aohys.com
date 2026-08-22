@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "ticket": "IM-13",
+  "preparedFromCommit": "619ec0df5b08edebbde0f78db248fabbf59971e2",
+  "destructiveExecutionAuthorized": false,
+  "candidates": [
+    {
+      "id": "dashboard-alias:/dashboard/case-studies",
+      "status": "blocked-active",
+      "evidence": "The alias remains declared in apps/dashboard/src/navigation.ts and mounted by apps/dashboard/src/app/router.tsx.",
+      "missingEvidence": "Current inbound-link and saved-bookmark usage is not proven zero, and no reviewed redirect or migration replaces it.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "dashboard-alias:/dashboard/media",
+      "status": "blocked-active",
+      "evidence": "The alias remains declared in apps/dashboard/src/navigation.ts and mounted by apps/dashboard/src/app/router.tsx.",
+      "missingEvidence": "Current inbound-link and saved-bookmark usage is not proven zero, and no reviewed redirect or migration replaces it.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "public-redirect:/blog",
+      "status": "blocked-active",
+      "evidence": "The redirect remains published in apps/site/public/_redirects.",
+      "missingEvidence": "Current inbound-link, traffic, and SEO obligations are not proven absent in the active environment.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "public-redirect:/agents",
+      "status": "blocked-active",
+      "evidence": "The redirect remains published in apps/site/public/_redirects.",
+      "missingEvidence": "Current inbound-link, traffic, and SEO obligations are not proven absent in the active environment.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "public-redirect:/pricing",
+      "status": "blocked-active",
+      "evidence": "The redirect remains published in apps/site/public/_redirects.",
+      "missingEvidence": "Current inbound-link, traffic, and SEO obligations are not proven absent in the active environment.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "public-redirect:/es/blog",
+      "status": "blocked-active",
+      "evidence": "The redirect remains published in apps/site/public/_redirects.",
+      "missingEvidence": "Current inbound-link, traffic, and SEO obligations are not proven absent in the active environment.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "public-redirect:/es/agentes",
+      "status": "blocked-active",
+      "evidence": "The redirect remains published in apps/site/public/_redirects.",
+      "missingEvidence": "Current inbound-link, traffic, and SEO obligations are not proven absent in the active environment.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "public-redirect:/es/precios",
+      "status": "blocked-active",
+      "evidence": "The redirect remains published in apps/site/public/_redirects.",
+      "missingEvidence": "Current inbound-link, traffic, and SEO obligations are not proven absent in the active environment.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "public-redirect:/blog/*",
+      "status": "blocked-active",
+      "evidence": "The redirect remains published in apps/site/public/_redirects.",
+      "missingEvidence": "Current nested inbound-link, traffic, and SEO obligations are not proven absent in the active environment.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "public-redirect:/es/blog/*",
+      "status": "blocked-active",
+      "evidence": "The redirect remains published in apps/site/public/_redirects.",
+      "missingEvidence": "Current nested inbound-link, traffic, and SEO obligations are not proven absent in the active environment.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "site-renderer:dashboard-sign-in",
+      "status": "blocked-active",
+      "evidence": "renderDashboardSignIn remains called by apps/site/src/dashboard-access.ts.",
+      "missingEvidence": "No approved successor preserves the current privacy, callback, and recovery contract.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "site-renderer:dashboard-state",
+      "status": "blocked-active",
+      "evidence": "renderDashboardState remains called by apps/site/src/dashboard-access.ts.",
+      "missingEvidence": "No approved successor preserves every protected dashboard failure state.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "site-renderer:dashboard-app-shell",
+      "status": "blocked-active",
+      "evidence": "renderDashboardAppShell remains called by apps/site/src/dashboard-access.ts.",
+      "missingEvidence": "No approved successor preserves runtime configuration and private response guarantees.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "pages-entry:dashboard-renderer",
+      "status": "blocked-active",
+      "evidence": "The exported onRequest entry still invokes safeHandleDashboardRequest for /dashboard/*.",
+      "missingEvidence": "No approved equivalent Pages boundary replaces its authentication and runtime contract.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "pages-entry:dashboard-fallback",
+      "status": "blocked-active",
+      "evidence": "unavailableDashboardHtml remains the catch-path response in functions/dashboard/[[path]].ts.",
+      "missingEvidence": "No approved failure boundary replaces its private unavailable and observability guarantees.",
+      "approval": "not-granted"
+    },
+    {
+      "id": "package-surface:dashboard-ui-empty",
+      "status": "eligible-for-human-review",
+      "targetPaths": ["packages/dashboard-ui/tsconfig.json"],
+      "expectedSha256": {
+        "packages/dashboard-ui/tsconfig.json": "51cf1053c97d69ea5ce4da06990c8e92ccc519de3b305463609761430fc553fd"
+      },
+      "evidence": "The directory has exactly one tracked file, no package manifest or source, and no production-code or workspace-config reference to packages/dashboard-ui or @aohys/dashboard-ui.",
+      "missingEvidence": "Explicit human approval bound to the current evidence report and a verified backup is still required before removal.",
+      "approval": "not-granted"
+    }
+  ]
+}

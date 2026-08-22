@@ -30,9 +30,9 @@ export function LabeledInput({
   return (
     <FormField
       label={label}
-      description={description}
-      error={error}
-      disabled={disabled}
+      {...(description ? { description } : {})}
+      {...(error ? { error } : {})}
+      {...(disabled !== undefined ? { disabled } : {})}
       renderControl={(controlProps) => (
         <Input
           {...controlProps}
@@ -65,9 +65,9 @@ export function LabeledTextarea({
   return (
     <FormField
       label={label}
-      description={description}
-      error={error}
-      disabled={disabled}
+      {...(description ? { description } : {})}
+      {...(error ? { error } : {})}
+      {...(disabled !== undefined ? { disabled } : {})}
       renderControl={(controlProps) => (
         <Textarea
           {...controlProps}
@@ -98,17 +98,23 @@ export function LabeledSelect({
   return (
     <FormField
       label={label}
-      description={description}
-      disabled={disabled}
+      {...(description ? { description } : {})}
+      {...(disabled !== undefined ? { disabled } : {})}
       renderControl={(controlProps) => (
-        <Select value={value} onValueChange={onValueChange} disabled={disabled}>
+        <Select
+          value={value}
+          onValueChange={onValueChange}
+          {...(disabled !== undefined ? { disabled } : {})}
+        >
           <SelectTrigger {...controlProps} className="w-full">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               {options.map((option) => (
-                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
               ))}
             </SelectGroup>
           </SelectContent>

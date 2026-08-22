@@ -1,9 +1,24 @@
 import type { EnvironmentName } from "@aohys/environment";
 import { CONTACT_SUBMISSION_RATE_LIMIT_MESSAGE } from "./contact-abuse.js";
-import type {
-  ContactLeadInput,
-  LeadAnalyticsEvent,
+import {
+  PREFERRED_CONTACT_PATHS,
+  type ContactLeadInput,
+  type LeadAnalyticsEvent,
 } from "./contact-workflow.js";
+import { LEAD_INTENTS, LEAD_LOCALES } from "./lead-intake.js";
+import {
+  normalizeContactReleaseSha,
+  normalizeContactSourcePath,
+} from "./contact-environment.js";
+
+/*
+ * HTTP payloads are untrusted at runtime even though the successful workflow
+ * narrows them to ContactLeadInput. Keep the failure telemetry boundary honest
+ * so rejected values cannot be reflected before validation.
+ */
+type ContactIntakeTelemetryInput = Partial<
+  Record<keyof ContactLeadInput, unknown>
+>;
 
 export type PublicContactErrorCode =
   | "validation_error"
@@ -24,9 +39,10 @@ export interface PublicContactError {
 
 export interface ContactIntakeFailureEventInput {
   environment: EnvironmentName;
-  input?: Partial<ContactLeadInput>;
+  input?: ContactIntakeTelemetryInput;
   publicError: PublicContactError;
   error: unknown;
+  releaseSha?: string;
 }
 
 type ContactIntakeRejectionReason =
@@ -35,8 +51,13 @@ type ContactIntakeRejectionReason =
   | "abuse_signal"
   | "rate_limited";
 
-function safeString(value: unknown): string | undefined {
-  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+function canonicalValue(
+  value: unknown,
+  allowedValues: readonly string[],
+): string | undefined {
+  return typeof value === "string" && allowedValues.includes(value)
+    ? value
+    : undefined;
 }
 
 function errorTypeFor(error: unknown): string {
@@ -55,7 +76,7 @@ function errorTypeFor(error: unknown): string {
 }
 
 function rejectionReasonFor(
-  input: Partial<ContactLeadInput> | undefined,
+  input: ContactIntakeTelemetryInput | undefined,
   publicError: PublicContactError,
   error: unknown,
 ): ContactIntakeRejectionReason | undefined {
@@ -75,12 +96,17 @@ export function buildContactIntakeTelemetryEvent({
   input,
   publicError,
   error,
+  releaseSha,
 }: ContactIntakeFailureEventInput): LeadAnalyticsEvent {
-  const sourcePath = safeString(input?.sourcePath);
-  const locale = safeString(input?.locale);
-  const intent = safeString(input?.intent);
-  const preferredContactPath = safeString(input?.preferredContactPath);
+  const sourcePath = normalizeContactSourcePath(input?.sourcePath);
+  const locale = canonicalValue(input?.locale, LEAD_LOCALES);
+  const intent = canonicalValue(input?.intent, LEAD_INTENTS);
+  const preferredContactPath = canonicalValue(
+    input?.preferredContactPath,
+    PREFERRED_CONTACT_PATHS,
+  );
   const rejectionReason = rejectionReasonFor(input, publicError, error);
+  const release = normalizeContactReleaseSha(releaseSha);
 
   return {
     event: rejectionReason ? "lead_intake_rejected" : "lead_intake_failed",
@@ -101,6 +127,7 @@ export function buildContactIntakeTelemetryEvent({
         : {}),
       has_company: Boolean(input?.company),
       has_phone: Boolean(input?.phone),
+      ...(release ? { release } : {}),
     },
   };
 }
@@ -180,6 +207,7 @@ function isValidationMessage(message: string): boolean {
     message.includes(" is not supported.") ||
     message === "consentToContact must be true." ||
     message === "Invalid contact payload." ||
+    message === "sourcePath must be an allowed contact path." ||
     message === "contact submission did not pass spam checks."
   );
 }

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "drill": "alert-to-runbook-to-fresh-local-verified-fix",
+  "alertId": "work-archive-eager-image-regression",
+  "providerWrites": false,
+  "triggerExercise": {
+    "mode": "simulation",
+    "observed": 2,
+    "threshold": 1,
+    "alertWouldFire": true
+  },
+  "verification": {
+    "mode": "fresh-local",
+    "measurementRevision": "085a803a69f2f0e3d1f0ec3db9f6dd7d24365059",
+    "observed": 1,
+    "threshold": 1,
+    "semanticCheck": {
+      "command": "pnpm performance:test",
+      "exitCode": 0
+    },
+    "result": "passed"
+  },
+  "correlation": {
+    "release": "085a803a69f2f0e3d1f0ec3db9f6dd7d24365059",
+    "measurementRevision": "085a803a69f2f0e3d1f0ec3db9f6dd7d24365059"
+  },
+  "deduplication": {
+    "alertId": "work-archive-eager-image-regression",
+    "release": "085a803a69f2f0e3d1f0ec3db9f6dd7d24365059",
+    "measurementRevision": "085a803a69f2f0e3d1f0ec3db9f6dd7d24365059"
+  },
+  "quietPeriodMinutes": 1440,
+  "runbook": "docs/observability/runbooks/work-archive-eager-image-regression.md",
+  "runbookCriteria": {
+    "freshMeasurement": true,
+    "semanticCheckPassed": true,
+    "metricWithinThreshold": true
+  },
+  "externalGatesRemain": [
+    { "id": "posthog-alert-activation", "status": "unproven" },
+    { "id": "browser-rum-baseline", "status": "unproven" },
+    { "id": "convex-runtime-insights", "status": "unproven" }
+  ],
+  "result": "passed"
+}

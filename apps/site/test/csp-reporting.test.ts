@@ -21,7 +21,8 @@ describe("CSP reporting boundary", () => {
             "document-uri": "https://aohys.com/contact/?lead=private",
             "violated-directive": "script-src-elem",
             "effective-directive": "script-src-elem",
-            "blocked-uri": "https://us-assets.i.posthog.com/array/phc_private/config.js?t=1",
+            "blocked-uri":
+              "https://us-assets.i.posthog.com/array/phc_private/config.js?t=1",
             disposition: "enforce",
           },
         }),
@@ -30,12 +31,15 @@ describe("CSP reporting boundary", () => {
         AOHYS_ENV: "production",
         PUBLIC_SITE_URL: "https://aohys.com",
         PUBLIC_POSTHOG_KEY: "phc_production",
+        PUBLIC_RELEASE_SHA: "0123456789abcdef0123456789abcdef01234567",
       },
       transport,
     );
 
     expect(response.status).toBe(204);
-    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
+    expect(response.headers.get("content-security-policy")).toBe(
+      CONTENT_SECURITY_POLICY,
+    );
     expect(requests[0]?.url).toBe("https://aohys.com/ingest/capture/");
     expect(JSON.parse(String(requests[0]?.init.body))).toEqual({
       api_key: "phc_production",
@@ -51,6 +55,7 @@ describe("CSP reporting boundary", () => {
         effectiveDirective: "script-src-elem",
         blockedHost: "us-assets.i.posthog.com",
         disposition: "enforce",
+        release: "0123456789abcdef0123456789abcdef01234567",
       },
     });
     expect(JSON.stringify(requests)).not.toContain("phc_private");
@@ -69,14 +74,19 @@ describe("CSP reporting boundary", () => {
     );
 
     expect(response.status).toBe(204);
-    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
+    expect(response.headers.get("content-security-policy")).toBe(
+      CONTENT_SECURITY_POLICY,
+    );
     expect(transport).not.toHaveBeenCalled();
   });
 
   it("emits no CSP telemetry in preview even if a stale key exists", async () => {
     const transport = vi.fn();
     const response = await handleCspReportRequest(
-      new Request("https://preview.aohys.com/observability/csp", { method: "POST", body: "{}" }),
+      new Request("https://preview.aohys.com/observability/csp", {
+        method: "POST",
+        body: "{}",
+      }),
       { AOHYS_ENV: "preview", PUBLIC_POSTHOG_KEY: "phc_stale" },
       transport,
     );
@@ -99,7 +109,9 @@ describe("CSP reporting boundary", () => {
 
     expect(response.status).toBe(204);
     expect(response.headers.get("allow")).toBe("POST, OPTIONS");
-    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
+    expect(response.headers.get("content-security-policy")).toBe(
+      CONTENT_SECURITY_POLICY,
+    );
     expect(transport).not.toHaveBeenCalled();
   });
 });

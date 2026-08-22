@@ -1,6 +1,8 @@
+import { validateCloudflareImagesCustomId } from "@aohys/core";
 import {
-  validateCloudflareImagesCustomId,
-} from "@aohys/core";
+  parseCloudflareImagesUploadResponse,
+  parseGitHubErrorResponse,
+} from "./provider-responses.js";
 
 export {
   normalizeCloudflareImagesCustomId,
@@ -58,18 +60,23 @@ export async function createCloudflareImagesDirectUpload(
   const customId = validateCloudflareImagesCustomId(payload.storageKey);
 
   if (!customId.isValid) {
-    throw new Error(`Cloudflare Images custom ID is invalid. ${customId.message}`);
+    throw new Error(
+      `Cloudflare Images custom ID is invalid. ${customId.message}`,
+    );
   }
 
   const form = new FormData();
   form.set("id", customId.value);
   form.set("requireSignedURLs", "false");
-  form.set("metadata", JSON.stringify({
-    altText: payload.altText,
-    contentId: payload.contentId,
-    locale: payload.locale,
-    usage: payload.usage,
-  }));
+  form.set(
+    "metadata",
+    JSON.stringify({
+      altText: payload.altText,
+      contentId: payload.contentId,
+      locale: payload.locale,
+      usage: payload.usage,
+    }),
+  );
 
   const response = await providerFetch(
     `https://api.cloudflare.com/client/v4/accounts/${accountId}/images/v2/direct_upload`,
@@ -81,24 +88,19 @@ export async function createCloudflareImagesDirectUpload(
       body: form,
     },
   );
-  const body = await response.json() as {
-    success?: boolean;
-    result?: {
-      id?: string;
-      uploadURL?: string;
-    };
-    errors?: Array<{ message?: string }>;
-  };
+  const body = parseCloudflareImagesUploadResponse(await response.json());
 
-  if (!response.ok || !body.success || !body.result?.id || !body.result.uploadURL) {
-    const providerMessage = body.errors?.map((error) => error.message).filter(Boolean).join(" ");
-    throw new Error(providerMessage || "Cloudflare Images upload URL could not be created.");
+  if (!response.ok || !body.success || !body.imageId || !body.uploadURL) {
+    const providerMessage = body.errors.join(" ");
+    throw new Error(
+      providerMessage || "Cloudflare Images upload URL could not be created.",
+    );
   }
 
   return {
-    imageId: body.result.id,
-    publicUrl: `https://imagedelivery.net/${accountHash}/${body.result.id}/public`,
-    uploadURL: body.result.uploadURL,
+    imageId: body.imageId,
+    publicUrl: `https://imagedelivery.net/${accountHash}/${body.imageId}/public`,
+    uploadURL: body.uploadURL,
   };
 }
 
@@ -131,7 +133,8 @@ export async function triggerGitHubPublishWorkflow(
       body: JSON.stringify({
         ref,
         inputs: {
-          target_environment: config.environment === "production" ? "production" : "preview",
+          target_environment:
+            config.environment === "production" ? "production" : "preview",
         },
       }),
     },
@@ -141,7 +144,7 @@ export async function triggerGitHubPublishWorkflow(
     let message = "GitHub publish workflow could not be queued.";
 
     try {
-      const body = await response.json() as { message?: string };
+      const body = parseGitHubErrorResponse(await response.json());
       message = body.message ?? message;
     } catch {
       // Keep the generic provider message.

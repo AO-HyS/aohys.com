@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { buildDashboardOverview, type DashboardOverviewInput } from "../src/dashboard-overview.js";
+import {
+  buildDashboardOverview,
+  type DashboardOverviewInput,
+} from "../src/dashboard-overview.js";
 
 function readyInput(): DashboardOverviewInput {
   return {
@@ -16,14 +19,24 @@ function readyInput(): DashboardOverviewInput {
       achievements: "Outcome",
       structureNotes: "Structure",
     })),
-    caseStudies: [{ contentId: "case-study:aohys", evidenceStatus: "sanitized" }],
-    media: [{ contentId: "case-study:aohys", status: "draft", selectedForPublic: true }],
+    caseStudies: [
+      { contentId: "case-study:aohys", evidenceStatus: "sanitized" },
+    ],
+    media: [
+      {
+        contentId: "case-study:aohys",
+        status: "draft",
+        selectedForPublic: true,
+      },
+    ],
     resumeDrafts: [],
-    settings: [{
-      key: "PUBLIC_WHATSAPP_URL",
-      value: "https://wa.me/522299020825",
-      classification: "public-build-value",
-    }],
+    settings: [
+      {
+        key: "PUBLIC_WHATSAPP_URL",
+        value: "https://wa.me/522299020825",
+        classification: "public-build-value",
+      },
+    ],
     releaseProviderConfigured: true,
   };
 }
@@ -44,7 +57,9 @@ describe("dashboard publication overview", () => {
 
   it("prioritizes an actionable copy blocker without exposing draft content", () => {
     const input = readyInput();
-    input.projectDrafts = input.projectDrafts.filter((draft) => draft.locale === "en");
+    input.projectDrafts = input.projectDrafts.filter(
+      (draft) => draft.locale === "en",
+    );
 
     const overview = buildDashboardOverview(input);
 
@@ -76,5 +91,30 @@ describe("dashboard publication overview", () => {
 
     expect(overview.state).toBe("partial");
     expect(overview.blockers[0]?.code).toBe("data-limit-reached");
+  });
+
+  it("maps durable publication states without treating acknowledgement as deployed", () => {
+    const input = readyInput();
+    input.publication = {
+      requestKey: "a".repeat(64),
+      scope: "all",
+      targetEnvironment: "preview",
+      state: "release-acknowledged",
+      retryable: false,
+      updatedAt: 1,
+    };
+    expect(buildDashboardOverview(input).release).toMatchObject({
+      workflowState: "acknowledged",
+      deploymentState: "unknown",
+    });
+    input.publication.state = "deployed";
+    expect(buildDashboardOverview(input).release.deploymentState).toBe(
+      "deployed",
+    );
+    input.publication.state = "rollback-needed";
+    expect(buildDashboardOverview(input).release).toMatchObject({
+      workflowState: "failed",
+      deploymentState: "rollback-needed",
+    });
   });
 });
