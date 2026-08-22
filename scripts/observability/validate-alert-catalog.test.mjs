@@ -16,9 +16,7 @@ test("every actionable alert is baseline-derived and operationally complete", as
   assert.deepEqual(validateAlertCatalog(catalog, baseline), []);
   assert.equal(catalog.alerts[0].threshold.value, 1);
   assert.ok(catalog.alerts.every((alert) => alert.owner && alert.runbook));
-  assert.ok(
-    catalog.alerts.every((alert) => alert.signal.correlationKeys.length > 0),
-  );
+  assert.ok(catalog.alerts.every((alert) => alert.signal.correlation.release));
   assert.ok(
     catalog.alerts.every((alert) => alert.deduplication.quietPeriodMinutes > 0),
   );
@@ -62,8 +60,25 @@ test("an alert cannot point at an unmeasured signal or lose release correlation"
     "../../docs/research/im-12-performance-baseline.json",
   );
   catalog.alerts[0].signal.metricPath = "/observations/publicSite/missing";
-  catalog.alerts[0].signal.correlationKeys = ["measurementRevision"];
+  delete catalog.alerts[0].signal.correlation.release;
   const errors = validateAlertCatalog(catalog, baseline);
   assert.ok(errors.some((error) => error.includes("metricPath must resolve")));
-  assert.ok(errors.some((error) => error.includes("must include release")));
+  assert.ok(errors.some((error) => error.includes("must map release")));
+});
+
+test("threshold derivation must use the measured signal rather than a budget constant", async () => {
+  const catalog = await readJson(
+    "../../docs/observability/alert-catalog.v1.json",
+  );
+  const baseline = await readJson(
+    "../../docs/research/im-12-performance-baseline.json",
+  );
+  catalog.alerts[0].threshold.derivation.jsonPointer =
+    "/budgets/publicSite/workArchiveEagerImages/expected";
+  const errors = validateAlertCatalog(catalog, baseline);
+  assert.ok(
+    errors.some((error) =>
+      error.includes("directly from its signal metricPath"),
+    ),
+  );
 });

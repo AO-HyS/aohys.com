@@ -36,7 +36,10 @@
       "signal": {
         "source": "performance:measure",
         "metricPath": "/observations/publicSite/workArchiveEagerImages",
-        "correlationKeys": ["release", "measurementRevision"]
+        "correlation": {
+          "release": "/source/revision",
+          "measurementRevision": "/source/revision"
+        }
       },
       "threshold": {
         "operator": "greater-than",
@@ -44,7 +47,7 @@
         "unit": "images",
         "derivation": {
           "baselineFile": "docs/research/im-12-performance-baseline.json",
-          "jsonPointer": "/budgets/publicSite/workArchiveEagerImages/expected",
+          "jsonPointer": "/observations/publicSite/workArchiveEagerImages",
           "kind": "measured-baseline"
         }
       },

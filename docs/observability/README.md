@@ -14,7 +14,7 @@ pnpm observability:validate
 pnpm observability:alert-drill
 ```
 
-The drill compares a fresh local simulation with the committed evidence artifact. It performs no provider writes and does not claim that an alert is live.
+The drill creates a production build, writes a fresh measurement only to a temporary directory, runs the real semantic performance tests, and evaluates the runbook's verified-fix criteria. Its trigger exercise is explicitly a simulation; its successful verification is a fresh local result. It performs no provider writes and does not claim that an alert is live.
 
 Public-site and dashboard browser exceptions use PostHog `captureException` so the SDK creates the structured exception list. The final `before_send` boundary removes messages and other arbitrary nested values while retaining the error type and sanitized stack frames. Browser, edge, and contact-backend events include `release` only when the injected value is a complete 40-character Git commit SHA. LCP, INP, and CLS are the only catalogued Core Web Vitals; `first-input` is not used as an INP substitute.
 

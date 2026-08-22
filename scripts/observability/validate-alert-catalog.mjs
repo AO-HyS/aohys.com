@@ -71,12 +71,8 @@ export function validateAlertCatalog(catalog, baseline) {
     ids.add(alert?.id);
     if (alert?.status !== "locally-defined")
       errors.push(`${at}.status must be locally-defined`);
-    if (
-      !isRecord(alert?.signal) ||
-      !Array.isArray(alert.signal.correlationKeys) ||
-      alert.signal.correlationKeys.length === 0
-    ) {
-      errors.push(`${at}.signal must define correlationKeys`);
+    if (!isRecord(alert?.signal) || !isRecord(alert.signal.correlation)) {
+      errors.push(`${at}.signal must define correlation mappings`);
     } else {
       const observedBaseline = readJsonPointer(
         baseline,
@@ -89,9 +85,12 @@ export function validateAlertCatalog(catalog, baseline) {
         errors.push(`${at}.signal metricPath must resolve to a measured value`);
       }
       for (const requiredKey of ["release", "measurementRevision"]) {
-        if (!alert.signal.correlationKeys.includes(requiredKey)) {
+        const pointer = alert.signal.correlation[requiredKey];
+        if (typeof pointer !== "string") {
+          errors.push(`${at}.signal correlation must map ${requiredKey}`);
+        } else if (typeof readJsonPointer(baseline, pointer) !== "string") {
           errors.push(
-            `${at}.signal correlationKeys must include ${requiredKey}`,
+            `${at}.signal correlation ${requiredKey} must resolve to a string`,
           );
         }
       }
@@ -108,6 +107,10 @@ export function validateAlertCatalog(catalog, baseline) {
       const derivation = alert.threshold.derivation;
       if (!isRecord(derivation) || derivation.kind !== "measured-baseline") {
         errors.push(`${at}.threshold must derive from a measured baseline`);
+      } else if (derivation.jsonPointer !== alert.signal?.metricPath) {
+        errors.push(
+          `${at}.threshold must derive directly from its signal metricPath`,
+        );
       } else {
         const baselineValue = readJsonPointer(baseline, derivation.jsonPointer);
         if (!Number.isFinite(baselineValue)) {
@@ -136,6 +139,16 @@ export function validateAlertCatalog(catalog, baseline) {
       errors.push(
         `${at}.deduplication must define keys and a positive quiet period`,
       );
+    } else {
+      const availableKeys = new Set([
+        "alertId",
+        ...Object.keys(alert.signal?.correlation ?? {}),
+      ]);
+      for (const key of alert.deduplication.keys) {
+        if (!availableKeys.has(key)) {
+          errors.push(`${at}.deduplication key ${key} must be materialized`);
+        }
+      }
     }
     if (
       !isRecord(alert?.verifiedFix) ||

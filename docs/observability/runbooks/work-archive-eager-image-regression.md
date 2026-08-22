@@ -6,7 +6,7 @@ This runbook is local and provider-independent. It handles the `work-archive-eag
 
 ## Correlate
 
-1. Record the `release` and `measurementRevision` values from the alert signal.
+1. Materialize `release` and `measurementRevision` from the measurement's `source.revision`, then record both values from the alert signal.
 2. Confirm that the observed metric is `/observations/publicSite/workArchiveEagerImages` from `pnpm performance:measure`.
 3. Deduplicate repeated evidence with `alertId + release + measurementRevision`; the catalog quiets that tuple for 1,440 minutes.
 
