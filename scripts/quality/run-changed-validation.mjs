@@ -38,6 +38,9 @@ const plan = buildChangedValidationPlan({
       "--no-advisory",
     ],
   ],
+  architecturePrefixes: ["apps", "functions", "packages", "scripts"],
+  architectureFiles: ["package.json", "pnpm-workspace.yaml"],
+  architectureCommands: [["pnpm", ["run", "architecture:fitness"]]],
 });
 
 console.log(JSON.stringify({ mode: "changed-validation", ...plan }, null, 2));
