@@ -216,4 +216,37 @@ describe("contact HTTP error boundary", () => {
     );
     expect(JSON.stringify(forgedSourceEvent)).not.toContain("token=private");
   });
+
+  it("omits poisoned categorical values from rejected intake telemetry", () => {
+    const privateValue = "client@example.com?token=private";
+    const validationError = new Error("Invalid contact payload.");
+    const event = buildContactIntakeTelemetryEvent({
+      environment: "production",
+      input: {
+        sourcePath: "/contact?email=client@example.com#token=private",
+        locale: privateValue,
+        intent: privateValue,
+        preferredContactPath: privateValue,
+        company: privateValue,
+        phone: privateValue,
+      },
+      publicError: buildPublicContactError(validationError),
+      error: validationError,
+    });
+
+    expect(event).toMatchObject({
+      event: "lead_intake_rejected",
+      properties: {
+        reason: "invalid_fields",
+        source_path: "/contact",
+        has_company: true,
+        has_phone: true,
+      },
+    });
+    expect(event.properties).not.toHaveProperty("locale");
+    expect(event.properties).not.toHaveProperty("intent");
+    expect(event.properties).not.toHaveProperty("preferred_contact_path");
+    expect(JSON.stringify(event)).not.toContain("client@example.com");
+    expect(JSON.stringify(event)).not.toContain("token=private");
+  });
 });
