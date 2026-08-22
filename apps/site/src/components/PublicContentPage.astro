@@ -182,7 +182,7 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
                   {...(entryDetail?.publicEvidence[0]?.kind
                     ? { evidenceKind: entryDetail.publicEvidence[0].kind }
                     : {})}
-                  loading="eager"
+                  loading={index === 0 ? "eager" : "lazy"}
                 />
               </figure>
               <div>

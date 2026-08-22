@@ -137,6 +137,10 @@ describe("public site source quality", () => {
     );
     expect(publicContentPage).toContain("getUiCopy");
     expect(publicContentPage).toContain("SunlitProofImage");
+    expect(publicContentPage).toContain(
+      'loading={index === 0 ? "eager" : "lazy"}',
+    );
+    expect(publicContentPage.match(/loading="eager"/g)).toHaveLength(1);
     expect(proofMedia).toContain("STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID");
     expect(proofMedia).toContain("preferFull");
     expect(proofMedia).toContain("dashboardMedia?.thumbSrc");

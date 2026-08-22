@@ -1,0 +1,241 @@
+{
+  "version": 1,
+  "mode": "observe",
+  "source": {
+    "revision": "619ec0df5b08edebbde0f78db248fabbf59971e2",
+    "toolchain": {
+      "node": "v25.7.0",
+      "packageManager": "pnpm@11.7.0",
+      "astro": "7.0.3",
+      "vite": "8.1.0"
+    },
+    "measurementMethod": "Production build artifacts, recursive static JavaScript import graph, and deterministic raw/gzip byte counts.",
+    "regenerationNote": "Regenerate after integrating IM-08 because backend source envelopes and the source revision will change."
+  },
+  "observations": {
+    "dashboardJourneys": {
+      "overview": {
+        "files": [
+          "assets/card.js",
+          "assets/dashboard.js",
+          "assets/data-runtime.js",
+          "assets/overview.js",
+          "assets/react-runtime.js",
+          "assets/rolldown-runtime.js",
+          "assets/section-panel.js",
+          "assets/shield-check.js",
+          "assets/status-badge.js"
+        ],
+        "rawBytes": 566405,
+        "gzipBytes": 177062
+      },
+      "projects": {
+        "files": [
+          "assets/card.js",
+          "assets/dashboard.js",
+          "assets/data-runtime.js",
+          "assets/external-link.js",
+          "assets/eye.js",
+          "assets/projects.js",
+          "assets/react-runtime.js",
+          "assets/rolldown-runtime.js",
+          "assets/tabs.js",
+          "assets/toast.js"
+        ],
+        "rawBytes": 747187,
+        "gzipBytes": 228373
+      },
+      "leads": {
+        "files": [
+          "assets/card.js",
+          "assets/dashboard.js",
+          "assets/dashboard2.js",
+          "assets/data-runtime.js",
+          "assets/eye.js",
+          "assets/leads.js",
+          "assets/react-runtime.js",
+          "assets/rolldown-runtime.js",
+          "assets/save-bar.js",
+          "assets/section-panel.js",
+          "assets/status-badge.js",
+          "assets/table.js",
+          "assets/toast.js"
+        ],
+        "rawBytes": 653987,
+        "gzipBytes": 201843
+      },
+      "resume": {
+        "files": [
+          "assets/card.js",
+          "assets/dashboard.js",
+          "assets/data-runtime.js",
+          "assets/react-runtime.js",
+          "assets/resume.js",
+          "assets/rolldown-runtime.js",
+          "assets/save-bar.js",
+          "assets/status-badge.js",
+          "assets/table.js",
+          "assets/tabs.js",
+          "assets/toast.js"
+        ],
+        "rawBytes": 738505,
+        "gzipBytes": 225498
+      },
+      "settings": {
+        "files": [
+          "assets/card.js",
+          "assets/dashboard.js",
+          "assets/dashboard2.js",
+          "assets/data-runtime.js",
+          "assets/external-link.js",
+          "assets/react-runtime.js",
+          "assets/rolldown-runtime.js",
+          "assets/save-bar.js",
+          "assets/section-panel.js",
+          "assets/settings.js",
+          "assets/shield-check.js",
+          "assets/status-badge.js",
+          "assets/toast.js"
+        ],
+        "rawBytes": 601330,
+        "gzipBytes": 188572
+      }
+    },
+    "dashboardAssets": {
+      "css": {
+        "files": ["dashboard.css"],
+        "rawBytes": 99383,
+        "gzipBytes": 16536
+      },
+      "fonts": {
+        "files": [
+          "atkinson-hyperlegible-next-latin-ext-wght-normal.woff2",
+          "atkinson-hyperlegible-next-latin-wght-normal.woff2",
+          "mona-sans-latin-ext-wght-normal.woff2",
+          "mona-sans-latin-wght-normal.woff2",
+          "mona-sans-vietnamese-wght-normal.woff2"
+        ],
+        "rawBytes": 115552,
+        "gzipBytes": 115692
+      }
+    },
+    "publicSite": {
+      "css": {
+        "files": [
+          "_astro/BaseLayout.DPyrAdt9.css",
+          "dashboard-app/assets/dashboard.css"
+        ],
+        "rawBytes": 233376,
+        "gzipBytes": 34753
+      },
+      "fonts": {
+        "files": [
+          "_astro/atkinson-hyperlegible-next-latin-ext-wght-normal.C6vrW8VD.woff2",
+          "_astro/atkinson-hyperlegible-next-latin-wght-normal.BcXVPD7q.woff2",
+          "_astro/mona-sans-latin-ext-wght-normal.BqSk0Z3x.woff2",
+          "_astro/mona-sans-latin-wght-normal.Pz49MTQZ.woff2",
+          "_astro/mona-sans-vietnamese-wght-normal.DsUdksa4.woff2",
+          "dashboard-app/assets/atkinson-hyperlegible-next-latin-ext-wght-normal.woff2",
+          "dashboard-app/assets/atkinson-hyperlegible-next-latin-wght-normal.woff2",
+          "dashboard-app/assets/mona-sans-latin-ext-wght-normal.woff2",
+          "dashboard-app/assets/mona-sans-latin-wght-normal.woff2",
+          "dashboard-app/assets/mona-sans-vietnamese-wght-normal.woff2"
+        ],
+        "rawBytes": 231104,
+        "gzipBytes": 231384
+      },
+      "images": {
+        "files": [
+          "apple-touch-icon.png",
+          "favicon.png",
+          "images/brand/aohys-connections-mark-v3.svg",
+          "images/brand/aohys-connections-mono-v3.svg",
+          "images/brand/aohys-connections-negative-v3.svg",
+          "images/brand/aohys-connections-wordmark-v3.svg",
+          "images/brand/aohys-logo.png",
+          "images/brand/aohys-portal-mark-v2.svg",
+          "images/brand/aohys-portal-mono-v2.svg",
+          "images/brand/aohys-portal-negative-v2.svg",
+          "images/brand/aohys-portal-wordmark-v2.svg",
+          "images/generated/aohys-architecture-proof-surface.png",
+          "images/generated/aohys-delivery-artifact.png",
+          "images/generated/aohys-hero-system-map.png",
+          "images/proof/aohys-system-map.svg",
+          "images/proof/barber-central-hero-v2.jpg",
+          "images/proof/barber-central-landing.png",
+          "images/proof/barber-central-ops.png",
+          "images/proof/barber-central-proof-thumb.png",
+          "images/proof/casa-roca-gallery-v2.jpg",
+          "images/proof/casa-roca-production.png",
+          "images/proof/casa-roca-value-v2.jpg",
+          "images/proof/engineering-practice-release-cycle.svg",
+          "images/proof/enterprise-delivery-map.svg",
+          "images/proof/enterprise-systems-map-v2.svg",
+          "images/proof/eteria-garden-blue-table-480.webp",
+          "images/proof/eteria-garden-blue-table-800.webp",
+          "images/proof/eteria-garden-blue-table-og.jpg",
+          "images/proof/eteria-ivory-linen-hero.webp",
+          "images/proof/nutri-plan-dashboard-v2.png",
+          "images/proof/nutri-plan-dashboard.png",
+          "images/proof/nutri-plan-proof-thumb.png",
+          "images/proof/nutri-plan-proof.png",
+          "images/social/aohys-social-preview-v1.png",
+          "images/social/engineering-practice-preview-v1.png",
+          "images/social/enterprise-systems-preview-v1.png"
+        ],
+        "rawBytes": 8110854,
+        "gzipBytes": 7955925
+      },
+      "workArchiveEagerImages": 1,
+      "workArchiveEagerCorrection": {
+        "before": 6,
+        "after": 1,
+        "evidence": "The six archive cards previously used eager loading; the production archive build now keeps only its first card eager."
+      },
+      "webglRuntime": {
+        "status": "unproven",
+        "note": "Requires browser and RUM evidence; no numeric budget is inferred from build output."
+      }
+    },
+    "backendStaticEnvelopes": {
+      "listForDashboard": {
+        "maximumDocumentsRequested": 563,
+        "maximumDocumentsAccepted": 560,
+        "source": "apps/backend/convex/model/content/overview.ts"
+      },
+      "dashboardOverview": {
+        "maximumDocumentsRequested": 616,
+        "maximumDocumentsAccepted": 610,
+        "source": "apps/backend/convex/model/content/overview.ts"
+      },
+      "publicationAll": {
+        "maximumDocumentsRequested": 713,
+        "maximumDocumentsAccepted": 710,
+        "source": "apps/backend/convex/model/content/publication.ts"
+      },
+      "mediaSelection": {
+        "maximumSiblingDocumentsRequested": 101,
+        "maximumSiblingDocumentsAccepted": 100,
+        "siblingPatches": "selected rows only",
+        "source": "apps/backend/convex/model/content/media.ts"
+      },
+      "runtimeFanoutAndContention": {
+        "status": "unproven",
+        "note": "Static bounds are not runtime fanout or contention measurements."
+      }
+    }
+  },
+  "budgets": {
+    "publicSite": {
+      "workArchiveEagerImages": { "expected": 1, "enforcement": "semantic" },
+      "webglRuntime": { "enforcement": "report-only", "numericBudget": null }
+    },
+    "dashboardBundles": { "enforcement": "report-only", "numericBudget": null },
+    "backendRuntime": { "enforcement": "report-only", "numericBudget": null }
+  },
+  "result": {
+    "violations": [],
+    "exitCode": 0,
+    "note": "Observe mode always exits 0; semantic violations remain visible in this report."
+  }
+}

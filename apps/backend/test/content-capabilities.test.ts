@@ -220,6 +220,7 @@ describe("moved content capability behavior", () => {
       _id: "media_sibling",
       contentId: "case-study:aohys",
       status: "published",
+      selectedForPublic: true,
     };
     const get = vi.fn(async () => selected);
     const take = vi.fn(async () => [selected, sibling]);
@@ -260,6 +261,47 @@ describe("moved content capability behavior", () => {
       selectedForPublicAt: 1_788_000_000_100,
       status: "draft",
       updatedAt: 1_788_000_000_100,
+    });
+    expect(patch).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not patch 100 already deselected siblings when selecting owned media", async () => {
+    vi.spyOn(Date, "now").mockReturnValue(1_788_000_000_150);
+    const selected = {
+      _id: "media_selected",
+      contentId: "case-study:aohys",
+      status: "draft",
+    };
+    const deselectedSiblings = Array.from({ length: 100 }, (_, index) => ({
+      _id: `media_sibling_${index}`,
+      contentId: "case-study:aohys",
+      status: "draft",
+      selectedForPublic: false,
+    }));
+    const get = vi.fn(async () => selected);
+    const take = vi.fn(async () => deselectedSiblings);
+    const eq = vi.fn(() => ({ take }));
+    const withIndex = vi.fn(
+      (_name: string, range: (query: { eq: typeof eq }) => unknown) => {
+        range({ eq });
+        return { take };
+      },
+    );
+    const query = vi.fn(() => ({ withIndex }));
+    const patch = vi.fn(async () => undefined);
+
+    await selectMediaForPublicHandler({ db: { get, query, patch } } as never, {
+      mediaId: "media_selected" as never,
+      contentId: "case-study:aohys",
+    });
+
+    expect(take).toHaveBeenCalledWith(101);
+    expect(patch).toHaveBeenCalledTimes(1);
+    expect(patch).toHaveBeenCalledWith("media_selected", {
+      selectedForPublic: true,
+      selectedForPublicAt: 1_788_000_000_150,
+      status: "draft",
+      updatedAt: 1_788_000_000_150,
     });
   });
 

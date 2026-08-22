@@ -68,6 +68,15 @@ async function listSiblingMedia(ctx: MutationCtx, contentId: string) {
   return withinLimit(siblingMedia, 100, "Project media selection");
 }
 
+function isPublicSelection(item: {
+  selectedForPublic?: boolean;
+  selectedForPublicAt?: number;
+}) {
+  return (
+    item.selectedForPublic === true || item.selectedForPublicAt !== undefined
+  );
+}
+
 export async function createMediaMetadataHandler(
   ctx: MutationCtx,
   args: ObjectType<typeof createMediaMetadataArgs>,
@@ -76,7 +85,7 @@ export async function createMediaMetadataHandler(
   if (args.selectedForPublic && args.contentId) {
     const siblingMedia = await listSiblingMedia(ctx, args.contentId);
     await Promise.all(
-      siblingMedia.map((item) =>
+      siblingMedia.filter(isPublicSelection).map((item) =>
         ctx.db.patch(item._id, {
           selectedForPublic: false,
           selectedForPublicAt: undefined,
@@ -108,7 +117,7 @@ export async function selectMediaForPublicHandler(
   const siblingMedia = await listSiblingMedia(ctx, args.contentId);
   await Promise.all(
     siblingMedia
-      .filter((item) => item._id !== args.mediaId)
+      .filter((item) => item._id !== args.mediaId && isPublicSelection(item))
       .map((item) =>
         ctx.db.patch(item._id, {
           selectedForPublic: false,
