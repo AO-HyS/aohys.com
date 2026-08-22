@@ -11,6 +11,8 @@ vi.mock("../convex/auth.js", () => ({ requireAdmin }));
 
 import { api, internal } from "../convex/_generated/api.js";
 import * as contentFunctions from "../convex/content.js";
+import * as contentActions from "../convex/contentActions.js";
+import { contentContract } from "./content-contract-fixture.js";
 
 const publicNames = [
   "archiveMedia",
@@ -36,6 +38,7 @@ const internalNames = [
 interface RegisteredFunction {
   isPublic?: boolean;
   isInternal?: boolean;
+  isAction?: boolean;
   _handler: (ctx: unknown, args: unknown) => Promise<unknown>;
   exportArgs: () => string;
   exportReturns: () => string;
@@ -71,30 +74,23 @@ describe("content registered-function facade", () => {
     );
   });
 
-  it("keeps public and internal registration visibility exact", () => {
-    for (const name of publicNames) {
-      expect(
-        (contentFunctions[name] as unknown as RegisteredFunction).isPublic,
-      ).toBe(true);
-    }
-    for (const name of internalNames) {
-      expect(
-        (contentFunctions[name] as unknown as RegisteredFunction).isInternal,
-      ).toBe(true);
-    }
-  });
+  it("preserves exact visibility, argument, and return contracts for all functions", () => {
+    for (const [name, contract] of Object.entries(contentContract)) {
+      const registeredFunction = contentFunctions[
+        name as keyof typeof contentFunctions
+      ] as unknown as RegisteredFunction;
 
-  it("defines argument and return validators for every registered function", () => {
-    for (const registeredFunction of Object.values(
-      contentFunctions,
-    ) as unknown as RegisteredFunction[]) {
-      expect(JSON.parse(registeredFunction.exportArgs())).toHaveProperty(
-        "type",
-        "object",
-      );
-      expect(JSON.parse(registeredFunction.exportReturns())).toHaveProperty(
-        "type",
-      );
+      expect({
+        isPublic: registeredFunction.isPublic === true,
+        isInternal: registeredFunction.isInternal === true,
+        args: JSON.parse(registeredFunction.exportArgs()),
+        returns: JSON.parse(registeredFunction.exportReturns()),
+      }).toEqual({
+        isPublic: contract.visibility === "public",
+        isInternal: contract.visibility === "internal",
+        args: contract.args,
+        returns: contract.returns,
+      });
     }
   });
 
@@ -116,36 +112,24 @@ describe("content registered-function facade", () => {
     expect(requireAdmin).toHaveBeenCalledTimes(publicNames.length);
   });
 
-  it("keeps writable media providers bounded to supported upload paths", () => {
-    const args = JSON.parse(
-      (
-        contentFunctions.createMediaMetadata as unknown as RegisteredFunction
-      ).exportArgs(),
-    ) as {
-      value: {
-        storageProvider: { fieldType: { value: Array<{ value: string }> } };
-      };
+  it("keeps both content actions public and auth-first", async () => {
+    const inaccessibleContext = {
+      get runMutation(): never {
+        throw new Error("mutation accessed before authz");
+      },
     };
+    const actions = [
+      contentActions.createMediaUploadUrl,
+      contentActions.publishContent,
+    ] as unknown as RegisteredFunction[];
 
-    expect(
-      args.value.storageProvider.fieldType.value.map((item) => item.value),
-    ).toEqual(["cloudflare-images", "external"]);
-  });
-
-  it("preserves the legacy listForDashboard result sections", () => {
-    const returns = JSON.parse(
-      (
-        contentFunctions.listForDashboard as unknown as RegisteredFunction
-      ).exportReturns(),
-    ) as { value: Record<string, unknown> };
-
-    expect(Object.keys(returns.value)).toEqual([
-      "caseStudies",
-      "projectDrafts",
-      "resumeDrafts",
-      "media",
-      "settings",
-      "resumeVersions",
-    ]);
+    for (const registeredAction of actions) {
+      expect(registeredAction.isPublic).toBe(true);
+      expect(registeredAction.isAction).toBe(true);
+      await expect(
+        registeredAction._handler(inaccessibleContext, {}),
+      ).rejects.toThrow("authz gate reached");
+    }
+    expect(requireAdmin).toHaveBeenCalledTimes(actions.length);
   });
 });

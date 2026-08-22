@@ -156,9 +156,9 @@ export async function listForDashboardHandler(ctx: QueryCtx) {
     ctx.db.query("caseStudyMetadata").take(101),
     ctx.db.query("projectDrafts").take(201),
     ctx.db.query("resumeDrafts").take(11),
-    ctx.db.query("mediaMetadata").order("desc").take(101),
-    ctx.db.query("siteSettings").order("desc").take(101),
-    ctx.db.query("resumeVersions").order("desc").take(51),
+    ctx.db.query("mediaMetadata").order("desc").take(100),
+    ctx.db.query("siteSettings").order("desc").take(100),
+    ctx.db.query("resumeVersions").order("desc").take(50),
   ]);
 
   return {
@@ -195,7 +195,7 @@ export async function listForDashboardHandler(ctx: QueryCtx) {
         publishedAt: item.publishedAt,
       }),
     ),
-    media: withinLimit(media, 100, "Media metadata").map((item) => ({
+    media: media.map((item) => ({
       id: item._id,
       storageProvider: item.storageProvider,
       storageKey: item.storageKey,
@@ -209,24 +209,22 @@ export async function listForDashboardHandler(ctx: QueryCtx) {
       selectedForPublicAt: item.selectedForPublicAt,
       updatedAt: item.updatedAt,
     })),
-    settings: withinLimit(settings, 100, "Site settings").map((item) => ({
+    settings: settings.map((item) => ({
       key: item.key,
       environment: item.environment,
       value: item.value,
       classification: item.classification,
       updatedAt: item.updatedAt,
     })),
-    resumeVersions: withinLimit(resumeVersions, 50, "Resume versions").map(
-      (item) => ({
-        id: item._id,
-        locale: item.locale,
-        version: item.version,
-        pdfPath: item.pdfPath,
-        isPublished: item.isPublished,
-        createdAt: item.createdAt,
-        publishedAt: item.publishedAt,
-      }),
-    ),
+    resumeVersions: resumeVersions.map((item) => ({
+      id: item._id,
+      locale: item.locale,
+      version: item.version,
+      pdfPath: item.pdfPath,
+      isPublished: item.isPublished,
+      createdAt: item.createdAt,
+      publishedAt: item.publishedAt,
+    })),
   };
 }
 
