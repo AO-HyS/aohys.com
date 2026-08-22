@@ -2,7 +2,7 @@
   "version": 1,
   "mode": "observe",
   "source": {
-    "revision": "619ec0df5b08edebbde0f78db248fabbf59971e2",
+    "revision": "e4807febb5ac68aae606596bd62136af004092c7",
     "toolchain": {
       "node": "v25.7.0",
       "packageManager": "pnpm@11.7.0",
@@ -194,34 +194,92 @@
       },
       "webglRuntime": {
         "status": "unproven",
+        "harness": "scripts/performance/browser-harness.js",
+        "schema": "scripts/performance/browser-capture.schema.json",
+        "protocol": "scripts/performance/browser-qa-protocol.md",
         "note": "Requires browser and RUM evidence; no numeric budget is inferred from build output."
       }
     },
     "backendStaticEnvelopes": {
-      "listForDashboard": {
-        "maximumDocumentsRequested": 563,
-        "maximumDocumentsAccepted": 560,
-        "source": "apps/backend/convex/model/content/overview.ts"
+      "sourceRevision": "56aa9372b0ffc6d4c318de5df8857c14f369094c",
+      "sourceFiles": [
+        "apps/backend/convex/model/content/overview.ts",
+        "apps/backend/convex/model/publication.ts",
+        "apps/backend/convex/model/content/publication.ts",
+        "apps/backend/convex/model/content/media.ts"
+      ],
+      "derived": {
+        "listForDashboard": {
+          "maximumDocumentsRequested": 614,
+          "maximumDocumentsAccepted": 610
+        },
+        "dashboardOverview": {
+          "maximumDocumentsRequested": 617,
+          "maximumDocumentsAccepted": 611
+        },
+        "publication": {
+          "identitySource": {
+            "maximumDocumentsRequested": 814,
+            "maximumDocumentsAccepted": 810
+          },
+          "localPublication": {
+            "maximumDocumentsRequested": 713,
+            "maximumDocumentsAccepted": 710
+          },
+          "combinedSourceReads": {
+            "maximumDocumentsRequested": 1527,
+            "maximumDocumentsAccepted": 1520
+          },
+          "initialProviderConfiguredWrites": {
+            "maximumContentPatches": 710,
+            "requestInserts": 1,
+            "attemptInserts": 1,
+            "statePatches": 2,
+            "maximumDatabaseWrites": 714,
+            "scheduledJobs": 1
+          }
+        },
+        "mediaSelection": {
+          "maximumDocumentsRequested": 101,
+          "maximumDocumentsAccepted": 100,
+          "siblingPatches": "0..maximumDocumentsAccepted, selected rows only",
+          "maximumTargetPatches": 1,
+          "maximumDatabaseWrites": 101
+        }
       },
-      "dashboardOverview": {
-        "maximumDocumentsRequested": 616,
-        "maximumDocumentsAccepted": 610,
-        "source": "apps/backend/convex/model/content/overview.ts"
-      },
-      "publicationAll": {
-        "maximumDocumentsRequested": 713,
-        "maximumDocumentsAccepted": 710,
-        "source": "apps/backend/convex/model/content/publication.ts"
-      },
-      "mediaSelection": {
-        "maximumSiblingDocumentsRequested": 101,
-        "maximumSiblingDocumentsAccepted": 100,
-        "siblingPatches": "selected rows only",
-        "source": "apps/backend/convex/model/content/media.ts"
+      "preIntegrationCandidate": {
+        "sourceRevision": "e4807febb5ac68aae606596bd62136af004092c7",
+        "derived": {
+          "listForDashboard": {
+            "maximumDocumentsRequested": 563,
+            "maximumDocumentsAccepted": 560
+          },
+          "dashboardOverview": {
+            "maximumDocumentsRequested": 616,
+            "maximumDocumentsAccepted": 610
+          },
+          "publication": {
+            "identitySource": null,
+            "localPublication": {
+              "maximumDocumentsRequested": 713,
+              "maximumDocumentsAccepted": 710
+            },
+            "combinedSourceReads": null,
+            "initialProviderConfiguredWrites": null
+          },
+          "mediaSelection": {
+            "maximumDocumentsRequested": 101,
+            "maximumDocumentsAccepted": 100,
+            "siblingPatches": "0..maximumDocumentsAccepted, selected rows only",
+            "maximumTargetPatches": 1,
+            "maximumDatabaseWrites": 101
+          }
+        }
       },
       "runtimeFanoutAndContention": {
         "status": "unproven",
-        "note": "Static bounds are not runtime fanout or contention measurements."
+        "previewGate": "scripts/performance/preview-insights-protocol.md",
+        "note": "Static read/write envelopes are not runtime subscription fanout or mutation contention measurements."
       }
     }
   },

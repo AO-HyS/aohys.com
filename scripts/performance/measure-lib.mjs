@@ -56,11 +56,135 @@ function measureExtensionGroup(root, extensions) {
   return measureFiles(files.sort(), root);
 }
 
+function functionSection(source, functionName, nextFunctionName) {
+  const start = source.indexOf(`function ${functionName}`);
+  if (start < 0) throw new Error(`Missing function contract: ${functionName}`);
+  const end = nextFunctionName
+    ? source.indexOf(`function ${nextFunctionName}`, start + 1)
+    : source.length;
+  return source.slice(start, end < 0 ? source.length : end);
+}
+
+function takeValues(source) {
+  return [...source.matchAll(/\.take\((\d+)\)/g)].map((match) =>
+    Number(match[1]),
+  );
+}
+
+function acceptedCapacity(values) {
+  return values.reduce(
+    (total, value) =>
+      total + (value > 1 && value % 10 === 1 ? value - 1 : value),
+    0,
+  );
+}
+
+function maximumTableTake(source, table) {
+  const values = [
+    ...source.matchAll(
+      new RegExp(`query\\("${table}"\\)[\\s\\S]*?\\.take\\((\\d+)\\)`, "g"),
+    ),
+  ].map((match) => Number(match[1]));
+  if (values.length === 0)
+    throw new Error(`Missing read contract for ${table}`);
+  return Math.max(...values);
+}
+
+function envelope(values) {
+  return {
+    maximumDocumentsRequested: values.reduce(
+      (total, value) => total + value,
+      0,
+    ),
+    maximumDocumentsAccepted: acceptedCapacity(values),
+  };
+}
+
+export function deriveBackendEnvelopes({
+  overviewSource,
+  durablePublicationSource,
+  localPublicationSource,
+  mediaSource,
+}) {
+  const listForDashboard = envelope(
+    takeValues(
+      functionSection(
+        overviewSource,
+        "listForDashboardHandler",
+        "getDashboardOverviewHandler",
+      ),
+    ),
+  );
+  const dashboardOverview = envelope(
+    takeValues(functionSection(overviewSource, "getDashboardOverviewHandler")),
+  );
+  const localPublication = envelope(
+    ["projectDrafts", "mediaMetadata", "resumeDrafts"].map((table) =>
+      maximumTableTake(localPublicationSource, table),
+    ),
+  );
+  const mediaSelection = envelope(
+    takeValues(
+      functionSection(
+        mediaSource,
+        "listSiblingMedia",
+        "createMediaMetadataHandler",
+      ),
+    ),
+  );
+  const publicationIdentity = durablePublicationSource
+    ? envelope(
+        ["projectDrafts", "mediaMetadata", "resumeDrafts", "siteSettings"].map(
+          (table) => maximumTableTake(durablePublicationSource, table),
+        ),
+      )
+    : null;
+
+  return {
+    listForDashboard,
+    dashboardOverview,
+    publication: {
+      identitySource: publicationIdentity,
+      localPublication,
+      combinedSourceReads: publicationIdentity
+        ? {
+            maximumDocumentsRequested:
+              publicationIdentity.maximumDocumentsRequested +
+              localPublication.maximumDocumentsRequested,
+            maximumDocumentsAccepted:
+              publicationIdentity.maximumDocumentsAccepted +
+              localPublication.maximumDocumentsAccepted,
+          }
+        : null,
+      initialProviderConfiguredWrites: durablePublicationSource
+        ? {
+            maximumContentPatches: localPublication.maximumDocumentsAccepted,
+            requestInserts: 1,
+            attemptInserts: 1,
+            statePatches: 2,
+            maximumDatabaseWrites:
+              localPublication.maximumDocumentsAccepted + 4,
+            scheduledJobs: 1,
+          }
+        : null,
+    },
+    mediaSelection: {
+      ...mediaSelection,
+      siblingPatches: "0..maximumDocumentsAccepted, selected rows only",
+      maximumTargetPatches: 1,
+      maximumDatabaseWrites: mediaSelection.maximumDocumentsAccepted + 1,
+    },
+  };
+}
+
 export function measurePerformance({
   dashboardDist,
   siteDist,
   sourceRevision,
   toolchain,
+  backendEnvelopes,
+  backendEnvelopeRevision,
+  preIntegrationBackendEnvelopes,
 }) {
   const dashboardAssets = path.join(dashboardDist, "assets");
   const dashboardEntry = path.join(dashboardAssets, "dashboard.js");
@@ -127,34 +251,33 @@ export function measurePerformance({
         },
         webglRuntime: {
           status: "unproven",
+          harness: "scripts/performance/browser-harness.js",
+          schema: "scripts/performance/browser-capture.schema.json",
+          protocol: "scripts/performance/browser-qa-protocol.md",
           note: "Requires browser and RUM evidence; no numeric budget is inferred from build output.",
         },
       },
       backendStaticEnvelopes: {
-        listForDashboard: {
-          maximumDocumentsRequested: 563,
-          maximumDocumentsAccepted: 560,
-          source: "apps/backend/convex/model/content/overview.ts",
-        },
-        dashboardOverview: {
-          maximumDocumentsRequested: 616,
-          maximumDocumentsAccepted: 610,
-          source: "apps/backend/convex/model/content/overview.ts",
-        },
-        publicationAll: {
-          maximumDocumentsRequested: 713,
-          maximumDocumentsAccepted: 710,
-          source: "apps/backend/convex/model/content/publication.ts",
-        },
-        mediaSelection: {
-          maximumSiblingDocumentsRequested: 101,
-          maximumSiblingDocumentsAccepted: 100,
-          siblingPatches: "selected rows only",
-          source: "apps/backend/convex/model/content/media.ts",
-        },
+        sourceRevision: backendEnvelopeRevision,
+        sourceFiles: [
+          "apps/backend/convex/model/content/overview.ts",
+          "apps/backend/convex/model/publication.ts",
+          "apps/backend/convex/model/content/publication.ts",
+          "apps/backend/convex/model/content/media.ts",
+        ],
+        derived: backendEnvelopes,
+        ...(preIntegrationBackendEnvelopes
+          ? {
+              preIntegrationCandidate: {
+                sourceRevision,
+                derived: preIntegrationBackendEnvelopes,
+              },
+            }
+          : {}),
         runtimeFanoutAndContention: {
           status: "unproven",
-          note: "Static bounds are not runtime fanout or contention measurements.",
+          previewGate: "scripts/performance/preview-insights-protocol.md",
+          note: "Static read/write envelopes are not runtime subscription fanout or mutation contention measurements.",
         },
       },
     },

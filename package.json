@@ -25,7 +25,7 @@
     "audit:posthog-env": "tsx scripts/audit-posthog-env-separation.ts",
     "lint": "pnpm -r --if-present lint",
     "performance:measure": "pnpm --filter @aohys/site build && node scripts/performance/measure.mjs",
-    "performance:test": "node --test scripts/performance/measure.test.mjs",
+    "performance:test": "node --check scripts/performance/browser-harness.js && node --test scripts/performance/measure.test.mjs",
     "observability:audit:deploy": "node scripts/observability/audit-environment.mjs",
     "observability:check": "node --test scripts/observability/*.test.mjs && node scripts/observability/validate-signal-catalog.mjs",
     "quality:commit": "pnpm run verify:foundation && pnpm run react:doctor:staged",

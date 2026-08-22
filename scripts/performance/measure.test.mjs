@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { measurePerformance } from "./measure-lib.mjs";
+import { deriveBackendEnvelopes, measurePerformance } from "./measure-lib.mjs";
 
 function fixture(eagerCount) {
   const root = mkdtempSync(path.join(tmpdir(), "aohys-performance-"));
@@ -46,6 +46,8 @@ test("measures deterministic journey graphs and asset groups", () => {
       astro: "fixture",
       vite: "fixture",
     },
+    backendEnvelopes: {},
+    backendEnvelopeRevision: "fixture-sha",
   };
   const first = measurePerformance(inputs);
   const second = measurePerformance(inputs);
@@ -65,10 +67,112 @@ test("observe mode reports the semantic eager violation but remains exit zero", 
     ...fixture(6),
     sourceRevision: "fixture-sha",
     toolchain: {},
+    backendEnvelopes: {},
+    backendEnvelopeRevision: "fixture-sha",
   });
 
   assert.equal(report.result.violations.length, 1);
   assert.equal(report.result.exitCode, 0);
   assert.equal(report.budgets.dashboardBundles.numericBudget, null);
   assert.equal(report.budgets.publicSite.webglRuntime.numericBudget, null);
+});
+
+test("derives the post-IM-08 read and write envelopes from source contracts", () => {
+  const overviewSource = `
+    async function listForDashboardHandler() {
+      await Promise.all([
+        q.take(101), q.take(201), q.take(11), q.take(100),
+        q.take(100), q.take(50), q.take(51)
+      ]);
+    }
+    async function getDashboardOverviewHandler() {
+      await Promise.all([
+        q.take(101), q.take(201), q.take(11), q.take(101),
+        q.take(101), q.take(101), q.take(1)
+      ]);
+    }
+  `;
+  const durablePublicationSource = `
+    async function readPublicationSource() {
+      db.query("projectDrafts").take(3); db.query("projectDrafts").take(201);
+      db.query("mediaMetadata").take(101); db.query("mediaMetadata").take(501);
+      db.query("resumeDrafts").take(2); db.query("resumeDrafts").take(11);
+      db.query("siteSettings").take(101);
+    }
+  `;
+  const localPublicationSource = `
+    async function publishContentHandler() {
+      db.query("projectDrafts").take(3); db.query("projectDrafts").take(201);
+      db.query("mediaMetadata").take(101); db.query("mediaMetadata").take(501);
+      db.query("resumeDrafts").take(2); db.query("resumeDrafts").take(11);
+    }
+  `;
+  const mediaSource = `
+    async function listSiblingMedia() { q.take(101); }
+    async function createMediaMetadataHandler() {}
+  `;
+
+  const result = deriveBackendEnvelopes({
+    overviewSource,
+    durablePublicationSource,
+    localPublicationSource,
+    mediaSource,
+  });
+
+  assert.deepEqual(result.listForDashboard, {
+    maximumDocumentsRequested: 614,
+    maximumDocumentsAccepted: 610,
+  });
+  assert.deepEqual(result.dashboardOverview, {
+    maximumDocumentsRequested: 617,
+    maximumDocumentsAccepted: 611,
+  });
+  assert.deepEqual(result.publication.identitySource, {
+    maximumDocumentsRequested: 814,
+    maximumDocumentsAccepted: 810,
+  });
+  assert.deepEqual(result.publication.localPublication, {
+    maximumDocumentsRequested: 713,
+    maximumDocumentsAccepted: 710,
+  });
+  assert.deepEqual(result.publication.combinedSourceReads, {
+    maximumDocumentsRequested: 1527,
+    maximumDocumentsAccepted: 1520,
+  });
+  assert.equal(
+    result.publication.initialProviderConfiguredWrites.maximumDatabaseWrites,
+    714,
+  );
+  assert.equal(result.mediaSelection.maximumDatabaseWrites, 101);
+});
+
+test("keeps the Browser QA harness and schema aligned on required metrics", () => {
+  const harness = readFileSync(
+    new URL("./browser-harness.js", import.meta.url),
+    "utf8",
+  );
+  const schema = JSON.parse(
+    readFileSync(
+      new URL("./browser-capture.schema.json", import.meta.url),
+      "utf8",
+    ),
+  );
+
+  assert.deepEqual(schema.properties.scenario.enum, [
+    "visible",
+    "offscreen",
+    "hidden",
+    "reduced-motion",
+  ]);
+  for (const metric of [
+    "routeLoad",
+    "render",
+    "longTasks",
+    "webgl",
+    "framesByContext",
+    "droppedFrameEstimate",
+  ]) {
+    assert.match(harness, new RegExp(metric));
+  }
+  assert.match(harness, /__AOHYS_PERFORMANCE_CAPTURE__/);
 });
