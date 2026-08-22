@@ -27,7 +27,6 @@ const expectedInventory = [
   "site-renderer:dashboard-app-shell",
   "pages-entry:dashboard-renderer",
   "pages-entry:dashboard-fallback",
-  "site-renderer:public-content-page",
   "package-surface:dashboard-ui-empty",
 ];
 
@@ -123,7 +122,7 @@ test("renderer and empty-surface entries retain their declared source contract",
     (entry) =>
       entry.kind.endsWith("renderer") || entry.kind === "site-renderer",
   );
-  assert.equal(rendererEntries.length, 6);
+  assert.equal(rendererEntries.length, 5);
   assert.deepEqual(
     rendererEntries.map((entry) => [entry.id, entry.source, entry.renderer]),
     [
@@ -151,11 +150,6 @@ test("renderer and empty-surface entries retain their declared source contract",
         "pages-entry:dashboard-fallback",
         "functions/dashboard/[[path]].ts",
         "unavailableDashboardHtml",
-      ],
-      [
-        "site-renderer:public-content-page",
-        "apps/site/src/components/PublicContentPage.astro",
-        "PublicContentPage",
       ],
     ],
   );

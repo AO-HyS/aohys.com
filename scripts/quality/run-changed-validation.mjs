@@ -39,7 +39,12 @@ const plan = buildChangedValidationPlan({
     ],
   ],
   architecturePrefixes: ["apps", "functions", "packages", "scripts"],
-  architectureFiles: ["package.json", "pnpm-workspace.yaml"],
+  architectureFiles: [
+    "docs/architecture/compatibility-registry.json",
+    "docs/workspace.md",
+    "package.json",
+    "pnpm-workspace.yaml",
+  ],
   architectureCommands: [["pnpm", ["run", "architecture:fitness"]]],
 });
 

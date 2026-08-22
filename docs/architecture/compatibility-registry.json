@@ -162,20 +162,6 @@
       "retirementCondition": "Retire when the Pages entry has an approved failure boundary with the same private unavailable and observability guarantees."
     },
     {
-      "id": "site-renderer:public-content-page",
-      "kind": "site-renderer",
-      "surface": "public graph-backed content pages",
-      "renderer": "PublicContentPage",
-      "source": "apps/site/src/components/PublicContentPage.astro",
-      "entryPoints": [
-        "apps/site/src/pages/index.astro",
-        "apps/site/src/pages/[...path].astro"
-      ],
-      "owner": "apps/site",
-      "rq04Evidence": "RQ-04: both active Astro page entry points render the graph-backed public route through PublicContentPage.",
-      "retirementCondition": "Retire when all graph-backed public entry points use an approved replacement renderer and the bilingual SEO/content contract is preserved."
-    },
-    {
       "id": "package-surface:dashboard-ui-empty",
       "kind": "package-surface",
       "surface": "packages/dashboard-ui",

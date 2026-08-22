@@ -39,7 +39,7 @@
     "smoke:preview": "tsx scripts/smoke-release-url.ts preview",
     "smoke:production": "tsx scripts/smoke-release-url.ts production",
     "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm -r --if-present test",
+    "test": "pnpm run architecture:fitness && pnpm -r --if-present test",
     "verify": "pnpm run verify:ci",
     "verify:changed": "node scripts/quality/run-changed-validation.mjs",
     "verify:ci": "pnpm run verify:foundation && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build && pnpm run quality:impeccable",
