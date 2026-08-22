@@ -7,7 +7,7 @@ import {
   LayoutDashboardIcon,
   SettingsIcon,
 } from "lucide-react";
-import type { DashboardNavigationId } from "@/app/navigation";
+import type { DashboardNavigationId } from "@/navigation";
 
 interface DashboardNavigationLoader {
   icon: ComponentType;

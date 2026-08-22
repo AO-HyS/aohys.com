@@ -25,7 +25,7 @@ import {
   dashboardNavigation,
   findDashboardNavigationItem,
   isDashboardNavigationItemActive,
-} from "@/app/navigation";
+} from "@/navigation";
 import { dashboardNavigationLoaders } from "@/app/navigation-loaders";
 import { dashboardRuntimeConfig } from "@/runtime-config";
 

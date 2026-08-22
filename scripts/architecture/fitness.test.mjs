@@ -28,7 +28,7 @@ test("derives an acyclic source graph, public exports, and generated producers f
   assert.doesNotMatch(formatFitnessReport(report), /BASELINE|dependency-cycle/);
   assert.deepEqual(
     report.graph.fileEdges.filter(
-      ([from]) => from === "apps/dashboard/src/app/navigation.ts",
+      ([from]) => from === "apps/dashboard/src/navigation.ts",
     ),
     [],
   );
@@ -60,12 +60,12 @@ test("blocks every source cycle without a baseline edge exemption", (context) =>
       name: "@fixture/dashboard",
       private: true,
     }),
-    "apps/dashboard/src/app/navigation.ts":
+    "apps/dashboard/src/navigation.ts":
       'import { screen } from "@/screens/projects-screen";\nexport const navigation = screen;\n',
     "apps/dashboard/src/screens/projects-screen.ts":
       'import { capture } from "@/lib/analytics";\nexport const screen = capture;\n',
     "apps/dashboard/src/lib/analytics.ts":
-      'import { navigation } from "@/app/navigation";\nexport const capture = navigation;\n',
+      'import { navigation } from "@/navigation";\nexport const capture = navigation;\n',
   });
   context.after(() => rmSync(root, { force: true, recursive: true }));
 
@@ -76,6 +76,29 @@ test("blocks every source cycle without a baseline edge exemption", (context) =>
       (violation) => violation.kind === "dependency-cycle",
     ),
   );
+});
+
+test("blocks a source file that imports itself", (context) => {
+  const selfCycle = "apps/dashboard/src/lib/self-cycle.ts";
+  const root = fixture({
+    "apps/dashboard/package.json": JSON.stringify({
+      name: "@fixture/dashboard",
+      private: true,
+    }),
+    [selfCycle]: 'import { value } from "./self-cycle";\nexport { value };\n',
+  });
+  context.after(() => rmSync(root, { force: true, recursive: true }));
+
+  const report = analyzeArchitecture({ root });
+  assert.equal(report.ok, false);
+  assert.deepEqual(report.blockingViolations, [
+    {
+      id: `dependency-cycle:${selfCycle}`,
+      kind: "dependency-cycle",
+      files: [selfCycle],
+      message: `Dependency cycle detected: ${selfCycle} -> ${selfCycle}`,
+    },
+  ]);
 });
 
 test("blocks a new feature import into dashboard app composition", (context) => {
@@ -146,6 +169,29 @@ test("blocks workspace dependency cycles deterministically", (context) => {
       packages: ["@fixture/consumer", "@fixture/library"],
       message:
         "Workspace dependency cycle detected: @fixture/consumer -> @fixture/library",
+    },
+  ]);
+});
+
+test("blocks a workspace manifest that depends on itself", (context) => {
+  const root = fixture({
+    "packages/self/package.json": JSON.stringify({
+      name: "@fixture/self",
+      private: true,
+      dependencies: { "@fixture/self": "workspace:*" },
+    }),
+  });
+  context.after(() => rmSync(root, { force: true, recursive: true }));
+
+  const report = analyzeArchitecture({ root });
+  assert.equal(report.ok, false);
+  assert.deepEqual(report.blockingViolations, [
+    {
+      id: "workspace-dependency-cycle:@fixture/self",
+      kind: "workspace-dependency-cycle",
+      packages: ["@fixture/self"],
+      message:
+        "Workspace dependency cycle detected: @fixture/self -> @fixture/self",
     },
   ]);
 });

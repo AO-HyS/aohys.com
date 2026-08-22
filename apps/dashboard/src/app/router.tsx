@@ -4,7 +4,7 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { DashboardShell } from "@/app/dashboard-shell";
-import { dashboardNavigation } from "@/app/navigation";
+import { dashboardNavigation } from "@/navigation";
 import { dashboardNavigationLoaders } from "@/app/navigation-loaders";
 import {
   RouteErrorState,

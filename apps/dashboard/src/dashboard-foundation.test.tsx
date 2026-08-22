@@ -12,7 +12,7 @@ import {
   findDashboardNavigationItem,
   matchDashboardNavigationItem,
   normalizeDashboardPath,
-} from "@/app/navigation";
+} from "@/navigation";
 import { SessionBoundaryState } from "@/app/route-states";
 
 describe("Operations Desk navigation", () => {

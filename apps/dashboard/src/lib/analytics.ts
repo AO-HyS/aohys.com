@@ -1,5 +1,5 @@
 import type { DashboardRuntimeConfig } from "@/runtime-config";
-import { matchDashboardNavigationItem } from "@/app/navigation";
+import { matchDashboardNavigationItem } from "@/navigation";
 
 export const DASHBOARD_ANALYTICS_EVENTS = [
   "$pageview",

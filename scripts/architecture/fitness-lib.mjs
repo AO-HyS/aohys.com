@@ -18,7 +18,7 @@ const IGNORED_DIRECTORIES = new Set([
   "node_modules",
 ]);
 
-const DASHBOARD_ROUTE_METADATA = "apps/dashboard/src/app/navigation.ts";
+const DASHBOARD_ROUTE_METADATA = "apps/dashboard/src/navigation.ts";
 
 function normalize(filePath) {
   return filePath.replaceAll("\\", "/").replace(/^\.\//, "");
@@ -204,7 +204,13 @@ function stronglyConnectedComponents(nodes, edges) {
       onStack.delete(member);
       component.push(member);
     } while (member !== node);
-    if (component.length > 1) components.push(component.sort());
+    if (
+      component.length > 1 ||
+      (component.length === 1 &&
+        adjacency.get(component[0])?.includes(component[0]))
+    ) {
+      components.push(component.sort());
+    }
   }
 
   for (const node of [...nodes].sort()) {
@@ -223,6 +229,12 @@ function isDashboardFeature(filePath) {
 
 function edgeId(from, to) {
   return `${from}->${to}`;
+}
+
+function cyclePath(component) {
+  return component.length === 1
+    ? `${component[0]} -> ${component[0]}`
+    : component.join(" -> ");
 }
 
 function generatedArtifactProducer({
@@ -316,7 +328,6 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
 
       if (
         target?.startsWith("apps/dashboard/src/app/") &&
-        target !== DASHBOARD_ROUTE_METADATA &&
         isDashboardFeature(importer)
       ) {
         violations.push({
@@ -357,7 +368,7 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
       id: `dependency-cycle:${component.join("|")}`,
       kind: "dependency-cycle",
       files: component,
-      message: `Dependency cycle detected: ${component.join(" -> ")}`,
+      message: `Dependency cycle detected: ${cyclePath(component)}`,
     });
   }
 
@@ -418,7 +429,7 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
       id: `workspace-dependency-cycle:${component.join("|")}`,
       kind: "workspace-dependency-cycle",
       packages: component,
-      message: `Workspace dependency cycle detected: ${component.join(" -> ")}`,
+      message: `Workspace dependency cycle detected: ${cyclePath(component)}`,
     });
   }
 
