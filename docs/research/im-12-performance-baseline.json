@@ -2,7 +2,7 @@
   "version": 1,
   "mode": "observe",
   "source": {
-    "revision": "e4807febb5ac68aae606596bd62136af004092c7",
+    "revision": "0d88f464d88d3a9c89f7f29cc964687775a00ce4",
     "toolchain": {
       "node": "v25.7.0",
       "packageManager": "pnpm@11.7.0",
@@ -10,7 +10,7 @@
       "vite": "8.1.0"
     },
     "measurementMethod": "Production build artifacts, recursive static JavaScript import graph, and deterministic raw/gzip byte counts.",
-    "regenerationNote": "Regenerate after integrating IM-08 because backend source envelopes and the source revision will change."
+    "regenerationNote": "Generated after integrating IM-08; regenerate whenever runtime code, build inputs, or the measured source revision changes."
   },
   "observations": {
     "dashboardJourneys": {
@@ -20,14 +20,15 @@
           "assets/dashboard.js",
           "assets/data-runtime.js",
           "assets/overview.js",
+          "assets/publication-state.js",
           "assets/react-runtime.js",
           "assets/rolldown-runtime.js",
           "assets/section-panel.js",
           "assets/shield-check.js",
           "assets/status-badge.js"
         ],
-        "rawBytes": 566405,
-        "gzipBytes": 177062
+        "rawBytes": 568440,
+        "gzipBytes": 177783
       },
       "projects": {
         "files": [
@@ -37,13 +38,14 @@
           "assets/external-link.js",
           "assets/eye.js",
           "assets/projects.js",
+          "assets/publication-state.js",
           "assets/react-runtime.js",
           "assets/rolldown-runtime.js",
           "assets/tabs.js",
           "assets/toast.js"
         ],
-        "rawBytes": 747187,
-        "gzipBytes": 228373
+        "rawBytes": 749038,
+        "gzipBytes": 229026
       },
       "leads": {
         "files": [
@@ -61,14 +63,15 @@
           "assets/table.js",
           "assets/toast.js"
         ],
-        "rawBytes": 653987,
-        "gzipBytes": 201843
+        "rawBytes": 655173,
+        "gzipBytes": 202211
       },
       "resume": {
         "files": [
           "assets/card.js",
           "assets/dashboard.js",
           "assets/data-runtime.js",
+          "assets/publication-state.js",
           "assets/react-runtime.js",
           "assets/resume.js",
           "assets/rolldown-runtime.js",
@@ -78,8 +81,8 @@
           "assets/tabs.js",
           "assets/toast.js"
         ],
-        "rawBytes": 738505,
-        "gzipBytes": 225498
+        "rawBytes": 740387,
+        "gzipBytes": 226149
       },
       "settings": {
         "files": [
@@ -97,8 +100,8 @@
           "assets/status-badge.js",
           "assets/toast.js"
         ],
-        "rawBytes": 601330,
-        "gzipBytes": 188572
+        "rawBytes": 602516,
+        "gzipBytes": 188940
       }
     },
     "dashboardAssets": {
@@ -201,7 +204,7 @@
       }
     },
     "backendStaticEnvelopes": {
-      "sourceRevision": "56aa9372b0ffc6d4c318de5df8857c14f369094c",
+      "sourceRevision": "0d88f464d88d3a9c89f7f29cc964687775a00ce4",
       "sourceFiles": [
         "apps/backend/convex/model/content/overview.ts",
         "apps/backend/convex/model/publication.ts",
@@ -245,35 +248,6 @@
           "siblingPatches": "0..maximumDocumentsAccepted, selected rows only",
           "maximumTargetPatches": 1,
           "maximumDatabaseWrites": 101
-        }
-      },
-      "preIntegrationCandidate": {
-        "sourceRevision": "e4807febb5ac68aae606596bd62136af004092c7",
-        "derived": {
-          "listForDashboard": {
-            "maximumDocumentsRequested": 563,
-            "maximumDocumentsAccepted": 560
-          },
-          "dashboardOverview": {
-            "maximumDocumentsRequested": 616,
-            "maximumDocumentsAccepted": 610
-          },
-          "publication": {
-            "identitySource": null,
-            "localPublication": {
-              "maximumDocumentsRequested": 713,
-              "maximumDocumentsAccepted": 710
-            },
-            "combinedSourceReads": null,
-            "initialProviderConfiguredWrites": null
-          },
-          "mediaSelection": {
-            "maximumDocumentsRequested": 101,
-            "maximumDocumentsAccepted": 100,
-            "siblingPatches": "0..maximumDocumentsAccepted, selected rows only",
-            "maximumTargetPatches": 1,
-            "maximumDatabaseWrites": 101
-          }
         }
       },
       "runtimeFanoutAndContention": {
