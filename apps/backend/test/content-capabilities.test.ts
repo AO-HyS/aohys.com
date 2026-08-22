@@ -12,14 +12,17 @@ afterEach(() => {
 
 function dashboardDatabase(rowsByTable: Record<string, unknown[]>) {
   const takes = new Map<string, ReturnType<typeof vi.fn>>();
+  const orders = new Map<string, ReturnType<typeof vi.fn>>();
   const query = vi.fn((table: string) => {
     const take = vi.fn(async (limit: number) =>
       (rowsByTable[table] ?? []).slice(0, limit),
     );
+    const order = vi.fn(() => ({ take }));
     takes.set(table, take);
-    return { take, order: vi.fn(() => ({ take })) };
+    orders.set(table, order);
+    return { take, order };
   });
-  return { db: { query }, takes };
+  return { db: { query }, orders, takes };
 }
 
 describe("content capability bounds and indexes", () => {
@@ -66,6 +69,15 @@ describe("content capability bounds and indexes", () => {
     expect(result.media).toHaveLength(100);
     expect(result.settings).toHaveLength(100);
     expect(result.resumeVersions).toHaveLength(50);
+    expect(result.media.at(0)?.id).toBe("media_0");
+    expect(result.media.at(-1)?.id).toBe("media_99");
+    expect(result.settings.at(0)?.key).toBe("setting_0");
+    expect(result.settings.at(-1)?.key).toBe("setting_99");
+    expect(result.resumeVersions.at(0)?.id).toBe("resume_0");
+    expect(result.resumeVersions.at(-1)?.id).toBe("resume_49");
+    expect(database.orders.get("mediaMetadata")).toHaveBeenCalledWith("desc");
+    expect(database.orders.get("siteSettings")).toHaveBeenCalledWith("desc");
+    expect(database.orders.get("resumeVersions")).toHaveBeenCalledWith("desc");
     expect(database.takes.get("mediaMetadata")).toHaveBeenCalledWith(100);
     expect(database.takes.get("siteSettings")).toHaveBeenCalledWith(100);
     expect(database.takes.get("resumeVersions")).toHaveBeenCalledWith(50);
