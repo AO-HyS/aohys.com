@@ -1,6 +1,9 @@
 import { assertOneOf, escapeHtml, trimToUndefined } from "@aohys/core";
 import type { EnvironmentName } from "@aohys/environment";
-import { normalizeContactReleaseSha } from "./contact-environment.js";
+import {
+  normalizeContactReleaseSha,
+  normalizeContactSourcePath,
+} from "./contact-environment.js";
 import {
   LEAD_INTENTS,
   LEAD_LOCALES,
@@ -175,6 +178,11 @@ function prepareContactLead(
     throw new Error("consentToContact is required.");
   }
 
+  const sourcePath = normalizeContactSourcePath(input.sourcePath);
+  if (!sourcePath) {
+    throw new Error("sourcePath must be an allowed contact path.");
+  }
+
   assertOneOf(input.intent, LEAD_INTENTS, "intent");
   assertOneOf(input.locale, LEAD_LOCALES, "locale");
   assertOneOf(
@@ -191,7 +199,7 @@ function prepareContactLead(
     throw new Error("phone must be 60 characters or less.");
   }
 
-  const preparedLead = prepareLeadIntake(input, { now });
+  const preparedLead = prepareLeadIntake({ ...input, sourcePath }, { now });
 
   return {
     ...preparedLead,

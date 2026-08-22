@@ -4,6 +4,10 @@ import type {
   ContactLeadInput,
   LeadAnalyticsEvent,
 } from "./contact-workflow.js";
+import {
+  normalizeContactReleaseSha,
+  normalizeContactSourcePath,
+} from "./contact-environment.js";
 
 export type PublicContactErrorCode =
   | "validation_error"
@@ -27,6 +31,7 @@ export interface ContactIntakeFailureEventInput {
   input?: Partial<ContactLeadInput>;
   publicError: PublicContactError;
   error: unknown;
+  releaseSha?: string;
 }
 
 type ContactIntakeRejectionReason =
@@ -75,12 +80,14 @@ export function buildContactIntakeTelemetryEvent({
   input,
   publicError,
   error,
+  releaseSha,
 }: ContactIntakeFailureEventInput): LeadAnalyticsEvent {
-  const sourcePath = safeString(input?.sourcePath);
+  const sourcePath = normalizeContactSourcePath(input?.sourcePath);
   const locale = safeString(input?.locale);
   const intent = safeString(input?.intent);
   const preferredContactPath = safeString(input?.preferredContactPath);
   const rejectionReason = rejectionReasonFor(input, publicError, error);
+  const release = normalizeContactReleaseSha(releaseSha);
 
   return {
     event: rejectionReason ? "lead_intake_rejected" : "lead_intake_failed",
@@ -101,6 +108,7 @@ export function buildContactIntakeTelemetryEvent({
         : {}),
       has_company: Boolean(input?.company),
       has_phone: Boolean(input?.phone),
+      ...(release ? { release } : {}),
     },
   };
 }
@@ -180,6 +188,7 @@ function isValidationMessage(message: string): boolean {
     message.includes(" is not supported.") ||
     message === "consentToContact must be true." ||
     message === "Invalid contact payload." ||
+    message === "sourcePath must be an allowed contact path." ||
     message === "contact submission did not pass spam checks."
   );
 }

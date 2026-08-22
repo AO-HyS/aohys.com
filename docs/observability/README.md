@@ -13,4 +13,6 @@ Public-site and dashboard browser exceptions use PostHog `captureException` so t
 
 No provider was queried or mutated during implementation. Before rollout, a human-authorized provider check must select PostHog project `489978` and read only event names, counts, timestamps, and property names. Historical repository evidence also names project `492205`; that conflict must be resolved in the provider UI before any controlled-exception claim is accepted.
 
+Release Train integration must inject both `PUBLIC_RELEASE_SHA` and `VITE_RELEASE_SHA` from the exact `${{ github.sha }}` value, then run `pnpm observability:audit:deploy` before either deploy command. The Environment Contract requires both complete SHAs and rejects drift between browser, edge, and backend release identity. Workflow wiring remains the integration owner's step after the publication lane converges.
+
 The controlled exception drill must run in an approved safe environment with the release variables injected from the same `github.sha`. It passes only when one synthetic exception appears in project `489978` with `source`, `error_type`, `release`, and an evaluable sanitized `$exception_list` stack; payload values, replay links, person profiles, and source-map upload remain out of scope. Source maps are deferred unless the captured minified stack proves non-actionable.

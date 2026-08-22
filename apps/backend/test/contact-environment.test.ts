@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   normalizeContactReleaseSha,
+  normalizeContactSourcePath,
   resolveContactEnvironment,
   shouldCaptureContactIntakeFailure,
 } from "../src/contact-environment.js";
@@ -33,5 +34,24 @@ describe("contact environment telemetry gate", () => {
       normalizeContactReleaseSha("0123456789ABCDEF0123456789ABCDEF01234567"),
     ).toBe("0123456789abcdef0123456789abcdef01234567");
     expect(normalizeContactReleaseSha("main")).toBeUndefined();
+  });
+
+  it("canonicalizes only allowlisted contact paths without query or fragment", () => {
+    expect(
+      normalizeContactSourcePath(
+        "/contact/?email=private@example.com#token=secret",
+      ),
+    ).toBe("/contact");
+    expect(normalizeContactSourcePath("/es/contacto/?token=secret")).toBe(
+      "/es/contacto",
+    );
+    expect(
+      normalizeContactSourcePath(
+        "//evil.example/contact?email=private@example.com",
+      ),
+    ).toBeUndefined();
+    expect(
+      normalizeContactSourcePath("/other?token=secret#private"),
+    ).toBeUndefined();
   });
 });

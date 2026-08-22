@@ -63,6 +63,7 @@ function getContactEnvironmentValues(): Record<string, string | undefined> {
     CONVEX_SITE_URL: process.env.CONVEX_SITE_URL,
     CONVEX_DEPLOY_KEY: process.env.CONVEX_DEPLOY_KEY,
     PUBLIC_POSTHOG_KEY: process.env.PUBLIC_POSTHOG_KEY,
+    PUBLIC_RELEASE_SHA: process.env.PUBLIC_RELEASE_SHA,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     RESEND_FROM: process.env.RESEND_FROM,
     LEAD_NOTIFICATION_EMAIL: process.env.LEAD_NOTIFICATION_EMAIL,
@@ -107,6 +108,9 @@ async function captureContactIntakeFailure(
         ...(input ? { input } : {}),
         publicError,
         error,
+        ...(process.env.PUBLIC_RELEASE_SHA
+          ? { releaseSha: process.env.PUBLIC_RELEASE_SHA }
+          : {}),
       }),
       {
         apiKey,

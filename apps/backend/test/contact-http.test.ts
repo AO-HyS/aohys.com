@@ -76,6 +76,19 @@ describe("contact HTTP error boundary", () => {
         error: "Contact submission is invalid.",
       },
     });
+
+    expect(
+      buildPublicContactError(
+        new Error("sourcePath must be an allowed contact path."),
+      ),
+    ).toEqual({
+      status: 400,
+      body: {
+        ok: false,
+        code: "validation_error",
+        error: "Contact submission is invalid.",
+      },
+    });
   });
 
   it("parses the real request boundary and rejects malformed JSON", async () => {
@@ -155,11 +168,12 @@ describe("contact HTTP error boundary", () => {
         preferredContactPath: "whatsapp",
         intent: "project",
         message: "Private project details.",
-        sourcePath: "/contact",
+        sourcePath: "/contact?email=client@example.com#token=private",
         locale: "en",
       },
       publicError,
       error: new Error("database timeout with client@example.com"),
+      releaseSha: "0123456789abcdef0123456789abcdef01234567",
     });
 
     expect(event).toEqual({
@@ -177,10 +191,29 @@ describe("contact HTTP error boundary", () => {
         preferred_contact_path: "whatsapp",
         has_company: true,
         has_phone: true,
+        release: "0123456789abcdef0123456789abcdef01234567",
       },
     });
     expect(JSON.stringify(event)).not.toContain("client@example.com");
     expect(JSON.stringify(event)).not.toContain("Private project details");
     expect(JSON.stringify(event)).not.toContain("Private Person");
+    expect(JSON.stringify(event)).not.toContain("token=private");
+
+    const forgedSourceEvent = buildContactIntakeTelemetryEvent({
+      environment: "production",
+      input: {
+        sourcePath:
+          "//evil.example/contact?email=client@example.com#token=private",
+      },
+      publicError,
+      error: new Error("database timeout"),
+      releaseSha: "main",
+    });
+    expect(forgedSourceEvent.properties).not.toHaveProperty("source_path");
+    expect(forgedSourceEvent.properties).not.toHaveProperty("release");
+    expect(JSON.stringify(forgedSourceEvent)).not.toContain(
+      "client@example.com",
+    );
+    expect(JSON.stringify(forgedSourceEvent)).not.toContain("token=private");
   });
 });

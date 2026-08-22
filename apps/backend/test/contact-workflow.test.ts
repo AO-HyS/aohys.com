@@ -77,7 +77,7 @@ describe("contact lead workflow", () => {
         preferredContactPath: "whatsapp",
         intent: "project",
         message: "I need a bilingual product site with a private dashboard.",
-        sourcePath: "/contact",
+        sourcePath: "/contact?email=private@example.com#token=secret",
         locale: "en",
         referrer: "https://aohys.com/resume",
         consentToContact: true,
@@ -125,6 +125,7 @@ describe("contact lead workflow", () => {
       phone: "+52 229 902 0825",
       preferredContactPath: "whatsapp",
       consentToContact: true,
+      sourcePath: "/contact",
       status: "new",
     });
     expect(notifications[0]).toMatchObject({
@@ -159,6 +160,38 @@ describe("contact lead workflow", () => {
       "alejandro.ortiz@aohys.com",
     );
     expect(JSON.stringify(analyticsEvents[0])).not.toContain("lead_123");
+    expect(JSON.stringify(analyticsEvents[0])).not.toContain("token=secret");
+    expect(JSON.stringify(analyticsEvents[0])).not.toContain(
+      "private@example.com",
+    );
+  });
+
+  it("rejects a non-allowlisted public source path before persistence", async () => {
+    const persistLead = vi.fn();
+    await expect(
+      submitContactLead(
+        {
+          name: "Alejandro Ortiz",
+          email: "alejandro.ortiz@aohys.com",
+          preferredContactPath: "email",
+          intent: "project",
+          message: "I need help shipping a product workflow.",
+          sourcePath: "//evil.example/contact?token=secret",
+          locale: "en",
+          consentToContact: true,
+        },
+        {
+          environment: "production",
+          values: validProviderValues,
+          adapters: {
+            persistLead,
+            sendNotification: vi.fn(),
+            captureAnalyticsEvent: vi.fn(),
+          },
+        },
+      ),
+    ).rejects.toThrow("sourcePath must be an allowed contact path.");
+    expect(persistLead).not.toHaveBeenCalled();
   });
 
   it("stores a lead even when optional contact provider settings are missing", async () => {

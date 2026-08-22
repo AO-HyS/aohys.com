@@ -33,7 +33,18 @@ test("fails closed when non-production capture is requested", () => {
     auditObservabilityEnvironment({
       AOHYS_ENV: "preview",
       ANALYTICS_CAPTURE_ENABLED: "true",
+      PUBLIC_RELEASE_SHA: release,
+      VITE_RELEASE_SHA: release,
     }),
     ["analytics capture must remain disabled outside production"],
   );
+});
+
+test("requires matched release identity for preview deploy readiness", () => {
+  const errors = auditObservabilityEnvironment({
+    AOHYS_ENV: "preview",
+    PUBLIC_SITE_URL: "https://preview.aohys.com",
+  });
+  assert.ok(errors.some((error) => error.includes("PUBLIC_RELEASE_SHA")));
+  assert.ok(errors.some((error) => error.includes("VITE_RELEASE_SHA")));
 });

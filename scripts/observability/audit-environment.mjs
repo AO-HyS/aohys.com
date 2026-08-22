@@ -11,17 +11,7 @@ export function auditObservabilityEnvironment(values) {
 
   const publicRelease = values.PUBLIC_RELEASE_SHA?.trim().toLowerCase();
   const dashboardRelease = values.VITE_RELEASE_SHA?.trim().toLowerCase();
-  if (environment === "production") {
-    let hostname;
-    try {
-      hostname = new URL(values.PUBLIC_SITE_URL ?? "").hostname;
-    } catch {
-      hostname = undefined;
-    }
-    if (hostname !== "aohys.com")
-      errors.push("production host must be aohys.com");
-    if (!values.PUBLIC_POSTHOG_KEY?.trim())
-      errors.push("production PostHog key is required");
+  if (environment === "preview" || environment === "production") {
     if (!publicRelease || !RELEASE_SHA_PATTERN.test(publicRelease)) {
       errors.push("PUBLIC_RELEASE_SHA must be a full git SHA");
     }
@@ -35,6 +25,19 @@ export function auditObservabilityEnvironment(values) {
     ) {
       errors.push("browser, edge, and backend release SHAs must match");
     }
+  }
+
+  if (environment === "production") {
+    let hostname;
+    try {
+      hostname = new URL(values.PUBLIC_SITE_URL ?? "").hostname;
+    } catch {
+      hostname = undefined;
+    }
+    if (hostname !== "aohys.com")
+      errors.push("production host must be aohys.com");
+    if (!values.PUBLIC_POSTHOG_KEY?.trim())
+      errors.push("production PostHog key is required");
   } else if (values.ANALYTICS_CAPTURE_ENABLED === "true") {
     errors.push("analytics capture must remain disabled outside production");
   }

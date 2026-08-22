@@ -4,6 +4,8 @@ import {
   validateEnvironmentContract,
 } from "../src/index.js";
 
+const releaseSha = "0123456789abcdef0123456789abcdef01234567";
+
 const validPreviewValues = {
   AOHYS_ENV: "preview",
   PUBLIC_SITE_URL: "https://preview.aohys.com",
@@ -13,12 +15,15 @@ const validPreviewValues = {
   CONVEX_SITE_URL: "https://aohys-preview.convex.site",
   CONVEX_DEPLOY_KEY: "preview-deploy-key",
   PUBLIC_POSTHOG_KEY: "phc_preview",
+  PUBLIC_RELEASE_SHA: releaseSha,
+  VITE_RELEASE_SHA: releaseSha,
   RESEND_API_KEY: "re_preview",
   RESEND_FROM: "Alejandro Ortiz <contact@aohys.com>",
   LEAD_NOTIFICATION_EMAIL: "alejandro.ortiz@aohys.com",
   BETTER_AUTH_SECRET: "preview-secret",
   BETTER_AUTH_URL: "https://preview.aohys.com",
-  BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+  BETTER_AUTH_TRUSTED_ORIGINS:
+    "https://preview.aohys.com,http://localhost:4321",
   ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
   GOOGLE_CLIENT_ID: "google-client-id.apps.googleusercontent.com",
   GOOGLE_CLIENT_SECRET: "google-client-secret",
@@ -37,7 +42,9 @@ describe("Convex Environment Contract", () => {
     const definitions = getEnvironmentVariableDefinitions().filter(
       (definition) => definition.provider === "convex",
     );
-    const byName = new Map(definitions.map((definition) => [definition.name, definition]));
+    const byName = new Map(
+      definitions.map((definition) => [definition.name, definition]),
+    );
 
     expect(byName.get("CONVEX_URL")).toMatchObject({
       classification: "provider-output",
@@ -55,7 +62,9 @@ describe("Convex Environment Contract", () => {
       classification: "server-secret",
       exposure: "server-only",
     });
-    expect(definitions.every((definition) => !definition.name.startsWith("PUBLIC_"))).toBe(true);
+    expect(
+      definitions.every((definition) => !definition.name.startsWith("PUBLIC_")),
+    ).toBe(true);
 
     expect(getEnvironmentVariableDefinitions()).toContainEqual(
       expect.objectContaining({
@@ -89,9 +98,14 @@ describe("Convex Environment Contract", () => {
     });
 
     expect(missingPreview.ok).toBe(false);
-    expect(missingPreview.errors).toContain("CONVEX_URL is required for preview release.");
+    expect(missingPreview.errors).toContain(
+      "CONVEX_URL is required for preview release.",
+    );
 
-    const validPreview = validateEnvironmentContract("preview", validPreviewValues);
+    const validPreview = validateEnvironmentContract(
+      "preview",
+      validPreviewValues,
+    );
 
     expect(validPreview).toEqual({ ok: true, errors: [] });
   });
@@ -120,8 +134,12 @@ describe("Convex Environment Contract", () => {
     );
 
     expect(releasePreview.ok).toBe(false);
-    expect(releasePreview.errors).toContain("CONVEX_DEPLOY_KEY is required for preview release.");
-    expect(releasePreview.errors).toContain("CLOUDFLARE_API_TOKEN is required for preview release.");
+    expect(releasePreview.errors).toContain(
+      "CONVEX_DEPLOY_KEY is required for preview release.",
+    );
+    expect(releasePreview.errors).toContain(
+      "CLOUDFLARE_API_TOKEN is required for preview release.",
+    );
   });
 
   it("requires only the production PostHog key", () => {
@@ -146,12 +164,54 @@ describe("Convex Environment Contract", () => {
     });
 
     expect(missingPostHog.ok).toBe(false);
-    expect(missingPostHog.errors).toContain("PUBLIC_POSTHOG_KEY is required for production.");
+    expect(missingPostHog.errors).toContain(
+      "PUBLIC_POSTHOG_KEY is required for production.",
+    );
 
-    expect(validateEnvironmentContract("preview", {
+    expect(
+      validateEnvironmentContract("preview", {
+        ...validPreviewValues,
+        PUBLIC_POSTHOG_KEY: undefined,
+      }),
+    ).toEqual({ ok: true, errors: [] });
+  });
+
+  it("registers and validates one full release SHA across browser, edge, and backend", () => {
+    expect(getEnvironmentVariableDefinitions()).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: "PUBLIC_RELEASE_SHA",
+          provider: "github",
+          classification: "public-build-value",
+          requiredIn: ["preview", "production"],
+        }),
+        expect.objectContaining({
+          name: "VITE_RELEASE_SHA",
+          provider: "github",
+          classification: "public-build-value",
+          requiredTargets: ["release"],
+        }),
+      ]),
+    );
+
+    const malformed = validateEnvironmentContract("preview", {
       ...validPreviewValues,
-      PUBLIC_POSTHOG_KEY: undefined,
-    })).toEqual({ ok: true, errors: [] });
+      PUBLIC_RELEASE_SHA: "develop",
+    });
+    expect(malformed.errors).toContain(
+      "PUBLIC_RELEASE_SHA must be a full 40-character git SHA.",
+    );
+
+    const mismatched = validateEnvironmentContract("production", {
+      ...validPreviewValues,
+      AOHYS_ENV: "production",
+      PUBLIC_SITE_URL: "https://aohys.com",
+      PUBLIC_POSTHOG_KEY: "phc_production",
+      VITE_RELEASE_SHA: "abcdefabcdefabcdefabcdefabcdefabcdefabcd",
+    });
+    expect(mismatched.errors).toContain(
+      "PUBLIC_RELEASE_SHA and VITE_RELEASE_SHA must match.",
+    );
   });
 
   it("rejects production PUBLIC_SITE_URL lookalikes by parsed origin", () => {
@@ -245,8 +305,10 @@ describe("Convex Environment Contract", () => {
         CONVEX_URL: "https://aohys-preview.convex.cloud",
         CONVEX_SITE_URL: "https://aohys-preview.convex.site",
         BETTER_AUTH_URL: "https://preview.aohys.com",
-        BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+        BETTER_AUTH_TRUSTED_ORIGINS:
+          "https://preview.aohys.com,http://localhost:4321",
         ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+        PUBLIC_RELEASE_SHA: releaseSha,
         CLOUDFLARE_ACCOUNT_ID: "cloudflare-account",
         CLOUDFLARE_IMAGES_ACCOUNT_HASH: "images-hash",
         CLOUDFLARE_IMAGES_API_TOKEN: "cloudflare-images-token",
@@ -265,8 +327,10 @@ describe("Convex Environment Contract", () => {
         CONVEX_URL: "https://aohys-preview.convex.cloud",
         CONVEX_SITE_URL: "https://aohys-preview.convex.site",
         BETTER_AUTH_URL: "https://preview.aohys.com",
-        BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+        BETTER_AUTH_TRUSTED_ORIGINS:
+          "https://preview.aohys.com,http://localhost:4321",
         ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+        PUBLIC_RELEASE_SHA: releaseSha,
       },
       { target: "dashboard-runtime" },
     );
@@ -284,35 +348,34 @@ describe("Convex Environment Contract", () => {
         CONVEX_URL: "https://aohys-preview.convex.cloud",
         CONVEX_SITE_URL: "https://aohys-preview.convex.site",
         BETTER_AUTH_URL: "https://preview.aohys.com",
-        BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+        BETTER_AUTH_TRUSTED_ORIGINS:
+          "https://preview.aohys.com,http://localhost:4321",
         ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+        PUBLIC_RELEASE_SHA: releaseSha,
         CLOUDFLARE_IMAGES_ACCOUNT_HASH: "images-hash",
       },
       { target: "dashboard-runtime" },
     );
 
-    expect(dashboardRuntimeWithoutImagesToken).toEqual({ ok: true, errors: [] });
+    expect(dashboardRuntimeWithoutImagesToken).toEqual({
+      ok: true,
+      errors: [],
+    });
 
-    const releaseWithoutImagesToken = validateEnvironmentContract(
-      "preview",
-      {
-        ...validPreviewValues,
-        CLOUDFLARE_IMAGES_API_TOKEN: undefined,
-      },
-    );
+    const releaseWithoutImagesToken = validateEnvironmentContract("preview", {
+      ...validPreviewValues,
+      CLOUDFLARE_IMAGES_API_TOKEN: undefined,
+    });
 
     expect(releaseWithoutImagesToken.ok).toBe(false);
     expect(releaseWithoutImagesToken.errors).toContain(
       "CLOUDFLARE_IMAGES_API_TOKEN is required for preview release.",
     );
 
-    const releaseWithoutImagesHash = validateEnvironmentContract(
-      "preview",
-      {
-        ...validPreviewValues,
-        CLOUDFLARE_IMAGES_ACCOUNT_HASH: undefined,
-      },
-    );
+    const releaseWithoutImagesHash = validateEnvironmentContract("preview", {
+      ...validPreviewValues,
+      CLOUDFLARE_IMAGES_ACCOUNT_HASH: undefined,
+    });
 
     expect(releaseWithoutImagesHash.ok).toBe(false);
     expect(releaseWithoutImagesHash.errors).toContain(
@@ -326,8 +389,10 @@ describe("Convex Environment Contract", () => {
         PUBLIC_SITE_URL: "https://preview.aohys.com",
         CONVEX_URL: "https://aohys-preview.convex.cloud",
         BETTER_AUTH_URL: "https://preview.aohys.com",
-        BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+        BETTER_AUTH_TRUSTED_ORIGINS:
+          "https://preview.aohys.com,http://localhost:4321",
         ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
+        PUBLIC_RELEASE_SHA: releaseSha,
       },
       { target: "dashboard-runtime" },
     );
@@ -344,7 +409,8 @@ describe("Convex Environment Contract", () => {
         PUBLIC_SITE_URL: "https://preview.aohys.com",
         CONVEX_SITE_URL: "https://aohys-preview.convex.site",
         BETTER_AUTH_URL: "https://preview.aohys.com",
-        BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+        BETTER_AUTH_TRUSTED_ORIGINS:
+          "https://preview.aohys.com,http://localhost:4321",
         ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
       },
       { target: "dashboard-runtime" },
@@ -363,7 +429,8 @@ describe("Convex Environment Contract", () => {
         CONVEX_SITE_URL: "https://aohys-preview.convex.site",
         BETTER_AUTH_SECRET: "preview-secret",
         BETTER_AUTH_URL: "https://preview.aohys.com",
-        BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+        BETTER_AUTH_TRUSTED_ORIGINS:
+          "https://preview.aohys.com,http://localhost:4321",
         ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
       },
       { target: "auth-runtime" },

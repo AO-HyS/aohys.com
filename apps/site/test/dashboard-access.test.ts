@@ -20,6 +20,7 @@ const validEnvironment: DashboardAccessEnvironment = {
   CLOUDFLARE_IMAGES_API_TOKEN: "cloudflare-images-token",
   PUBLISH_GITHUB_TOKEN: "github-publish-token",
   PUBLIC_POSTHOG_KEY: "phc_preview",
+  PUBLIC_RELEASE_SHA: "0123456789abcdef0123456789abcdef01234567",
 };
 
 function omitEnvironmentValue(
