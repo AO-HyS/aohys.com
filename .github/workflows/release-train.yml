@@ -21,8 +21,8 @@ permissions:
   deployments: write
 
 concurrency:
-  group: release-train-${{ github.ref }}
-  cancel-in-progress: true
+  group: release-train-${{ github.event_name == 'workflow_dispatch' && inputs.target_environment || (github.ref == 'refs/heads/main' && 'production' || 'preview') }}
+  cancel-in-progress: ${{ (github.event_name == 'workflow_dispatch' && inputs.target_environment == 'preview') || (github.event_name == 'push' && github.ref == 'refs/heads/develop') }}
 
 jobs:
   release-plan:

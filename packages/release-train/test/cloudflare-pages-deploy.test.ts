@@ -809,6 +809,40 @@ describe("Cloudflare Pages release plan", () => {
     );
   });
 
+  it("keeps preview cancellation isolated from non-cancelable production releases", () => {
+    const repoRoot = path.resolve(process.cwd(), "../..");
+    const workflowPath = path.join(repoRoot, ".github", "workflows", "release-train.yml");
+    const workflow = readFileSync(workflowPath, "utf8");
+    const concurrency = workflow.match(/^concurrency:\n(?:  .*(?:\n|$)){2}/m)?.[0];
+
+    expect(concurrency).toBe(
+      "concurrency:\n" +
+        "  group: release-train-${{ github.event_name == 'workflow_dispatch' && inputs.target_environment || (github.ref == 'refs/heads/main' && 'production' || 'preview') }}\n" +
+        "  cancel-in-progress: ${{ (github.event_name == 'workflow_dispatch' && inputs.target_environment == 'preview') || (github.event_name == 'push' && github.ref == 'refs/heads/develop') }}\n",
+    );
+
+    const fixtures = [
+      { event: "push", ref: "refs/heads/develop", input: undefined, group: "preview", cancel: true },
+      { event: "push", ref: "refs/heads/main", input: undefined, group: "production", cancel: false },
+      { event: "workflow_dispatch", ref: "refs/heads/develop", input: "preview", group: "preview", cancel: true },
+      { event: "workflow_dispatch", ref: "refs/heads/develop", input: "production", group: "production", cancel: false },
+    ] as const;
+
+    expect(
+      fixtures.map(({ event, ref, input }) => ({
+        group:
+          event === "workflow_dispatch"
+            ? input
+            : ref === "refs/heads/main"
+              ? "production"
+              : "preview",
+        cancel:
+          event === "workflow_dispatch"
+            ? input === "preview"
+            : ref === "refs/heads/develop",
+      })),
+    ).toEqual(fixtures.map(({ group, cancel }) => ({ group, cancel })));
+  });
   it("documents the Cloudflare redirect rule for aohys.net and www canonicalization", () => {
     const repoRoot = path.resolve(process.cwd(), "../..");
     const redirectsPath = path.join(

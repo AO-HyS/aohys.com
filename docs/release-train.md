@@ -82,6 +82,10 @@ The launch-readiness checklist is maintained in [Launch Hardening Checklist](lau
 GitHub Environment `preview`; pushes to `main` deploy production through GitHub
 Environment `production`. It installs only what deployment needs and does not
 repeat lint, typecheck, tests, or build-only quality gates before deployment.
+Workflow concurrency is partitioned by target environment: newer preview runs
+cancel older preview runs, while production runs are never canceled in progress.
+Manual dispatches use their selected target environment, so a preview run cannot
+cancel or replace a production release.
 
 `.github/workflows/quality-gates.yml` is the lightweight pull-request policy
 workflow. Feature PRs pass without checkout or dependency installation.
