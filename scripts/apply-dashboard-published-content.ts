@@ -67,11 +67,11 @@ interface DashboardSiteSetting {
   updatedAt: number;
 }
 
-interface DashboardContentPayload {
-  projectDrafts?: DashboardProjectDraft[];
-  resumeDrafts?: DashboardResumeDraft[];
-  media?: DashboardMediaMetadata[];
-  settings?: DashboardSiteSetting[];
+export interface DashboardContentPayload {
+  projectDrafts: DashboardProjectDraft[];
+  resumeDrafts: DashboardResumeDraft[];
+  media: DashboardMediaMetadata[];
+  settings: DashboardSiteSetting[];
 }
 
 interface LocalizedEntry {
@@ -172,7 +172,7 @@ export function shouldApplyDashboardDraft(
   return Boolean(updatedAt && updatedAt > approvedAt);
 }
 
-async function loadDashboardContent(): Promise<DashboardContentPayload | null> {
+async function loadDashboardContent(): Promise<unknown | null> {
   if (!hasConvexDeploymentAccess()) {
     console.log(
       "Dashboard published content bridge skipped: CONVEX_DEPLOY_KEY and CONVEX_DEPLOYMENT are missing.",
@@ -180,9 +180,10 @@ async function loadDashboardContent(): Promise<DashboardContentPayload | null> {
     return null;
   }
 
-  return runConvexFunction<DashboardContentPayload>(
+  return runConvexFunction(
     "content:listForDashboardInternal",
     {},
+    (value) => value,
   );
 }
 
@@ -213,6 +214,14 @@ function isStringArray(value: unknown): value is string[] {
   );
 }
 
+function isArrayOf<T>(
+  value: unknown,
+  predicate: (item: unknown) => item is T,
+): value is T[];
+function isArrayOf(
+  value: unknown,
+  predicate: (item: unknown) => boolean,
+): boolean;
 function isArrayOf(
   value: unknown,
   predicate: (item: unknown) => boolean,
@@ -220,42 +229,232 @@ function isArrayOf(
   return Array.isArray(value) && value.every(predicate);
 }
 
-export function parseLocaleDictionary(
-  serialized: string,
-  source = "locale JSON",
-): LocaleDictionary {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(serialized);
-  } catch {
-    throw new Error(`${source} must contain valid JSON.`);
-  }
-  if (
-    !isJsonRecord(parsed) ||
-    Object.values(parsed).some(
-      (entry) =>
-        !isJsonRecord(entry) ||
-        !["path", "title", "summary", "seoDescription"].every(
-          (field) => typeof entry[field] === "string",
-        ),
-    )
-  ) {
-    throw new Error(
-      `${source} must contain an object of localized content entries.`,
-    );
-  }
-  return parsed as LocaleDictionary;
+function hasOptionalString(
+  value: Record<string, unknown>,
+  field: string,
+): boolean {
+  return value[field] === undefined || typeof value[field] === "string";
 }
 
-export function parseResumeContent(
-  serialized: string,
-): Record<string, unknown> {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(serialized);
-  } catch {
-    throw new Error("Published resume content must contain valid JSON.");
+function hasOptionalNumber(
+  value: Record<string, unknown>,
+  field: string,
+): boolean {
+  return value[field] === undefined || typeof value[field] === "number";
+}
+
+function hasOptionalBoolean(
+  value: Record<string, unknown>,
+  field: string,
+): boolean {
+  return value[field] === undefined || typeof value[field] === "boolean";
+}
+
+function isLocale(value: unknown): value is Locale {
+  return value === "en" || value === "es";
+}
+
+function isDashboardProjectDraft(
+  value: unknown,
+): value is DashboardProjectDraft {
+  return (
+    hasStringFields(value, [
+      "contentId",
+      "title",
+      "summary",
+      "seoDescription",
+      "ctaLabel",
+      "ctaHref",
+      "achievements",
+      "structureNotes",
+    ]) &&
+    isLocale(value.locale) &&
+    hasOptionalString(value, "localizedSlug") &&
+    hasOptionalString(value, "projectUrl") &&
+    typeof value.updatedAt === "number" &&
+    hasOptionalNumber(value, "publishedAt")
+  );
+}
+
+function isDashboardResumeDraft(value: unknown): value is DashboardResumeDraft {
+  return (
+    hasStringFields(value, ["contentJson"]) &&
+    isLocale(value.locale) &&
+    typeof value.updatedAt === "number" &&
+    hasOptionalNumber(value, "publishedAt")
+  );
+}
+
+function isDashboardMediaMetadata(
+  value: unknown,
+): value is DashboardMediaMetadata {
+  return (
+    hasStringFields(value, ["storageKey", "altText"]) &&
+    ["case-study", "resume", "architecture", "site"].includes(
+      String(value.usage),
+    ) &&
+    ["draft", "published", "archived"].includes(String(value.status)) &&
+    typeof value.updatedAt === "number" &&
+    typeof value.id === "string" &&
+    hasOptionalString(value, "contentId") &&
+    hasOptionalString(value, "publicUrl") &&
+    ["cloudflare-images", "cloudflare-r2", "external"].includes(
+      String(value.storageProvider),
+    ) &&
+    (value.locale === undefined || isLocale(value.locale)) &&
+    hasOptionalBoolean(value, "selectedForPublic") &&
+    hasOptionalNumber(value, "selectedForPublicAt")
+  );
+}
+
+function isDashboardSiteSetting(value: unknown): value is DashboardSiteSetting {
+  return (
+    hasStringFields(value, ["key", "value"]) &&
+    ["local", "preview", "production"].includes(String(value.environment)) &&
+    ["public-build-value", "provider-output", "policy-value"].includes(
+      String(value.classification),
+    ) &&
+    typeof value.updatedAt === "number"
+  );
+}
+
+export function parseDashboardContentPayload(
+  value: unknown,
+): DashboardContentPayload {
+  if (
+    !isJsonRecord(value) ||
+    !isArrayOf(value.projectDrafts, isDashboardProjectDraft) ||
+    !isArrayOf(value.resumeDrafts, isDashboardResumeDraft) ||
+    !isArrayOf(value.media, isDashboardMediaMetadata) ||
+    !isArrayOf(value.settings, isDashboardSiteSetting)
+  ) {
+    throw new Error(
+      "Convex dashboard content must match the publication contract.",
+    );
   }
+  return {
+    projectDrafts: value.projectDrafts,
+    resumeDrafts: value.resumeDrafts,
+    media: value.media,
+    settings: value.settings,
+  };
+}
+
+const DANGEROUS_OBJECT_KEYS = new Set([
+  "__proto__",
+  "constructor",
+  "prototype",
+]);
+const RESUME_HTTPS_HOSTS = new Set([
+  "aohys.com",
+  "www.linkedin.com",
+  "github.com",
+]);
+const RESUME_EXPLICIT_LINKS = new Set([
+  "mailto:alejandro.ortiz@aohys.com",
+  "tel:+522299020825",
+]);
+
+function isSafeJsonValue(value: unknown): boolean {
+  if (value === null || ["string", "number", "boolean"].includes(typeof value))
+    return true;
+  if (Array.isArray(value)) return value.every(isSafeJsonValue);
+  if (!isJsonRecord(value)) return false;
+  return Object.entries(value).every(
+    ([key, nested]) =>
+      !DANGEROUS_OBJECT_KEYS.has(key) && isSafeJsonValue(nested),
+  );
+}
+
+function hasSafeDecodedPath(pathname: string): boolean {
+  let decoded = pathname;
+  try {
+    for (let index = 0; index < 3; index += 1) {
+      const next = decodeURIComponent(decoded);
+      if (next === decoded) break;
+      decoded = next;
+    }
+  } catch {
+    return false;
+  }
+  return (
+    !decoded.includes("\\") &&
+    !decoded.split("/").some((segment) => segment === "." || segment === "..")
+  );
+}
+
+function isSafeInternalHref(href: string): boolean {
+  if (
+    !href.startsWith("/") ||
+    href.startsWith("//") ||
+    href.includes("\\") ||
+    !hasSafeDecodedPath(href)
+  )
+    return false;
+  try {
+    const parsed = new URL(href, "https://aohys.com");
+    return (
+      parsed.origin === "https://aohys.com" &&
+      !parsed.search &&
+      !parsed.hash &&
+      hasSafeDecodedPath(parsed.pathname)
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isSafeResumeLinkHref(href: string): boolean {
+  if (RESUME_EXPLICIT_LINKS.has(href) || isSafeInternalHref(href)) return true;
+  try {
+    const parsed = new URL(href);
+    return (
+      hasSafeDecodedPath(href) &&
+      parsed.protocol === "https:" &&
+      !parsed.username &&
+      !parsed.password &&
+      !parsed.port &&
+      RESUME_HTTPS_HOSTS.has(parsed.hostname.toLowerCase()) &&
+      hasSafeDecodedPath(parsed.pathname)
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isSafeResumePdfHref(href: string): boolean {
+  return (
+    isSafeInternalHref(href) &&
+    href.startsWith("/downloads/") &&
+    href.endsWith(".pdf")
+  );
+}
+
+function isSafePublicHttpsHref(href: string): boolean {
+  if (isSafeInternalHref(href)) return true;
+  try {
+    const parsed = new URL(href);
+    const hostname = parsed.hostname.toLowerCase().replace(/\.$/, "");
+    return (
+      hasSafeDecodedPath(href) &&
+      parsed.protocol === "https:" &&
+      !parsed.username &&
+      !parsed.password &&
+      !parsed.port &&
+      isIP(hostname) === 0 &&
+      hostname.includes(".") &&
+      !hostname.endsWith(".local") &&
+      !hostname.endsWith(".internal") &&
+      hasSafeDecodedPath(parsed.pathname)
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isResumeContentValue(
+  value: unknown,
+): value is Record<string, unknown> {
   const stringFields = [
     "name",
     "role",
@@ -270,44 +469,150 @@ export function parseResumeContent(
     "educationTitle",
     "languagesTitle",
   ];
-  const isLink = (value: unknown) =>
-    hasStringFields(value, ["label", "href", "text"]);
-  if (
-    !hasStringFields(parsed, stringFields) ||
-    !hasStringFields(parsed.pdf, [
-      "label",
-      "href",
-      "fileName",
-      "description",
-    ]) ||
-    !hasStringFields(parsed.proof, ["label", "title", "body"]) ||
-    !isArrayOf(parsed.contactLinks, isLink) ||
-    !isArrayOf(parsed.contextLinks, isLink) ||
-    !isStringArray(parsed.summary) ||
-    !isArrayOf(parsed.highlights, (item) =>
+  const isLink = (item: unknown) =>
+    hasStringFields(item, ["label", "href", "text"]) &&
+    typeof item.href === "string" &&
+    isSafeResumeLinkHref(item.href);
+  return (
+    hasStringFields(value, stringFields) &&
+    hasStringFields(value.pdf, ["label", "href", "fileName", "description"]) &&
+    typeof value.pdf.href === "string" &&
+    isSafeResumePdfHref(value.pdf.href) &&
+    hasStringFields(value.proof, ["label", "title", "body"]) &&
+    isArrayOf(value.contactLinks, isLink) &&
+    isArrayOf(value.contextLinks, isLink) &&
+    isStringArray(value.summary) &&
+    isArrayOf(value.highlights, (item) =>
       hasStringFields(item, ["label", "text"]),
-    ) ||
-    !isArrayOf(
-      parsed.projects,
+    ) &&
+    isArrayOf(
+      value.projects,
       (item) =>
         hasStringFields(item, ["title", "summary"]) &&
         isStringArray(item.bullets),
-    ) ||
-    !isArrayOf(
-      parsed.experience,
+    ) &&
+    isArrayOf(
+      value.experience,
       (item) =>
         hasStringFields(item, ["role", "company", "period"]) &&
         isStringArray(item.bullets),
-    ) ||
-    !isArrayOf(
-      parsed.skills,
+    ) &&
+    isArrayOf(
+      value.skills,
       (item) => hasStringFields(item, ["label"]) && isStringArray(item.items),
-    ) ||
-    !isArrayOf(parsed.education, (item) =>
+    ) &&
+    isArrayOf(value.education, (item) =>
       hasStringFields(item, ["degree", "institution", "period"]),
-    ) ||
-    !isStringArray(parsed.languages)
-  ) {
+    ) &&
+    isStringArray(value.languages) &&
+    isSafeJsonValue(value)
+  );
+}
+
+function isLocalizedEntry(value: unknown): value is LocalizedEntry {
+  if (
+    !hasStringFields(value, ["path", "title", "summary", "seoDescription"]) ||
+    ![
+      "approvedAt",
+      "approvedHash",
+      "seoTitle",
+      "primaryActionLabel",
+      "primaryActionContentId",
+      "secondaryActionLabel",
+      "secondaryActionContentId",
+    ].every((field) => hasOptionalString(value, field)) ||
+    !isSafeJsonValue(value)
+  )
+    return false;
+  if (
+    value.resumeContent !== undefined &&
+    !isResumeContentValue(value.resumeContent)
+  )
+    return false;
+  if (value.caseStudyContent === undefined) return true;
+  const content = value.caseStudyContent;
+  if (
+    !isJsonRecord(content) ||
+    !["statusLabel", "overview", "publicEvidenceTitle"].every((field) =>
+      hasOptionalString(content, field),
+    )
+  )
+    return false;
+  for (const field of [
+    "problem",
+    "businessOutcome",
+    "role",
+    "constraints",
+    "architectureDecisions",
+    "executionHighlights",
+    "qualitySecurityPerformance",
+    "confidentialityNote",
+  ]) {
+    const section = content[field];
+    if (
+      section !== undefined &&
+      (!hasStringFields(section, []) ||
+        !hasOptionalString(section, "title") ||
+        !hasOptionalString(section, "body"))
+    )
+      return false;
+  }
+  return (
+    content.publicEvidence === undefined ||
+    isArrayOf(
+      content.publicEvidence,
+      (evidence) =>
+        hasStringFields(evidence, [
+          "label",
+          "description",
+          "href",
+          "altText",
+          "kind",
+        ]) &&
+        typeof evidence.href === "string" &&
+        typeof evidence.publicSafe === "boolean" &&
+        isSafePublicHttpsHref(evidence.href),
+    )
+  );
+}
+
+export function parseLocaleDictionary(
+  serialized: string,
+  source = "locale JSON",
+): LocaleDictionary {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(serialized);
+  } catch {
+    throw new Error(`${source} must contain valid JSON.`);
+  }
+  if (!isJsonRecord(parsed)) {
+    throw new Error(
+      `${source} must contain an object of localized content entries.`,
+    );
+  }
+  const dictionary: LocaleDictionary = Object.create(null);
+  for (const [contentId, entry] of Object.entries(parsed)) {
+    if (DANGEROUS_OBJECT_KEYS.has(contentId) || !isLocalizedEntry(entry)) {
+      throw new Error(
+        `${source} must contain fully valid localized content entries.`,
+      );
+    }
+    dictionary[contentId] = entry;
+  }
+  return dictionary;
+}
+
+export function parseResumeContent(
+  serialized: string,
+): Record<string, unknown> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(serialized);
+  } catch {
+    throw new Error("Published resume content must contain valid JSON.");
+  }
+  if (!isResumeContentValue(parsed)) {
     throw new Error(
       "Published resume content must match the resume JSON object contract.",
     );
@@ -500,7 +805,18 @@ export function applyProjectDraft(
   dictionary: LocaleDictionary,
   draft: DashboardProjectDraft,
 ): boolean {
-  let entry = dictionary[draft.contentId];
+  if (
+    !isCaseStudyContentId(draft.contentId) ||
+    DANGEROUS_OBJECT_KEYS.has(draft.contentId)
+  ) {
+    console.log(
+      `Skipping unknown content entry ${draft.contentId} (${draft.locale}).`,
+    );
+    return false;
+  }
+  let entry = Object.hasOwn(dictionary, draft.contentId)
+    ? dictionary[draft.contentId]
+    : undefined;
 
   if (
     entry &&
@@ -514,13 +830,6 @@ export function applyProjectDraft(
 
   if (!entry) {
     if (!shouldApplyDashboardDraft(undefined, draft.publishedAt)) {
-      return false;
-    }
-
-    if (!isCaseStudyContentId(draft.contentId)) {
-      console.log(
-        `Skipping unknown content entry ${draft.contentId} (${draft.locale}).`,
-      );
       return false;
     }
 
@@ -733,10 +1042,8 @@ export function buildGeneratedPublicMedia(
 }
 
 function writeGeneratedPublicMedia(
-  mediaItems: DashboardMediaMetadata[],
+  mediaLiteral: ReturnType<typeof buildGeneratedPublicMedia>,
 ): number {
-  const mediaLiteral = buildGeneratedPublicMedia(mediaItems);
-
   mkdirSync(generatedSiteDir, { recursive: true });
   writeFileSync(
     generatedMediaFile,
@@ -756,9 +1063,9 @@ function writeGeneratedPublicMedia(
   return Object.keys(mediaLiteral).length;
 }
 
-function writeGeneratedPublicSettings(
-  settings: DashboardSiteSetting[],
-): number {
+function buildGeneratedPublicSettings(settings: DashboardSiteSetting[]): {
+  PUBLIC_WHATSAPP_URL?: string;
+} {
   const activeEnvironment =
     process.env.AOHYS_ENV === "production" ? "production" : "preview";
   const publicSettings = settings.filter(
@@ -778,6 +1085,12 @@ function writeGeneratedPublicSettings(
     ? { PUBLIC_WHATSAPP_URL: normalizedWhatsappUrl }
     : {};
 
+  return settingsLiteral;
+}
+
+function writeGeneratedPublicSettings(
+  settingsLiteral: ReturnType<typeof buildGeneratedPublicSettings>,
+): number {
   mkdirSync(generatedSiteDir, { recursive: true });
   writeFileSync(
     generatedSettingsFile,
@@ -879,39 +1192,36 @@ function writeGeneratedPublicProjectIds(projectIds: readonly string[]): number {
   return projectIds.length;
 }
 
-async function main(): Promise<void> {
-  const content = await loadDashboardContent();
+export function applyValidatedDashboardContent<T>(
+  value: unknown,
+  apply: (content: DashboardContentPayload) => T,
+): T {
+  const content = parseDashboardContentPayload(value);
+  return apply(content);
+}
 
-  if (!content) {
-    return;
-  }
-
+function applyDashboardContent(content: DashboardContentPayload): void {
   const dictionaries: Record<Locale, LocaleDictionary> = {
     en: readLocaleFile("en"),
     es: readLocaleFile("es"),
   };
+
   let appliedProjects = 0;
   let appliedResumes = 0;
   const publishedProjectContentIds: string[] = [];
 
-  for (const draft of content.projectDrafts ?? []) {
-    if (!draft.publishedAt) {
-      continue;
-    }
-
+  for (const draft of content.projectDrafts) {
+    if (!draft.publishedAt) continue;
     publishedProjectContentIds.push(draft.contentId);
-
-    if (applyProjectDraft(dictionaries[draft.locale], draft)) {
+    if (applyProjectDraft(dictionaries[draft.locale], draft))
       appliedProjects += 1;
-    }
   }
 
-  for (const draft of content.resumeDrafts ?? []) {
-    if (!draft.publishedAt) {
-      continue;
-    }
-
-    if (applyResumeDraft(dictionaries[draft.locale], draft)) {
+  for (const draft of content.resumeDrafts) {
+    if (
+      draft.publishedAt &&
+      applyResumeDraft(dictionaries[draft.locale], draft)
+    ) {
       appliedResumes += 1;
     }
   }
@@ -925,24 +1235,34 @@ async function main(): Promise<void> {
     "dashboard-applied Spanish public content",
   );
 
-  writeLocaleFile("en", dictionaries.en);
-  writeLocaleFile("es", dictionaries.es);
-  const publicMediaByContentId = publicMediaItemsByContentId(
-    content.media ?? [],
-  );
+  const publicMediaByContentId = publicMediaItemsByContentId(content.media);
   const publicProjectIds = publicProjectIdsFromDictionaries(
     dictionaries,
     publishedProjectContentIds,
     publicMediaByContentId,
   );
+  const mediaLiteral = buildGeneratedPublicMedia(content.media);
+  const settingsLiteral = buildGeneratedPublicSettings(content.settings);
+
+  writeLocaleFile("en", dictionaries.en);
+  writeLocaleFile("es", dictionaries.es);
   const generatedPublicProjects =
     writeGeneratedPublicProjectIds(publicProjectIds);
-  const appliedMedia = writeGeneratedPublicMedia(content.media ?? []);
-  const appliedSettings = writeGeneratedPublicSettings(content.settings ?? []);
+  const appliedMedia = writeGeneratedPublicMedia(mediaLiteral);
+  const appliedSettings = writeGeneratedPublicSettings(settingsLiteral);
 
   console.log(
     `Applied ${appliedProjects} published project draft(s), ${appliedResumes} published resume draft(s), ${appliedMedia} media asset(s), ${appliedSettings} public setting(s), and ${generatedPublicProjects} generated public project id(s).`,
   );
+}
+
+async function main(): Promise<void> {
+  const content = await loadDashboardContent();
+
+  if (!content) {
+    return;
+  }
+  applyValidatedDashboardContent(content, applyDashboardContent);
 }
 
 const invokedScriptUrl = process.argv[1]

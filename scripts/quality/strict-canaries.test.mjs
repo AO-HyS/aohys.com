@@ -12,6 +12,7 @@ const canaries = [
   ["apps/backend/tsconfig.json", "apps/backend/package.json"],
   ["apps/dashboard/tsconfig.json", "apps/dashboard/package.json"],
   ["apps/site/tsconfig.json", "apps/site/package.json"],
+  ["apps/site/tsconfig.functions.json", "apps/site/package.json"],
   [
     "packages/release-train/tsconfig.json",
     "packages/release-train/package.json",

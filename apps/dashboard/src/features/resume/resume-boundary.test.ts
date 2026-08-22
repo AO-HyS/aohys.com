@@ -19,4 +19,26 @@ describe("resume JSON boundary", () => {
     ).toBeUndefined();
     expect(parseDashboardResumeContent("not-json")).toBeUndefined();
   });
+
+  it("fails closed for active resume URLs", () => {
+    const resume = getResumePageContent("en");
+    expect(
+      parseDashboardResumeContent(
+        JSON.stringify({
+          ...resume,
+          pdf: { ...resume.pdf, href: "/downloads/%252e%252e/secrets.pdf" },
+        }),
+      ),
+    ).toBeUndefined();
+    expect(
+      parseDashboardResumeContent(
+        JSON.stringify({
+          ...resume,
+          contactLinks: [
+            { label: "Unsafe", href: "javascript:alert(1)", text: "Unsafe" },
+          ],
+        }),
+      ),
+    ).toBeUndefined();
+  });
 });

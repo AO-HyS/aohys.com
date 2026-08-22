@@ -8,16 +8,17 @@ const authClientCandidate: unknown = createAuthClient({
   plugins: [convexClient()],
 });
 
-function isAuthClient(value: unknown): value is AuthClient {
+export function isAuthClient(value: unknown): value is AuthClient {
+  if (
+    (typeof value !== "object" && typeof value !== "function") ||
+    value === null
+  ) {
+    return false;
+  }
   return (
-    typeof value === "object" &&
-    value !== null &&
-    "$fetch" in value &&
-    typeof value.$fetch === "function" &&
-    "$store" in value &&
-    typeof value.$store === "object" &&
-    "useSession" in value &&
-    typeof value.useSession === "function"
+    typeof Reflect.get(value, "$fetch") === "function" &&
+    typeof Reflect.get(value, "$store") === "function" &&
+    typeof Reflect.get(value, "useSession") === "function"
   );
 }
 
