@@ -240,13 +240,14 @@ function buildDashboardCaseStudyRows(
     metadataRows.map((row) => [row.contentId, row]),
   );
 
-  return PUBLIC_CONTENT_NODES.filter((node) => node.type === "case-study").map(
-    (node) => {
-      const englishVariant = getLocaleVariant(node, "en");
-      const spanishVariant = getLocaleVariant(node, "es");
-      const metadata = metadataByContentId.get(node.id);
+  return PUBLIC_CONTENT_NODES.flatMap((node) => {
+    if (node.type !== "case-study") return [];
+    const englishVariant = getLocaleVariant(node, "en");
+    const spanishVariant = getLocaleVariant(node, "es");
+    const metadata = metadataByContentId.get(node.id);
 
-      return {
+    return [
+      {
         contentId: node.id,
         title: englishVariant.title,
         englishPath: englishVariant.path,
@@ -255,9 +256,9 @@ function buildDashboardCaseStudyRows(
         status: metadata?.status ?? "active-build",
         evidenceStatus: metadata?.evidenceStatus ?? "missing",
         updatedAt: metadata?.updatedAt ?? 0,
-      };
-    },
-  );
+      },
+    ];
+  });
 }
 
 function fallbackProjectVariant(

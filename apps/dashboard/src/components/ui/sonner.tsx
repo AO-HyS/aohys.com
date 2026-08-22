@@ -1,6 +1,4 @@
-import { Toaster as SonnerToaster, toast } from "sonner";
-
-export { toast };
+import { Toaster as SonnerToaster } from "sonner";
 
 export function Toaster() {
   return <SonnerToaster richColors closeButton position="top-right" />;

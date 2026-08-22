@@ -15,7 +15,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/components/ui/toast";
 import { captureDashboardAction } from "@/lib/analytics";
 import { getPublicWhatsappSettingViewModel } from "./settings-view-model";
 

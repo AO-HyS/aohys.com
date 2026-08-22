@@ -80,6 +80,7 @@ import type {
   DashboardProjectLocaleContent,
   ProjectsContent,
 } from "./projects-types";
+import { useFilePreviewUrl } from "./use-file-preview-url";
 
 const caseStudyStatuses: DashboardCaseStudyStatus[] = [
   "production-proof",
@@ -94,6 +95,10 @@ const evidenceStatuses: DashboardEvidenceStatus[] = [
   "sanitized",
   "published",
 ];
+const projectDateFormatter = new Intl.DateTimeFormat(undefined, {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
 const dashboardLocaleOptions = (["en", "es"] as const).map((locale) => ({
   value: locale,
   label: getSharedI18n(locale).dashboard.languageName,
@@ -604,12 +609,16 @@ function ProjectSummaryCard({
   onPublish: () => void | Promise<void>;
 }) {
   const latestDraft = project.locales
-    .map((localeContent) => localeContent.draft)
-    .filter(Boolean)
+    .flatMap((localeContent) =>
+      localeContent.draft ? [localeContent.draft] : [],
+    )
     .sort((a, b) => (b?.updatedAt ?? 0) - (a?.updatedAt ?? 0))[0];
   const latestPublished = project.locales
-    .map((localeContent) => localeContent.draft?.publishedAt)
-    .filter((value): value is number => typeof value === "number")
+    .flatMap((localeContent) =>
+      typeof localeContent.draft?.publishedAt === "number"
+        ? [localeContent.draft.publishedAt]
+        : [],
+    )
     .sort((a, b) => b - a)[0];
 
   return (
@@ -1155,7 +1164,8 @@ function ImageUploadForm({
     project.contentId,
   );
   const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const previewUrl = useFilePreviewUrl(file);
+
   const [publicUrl, setPublicUrl] = useState("");
   const [form, setForm] = useState<MediaUploadRequest>({
     contentId: project.contentId,
@@ -1176,15 +1186,6 @@ function ImageUploadForm({
   );
   const showStorageKeyError =
     !trimmedPublicUrl && !storageKeyValidation.isValid;
-
-  useEffect(
-    () => () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    },
-    [previewUrl],
-  );
 
   return (
     <Card className={dashboardClass.cardShadow}>
@@ -1241,13 +1242,7 @@ function ImageUploadForm({
                 accept="image/png,image/jpeg,image/webp"
                 onChange={(event) => {
                   const selectedFile = event.target.files?.[0] ?? null;
-                  if (previewUrl) {
-                    URL.revokeObjectURL(previewUrl);
-                  }
                   setFile(selectedFile);
-                  setPreviewUrl(
-                    selectedFile ? URL.createObjectURL(selectedFile) : null,
-                  );
 
                   if (selectedFile) {
                     setForm((current) => ({
@@ -1419,10 +1414,7 @@ function formatLabel(value: string): string {
 }
 
 function formatDate(value: number): string {
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
+  return projectDateFormatter.format(new Date(value));
 }
 
 function projectFormsEqual(

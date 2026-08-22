@@ -21,7 +21,7 @@ import {
   type ProjectDraftRequest,
   type PublishContentResponse,
 } from "./projects-api";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/components/ui/toast";
 import { captureDashboardAction } from "@/lib/analytics";
 import { validateCloudflareImagesCustomId } from "./media-upload";
 import type {

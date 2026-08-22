@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/card";
 import { FieldGroup } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/components/ui/toast";
 import { captureDashboardAction } from "@/lib/analytics";
 import { dashboardClass } from "@/lib/dashboard-classes";
 import {
@@ -73,6 +73,19 @@ import type {
   ResumeSkillGroup,
   ResumeContent,
 } from "./resume-types";
+import { useEditorListKeys } from "./use-editor-list-keys";
+
+const resumeDateFormatter = new Intl.DateTimeFormat(undefined, {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
+interface ResumeVersionForm {
+  locale: DashboardLocale;
+  version: string;
+  pdfPath: string;
+  isPublished: boolean;
+}
 
 export function ResumeScreen() {
   const payload = useResumeContent();
@@ -154,7 +167,7 @@ function ResumeWorkspace({
   const [pendingLocale, setPendingLocale] = useState<DashboardLocale | null>(
     null,
   );
-  const [versionForm, setVersionForm] = useState({
+  const [versionForm, setVersionForm] = useState<ResumeVersionForm>({
     locale: selectedLocale,
     version: "",
     pdfPath: "/downloads/alejandro-ortiz-corro-resume.pdf",
@@ -297,18 +310,186 @@ function ResumeWorkspace({
 
   return (
     <div className="flex flex-col gap-6">
+      <ResumeWorkspaceStatus
+        selectedLocale={selectedLocale}
+        activeDraft={activeDraft}
+        validationErrors={validationErrors}
+        hasRemoteBaseline={hasRemoteBaseline}
+        onRequestLocale={(nextLocale) => {
+          if (nextLocale === selectedLocale) return;
+          if (hasChanges) setPendingLocale(nextLocale);
+          else onSelectLocale(nextLocale);
+        }}
+        onRebase={() => {
+          dispatch({ type: "rebase", baseline });
+          setSeenBaselineVersion(baselineVersion);
+          setSaveResult("clean");
+        }}
+      />
+
+      <ResumeEditor
+        content={form}
+        onChange={(draft) => {
+          setSaveResult("clean");
+          dispatch({ type: "replace", draft });
+        }}
+      />
+
+      <SaveBar
+        state={isSaving ? "saving" : hasChanges ? "dirty" : saveResult}
+        onSave={() => void handleSave()}
+        disabled={!hasChanges || validationErrors.length > 0 || isPublishing}
+        description={
+          hasChanges
+            ? "Save this locale before switching locale or requesting publication."
+            : "The current locale matches its saved Convex baseline."
+        }
+        secondaryAction={
+          !hasChanges && validationErrors.length === 0 ? (
+            <Action
+              variant="secondary"
+              pending={isPublishing}
+              pendingLabel="Requesting publication…"
+              onClick={() => void handlePublish()}
+            >
+              <RocketIcon data-icon="inline-start" />
+              <span className="sm:hidden">Publish</span>
+              <span className="hidden sm:inline">Publish saved draft</span>
+            </Action>
+          ) : undefined
+        }
+      />
+
+      <ResumeArtifactsSection
+        versions={versions}
+        form={versionForm}
+        isSaving={isSavingVersion}
+        onChange={(patch) =>
+          setVersionForm((current) => ({ ...current, ...patch }))
+        }
+        onSubmit={handleVersionSubmit}
+      />
+
+      <AlertDialog
+        open={pendingLocale !== null}
+        onOpenChange={(open) => !open && setPendingLocale(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Discard unsaved locale changes?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Switching locale resets this editor to the other locale's saved
+              Convex baseline.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep editing</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (pendingLocale) onSelectLocale(pendingLocale);
+                setPendingLocale(null);
+              }}
+            >
+              Discard and switch
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
+function ResumeArtifactsSection({
+  versions,
+  form,
+  isSaving,
+  onChange,
+  onSubmit,
+}: {
+  versions: DashboardResumeVersion[];
+  form: ResumeVersionForm;
+  isSaving: boolean;
+  onChange: (patch: Partial<ResumeVersionForm>) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
+      <ResumeVersionsCard versions={versions} />
+      <Card>
+        <CardHeader>
+          <CardTitle>PDF artifact</CardTitle>
+          <CardDescription>
+            Optional downloadable file used by the public resume CTA.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className={dashboardClass.editForm} onSubmit={onSubmit}>
+            <FieldGroup>
+              <LabeledSelect
+                label="Locale"
+                value={form.locale}
+                onValueChange={(value) =>
+                  onChange({ locale: value as DashboardLocale })
+                }
+                options={[
+                  { value: "en", label: "English" },
+                  { value: "es", label: "Spanish" },
+                ]}
+              />
+              <LabeledInput
+                label="Version"
+                value={form.version}
+                placeholder="2026.07"
+                onValueChange={(version) => onChange({ version })}
+              />
+              <LabeledInput
+                label="PDF path"
+                value={form.pdfPath}
+                onValueChange={(pdfPath) => onChange({ pdfPath })}
+              />
+            </FieldGroup>
+            <Button type="submit" disabled={isSaving || !form.version.trim()}>
+              {isSaving ? (
+                <LoaderCircleIcon
+                  data-icon="inline-start"
+                  className="animate-spin"
+                />
+              ) : (
+                <SaveIcon data-icon="inline-start" />
+              )}
+              Save PDF artifact
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function ResumeWorkspaceStatus({
+  selectedLocale,
+  activeDraft,
+  validationErrors,
+  hasRemoteBaseline,
+  onRequestLocale,
+  onRebase,
+}: {
+  selectedLocale: DashboardLocale;
+  activeDraft: ResumeContent["resumeDrafts"][number] | undefined;
+  validationErrors: string[];
+  hasRemoteBaseline: boolean;
+  onRequestLocale: (locale: DashboardLocale) => void;
+  onRebase: () => void;
+}) {
+  return (
+    <>
       <PageHeader
         title="Resume publishing workspace"
         description="Edit one section at a time. Save commits the Convex draft; Publish becomes available only after the draft is valid and saved."
         actions={
           <Tabs
             value={selectedLocale}
-            onValueChange={(value) => {
-              const nextLocale = value as DashboardLocale;
-              if (nextLocale === selectedLocale) return;
-              if (hasChanges) setPendingLocale(nextLocale);
-              else onSelectLocale(nextLocale);
-            }}
+            onValueChange={(value) => onRequestLocale(value as DashboardLocale)}
           >
             <TabsList className={dashboardClass.localeTabsList}>
               <TabsTrigger value="en">English</TabsTrigger>
@@ -380,144 +561,11 @@ function ResumeWorkspace({
             title="Replace this local editor state?"
             description="The newer Convex baseline will replace any unsaved changes in this locale."
             confirmLabel="Rebase editor"
-            onConfirm={() => {
-              dispatch({ type: "rebase", baseline });
-              setSeenBaselineVersion(baselineVersion);
-              setSaveResult("clean");
-            }}
+            onConfirm={onRebase}
           />
         </div>
       ) : null}
-
-      <ResumeEditor
-        content={form}
-        onChange={(draft) => {
-          setSaveResult("clean");
-          dispatch({ type: "replace", draft });
-        }}
-      />
-
-      <SaveBar
-        state={isSaving ? "saving" : hasChanges ? "dirty" : saveResult}
-        onSave={() => void handleSave()}
-        disabled={!hasChanges || validationErrors.length > 0 || isPublishing}
-        description={
-          hasChanges
-            ? "Save this locale before switching locale or requesting publication."
-            : "The current locale matches its saved Convex baseline."
-        }
-        secondaryAction={
-          !hasChanges && validationErrors.length === 0 ? (
-            <Action
-              variant="secondary"
-              pending={isPublishing}
-              pendingLabel="Requesting publication…"
-              onClick={() => void handlePublish()}
-            >
-              <RocketIcon data-icon="inline-start" />
-              <span className="sm:hidden">Publish</span>
-              <span className="hidden sm:inline">Publish saved draft</span>
-            </Action>
-          ) : undefined
-        }
-      />
-
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
-        <ResumeVersionsCard versions={versions} />
-        <Card>
-          <CardHeader>
-            <CardTitle>PDF artifact</CardTitle>
-            <CardDescription>
-              Optional downloadable file used by the public resume CTA.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form
-              className={dashboardClass.editForm}
-              onSubmit={handleVersionSubmit}
-            >
-              <FieldGroup>
-                <LabeledSelect
-                  label="Locale"
-                  value={versionForm.locale}
-                  onValueChange={(value) =>
-                    setVersionForm((current) => ({
-                      ...current,
-                      locale: value as DashboardLocale,
-                    }))
-                  }
-                  options={[
-                    { value: "en", label: "English" },
-                    { value: "es", label: "Spanish" },
-                  ]}
-                />
-                <LabeledInput
-                  label="Version"
-                  value={versionForm.version}
-                  placeholder="2026.07"
-                  onValueChange={(value) =>
-                    setVersionForm((current) => ({
-                      ...current,
-                      version: value,
-                    }))
-                  }
-                />
-                <LabeledInput
-                  label="PDF path"
-                  value={versionForm.pdfPath}
-                  onValueChange={(value) =>
-                    setVersionForm((current) => ({
-                      ...current,
-                      pdfPath: value,
-                    }))
-                  }
-                />
-              </FieldGroup>
-              <Button
-                type="submit"
-                disabled={isSavingVersion || !versionForm.version.trim()}
-              >
-                {isSavingVersion ? (
-                  <LoaderCircleIcon
-                    data-icon="inline-start"
-                    className="animate-spin"
-                  />
-                ) : (
-                  <SaveIcon data-icon="inline-start" />
-                )}
-                Save PDF artifact
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-
-      <AlertDialog
-        open={pendingLocale !== null}
-        onOpenChange={(open) => !open && setPendingLocale(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Discard unsaved locale changes?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Switching locale resets this editor to the other locale's saved
-              Convex baseline.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Keep editing</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (pendingLocale) onSelectLocale(pendingLocale);
-                setPendingLocale(null);
-              }}
-            >
-              Discard and switch
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+    </>
   );
 }
 
@@ -791,6 +839,8 @@ function TextArrayEditor({
   onTitleChange: (title: string) => void;
   onChange: (values: string[]) => void;
 }) {
+  const itemKeys = useEditorListKeys(values.length);
+
   return (
     <Card>
       <CardHeader>
@@ -804,7 +854,7 @@ function TextArrayEditor({
           onValueChange={onTitleChange}
         />
         {values.map((value, index) => (
-          <div key={index} className={dashboardClass.arrayRow}>
+          <div key={itemKeys.at(index)} className={dashboardClass.arrayRow}>
             <LabeledTextarea
               label={`Item ${index + 1}`}
               value={value}
@@ -815,14 +865,20 @@ function TextArrayEditor({
             />
             <IconButton
               label="Remove"
-              onClick={() => onChange(removeAt(values, index))}
+              onClick={() => {
+                itemKeys.remove(index);
+                onChange(removeAt(values, index));
+              }}
             />
           </div>
         ))}
         <Button
           type="button"
           variant="outline"
-          onClick={() => onChange([...values, ""])}
+          onClick={() => {
+            itemKeys.append();
+            onChange([...values, ""]);
+          }}
         >
           <PlusIcon data-icon="inline-start" />
           Add item
@@ -843,6 +899,8 @@ function HighlightsEditor({
   onTitleChange: (title: string) => void;
   onChange: (items: ResumeHighlight[]) => void;
 }) {
+  const itemKeys = useEditorListKeys(items.length);
+
   return (
     <Card>
       <CardHeader>
@@ -856,7 +914,10 @@ function HighlightsEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div key={index} className={dashboardClass.nestedEditorRow}>
+          <div
+            key={itemKeys.at(index)}
+            className={dashboardClass.nestedEditorRow}
+          >
             <div className={dashboardClass.formGrid2}>
               <LabeledInput
                 label={`Highlight ${index + 1} label`}
@@ -875,14 +936,20 @@ function HighlightsEditor({
             </div>
             <IconButton
               label="Remove highlight"
-              onClick={() => onChange(removeAt(items, index))}
+              onClick={() => {
+                itemKeys.remove(index);
+                onChange(removeAt(items, index));
+              }}
             />
           </div>
         ))}
         <Button
           type="button"
           variant="outline"
-          onClick={() => onChange([...items, { label: "", text: "" }])}
+          onClick={() => {
+            itemKeys.append();
+            onChange([...items, { label: "", text: "" }]);
+          }}
         >
           <PlusIcon data-icon="inline-start" />
           Add highlight
@@ -903,6 +970,8 @@ function ProjectsEditor({
   onTitleChange: (title: string) => void;
   onChange: (items: ResumeProject[]) => void;
 }) {
+  const itemKeys = useEditorListKeys(items.length);
+
   return (
     <Card>
       <CardHeader>
@@ -916,7 +985,10 @@ function ProjectsEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div key={index} className={dashboardClass.nestedEditorRow}>
+          <div
+            key={itemKeys.at(index)}
+            className={dashboardClass.nestedEditorRow}
+          >
             <LabeledInput
               label={`Project ${index + 1} title`}
               value={item.title}
@@ -948,16 +1020,20 @@ function ProjectsEditor({
             />
             <IconButton
               label="Remove project"
-              onClick={() => onChange(removeAt(items, index))}
+              onClick={() => {
+                itemKeys.remove(index);
+                onChange(removeAt(items, index));
+              }}
             />
           </div>
         ))}
         <Button
           type="button"
           variant="outline"
-          onClick={() =>
-            onChange([...items, { title: "", summary: "", bullets: [""] }])
-          }
+          onClick={() => {
+            itemKeys.append();
+            onChange([...items, { title: "", summary: "", bullets: [""] }]);
+          }}
         >
           <PlusIcon data-icon="inline-start" />
           Add project
@@ -978,6 +1054,8 @@ function ExperienceEditor({
   onTitleChange: (title: string) => void;
   onChange: (items: ResumeExperience[]) => void;
 }) {
+  const itemKeys = useEditorListKeys(items.length);
+
   return (
     <Card>
       <CardHeader>
@@ -993,7 +1071,10 @@ function ExperienceEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div key={index} className={dashboardClass.nestedEditorRow}>
+          <div
+            key={itemKeys.at(index)}
+            className={dashboardClass.nestedEditorRow}
+          >
             <div className={dashboardClass.formGrid3}>
               <LabeledInput
                 label={`Experience ${index + 1} role`}
@@ -1033,19 +1114,23 @@ function ExperienceEditor({
             />
             <IconButton
               label="Remove experience"
-              onClick={() => onChange(removeAt(items, index))}
+              onClick={() => {
+                itemKeys.remove(index);
+                onChange(removeAt(items, index));
+              }}
             />
           </div>
         ))}
         <Button
           type="button"
           variant="outline"
-          onClick={() =>
+          onClick={() => {
+            itemKeys.append();
             onChange([
               ...items,
               { role: "", company: "", period: "", bullets: [""] },
-            ])
-          }
+            ]);
+          }}
         >
           <PlusIcon data-icon="inline-start" />
           Add experience
@@ -1066,6 +1151,8 @@ function SkillsEditor({
   onTitleChange: (title: string) => void;
   onChange: (items: ResumeSkillGroup[]) => void;
 }) {
+  const itemKeys = useEditorListKeys(items.length);
+
   return (
     <Card>
       <CardHeader>
@@ -1081,7 +1168,10 @@ function SkillsEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div key={index} className={dashboardClass.nestedEditorRow}>
+          <div
+            key={itemKeys.at(index)}
+            className={dashboardClass.nestedEditorRow}
+          >
             <LabeledInput
               label={`Skill group ${index + 1} label`}
               value={item.label}
@@ -1105,14 +1195,20 @@ function SkillsEditor({
             />
             <IconButton
               label="Remove skill group"
-              onClick={() => onChange(removeAt(items, index))}
+              onClick={() => {
+                itemKeys.remove(index);
+                onChange(removeAt(items, index));
+              }}
             />
           </div>
         ))}
         <Button
           type="button"
           variant="outline"
-          onClick={() => onChange([...items, { label: "", items: [""] }])}
+          onClick={() => {
+            itemKeys.append();
+            onChange([...items, { label: "", items: [""] }]);
+          }}
         >
           <PlusIcon data-icon="inline-start" />
           Add skill group
@@ -1133,6 +1229,8 @@ function EducationEditor({
   onTitleChange: (title: string) => void;
   onChange: (items: ResumeEducation[]) => void;
 }) {
+  const itemKeys = useEditorListKeys(items.length);
+
   return (
     <Card>
       <CardHeader>
@@ -1146,7 +1244,10 @@ function EducationEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div key={index} className={dashboardClass.nestedEditorRow}>
+          <div
+            key={itemKeys.at(index)}
+            className={dashboardClass.nestedEditorRow}
+          >
             <div className={dashboardClass.formGrid3}>
               <LabeledInput
                 label={`Education ${index + 1} degree`}
@@ -1174,16 +1275,20 @@ function EducationEditor({
             </div>
             <IconButton
               label="Remove education"
-              onClick={() => onChange(removeAt(items, index))}
+              onClick={() => {
+                itemKeys.remove(index);
+                onChange(removeAt(items, index));
+              }}
             />
           </div>
         ))}
         <Button
           type="button"
           variant="outline"
-          onClick={() =>
-            onChange([...items, { degree: "", institution: "", period: "" }])
-          }
+          onClick={() => {
+            itemKeys.append();
+            onChange([...items, { degree: "", institution: "", period: "" }]);
+          }}
         >
           <PlusIcon data-icon="inline-start" />
           Add education
@@ -1286,8 +1391,5 @@ function linesFromTextarea(value: string): string[] {
 }
 
 function formatDate(value: number): string {
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(value));
+  return resumeDateFormatter.format(new Date(value));
 }

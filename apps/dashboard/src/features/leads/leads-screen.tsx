@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/components/ui/toast";
 import {
   Table,
   TableBody,
@@ -43,6 +43,12 @@ import {
 } from "./leads-view-model";
 
 const statuses: DashboardLeadStatus[] = ["new", "reviewing", "closed"];
+const leadDateFormatter = new Intl.DateTimeFormat("en", {
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+});
 
 export function LeadsScreen() {
   return <LiveLeadsScreen />;
@@ -531,10 +537,5 @@ function leadColumnClass(columnId: string): string {
 }
 
 function formatDate(timestamp: number): string {
-  return new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(timestamp));
+  return leadDateFormatter.format(new Date(timestamp));
 }
