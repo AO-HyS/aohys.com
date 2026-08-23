@@ -1,72 +1,31 @@
-type PagesEnvironmentName = "preview" | "production";
+import { pathToFileURL } from "node:url";
 
-interface CloudflarePagesVariable {
-  value?: string;
-  type?: string;
-}
-
-interface CloudflarePagesProject {
-  deployment_configs?: Record<
-    PagesEnvironmentName,
-    {
-      env_vars?: Record<string, CloudflarePagesVariable | string>;
-      secrets?: Record<string, CloudflarePagesVariable | string>;
-    }
-  >;
-}
-
-interface CloudflareApiResponse<T> {
-  success: boolean;
-  result?: T;
-  errors?: Array<{ message?: string }>;
-}
-
-const REQUIRED_RUNTIME_BINDINGS = [
-  "ADMIN_EMAIL",
-  "AOHYS_ENV",
-  "BETTER_AUTH_TRUSTED_ORIGINS",
-  "BETTER_AUTH_URL",
-  "CONVEX_SITE_URL",
-  "CONVEX_URL",
-  "CLOUDFLARE_IMAGES_ACCOUNT_HASH",
-  "PUBLIC_SITE_URL",
-] as const;
+import {
+  collectCanonicalRuntimeValues,
+  parsePagesEnvironment,
+  readPagesProject,
+  readPlainVariable,
+  RUNTIME_BINDING_NAMES,
+  type CloudflarePagesProject,
+  type CloudflarePagesVariable,
+  type PagesEnvironmentName,
+} from "./sync-cloudflare-pages-runtime.ts";
 
 function requiredEnv(name: string): string {
   const value = process.env[name]?.trim();
-
   if (!value) {
-    throw new Error(`${name} is required to audit Cloudflare Pages runtime bindings.`);
+    throw new Error(
+      `${name} is required to audit Cloudflare Pages runtime bindings.`,
+    );
   }
-
   return value;
 }
 
-async function readPagesProject(): Promise<CloudflarePagesProject> {
-  const accountId = requiredEnv("CLOUDFLARE_ACCOUNT_ID");
-  const apiToken = requiredEnv("CLOUDFLARE_API_TOKEN");
-  const projectName = process.env.CLOUDFLARE_PROJECT_NAME?.trim() || "aohys-com";
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}`,
-    {
-      headers: {
-        authorization: `Bearer ${apiToken}`,
-      },
-    },
-  );
-  const payload = await response.json() as CloudflareApiResponse<CloudflarePagesProject>;
-
-  if (!response.ok || !payload.success || !payload.result) {
-    const message = payload.errors?.map((error) => error.message).filter(Boolean).join("; ");
-    throw new Error(message || `Cloudflare Pages project ${projectName} could not be read.`);
-  }
-
-  return payload.result;
-}
-
-function bindingNames(project: CloudflarePagesProject, environment: PagesEnvironmentName): Set<string> {
+function bindingNames(
+  project: CloudflarePagesProject,
+  environment: PagesEnvironmentName,
+): Set<string> {
   const config = project.deployment_configs?.[environment];
-
   return new Set([
     ...Object.keys(config?.env_vars ?? {}),
     ...Object.keys(config?.secrets ?? {}),
@@ -77,76 +36,108 @@ function readVariable(
   project: CloudflarePagesProject,
   environment: PagesEnvironmentName,
   name: string,
-): CloudflarePagesVariable | string | undefined {
-  return project.deployment_configs?.[environment]?.env_vars?.[name]
-    ?? project.deployment_configs?.[environment]?.secrets?.[name];
+): CloudflarePagesVariable | string | null | undefined {
+  return (
+    project.deployment_configs?.[environment]?.env_vars?.[name] ??
+    project.deployment_configs?.[environment]?.secrets?.[name]
+  );
 }
 
-function readPlainVariable(
+export function auditRuntimeBindings(
   project: CloudflarePagesProject,
-  environment: PagesEnvironmentName,
-  name: string,
-): string | undefined {
-  const variable = project.deployment_configs?.[environment]?.env_vars?.[name];
-
-  if (typeof variable === "string") {
-    return variable;
-  }
-
-  if (variable?.type === "secret_text") {
-    return undefined;
-  }
-
-  return variable?.value;
-}
-
-function assertRuntimeBindings(project: CloudflarePagesProject): void {
+  activeEnvironment: PagesEnvironmentName,
+  expectedActiveValues: Record<string, string>,
+): string[] {
   const errors: string[] = [];
 
   for (const environment of ["preview", "production"] as const) {
     const names = bindingNames(project, environment);
-
-    for (const binding of REQUIRED_RUNTIME_BINDINGS) {
+    for (const binding of RUNTIME_BINDING_NAMES) {
       if (!names.has(binding)) {
-        errors.push(`Cloudflare Pages ${environment} runtime is missing ${binding}.`);
+        errors.push(
+          `Cloudflare Pages ${environment} runtime is missing ${binding}.`,
+        );
         continue;
       }
 
       const variable = readVariable(project, environment, binding);
       const value = typeof variable === "string" ? variable : variable?.value;
-      const isSecret = typeof variable !== "string" && variable?.type === "secret_text";
-
+      const isSecret =
+        typeof variable !== "string" && variable?.type === "secret_text";
       if (!isSecret && !value?.trim()) {
-        errors.push(`Cloudflare Pages ${environment} runtime has an empty ${binding}.`);
+        errors.push(
+          `Cloudflare Pages ${environment} runtime has an empty ${binding}.`,
+        );
       }
     }
 
-    const environmentValue = readPlainVariable(project, environment, "AOHYS_ENV");
+    const environmentValue = readPlainVariable(
+      project,
+      environment,
+      "AOHYS_ENV",
+    );
     if (environmentValue && environmentValue !== environment) {
-      errors.push(`Cloudflare Pages ${environment} runtime has AOHYS_ENV=${environmentValue}.`);
+      errors.push(
+        `Cloudflare Pages ${environment} runtime has an incorrect AOHYS_ENV.`,
+      );
     }
   }
 
-  const productionPostHogKey = readPlainVariable(project, "production", "PUBLIC_POSTHOG_KEY");
+  for (const [name, expectedValue] of Object.entries(expectedActiveValues)) {
+    if (readPlainVariable(project, activeEnvironment, name) !== expectedValue) {
+      errors.push(
+        `Cloudflare Pages ${activeEnvironment} runtime ${name} does not match the active Environment Contract.`,
+      );
+    }
+  }
 
+  const productionPostHogKey = readPlainVariable(
+    project,
+    "production",
+    "PUBLIC_POSTHOG_KEY",
+  );
   if (readPlainVariable(project, "preview", "PUBLIC_POSTHOG_KEY")) {
     errors.push("Cloudflare Pages preview must not define PUBLIC_POSTHOG_KEY.");
   }
-
   if (!productionPostHogKey) {
-    errors.push("Cloudflare Pages production PUBLIC_POSTHOG_KEY must be a non-empty plain env var.");
+    errors.push(
+      "Cloudflare Pages production PUBLIC_POSTHOG_KEY must be a non-empty plain env var.",
+    );
   }
 
-  if (errors.length > 0) {
-    throw new Error(`Cloudflare Pages runtime is not valid:\n- ${errors.join("\n- ")}`);
-  }
+  return errors;
 }
 
-try {
-  const project = await readPagesProject();
-  assertRuntimeBindings(project);
-  console.log("Cloudflare Pages runtime bindings are valid for preview and production.");
-} catch (error) {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exit(1);
+async function main(): Promise<void> {
+  const activeEnvironment = parsePagesEnvironment(process.env.AOHYS_ENV);
+  const accountId = requiredEnv("CLOUDFLARE_ACCOUNT_ID");
+  const apiToken = requiredEnv("CLOUDFLARE_API_TOKEN");
+  const projectName =
+    process.env.CLOUDFLARE_PROJECT_NAME?.trim() || "aohys-com";
+  const project = await readPagesProject({ accountId, apiToken, projectName });
+  const expectedActiveValues = collectCanonicalRuntimeValues(activeEnvironment);
+  const errors = auditRuntimeBindings(
+    project,
+    activeEnvironment,
+    expectedActiveValues,
+  );
+
+  if (errors.length > 0) {
+    throw new Error(
+      `Cloudflare Pages runtime is not valid:\n- ${errors.join("\n- ")}`,
+    );
+  }
+  console.log(
+    `Cloudflare Pages runtime bindings are valid for ${activeEnvironment}; cross-environment boundaries are intact.`,
+  );
+}
+
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
+  main().catch((error: unknown) => {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  });
 }
