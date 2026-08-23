@@ -12,14 +12,28 @@ const validEnvironment: DashboardAccessEnvironment = {
   CONVEX_URL: "https://effervescent-minnow-483.convex.cloud",
   CONVEX_SITE_URL: "https://effervescent-minnow-483.convex.site",
   BETTER_AUTH_URL: "https://preview.aohys.com",
-  BETTER_AUTH_TRUSTED_ORIGINS: "https://preview.aohys.com,http://localhost:4321",
+  BETTER_AUTH_TRUSTED_ORIGINS:
+    "https://preview.aohys.com,http://localhost:4321",
   ADMIN_EMAIL: "alejandro.ortiz@aohys.com",
   CLOUDFLARE_ACCOUNT_ID: "cloudflare-account-id",
   CLOUDFLARE_IMAGES_ACCOUNT_HASH: "cloudflare-images-hash",
   CLOUDFLARE_IMAGES_API_TOKEN: "cloudflare-images-token",
   PUBLISH_GITHUB_TOKEN: "github-publish-token",
   PUBLIC_POSTHOG_KEY: "phc_preview",
+  PUBLIC_RELEASE_SHA: "0123456789abcdef0123456789abcdef01234567",
 };
+
+function omitEnvironmentValue(
+  environment: DashboardAccessEnvironment,
+  key: keyof DashboardAccessEnvironment,
+): Partial<DashboardAccessEnvironment> & Record<string, string | undefined> {
+  const result: Partial<DashboardAccessEnvironment> &
+    Record<string, string | undefined> = {
+    ...environment,
+  };
+  delete result[key];
+  return result;
+}
 
 describe("dashboard access guard", () => {
   it("redirects anonymous dashboard visitors to the private sign-in route", async () => {
@@ -30,21 +44,30 @@ describe("dashboard access guard", () => {
     );
 
     expect(response.status).toBe(302);
-    expect(response.headers.get("location")).toBe("/dashboard/sign-in?callbackURL=%2Fdashboard");
+    expect(response.headers.get("location")).toBe(
+      "/dashboard/sign-in?callbackURL=%2Fdashboard",
+    );
     expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
-    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
+    expect(response.headers.get("content-security-policy")).toBe(
+      CONTENT_SECURITY_POLICY,
+    );
   });
 
   it("renders the allowlisted admin dashboard shell after Better Auth session verification", async () => {
-    const fetchSession = vi.fn(async () => new Response(JSON.stringify({
-      user: {
-        email: "alejandro.ortiz@aohys.com",
-        name: "Alejandro Ortiz",
-      },
-      session: {
-        id: "session_123",
-      },
-    })));
+    const fetchSession = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            user: {
+              email: "alejandro.ortiz@aohys.com",
+              name: "Alejandro Ortiz",
+            },
+            session: {
+              id: "session_123",
+            },
+          }),
+        ),
+    );
 
     const response = await handleDashboardRequest(
       new Request("https://preview.aohys.com/dashboard", {
@@ -74,7 +97,9 @@ describe("dashboard access guard", () => {
     expect(html).toContain("window.__AOHYS_DASHBOARD__");
     expect(html).toContain('"adminEmail":"alejandro.ortiz@aohys.com"');
     expect(html).toContain('"environment":"preview"');
-    expect(html).toContain('"convexUrl":"https://effervescent-minnow-483.convex.cloud"');
+    expect(html).toContain(
+      '"convexUrl":"https://effervescent-minnow-483.convex.cloud"',
+    );
     expect(html).toContain('"betterAuthUrl":"https://preview.aohys.com"');
     expect(html).toContain('"imagesAccountHash":"cloudflare-images-hash"');
     expect(html).not.toContain('"posthogKey"');
@@ -88,13 +113,15 @@ describe("dashboard access guard", () => {
           cookie: "better-auth.session_token=valid",
         },
       }),
-      {
-        ...validEnvironment,
-        CLOUDFLARE_IMAGES_ACCOUNT_HASH: undefined,
-      },
-      vi.fn(async () => new Response(JSON.stringify({
-        user: { email: "alejandro.ortiz@aohys.com" },
-      }))),
+      omitEnvironmentValue(validEnvironment, "CLOUDFLARE_IMAGES_ACCOUNT_HASH"),
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              user: { email: "alejandro.ortiz@aohys.com" },
+            }),
+          ),
+      ),
     );
     const html = await response.text();
 
@@ -118,7 +145,9 @@ describe("dashboard access guard", () => {
     expect(response.headers.get("location")).toBe("/dashboard/sign-in");
     expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
     const setCookieHeaders = response.headers.getSetCookie().join("\n");
-    expect(setCookieHeaders).toContain("better-auth.session_token=; Path=/; Max-Age=0");
+    expect(setCookieHeaders).toContain(
+      "better-auth.session_token=; Path=/; Max-Age=0",
+    );
   });
 
   it("supports multiple admin allowlist emails for Google account and institutional email", async () => {
@@ -132,11 +161,16 @@ describe("dashboard access guard", () => {
         ...validEnvironment,
         ADMIN_EMAIL: "a.ortizcrr@gmail.com,alejandro.ortiz@aohys.com",
       },
-      vi.fn(async () => new Response(JSON.stringify({
-        user: {
-          email: "a.ortizcrr@gmail.com",
-        },
-      }))),
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              user: {
+                email: "a.ortizcrr@gmail.com",
+              },
+            }),
+          ),
+      ),
     );
     const html = await response.text();
 
@@ -153,11 +187,16 @@ describe("dashboard access guard", () => {
         },
       }),
       validEnvironment,
-      vi.fn(async () => new Response(JSON.stringify({
-        user: {
-          email: "someone@example.com",
-        },
-      }))),
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              user: {
+                email: "someone@example.com",
+              },
+            }),
+          ),
+      ),
     );
     const html = await response.text();
 
@@ -172,11 +211,13 @@ describe("dashboard access guard", () => {
       const url = String(input);
 
       if (url.endsWith("/api/auth/get-session")) {
-        return new Response(JSON.stringify({
-          user: {
-            email: "someone@example.com",
-          },
-        }));
+        return new Response(
+          JSON.stringify({
+            user: {
+              email: "someone@example.com",
+            },
+          }),
+        );
       }
 
       throw new Error(`Unexpected private endpoint call: ${url}`);
@@ -217,10 +258,7 @@ describe("dashboard access guard", () => {
   it("renders a configuration error when CONVEX_URL is missing from the dashboard runtime", async () => {
     const response = await handleDashboardRequest(
       new Request("https://preview.aohys.com/dashboard"),
-      {
-        ...validEnvironment,
-        CONVEX_URL: undefined,
-      },
+      omitEnvironmentValue(validEnvironment, "CONVEX_URL"),
       vi.fn(),
     );
     const html = await response.text();
@@ -240,7 +278,9 @@ describe("dashboard access guard", () => {
     expect(response.status).toBe(503);
     expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
     expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
+    expect(response.headers.get("content-security-policy")).toBe(
+      CONTENT_SECURITY_POLICY,
+    );
     expect(html).toContain("Dashboard configuration needs attention");
   });
 
@@ -258,9 +298,13 @@ describe("dashboard access guard", () => {
     );
 
     expect(response.status).toBe(302);
-    expect(response.headers.get("location")).toBe("/dashboard/sign-in?callbackURL=%2Fdashboard%2Fleads");
+    expect(response.headers.get("location")).toBe(
+      "/dashboard/sign-in?callbackURL=%2Fdashboard%2Fleads",
+    );
     expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
-    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
+    expect(response.headers.get("content-security-policy")).toBe(
+      CONTENT_SECURITY_POLICY,
+    );
   });
 
   it("returns a private unavailable state and reports unexpected dashboard runtime failures", async () => {
@@ -269,7 +313,9 @@ describe("dashboard access guard", () => {
       throw new Error("Private auth provider failed with private details.");
     });
     const response = await safeHandleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/sign-in/google?callbackURL=%2Fdashboard"),
+      new Request(
+        "https://preview.aohys.com/dashboard/sign-in/google?callbackURL=%2Fdashboard",
+      ),
       validEnvironment,
       fetchAuth,
       { capture },
@@ -279,7 +325,9 @@ describe("dashboard access guard", () => {
     expect(response.status).toBe(502);
     expect(response.headers.get("x-robots-tag")).toBe("noindex, nofollow");
     expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
+    expect(response.headers.get("content-security-policy")).toBe(
+      CONTENT_SECURITY_POLICY,
+    );
     expect(html).toContain("Dashboard is temporarily unavailable");
     expect(capture).toHaveBeenCalledWith({
       event: "dashboard_runtime_exception",
@@ -296,39 +344,61 @@ describe("dashboard access guard", () => {
 
   it("renders the sign-in page with noindex metadata", async () => {
     const response = await handleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/sign-in?callbackURL=%2Fdashboard"),
+      new Request(
+        "https://preview.aohys.com/dashboard/sign-in?callbackURL=%2Fdashboard",
+      ),
       validEnvironment,
       vi.fn(),
     );
     const html = await response.text();
 
     expect(response.status).toBe(200);
-    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
+    expect(response.headers.get("content-security-policy")).toBe(
+      CONTENT_SECURITY_POLICY,
+    );
     expect(html).toContain('data-dashboard-shell="sign-in"');
     expect(html).toContain('<meta name="robots" content="noindex,nofollow"');
-    expect(html).toContain("/dashboard/sign-in/google?callbackURL=%2Fdashboard");
+    expect(html).toContain(
+      "/dashboard/sign-in/google?callbackURL=%2Fdashboard",
+    );
   });
 
   it("starts Google sign-in server-side and redirects with the Better Auth state cookie", async () => {
-    const fetchAuth = vi.fn(async () => new Response(JSON.stringify({
-      url: "https://accounts.google.com/o/oauth2/v2/auth?state=state_123",
-    }), {
-      headers: {
-        location: "https://accounts.google.com/o/oauth2/v2/auth?state=state_123",
-        "set-cookie": "better-auth.state=state_123; Path=/; HttpOnly; SameSite=Lax",
-      },
-    }));
+    const fetchAuth = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            url: "https://accounts.google.com/o/oauth2/v2/auth?state=state_123",
+          }),
+          {
+            headers: {
+              location:
+                "https://accounts.google.com/o/oauth2/v2/auth?state=state_123",
+              "set-cookie":
+                "better-auth.state=state_123; Path=/; HttpOnly; SameSite=Lax",
+            },
+          },
+        ),
+    );
 
     const response = await handleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/sign-in/google?callbackURL=%2Fdashboard"),
+      new Request(
+        "https://preview.aohys.com/dashboard/sign-in/google?callbackURL=%2Fdashboard",
+      ),
       validEnvironment,
       fetchAuth,
     );
 
     expect(response.status).toBe(302);
-    expect(response.headers.get("location")).toBe("https://accounts.google.com/o/oauth2/v2/auth?state=state_123");
-    expect(response.headers.get("content-security-policy")).toBe(CONTENT_SECURITY_POLICY);
-    expect(response.headers.get("set-cookie")).toContain("better-auth.state=state_123");
+    expect(response.headers.get("location")).toBe(
+      "https://accounts.google.com/o/oauth2/v2/auth?state=state_123",
+    );
+    expect(response.headers.get("content-security-policy")).toBe(
+      CONTENT_SECURITY_POLICY,
+    );
+    expect(response.headers.get("set-cookie")).toContain(
+      "better-auth.state=state_123",
+    );
     expect(fetchAuth).toHaveBeenCalledWith(
       "https://effervescent-minnow-483.convex.site/api/auth/sign-in/social",
       expect.objectContaining({
@@ -347,17 +417,27 @@ describe("dashboard access guard", () => {
   });
 
   it("keeps Google sign-in callbacks on the Cloudflare preview host that started the flow", async () => {
-    const fetchAuth = vi.fn(async () => new Response(JSON.stringify({
-      url: "https://accounts.google.com/o/oauth2/v2/auth?state=state_123&redirect_uri=https%3A%2F%2Fdevelop.aohys-com.pages.dev%2Fapi%2Fauth%2Fcallback%2Fgoogle",
-    }), {
-      headers: {
-        location: "https://accounts.google.com/o/oauth2/v2/auth?state=state_123&redirect_uri=https%3A%2F%2Fdevelop.aohys-com.pages.dev%2Fapi%2Fauth%2Fcallback%2Fgoogle",
-        "set-cookie": "__Secure-better-auth.state=state_123; Path=/; HttpOnly; Secure; SameSite=Lax",
-      },
-    }));
+    const fetchAuth = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            url: "https://accounts.google.com/o/oauth2/v2/auth?state=state_123&redirect_uri=https%3A%2F%2Fdevelop.aohys-com.pages.dev%2Fapi%2Fauth%2Fcallback%2Fgoogle",
+          }),
+          {
+            headers: {
+              location:
+                "https://accounts.google.com/o/oauth2/v2/auth?state=state_123&redirect_uri=https%3A%2F%2Fdevelop.aohys-com.pages.dev%2Fapi%2Fauth%2Fcallback%2Fgoogle",
+              "set-cookie":
+                "__Secure-better-auth.state=state_123; Path=/; HttpOnly; Secure; SameSite=Lax",
+            },
+          },
+        ),
+    );
 
     const response = await handleDashboardRequest(
-      new Request("https://develop.aohys-com.pages.dev/dashboard/sign-in/google?callbackURL=%2Fdashboard"),
+      new Request(
+        "https://develop.aohys-com.pages.dev/dashboard/sign-in/google?callbackURL=%2Fdashboard",
+      ),
       validEnvironment,
       fetchAuth,
     );
@@ -382,16 +462,25 @@ describe("dashboard access guard", () => {
   });
 
   it("falls back to the dashboard root for unsafe sign-in callback paths", async () => {
-    const fetchAuth = vi.fn(async () => new Response(JSON.stringify({
-      url: "https://accounts.google.com/o/oauth2/v2/auth?state=state_123",
-    }), {
-      headers: {
-        location: "https://accounts.google.com/o/oauth2/v2/auth?state=state_123",
-      },
-    }));
+    const fetchAuth = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            url: "https://accounts.google.com/o/oauth2/v2/auth?state=state_123",
+          }),
+          {
+            headers: {
+              location:
+                "https://accounts.google.com/o/oauth2/v2/auth?state=state_123",
+            },
+          },
+        ),
+    );
 
     await handleDashboardRequest(
-      new Request("https://preview.aohys.com/dashboard/sign-in/google?callbackURL=https%3A%2F%2Fevil.example"),
+      new Request(
+        "https://preview.aohys.com/dashboard/sign-in/google?callbackURL=https%3A%2F%2Fevil.example",
+      ),
       validEnvironment,
       fetchAuth,
     );
@@ -412,15 +501,21 @@ describe("dashboard access guard", () => {
       const url = String(input);
 
       if (url.endsWith("/api/auth/get-session")) {
-        return new Response(JSON.stringify({
-          user: { email: "alejandro.ortiz@aohys.com" },
-        }));
+        return new Response(
+          JSON.stringify({
+            user: { email: "alejandro.ortiz@aohys.com" },
+          }),
+        );
       }
 
       throw new Error(`Unexpected private endpoint call: ${url}`);
     });
 
-    for (const path of ["/dashboard/leads", "/dashboard/projects", "/dashboard/settings"]) {
+    for (const path of [
+      "/dashboard/leads",
+      "/dashboard/projects",
+      "/dashboard/settings",
+    ]) {
       const response = await handleDashboardRequest(
         new Request(`https://preview.aohys.com${path}`, {
           headers: { cookie: "better-auth.session_token=valid" },
@@ -432,7 +527,9 @@ describe("dashboard access guard", () => {
 
       expect(response.status).toBe(200);
       expect(html).toContain("/dashboard-app/assets/dashboard.js");
-      expect(html).toContain('"convexUrl":"https://effervescent-minnow-483.convex.cloud"');
+      expect(html).toContain(
+        '"convexUrl":"https://effervescent-minnow-483.convex.cloud"',
+      );
     }
 
     expect(fetchDashboard).toHaveBeenCalledTimes(3);
@@ -450,15 +547,24 @@ describe("dashboard access guard", () => {
           "https://develop.aohys-com.pages.dev",
         ].join(","),
       },
-      vi.fn(async () => new Response(JSON.stringify({
-        user: { email: "alejandro.ortiz@aohys.com" },
-      }))),
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              user: { email: "alejandro.ortiz@aohys.com" },
+            }),
+          ),
+      ),
     );
     const html = await response.text();
 
     expect(response.status).toBe(200);
-    expect(html).toContain('"convexUrl":"https://effervescent-minnow-483.convex.cloud"');
-    expect(html).toContain('"betterAuthUrl":"https://develop.aohys-com.pages.dev"');
+    expect(html).toContain(
+      '"convexUrl":"https://effervescent-minnow-483.convex.cloud"',
+    );
+    expect(html).toContain(
+      '"betterAuthUrl":"https://develop.aohys-com.pages.dev"',
+    );
     expect(html).not.toContain('"betterAuthUrl":"https://preview.aohys.com"');
   });
 });

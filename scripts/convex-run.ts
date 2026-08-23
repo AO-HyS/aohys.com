@@ -1,12 +1,16 @@
 import { spawnSync } from "node:child_process";
 
 export function hasConvexDeploymentAccess(): boolean {
-  return Boolean(process.env.CONVEX_DEPLOY_KEY?.trim() || process.env.CONVEX_DEPLOYMENT?.trim());
+  return Boolean(
+    process.env.CONVEX_DEPLOY_KEY?.trim() ||
+    process.env.CONVEX_DEPLOYMENT?.trim(),
+  );
 }
 
 export function runConvexFunction<T>(
   functionName: string,
   args: object,
+  parseResult: (value: unknown) => T,
 ): T {
   const deployKey = process.env.CONVEX_DEPLOY_KEY?.trim();
   const deployment = process.env.CONVEX_DEPLOYMENT?.trim();
@@ -25,7 +29,15 @@ export function runConvexFunction<T>(
 
   const result = spawnSync(
     "pnpm",
-    ["--filter", "@aohys/backend", "exec", "convex", "run", functionName, JSON.stringify(args)],
+    [
+      "--filter",
+      "@aohys/backend",
+      "exec",
+      "convex",
+      "run",
+      functionName,
+      JSON.stringify(args),
+    ],
     {
       env,
       encoding: "utf8",
@@ -34,7 +46,9 @@ export function runConvexFunction<T>(
   );
 
   if (result.error) {
-    throw new Error(`convex run ${functionName} could not start: ${result.error.message}`);
+    throw new Error(
+      `convex run ${functionName} could not start: ${result.error.message}`,
+    );
   }
 
   if (result.status !== 0) {
@@ -44,24 +58,29 @@ export function runConvexFunction<T>(
     );
   }
 
-  return parseConvexRunOutput<T>(functionName, result.stdout ?? "");
+  return parseResult(parseConvexRunOutput(functionName, result.stdout ?? ""));
 }
 
-function parseConvexRunOutput<T>(functionName: string, stdout: string): T {
+export function parseConvexRunOutput(
+  functionName: string,
+  stdout: string,
+): unknown {
   const trimmed = stdout.trim();
 
   if (!trimmed || trimmed === "null") {
-    return null as T;
+    return null;
   }
 
   const start = trimmed.search(/[[{]/);
 
   if (start === -1) {
-    throw new Error(`convex run ${functionName} returned unparseable output: ${trimmed}`);
+    throw new Error(
+      `convex run ${functionName} returned unparseable output: ${trimmed}`,
+    );
   }
 
   try {
-    return JSON.parse(trimmed.slice(start)) as T;
+    return JSON.parse(trimmed.slice(start));
   } catch (error) {
     throw new Error(
       `convex run ${functionName} returned invalid JSON: ${error instanceof Error ? error.message : String(error)}`,

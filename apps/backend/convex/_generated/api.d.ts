@@ -13,6 +13,8 @@ import type * as content from "../content.js";
 import type * as contentActions from "../contentActions.js";
 import type * as http from "../http.js";
 import type * as leads from "../leads.js";
+import type * as publication from "../publication.js";
+import type * as publicationActions from "../publicationActions.js";
 
 import type {
   ApiFromModules,
@@ -26,6 +28,8 @@ declare const fullApi: ApiFromModules<{
   contentActions: typeof contentActions;
   http: typeof http;
   leads: typeof leads;
+  publication: typeof publication;
+  publicationActions: typeof publicationActions;
 }>;
 
 /**

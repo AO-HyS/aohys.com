@@ -28,6 +28,34 @@ const preferredContactPathValidator = v.union(
   v.literal("whatsapp"),
 );
 
+const publicationScopeValidator = v.union(
+  v.literal("project"),
+  v.literal("resume"),
+  v.literal("all"),
+);
+
+const publicationTargetValidator = v.union(
+  v.literal("preview"),
+  v.literal("production"),
+);
+
+const publicationRequestStateValidator = v.union(
+  v.literal("published-locally"),
+  v.literal("release-requested"),
+  v.literal("release-acknowledged"),
+  v.literal("release-failed"),
+  v.literal("deployed"),
+  v.literal("rollback-needed"),
+);
+
+const publicationAttemptStateValidator = v.union(
+  v.literal("scheduled"),
+  v.literal("dispatching"),
+  v.literal("acknowledged"),
+  v.literal("failed"),
+  v.literal("ambiguous"),
+);
+
 export default defineSchema({
   leads: defineTable({
     name: v.string(),
@@ -42,9 +70,11 @@ export default defineSchema({
     locale: localeValidator,
     referrer: v.optional(v.string()),
     status: leadStatusValidator,
-    spamSignals: v.optional(v.object({
-      elapsedMs: v.optional(v.number()),
-    })),
+    spamSignals: v.optional(
+      v.object({
+        elapsedMs: v.optional(v.number()),
+      }),
+    ),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
@@ -68,7 +98,11 @@ export default defineSchema({
       v.literal("architecture"),
       v.literal("site"),
     ),
-    status: v.union(v.literal("draft"), v.literal("published"), v.literal("archived")),
+    status: v.union(
+      v.literal("draft"),
+      v.literal("published"),
+      v.literal("archived"),
+    ),
     locale: v.optional(localeValidator),
     selectedForPublic: v.optional(v.boolean()),
     selectedForPublicAt: v.optional(v.number()),
@@ -143,4 +177,78 @@ export default defineSchema({
   })
     .index("by_locale_and_published", ["locale", "isPublished"])
     .index("by_locale_and_created_at", ["locale", "createdAt"]),
+
+  publicationRequests: defineTable({
+    requestKey: v.string(),
+    sourceRevision: v.string(),
+    scope: publicationScopeValidator,
+    contentId: v.optional(v.string()),
+    locale: v.optional(localeValidator),
+    targetEnvironment: publicationTargetValidator,
+    requestedBy: v.string(),
+    state: publicationRequestStateValidator,
+    retryable: v.optional(v.boolean()),
+    latestAttemptNumber: v.number(),
+    publishedAt: v.number(),
+    projectDraftsPublished: v.number(),
+    resumeDraftsPublished: v.number(),
+    mediaPublished: v.number(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_request_key", ["requestKey"])
+    .index("by_updated_at", ["updatedAt"])
+    .index("by_target_environment_and_updated_at", [
+      "targetEnvironment",
+      "updatedAt",
+    ])
+    .index("by_scope_content_id_locale_target_environment_updated_at", [
+      "scope",
+      "contentId",
+      "locale",
+      "targetEnvironment",
+      "updatedAt",
+    ]),
+
+  publicationAttempts: defineTable({
+    requestId: v.id("publicationRequests"),
+    publicationAttemptId: v.string(),
+    attemptNumber: v.number(),
+    state: publicationAttemptStateValidator,
+    retryable: v.boolean(),
+    schedulerJobId: v.optional(v.id("_scheduled_functions")),
+    claimedAt: v.optional(v.number()),
+    providerRunId: v.optional(v.string()),
+    providerRunUrl: v.optional(v.string()),
+    providerGitRef: v.optional(v.string()),
+    providerReleaseSha: v.optional(v.string()),
+    workflowOutcome: v.optional(
+      v.union(v.literal("failure"), v.literal("cancelled")),
+    ),
+    workflowOutcomeAt: v.optional(v.number()),
+    failureCode: v.optional(v.string()),
+    failureMessage: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_publication_attempt_id", ["publicationAttemptId"])
+    .index("by_request_id_and_attempt_number", ["requestId", "attemptNumber"])
+    .index("by_state_and_updated_at", ["state", "updatedAt"]),
+
+  publicationReceipts: defineTable({
+    requestId: v.id("publicationRequests"),
+    attemptId: v.id("publicationAttempts"),
+    publicationAttemptId: v.string(),
+    requestKey: v.string(),
+    targetEnvironment: publicationTargetValidator,
+    gitRef: v.optional(v.string()),
+    runId: v.string(),
+    runUrl: v.string(),
+    sha: v.string(),
+    smokePassed: v.literal(true),
+    receivedAt: v.number(),
+  })
+    .index("by_publication_attempt_id", ["publicationAttemptId"])
+    .index("by_request_id", ["requestId"])
+    .index("by_request_key", ["requestKey"]),
 });

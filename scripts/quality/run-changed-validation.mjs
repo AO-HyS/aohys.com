@@ -10,7 +10,10 @@ const baseRef = process.env.QUALITY_BASE_REF ?? "origin/develop";
 const plan = buildChangedValidationPlan({
   changedFiles: resolveChangedFiles({ baseRef }),
   baseRef,
-  baseCommands: [["node", ["scripts/verify-foundation.mjs"]]],
+  baseCommands: [
+    ["node", ["scripts/verify-foundation.mjs"]],
+    ["pnpm", ["run", "strict:boundaries"]],
+  ],
   fullCommands: [
     ["pnpm", ["run", "lint"]],
     ["pnpm", ["run", "typecheck"]],
@@ -38,6 +41,14 @@ const plan = buildChangedValidationPlan({
       "--no-advisory",
     ],
   ],
+  architecturePrefixes: ["apps", "functions", "packages", "scripts"],
+  architectureFiles: [
+    "docs/architecture/compatibility-registry.json",
+    "docs/workspace.md",
+    "package.json",
+    "pnpm-workspace.yaml",
+  ],
+  architectureCommands: [["pnpm", ["run", "architecture:fitness"]]],
 });
 
 console.log(JSON.stringify({ mode: "changed-validation", ...plan }, null, 2));

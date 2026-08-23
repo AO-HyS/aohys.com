@@ -80,14 +80,14 @@ const analyticsPath = (() => {
   </head>
   <body class={bodyClass}>
     <div class={ui.siteShell} data-site-shell="public" data-content-id={contentId}>
-      <SiteHeader locale={locale} currentId={contentId} />
+      <SiteHeader locale={locale} {...(contentId ? { currentId: contentId } : {})} />
       <main id="main-content">
         <slot />
       </main>
       <SiteFooter locale={locale} />
     </div>
     <PostHogAnalytics
-      contentId={contentId}
+      {...(contentId ? { contentId } : {})}
       locale={locale}
       canonicalUrl={canonicalUrl}
       path={analyticsPath}

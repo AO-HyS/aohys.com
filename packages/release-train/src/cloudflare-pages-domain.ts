@@ -25,8 +25,158 @@ interface CloudflareApiError {
 
 interface CloudflareApiEnvelope<T> {
   success: boolean;
-  result: T;
+  result?: T;
   errors?: CloudflareApiError[];
+}
+
+type UnknownRecord = Record<string, unknown>;
+
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function requiredString(value: unknown, field: string): string {
+  if (typeof value !== "string" || value.length === 0) {
+    throw new Error(`Cloudflare Pages API result has an invalid ${field}.`);
+  }
+  return value;
+}
+
+function isDomainStatus(value: unknown): value is CloudflarePagesDomainStatus {
+  return (
+    typeof value === "string" &&
+    [
+      "initializing",
+      "pending",
+      "active",
+      "deactivated",
+      "blocked",
+      "error",
+    ].includes(value)
+  );
+}
+
+function parseDomainCheck(
+  value: unknown,
+  field: string,
+): CloudflarePagesDomainCheck {
+  if (!isRecord(value))
+    throw new Error(`Cloudflare Pages API result has invalid ${field}.`);
+  if (value.status !== undefined && !isDomainStatus(value.status)) {
+    throw new Error(`Cloudflare Pages API result has invalid ${field} status.`);
+  }
+  if (
+    value.error_message !== undefined &&
+    typeof value.error_message !== "string"
+  ) {
+    throw new Error(
+      `Cloudflare Pages API result has invalid ${field} error message.`,
+    );
+  }
+  return {
+    ...(value.status ? { status: value.status } : {}),
+    ...(typeof value.error_message === "string"
+      ? { error_message: value.error_message }
+      : {}),
+  };
+}
+
+function parseDomain(value: unknown): CloudflarePagesDomain {
+  if (
+    !isRecord(value) ||
+    typeof value.name !== "string" ||
+    !isDomainStatus(value.status)
+  ) {
+    throw new Error("Cloudflare Pages API result is not a valid Pages domain.");
+  }
+  return {
+    name: value.name,
+    status: value.status,
+    ...(value.validation_data !== undefined
+      ? {
+          validation_data: parseDomainCheck(
+            value.validation_data,
+            "validation_data",
+          ),
+        }
+      : {}),
+    ...(value.verification_data !== undefined
+      ? {
+          verification_data: parseDomainCheck(
+            value.verification_data,
+            "verification_data",
+          ),
+        }
+      : {}),
+  };
+}
+
+function parseZone(value: unknown): CloudflareZone {
+  if (!isRecord(value))
+    throw new Error("Cloudflare Pages API result is not a valid zone.");
+  return {
+    id: requiredString(value.id, "zone id"),
+    name: requiredString(value.name, "zone name"),
+    status: requiredString(value.status, "zone status"),
+  };
+}
+
+function parseDnsRecord(value: unknown): CloudflareDnsRecord {
+  if (!isRecord(value))
+    throw new Error("Cloudflare Pages API result is not a valid DNS record.");
+  return {
+    id: requiredString(value.id, "DNS record id"),
+    name: requiredString(value.name, "DNS record name"),
+    type: requiredString(value.type, "DNS record type"),
+    content: requiredString(value.content, "DNS record content"),
+    ...(typeof value.proxied === "boolean" ? { proxied: value.proxied } : {}),
+  };
+}
+
+function parseArray<T>(value: unknown, parseItem: (item: unknown) => T): T[] {
+  if (!Array.isArray(value))
+    throw new Error("Cloudflare Pages API result must be an array.");
+  return value.map(parseItem);
+}
+
+export function parseCloudflareApiEnvelope<T>(
+  serialized: string,
+  parseResult: (value: unknown) => T,
+): CloudflareApiEnvelope<T> {
+  let value: unknown;
+  try {
+    value = JSON.parse(serialized);
+  } catch {
+    throw new Error("Cloudflare Pages API returned malformed JSON.");
+  }
+  if (
+    !isRecord(value) ||
+    typeof value.success !== "boolean" ||
+    (value.success && !("result" in value))
+  ) {
+    throw new Error(
+      "Cloudflare Pages API returned an invalid response envelope.",
+    );
+  }
+  const errors = Array.isArray(value.errors)
+    ? value.errors.map((error): CloudflareApiError => {
+        if (!isRecord(error))
+          throw new Error(
+            "Cloudflare Pages API returned an invalid error entry.",
+          );
+        return {
+          ...(typeof error.code === "number" ? { code: error.code } : {}),
+          ...(typeof error.message === "string"
+            ? { message: error.message }
+            : {}),
+        };
+      })
+    : undefined;
+  return {
+    success: value.success,
+    ...(value.success ? { result: parseResult(value.result) } : {}),
+    ...(errors ? { errors } : {}),
+  };
 }
 
 interface CloudflareZone {
@@ -79,7 +229,9 @@ const RETRYABLE_VALIDATION_STATUSES = new Set<CloudflarePagesDomainStatus>([
 
 function assertRequired(value: string, name: string): void {
   if (!value.trim()) {
-    throw new Error(`${name} is required to reconcile a Cloudflare Pages domain.`);
+    throw new Error(
+      `${name} is required to reconcile a Cloudflare Pages domain.`,
+    );
   }
 }
 
@@ -123,20 +275,26 @@ export function parseCloudflareProductionDomainEnvironment(
   values: Record<string, string | undefined>,
 ): CloudflareProductionDomainConfig {
   if (values.AOHYS_ENV !== "production") {
-    throw new Error("Cloudflare Pages domain reconciliation may run only with AOHYS_ENV=production.");
+    throw new Error(
+      "Cloudflare Pages domain reconciliation may run only with AOHYS_ENV=production.",
+    );
   }
 
   const required = (name: string): string => {
     const value = values[name]?.trim();
     if (!value) {
-      throw new Error(`${name} is required to reconcile the production Pages domain.`);
+      throw new Error(
+        `${name} is required to reconcile the production Pages domain.`,
+      );
     }
     return value;
   };
   const publicSiteUrl = required("PUBLIC_SITE_URL");
 
   if (publicSiteUrl !== "https://aohys.com") {
-    throw new Error("Production Pages domain reconciliation requires PUBLIC_SITE_URL=https://aohys.com.");
+    throw new Error(
+      "Production Pages domain reconciliation requires PUBLIC_SITE_URL=https://aohys.com.",
+    );
   }
   if (required("CLOUDFLARE_PROJECT_NAME") !== "aohys-com") {
     throw new Error(
@@ -171,21 +329,26 @@ export async function ensureCloudflarePagesDomain(
   const deadline = now() + overallTimeoutMs;
   const sleep =
     options.sleep ??
-    ((milliseconds: number) => new Promise<void>((resolve) => setTimeout(resolve, milliseconds)));
+    ((milliseconds: number) =>
+      new Promise<void>((resolve) => setTimeout(resolve, milliseconds)));
   const projectPath = `/accounts/${encodeURIComponent(options.accountId)}/pages/projects/${encodeURIComponent(options.projectName)}/domains`;
   const exactDomainPath = `${projectPath}/${encodeURIComponent(options.domainName)}`;
-  const redact = (value: string) => value.replaceAll(options.apiToken, "[redacted]");
+  const redact = (value: string) =>
+    value.replaceAll(options.apiToken, "[redacted]");
 
   async function waitWithinDeadline(milliseconds: number): Promise<void> {
     const remaining = deadline - now();
     if (remaining <= 0) {
-      throw new Error(`Cloudflare Pages domain ${options.domainName} reconciliation timed out.`);
+      throw new Error(
+        `Cloudflare Pages domain ${options.domainName} reconciliation timed out.`,
+      );
     }
     await sleep(Math.min(milliseconds, remaining));
   }
 
   async function request<T>(
     path: string,
+    parseResult: (value: unknown) => T,
     init?: {
       method?: "GET" | "POST" | "PATCH";
       body?: Record<string, unknown>;
@@ -196,7 +359,9 @@ export async function ensureCloudflarePagesDomain(
     for (let attempt = 0; attempt < requestAttemptLimit; attempt += 1) {
       const remaining = deadline - now();
       if (remaining <= 0) {
-        throw new Error(`Cloudflare Pages domain ${options.domainName} reconciliation timed out.`);
+        throw new Error(
+          `Cloudflare Pages domain ${options.domainName} reconciliation timed out.`,
+        );
       }
 
       let response: Response;
@@ -207,7 +372,7 @@ export async function ensureCloudflarePagesDomain(
             Authorization: `Bearer ${options.apiToken}`,
             ...(init?.body ? { "Content-Type": "application/json" } : {}),
           },
-          body: init?.body ? JSON.stringify(init.body) : undefined,
+          ...(init?.body ? { body: JSON.stringify(init.body) } : {}),
           signal: AbortSignal.timeout(Math.min(requestTimeoutMs, remaining)),
         });
       } catch (error) {
@@ -215,49 +380,67 @@ export async function ensureCloudflarePagesDomain(
           await waitWithinDeadline(retryDelayMs * 2 ** attempt);
           continue;
         }
-        const detail = error instanceof Error ? error.message : "unknown network error";
-        throw new Error(redact(`Cloudflare Pages API request could not complete: ${detail}`));
+        const detail =
+          error instanceof Error ? error.message : "unknown network error";
+        throw new Error(
+          redact(`Cloudflare Pages API request could not complete: ${detail}`),
+        );
       }
 
-      if ((response.status === 429 || response.status >= 500) && attempt + 1 < requestAttemptLimit) {
+      if (
+        (response.status === 429 || response.status >= 500) &&
+        attempt + 1 < requestAttemptLimit
+      ) {
         const retryAfterHeader = response.headers.get("Retry-After");
-        const retryAfterSeconds = retryAfterHeader === null ? Number.NaN : Number(retryAfterHeader);
-        const delay = Number.isFinite(retryAfterSeconds) && retryAfterSeconds >= 0
-          ? retryAfterSeconds * 1_000
-          : retryDelayMs * 2 ** attempt;
+        const retryAfterSeconds =
+          retryAfterHeader === null ? Number.NaN : Number(retryAfterHeader);
+        const delay =
+          Number.isFinite(retryAfterSeconds) && retryAfterSeconds >= 0
+            ? retryAfterSeconds * 1_000
+            : retryDelayMs * 2 ** attempt;
         await response.body?.cancel();
         await waitWithinDeadline(delay);
         continue;
       }
 
       const payload = await response.text();
-      let envelope: CloudflareApiEnvelope<T> | undefined;
+      let envelope: CloudflareApiEnvelope<T>;
       try {
-        envelope = JSON.parse(payload) as CloudflareApiEnvelope<T>;
+        envelope = parseCloudflareApiEnvelope(payload, parseResult);
       } catch {
-        throw new Error(`Cloudflare Pages API returned malformed JSON with HTTP ${response.status}.`);
+        throw new Error(
+          `Cloudflare Pages API returned malformed JSON with HTTP ${response.status}.`,
+        );
       }
 
       if (!response.ok || !envelope.success) {
         throw apiFailure(response.status, envelope.errors, redact);
       }
 
+      if (envelope.result === undefined) {
+        throw new Error(
+          "Cloudflare Pages API returned a successful envelope without a result.",
+        );
+      }
       return envelope.result;
     }
 
     throw new Error("Cloudflare Pages API request exhausted its retry budget.");
   }
 
-  const listDomains = () => request<CloudflarePagesDomain[]>(projectPath);
+  const listDomains = () =>
+    request(projectPath, (value) => parseArray(value, parseDomain));
   const findDomain = async () =>
     (await listDomains()).find((domain) => domain.name === options.domainName);
 
   async function reconcileApexDnsRecord(): Promise<void> {
-    const zones = await request<CloudflareZone[]>(
+    const zones = await request(
       `/zones?name=${encodeURIComponent(options.domainName)}&account.id=${encodeURIComponent(options.accountId)}&status=active`,
+      (value) => parseArray(value, parseZone),
     );
     const zone = zones.find(
-      (candidate) => candidate.name === options.domainName && candidate.status === "active",
+      (candidate) =>
+        candidate.name === options.domainName && candidate.status === "active",
     );
 
     if (!zone) {
@@ -269,9 +452,9 @@ export async function ensureCloudflarePagesDomain(
     const expectedTarget = `${options.projectName}.pages.dev`;
     const recordsPath = `/zones/${encodeURIComponent(zone.id)}/dns_records?name=${encodeURIComponent(options.domainName)}`;
     const readRoutingRecords = async () =>
-      (await request<CloudflareDnsRecord[]>(recordsPath)).filter((record) =>
-        ["A", "AAAA", "CNAME"].includes(record.type),
-      );
+      (
+        await request(recordsPath, (value) => parseArray(value, parseDnsRecord))
+      ).filter((record) => ["A", "AAAA", "CNAME"].includes(record.type));
 
     function hasExpectedRecord(records: CloudflareDnsRecord[]): boolean {
       return records.some(
@@ -285,7 +468,9 @@ export async function ensureCloudflarePagesDomain(
 
     function assertNoConflictingRecords(records: CloudflareDnsRecord[]): void {
       if (records.length === 0) return;
-      const recordTypes = [...new Set(records.map((record) => record.type))].join(", ");
+      const recordTypes = [
+        ...new Set(records.map((record) => record.type)),
+      ].join(", ");
       throw new Error(
         `Cloudflare zone ${options.domainName} has conflicting apex routing records (${recordTypes}); refusing to overwrite them.`,
       );
@@ -296,25 +481,28 @@ export async function ensureCloudflarePagesDomain(
     assertNoConflictingRecords(routingRecords);
 
     try {
-      await request<CloudflareDnsRecord>(`/zones/${encodeURIComponent(zone.id)}/dns_records`, {
-        method: "POST",
-        retry: false,
-        body: {
-          type: "CNAME",
-          name: options.domainName,
-          content: expectedTarget,
-          proxied: true,
-          ttl: 1,
-          comment: "Managed by the AOHYS production release train",
+      await request(
+        `/zones/${encodeURIComponent(zone.id)}/dns_records`,
+        parseDnsRecord,
+        {
+          method: "POST",
+          retry: false,
+          body: {
+            type: "CNAME",
+            name: options.domainName,
+            content: expectedTarget,
+            proxied: true,
+            ttl: 1,
+            comment: "Managed by the AOHYS production release train",
+          },
         },
-      });
+      );
     } catch (creationError) {
       const recordsAfterFailure = await readRoutingRecords();
       if (hasExpectedRecord(recordsAfterFailure)) return;
       assertNoConflictingRecords(recordsAfterFailure);
       throw creationError;
     }
-
   }
 
   let domain = await findDomain();
@@ -323,7 +511,7 @@ export async function ensureCloudflarePagesDomain(
 
   if (!domain) {
     try {
-      domain = await request<CloudflarePagesDomain>(projectPath, {
+      domain = await request(projectPath, parseDomain, {
         method: "POST",
         body: { name: options.domainName },
       });
@@ -339,12 +527,15 @@ export async function ensureCloudflarePagesDomain(
   async function retryValidationOrThrow(
     currentDomain: CloudflarePagesDomain,
   ): Promise<CloudflarePagesDomain> {
-    if (!RETRYABLE_VALIDATION_STATUSES.has(currentDomain.status) || validationRetried) {
+    if (
+      !RETRYABLE_VALIDATION_STATUSES.has(currentDomain.status) ||
+      validationRetried
+    ) {
       throw domainFailure(currentDomain);
     }
 
     validationRetried = true;
-    return request<CloudflarePagesDomain>(exactDomainPath, { method: "PATCH" });
+    return request(exactDomainPath, parseDomain, { method: "PATCH" });
   }
 
   if (domain.status === "blocked") {
@@ -357,7 +548,7 @@ export async function ensureCloudflarePagesDomain(
       : await reconcileApexDnsRecord();
   if (dnsManagement === "external" && domain.status !== "active") {
     validationRetried = true;
-    domain = await request<CloudflarePagesDomain>(exactDomainPath, { method: "PATCH" });
+    domain = await request(exactDomainPath, parseDomain, { method: "PATCH" });
   }
   if (domain.status === "active") {
     return { domain, created };
@@ -374,7 +565,7 @@ export async function ensureCloudflarePagesDomain(
 
   for (let attempt = 0; attempt < maxPollAttempts; attempt += 1) {
     await waitWithinDeadline(pollIntervalMs);
-    domain = await request<CloudflarePagesDomain>(exactDomainPath);
+    domain = await request(exactDomainPath, parseDomain);
 
     if (domain.status === "active") {
       return { domain, created };

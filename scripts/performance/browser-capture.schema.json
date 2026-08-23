@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aohys.com/schemas/im-12-browser-capture.schema.json",
+  "title": "AOHYS IM-12 browser performance capture",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "journey",
+    "scenario",
+    "requestedDurationMs",
+    "startedAt",
+    "page",
+    "routeLoad",
+    "render",
+    "longTasks",
+    "webgl"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "journey": { "type": "string", "minLength": 1 },
+    "scenario": {
+      "enum": ["visible", "offscreen", "hidden", "reduced-motion"]
+    },
+    "requestedDurationMs": { "type": "number", "minimum": 1000 },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "page": {
+      "type": "object",
+      "required": ["url", "visibilityState", "reducedMotion", "viewport"]
+    },
+    "routeLoad": { "type": ["object", "null"] },
+    "render": {
+      "type": "object",
+      "required": [
+        "sampledFrames",
+        "framesByContext",
+        "medianFrameDeltaMs",
+        "p95FrameDeltaMs",
+        "maximumFrameDeltaMs",
+        "framesOver50Ms",
+        "droppedFrameEstimate"
+      ],
+      "properties": {
+        "sampledFrames": { "type": "integer", "minimum": 0 },
+        "framesByContext": {
+          "type": "object",
+          "required": ["visible", "offscreen", "hidden", "reduced-motion"]
+        }
+      }
+    },
+    "longTasks": {
+      "type": "object",
+      "required": ["supported", "count", "totalDurationMs", "entries"]
+    },
+    "webgl": {
+      "type": "object",
+      "required": ["canvasCount", "canvases"]
+    }
+  },
+  "additionalProperties": false
+}

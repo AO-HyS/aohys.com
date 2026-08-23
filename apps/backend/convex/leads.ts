@@ -1,5 +1,8 @@
 import { v } from "convex/values";
-import { paginationOptsValidator, paginationResultValidator } from "convex/server";
+import {
+  paginationOptsValidator,
+  paginationResultValidator,
+} from "convex/server";
 import { internalMutation, mutation, query } from "./_generated/server.js";
 import type { Doc } from "./_generated/dataModel.js";
 import { requireAdmin } from "./auth.js";
@@ -74,9 +77,14 @@ export const createFromContact = internalMutation({
   handler: async (ctx, args) => {
     const recentSubmissions = await ctx.db
       .query("leads")
-      .withIndex("by_email_and_created_at", (query) => query
-        .eq("email", args.email)
-        .gte("createdAt", args.createdAt - CONTACT_SUBMISSION_RATE_LIMIT_WINDOW_MS))
+      .withIndex("by_email_and_created_at", (query) =>
+        query
+          .eq("email", args.email)
+          .gte(
+            "createdAt",
+            args.createdAt - CONTACT_SUBMISSION_RATE_LIMIT_WINDOW_MS,
+          ),
+      )
       .take(CONTACT_SUBMISSION_MAX_PER_WINDOW);
 
     if (recentSubmissions.length >= CONTACT_SUBMISSION_MAX_PER_WINDOW) {
@@ -101,8 +109,14 @@ export const listForDashboard = query({
       .order("desc")
       .paginate({
         ...args.paginationOpts,
-        maximumRowsRead: Math.min(args.paginationOpts.maximumRowsRead ?? 100, 100),
-        maximumBytesRead: Math.min(args.paginationOpts.maximumBytesRead ?? 1_000_000, 1_000_000),
+        maximumRowsRead: Math.min(
+          args.paginationOpts.maximumRowsRead ?? 100,
+          100,
+        ),
+        maximumBytesRead: Math.min(
+          args.paginationOpts.maximumBytesRead ?? 1_000_000,
+          1_000_000,
+        ),
       });
 
     return {
@@ -117,15 +131,19 @@ function toDashboardLead(lead: Doc<"leads">) {
     id: lead._id,
     name: lead.name,
     email: lead.email,
-    company: lead.company,
-    phone: lead.phone,
-    preferredContactPath: lead.preferredContactPath,
-    consentToContact: lead.consentToContact,
+    ...(lead.company ? { company: lead.company } : {}),
+    ...(lead.phone ? { phone: lead.phone } : {}),
+    ...(lead.preferredContactPath
+      ? { preferredContactPath: lead.preferredContactPath }
+      : {}),
+    ...(lead.consentToContact !== undefined
+      ? { consentToContact: lead.consentToContact }
+      : {}),
     intent: lead.intent,
     message: lead.message,
     sourcePath: lead.sourcePath,
     locale: lead.locale,
-    referrer: lead.referrer,
+    ...(lead.referrer ? { referrer: lead.referrer } : {}),
     status: lead.status,
     createdAt: lead.createdAt,
     updatedAt: lead.updatedAt,
