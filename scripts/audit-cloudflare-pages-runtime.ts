@@ -53,6 +53,10 @@ export function auditRuntimeBindings(
   for (const environment of ["preview", "production"] as const) {
     const names = bindingNames(project, environment);
     for (const binding of RUNTIME_BINDING_NAMES) {
+      // Release identity is target-scoped and changes on every deployment.
+      // The exact active-target comparison below owns its presence and value.
+      if (binding === "PUBLIC_RELEASE_SHA") continue;
+
       if (!names.has(binding)) {
         errors.push(
           `Cloudflare Pages ${environment} runtime is missing ${binding}.`,

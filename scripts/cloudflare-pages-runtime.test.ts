@@ -189,6 +189,20 @@ test("audit requires exact equality for the active target", () => {
   );
 });
 
+test("audit scopes release identity to the active deployment target", () => {
+  const project = pagesProject();
+  delete project.deployment_configs?.production?.env_vars?.PUBLIC_RELEASE_SHA;
+
+  assert.deepEqual(auditRuntimeBindings(project, "preview", previewValues), []);
+
+  delete project.deployment_configs?.preview?.env_vars?.PUBLIC_RELEASE_SHA;
+  assert.ok(
+    auditRuntimeBindings(project, "preview", previewValues).includes(
+      "Cloudflare Pages preview runtime PUBLIC_RELEASE_SHA does not match the active Environment Contract.",
+    ),
+  );
+});
+
 test("fails closed when the provider does not retain the requested values", async () => {
   const driftedPreview = {
     ...previewValues,
