@@ -7,43 +7,35 @@ import test from "node:test";
 import {
   collectCleanupEvidence,
   prepareBackup,
-  verifyBackup,
 } from "./im13-cleanup-evidence.mjs";
 
-test("IM-13 keeps every destructive approval closed and proves only the empty surface ready for review", () => {
+test("IM-13 proves the one approved empty surface was removed and keeps every other approval closed", () => {
   const evidence = collectCleanupEvidence();
 
   assert.equal(evidence.ok, true);
   assert.equal(evidence.destructiveExecutionAuthorized, false);
-  assert.equal(evidence.eligibleForHumanReview, true);
-  assert.equal(evidence.emptySurface.approval, "not-granted");
-  assert.deepEqual(evidence.emptySurface.trackedFiles, [
-    "packages/dashboard-ui/tsconfig.json",
-  ]);
-  assert.deepEqual(evidence.emptySurface.worktreeFiles, [
-    "packages/dashboard-ui/tsconfig.json",
-  ]);
+  assert.equal(evidence.checks.blanketDestructiveExecutionClosed, true);
+  assert.equal(evidence.checks.removedCandidateIsExact, true);
+  assert.equal(evidence.checks.removedApprovalIsExact, true);
+  assert.equal(evidence.eligibleForHumanReview, false);
+  assert.equal(evidence.removalVerified, true);
+  assert.equal(evidence.emptySurface.status, "removed");
+  assert.equal(evidence.emptySurface.approval, "granted");
+  assert.deepEqual(evidence.emptySurface.trackedFiles, []);
+  assert.deepEqual(evidence.emptySurface.worktreeFiles, []);
   assert.deepEqual(evidence.emptySurface.productionReferences, []);
   assert.equal(evidence.activeOrUnprovenCandidates.length, 15);
 });
 
-test("IM-13 backup is content-addressed and independently verifiable", () => {
+test("IM-13 refuses to prepare another backup after the approved removal", () => {
   const backupDirectory = mkdtempSync(
     path.join(tmpdir(), "aohys-im13-backup-test-"),
   );
-
   try {
-    const manifest = prepareBackup({ backupDirectory });
-    assert.equal(manifest.destructiveExecutionAuthorized, false);
-    assert.deepEqual(
-      manifest.entries.map((entry) => entry.path),
-      ["packages/dashboard-ui/tsconfig.json"],
+    assert.throws(
+      () => prepareBackup({ backupDirectory }),
+      /current evidence does not permit backup preparation/,
     );
-    assert.deepEqual(verifyBackup({ backupDirectory }), {
-      ok: true,
-      failures: [],
-      manifest,
-    });
   } finally {
     rmSync(backupDirectory, { recursive: true, force: true });
   }

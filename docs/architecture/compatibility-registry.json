@@ -160,15 +160,6 @@
       "owner": "functions/dashboard",
       "rq04Evidence": "RQ-04: the Cloudflare Pages entry has a private unavailable fallback that prevents a raw Worker 1101 response when the dashboard boundary fails.",
       "retirementCondition": "Retire when the Pages entry has an approved failure boundary with the same private unavailable and observability guarantees."
-    },
-    {
-      "id": "package-surface:dashboard-ui-empty",
-      "kind": "package-surface",
-      "surface": "packages/dashboard-ui",
-      "source": "packages/dashboard-ui/tsconfig.json",
-      "owner": "packages/dashboard-ui",
-      "rq04Evidence": "RQ-04: the workspace retains packages/dashboard-ui as an intentionally empty compatibility surface with only its TypeScript boundary.",
-      "retirementCondition": "Retire when the package gains a first shared dashboard UI module or is removed from the workspace through an approved architecture change."
     }
   ]
 }

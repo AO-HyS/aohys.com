@@ -1,6 +1,6 @@
-# IM-13 cleanup preparation
+# IM-13 cleanup execution record
 
-This is a preparation gate, not removal authorization. It records source-derived evidence, creates a content-addressed backup, and keeps approval closed for every compatibility-registry entry. Nothing in this document authorizes deleting a path, changing a provider, or promoting a release.
+This record closes the one explicitly approved IM-13 removal. It binds source-derived evidence, the reviewed pre-removal commit, a verified content-addressed backup, and the user's exact approval to `packages/dashboard-ui/tsconfig.json`. It does not authorize any other deletion, provider change, merge, or release promotion.
 
 ## Reproduce the evidence
 
@@ -10,53 +10,58 @@ Run from the repository root:
 node scripts/architecture/im13-cleanup-evidence.mjs
 ```
 
-The command fails if the registry and checklist drift, a blocked source disappears without review, the empty surface gains or loses a tracked file, its known hash changes, a package manifest appears, a production reference appears, or any approval is opened in source control.
+The command fails if the registry and checklist drift, a blocked source disappears without review, the removed surface reappears, a production reference appears, the exact authorization binding changes, or any remaining approval is opened in source control.
 
-Against baseline commit `619ec0df5b08edebbde0f78db248fabbf59971e2` and the current worktree, only `packages/dashboard-ui/tsconfig.json` passes the zero-use checks. It remains merely **eligible for human review**. The other fifteen entries are active or missing the runtime/traffic/successor evidence required by their retirement conditions.
+Against reviewed pre-removal commit `a7074783231871f69f972779245160633b411a7c`, only `packages/dashboard-ui/tsconfig.json` passed the zero-use checks. The user explicitly approved that path on 2026-08-23, it was removed from the repository and from the live compatibility registry, and the post-removal evidence now proves it remains absent. The other fifteen entries remain active or lack the runtime, traffic, or successor evidence required by their retirement conditions.
 
 ## Per-element approval checklist
 
 The machine-readable checklist is [im-13-cleanup-gate.json](./im-13-cleanup-gate.json). Every row is deliberately closed.
 
-| Registry element                          | Current gate                                                              | Human approval |
-| ----------------------------------------- | ------------------------------------------------------------------------- | -------------- |
-| `dashboard-alias:/dashboard/case-studies` | Blocked: mounted alias; inbound use and successor unproven                | Not granted    |
-| `dashboard-alias:/dashboard/media`        | Blocked: mounted alias; inbound use and successor unproven                | Not granted    |
-| `public-redirect:/blog`                   | Blocked: published redirect; traffic/SEO obligation unproven              | Not granted    |
-| `public-redirect:/agents`                 | Blocked: published redirect; traffic/SEO obligation unproven              | Not granted    |
-| `public-redirect:/pricing`                | Blocked: published redirect; traffic/SEO obligation unproven              | Not granted    |
-| `public-redirect:/es/blog`                | Blocked: published redirect; traffic/SEO obligation unproven              | Not granted    |
-| `public-redirect:/es/agentes`             | Blocked: published redirect; traffic/SEO obligation unproven              | Not granted    |
-| `public-redirect:/es/precios`             | Blocked: published redirect; traffic/SEO obligation unproven              | Not granted    |
-| `public-redirect:/blog/*`                 | Blocked: published redirect; nested traffic/SEO obligation unproven       | Not granted    |
-| `public-redirect:/es/blog/*`              | Blocked: published redirect; nested traffic/SEO obligation unproven       | Not granted    |
-| `site-renderer:dashboard-sign-in`         | Blocked: live call; approved successor absent                             | Not granted    |
-| `site-renderer:dashboard-state`           | Blocked: live calls; approved successor absent                            | Not granted    |
-| `site-renderer:dashboard-app-shell`       | Blocked: live call; approved successor absent                             | Not granted    |
-| `pages-entry:dashboard-renderer`          | Blocked: active Pages entry; approved successor absent                    | Not granted    |
-| `pages-entry:dashboard-fallback`          | Blocked: active catch path; approved successor absent                     | Not granted    |
-| `package-surface:dashboard-ui-empty`      | Eligible for human review: one hashed file and zero production references | Not granted    |
+| Registry element                          | Current gate                                                          | Human approval |
+| ----------------------------------------- | --------------------------------------------------------------------- | -------------- |
+| `dashboard-alias:/dashboard/case-studies` | Blocked: mounted alias; inbound use and successor unproven            | Not granted    |
+| `dashboard-alias:/dashboard/media`        | Blocked: mounted alias; inbound use and successor unproven            | Not granted    |
+| `public-redirect:/blog`                   | Blocked: published redirect; traffic/SEO obligation unproven          | Not granted    |
+| `public-redirect:/agents`                 | Blocked: published redirect; traffic/SEO obligation unproven          | Not granted    |
+| `public-redirect:/pricing`                | Blocked: published redirect; traffic/SEO obligation unproven          | Not granted    |
+| `public-redirect:/es/blog`                | Blocked: published redirect; traffic/SEO obligation unproven          | Not granted    |
+| `public-redirect:/es/agentes`             | Blocked: published redirect; traffic/SEO obligation unproven          | Not granted    |
+| `public-redirect:/es/precios`             | Blocked: published redirect; traffic/SEO obligation unproven          | Not granted    |
+| `public-redirect:/blog/*`                 | Blocked: published redirect; nested traffic/SEO obligation unproven   | Not granted    |
+| `public-redirect:/es/blog/*`              | Blocked: published redirect; nested traffic/SEO obligation unproven   | Not granted    |
+| `site-renderer:dashboard-sign-in`         | Blocked: live call; approved successor absent                         | Not granted    |
+| `site-renderer:dashboard-state`           | Blocked: live calls; approved successor absent                        | Not granted    |
+| `site-renderer:dashboard-app-shell`       | Blocked: live call; approved successor absent                         | Not granted    |
+| `pages-entry:dashboard-renderer`          | Blocked: active Pages entry; approved successor absent                | Not granted    |
+| `pages-entry:dashboard-fallback`          | Blocked: active catch path; approved successor absent                 | Not granted    |
+| `package-surface:dashboard-ui-empty`      | Removed: one hashed file, zero production references, verified backup | Granted        |
 
 No additional facade is a cleanup candidate. A future proposal must first add the facade to the compatibility registry with an owner, retirement condition, current zero-use evidence, backup target, rollback, and its own explicit approval.
 
-## Backup and rollback gate
+## Authorization, backup, and rollback
 
-Before requesting approval, create a new backup directory outside the repository and verify it:
+The approved removal is bound to:
+
+- Registry ID: `package-surface:dashboard-ui-empty`
+- Target: `packages/dashboard-ui/tsconfig.json`
+- Reviewed pre-removal SHA: `a7074783231871f69f972779245160633b411a7c`
+- User statement: `Apruebo eliminar packages/dashboard-ui/tsconfig.json`
+- Durable manifest: `/Users/corrortiz/.development-system/private/backups/aohys-architecture-convergence/im-13/a7074783231871f69f972779245160633b411a7c/manifest.json`
+- Manifest SHA-256: `b5e3bd8613920dd34c81f2121c0e29e4cee0499336f00c996d9ce81e209df39b`
+- Backed-up file SHA-256: `51cf1053c97d69ea5ce4da06990c8e92ccc519de3b305463609761430fc553fd`
+
+Verify the durable backup at any time with:
 
 ```sh
-backup_dir="$(mktemp -d /tmp/aohys-im13-backup.XXXXXX)"
-node scripts/architecture/im13-cleanup-evidence.mjs --prepare-backup "$backup_dir"
-node scripts/architecture/im13-cleanup-evidence.mjs --verify-backup "$backup_dir"
+node scripts/architecture/im13-cleanup-evidence.mjs --verify-backup /Users/corrortiz/.development-system/private/backups/aohys-architecture-convergence/im-13/a7074783231871f69f972779245160633b411a7c
 ```
 
-The backup operation refuses to overwrite an existing backup file. Its manifest binds the repository HEAD, relative path, byte count, and SHA-256 while retaining `destructiveExecutionAuthorized: false`.
-
-If a later, separately approved removal fails its post-removal build or smoke checks, restore from the reviewed pre-removal commit:
+If the integrated cleanup later fails its build or smoke checks, revert the IM-13 cleanup commit. For emergency file-only recovery, the reviewed source remains available:
 
 ```sh
-git restore --source=<reviewed-pre-removal-sha> -- packages/dashboard-ui/tsconfig.json
-node scripts/architecture/im13-cleanup-evidence.mjs
+git restore --source=a7074783231871f69f972779245160633b411a7c -- packages/dashboard-ui/tsconfig.json
 pnpm quality:changed
 ```
 
-The human approval must name the single registry ID, target path, evidence-report HEAD, verified backup manifest path and hash, and reviewed pre-removal SHA. Approval of one row never approves another row.
+File-only recovery deliberately makes the post-removal architecture evidence fail until the registry, policy, and tests are rolled back together. Approval of this row never approves another row; the top-level gate remains closed.

@@ -18,6 +18,14 @@ const REGISTRY_PATH = "docs/architecture/compatibility-registry.json";
 const EVIDENCE_SCRIPT_PATH = "scripts/architecture/im13-cleanup-evidence.mjs";
 const EMPTY_SURFACE_ID = "package-surface:dashboard-ui-empty";
 const EMPTY_SURFACE_DIRECTORY = "packages/dashboard-ui";
+const APPROVED_TARGET_PATH = "packages/dashboard-ui/tsconfig.json";
+const REVIEWED_PRE_REMOVAL_SHA = "a7074783231871f69f972779245160633b411a7c";
+const BACKUP_MANIFEST_PATH =
+  "/Users/corrortiz/.development-system/private/backups/aohys-architecture-convergence/im-13/a7074783231871f69f972779245160633b411a7c/manifest.json";
+const BACKUP_MANIFEST_SHA256 =
+  "b5e3bd8613920dd34c81f2121c0e29e4cee0499336f00c996d9ce81e209df39b";
+const BACKUP_ENTRY_SHA256 =
+  "51cf1053c97d69ea5ce4da06990c8e92ccc519de3b305463609761430fc553fd";
 const REFERENCE_NEEDLES = ["packages/dashboard-ui", "@aohys/dashboard-ui"];
 const SEARCH_ROOTS = [
   "apps",
@@ -99,14 +107,27 @@ function findProductionReferences(root) {
 export function collectCleanupEvidence({ root = process.cwd() } = {}) {
   const policy = readJson(root, POLICY_PATH);
   const registry = readJson(root, REGISTRY_PATH);
-  const candidateIds = policy.candidates.map((candidate) => candidate.id);
+  const candidateIds = policy.candidates
+    .filter((candidate) => candidate.status !== "removed")
+    .map((candidate) => candidate.id);
   const registryIds = registry.entries.map((entry) => entry.id);
   const emptySurface = policy.candidates.find(
     (candidate) => candidate.id === EMPTY_SURFACE_ID,
   );
-  const actualTrackedFiles = trackedFiles(root, EMPTY_SURFACE_DIRECTORY);
-  const actualWorktreeFiles = worktreeFiles(root, EMPTY_SURFACE_DIRECTORY);
-  const expectedTrackedFiles = emptySurface?.targetPaths ?? [];
+  const actualTrackedFiles = trackedFiles(root, EMPTY_SURFACE_DIRECTORY).filter(
+    (filePath) => existsSync(path.join(root, filePath)),
+  );
+  const actualWorktreeFiles = worktreeFiles(
+    root,
+    EMPTY_SURFACE_DIRECTORY,
+  ).filter((filePath) => existsSync(path.join(root, filePath)));
+  const surfaceWasRemoved = emptySurface?.status === "removed";
+  const removedCandidateIds = policy.candidates
+    .filter((candidate) => candidate.status === "removed")
+    .map((candidate) => candidate.id);
+  const expectedTrackedFiles = surfaceWasRemoved
+    ? []
+    : (emptySurface?.targetPaths ?? []);
   const actualHashes = Object.fromEntries(
     actualTrackedFiles.map((filePath) => [
       filePath,
@@ -115,13 +136,34 @@ export function collectCleanupEvidence({ root = process.cwd() } = {}) {
   );
   const productionReferences = findProductionReferences(root);
   const checks = {
-    destructiveExecutionAuthorized:
+    blanketDestructiveExecutionClosed:
       policy.destructiveExecutionAuthorized === false,
+    removedCandidateIsExact:
+      JSON.stringify(removedCandidateIds) ===
+      JSON.stringify([EMPTY_SURFACE_ID]),
     registryCoverage:
       JSON.stringify(candidateIds) === JSON.stringify(registryIds),
     approvalsRemainClosed: policy.candidates.every(
-      (candidate) => candidate.approval === "not-granted",
+      (candidate) =>
+        candidate.status === "removed" || candidate.approval === "not-granted",
     ),
+    removedApprovalIsExact:
+      !surfaceWasRemoved ||
+      (emptySurface?.approval === "granted" &&
+        emptySurface?.destructiveExecutionAuthorized === true &&
+        emptySurface?.authorization?.approvedStatement ===
+          "Apruebo eliminar packages/dashboard-ui/tsconfig.json" &&
+        emptySurface?.authorization?.targetPath === APPROVED_TARGET_PATH &&
+        emptySurface?.authorization?.reviewedPreRemovalSha ===
+          REVIEWED_PRE_REMOVAL_SHA &&
+        emptySurface?.authorization?.backupManifestPath ===
+          BACKUP_MANIFEST_PATH &&
+        emptySurface?.authorization?.backupManifestSha256 ===
+          BACKUP_MANIFEST_SHA256 &&
+        emptySurface?.authorization?.backupEntrySha256 ===
+          BACKUP_ENTRY_SHA256 &&
+        emptySurface?.expectedSha256?.[APPROVED_TARGET_PATH] ===
+          BACKUP_ENTRY_SHA256),
     blockedSourcesExist: policy.candidates
       .filter((candidate) => candidate.status === "blocked-active")
       .every((candidate) => {
@@ -143,7 +185,9 @@ export function collectCleanupEvidence({ root = process.cwd() } = {}) {
     ),
     emptySurfaceHashes:
       JSON.stringify(actualHashes) ===
-      JSON.stringify(emptySurface?.expectedSha256 ?? {}),
+      JSON.stringify(
+        surfaceWasRemoved ? {} : (emptySurface?.expectedSha256 ?? {}),
+      ),
     emptySurfaceProductionReferences: productionReferences.length === 0,
   };
 
@@ -157,9 +201,20 @@ export function collectCleanupEvidence({ root = process.cwd() } = {}) {
     checks,
     ok: Object.values(checks).every(Boolean),
     eligibleForHumanReview:
+      !surfaceWasRemoved &&
       checks.emptySurfaceTrackedFiles &&
       checks.emptySurfaceWorktreeFiles &&
       checks.emptySurfaceHasNoManifest &&
+      checks.emptySurfaceHashes &&
+      checks.emptySurfaceProductionReferences,
+    removalVerified:
+      surfaceWasRemoved &&
+      checks.registryCoverage &&
+      checks.approvalsRemainClosed &&
+      checks.removedCandidateIsExact &&
+      checks.removedApprovalIsExact &&
+      checks.emptySurfaceTrackedFiles &&
+      checks.emptySurfaceWorktreeFiles &&
       checks.emptySurfaceHashes &&
       checks.emptySurfaceProductionReferences,
     destructiveExecutionAuthorized: false,
@@ -173,6 +228,8 @@ export function collectCleanupEvidence({ root = process.cwd() } = {}) {
       sha256: actualHashes,
       productionReferences,
       approval: emptySurface?.approval ?? "missing",
+      status: emptySurface?.status ?? "missing",
+      authorization: emptySurface?.authorization ?? null,
     },
   };
 }

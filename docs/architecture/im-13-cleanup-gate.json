@@ -111,14 +111,24 @@
     },
     {
       "id": "package-surface:dashboard-ui-empty",
-      "status": "eligible-for-human-review",
+      "status": "removed",
       "targetPaths": ["packages/dashboard-ui/tsconfig.json"],
       "expectedSha256": {
         "packages/dashboard-ui/tsconfig.json": "51cf1053c97d69ea5ce4da06990c8e92ccc519de3b305463609761430fc553fd"
       },
-      "evidence": "The directory has exactly one tracked file, no package manifest or source, and no production-code or workspace-config reference to packages/dashboard-ui or @aohys/dashboard-ui.",
-      "missingEvidence": "Explicit human approval bound to the current evidence report and a verified backup is still required before removal.",
-      "approval": "not-granted"
+      "evidence": "At reviewed pre-removal SHA a7074783231871f69f972779245160633b411a7c, the directory had exactly one tracked file, no package manifest or source, and no production-code or workspace-config reference to packages/dashboard-ui or @aohys/dashboard-ui.",
+      "missingEvidence": null,
+      "approval": "granted",
+      "destructiveExecutionAuthorized": true,
+      "authorization": {
+        "approvedAt": "2026-08-23T18:58:10Z",
+        "approvedStatement": "Apruebo eliminar packages/dashboard-ui/tsconfig.json",
+        "targetPath": "packages/dashboard-ui/tsconfig.json",
+        "reviewedPreRemovalSha": "a7074783231871f69f972779245160633b411a7c",
+        "backupManifestPath": "/Users/corrortiz/.development-system/private/backups/aohys-architecture-convergence/im-13/a7074783231871f69f972779245160633b411a7c/manifest.json",
+        "backupManifestSha256": "b5e3bd8613920dd34c81f2121c0e29e4cee0499336f00c996d9ce81e209df39b",
+        "backupEntrySha256": "51cf1053c97d69ea5ce4da06990c8e92ccc519de3b305463609761430fc553fd"
+      }
     }
   ]
 }

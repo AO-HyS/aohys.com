@@ -27,7 +27,6 @@ const expectedInventory = [
   "site-renderer:dashboard-app-shell",
   "pages-entry:dashboard-renderer",
   "pages-entry:dashboard-fallback",
-  "package-surface:dashboard-ui-empty",
 ];
 
 const expectedRedirects = [
@@ -126,7 +125,7 @@ test("public redirect registry matches the eight active Pages redirects", () => 
   assert.deepEqual(redirects, expectedRedirects);
 });
 
-test("renderer and empty-surface entries retain their declared source contract", () => {
+test("renderer entries retain their declared source contract", () => {
   const rendererEntries = registry.entries.filter(
     (entry) =>
       entry.kind.endsWith("renderer") || entry.kind === "site-renderer",
@@ -162,20 +161,10 @@ test("renderer and empty-surface entries retain their declared source contract",
       ],
     ],
   );
-  assert.deepEqual(
-    registry.entries.find(
+  assert.equal(
+    registry.entries.some(
       (entry) => entry.id === "package-surface:dashboard-ui-empty",
     ),
-    {
-      id: "package-surface:dashboard-ui-empty",
-      kind: "package-surface",
-      surface: "packages/dashboard-ui",
-      source: "packages/dashboard-ui/tsconfig.json",
-      owner: "packages/dashboard-ui",
-      rq04Evidence:
-        "RQ-04: the workspace retains packages/dashboard-ui as an intentionally empty compatibility surface with only its TypeScript boundary.",
-      retirementCondition:
-        "Retire when the package gains a first shared dashboard UI module or is removed from the workspace through an approved architecture change.",
-    },
+    false,
   );
 });
