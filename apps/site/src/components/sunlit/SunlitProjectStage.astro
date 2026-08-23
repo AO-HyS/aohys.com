@@ -72,7 +72,7 @@ const projects = outcomes.map((outcome) => ({
                 <figure data-media-kind={media.kind}>
                   <SunlitProofImage
                     contentId={String(outcome.contentId)}
-                    evidenceSrc={outcome.evidence.src}
+                    {...(outcome.evidence.src ? { evidenceSrc: outcome.evidence.src } : {})}
                     alt={outcome.evidence.altText ?? labels.fallbackAlt}
                     evidenceKind={outcome.evidence.kind}
                     loading={index === 0 ? "eager" : "lazy"}
@@ -250,7 +250,9 @@ const projects = outcomes.map((outcome) => ({
       while (requestedIndex !== activeIndex) {
         if (reducedMotion.matches) {
           const targetIndex = requestedIndex;
-          await prepareImage(panels[targetIndex]);
+          const targetPanel = panels[targetIndex];
+          if (!targetPanel) break;
+          await prepareImage(targetPanel);
           setActivePanel(targetIndex);
           break;
         }
@@ -260,7 +262,9 @@ const projects = outcomes.map((outcome) => ({
         stage.dataset.stageState = "swapping";
         const targetIndex = requestedIndex;
         setActivePanel(targetIndex);
-        await Promise.race([prepareImage(panels[targetIndex]), wait(1600)]);
+        const targetPanel = panels[targetIndex];
+        if (!targetPanel) break;
+        await Promise.race([prepareImage(targetPanel), wait(1600)]);
         stage.dataset.stageState = "opening";
         await wait(340);
         stage.dataset.stageState = "open";

@@ -1,0 +1,405 @@
+import { v, type ObjectType } from "convex/values";
+import type { QueryCtx } from "../../_generated/server.js";
+import { buildDashboardOverview } from "../../../src/dashboard-overview.js";
+import {
+  mediaStatusValidator,
+  mediaStorageProviderValidator,
+  mediaUsageValidator,
+} from "./media.js";
+import {
+  caseStudyStatusValidator,
+  evidenceStatusValidator,
+  projectDraftValidator,
+} from "./projects.js";
+import {
+  environmentValidator,
+  localeValidator,
+  publicMediaUrl,
+  withinLimit,
+} from "./shared.js";
+import { settingClassificationValidator } from "./settings.js";
+import { publicationSummaryValidator } from "../publication.js";
+
+const overviewPathValidator = v.union(
+  v.literal("/projects"),
+  v.literal("/resume"),
+  v.literal("/settings"),
+);
+
+const overviewGateStatusValidator = v.union(
+  v.literal("clear"),
+  v.literal("ready"),
+  v.literal("blocked"),
+  v.literal("unavailable"),
+);
+
+export const dashboardOverviewArgs = { environment: environmentValidator };
+
+export const dashboardOverviewReturns = v.object({
+  environment: environmentValidator,
+  state: v.union(
+    v.literal("clear"),
+    v.literal("action-required"),
+    v.literal("ready-to-queue"),
+    v.literal("partial"),
+  ),
+  gates: v.array(
+    v.object({
+      id: v.union(
+        v.literal("project-copy"),
+        v.literal("evidence"),
+        v.literal("resume"),
+        v.literal("public-contact"),
+        v.literal("release-provider"),
+      ),
+      label: v.string(),
+      status: overviewGateStatusValidator,
+      reason: v.string(),
+      actionLabel: v.optional(v.string()),
+      actionPath: v.optional(overviewPathValidator),
+    }),
+  ),
+  blockers: v.array(
+    v.object({
+      code: v.union(
+        v.literal("data-limit-reached"),
+        v.literal("project-copy-incomplete"),
+        v.literal("project-evidence-incomplete"),
+        v.literal("resume-incomplete"),
+        v.literal("public-contact-invalid"),
+        v.literal("release-provider-unavailable"),
+      ),
+      title: v.string(),
+      reason: v.string(),
+      actionLabel: v.optional(v.string()),
+      actionPath: v.optional(overviewPathValidator),
+    }),
+  ),
+  nextAction: v.optional(
+    v.object({
+      label: v.string(),
+      path: overviewPathValidator,
+      reason: v.string(),
+    }),
+  ),
+  release: v.object({
+    providerState: v.union(v.literal("configured"), v.literal("unavailable")),
+    workflowState: v.union(
+      v.literal("not-requested"),
+      v.literal("requested"),
+      v.literal("acknowledged"),
+      v.literal("failed"),
+    ),
+    deploymentState: v.union(
+      v.literal("unknown"),
+      v.literal("deployed"),
+      v.literal("rollback-needed"),
+    ),
+  }),
+  publication: v.optional(publicationSummaryValidator),
+});
+
+export const listForDashboardReturns = v.object({
+  caseStudies: v.array(
+    v.object({
+      contentId: v.string(),
+      status: caseStudyStatusValidator,
+      evidenceStatus: evidenceStatusValidator,
+      updatedAt: v.number(),
+    }),
+  ),
+  projectDrafts: v.array(projectDraftValidator),
+  resumeDrafts: v.array(
+    v.object({
+      locale: localeValidator,
+      contentJson: v.string(),
+      updatedAt: v.number(),
+      publishedAt: v.optional(v.number()),
+    }),
+  ),
+  media: v.array(
+    v.object({
+      id: v.id("mediaMetadata"),
+      storageProvider: mediaStorageProviderValidator,
+      storageKey: v.string(),
+      publicUrl: v.optional(v.string()),
+      altText: v.string(),
+      contentId: v.optional(v.string()),
+      usage: mediaUsageValidator,
+      status: mediaStatusValidator,
+      locale: v.optional(localeValidator),
+      selectedForPublic: v.optional(v.boolean()),
+      selectedForPublicAt: v.optional(v.number()),
+      updatedAt: v.number(),
+    }),
+  ),
+  settings: v.array(
+    v.object({
+      key: v.string(),
+      environment: environmentValidator,
+      value: v.string(),
+      classification: settingClassificationValidator,
+      updatedAt: v.number(),
+    }),
+  ),
+  resumeVersions: v.array(
+    v.object({
+      id: v.id("resumeVersions"),
+      locale: localeValidator,
+      version: v.string(),
+      pdfPath: v.string(),
+      isPublished: v.boolean(),
+      createdAt: v.number(),
+      publishedAt: v.optional(v.number()),
+    }),
+  ),
+  publications: v.array(publicationSummaryValidator),
+});
+
+export async function listForDashboardHandler(ctx: QueryCtx) {
+  const [
+    caseStudies,
+    projectDrafts,
+    resumeDrafts,
+    media,
+    settings,
+    resumeVersions,
+    publicationRequests,
+  ] = await Promise.all([
+    ctx.db.query("caseStudyMetadata").take(101),
+    ctx.db.query("projectDrafts").take(201),
+    ctx.db.query("resumeDrafts").take(11),
+    ctx.db.query("mediaMetadata").order("desc").take(100),
+    ctx.db.query("siteSettings").order("desc").take(100),
+    ctx.db.query("resumeVersions").order("desc").take(50),
+    ctx.db
+      .query("publicationRequests")
+      .withIndex("by_updated_at")
+      .order("desc")
+      .take(51),
+  ]);
+
+  return {
+    caseStudies: withinLimit(caseStudies, 100, "Case study metadata").map(
+      (item) => ({
+        contentId: item.contentId,
+        status: item.status,
+        evidenceStatus: item.evidenceStatus,
+        updatedAt: item.updatedAt,
+      }),
+    ),
+    projectDrafts: withinLimit(projectDrafts, 200, "Project drafts").map(
+      (item) => ({
+        contentId: item.contentId,
+        locale: item.locale,
+        ...(item.localizedSlug ? { localizedSlug: item.localizedSlug } : {}),
+        title: item.title,
+        summary: item.summary,
+        seoDescription: item.seoDescription,
+        ...(item.projectUrl ? { projectUrl: item.projectUrl } : {}),
+        ctaLabel: item.ctaLabel,
+        ctaHref: item.ctaHref,
+        achievements: item.achievements,
+        structureNotes: item.structureNotes,
+        updatedAt: item.updatedAt,
+        ...(item.publishedAt !== undefined
+          ? { publishedAt: item.publishedAt }
+          : {}),
+      }),
+    ),
+    resumeDrafts: withinLimit(resumeDrafts, 10, "Resume drafts").map(
+      (item) => ({
+        locale: item.locale,
+        contentJson: item.contentJson,
+        updatedAt: item.updatedAt,
+        ...(item.publishedAt !== undefined
+          ? { publishedAt: item.publishedAt }
+          : {}),
+      }),
+    ),
+    media: media.map((item) => {
+      const resolvedPublicUrl = publicMediaUrl(item);
+      return {
+        id: item._id,
+        storageProvider: item.storageProvider,
+        storageKey: item.storageKey,
+        ...(resolvedPublicUrl ? { publicUrl: resolvedPublicUrl } : {}),
+        altText: item.altText,
+        ...(item.contentId ? { contentId: item.contentId } : {}),
+        usage: item.usage,
+        status: item.status,
+        ...(item.locale ? { locale: item.locale } : {}),
+        ...(item.selectedForPublic !== undefined
+          ? { selectedForPublic: item.selectedForPublic }
+          : {}),
+        ...(item.selectedForPublicAt !== undefined
+          ? { selectedForPublicAt: item.selectedForPublicAt }
+          : {}),
+        updatedAt: item.updatedAt,
+      };
+    }),
+    settings: settings.map((item) => ({
+      key: item.key,
+      environment: item.environment,
+      value: item.value,
+      classification: item.classification,
+      updatedAt: item.updatedAt,
+    })),
+    resumeVersions: resumeVersions.map((item) => ({
+      id: item._id,
+      locale: item.locale,
+      version: item.version,
+      pdfPath: item.pdfPath,
+      isPublished: item.isPublished,
+      createdAt: item.createdAt,
+      ...(item.publishedAt !== undefined
+        ? { publishedAt: item.publishedAt }
+        : {}),
+    })),
+    publications: withinLimit(
+      publicationRequests,
+      50,
+      "Publication requests",
+    ).map((item) => ({
+      requestKey: item.requestKey,
+      scope: item.scope,
+      ...(item.contentId ? { contentId: item.contentId } : {}),
+      ...(item.locale ? { locale: item.locale } : {}),
+      targetEnvironment: item.targetEnvironment,
+      state: item.state,
+      retryable: item.retryable === true,
+      updatedAt: item.updatedAt,
+    })),
+  };
+}
+
+export async function getDashboardOverviewHandler(
+  ctx: QueryCtx,
+  args: ObjectType<typeof dashboardOverviewArgs>,
+) {
+  const publicationTarget =
+    args.environment === "preview" || args.environment === "production"
+      ? args.environment
+      : undefined;
+  const [
+    caseStudies,
+    projectDrafts,
+    resumeDrafts,
+    draftMedia,
+    publishedMedia,
+    settings,
+    latestPublicationRows,
+  ] = await Promise.all([
+    ctx.db.query("caseStudyMetadata").order("desc").take(101),
+    ctx.db.query("projectDrafts").order("desc").take(201),
+    ctx.db.query("resumeDrafts").order("desc").take(11),
+    ctx.db
+      .query("mediaMetadata")
+      .withIndex("by_status_and_usage", (query) =>
+        query.eq("status", "draft").eq("usage", "case-study"),
+      )
+      .order("desc")
+      .take(101),
+    ctx.db
+      .query("mediaMetadata")
+      .withIndex("by_status_and_usage", (query) =>
+        query.eq("status", "published").eq("usage", "case-study"),
+      )
+      .order("desc")
+      .take(101),
+    ctx.db
+      .query("siteSettings")
+      .withIndex("by_environment_and_key", (query) =>
+        query.eq("environment", args.environment),
+      )
+      .order("desc")
+      .take(101),
+    publicationTarget
+      ? ctx.db
+          .query("publicationRequests")
+          .withIndex("by_target_environment_and_updated_at", (query) =>
+            query.eq("targetEnvironment", publicationTarget),
+          )
+          .order("desc")
+          .take(1)
+      : Promise.resolve([]),
+  ]);
+
+  return buildDashboardOverview({
+    environment: args.environment,
+    truncated:
+      caseStudies.length > 100 ||
+      projectDrafts.length > 200 ||
+      resumeDrafts.length > 10 ||
+      draftMedia.length > 100 ||
+      publishedMedia.length > 100 ||
+      settings.length > 100,
+    caseStudies: caseStudies.slice(0, 100).map((item) => ({
+      contentId: item.contentId,
+      evidenceStatus: item.evidenceStatus,
+    })),
+    projectDrafts: projectDrafts.slice(0, 200).map((item) => ({
+      contentId: item.contentId,
+      locale: item.locale,
+      title: item.title,
+      summary: item.summary,
+      seoDescription: item.seoDescription,
+      ctaLabel: item.ctaLabel,
+      ctaHref: item.ctaHref,
+      achievements: item.achievements,
+      structureNotes: item.structureNotes,
+      ...(item.publishedAt !== undefined
+        ? { publishedAt: item.publishedAt }
+        : {}),
+    })),
+    media: [
+      ...draftMedia.slice(0, 100).map((item) => ({
+        ...(item.contentId ? { contentId: item.contentId } : {}),
+        status: "draft" as const,
+        ...(item.selectedForPublic !== undefined
+          ? { selectedForPublic: item.selectedForPublic }
+          : {}),
+      })),
+      ...publishedMedia.slice(0, 100).map((item) => ({
+        ...(item.contentId ? { contentId: item.contentId } : {}),
+        status: "published" as const,
+        ...(item.selectedForPublic !== undefined
+          ? { selectedForPublic: item.selectedForPublic }
+          : {}),
+      })),
+    ],
+    resumeDrafts: resumeDrafts.slice(0, 10).map((item) => ({
+      locale: item.locale,
+      contentJson: item.contentJson,
+      ...(item.publishedAt !== undefined
+        ? { publishedAt: item.publishedAt }
+        : {}),
+    })),
+    settings: settings.slice(0, 100).map((item) => ({
+      key: item.key,
+      value: item.value,
+      classification: item.classification,
+    })),
+    releaseProviderConfigured: Boolean(
+      process.env.PUBLISH_GITHUB_TOKEN?.trim(),
+    ),
+    ...(latestPublicationRows[0]
+      ? {
+          publication: {
+            requestKey: latestPublicationRows[0].requestKey,
+            scope: latestPublicationRows[0].scope,
+            ...(latestPublicationRows[0].contentId
+              ? { contentId: latestPublicationRows[0].contentId }
+              : {}),
+            ...(latestPublicationRows[0].locale
+              ? { locale: latestPublicationRows[0].locale }
+              : {}),
+            targetEnvironment: latestPublicationRows[0].targetEnvironment,
+            state: latestPublicationRows[0].state,
+            retryable: latestPublicationRows[0].retryable === true,
+            updatedAt: latestPublicationRows[0].updatedAt,
+          },
+        }
+      : {}),
+  });
+}

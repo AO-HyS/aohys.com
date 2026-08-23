@@ -12,9 +12,8 @@ import {
   findDashboardNavigationItem,
   matchDashboardNavigationItem,
   normalizeDashboardPath,
-} from "@/app/navigation";
+} from "@/navigation";
 import { SessionBoundaryState } from "@/app/route-states";
-import { DashboardOverviewContent } from "@/screens/dashboard-home";
 
 describe("Operations Desk navigation", () => {
   it("uses one unique route model for canonical paths and legacy aliases", () => {
@@ -22,18 +21,32 @@ describe("Operations Desk navigation", () => {
     const aliases = dashboardNavigation.flatMap((item) => item.aliases);
 
     expect(new Set(canonicalPaths).size).toBe(canonicalPaths.length);
-    expect(canonicalPaths).toEqual(["/", "/projects", "/leads", "/resume", "/settings"]);
+    expect(canonicalPaths).toEqual([
+      "/",
+      "/projects",
+      "/leads",
+      "/resume",
+      "/settings",
+    ]);
     expect(aliases).toEqual(["/case-studies", "/media"]);
-    expect(findDashboardNavigationItem("/dashboard/case-studies").id).toBe("projects");
-    expect(findDashboardNavigationItem("/dashboard/media?project=casa-roca").id).toBe("projects");
-    expect(findDashboardNavigationItem("/dashboard/not-real").id).toBe("overview");
+    expect(findDashboardNavigationItem("/dashboard/case-studies").id).toBe(
+      "projects",
+    );
+    expect(
+      findDashboardNavigationItem("/dashboard/media?project=casa-roca").id,
+    ).toBe("projects");
+    expect(findDashboardNavigationItem("/dashboard/not-real").id).toBe(
+      "overview",
+    );
     expect(matchDashboardNavigationItem("/dashboard/not-real")).toBeUndefined();
   });
 
   it("normalizes dashboard paths without changing real route identity", () => {
     expect(normalizeDashboardPath("/dashboard")).toBe("/");
     expect(normalizeDashboardPath("/dashboard/projects/")).toBe("/projects");
-    expect(normalizeDashboardPath("/dashboard/leads?status=new")).toBe("/leads");
+    expect(normalizeDashboardPath("/dashboard/leads?status=new")).toBe(
+      "/leads",
+    );
   });
 });
 
@@ -46,7 +59,9 @@ describe("Dashboard primitive adapters", () => {
 
   it("announces pending actions and prevents duplicate activation", () => {
     const html = renderToStaticMarkup(
-      <Action pending pendingLabel="Saving draft…">Save draft</Action>,
+      <Action pending pendingLabel="Saving draft…">
+        Save draft
+      </Action>,
     );
 
     expect(html).toContain('aria-busy="true"');
@@ -92,7 +107,9 @@ describe("Dashboard primitive adapters", () => {
 
     expect(html).toContain('for="project-title"');
     expect(html).toContain('id="project-title"');
-    expect(html).toContain('aria-describedby="project-title-description project-title-error"');
+    expect(html).toContain(
+      'aria-describedby="project-title-description project-title-error"',
+    );
     expect(html).toContain('aria-errormessage="project-title-error"');
     expect(html).toContain('aria-invalid="true"');
     expect(html).toContain('role="alert"');
@@ -112,8 +129,12 @@ describe("Dashboard primitive adapters", () => {
 
   it("renders explicit loading, permission, and retry recovery states", () => {
     const loading = renderToStaticMarkup(<AsyncSurface state="loading" />);
-    const permission = renderToStaticMarkup(<AsyncSurface state="permission" />);
-    const error = renderToStaticMarkup(<AsyncSurface state="error" onRetry={() => undefined} />);
+    const permission = renderToStaticMarkup(
+      <AsyncSurface state="permission" />,
+    );
+    const error = renderToStaticMarkup(
+      <AsyncSurface state="error" onRetry={() => undefined} />,
+    );
 
     expect(loading).toContain('aria-busy="true"');
     expect(permission).toContain("Permission required");
@@ -121,9 +142,15 @@ describe("Dashboard primitive adapters", () => {
   });
 
   it("keeps checking, expired, and permission session states accessible", () => {
-    const checking = renderToStaticMarkup(<SessionBoundaryState status="checking" />);
-    const expired = renderToStaticMarkup(<SessionBoundaryState status="expired" />);
-    const permission = renderToStaticMarkup(<SessionBoundaryState status="permission" />);
+    const checking = renderToStaticMarkup(
+      <SessionBoundaryState status="checking" />,
+    );
+    const expired = renderToStaticMarkup(
+      <SessionBoundaryState status="expired" />,
+    );
+    const permission = renderToStaticMarkup(
+      <SessionBoundaryState status="permission" />,
+    );
 
     expect(checking).toContain('aria-busy="true"');
     expect(expired).toContain("Dashboard session expired");
@@ -131,43 +158,16 @@ describe("Dashboard primitive adapters", () => {
   });
 
   it("makes dirty and saving states explicit in the shared save bar", () => {
-    const dirty = renderToStaticMarkup(<SaveBar state="dirty" onSave={() => undefined} />);
-    const saving = renderToStaticMarkup(<SaveBar state="saving" onSave={() => undefined} />);
+    const dirty = renderToStaticMarkup(
+      <SaveBar state="dirty" onSave={() => undefined} />,
+    );
+    const saving = renderToStaticMarkup(
+      <SaveBar state="saving" onSave={() => undefined} />,
+    );
 
     expect(dirty).toContain("Unsaved changes");
     expect(dirty).toContain("Save changes");
     expect(saving).toContain('aria-busy="true"');
     expect(saving).toContain("Saving…");
-  });
-});
-
-describe("authoritative dashboard overview", () => {
-  it("keeps queue, workflow, and deployment truth visibly distinct", () => {
-    type Overview = Parameters<typeof DashboardOverviewContent>[0]["overview"];
-    const overview = {
-      environment: "preview",
-      state: "clear",
-      gates: [{
-        id: "release-provider",
-        label: "Release provider",
-        status: "ready",
-        reason: "The dispatcher is configured.",
-      }],
-      blockers: [],
-      release: {
-        providerState: "configured",
-        workflowState: "not-requested",
-        deploymentState: "unknown",
-      },
-    } satisfies Overview;
-
-    const html = renderToStaticMarkup(<DashboardOverviewContent overview={overview} />);
-
-    expect(html).toContain("No release work waiting");
-    expect(html).toContain("Workflow request");
-    expect(html).toContain("Not requested");
-    expect(html).toContain("Deployment proof");
-    expect(html).toContain("Unknown");
-    expect(html).toContain("Ready to queue is not workflow queued");
   });
 });

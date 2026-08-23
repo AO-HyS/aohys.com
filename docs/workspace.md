@@ -1,52 +1,66 @@
 # AOHYS Workspace
 
-This document defines the monorepo foundation for `aohys.com`. It exists so implementation work starts with clear workspace boundaries, runnable local commands, and visible seams for the architecture modules already documented.
+This is the World Tree for `aohys.com`: a directional guide for finding the authority behind a change, identifying who decides, and placing new code. It deliberately does not mirror the current repository tree. Manifests, public exports, imports, generated bindings, and source-derived graphs are the current-state evidence for any analyzed commit.
 
-## Package Manager
+## Start With Authority
 
-Use pnpm from the repository root.
+Before choosing a directory, identify the decision that the change belongs to:
+
+- Domain language and human decision rights come from [AOHYS Site Context](../CONTEXT.md) and the [Domain Docs policy](agents/domain.md).
+- Architecture decisions belong in the durable [ADR collection](adr/); an ADR records a consequential boundary decision instead of a folder preference.
+- Work ownership, assignees, dependencies, and resolution comments live in the [Issue Tracker](agents/issue-tracker.md).
+- Existing operational boundaries are described by the [Environment Contract](environment-contract.md), [Public Content Graph](public-content-graph.md), [Dashboard UI Kit](dashboard-ui-kit.md), and [Release Train](release-train.md).
+- Release and incident procedures live in the [Release Train](release-train.md) and [Launch Hardening Checklist](launch-hardening.md). These are the runbooks; this guide must not duplicate their commands or provider state.
+
+The accountable human decides business intent, scope, review, and release. The assigned Linear owner decides execution within those boundaries. If a proposed placement changes a consequential boundary, the relevant ADR must decide it before the directory structure does.
+
+## Placement Decision Tree
+
+Follow these questions in order. Stop at the first answer that provides a clear owner.
+
+1. **Does the change alter domain language or business responsibility?** Start in `CONTEXT.md`. Resolve the term or responsibility before writing code; record a consequential boundary decision in an ADR.
+2. **Does an existing contract already own the behavior?** Follow that contract's documentation to its source, tests, and public interface. Add behavior behind the owner rather than beside it.
+3. **Is this behavior private to one product capability?** Place UI, state, actions, validators, and tests together inside the capability that owns the user or operational outcome. Let the nearest manifest and public export confirm the boundary.
+4. **Must multiple capabilities use it?** First prefer a behavior-oriented facade owned by one capability. Create or extend a shared primitive only when the callers genuinely share the same invariant, not merely similar syntax.
+5. **Does it cross a runtime or provider boundary?** Put validation and translation at the boundary named by the Environment Contract. Keep provider details behind that interface and keep release operations in the Release Train.
+6. **Is the target generated?** Change the owning schema, manifest, or generator and regenerate the artifact. Never make a generated file the architectural source of truth.
+7. **Is ownership still ambiguous?** Do not default to a global `lib`, `types`, `utils`, or catch-all package. Assign an owner in Linear and, when the decision is durable or costly to reverse, capture it in an ADR before adding a new boundary.
+
+After placement, verify the dependency points toward the owner, the owner's public interface stays small, and the focused behavior test lives with the behavior. A directory name alone is not evidence of ownership.
+
+## Durable Navigation
+
+Use the source that matches the question instead of searching for a manually curated tree:
+
+| Question                                                  | Durable source                                                                                                |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| What does this concept mean, and who remains accountable? | `CONTEXT.md` and `docs/agents/domain.md`                                                                      |
+| Who owns the work and its dependency order?               | Linear, through `docs/agents/issue-tracker.md`                                                                |
+| Why does this boundary exist?                             | The relevant record under `docs/adr/`                                                                         |
+| What behavior does an operational boundary promise?       | Its contract document and public source interface                                                             |
+| How is a release, recovery, or smoke check performed?     | `docs/release-train.md` and `docs/launch-hardening.md`                                                        |
+| What exists at this commit?                               | Workspace/package manifests, imports, exports, generated artifacts, and source-derived graphs for that commit |
+
+When code moves, update its manifest, imports, public exports, tests, and any affected contract or ADR. Do not update this guide with a synchronized list of directories or modules.
+
+## Illustrative, Non-Exhaustive Example
+
+The names in this example are illustrative and non-exhaustive. They show how to follow ownership at one point in the repository's history; they are not a required layout, a complete inventory, or a promise that these paths remain present.
+
+Suppose a public content change also needs private editing and deployment validation. Begin with the Public Content Graph contract. Its evidence may lead through a public surface such as `apps/site`, a private workflow such as `apps/dashboard`, a provider-backed boundary such as `apps/backend`, and shared contract code such as `packages/content-graph`. Only if the invariant is truly cross-capability should it move toward a primitive boundary such as `packages/core` or `packages/environment`; release behavior remains behind a boundary such as `packages/release-train`.
+
+The point of the example is the direction of the decisions: contract, owner, capability, boundary, verification. Before changing any named path, confirm the actual owner from the source at the commit you are editing.
+
+## Local and Release Boundaries
+
+Use pnpm from the repository root:
 
 ```sh
 pnpm install
 pnpm verify
 ```
 
-The root `package.json` pins pnpm through `packageManager`. The root `verify` command runs foundation verification, then recursive build/lint/typecheck/test commands. Release commands live at the root because the Release Train crosses the public site, Environment Contract, Cloudflare Pages, and GitHub Environments.
-
-## Workspace Layout
-
-| Path | Role |
-| --- | --- |
-| `apps/site` | Astro public site for SEO pages, bilingual routes, metadata, sitemap, public shell, and dashboard auth guard. |
-| `apps/dashboard` | Private React dashboard app served under `/dashboard` with TanStack Router, shadcn/ui, and Convex-backed workflows. |
-| `apps/backend` | Convex backend surface for leads, content, media, settings, resume, auth, and dashboard workflows. |
-| `packages/core` | Shared TypeScript primitives used across app and package boundaries. |
-| `packages/environment` | Environment Contract implementation for provider variable definitions and runtime/release validation. |
-| `packages/content-graph` | Public Content Graph implementation for stable content IDs, bilingual routes, SEO metadata, sitemap behavior, and private route exclusions. |
-| `apps/site/src/dashboard-access-states.ts` | Narrow pre-React sign-in and access-state renderer for the private dashboard guard. |
-| `packages/release-train` | Release Train checks, deploy plans, and smoke-check helpers. |
-| `scripts` | Repository-level verification, release environment validation, and smoke commands. |
-
-## Module Seams
-
-The foundation is intentionally shallow on implementation and strict on seams:
-
-- Public routes should use `packages/content-graph` for identity, localized paths, metadata, sitemap rules, and private route exclusions.
-- Reusable primitives should live in `packages/core` once they cross a single feature boundary or are likely to repeat across apps.
-- App and backend code should use `packages/environment` for provider variable classification and validation.
-- Dashboard workflows should live in `apps/dashboard`; `apps/site` should only protect routes, serve the app shell, and inject the runtime config needed for direct Convex access.
-- Deployment and smoke checks should collect in `packages/release-train`, root scripts, and `.github/workflows/release-train.yml`.
-- Convex code lives under `apps/backend/convex`; generated bindings in `apps/backend/convex/_generated` are committed because backend functions typecheck against them.
-
-## Environment Files
-
-`.env.example` documents safe local placeholders. Real values belong in `.env.local` locally and GitHub Environments for preview/production deploys. Provider dashboard changes are setup or recovery actions only; durable deploy-time values should be reconciled back to GitHub Environments.
-
-## Cloudflare Release Surface
-
-`pnpm run cloudflare:local` serves the built public site through Wrangler Pages dev. `pnpm run deploy:preview` and `pnpm run deploy:production` validate the target Environment Contract, audit the production-only PostHog boundary, build `apps/site`, then run `wrangler pages deploy apps/site/dist --project-name aohys-com` with the correct branch.
-
-Domain canonicalization is not stored in `apps/site/public/_redirects`; Cloudflare Pages redirects do not support domain-level redirects. The intended Cloudflare Redirect Rules payload is versioned in `cloudflare/redirect-rules.json` and should be applied in Cloudflare for `aohys.net`, `www.aohys.net`, and `www.aohys.com`.
+Local values belong in `.env.local`; deploy-time values follow the Environment Contract. Promotion, provider reconciliation, smoke checks, and Cloudflare operations follow the Release Train and Launch Hardening runbooks. Do not infer live provider state from this document.
 
 ## Source Boundary
 

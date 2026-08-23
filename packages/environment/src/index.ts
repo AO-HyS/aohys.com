@@ -42,8 +42,15 @@ export interface EnvironmentValidationOptions {
   target?: EnvironmentValidationTarget;
 }
 
-const ENVIRONMENTS = ["local", "preview", "production"] as const satisfies readonly EnvironmentName[];
-const DEFAULT_REQUIRED_TARGETS = ["runtime", "release"] as const satisfies readonly EnvironmentValidationTarget[];
+const ENVIRONMENTS = [
+  "local",
+  "preview",
+  "production",
+] as const satisfies readonly EnvironmentName[];
+const DEFAULT_REQUIRED_TARGETS = [
+  "runtime",
+  "release",
+] as const satisfies readonly EnvironmentValidationTarget[];
 const DASHBOARD_RUNTIME_TARGETS = [
   "runtime",
   "release",
@@ -56,6 +63,11 @@ const AUTH_RUNTIME_TARGETS = [
   "auth-runtime",
 ] as const satisfies readonly EnvironmentValidationTarget[];
 const CONVEX_CLIENT_TARGETS = [
+  "runtime",
+  "release",
+  "dashboard-runtime",
+] as const satisfies readonly EnvironmentValidationTarget[];
+const RELEASE_CONTEXT_TARGETS = [
   "runtime",
   "release",
   "dashboard-runtime",
@@ -86,7 +98,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "public-build-value",
     exposure: "public-browser",
     requiredIn: ["local", "preview", "production"],
-    description: "Public contact submission endpoint, backed by the Convex HTTP action.",
+    description:
+      "Public contact submission endpoint, backed by the Convex HTTP action.",
   },
   {
     name: "CONVEX_URL",
@@ -95,7 +108,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "public-browser",
     requiredIn: ["preview", "production"],
     requiredTargets: CONVEX_CLIENT_TARGETS,
-    description: "Convex deployment URL consumed by server code and the dashboard SPA runtime.",
+    description:
+      "Convex deployment URL consumed by server code and the dashboard SPA runtime.",
   },
   {
     name: "CONVEX_DEPLOYMENT",
@@ -121,7 +135,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "server-only",
     requiredIn: ["preview", "production"],
     requiredTargets: ["release"],
-    description: "GitHub Environment secret used by CI/release flows to deploy Convex.",
+    description:
+      "GitHub Environment secret used by CI/release flows to deploy Convex.",
   },
   {
     name: "PUBLIC_POSTHOG_KEY",
@@ -129,7 +144,28 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "public-build-value",
     exposure: "public-browser",
     requiredIn: ["production"],
-    description: "Production-only PostHog public key; browser traffic uses the first-party /ingest proxy.",
+    description:
+      "Production-only PostHog public key; browser traffic uses the first-party /ingest proxy.",
+  },
+  {
+    name: "PUBLIC_RELEASE_SHA",
+    provider: "github",
+    classification: "public-build-value",
+    exposure: "public-browser",
+    requiredIn: ["preview", "production"],
+    requiredTargets: RELEASE_CONTEXT_TARGETS,
+    description:
+      "Full github.sha shared by public browser, edge, and Convex telemetry.",
+  },
+  {
+    name: "VITE_RELEASE_SHA",
+    provider: "github",
+    classification: "public-build-value",
+    exposure: "public-browser",
+    requiredIn: ["preview", "production"],
+    requiredTargets: ["release"],
+    description:
+      "Full github.sha embedded in the private dashboard browser bundle.",
   },
   {
     name: "RESEND_API_KEY",
@@ -162,7 +198,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "server-only",
     requiredIn: ["preview", "production"],
     requiredTargets: AUTH_RUNTIME_TARGETS,
-    description: "Better Auth secret for signed auth state, owned by the auth runtime.",
+    description:
+      "Better Auth secret for signed auth state, owned by the auth runtime.",
   },
   {
     name: "BETTER_AUTH_URL",
@@ -180,7 +217,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "server-only",
     requiredIn: ["local", "preview", "production"],
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
-    description: "Comma-separated origins accepted by Better Auth for the current environment.",
+    description:
+      "Comma-separated origins accepted by Better Auth for the current environment.",
   },
   {
     name: "ADMIN_EMAIL",
@@ -198,7 +236,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "server-only",
     requiredIn: ["preview", "production"],
     requiredTargets: AUTH_RUNTIME_TARGETS,
-    description: "Google OAuth client identifier used by Better Auth social sign-in.",
+    description:
+      "Google OAuth client identifier used by Better Auth social sign-in.",
   },
   {
     name: "GOOGLE_CLIENT_SECRET",
@@ -207,7 +246,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "server-only",
     requiredIn: ["preview", "production"],
     requiredTargets: AUTH_RUNTIME_TARGETS,
-    description: "Google OAuth client secret used only by Better Auth server routes.",
+    description:
+      "Google OAuth client secret used only by Better Auth server routes.",
   },
   {
     name: "CLOUDFLARE_ACCOUNT_ID",
@@ -216,7 +256,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "server-only",
     requiredIn: ["preview", "production"],
     requiredTargets: ["release"],
-    description: "Cloudflare account identifier for release workflows and Images direct-upload URLs.",
+    description:
+      "Cloudflare account identifier for release workflows and Images direct-upload URLs.",
   },
   {
     name: "CLOUDFLARE_API_TOKEN",
@@ -225,7 +266,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "server-only",
     requiredIn: ["preview", "production"],
     requiredTargets: ["release"],
-    description: "GitHub Environment secret used by Wrangler to deploy Cloudflare Pages.",
+    description:
+      "GitHub Environment secret used by Wrangler to deploy Cloudflare Pages.",
   },
   {
     name: "CLOUDFLARE_PROJECT_NAME",
@@ -243,7 +285,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "public-browser",
     requiredIn: ["preview", "production"],
     requiredTargets: ["release", "dashboard-runtime"],
-    description: "Cloudflare Images delivery account hash for dashboard media URLs.",
+    description:
+      "Cloudflare Images delivery account hash for dashboard media URLs.",
   },
   {
     name: "CLOUDFLARE_IMAGES_API_TOKEN",
@@ -252,7 +295,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "server-only",
     requiredIn: ["preview", "production"],
     requiredTargets: ["release"],
-    description: "Narrow Cloudflare Images token used by Convex to create direct upload URLs.",
+    description:
+      "Narrow Cloudflare Images token used by Convex to create direct upload URLs.",
   },
   {
     name: "PUBLISH_GITHUB_TOKEN",
@@ -261,7 +305,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "server-only",
     requiredIn: ["preview", "production"],
     requiredTargets: ["release"],
-    description: "Token used by Convex to queue the Release Train workflow after dashboard publish.",
+    description:
+      "Token used by Convex to queue the Release Train workflow after dashboard publish.",
   },
   {
     name: "PUBLISH_GITHUB_REPOSITORY",
@@ -269,7 +314,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "policy-value",
     exposure: "server-only",
     requiredIn: [],
-    description: "Optional owner/repo override for dashboard-triggered publish workflow dispatch.",
+    description:
+      "Optional owner/repo override for dashboard-triggered publish workflow dispatch.",
   },
   {
     name: "PUBLISH_GITHUB_WORKFLOW_ID",
@@ -277,7 +323,8 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     classification: "policy-value",
     exposure: "server-only",
     requiredIn: [],
-    description: "Optional workflow file override for dashboard-triggered publish workflow dispatch.",
+    description:
+      "Optional workflow file override for dashboard-triggered publish workflow dispatch.",
   },
   {
     name: "PUBLIC_CONTACT_EMAIL",
@@ -314,8 +361,11 @@ export function validateEnvironmentContract(
   }
 
   for (const definition of DEFINITIONS) {
-    const requiredTargets = definition.requiredTargets ?? DEFAULT_REQUIRED_TARGETS;
-    const isRequired = definition.requiredIn.includes(environment) && requiredTargets.includes(target);
+    const requiredTargets =
+      definition.requiredTargets ?? DEFAULT_REQUIRED_TARGETS;
+    const isRequired =
+      definition.requiredIn.includes(environment) &&
+      requiredTargets.includes(target);
 
     if (isRequired && !values[definition.name]) {
       const scope = definition.requiredTargets ? ` ${target}` : "";
@@ -324,9 +374,12 @@ export function validateEnvironmentContract(
 
     if (
       definition.classification === "server-secret" &&
-      (definition.exposure !== "server-only" || definition.name.startsWith("PUBLIC_"))
+      (definition.exposure !== "server-only" ||
+        definition.name.startsWith("PUBLIC_"))
     ) {
-      errors.push(`${definition.name} is a server secret and must not be public.`);
+      errors.push(
+        `${definition.name} is a server secret and must not be public.`,
+      );
     }
   }
 
@@ -336,16 +389,28 @@ export function validateEnvironmentContract(
     publicSiteUrl &&
     !hasExactOrigin(publicSiteUrl, "https://aohys.com")
   ) {
-    errors.push("PUBLIC_SITE_URL must point to https://aohys.com in production.");
+    errors.push(
+      "PUBLIC_SITE_URL must point to https://aohys.com in production.",
+    );
   }
 
-  const betterAuthTrustedOrigins = parseCommaSeparatedOrigins(values.BETTER_AUTH_TRUSTED_ORIGINS);
+  const betterAuthTrustedOrigins = parseCommaSeparatedOrigins(
+    values.BETTER_AUTH_TRUSTED_ORIGINS,
+  );
   const betterAuthUrl = values.BETTER_AUTH_URL;
-  if (betterAuthUrl && betterAuthTrustedOrigins.length > 0 && !betterAuthTrustedOrigins.includes(betterAuthUrl)) {
+  if (
+    betterAuthUrl &&
+    betterAuthTrustedOrigins.length > 0 &&
+    !betterAuthTrustedOrigins.includes(betterAuthUrl)
+  ) {
     errors.push("BETTER_AUTH_TRUSTED_ORIGINS must include BETTER_AUTH_URL.");
   }
 
-  if (publicSiteUrl && betterAuthTrustedOrigins.length > 0 && !betterAuthTrustedOrigins.includes(publicSiteUrl)) {
+  if (
+    publicSiteUrl &&
+    betterAuthTrustedOrigins.length > 0 &&
+    !betterAuthTrustedOrigins.includes(publicSiteUrl)
+  ) {
     errors.push("BETTER_AUTH_TRUSTED_ORIGINS must include PUBLIC_SITE_URL.");
   }
 
@@ -359,7 +424,30 @@ export function validateEnvironmentContract(
     errors.push("CONVEX_DEPLOYMENT must not point to preview in production.");
   }
 
+  const publicReleaseSha = normalizeGitCommitSha(values.PUBLIC_RELEASE_SHA);
+  const dashboardReleaseSha = normalizeGitCommitSha(values.VITE_RELEASE_SHA);
+  if (values.PUBLIC_RELEASE_SHA && !publicReleaseSha) {
+    errors.push("PUBLIC_RELEASE_SHA must be a full 40-character git SHA.");
+  }
+  if (values.VITE_RELEASE_SHA && !dashboardReleaseSha) {
+    errors.push("VITE_RELEASE_SHA must be a full 40-character git SHA.");
+  }
+  if (
+    publicReleaseSha &&
+    dashboardReleaseSha &&
+    publicReleaseSha !== dashboardReleaseSha
+  ) {
+    errors.push("PUBLIC_RELEASE_SHA and VITE_RELEASE_SHA must match.");
+  }
+
   return { ok: errors.length === 0, errors };
+}
+
+function normalizeGitCommitSha(value: string | undefined): string | undefined {
+  const normalized = value?.trim().toLowerCase();
+  return normalized && /^[0-9a-f]{40}$/.test(normalized)
+    ? normalized
+    : undefined;
 }
 
 function hasExactOrigin(value: string, expectedOrigin: string): boolean {

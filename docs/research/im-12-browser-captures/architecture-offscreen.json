@@ -1,0 +1,57 @@
+{
+  "journey": "architecture",
+  "longTasks": {
+    "count": 0,
+    "entries": [],
+    "supported": true,
+    "totalDurationMs": 0
+  },
+  "page": {
+    "reducedMotion": false,
+    "url": "http://localhost:5202/architecture",
+    "viewport": {
+      "height": 960,
+      "width": 1536
+    },
+    "visibilityState": "visible"
+  },
+  "render": {
+    "droppedFrameEstimate": 0,
+    "framesByContext": {
+      "hidden": 0,
+      "offscreen": 432,
+      "reduced-motion": 0,
+      "visible": 0
+    },
+    "framesOver50Ms": 0,
+    "maximumFrameDeltaMs": 8.69999999999709,
+    "medianFrameDeltaMs": 6.900000000008731,
+    "p95FrameDeltaMs": 8,
+    "sampledFrames": 431
+  },
+  "requestedDurationMs": 3000,
+  "routeLoad": {
+    "domContentLoadedMs": 92,
+    "encodedBodyBytes": 5864,
+    "loadEventMs": 96,
+    "paints": {},
+    "resourceCount": 6,
+    "resourceTransferBytes": 102295,
+    "transferBytes": 6164,
+    "type": "navigate"
+  },
+  "scenario": "offscreen",
+  "schemaVersion": 1,
+  "startedAt": "2026-08-22T11:26:39.507Z",
+  "webgl": {
+    "canvasCount": 1,
+    "canvases": [
+      {
+        "height": 544,
+        "sceneVariant": "architecture",
+        "visibleAtEnd": false,
+        "width": 633
+      }
+    ]
+  }
+}

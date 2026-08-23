@@ -3,6 +3,7 @@ import { buildAnalyticsBootstrapPayload } from "../src/analytics";
 
 const posthog = vi.hoisted(() => ({
   capture: vi.fn(),
+  captureException: vi.fn(),
   init: vi.fn(),
   register: vi.fn(),
 }));
@@ -27,6 +28,7 @@ describe("PostHog browser runtime", () => {
     );
     const documentListeners: string[] = [];
     const windowListeners: string[] = [];
+    const windowCallbacks = new Map<string, EventListener>();
     const documentRef = {
       addEventListener: (name: string) => documentListeners.push(name),
       getElementById: () => ({ textContent: JSON.stringify(payload) }),
@@ -34,7 +36,10 @@ describe("PostHog browser runtime", () => {
       visibilityState: "visible",
     } as unknown as Document;
     const windowRef = {
-      addEventListener: (name: string) => windowListeners.push(name),
+      addEventListener: (name: string, callback: EventListener) => {
+        windowListeners.push(name);
+        windowCallbacks.set(name, callback);
+      },
       location: { hostname: "aohys.com" },
       navigator: { webdriver: false },
     } as unknown as Window;
@@ -70,6 +75,17 @@ describe("PostHog browser runtime", () => {
         "error",
         "unhandledrejection",
       ]),
+    );
+
+    const controlledError = new TypeError("private@example.com");
+    windowCallbacks.get("error")?.({ error: controlledError } as ErrorEvent);
+    expect(posthog.captureException).toHaveBeenCalledWith(
+      controlledError,
+      expect.objectContaining({
+        source: "window_error",
+        error_type: "TypeError",
+        environment: "production",
+      }),
     );
   });
 });

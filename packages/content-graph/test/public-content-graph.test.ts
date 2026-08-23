@@ -1304,7 +1304,10 @@ describe("Public Content Graph", () => {
     expect(
       applyResumeDraft(dictionary, {
         locale: "en",
-        contentJson: JSON.stringify({ role: "Newer reviewed resume role" }),
+        contentJson: JSON.stringify({
+          ...dictionary.resume.resumeContent,
+          role: "Newer reviewed resume role",
+        }),
         updatedAt: resumeApprovedAt + 1,
         publishedAt: resumeApprovedAt + 1,
       }),
@@ -1312,6 +1315,126 @@ describe("Public Content Graph", () => {
     expect(dictionary.resume.resumeContent.role).toBe(
       "Newer reviewed resume role",
     );
+  });
+
+  it("validates publication locale and resume JSON before applying it", async () => {
+    const { parseLocaleDictionary, parseResumeContent } =
+      await import("../../../scripts/apply-dashboard-published-content.js");
+    expect(
+      parseLocaleDictionary(
+        '{"home":{"path":"/","title":"Home","summary":"Summary","seoDescription":"SEO"}}',
+      ),
+    ).toEqual({
+      home: {
+        path: "/",
+        title: "Home",
+        summary: "Summary",
+        seoDescription: "SEO",
+      },
+    });
+    expect(() => parseLocaleDictionary("[]")).toThrow(
+      "localized content entries",
+    );
+    const validResume = enContent.resume.resumeContent;
+    expect(parseResumeContent(JSON.stringify(validResume))).toEqual(
+      validResume,
+    );
+    expect(() =>
+      parseResumeContent(
+        JSON.stringify({
+          ...validResume,
+          projects: [{ title: "Missing nested fields" }],
+        }),
+      ),
+    ).toThrow("resume JSON object contract");
+    expect(() => parseResumeContent("[]")).toThrow("JSON object");
+    expect(() =>
+      parseResumeContent(
+        JSON.stringify({
+          ...validResume,
+          pdf: { ...validResume.pdf, href: "/downloads/resume.pdf?html=1" },
+        }),
+      ),
+    ).toThrow("resume JSON object contract");
+    expect(() =>
+      parseResumeContent(
+        JSON.stringify({
+          ...validResume,
+          contactLinks: [
+            { label: "Unsafe", href: "javascript:alert(1)", text: "Unsafe" },
+          ],
+        }),
+      ),
+    ).toThrow("resume JSON object contract");
+    expect(() =>
+      parseLocaleDictionary(
+        '{"__proto__":{"path":"/","title":"Bad","summary":"Bad","seoDescription":"Bad"}}',
+      ),
+    ).toThrow("fully valid localized content entries");
+  });
+
+  it("validates the complete Convex publication payload before any write effect", async () => {
+    const { applyValidatedDashboardContent } =
+      await import("../../../scripts/apply-dashboard-published-content.js");
+    const writeEffect = vi.fn();
+    const valid = {
+      projectDrafts: [],
+      resumeDrafts: [],
+      media: [],
+      settings: [],
+    };
+
+    expect(() =>
+      applyValidatedDashboardContent(
+        { ...valid, projectDrafts: [{ contentId: "incomplete" }] },
+        writeEffect,
+      ),
+    ).toThrow("publication contract");
+    expect(() =>
+      applyValidatedDashboardContent(
+        { ...valid, resumeDrafts: [{ locale: "en" }] },
+        writeEffect,
+      ),
+    ).toThrow("publication contract");
+    expect(() =>
+      applyValidatedDashboardContent(
+        { ...valid, media: [{ storageKey: "bad" }] },
+        writeEffect,
+      ),
+    ).toThrow("publication contract");
+    expect(() =>
+      applyValidatedDashboardContent(
+        { ...valid, settings: [{ key: "bad" }] },
+        writeEffect,
+      ),
+    ).toThrow("publication contract");
+    expect(writeEffect).not.toHaveBeenCalled();
+    expect(
+      applyValidatedDashboardContent(valid, (content) => content.media.length),
+    ).toBe(0);
+  });
+
+  it("rejects prototype project ids before dictionary lookup", async () => {
+    const { applyProjectDraft } =
+      await import("../../../scripts/apply-dashboard-published-content.js");
+    const dictionary: Record<string, any> = {};
+    expect(
+      applyProjectDraft(dictionary, {
+        contentId: "__proto__",
+        locale: "en",
+        title: "Bad",
+        summary: "Bad",
+        seoDescription: "Bad",
+        ctaLabel: "Bad",
+        ctaHref: "/",
+        achievements: "Bad",
+        structureNotes: "Bad",
+        updatedAt: 2,
+        publishedAt: 2,
+      }),
+    ).toBe(false);
+    expect(Object.prototype).not.toHaveProperty("title", "Bad");
+    expect(Object.hasOwn(dictionary, "__proto__")).toBe(false);
   });
 
   it("does not treat republishing an old locale revision as a fresh review", async () => {

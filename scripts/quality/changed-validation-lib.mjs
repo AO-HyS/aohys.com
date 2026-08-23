@@ -85,6 +85,9 @@ export function buildChangedValidationPlan({
   uiCommandPrefix = null,
   nativePrefixes = [],
   nativeCommands = [],
+  architecturePrefixes = [],
+  architectureFiles = [],
+  architectureCommands = [],
 } = {}) {
   const files = [...new Set(changedFiles ?? [])].sort();
   const documentationOnly =
@@ -100,6 +103,13 @@ export function buildChangedValidationPlan({
   const nativeChanged = files.some((filePath) =>
     matchesSourcePrefix(filePath, nativePrefixes),
   );
+  const architectureChanged = files.some(
+    (filePath) =>
+      architectureFiles.includes(filePath) ||
+      matchesSourcePrefix(filePath, architecturePrefixes),
+  );
+
+  if (architectureChanged) plan.push(...architectureCommands);
 
   if (!documentationOnly && files.length > 0) {
     if (globalQualityChange) {
@@ -156,6 +166,7 @@ export function buildChangedValidationPlan({
     globalQualityChange,
     uiChanged,
     nativeChanged,
+    architectureChanged,
     commands: plan,
   };
 }

@@ -1,12 +1,13 @@
 import { v } from "convex/values";
+import type { FunctionReference } from "convex/server";
 import { action } from "./_generated/server.js";
 import { internal } from "./_generated/api.js";
 import { requireAdmin } from "./auth.js";
 import {
   createCloudflareImagesDirectUpload,
-  triggerGitHubPublishWorkflow,
   type PublishWorkflowResult,
 } from "../src/dashboard-providers.js";
+import { publicationSummaryValidator } from "./model/publication.js";
 
 const localeValidator = v.union(v.literal("en"), v.literal("es"));
 
@@ -30,25 +31,41 @@ const publishWorkflowValidator = v.union(
   }),
 );
 
-type PublishContentMutationResult = {
+type DurablePublishResult = {
   publishedAt: number;
   projectDraftsPublished: number;
   resumeDraftsPublished: number;
   mediaPublished: number;
+  workflowPending: boolean;
+  publication: {
+    requestKey: string;
+    publicationAttemptId?: string;
+    scope: "project" | "resume" | "all";
+    contentId?: string;
+    locale?: "en" | "es";
+    targetEnvironment: "preview" | "production";
+    state:
+      | "published-locally"
+      | "release-requested"
+      | "release-acknowledged"
+      | "release-failed"
+      | "deployed"
+      | "rollback-needed";
+    retryable: boolean;
+    updatedAt: number;
+  };
 };
 
-function getPublishEnvironment(): "local" | "preview" | "production" {
+function getPublishEnvironment(): "preview" | "production" {
   const environment = process.env.AOHYS_ENV;
 
-  if (
-    environment === "local" ||
-    environment === "preview" ||
-    environment === "production"
-  ) {
+  if (environment === "preview" || environment === "production") {
     return environment;
   }
 
-  return "production";
+  throw new Error(
+    "AOHYS_ENV must be preview or production to publish content.",
+  );
 }
 
 export const createMediaUploadUrl = action({
@@ -69,9 +86,15 @@ export const createMediaUploadUrl = action({
     await requireAdmin(ctx);
 
     return createCloudflareImagesDirectUpload(args, {
-      accountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
-      accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
-      apiToken: process.env.CLOUDFLARE_IMAGES_API_TOKEN,
+      ...(process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
+        ? { accountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH }
+        : {}),
+      ...(process.env.CLOUDFLARE_ACCOUNT_ID
+        ? { accountId: process.env.CLOUDFLARE_ACCOUNT_ID }
+        : {}),
+      ...(process.env.CLOUDFLARE_IMAGES_API_TOKEN
+        ? { apiToken: process.env.CLOUDFLARE_IMAGES_API_TOKEN }
+        : {}),
     });
   },
 });
@@ -88,23 +111,67 @@ export const publishContent = action({
     resumeDraftsPublished: v.number(),
     mediaPublished: v.number(),
     workflow: publishWorkflowValidator,
+    publication: publicationSummaryValidator,
   }),
-  handler: async (ctx, args): Promise<PublishContentMutationResult & { workflow: PublishWorkflowResult }> => {
-    await requireAdmin(ctx);
-
-    const result: PublishContentMutationResult = await ctx.runMutation(
-      internal.content.publishContentFromDashboard,
-      args,
+  handler: async (
+    ctx,
+    args,
+  ): Promise<
+    Omit<DurablePublishResult, "workflowPending"> & {
+      workflow: PublishWorkflowResult;
+    }
+  > => {
+    const user = await requireAdmin(ctx);
+    const environment = getPublishEnvironment();
+    const providerConfigured = Boolean(
+      process.env.PUBLISH_GITHUB_TOKEN?.trim(),
     );
-    const workflow = await triggerGitHubPublishWorkflow({
-      environment: getPublishEnvironment(),
-      repository: process.env.PUBLISH_GITHUB_REPOSITORY,
-      token: process.env.PUBLISH_GITHUB_TOKEN,
-      workflowId: process.env.PUBLISH_GITHUB_WORKFLOW_ID,
-    });
+
+    const publicationMutation = internal.publication
+      .publishFromDashboard as FunctionReference<
+      "mutation",
+      "internal",
+      {
+        scope: "project" | "resume" | "all";
+        contentId?: string;
+        locale?: "en" | "es";
+        targetEnvironment: "preview" | "production";
+        requestedBy: string;
+        providerConfigured: boolean;
+      },
+      DurablePublishResult
+    >;
+    const result: DurablePublishResult = await ctx.runMutation(
+      publicationMutation,
+      {
+        ...args,
+        targetEnvironment: environment,
+        requestedBy: String(user._id),
+        providerConfigured,
+      },
+    );
+    const workflow: PublishWorkflowResult =
+      providerConfigured && result.workflowPending
+        ? {
+            status: "queued",
+            repository:
+              process.env.PUBLISH_GITHUB_REPOSITORY?.trim() ||
+              "AO-HyS/aohys.com",
+            workflowId:
+              process.env.PUBLISH_GITHUB_WORKFLOW_ID?.trim() ||
+              "release-train.yml",
+            ref: environment === "production" ? "main" : "develop",
+          }
+        : {
+            status: "not-configured",
+            reason: providerConfigured
+              ? "No new workflow dispatch is pending for this publication request."
+              : "PUBLISH_GITHUB_TOKEN is missing.",
+          };
+    const { workflowPending: _workflowPending, ...publicResult } = result;
 
     return {
-      ...result,
+      ...publicResult,
       workflow,
     };
   },
