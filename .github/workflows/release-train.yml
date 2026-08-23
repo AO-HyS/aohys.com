@@ -120,9 +120,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: pnpm run audit:posthog-env
 
-      - name: Audit Cloudflare Pages runtime bindings
-        run: pnpm run audit:cloudflare-pages-runtime
-
       - name: Deploy Cloudflare Pages preview with sync:convex-env
         id: deploy-preview
         run: |
@@ -215,9 +212,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: pnpm run audit:posthog-env
-
-      - name: Audit Cloudflare Pages runtime bindings
-        run: pnpm run audit:cloudflare-pages-runtime
 
       - name: Deploy Cloudflare Pages production with sync:convex-env
         run: pnpm run deploy:production
