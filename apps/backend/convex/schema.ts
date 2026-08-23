@@ -202,10 +202,13 @@ export default defineSchema({
       "targetEnvironment",
       "updatedAt",
     ])
-    .index(
-      "by_scope_and_content_id_and_locale_and_target_environment_and_updated_at",
-      ["scope", "contentId", "locale", "targetEnvironment", "updatedAt"],
-    ),
+    .index("by_scope_content_id_locale_target_environment_updated_at", [
+      "scope",
+      "contentId",
+      "locale",
+      "targetEnvironment",
+      "updatedAt",
+    ]),
 
   publicationAttempts: defineTable({
     requestId: v.id("publicationRequests"),
