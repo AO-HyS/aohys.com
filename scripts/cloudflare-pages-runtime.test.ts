@@ -2,9 +2,12 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
+import { getEnvironmentVariableDefinitions } from "@aohys/environment";
+
 import { auditRuntimeBindings } from "./audit-cloudflare-pages-runtime.ts";
 import {
   collectCanonicalRuntimeValues,
+  RUNTIME_BINDING_NAMES,
   synchronizeCloudflarePagesRuntime,
   type CloudflarePagesProject,
 } from "./sync-cloudflare-pages-runtime.ts";
@@ -17,6 +20,7 @@ const previewValues = {
   CLOUDFLARE_IMAGES_ACCOUNT_HASH: "preview-images",
   CONVEX_SITE_URL: "https://preview.convex.site",
   CONVEX_URL: "https://preview.convex.cloud",
+  PUBLIC_RELEASE_SHA: "preview-release-sha",
   PUBLIC_SITE_URL: "https://preview.aohys.com",
 };
 
@@ -29,6 +33,7 @@ const productionValues = {
   CONVEX_SITE_URL: "https://production.convex.site",
   CONVEX_URL: "https://production.convex.cloud",
   PUBLIC_POSTHOG_KEY: "phc_production",
+  PUBLIC_RELEASE_SHA: "production-release-sha",
   PUBLIC_SITE_URL: "https://aohys.com",
 };
 
@@ -60,6 +65,20 @@ function pagesProject(
     },
   };
 }
+
+test("synchronizes every shared dashboard-runtime binding from the Environment Contract", () => {
+  const expectedBindings = getEnvironmentVariableDefinitions()
+    .filter(
+      (definition) =>
+        definition.requiredIn.includes("preview") &&
+        definition.requiredIn.includes("production") &&
+        definition.requiredTargets?.includes("dashboard-runtime"),
+    )
+    .map(({ name }) => name)
+    .sort();
+
+  assert.deepEqual([...RUNTIME_BINDING_NAMES].sort(), expectedBindings);
+});
 
 test("collects only the canonical plaintext bindings for the selected target", () => {
   assert.deepEqual(
@@ -95,7 +114,7 @@ test("skips PATCH when the selected target already matches", async () => {
     fetchImplementation,
   });
 
-  assert.deepEqual(result, { changed: false, bindingCount: 8 });
+  assert.deepEqual(result, { changed: false, bindingCount: 9 });
   assert.deepEqual(requests, [{ method: "GET" }]);
 });
 
@@ -130,7 +149,7 @@ test("PATCHes only target plaintext env vars, preserves hash, and verifies the w
     fetchImplementation,
   });
 
-  assert.deepEqual(result, { changed: true, bindingCount: 8 });
+  assert.deepEqual(result, { changed: true, bindingCount: 9 });
   assert.deepEqual(
     requests.map(({ method }) => method),
     ["GET", "PATCH", "GET"],
