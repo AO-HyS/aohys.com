@@ -1,6 +1,6 @@
 # Development System repository adapter
 
-Contract version: `1.5.15`
+Contract version: `1.5.16`
 Product: `aohys.com`
 Harness: `codex`
 
@@ -12,7 +12,7 @@ Preserve this product's domain language, stack, commands, release policy, and vi
 
 Both operator styles are supported:
 
-- Automatic routing: describe the software goal normally. In T3 Code, an explicit skill invocation routes to `working-backwards`; future customer story, Amazon Working Backwards, PRFAQ, and progressive planning requests route there. Direct implementation, review, diagnosis, research, and QA route to their matching flows. `drive-development-flow` never expands authority. Recommendation-only requests remain read-only. Non-trivial implementation follows the pure `orchestration-plan` output; trivial edits stay direct. An exact authorized multi-ticket work graph routes automatically to dependency-aware parallel lanes; ticket count alone never activates work.
+- Automatic routing: describe the software goal normally. In T3 Code, an explicit skill invocation routes to `working-backwards`; future customer story, Amazon Working Backwards, PRFAQ, and progressive planning requests route there. Direct implementation, review, diagnosis, research, and QA route to their matching flows. `drive-development-flow` never expands authority. Recommendation-only requests remain read-only. Mechanical execution, including trivial edits, code/file search, file creation, code generation, evidence collection, and focused tests, follows the ordered fast route; the Sol parent retains deliberation and integration judgment. An exact authorized multi-ticket work graph routes automatically to dependency-aware parallel lanes; ticket count alone never activates work.
 - Explicit routing: invoke the exact phase command when you want direct control.
 
 Explicit phase commands:
@@ -41,7 +41,7 @@ Commit, push, pull-request, preview, and deploy state changes occur only when th
 
 ## Operational prerequisite
 
-Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.22.0` and verify that Codex discovers these commands plus `drive-development-flow`, `coding-orchestration`, `pstack-engineering`, `working-backwards`, `parallel-work`, `simplify-code`, `orchestration-pilot`, and `check-in`. The internal `orchestration-plan` CLI operation is consumed by `coding-orchestration`; it is not a `$` skill. T3 Code consumes the Codex-compatible surface. T3 Code shares the Codex adapter structurally but has no independent live command proof in this release.
+Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.23.0` and verify that Codex discovers these commands plus `drive-development-flow`, `coding-orchestration`, `pstack-engineering`, `working-backwards`, `parallel-work`, `simplify-code`, `orchestration-pilot`, and `check-in`. The internal `orchestration-plan` CLI operation is consumed by `coding-orchestration`; it is not a `$` skill. T3 Code consumes the Codex-compatible surface. T3 Code shares the Codex adapter structurally but has no independent live command proof in this release.
 
 Global `exa-search` is paid public-web retrieval. This adapter never activates a paid service; it only declares its availability and never calls or activates it. A repository opt-in or explicit user invocation is required, and every request must receive no secrets, private source, customer data, PHI, PII, private URLs, or private identifiers. Global `global-agent-guardrails` must be enabled and audited separately; it is defense in depth, not authorization or a sandbox.
 
