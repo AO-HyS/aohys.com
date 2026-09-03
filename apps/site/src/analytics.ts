@@ -106,13 +106,6 @@ export function normalizeAnalyticsReleaseSha(
   return RELEASE_SHA_PATTERN.test(normalized) ? normalized : undefined;
 }
 
-function buildEnvironmentReleaseSha(): string | undefined {
-  const metadata = import.meta as ImportMeta & {
-    env?: { PUBLIC_RELEASE_SHA?: string };
-  };
-  return metadata.env?.PUBLIC_RELEASE_SHA;
-}
-
 function normalizePath(path: string): string {
   const normalized = path.trim();
   return normalized.startsWith("/") ? normalized : `/${normalized}`;
@@ -345,7 +338,7 @@ export function buildAnalyticsBootstrapPayload(
 ): AnalyticsBootstrapPayload {
   const config = buildPostHogClientConfig(settings);
   const release = normalizeAnalyticsReleaseSha(
-    settings.releaseSha ?? context.release ?? buildEnvironmentReleaseSha(),
+    settings.releaseSha ?? context.release,
   );
   const releaseContext: AnalyticsContext = {
     contentId: context.contentId,

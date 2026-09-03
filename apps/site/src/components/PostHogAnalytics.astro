@@ -30,6 +30,7 @@ const context: AnalyticsContext = {
 
 const payload = buildAnalyticsBootstrapPayload({
   key: import.meta.env.PUBLIC_POSTHOG_KEY,
+  releaseSha: import.meta.env.PUBLIC_RELEASE_SHA,
   environment,
   canonicalUrl,
 }, context);
