@@ -13,6 +13,9 @@ coverage/
 
 # Local agent/tooling state
 .agents/
+!.agents/
+.agents/*
+!.agents/skills/
 .claude/
 .codex/
 !.codex/

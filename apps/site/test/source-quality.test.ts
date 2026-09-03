@@ -337,4 +337,14 @@ describe("public site source quality", () => {
     );
     expect(dashboardPackage).toContain("vite build");
   });
+
+  it("reads the public release SHA through Vite's static env transform", () => {
+    const analytics = read("src/analytics.ts");
+    const posthogAnalytics = read("src/components/PostHogAnalytics.astro");
+
+    expect(posthogAnalytics).toContain(
+      "releaseSha: import.meta.env.PUBLIC_RELEASE_SHA",
+    );
+    expect(analytics).not.toContain("import.meta");
+  });
 });

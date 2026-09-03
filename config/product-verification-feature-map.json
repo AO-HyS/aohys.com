@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "product": "aohys.com",
+  "surfaces": [
+    {
+      "id": "site",
+      "app": "apps/site",
+      "localOrigin": "http://localhost:4321",
+      "scope": "public marketing site, case studies, and calls to action"
+    },
+    {
+      "id": "dashboard",
+      "app": "apps/dashboard",
+      "localOrigin": "http://127.0.0.1:5180",
+      "scope": "private operations workspace behind Better Auth"
+    },
+    {
+      "id": "backend",
+      "app": "apps/backend",
+      "scope": "Convex data and functions; no browser surface"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "site-public-home",
+      "surface": "site",
+      "launch": "SITE_URL or http://localhost:4321/",
+      "identity": "anonymous",
+      "identityClass": "anonymous",
+      "behavior": "The public home renders the sunlit product stage with the primary 'Let's talk' / 'Hablemos' ticket and the secondary selected-work link without authentication.",
+      "routes": ["/", "/es/"],
+      "preconditions": [
+        "The site app is ready on its authorized local origin.",
+        "No session, fixture, or write is required."
+      ],
+      "steps": [
+        "Navigate to / with Computer Use as an anonymous visitor.",
+        "Capture the initial viewport.",
+        "Observe the primary ticket, the secondary selected-work link, and the project stage.",
+        "Capture the final viewport plus console and network observations."
+      ],
+      "expectedResults": [
+        "The home renders in the declared locale without a runtime error or not-found state.",
+        "The primary and secondary actions are visible.",
+        "The route stays on the allowed origin and no write occurs."
+      ],
+      "beforeProbe": "GET / and record status, final URL, and selected safe headers.",
+      "afterProbe": "Repeat the same GET and assert the response and final URL are unchanged.",
+      "cleanup": "none; sideEffectMode is none",
+      "evidence": "$HOME/.development-system/private/verification/<run-id>/site-public-home/",
+      "sideEffectMode": "none",
+      "status": "draft",
+      "sourceGlobs": [
+        "apps/site/src/pages/index.astro",
+        "apps/site/src/components/sunlit/SunlitCtaBand.astro"
+      ]
+    },
+    {
+      "id": "site-case-study-casa-roca",
+      "surface": "site",
+      "launch": "SITE_URL or http://localhost:4321/case-studies/casa-roca",
+      "identity": "anonymous",
+      "identityClass": "anonymous",
+      "behavior": "The Casa Roca case study renders its localized project stage evidence without authentication.",
+      "routes": ["/case-studies/casa-roca", "/es/casos/casa-roca"],
+      "preconditions": [
+        "The site app is ready on its authorized local origin.",
+        "The static case-study route is published by packages/content-graph."
+      ],
+      "steps": [
+        "Navigate to each mapped locale route with Computer Use as an anonymous visitor.",
+        "Observe the project stage media, outcome copy, and case navigation.",
+        "Capture the final viewport plus console and network observations."
+      ],
+      "expectedResults": [
+        "Both locales render case-study evidence without a not-found state or runtime error.",
+        "The route stays on the allowed origin and no write occurs."
+      ],
+      "beforeProbe": "GET each mapped route and record status and final URL.",
+      "afterProbe": "Repeat the same GETs and assert the responses are unchanged.",
+      "cleanup": "none; sideEffectMode is none",
+      "evidence": "$HOME/.development-system/private/verification/<run-id>/site-case-study-casa-roca/",
+      "sideEffectMode": "none",
+      "status": "draft",
+      "sourceGlobs": [
+        "apps/site/src/pages/[...path].astro",
+        "packages/content-graph/src/static-case-study-routes.ts"
+      ]
+    },
+    {
+      "id": "dashboard-auth-gate",
+      "surface": "dashboard",
+      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard",
+      "identity": "anonymous",
+      "identityClass": "anonymous",
+      "behavior": "Unauthenticated navigation to the protected dashboard does not render operations content; the observed redirect target is recorded verbatim at run time.",
+      "routes": ["/dashboard"],
+      "preconditions": [
+        "No session exists; this journey never automates login or creates a browser profile.",
+        "Production remains read-only."
+      ],
+      "steps": [
+        "Navigate to /dashboard without a session using Computer Use.",
+        "Capture the observed response, final URL, and visible state.",
+        "Assert no Overview, Leads, Projects, Resume, or Settings content rendered."
+      ],
+      "expectedResults": [
+        "The protected route never renders dashboard content anonymously.",
+        "The observed redirect is recorded exactly as seen; the exact sign-in origin is not claimed until evidence exists."
+      ],
+      "beforeProbe": "GET /dashboard and record status and final URL without following the redirect.",
+      "afterProbe": "Repeat the same GET and assert the observed state is unchanged.",
+      "cleanup": "none; sideEffectMode is none",
+      "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-auth-gate/",
+      "sideEffectMode": "none",
+      "status": "draft",
+      "sourceGlobs": [
+        "apps/dashboard/src/app/router.tsx",
+        "apps/dashboard/src/runtime-config.ts"
+      ]
+    },
+    {
+      "id": "dashboard-overview",
+      "surface": "dashboard",
+      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard/",
+      "identity": "host.dashboard-operator-session",
+      "identityClass": "authorized-session",
+      "behavior": "An authorized dashboard operator opens Overview and observes the operational readiness checklist without mutating anything.",
+      "routes": ["/dashboard/"],
+      "preconditions": [
+        "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
+        "Production remains read-only."
+      ],
+      "steps": [
+        "Navigate to /dashboard/ with the existing authorized session only.",
+        "Observe the readiness checklist and the next trustworthy action.",
+        "Capture discriminating screenshots plus console and network observations."
+      ],
+      "expectedResults": [
+        "Overview renders its five sections without an unexpected runtime error.",
+        "No data changes and unrelated records remain unchanged.",
+        "Session material never enters the execution record."
+      ],
+      "beforeProbe": "Record the visible checklist sections and console error count.",
+      "afterProbe": "Repeat the same observation and assert the checklist state is unchanged.",
+      "cleanup": "none; sideEffectMode is none",
+      "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-overview/",
+      "sideEffectMode": "none",
+      "status": "draft",
+      "sourceGlobs": [
+        "apps/dashboard/src/app/dashboard-shell.tsx",
+        "apps/dashboard/src/navigation.ts"
+      ]
+    },
+    {
+      "id": "dashboard-leads",
+      "surface": "dashboard",
+      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard/leads",
+      "identity": "host.dashboard-operator-session",
+      "identityClass": "authorized-session",
+      "behavior": "An authorized operator opens Leads and observes contact requests and their statuses without mutating anything.",
+      "routes": ["/dashboard/leads"],
+      "preconditions": [
+        "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
+        "Production remains read-only."
+      ],
+      "steps": [
+        "Navigate to /dashboard/leads with the existing authorized session only.",
+        "Observe the contact-request list and its status values.",
+        "Capture discriminating screenshots plus console and network observations."
+      ],
+      "expectedResults": [
+        "Leads renders without an unexpected runtime error.",
+        "No record is created, edited, or deleted; any future mutation requires sideEffectMode authorized-writes with a run-scoped fixture, before/after probes, cleanup, and a host authorization receipt outside this repository."
+      ],
+      "beforeProbe": "Record the visible lead list summary and console error count.",
+      "afterProbe": "Repeat the same observation and assert the list state is unchanged.",
+      "cleanup": "none; sideEffectMode is none",
+      "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-leads/",
+      "sideEffectMode": "none",
+      "status": "draft",
+      "sourceGlobs": ["apps/dashboard/src/features/leads"]
+    }
+  ]
+}
