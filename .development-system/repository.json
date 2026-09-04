@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "1.5.16",
+  "contractVersion": "1.5.18",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [
@@ -128,14 +128,100 @@
     "sharedPreview": "once-per-candidate",
     "providerReadiness": "before-shared-preview-when-affected"
   },
+  "antiSlop": {
+    "schema": "executable-lane-contract-v1",
+    "upstream": {
+      "catalogSkill": "install-anti-slop",
+      "repository": "https://github.com/dmmulroy/anti-slop",
+      "commit": "e8c4880471b23ab7f216fba7b27d173a6ef07d4c",
+      "treeSha256": "c309c21257eea4c681cb2388e1939c6f03d98af17885ff14e3b38efaf01f6a55",
+      "license": "MIT"
+    },
+    "phases": [
+      {
+        "order": 1,
+        "id": "pre-implementation-simplification",
+        "ownerRole": "fast_implementer",
+        "laneType": "writer",
+        "writable": true,
+        "dependsOn": []
+      },
+      {
+        "order": 2,
+        "id": "behavior-first-evidence-design",
+        "ownerRole": "fast_implementer",
+        "laneType": "writer",
+        "writable": true,
+        "dependsOn": ["pre-implementation-simplification"]
+      },
+      {
+        "order": 3,
+        "id": "implementation",
+        "ownerRole": "fast_implementer",
+        "laneType": "writer",
+        "writable": true,
+        "dependsOn": ["behavior-first-evidence-design"]
+      },
+      {
+        "order": 4,
+        "id": "test-value-review",
+        "ownerRole": "reviewer",
+        "laneType": "independent-review",
+        "writable": false,
+        "dependsOn": ["implementation"]
+      },
+      {
+        "order": 5,
+        "id": "deletion-pass",
+        "ownerRole": "fast_implementer",
+        "laneType": "correction",
+        "writable": true,
+        "dependsOn": ["test-value-review"]
+      },
+      {
+        "order": 6,
+        "id": "independent-objective-verification",
+        "ownerRole": "reviewer",
+        "laneType": "independent-review",
+        "writable": false,
+        "dependsOn": ["deletion-pass"]
+      }
+    ],
+    "testsAreSubordinateEvidence": true,
+    "independentVerification": "oracle-derived-from-objective-and-public-interface",
+    "excludedMetrics": [
+      "lines-of-code",
+      "file-counts",
+      "test-to-runtime-line-ratio",
+      "identifier-length",
+      "minified-or-compressed-formatting"
+    ],
+    "diagnosticOnlyMetrics": ["cyclomatic-complexity", "halstead-complexity"],
+    "installerSafety": {
+      "entrypoint": "scripts/install.mjs",
+      "refuses": [
+        "absolute-targets",
+        "empty-dot-or-parent-segments",
+        "backslash-targets",
+        "symlink-ancestors-or-target-escape"
+      ],
+      "forceBehaviorPreserved": true
+    },
+    "factoryCoverage": {
+      "policy": "requirements-embedded-in-lane-contracts",
+      "installedSkillsRequired": false
+    }
+  },
   "operatorPrerequisites": {
-    "skillCatalogVersion": "0.23.0",
+    "skillCatalogVersion": "0.25.0",
     "installationScope": "global",
     "readinessScope": "repository-adapter-only",
     "requiredSkills": [
       "drive-development-flow",
       "coding-orchestration",
       "simplify-code",
+      "behavioral-evidence",
+      "install-anti-slop",
       "wayfinder",
       "grill-with-docs",
       "to-spec",
