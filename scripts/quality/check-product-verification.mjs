@@ -45,8 +45,11 @@ if (!fs.existsSync(skillPath)) {
     !skill.includes("$HOME/.development-system/private/verification/<run-id>")
   )
     fail("skill must use the private host evidence directory");
-  if (!/Luna Max\/Fast/.test(skill) || !/Sol owns/.test(skill))
-    fail("skill must separate neutral Luna execution from Sol judgment");
+  if (
+    !/Astra is the neutral Computer Use\s+executor/.test(skill) ||
+    !/Astra owns/.test(skill)
+  )
+    fail("skill must separate neutral Astra execution from Astra judgment");
   if (!skill.includes("config/product-verification-feature-map.json"))
     fail("skill must reference the canonical product feature map");
   if (!/Computer Use/.test(skill))
