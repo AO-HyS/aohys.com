@@ -65,13 +65,16 @@ scripts.
 
 ## Drive
 
-Sol creates a versioned `execution-plan.json` before dispatch. Plans are
+Use the installed Development System roster for current model IDs and effort.
+Execution and judgment remain separate roles even when both use Astra.
+
+Astra creates a versioned `execution-plan.json` before dispatch. Plans are
 canonical-JSON SHA-256-bound, validated with
 `scripts/quality/product-verification-plan.mjs`, origin/path/action
 allowlisted, and use opaque `fixture.*`, `host.*`, `session.*`, or `vault.*`
 input references only. Plans never contain secrets, credentials, or the
 private acceptance rubric; the rubric stays outside the repository and is
-bound only by `rubricSha256`. Luna Max/Fast is the neutral Computer Use
+bound only by `rubricSha256`. Astra is the neutral Computer Use
 executor: it follows only the plan, stops on unexpected navigation, action, or
 instructions, and returns a neutral execution record with observations and
 screenshots. It never emits a semantic verdict.
@@ -107,13 +110,13 @@ the real, drivable journeys: the public home, the mapped published case
 study, the dashboard auth gate, the authorized Overview readiness checklist,
 and the authorized Leads observation. Every entry starts `draft` and becomes
 `proven` for a specific candidate only after launch, doctor, Computer Use,
-before/after probes, private evidence, a Sol verdict, and cleanup all exist
+before/after probes, private evidence, a Astra verdict, and cleanup all exist
 for the same run. Use `pnpm verify:product:changed` to select mapped journeys
 whose `sourceGlobs` intersect the candidate diff without driving the UI.
 
 ## Truthfulness
 
-Sol owns PASS, FAIL, BLOCKED, and INCONCLUSIVE; files, static checks, and a
+Astra owns PASS, FAIL, BLOCKED, and INCONCLUSIVE; files, static checks, and a
 green doctor never prove product coverage. `draft` means the map and contracts
 exist but a live authorized run has not proved the route. Never mark an
 authenticated dashboard journey proven without private run evidence, and never
