@@ -4,7 +4,7 @@ Read this file before changing the repository.
 
 ## Coding orchestration
 
-For every non-trivial coding task, load the global `coding-orchestration` skill and use the global Codex agents from `${CODEX_HOME:-$HOME/.codex}/agents`. Their TOML files are the single source of truth for GPT-5.6 model, reasoning, and sandbox selection; do not add repo-local model maps, routers, or custom-agent copies.
+For every non-trivial coding task, load the global `coding-orchestration` skill and use the global Codex agents from `${CODEX_HOME:-$HOME/.codex}/agents`. Their TOML files are the single source of truth for model, reasoning, and sandbox selection; do not add repo-local model maps, routers, or custom-agent copies.
 
 Keep trivial direct answers, one-line read-only checks, and tiny localized edits on the parent agent. For delegated work, prefer parallel read-only discovery and verification, keep one writer by default, and preserve the dependency gates defined by the global skill.
 
@@ -43,3 +43,12 @@ Use the canonical `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-hu
 ### Domain docs
 
 AOHYS uses a single domain context through `CONTEXT.md` and global ADRs in `docs/adr/`. See `docs/agents/domain.md`.
+
+## Development System package
+
+The pinned development dependency supplies the shared contract and skills. Run
+`pnpm ds setup` explicitly after adopting a release; dependency installation
+never changes HOME. Use the installed global roster for models and effort.
+Astra owns decisions, design, review and Computer Use; OpenCode Go is the first
+bounded implementation route. Keep product tokens, architecture and release
+rules here; Impeccable and focused interface skills complement that context.
