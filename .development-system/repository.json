@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "1.7.0",
+  "contractVersion": "1.8.1",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [
@@ -213,7 +213,7 @@
     }
   },
   "operatorPrerequisites": {
-    "skillCatalogVersion": "0.28.0",
+    "skillCatalogVersion": "0.29.1",
     "installationScope": "global",
     "readinessScope": "repository-adapter-only",
     "requiredSkills": [
