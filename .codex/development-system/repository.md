@@ -1,6 +1,6 @@
 # Development System repository adapter
 
-Contract version: `1.8.1`
+Contract version: `1.8.2`
 Product: `aohys.com`
 Harness: `codex`
 
@@ -21,13 +21,13 @@ Explicit phase commands:
 - `$grill-with-docs`: requirements; explicit invocation only and stop for human approval.
 - `$to-spec`: spec plus Local Visual Plan; explicit invocation only and stop for human approval.
 - `$to-tickets`: executable slices; explicit invocation only and stop for human approval.
-- `$flow-implement`: one named terminal slice; run the autonomous development loop only inside the request's existing authority and stop at the pinned human boundary. Tests, validation, review, correction, and proportional QA are development substeps and grant no external-state authority.
+- `$flow-implement`: deliver the full requested outcome; run the autonomous development loop only inside the request's existing authority and stop at the pinned human boundary, preserving incomplete objectives and already-granted authority across stages and turns. Tests, validation, review, correction, and proportional QA are development substeps and grant no external-state authority.
 - `$flow-code-review`: independent review of an existing branch or pull request.
 - `$simplify-code`: optional read-only review for safe deletion and reuse.
 - `$working-backwards`: customer-first feature definition through the three persisted approval gates; it produces an implementation map but never authorizes implementation.
 - `$orchestration-pilot`: read-only five-run-or-five-day evaluation of direct, sequential, and delegated development work.
 
-Before implementation, pin one objective, constraints, exact scope, required evidence and validation, a verifiable stop condition, and every human or external-state boundary. For non-trivial write work, the ordered anti-slop protocol is an executable lane contract, not advice: the writer performs pre-implementation simplification, behavior-first evidence design, and implementation; an independent read-only test-value review then audits every changed or new test and refuses green-only acceptance, weakened assertions, updated snapshots, or private-structure tests without observable-behavior justification; a writable fast-writer correction lane follows that review, applies safe deletions and corrections across production and test code, reports what was deleted, kept, and why, and reruns the focused checks after edits; independent objective-derived verification finishes only after the correction lane, deriving its oracle from the accepted objective and public interface. Tests are subordinate evidence. Lines of code, file counts, and test-to-runtime line ratios are never quality gates, and cyclomatic or Halstead signals stay diagnostic only. These requirements are embedded in every lane contract, so harness writers (including Factory) never depend on installed skills or Codex skill discovery. The vendored `install-anti-slop` capability installs only through its Development System contained `scripts/install.mjs` entrypoint, which refuses absolute targets, empty, dot, or parent path segments, backslash targets, and any symlink escape, including destination symlinks under `--force`; the pristine upstream installer source and MIT provenance are preserved unchanged. A native goal is created only on explicit request; its persistence never expands authority or scope.
+Before implementation, pin one objective, constraints, exact scope, required evidence and validation, a verifiable stop condition, and every human or external-state boundary. For non-trivial write work, the ordered anti-slop protocol is an executable lane contract, not advice: the writer performs pre-implementation simplification, behavior-first evidence design, and implementation, then Astra reviews every changed/new test for behavioral value and performs ordinary review in the parent lane; Fable assists review only for observed complexity or an explicit independence request. Correction applies only to actual findings and reruns the focused checks for the edited surfaces; a correction with no findings is recorded as an evidenced no-op. After corrections, Astra verifies the requested objective against the public interface and rejects weakened assertions or a green-only acceptance. Tests are subordinate evidence: meaningful tests target observable behavior through public interfaces, and updated snapshots or private-structure assertions require observable-behavior justification. Lines of code, file counts, and test-to-runtime line ratios are never quality gates, and cyclomatic or Halstead signals stay diagnostic only. These requirements are embedded in every lane contract, so harness writers (including Factory) never depend on installed skills or Codex skill discovery. The vendored `install-anti-slop` capability installs only through its Development System contained `scripts/install.mjs` entrypoint, which refuses absolute targets, empty, dot, or parent path segments, backslash targets, and any symlink escape, including destination symlinks under `--force`; the pristine upstream installer source and MIT provenance are preserved unchanged. A native goal is created only on explicit request; its persistence never expands authority or scope.
 
 Commit, push, pull-request, preview, and deploy state changes occur only when the request and repository policy authorize them. Merge, release, and production require explicit authority for each operation; one user instruction can grant all of them. Preserve that authority across stages and turns. Neither automatic nor explicit phase routing grants promotion authority.
 
@@ -38,10 +38,22 @@ Commit, push, pull-request, preview, and deploy state changes occur only when th
 - QA is selected by observable risk. Documentation, labels, copy, icons, and internal-only changes do not inherit browser or E2E work without a mapped surface.
 - Parallel or sequential implementation lanes converge before `develop`; Git carries their history, and `develop` produces one shared branch preview without manual SHA bookkeeping.
 - Provider readiness for auth, data migrations, seeds, roles, and environment contracts is proven before the shared preview merge when those surfaces changed.
+- Stop testing once the affected checks and required gates pass; rerun only after relevant changes, failures, or unresolved risk, reusing valid evidence for the same candidate and environment. Never bypass mandatory hooks or CI.
+
+## Instruction precedence
+
+- User intent and granted authority override skill guidelines; historical specs and ADRs do not reopen settled approvals.
+- Platform security and repository protected boundaries still apply.
+- When a skill blocks, cite the exact file and instruction plus why it applies instead of a vague permission request.
+
+## Execution economy
+
+- Batch independent reads and tool calls; overlap independent CI and work, but never run simultaneous mutating builds on the same surface.
+- Dispatch only bounded, genuinely useful work; trivial edits stay direct. This adapter does not enable API async tools or configuration_update; do not claim host support without runtime evidence.
 
 ## Operational prerequisite
 
-Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.29.1` and verify that Codex discovers these commands plus `drive-development-flow`, `coding-orchestration`, `pstack-engineering`, `working-backwards`, `parallel-work`, `simplify-code`, `orchestration-pilot`, and `check-in`. The internal `orchestration-plan` CLI operation is consumed by `coding-orchestration`; it is not a `$` skill. T3 Code consumes the Codex-compatible surface. T3 Code shares the Codex adapter structurally but has no independent live command proof in this release.
+Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.29.2` and verify that Codex discovers these commands plus `drive-development-flow`, `coding-orchestration`, `pstack-engineering`, `working-backwards`, `parallel-work`, `simplify-code`, `orchestration-pilot`, and `check-in`. The internal `orchestration-plan` CLI operation is consumed by `coding-orchestration`; it is not a `$` skill. T3 Code consumes the Codex-compatible surface. T3 Code shares the Codex adapter structurally but has no independent live command proof in this release.
 
 Global `exa-search` is paid public-web retrieval. This adapter never activates a paid service; it only declares its availability and never calls or activates it. A repository opt-in or explicit user invocation is required, and every request must receive no secrets, private source, customer data, PHI, PII, private URLs, or private identifiers. Global `global-agent-guardrails` must be enabled and audited separately; it is defense in depth, not authorization or a sandbox.
 
