@@ -75,6 +75,6 @@
     "react-doctor": "0.9.12",
     "tsx": "^4.22.4",
     "wrangler": "^4.105.0",
-    "@aohys/development-system": "https://github.com/AO-HyS/development-system/releases/download/v1.8.2/aohys-development-system-1.8.2.tgz"
+    "@aohys/development-system": "https://github.com/AO-HyS/development-system/releases/download/v1.8.3/aohys-development-system-1.8.3.tgz"
   }
 }
