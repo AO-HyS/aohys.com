@@ -8,8 +8,8 @@ importers:
   .:
     devDependencies:
       "@aohys/development-system":
-        specifier: https://github.com/AO-HyS/development-system/releases/download/v1.6.1/aohys-development-system-1.6.1.tgz
-        version: https://github.com/AO-HyS/development-system/releases/download/v1.6.1/aohys-development-system-1.6.1.tgz
+        specifier: https://github.com/AO-HyS/development-system/releases/download/v1.7.0/aohys-development-system-1.7.0.tgz
+        version: https://github.com/AO-HyS/development-system/releases/download/v1.7.0/aohys-development-system-1.7.0.tgz
       "@aohys/environment":
         specifier: workspace:*
         version: link:packages/environment
@@ -268,13 +268,13 @@ importers:
         version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.0.1)(happy-dom@20.11.6)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
 
 packages:
-  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.6.1/aohys-development-system-1.6.1.tgz":
+  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.7.0/aohys-development-system-1.7.0.tgz":
     resolution:
       {
-        integrity: sha512-VQjkVqbkRVSh27cjCTEfOznpvhW1L59AgTArlBuzljH3rw9sAQ/AbvzFmZQmZXSkxqczDehCbLAGilcrujuYUw==,
-        tarball: https://github.com/AO-HyS/development-system/releases/download/v1.6.1/aohys-development-system-1.6.1.tgz,
+        integrity: sha512-qifpg1adUujXLSRC5TpGJUNa9N8svLWsVnaP046S50kIZy4/65d1MOJ+P9r/7WCW8jcyL9z5MJZRZIdz8pr29g==,
+        tarball: https://github.com/AO-HyS/development-system/releases/download/v1.7.0/aohys-development-system-1.7.0.tgz,
       }
-    version: 1.6.1
+    version: 1.7.0
     engines: { node: ">=22.0.0" }
     hasBin: true
 
@@ -9091,7 +9091,7 @@ packages:
       }
 
 snapshots:
-  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.6.1/aohys-development-system-1.6.1.tgz":
+  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.7.0/aohys-development-system-1.7.0.tgz":
     {}
 
   "@apm-js-collab/code-transformer-bundler-plugins@0.7.2":
