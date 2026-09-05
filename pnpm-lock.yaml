@@ -8,8 +8,8 @@ importers:
   .:
     devDependencies:
       "@aohys/development-system":
-        specifier: https://github.com/AO-HyS/development-system/releases/download/v1.8.1/aohys-development-system-1.8.1.tgz
-        version: https://github.com/AO-HyS/development-system/releases/download/v1.8.1/aohys-development-system-1.8.1.tgz
+        specifier: https://github.com/AO-HyS/development-system/releases/download/v1.8.2/aohys-development-system-1.8.2.tgz
+        version: https://github.com/AO-HyS/development-system/releases/download/v1.8.2/aohys-development-system-1.8.2.tgz
       "@aohys/environment":
         specifier: workspace:*
         version: link:packages/environment
@@ -268,13 +268,13 @@ importers:
         version: 4.1.9(@opentelemetry/api@1.9.1)(@types/node@26.0.1)(happy-dom@20.11.6)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
 
 packages:
-  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.8.1/aohys-development-system-1.8.1.tgz":
+  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.8.2/aohys-development-system-1.8.2.tgz":
     resolution:
       {
-        integrity: sha512-jqga/+4E1YxM+gRPtWRT/Csy1/SghOyohAQVk72wRaH8H5CAg7nTM05WLMovZeAeUD0SVhwe/NX6PHv3v8NFTQ==,
-        tarball: https://github.com/AO-HyS/development-system/releases/download/v1.8.1/aohys-development-system-1.8.1.tgz,
+        integrity: sha512-BZsMD9mAt300Ttj7uiUU/oCvPMm+eHzy0ECrjIwDNX2axg0YnhsBJ2KkHB3WXqcQ6iMQpFxd9K1J7xlY/Dg+fg==,
+        tarball: https://github.com/AO-HyS/development-system/releases/download/v1.8.2/aohys-development-system-1.8.2.tgz,
       }
-    version: 1.8.1
+    version: 1.8.2
     engines: { node: ">=22.0.0" }
     hasBin: true
 
@@ -9091,7 +9091,7 @@ packages:
       }
 
 snapshots:
-  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.8.1/aohys-development-system-1.8.1.tgz":
+  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.8.2/aohys-development-system-1.8.2.tgz":
     {}
 
   "@apm-js-collab/code-transformer-bundler-plugins@0.7.2":
