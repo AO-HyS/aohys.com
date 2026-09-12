@@ -1,6 +1,6 @@
 # Development System repository adapter
 
-Contract version: `1.18.0`
+Contract version: `1.18.1`
 Product: `aohys.com`
 Harness: `codex`
 
@@ -122,7 +122,7 @@ Preview
 
 ## Installation and final report
 
-Synchronize global skill catalog `0.39.0` with the pinned
+Synchronize global skill catalog `0.39.1` with the pinned
 Development System package. Installation and structural readiness do not prove
 live loading; T3 and other hosts need their own observations. Ordinary completion
 uses a concise outcome, checks, remaining gaps and usable links. Generate a
