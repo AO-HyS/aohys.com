@@ -56,9 +56,9 @@
     {
       "id": "impeccable",
       "category": "visual-quality",
-      "command": "node",
+      "command": ".agents/skills/impeccable/scripts/impeccable",
       "args": [
-        ".agents/skills/impeccable/scripts/detect.mjs",
+        "detect",
         "--json",
         "--no-advisory",
         "apps/dashboard/src",

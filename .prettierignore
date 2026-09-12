@@ -1,0 +1,4 @@
+# Vendored Impeccable files retain the published upstream bytes.
+.agents/skills/impeccable/
+.claude/skills/impeccable/
+.github/skills/impeccable/
