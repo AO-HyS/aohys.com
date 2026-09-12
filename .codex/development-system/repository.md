@@ -1,79 +1,94 @@
 # Development System repository adapter
 
-Contract version: `1.10.0`
+Contract version: `1.18.1`
 Product: `aohys.com`
 Harness: `codex`
 
-Codex uses the native repository adapter; T3 Code shares this Codex contract and state namespace.
+Codex uses the native repository adapter; T3 Code consumes the Codex-compatible
+surface. This describes installed guidance, not proof of discovery or behavior.
+Preserve this product's domain, stack, commands, release policy and design.
 
-Preserve this product's domain language, stack, commands, release policy, and visual design. Do not import another product's vocabulary or activate paid services.
+## Requested workflow and completion
 
-## Lifecycle interface
+Optimize **rápido → bien → barato**: delivery of the complete usable result,
+including corrections. The starting conversation model remains the orchestrator;
+it chooses available agents within the user's provider and capability limits.
+The roster recommends defaults; it does not replace the selected parent. Design,
+visual critique and Computer Use require actual vision/browser capability.
+Restricted provider families stay restricted in descendants.
 
-Both operator styles are supported:
+Use `drive-development-flow` to select only the requested stage. Clear work
+proceeds through `$flow-implement`; an existing spec or settled decisions do not
+require another grill. Use `coding-orchestration` or an already selected
+`orchestrate-work` method for useful delegation, integration and verification.
+A bounded worker executes its packet without restarting parent routing.
 
-- Automatic routing: describe the software goal normally. In T3 Code, an explicit skill invocation routes to `working-backwards`; future customer story, Amazon Working Backwards, PRFAQ, and progressive planning requests route there. Direct implementation, review, diagnosis, research, and QA route to their matching flows. `drive-development-flow` never expands authority. Recommendation-only requests remain read-only. Astra owns orchestration, decisions, design, review, Computer Use and integration. Deterministic searches, Git operations and checks run directly with tools. Bounded implementation uses OpenCode Go first, Factory/Devin as declared fallbacks, and Luna last; Fable assists complex review. Logical phases do not mandate separate agents. Preserve publication authority already granted by the user. An exact authorized multi-ticket work graph routes automatically to dependency-aware parallel lanes; ticket count alone never activates work.
-- Explicit routing: invoke the exact phase command when you want direct control.
+Explicit discovery or definition can use `$wayfinder`, `$grill-with-docs`,
+`$working-backwards`, `$to-spec` or `$to-tickets` when available. Ordinary work
+does not load these stages automatically. `$flow-code-review` reviews a diff;
+`review-thread` audits execution claims. `simplify-code`, `pstack-engineering`
+and `orchestration-pilot` are optional for their specific requests or bottlenecks.
+The internal `orchestration-plan` operation describes a work graph; it is not
+a skill, a dispatcher or an authorization receipt.
 
-Explicit phase commands:
+Define observable behavior, relevant checks and the authorized endpoint. Continue
+implementation, verification and corrections until those criteria are met. Reuse
+valid decisions and evidence on resume. Preserve user authorization across turns;
+prepare the reviewable result before asking for a genuinely missing decision.
+Commit, push, PR, merge, release, production, external writes and paid activation
+follow the request and repository policy. One instruction may authorize several
+operations. A native goal requires an explicit user request; its persistence never expands authority.
+A plan or installed skill grants no additional authority; platform and repository protections remain.
 
-- `$wayfinder`: optional discovery outside the normal lifecycle; explicit invocation only.
-- `$grill-with-docs`: requirements; explicit invocation only and stop for human approval.
-- `$to-spec`: spec plus Local Visual Plan; explicit invocation only and stop for human approval.
-- `$to-tickets`: executable slices; explicit invocation only and stop for human approval.
-- `$flow-implement`: deliver the full requested outcome; run the autonomous development loop only inside the request's existing authority and stop at the pinned human boundary, preserving incomplete objectives and already-granted authority across stages and turns. Tests, validation, review, correction, and proportional QA are development substeps and grant no external-state authority.
-- `$flow-code-review`: independent review of an existing branch or pull request.
-- `$simplify-code`: optional read-only review for safe deletion and reuse.
-- `$working-backwards`: customer-first feature definition through the three persisted approval gates; it produces an implementation map but never authorizes implementation.
-- `$orchestration-pilot`: read-only five-run-or-five-day evaluation of direct, sequential, and delegated development work.
+## Proportional verification and design
 
-Before implementation, pin one objective, constraints, exact scope, required evidence and validation, a verifiable stop condition, and every human or external-state boundary. For non-trivial write work, the ordered anti-slop protocol is an executable lane contract, not advice: the writer performs pre-implementation simplification, behavior-first evidence design, and implementation, then Astra reviews every changed/new test for behavioral value and performs ordinary review in the parent lane; Fable assists review only for observed complexity or an explicit independence request. Correction applies only to actual findings and reruns the focused checks for the edited surfaces; a correction with no findings is recorded as an evidenced no-op. After corrections, Astra verifies the requested objective against the public interface and rejects weakened assertions or a green-only acceptance. Tests are subordinate evidence: meaningful tests target observable behavior through public interfaces, and updated snapshots or private-structure assertions require observable-behavior justification. Lines of code, file counts, and test-to-runtime line ratios are never quality gates, and cyclomatic or Halstead signals stay diagnostic only. These requirements are embedded in every lane contract, so harness writers (including Factory) never depend on installed skills or Codex skill discovery. The vendored `install-anti-slop` capability installs only through its Development System contained `scripts/install.mjs` entrypoint, which refuses absolute targets, empty, dot, or parent path segments, backslash targets, and any symlink escape, including destination symlinks under `--force`; the pristine upstream installer source and MIT provenance are preserved unchanged. A native goal is created only on explicit request; its persistence never expands authority or scope.
+Use changed validation for ordinary feedback and required certification once the
+integrated candidate stabilizes. Choose checks by the changed public behavior;
+new tests need a named failure they catch. Simplification, review of test value,
+correction and objective verification are responsibilities, not mandatory new
+agents or fixed review loops. The parent reviews ordinary work; use independent
+judgment for observed complex risk or when requested. Reject weakened assertions
+and unsupported green-check claims. File counts and style scores are not gates.
 
-Commit, push, pull-request, preview, and deploy state changes occur only when the request and repository policy authorize them. Merge, release, and production require explicit authority for each operation; one user instruction can grant all of them. Preserve that authority across stages and turns. Neither automatic nor explicit phase routing grants promotion authority.
+Repeat checks only for relevant edits, failures, required gates or unresolved
+concerns. Preserve exit codes and still-valid evidence. Never bypass hooks or CI.
+Documentation and internal-only changes do not inherit browser work without an
+affected product surface. Prove provider readiness when the changed auth, data,
+migration, seed, role or environment contract requires it.
 
-## Delivery policy
+For visual implementation, open the approved direction and accessible reference
+images. `design-quality` coordinates Impeccable and independent visual-capable
+critique; resolve material findings before `evidence-capture` packages final
+media. Diagnostic screenshots can precede that review. Existing reviewed media
+needs media validation, not another design cycle. Respect this repository's
+browser mechanism and privacy rules. Report unavailable capabilities honestly.
 
-- Ordinary implementation and pre-push feedback use the changed-validation command. A full repository suite is never implicit.
-- Full certification runs once for the integrated change when explicitly requested or required by the repository release policy.
-- QA is selected by observable risk. Documentation, labels, copy, icons, and internal-only changes do not inherit browser or E2E work without a mapped surface.
-- Parallel or sequential implementation lanes converge before `develop`; Git carries their history, and `develop` produces one shared branch preview without manual SHA bookkeeping.
-- Provider readiness for auth, data migrations, seeds, roles, and environment contracts is proven before the shared preview merge when those surfaces changed.
-- Stop testing once the affected checks and required gates pass; rerun only after relevant changes, failures, or unresolved risk, reusing valid evidence for the same candidate and environment. Never bypass mandatory hooks or CI.
+## Context and architecture
 
-## Instruction precedence
+Read product docs for the affected boundary: architecture when changing module
+ownership, schema/auth docs for data work, design context for visual changes and
+release guidance for publication. A typo does not require a full repository map.
+The installed architecture reference pack supports product-convergence work;
+it does not impose a folder template. Preserve dependency direction, public
+interfaces, feature state ownership and cohesive modules. Development System owns
+global agent guardrails, anti-slop tooling and release-train capabilities; local
+files supply product contracts rather than duplicating the global coordinator.
 
-- User intent and granted authority override skill guidelines; historical specs and ADRs do not reopen settled approvals.
-- Platform security and repository protected boundaries still apply.
-- When a skill blocks, cite the exact file and instruction plus why it applies instead of a vague permission request.
+Use native host tools and compact worker packets. Batch independent reads and
+keep one writer per surface. Independent writes require disjoint ownership and
+parent-owned integration. Planner output never performs writes. The contained
+anti-slop installer remains the only supported installer entrypoint and rejects
+path traversal and symlink escapes, including under force.
 
-## Execution economy
-
-- Batch independent reads and tool calls; overlap independent CI and work, but never run simultaneous mutating builds on the same surface.
-- Dispatch only bounded, genuinely useful work; trivial edits stay direct. This adapter does not enable API async tools or configuration_update; do not claim host support without runtime evidence.
-
-## Operational prerequisite
-
-Repository adapter readiness is structural, not proof of skill loading. Synchronize global skill catalog `0.31.0` and verify that Codex discovers these commands plus `drive-development-flow`, `coding-orchestration`, `pstack-engineering`, `working-backwards`, `parallel-work`, `simplify-code`, `orchestration-pilot`, and `check-in`. The internal `orchestration-plan` CLI operation is consumed by `coding-orchestration`; it is not a `$` skill. T3 Code consumes the Codex-compatible surface. T3 Code shares the Codex adapter structurally but has no independent live command proof in this release.
-
-Global `exa-search` is paid public-web retrieval. This adapter never activates a paid service; it only declares its availability and never calls or activates it. A repository opt-in or explicit user invocation is required, and every request must receive no secrets, private source, customer data, PHI, PII, private URLs, or private identifiers. Global `global-agent-guardrails` must be enabled and audited separately; it is defense in depth, not authorization or a sandbox.
-
-## Product architecture baseline
-
-- Map domain and capability ownership before moving files. Keep code, tests, documentation, adapters, and generated artifacts discoverable beside the boundary they explain.
-- Make dependency direction and public Interfaces explicit. Prefer cohesive deep modules over pass-through abstractions, duplicate contracts, or historical dumping grounds.
-- Define component boundaries by cohesion, responsibility, state ownership, composition, and public API—not by an arbitrary line count.
-- Keep backend contracts typed end to end. For Convex, require explicit authorization, validators, indexed bounded reads, and deliberate storage/migration boundaries.
-- Select fast checks from changed surfaces: architecture rules, strict typecheck, focused behavior tests, performance/security checks, and visual review when UI changed.
-- Use the installed architecture reference pack at `~/.codex/development-system/architecture-reference-pack.md` for product-convergence work. It is comparative evidence, not a universal folder template.
-
-## Development System-owned capabilities
-
-Agent guardrails, global anti-slop policy, and Release Train design are supplied and evolved by the Development System. A product architecture migration must not duplicate or redesign them. The repository remains responsible for exposing real changed-validation, certification, QA, preview, and provider-readiness commands that those global capabilities consume.
+Global `exa-search` uses public-web retrieval only when requested or opted in;
+never send secrets, private source, private URLs, PII or PHI. This adapter does
+not call or activate a paid service. Agent guardrails are defense in depth,
+not permission or a sandbox.
 
 ## Stack rules
 
-- React: preserve component locality, accessibility, and existing visual design; use the configured validation and QA commands. React Doctor is advisory unless this repository explicitly configures it as a gate.
-- Convex: require argument and return validators, explicit authorization boundaries, indexed bounded reads, and the repository's configured validation command.
+- React: preserve component locality, accessibility, state ownership and the approved visual language. React Doctor is advisory unless this repository makes it a gate.
+- Convex: keep argument and return validators, explicit authorization, tenant boundaries and indexed bounded reads. Follow the product's schema and migration contract.
 
 ## Repository commands
 
@@ -105,6 +120,11 @@ Preview
 
 - pnpm run cloudflare:local
 
-## Architecture diagnostic
+## Installation and final report
 
-`improve-codebase-architecture` is manual and proposal-only. It must propose deepening before any separately authorized refactor.
+Synchronize global skill catalog `0.39.1` with the pinned
+Development System package. Installation and structural readiness do not prove
+live loading; T3 and other hosts need their own observations. Ordinary completion
+uses a concise outcome, checks, remaining gaps and usable links. Generate a
+standalone document only when requested or needed for the agreed evidence package.
+Keep source, local runtime, PR, Preview and production claims distinct.

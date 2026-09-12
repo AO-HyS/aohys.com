@@ -46,10 +46,10 @@ if (!fs.existsSync(skillPath)) {
   )
     fail("skill must use the private host evidence directory");
   if (
-    !/Astra is the neutral Computer Use\s+executor/.test(skill) ||
-    !/Astra owns/.test(skill)
+    !/neutral Computer Use\s+executor/.test(skill) ||
+    !/verification judge owns/.test(skill)
   )
-    fail("skill must separate neutral Astra execution from Astra judgment");
+    fail("skill must separate neutral execution from independent judgment");
   if (!skill.includes("config/product-verification-feature-map.json"))
     fail("skill must reference the canonical product feature map");
   if (!/Computer Use/.test(skill))

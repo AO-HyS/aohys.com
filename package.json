@@ -18,7 +18,7 @@
     "doctor": "react-doctor",
     "quality:scorecard": "node scripts/quality/run-quality-scorecard.mjs",
     "quality:scorecard:test": "node --test scripts/quality/*.test.mjs",
-    "quality:impeccable": "node .agents/skills/impeccable/scripts/detect.mjs --quiet --no-advisory apps/dashboard/src apps/site/src",
+    "quality:impeccable": ".agents/skills/impeccable/scripts/impeccable detect --quiet --no-advisory apps/dashboard/src apps/site/src",
     "build:resume-pdf": "python3 apps/site/scripts/build-resume-pdf.py",
     "ensure:cloudflare-production-domain": "tsx scripts/ensure-cloudflare-pages-domain.ts",
     "audit:cloudflare-pages-runtime": "tsx scripts/audit-cloudflare-pages-runtime.ts",
@@ -75,6 +75,6 @@
     "react-doctor": "0.9.12",
     "tsx": "^4.22.4",
     "wrangler": "^4.105.0",
-    "@aohys/development-system": "https://github.com/AO-HyS/development-system/releases/download/v1.10.1/aohys-development-system-1.10.1.tgz"
+    "@aohys/development-system": "https://github.com/AO-HyS/development-system/releases/download/v1.18.1/aohys-development-system-1.18.1.tgz"
   }
 }

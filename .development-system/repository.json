@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "1.10.0",
+  "contractVersion": "1.18.1",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [
@@ -17,10 +17,7 @@
   },
   "preserved": {
     "releasePolicyFiles": [".github/workflows/release-train.yml"],
-    "designFiles": [
-      ".agents/skills/impeccable/scripts/detector/design-system.mjs",
-      "apps/dashboard/src/styles.css"
-    ]
+    "designFiles": ["apps/dashboard/src/styles.css"]
   },
   "commands": {
     "review": {
@@ -130,6 +127,8 @@
   },
   "antiSlop": {
     "schema": "executable-lane-contract-v1",
+    "activation": "explicit-orchestration-plan-only",
+    "ordinaryWork": "parent-owned-responsibilities-with-proportional-review-not-mandatory-lanes",
     "upstream": {
       "catalogSkill": "install-anti-slop",
       "repository": "https://github.com/dmmulroy/anti-slop",
@@ -213,7 +212,7 @@
     }
   },
   "operatorPrerequisites": {
-    "skillCatalogVersion": "0.31.0",
+    "skillCatalogVersion": "0.39.1",
     "installationScope": "global",
     "readinessScope": "repository-adapter-only",
     "requiredSkills": [
