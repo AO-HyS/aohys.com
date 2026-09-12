@@ -4,15 +4,18 @@ Read this file before changing the repository.
 
 ## Coding orchestration
 
-For every non-trivial coding task, load the global `coding-orchestration` skill and use the global Codex agents from `${CODEX_HOME:-$HOME/.codex}/agents`. Their TOML files are the single source of truth for model, reasoning, and sandbox selection; do not add repo-local model maps, routers, or custom-agent copies.
+For every non-trivial coding task, load the global `coding-orchestration` skill and use the global Codex agents from `${CODEX_HOME:-$HOME/.codex}/agents`. Their TOML files recommend defaults; the starting model and host capabilities govern dispatch; do not add repo-local model maps, routers, or custom-agent copies.
 
 Keep trivial direct answers, one-line read-only checks, and tiny localized edits on the parent agent. For delegated work, prefer parallel read-only discovery and verification, keep one writer by default, and preserve the dependency gates defined by the global skill.
 
-Visual planning and visual recap are separate artifacts. Do not run them as part of normal execution unless the user asks for them.
+Visual planning remains opt-in. Use a standalone completion/review document when requested or needed for the
+agreed evidence package; ordinary completion uses the final response.
 
 ## Merge gate
 
-Agents may push branches, open pull requests, and resolve or close review threads as part of normal execution. Do not merge any PR or branch into `develop`, `main`, or production release branches unless the user explicitly approves that merge after reviewing the result. General instructions like "avanza", "haz todo", or "continua" are not merge approval.
+Agents may push branches, open pull requests, and resolve or close review threads as part of normal execution. Do not merge any PR or branch into `develop`, `main`, or production release branches unless the user explicitly authorizes that merge. One instruction may authorize
+implementation, merge and publication together; retain it through the task.
+General instructions like "avanza" or "continua" alone are not merge approval.
 
 ## Delivery quality
 
@@ -46,9 +49,12 @@ AOHYS uses a single domain context through `CONTEXT.md` and global ADRs in `docs
 
 ## Development System package
 
+Read `.codex/development-system/repository.md` for the active shared process.
 The pinned development dependency supplies the shared contract and skills. Run
 `pnpm ds setup` explicitly after adopting a release; dependency installation
-never changes HOME. Use the installed global roster for models and effort.
-Astra owns decisions, design, review and Computer Use; OpenCode Go is the first
-bounded implementation route. Keep product tokens, architecture and release
-rules here; Impeccable and focused interface skills complement that context.
+never changes HOME. The starting model remains the orchestrator; it chooses
+available agents within the user's provider and capability limits. The roster
+recommends defaults. Load only guidance relevant to the changed surface and
+continue through validation, corrections and the authorized endpoint. Preserve
+product tokens, architecture and release rules. For visual acceptance, use
+approved references, Impeccable and independent capable critique before final evidence.

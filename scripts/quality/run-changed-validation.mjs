@@ -34,12 +34,8 @@ const plan = buildChangedValidationPlan({
   ],
   uiPrefixes: ["apps/dashboard/src", "apps/site/src"],
   uiCommandPrefix: [
-    "node",
-    [
-      ".agents/skills/impeccable/scripts/detect.mjs",
-      "--quiet",
-      "--no-advisory",
-    ],
+    ".agents/skills/impeccable/scripts/impeccable",
+    ["detect", "--quiet", "--no-advisory"],
   ],
   architecturePrefixes: ["apps", "functions", "packages", "scripts"],
   architectureFiles: [
