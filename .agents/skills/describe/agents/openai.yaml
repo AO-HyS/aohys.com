@@ -1,0 +1,3 @@
+display_name: Describe
+short_description: Create a described initiative after loading repo rules and docs.
+default_prompt: /describe <initiative-slug> <problem statement>

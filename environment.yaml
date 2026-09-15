@@ -1,0 +1,84 @@
+# Devin Cloud environment blueprint for aohys.com.
+# Mirrors the operator's machine: pinned toolchain, development-system
+# provisioning, committed agent assets, and secret-derived CLI auth files
+# (secrets are injected by Devin as env vars; never literal values here).
+initialize:
+  - name: Install Node.js 24
+    run: |
+      set -e
+      VERSION=$(curl -fsSL https://nodejs.org/dist/index.json | python3 -c "import json,sys; print(next(v['version'] for v in json.load(sys.stdin) if v['version'].startswith('v24.')))")
+      curl -fsSL -o /tmp/node.tar.xz "https://nodejs.org/dist/${VERSION}/node-${VERSION}-linux-x64.tar.xz"
+      mkdir -p "$HOME/.local/node24"
+      tar -xJf /tmp/node.tar.xz -C "$HOME/.local/node24" --strip-components=1
+      echo 'export PATH="$HOME/.local/node24/bin:$PATH"' >> "$ENVRC"
+      grep -q '.local/node24/bin' "$HOME/.bashrc" || echo 'export PATH="$HOME/.local/node24/bin:$PATH"' >> "$HOME/.bashrc"
+      "$HOME/.local/node24/bin/node" --version
+
+  - name: Enable corepack pnpm
+    run: |
+      corepack enable
+      corepack prepare pnpm@11.7.0 --activate
+      pnpm --version
+
+  - name: Install OpenAI Codex CLI
+    run: npm install -g @openai/codex || true
+
+maintenance:
+  - name: Install dependencies
+    run: pnpm install --frozen-lockfile
+
+  - name: Provision development system and agent assets
+    run: |
+      pnpm ds setup
+      mkdir -p "$HOME/.agents/skills"
+      cp -R .agents/skills/. "$HOME/.agents/skills/" 2>/dev/null || true
+      cp .codex/config.toml .codex/hooks.json "$HOME/.codex/" 2>/dev/null || true
+      cp -R .codex/development-system "$HOME/.codex/" 2>/dev/null || true
+
+  - name: Write CLI auth files from secrets
+    run: |
+      if [ -n "${CODEX_AUTH_JSON:-}" ]; then printf '%s' "$CODEX_AUTH_JSON" > "$HOME/.codex/auth.json" && chmod 600 "$HOME/.codex/auth.json"; fi
+      if [ -n "${CONVEX_ACCESS_TOKEN:-}" ]; then mkdir -p "$HOME/.convex" && printf '{"accessToken":"%s"}\n' "$CONVEX_ACCESS_TOKEN" > "$HOME/.convex/config.json"; fi
+      if [ -n "${EXA_API_KEY:-}" ]; then mkdir -p "$HOME/.config/exa" && printf '%s' "$EXA_API_KEY" > "$HOME/.config/exa/key"; fi
+
+  - name: Write local env files from secrets
+    run: |
+      if [ -n "${CONVEX_DEPLOYMENT:-}" ]; then
+        printf 'CONVEX_DEPLOYMENT=%s\nCONVEX_URL=%s\nCONVEX_SITE_URL=%s\n' "$CONVEX_DEPLOYMENT" "${CONVEX_URL:-}" "${CONVEX_SITE_URL:-}" > apps/backend/.env.local
+      fi
+      if [ ! -f .env.local ]; then printf 'AOHYS_ENV=local\nPUBLIC_SITE_URL=http://localhost:4321\n' > .env.local; fi
+
+knowledge:
+  - name: layout
+    contents: |
+      pnpm monorepo: apps/site (Astro public site), apps/dashboard (React app),
+      apps/backend (Convex), functions/* (Convex functions), packages/*
+      (content-graph, core, dashboard-ui, environment, release-train).
+      Node >= 24, pnpm >= 11. `pnpm ds` is the pinned Development System CLI.
+  - name: lint
+    contents: pnpm run lint
+  - name: test
+    contents: pnpm run test
+  - name: build
+    contents: pnpm run build
+  - name: validate
+    contents: pnpm run quality:changed (ordinary) / pnpm run quality:certify (once per integrated candidate)
+  - name: startup
+    contents: pnpm run cloudflare:local — builds apps/site and serves dist through wrangler pages dev
+  - name: deploy
+    contents: |
+      pnpm run deploy:preview (develop → Convex preview + Cloudflare Pages preview).
+      pnpm run deploy:production (main → production). Both need provider secrets.
+  - name: agent-assets
+    contents: |
+      .agents/skills/ is the committed union of the operator's skill catalog;
+      .codex/ mirrors $HOME/.codex (agents/, development-system/, config.toml,
+      hooks.json, rules/, prompts/, commands/). `pnpm ds setup` also provisions
+      $HOME from the pinned catalog; rerun it after adopting a new
+      Development System release.
+  - name: secrets
+    contents: |
+      Org/repo secrets are injected as env vars. Provider keys needed at
+      runtime: CONVEX_*, BETTER_AUTH_*, GOOGLE_CLIENT_*, RESEND_*,
+      PUBLIC_POSTHOG_KEY, CLOUDFLARE_*. CLI auth files are written from
+      CODEX_AUTH_JSON, CONVEX_ACCESS_TOKEN, EXA_API_KEY during builds.

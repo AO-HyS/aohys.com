@@ -1,0 +1,7 @@
+interface:
+  display_name: "Local Visual Recap"
+  short_description: "Review PR diffs locally with Agent-Native"
+  default_prompt: "Use $local-visual-recap to generate a local visual recap for the current PR and guide VAR review."
+
+policy:
+  allow_implicit_invocation: false

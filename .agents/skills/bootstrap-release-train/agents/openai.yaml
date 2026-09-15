@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bootstrap Release Train"
+  short_description: "Install a fast local-first release train"
+  default_prompt: "Use $bootstrap-release-train to audit this repository and install its local-first release train."
