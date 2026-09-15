@@ -1,0 +1,36 @@
+{
+  "mcpServers": {
+    "convex": {
+      "command": "pnpm",
+      "args": ["--filter", "@aohys/backend", "exec", "convex", "mcp", "start"]
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    },
+    "shadcn": {
+      "command": "npx",
+      "args": ["-y", "shadcn@latest", "mcp"]
+    },
+    "expect": {
+      "command": "npx",
+      "args": ["-y", "expect-cli@latest", "mcp"]
+    },
+    "github": {
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": { "Authorization": "Bearer ${env:GITHUB_TOKEN}" }
+    },
+    "linear": { "url": "https://mcp.linear.app/mcp" },
+    "posthog": { "url": "https://mcp.posthog.com/mcp" },
+    "sentry": { "url": "https://mcp.sentry.dev/mcp" },
+    "vercel": { "url": "https://mcp.vercel.com" },
+    "stripe": { "url": "https://mcp.stripe.com" },
+    "mobbin": { "url": "https://api.mobbin.com/mcp" },
+    "mercadopago-mcp-server": { "url": "https://mcp.mercadopago.com/mcp" },
+    "auggie": {
+      "url": "https://api.augmentcode.com/mcp",
+      "headers": { "Authorization": "Bearer ${env:AUGGIE_TOKEN}" }
+    },
+    "cloudflare-docs": { "url": "https://docs.mcp.cloudflare.com/mcp" }
+  }
+}

@@ -33,6 +33,10 @@ General instructions like "avanza" or "continua" alone are not merge approval.
 - Do not replace Computer Use with Browser or shell when local Mac app UI operation is the task.
 - Do not use GitHub Actions to orchestrate local subagents.
 
+## Devin Cloud
+
+`environment.yaml` is the cloud blueprint; it provisions `$HOME` from the committed `.codex/` mirror and the `.agents/skills/` union, then runs `pnpm ds setup`. `.devin/` holds shared agent config and MCP servers; secrets live in Devin org secrets, never in the repo. Update the blueprint when the pinned toolchain or committed agent assets change.
+
 ## Agent skills
 
 ### Issue tracker

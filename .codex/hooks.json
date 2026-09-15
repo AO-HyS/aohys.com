@@ -1,5 +1,19 @@
 {
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|exec",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ ! -f \".agents/skills/global-agent-guardrails/scripts/command-guard.mjs\" ] || AOHYS_GLOBAL_AGENT_GUARDRAILS=1 node \".agents/skills/global-agent-guardrails/scripts/command-guard.mjs\" hook --harness codex",
+            "timeout": 5,
+            "statusMessage": "Checking destructive-command policy",
+            "commandWindows": "if exist \".agents/skills/global-agent-guardrails/scripts/command-guard.mjs\" (set AOHYS_GLOBAL_AGENT_GUARDRAILS=1 & node \".agents/skills/global-agent-guardrails/scripts/command-guard.mjs\" hook --harness codex & exit /b)"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write|apply_patch",

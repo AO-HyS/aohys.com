@@ -20,10 +20,15 @@ coverage/
 .codex/
 !.codex/
 .codex/*
-!.codex/hooks.json
+!.codex/AGENTS.md
+!.codex/agents/
+!.codex/commands/
+!.codex/config.toml
 !.codex/development-system/
-.codex/development-system/*
-!.codex/development-system/repository.md
+!.codex/hooks.json
+!.codex/prompts/
+!.codex/rules/
+!.codex/scripts/
 .cursor/
 .expect/
 .playwright-cli/
@@ -31,4 +36,6 @@ coverage/
 .impeccable/config.local.json
 .opencode/
 .vscode/
+.devin/config.local.json
+.devin/mcp_config.local.json
 output/
