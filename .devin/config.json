@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Write(**)",
+      "Exec(git)",
+      "Exec(pnpm)",
+      "Exec(node)",
+      "Exec(npx)",
+      "Exec(npm)",
+      "Exec(corepack)",
+      "Exec(gh)",
+      "Exec(tsx)",
+      "Exec(wrangler)",
+      "mcp__*"
+    ],
+    "deny": ["Exec(sudo)", "Exec(git push --force)", "Exec(git reset --hard)"]
+  },
+  "read_config_from": {
+    "cursor": true,
+    "windsurf": true,
+    "claude": true
+  }
+}

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Auditar PostHog producción"
+  short_description: "Audita salud real de producción en PostHog"
+  default_prompt: "Usa $posthog-production-audit para auditar Casa-Roca, ETERIA, AO HyS, Nutri Plan y Barber Central ahora."
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,2 @@
+__PACKAGE_RUNNER__ exec lint-staged
+__PACKAGE_RUNNER__ run quality:commit

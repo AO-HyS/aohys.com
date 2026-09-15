@@ -1,0 +1,80 @@
+name: Release Train
+
+on:
+  pull_request:
+    branches:
+      - __PREVIEW_BRANCH__
+      - __PRODUCTION_BRANCH__
+  push:
+    branches:
+      - __PREVIEW_BRANCH__
+      - __PRODUCTION_BRANCH__
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Manual release operation
+        required: true
+        default: quality
+        type: choice
+        options:
+          - quality
+          - preview
+          - production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-train-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/__PRODUCTION_BRANCH__' }}
+
+jobs:
+  pull-request-policy:
+    name: __REQUIRED_CHECK_NAME__
+    if: github.event_name == 'pull_request'
+    runs-on: __RUNNER__
+    steps:
+      - name: Enforce the release path
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const pullRequest = context.payload.pull_request;
+            if (pullRequest.base.ref !== '__PRODUCTION_BRANCH__') {
+              core.notice('Local Husky gates are the source of truth; CI only validates the release path.');
+              return;
+            }
+            if (
+              pullRequest.head.ref !== '__PREVIEW_BRANCH__' ||
+              pullRequest.head.repo.full_name !== pullRequest.base.repo.full_name
+            ) {
+              core.setFailed('Production pull requests must come from canonical __PREVIEW_BRANCH__.');
+              return;
+            }
+            core.notice('Git owns commit ancestry; preview and production retain their own deployment evidence.');
+
+  preview:
+    name: Deploy Preview
+    if: github.event_name == 'push' && github.ref == 'refs/heads/__PREVIEW_BRANCH__'
+    runs-on: __RUNNER__
+    environment: Preview
+    steps:
+      - name: Run existing preview adapter
+        run: "__PREVIEW_RELEASE_COMMAND__"
+
+  production:
+    name: Deploy Production
+    if: github.event_name == 'push' && github.ref == 'refs/heads/__PRODUCTION_BRANCH__'
+    runs-on: __RUNNER__
+    environment: Production
+    steps:
+      - name: Run existing production adapter
+        run: "__PRODUCTION_RELEASE_COMMAND__"
+
+  manual-quality:
+    name: Manual Quality
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'quality'
+    runs-on: __RUNNER__
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run exhaustive repository quality
+        run: "__QUALITY_PUSH_COMMAND__"

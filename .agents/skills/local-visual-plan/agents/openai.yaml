@@ -1,0 +1,7 @@
+interface:
+  display_name: "Local Visual Plan"
+  short_description: "Plan risky work locally with Agent-Native"
+  default_prompt: "Use $local-visual-plan to create a local visual implementation plan before editing code."
+
+policy:
+  allow_implicit_invocation: false

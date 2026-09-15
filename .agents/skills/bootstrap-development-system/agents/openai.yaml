@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bootstrap Development System"
+  short_description: "Prepare a repo for agent development"
+  default_prompt: "Use $bootstrap-development-system to audit and prepare this repository for the global agent development system."
