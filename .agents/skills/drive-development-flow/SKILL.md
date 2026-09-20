@@ -1,6 +1,6 @@
 ---
 name: drive-development-flow
-description: Select the next software workflow when defining, implementing, reviewing, or resuming development work.
+description: Select the next software workflow, including visual or mixed grills expressed in natural language, without adding ceremony to small edits.
 ---
 
 # Development flow
@@ -16,10 +16,21 @@ steer that outcome unless the user replaces it.
   obvious edit can be handled directly with applicable repository checks.
 - Approved specification: use `implement-spec` when coordinating its scope or
   ticket dependencies; reuse the existing spec instead of defining it again.
-- Requested discovery or questioning: use `grill-with-docs`. Use
+- Requested functional discovery or questioning: use `grill-with-docs`. Use
   `working-backwards` for a requested PRFAQ or staged product definition.
-- New visual direction or an approved design handoff: use `design-direction`.
-  A small visual refinement stays in Impeccable's matching workflow.
+- A request to explore how a product looks, see proposals before functional
+  discussion, calibrate taste, or compare visual directions is a visual grill:
+  route to `design-direction`, which leads the session and uses
+  `grill-with-docs` as its one question/HTML surface. Impeccable's decision page
+  is the one comparison and selection surface; do not create a second visual
+  comparator in the grill or the router.
+- A request to simplify or redefine both behavior and appearance is a mixed
+  grill. Use one `grill-with-docs` interview with functional and visual decision
+  keys; `design-direction` leads the visual branch and reuses every equivalent
+  answer. Do not conduct a second visual interview.
+- An approved visual direction resumes its recorded phase. A small styling fix,
+  token adjustment or bounded component polish stays in Impeccable's matching
+  refinement workflow and does not start direction exploration.
 - Branch/diff review: use `flow-code-review`. Review of a thread's claims and
   execution history: use `review-thread`.
 - Explanation or status: answer from relevant sources; this does not start
@@ -29,7 +40,10 @@ Load the applicable branch, not this entire list. For non-trivial repository
 execution, `coding-orchestration` owns delegation and verification. A worker
 with an exact root, task and checks executes its packet; it does not repeat
 parent routing. A supplied `orchestrate-work` execution method can satisfy that
-responsibility without loading a second coordination stack.
+responsibility without loading a second coordination stack. Both use the
+[exact-default execution contract](../coding-orchestration/references/execution-contract.md).
+Model changes alter packet size and checkpoints, not acceptance or authorization;
+reuse the contract's continuity handoff when resuming.
 
 ## Continue through the agreed endpoint
 

@@ -1,45 +1,36 @@
-# Model routing operator contract (1.17.0)
+# Model routing 1.24.0
 
-**The model selected when the conversation starts remains the orchestrator.**
-The parent chooses agents and effort from available native capabilities. The
-roster and Codex role TOMLs contain recommendations/requested defaults; they do
-not prove a served model or force a provider chain. No extra coordinator is added.
+New sessions default to Sol High. The model already selected for a conversation
+remains its orchestrator. It owns decomposition, integration, conflicts,
+verification, corrections and delivery; a release does not replace a live parent.
 
-Edit `config/agent-roster.json` for suggestions, then publish a new snapshot.
-The preliminary [local worker screen](https://github.com/AO-HyS/development-system/blob/v1.17.0/docs/model-screen-2026-09-10.md) favors trying
-Terra Low or Sol Low priority for bounded Codex implementation, and GLM High
-for OpenCode. These are single-sample suggestions, not universal specialist
-rankings. Existing named profiles remain usable; a parent can explicitly select
-an available model through generic native delegation when a fixed profile does
-not match its task. A profile's old default never replaces the starting parent.
+| Responsibility | Requested profile |
+| --- | --- |
+| New-session coordination | gpt-5.6-sol, high |
+| Bounded exact writing | opencode-go/deepseek-v4.1-flash, high |
+| Native research, decisions and independent review | gpt-6-astra, xhigh |
+| Typed advice at useful boundaries | Jev 1.13.0, advisory |
 
-Codex and OpenCode remain ordinary supported routes. Devin is explicitly enabled
-for the user's SWE-2 experiment, not restored as an automatic fallback. Factory
-and Droid remain retired. Every descendant of that SWE lane stays SWE, including
-critics/browser roles when capable. Missing capability is reported, not silently
-filled by Codex or Go. T3 uses the model and tools of its selected underlying
-provider; file installation alone does not certify provider capabilities.
+Use the installed coding-orchestration/references/jev-advisory.md recipe for
+non-trivial work. Native profiles and the roster request these settings;
+session/provider metadata establishes observed identity. Every native descendant
+in this profile uses Astra XHigh. Luna and silent model/provider fallbacks are
+excluded. A missing essential capability remains a gap. An explicit user-selected
+family or model overrides defaults while retaining its capability restrictions.
 
-`model-route` and `orchestration-plan` are optional pure proposals. They neither
-dispatch agents nor change the current conversation. When asking `model-route`
-for suggestions, pass a roster compatible with the chosen session/family. The
-resolver reads an input roster, then an explicit version snapshot, otherwise
-the executing package's config. It does not automatically reload a HOME copy.
-Do not mistake a computed default or a copied skill for observed host behavior.
+Keep one writer per surface and at most two independent writers. Serialize
+dependent work and shared provider state. Jev advises; the parent chooses and
+executes using existing host tools. Tiny integration stays with the parent.
+Receive completion events, retain raw usage and judge actual behavior before
+acceptance. Historical automatic controllers are disabled in 1.24.0.
 
-Native TOML profiles are installed artifacts; already-running agents do not
-change when files change. Verify actual runtime identity/capabilities when the
-host exposes them, otherwise report requested settings and unknown observations.
-Fast means priority service tier; Max is reasoning effort. A request for priority
-is not a billing receipt or evidence it was honored.
+Codex and T3 use their actual native model and browser capabilities. Remote
+development environments load the same package and generated instructions;
+copying files does not prove runtime influence. Record requested and observed
+profiles separately. Existing running agents keep their current context; load
+the release in a new session before relying on its defaults.
 
-Use direct tools for deterministic work. Send compact packets with root, owned
-files, behavior and focused checks to useful workers. They execute the packet
-without reopening lifecycle discovery. Keep one writer per surface and native
-attached cancellation. Preserve useful work and typed failure evidence. Record
-interrupted setup attempts separately from implementation results.
-
-Design, visual critique and Computer Use require actual vision/browser capability
-within the selected family. Independent visual critique follows Impeccable and
-precedes final walkthrough recording. Existing product architecture, state/data
-invariants and relevant quality gates remain. Selection grants no new authority.
+BARBER-205 measured one complete accepted Sol run at 35:15 / USD18.885702 and
+one Astra run at 49:09 / USD33.334097 on 2026-09-20. Both used Flash and Jev.
+These are API-equivalent full-arm costs and one-task observations, not universal
+performance guarantees or subscription invoices.

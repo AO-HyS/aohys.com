@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Render the shared grill template, serve one questionnaire, save literal answers."""
 import argparse
+import base64
 import fcntl
 from datetime import datetime, timezone
 import hashlib
@@ -23,6 +24,8 @@ import uuid
 ASSETS = Path(__file__).resolve().parent.parent / 'assets'
 SAFE_ID = re.compile(r'[A-Za-z][A-Za-z0-9_-]{0,79}\Z')
 MAX_BODY = 2_000_000
+MAX_IMAGE_BYTES = 5_000_000
+MAX_MEDIA_BYTES = 12_000_000
 
 
 def text(value, label, limit=12000, required=False):
@@ -37,7 +40,50 @@ def identifier(value, label):
     return value
 
 
-def normalize_questions(raw):
+def raster_data(path, label):
+    if path.is_symlink() or not path.is_file():
+        raise ValueError(f'{label}: expected a regular local raster image')
+    data = path.read_bytes()
+    if not data or len(data) > MAX_IMAGE_BYTES:
+        raise ValueError(f'{label}: image must contain 1–{MAX_IMAGE_BYTES} bytes')
+    if data.startswith(b'\x89PNG\r\n\x1a\n'):
+        mime = 'image/png'
+    elif data.startswith(b'\xff\xd8\xff'):
+        mime = 'image/jpeg'
+    elif data.startswith((b'GIF87a', b'GIF89a')):
+        mime = 'image/gif'
+    elif len(data) >= 12 and data[:4] == b'RIFF' and data[8:12] == b'WEBP':
+        mime = 'image/webp'
+    else:
+        raise ValueError(f'{label}: only PNG, JPEG, GIF or WebP raster images are allowed')
+    return f'data:{mime};base64,{base64.b64encode(data).decode()}', len(data)
+
+
+def normalize_reference(raw, label, source_directory, embed_media=True):
+    if not isinstance(raw, dict):
+        raise ValueError(f'{label}: expected an object')
+    image = text(raw.get('imagePath'), f'{label}.imagePath', 2000, True)
+    path = Path(image).expanduser()
+    source_url = text(raw.get('sourceUrl', ''), f'{label}.sourceUrl', 2000)
+    if source_url and urlsplit(source_url).scheme not in ('http', 'https'):
+        raise ValueError(f'{label}.sourceUrl: use an http or https URL')
+    reference = dict(id=identifier(raw.get('id'), f'{label}.id'),
+                     title=text(raw.get('title', ''), f'{label}.title', 200),
+                     alt=text(raw.get('alt'), f'{label}.alt', 500, True),
+                     caption=text(raw.get('caption', ''), f'{label}.caption', 2000),
+                     function=text(raw.get('function'), f'{label}.function', 500, True),
+                     sourceUrl=source_url, sourceName=path.name)
+    if not embed_media:
+        return reference, 0
+    if not path.is_absolute():
+        if source_directory is None:
+            raise ValueError(f'{label}.imagePath: relative paths require the question JSON directory')
+        path = source_directory / path
+    reference['dataUrl'], byte_count = raster_data(path, f'{label}.imagePath')
+    return reference, byte_count
+
+
+def normalize_questions(raw, source_directory=None, embed_media=True):
     if not isinstance(raw, dict):
         raise ValueError('Questions must be a JSON object')
     key = identifier(raw.get('id'), 'id')
@@ -46,6 +92,7 @@ def normalize_questions(raw):
     if not isinstance(questions, list) or not 1 <= len(questions) <= 200:
         raise ValueError('Provide 1–200 questions')
     seen = set()
+    media_bytes = 0
     normalized = []
     for q in questions:
         if not isinstance(q, dict):
@@ -58,10 +105,28 @@ def normalize_questions(raw):
         if not isinstance(options, dict) or len(options) > 12:
             raise ValueError(f'{ident}: options must be an object with up to 12 entries')
         options = {identifier(k, 'option key'): text(v, 'option', 3000, True) for k, v in options.items()}
-        normalized.append(dict(id=ident, title=text(q.get('text'), 'question.text', 1000, True),
-                               group=text(q.get('group', 'Preguntas'), 'group', 120, True),
-                               context=text(q.get('context', ''), 'context', 6000), options=options,
-                               recommendation=text(q.get('recommendation', ''), 'recommendation', 6000)))
+        raw_references = q.get('references', [])
+        if not isinstance(raw_references, list) or len(raw_references) > 8:
+            raise ValueError(f'{ident}: references must be an array with up to 8 entries')
+        references = []
+        reference_ids = set()
+        for index, raw_reference in enumerate(raw_references, 1):
+            reference, byte_count = normalize_reference(raw_reference, f'{ident}.references[{index}]', source_directory, embed_media)
+            if reference['id'] in reference_ids:
+                raise ValueError(f'{ident}: duplicate reference {reference["id"]}')
+            reference_ids.add(reference['id'])
+            media_bytes += byte_count
+            if media_bytes > MAX_MEDIA_BYTES:
+                raise ValueError(f'Questionnaire images exceed {MAX_MEDIA_BYTES} bytes')
+            references.append(reference)
+        normalized_question = dict(id=ident, title=text(q.get('text'), 'question.text', 1000, True),
+                                   group=text(q.get('group', 'Preguntas'), 'group', 120, True),
+                                   context=text(q.get('context', ''), 'context', 6000), options=options,
+                                   recommendation=text(q.get('recommendation', ''), 'recommendation', 6000))
+        # Preserve the pre-1.22.1 canonical shape when a question has no media.
+        if references:
+            normalized_question['references'] = references
+        normalized.append(normalized_question)
     config = dict(version=1, sessionId=key, title=title,
                   productName=text(raw.get('productName', 'Grill with Docs'), 'productName', 100, True),
                   introduction=text(raw.get('introduction', 'Lee, elige y añade tus comentarios. Después de enviar, vuelve al chat y avisa que ya contestaste.'), 'introduction'),
@@ -79,12 +144,22 @@ def render(config):
             nav.append(f'<a href="#q-{ident}"><span>{i:02}</span>{esc(q["group"])}</a>')
             groups.add(q['group'])
         options = ''.join(f'<label class="option"><input type="radio" name="answer-{ident}" value="{k}"><span class="letter" aria-hidden="true">{k}</span><span>{esc(v)}</span></label>' for k, v in q['options'].items())
+        choice_field = f'<fieldset><legend>Elige una opción o escribe tu propia respuesta.</legend><div class="options">{options}</div></fieldset>' if q['options'] else ''
+        clear_choice = f'<button type="button" class="compact-action" data-clear="{ident}">Quitar elección</button>' if q['options'] else ''
         recommendation = f'<p class="recommendation"><strong>Mi recomendación</strong>{esc(q["recommendation"])}</p>' if q['recommendation'] else ''
+        references = []
+        for reference in q.get('references', []):
+            title = f'<strong>{esc(reference["title"])}</strong>' if reference['title'] else ''
+            caption = f'<p>{esc(reference["caption"])}</p>' if reference['caption'] else ''
+            source = f'<a href="{esc(reference["sourceUrl"], quote=True)}" target="_blank" rel="noreferrer">Abrir fuente</a>' if reference['sourceUrl'] else ''
+            references.append(f'''<figure class="visual-reference" data-reference-id="{esc(reference['id'], quote=True)}">
+<img src="{esc(reference['dataUrl'], quote=True)}" alt="{esc(reference['alt'], quote=True)}" loading="lazy"><figcaption>{title}{caption}<p class="reference-function"><span>Qué aporta</span>{esc(reference['function'])}</p>{source}</figcaption></figure>''')
+        reference_gallery = f'<div class="reference-gallery" aria-label="Referencias visuales">{"".join(references)}</div>' if references else ''
         sections.append(f'''<section class="question" id="q-{ident}" data-question-id="{ident}" aria-labelledby="title-{ident}" tabindex="-1">
 <p class="group-label">{esc(q['group'])} · {i} de {len(config['questions'])}</p><h2 id="title-{ident}">{i}. {esc(q['title'])}</h2>
-<p class="question-context">{esc(q['context'])}</p><fieldset><legend>Elige una opción o escribe tu propia respuesta.</legend><div class="options">{options}</div></fieldset>{recommendation}
+<p class="question-context">{esc(q['context'])}</p>{reference_gallery}{choice_field}{recommendation}
 <details id="details-{ident}" {"open" if not q["options"] else ""}><summary>Mi respuesta, matiz o ejemplo</summary><label class="sr-only" for="note-{ident}">Comentario: {esc(q['title'])}</label><textarea id="note-{ident}" name="note-{ident}" rows="3" maxlength="6000" placeholder="Puedes combinar opciones, proponer algo distinto o contar un caso real."></textarea></details>
-<div class="question-actions"><button type="button" class="compact-action" data-defer="{ident}" aria-pressed="false">Dejar para después</button><button type="button" class="compact-action" data-clear="{ident}">Quitar elección</button></div><p class="answer-state" id="state-{ident}">Sin responder</p></section>''')
+<div class="question-actions"><button type="button" class="compact-action" data-defer="{ident}" aria-pressed="false">Dejar para después</button>{clear_choice}</div><p class="answer-state" id="state-{ident}">Sin responder</p></section>''')
     data = json.dumps(config, ensure_ascii=False).replace('<', '\\u003c').replace('&', '\\u0026')
     values = dict(TITLE=esc(config['title']), PRODUCT=esc(config['productName']), ID=esc(config['sessionId']),
                   INTRO=esc(config['introduction']), COUNT=str(len(config['questions'])),
@@ -115,19 +190,38 @@ def write_json(path, data):
             os.unlink(temp)
 
 
-def prepare(raw, home):
-    config = normalize_questions(raw)
+def question_definition(config):
+    definition = {key: config[key] for key in ['version', 'sessionId', 'title', 'productName', 'introduction']}
+    definition['questions'] = []
+    for question in config['questions']:
+        item = {key: question[key] for key in ['id', 'title', 'group', 'context', 'options', 'recommendation']}
+        if question.get('references'):
+            item['references'] = [
+                {key: reference[key] for key in ['id', 'title', 'alt', 'caption', 'function', 'sourceUrl', 'sourceName']}
+                for reference in question['references']
+            ]
+        definition['questions'].append(item)
+    return definition
+
+
+def prepare(raw, home, source_directory=None):
+    definition = normalize_questions(raw, source_directory, embed_media=False)
+    key = definition['sessionId']
     directory = home.resolve()
     directory.mkdir(mode=0o700, parents=True, exist_ok=True)
-    for name in ['.development-system', 'private', 'questionnaires', config['sessionId']]:
+    for name in ['.development-system', 'private', 'questionnaires', key]:
         directory = directory / name
         if directory.is_symlink():
             raise ValueError(f'Refusing symlinked questionnaire directory: {directory}')
         directory.mkdir(mode=0o700, exist_ok=True)
     canonical = regular(directory / 'questions.json')
-    if canonical.exists() and json.loads(canonical.read_text()) != config:
-        raise ValueError('This questionnaire ID already has different questions. Use a new id for a new round.')
-    write_json(canonical, config)
+    if canonical.exists():
+        config = json.loads(canonical.read_text())
+        if question_definition(config) != question_definition(definition):
+            raise ValueError('This questionnaire ID already has different questions. Use a new id for a new round.')
+    else:
+        config = normalize_questions(raw, source_directory, embed_media=True)
+        write_json(canonical, config)
     regular(directory / 'index.html').write_text(render(config))
     return directory, config
 
@@ -245,7 +339,7 @@ def main():
         parser.error('cloudflared is not installed; run without --tunnel for a local link')
     if args.input.stat().st_size > MAX_BODY:
         parser.error('Question JSON is too large')
-    directory, config = prepare(json.loads(args.input.read_text()), args.home)
+    directory, config = prepare(json.loads(args.input.read_text()), args.home, args.input.resolve().parent)
     output = dict(id=config['sessionId'], htmlPath=str(directory / 'index.html'),
                   questionsPath=str(directory / 'questions.json'), responsesPath=str(directory / 'responses.json'))
     if args.build_only:

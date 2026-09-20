@@ -9,6 +9,8 @@ once and use its current project brief. Reuse that context and selected phase.
 Let Impeccable own the design workflow. Load its current skill, run context
 once at the actual app path, and choose its one matching playbook. This skill
 adds the acceptance contract; it is not another router or another review loop.
+For open direction work, Impeccable's decision page is the sole comparison and
+selection surface; internal matched-screen checks do not become user choosers.
 Reuse the active execution method when assigning the critic; its actual vision
 capability and the selected provider restrictions govern the assignment.
 
@@ -28,19 +30,26 @@ capability and the selected provider restrictions govern the assignment.
    content; distinguish real empty-state constraints from missing fixture data.
 4. Complete Impeccable's selected workflow, including its finish checks. Have
    the orchestrator assign an independent visual-capable critic current working
-   screenshots, task, approved direction and references. Do not give that critic
-   implementation rationalizations or previous self-scores. A distinct finish
-   reviewer can satisfy this role; a designer's self-review cannot.
-5. The critic returns specific visible gaps ordered by impact. Correct in one
-   batch, then have the critic confirm changed states. Extend only for named
-   unresolved defects or newly observed regressions. Numerical taste scores
-   never trigger automatic repeat loops.
+   screenshots, task and usage context, confirmed constraints, approved direction
+   when one exists, and visual references with the function of each reference.
+   Do not give that critic implementation rationalizations, code effort, prior
+   critique or self-scores. A distinct finish reviewer can satisfy this role; a
+   designer's self-review cannot.
+5. The critic reports separately (a) conformity with confirmed constraints and
+   (b) compositional quality against the reference level, then returns specific
+   visible gaps ordered by impact. A grounded score may support either judgment;
+   it never replaces criteria, proves approval or triggers repetition by itself.
+   Correct in one batch, then have the critic confirm changed states. Run one or
+   two initial passes and evaluate convergence. Extend only for named unresolved
+   gaps or newly observed regressions. If the same hypothesis is not improving,
+   change it instead of repeating the loop.
    Judge the approved task hierarchy, density, grouping and content area as well
    as responsive geometry. A material mismatch with an approved choice blocks
    visual acceptance; it cannot be dismissed as optional polish because nothing
    clips. Return the compared criteria, deviations and review scope. Closing a
    bounded finding list proves that list only. The parent checks the complete
-   requested visual outcome before declaring acceptance.
+   requested visual outcome before declaring acceptance. “Ready to compare” and
+   “no defects found” within the review scope do not establish user selection.
 6. Once critique findings are resolved, prepare the final delivery evidence
    through `evidence-capture` from that reviewed candidate. Working screenshots
    and functional probes used to review are diagnostic material, not the final

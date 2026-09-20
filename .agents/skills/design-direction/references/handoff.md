@@ -1,7 +1,8 @@
 # Handoff that survives a new thread
 
 Update the existing spec and tickets. Keep the current selected composition at
-the top, with superseded explorations clearly separated. Preserve the authorized
+the top, with exploration, approved composition, superseded references and
+verified implementation explicitly distinguished. Preserve the authorized
 scope and settled decisions; an implementation handoff does not reopen the grill.
 
 Carry the approved image files through committed repository assets or durable
@@ -20,7 +21,10 @@ choices. Illustrative copy, avatars, dates, clinical data and raster measurement
 may be replaced with product truth; that exception does not erase the composition.
 Explicit later user corrections govern the affected property only.
 
-Give the next worker the current brief, exact relevant assets and owned criteria,
-without historical chat. Verify from that packet that a fresh reader can retrieve
-and inspect the selected images and explain which choices must survive. A tracker
-link without viewable references does not complete a visual handoff.
+Include the interview decision keys and the candidate → seed → Impeccable
+decision-page receipt so a new thread can recover the choice and how it was
+reached without repeating questions. Give the next worker the current brief,
+exact relevant assets and owned criteria, without historical chat. Verify from
+that packet that a fresh reader can retrieve and inspect the selected images and
+explain which choices must survive. A tracker link without viewable references
+does not complete a visual handoff.

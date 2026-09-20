@@ -14,6 +14,10 @@ For non-trivial repository work, use `coding-orchestration` for ownership,
 delegation and verification. Reuse an already selected `orchestrate-work` method
 instead of adding another execution loop. Clear work proceeds without another
 planning or approval ceremony. A bounded worker executes its supplied packet.
+Use the [exact-default execution contract](../coding-orchestration/references/execution-contract.md)
+for ordered actions, expected observations and receipts. Adapt the packet to
+available capability without reducing acceptance. Resume model/quota changes
+through its linked continuity handoff, preserving valid evidence and ownership.
 
 For a stateful UI or routing change, preserve the relevant state owners and
 transitions: drafts, selection, filters, focus, dismissal and permissions. Check
