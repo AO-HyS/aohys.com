@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "0.41.0",
+  "catalogVersion": "0.44.0",
   "supportedHarnesses": [
     {
       "id": "codex",
@@ -11,7 +11,11 @@
       "adapter": "codex"
     }
   ],
-  "supportedRoots": [".agents/skills", ".codex/skills", ".factory/skills"],
+  "supportedRoots": [
+    ".agents/skills",
+    ".codex/skills",
+    ".factory/skills"
+  ],
   "maxCatalogEntries": 512,
   "operationalEvidenceSkills": [
     "research",
@@ -110,7 +114,9 @@
   "skills": [
     {
       "logicalName": "ask-matt",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -129,7 +135,9 @@
     },
     {
       "logicalName": "diagnosing-bugs",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -148,7 +156,9 @@
     },
     {
       "logicalName": "wayfinder",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -167,7 +177,9 @@
     },
     {
       "logicalName": "triage",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -186,7 +198,9 @@
     },
     {
       "logicalName": "improve-codebase-architecture",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -205,7 +219,9 @@
     },
     {
       "logicalName": "setup-matt-pocock-skills",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -224,7 +240,9 @@
     },
     {
       "logicalName": "tdd",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -243,7 +261,9 @@
     },
     {
       "logicalName": "grilling",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -262,7 +282,9 @@
     },
     {
       "logicalName": "domain-modeling",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -281,7 +303,9 @@
     },
     {
       "logicalName": "codebase-design",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -300,7 +324,9 @@
     },
     {
       "logicalName": "to-spec",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -319,7 +345,9 @@
     },
     {
       "logicalName": "to-tickets",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -338,7 +366,9 @@
     },
     {
       "logicalName": "implement",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -357,7 +387,9 @@
     },
     {
       "logicalName": "code-review",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -381,7 +413,9 @@
     },
     {
       "logicalName": "resolving-merge-conflicts",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -400,7 +434,9 @@
     },
     {
       "logicalName": "wizard",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -419,7 +455,9 @@
     },
     {
       "logicalName": "prototype",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -438,7 +476,9 @@
     },
     {
       "logicalName": "research",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -457,7 +497,9 @@
     },
     {
       "logicalName": "grill-me",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -476,7 +518,9 @@
     },
     {
       "logicalName": "handoff",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -495,7 +539,9 @@
     },
     {
       "logicalName": "teach",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -514,7 +560,9 @@
     },
     {
       "logicalName": "to-questionnaire",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -533,7 +581,9 @@
     },
     {
       "logicalName": "wait-what",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -552,11 +602,13 @@
     },
     {
       "logicalName": "writing-for-agents",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.18.0/skills/internal/writing-for-agents",
+        "path": "artifacts/1.21.0/skills/internal/writing-for-agents",
         "upstreamReference": {
           "repository": "https://github.com/mattpocock/skills",
           "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -567,16 +619,18 @@
         {
           "id": "writing-for-agents.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.18.0/skills/internal/writing-for-agents",
+          "sourceDirectory": "artifacts/1.21.0/skills/internal/writing-for-agents",
           "destination": ".agents/skills/writing-for-agents",
-          "folderSha256": "2cea304a707a76d15402c7ac11519542578dab501758227a7bb1a24631d27e8d",
+          "folderSha256": "76930e1840b808f0e69835431955045755379041202bf26ff1219199edd87230",
           "expectedMirrorOf": null
         }
       ]
     },
     {
       "logicalName": "claude-handoff",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -595,7 +649,9 @@
     },
     {
       "logicalName": "loop-me",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -614,7 +670,9 @@
     },
     {
       "logicalName": "retro",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -633,7 +691,9 @@
     },
     {
       "logicalName": "setup-ts-deep-modules",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -652,7 +712,9 @@
     },
     {
       "logicalName": "writing-beats",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -671,7 +733,9 @@
     },
     {
       "logicalName": "writing-fragments",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -690,7 +754,9 @@
     },
     {
       "logicalName": "writing-shape",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -709,7 +775,9 @@
     },
     {
       "logicalName": "git-guardrails-claude-code",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -728,7 +796,9 @@
     },
     {
       "logicalName": "migrate-to-shoehorn",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -747,7 +817,9 @@
     },
     {
       "logicalName": "scaffold-exercises",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -766,7 +838,9 @@
     },
     {
       "logicalName": "setup-pre-commit",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/mattpocock/skills",
         "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -785,7 +859,9 @@
     },
     {
       "logicalName": "implement-spec",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -809,7 +885,9 @@
     },
     {
       "logicalName": "flow-code-review",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -828,26 +906,30 @@
     },
     {
       "logicalName": "flow-implement",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.18.0/skills/internal/flow-implement"
+        "path": "artifacts/1.21.0/skills/internal/flow-implement"
       },
       "variants": [
         {
           "id": "flow-implement.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.18.0/skills/internal/flow-implement",
+          "sourceDirectory": "artifacts/1.21.0/skills/internal/flow-implement",
           "destination": ".agents/skills/flow-implement",
-          "folderSha256": "bbc430fb44ccfe5fca164c3ea645a83a6b1f37633efba5cf3ef4cc21d53d9fc0",
+          "folderSha256": "e388f034e8a272b200579b0d8b8e5e1fe745d47cd95b8c75ec6d81518d48a9af",
           "expectedMirrorOf": null
         }
       ]
     },
     {
       "logicalName": "flow-qa",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -866,7 +948,9 @@
     },
     {
       "logicalName": "flow-research",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -885,55 +969,59 @@
     },
     {
       "logicalName": "drive-development-flow",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.18.0/skills/internal/drive-development-flow"
+        "path": "artifacts/1.22.1/skills/internal/drive-development-flow"
       },
       "variants": [
         {
           "id": "drive-development-flow.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.18.0/skills/internal/drive-development-flow",
+          "sourceDirectory": "artifacts/1.22.1/skills/internal/drive-development-flow",
           "destination": ".codex/skills/drive-development-flow",
-          "folderSha256": "4c7829bf7fd36f40cc23a7ff91c46419f8b63d7854ee8740a7f378c3d2d492e2",
+          "folderSha256": "62736c771ce69bec2b4d97ad9f4a3b00fb286d74b04e42bfb953f0379e7173bb",
           "expectedMirrorOf": null
         },
         {
           "id": "drive-development-flow.agents",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.18.0/skills/internal/drive-development-flow",
+          "sourceDirectory": "artifacts/1.22.1/skills/internal/drive-development-flow",
           "destination": ".agents/skills/drive-development-flow",
-          "folderSha256": "4c7829bf7fd36f40cc23a7ff91c46419f8b63d7854ee8740a7f378c3d2d492e2",
+          "folderSha256": "62736c771ce69bec2b4d97ad9f4a3b00fb286d74b04e42bfb953f0379e7173bb",
           "expectedMirrorOf": "drive-development-flow.codex"
         }
       ]
     },
     {
       "logicalName": "coding-orchestration",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.20.0/skills/internal/coding-orchestration"
+        "path": "artifacts/1.24.0/skills/internal/coding-orchestration"
       },
       "variants": [
         {
           "id": "coding-orchestration.codex-adapter",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.20.0/skills/internal/coding-orchestration",
+          "sourceDirectory": "artifacts/1.24.0/skills/internal/coding-orchestration",
           "destination": ".codex/skills/coding-orchestration",
-          "folderSha256": "e660ad55c8b0ae1217e0e58700c584c037fb5d3ee2d1658607b80a7e4dbf1d21",
+          "folderSha256": "06bc7ba16b70990ed01df21b81e47ab10f32516008560180ff64e26ca3235101",
           "expectedMirrorOf": null,
           "adapterContract": "authorized-initiative-orchestration-v2"
         },
         {
           "id": "coding-orchestration.agents",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.20.0/skills/internal/coding-orchestration",
+          "sourceDirectory": "artifacts/1.24.0/skills/internal/coding-orchestration",
           "destination": ".agents/skills/coding-orchestration",
-          "folderSha256": "e660ad55c8b0ae1217e0e58700c584c037fb5d3ee2d1658607b80a7e4dbf1d21",
+          "folderSha256": "06bc7ba16b70990ed01df21b81e47ab10f32516008560180ff64e26ca3235101",
           "expectedMirrorOf": "coding-orchestration.codex-adapter",
           "adapterContract": "authorized-initiative-orchestration-v2"
         }
@@ -941,7 +1029,9 @@
     },
     {
       "logicalName": "pstack-engineering",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -960,11 +1050,13 @@
     },
     {
       "logicalName": "grill-with-docs",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.19.1/skills/internal/grill-with-docs",
+        "path": "artifacts/1.22.1/skills/internal/grill-with-docs",
         "upstreamReference": {
           "repository": "https://github.com/mattpocock/skills",
           "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -975,16 +1067,18 @@
         {
           "id": "grill-with-docs.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.19.1/skills/internal/grill-with-docs",
+          "sourceDirectory": "artifacts/1.22.1/skills/internal/grill-with-docs",
           "destination": ".agents/skills/grill-with-docs",
-          "folderSha256": "e8d4fbcc04a8587603cd8118c9a51afc927abc3018f864812daf5f6aee5b2404",
+          "folderSha256": "778476c0f60a9dd4f3bdde15c62de05baca2273ce9606d5602bbcdf9cc262c99",
           "expectedMirrorOf": null
         }
       ]
     },
     {
       "logicalName": "measure-development-run",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "availabilityReason": "Codex session JSONL and CODEX_THREAD_ID are required; Factory is intentionally out of scope.",
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
@@ -1004,7 +1098,9 @@
     },
     {
       "logicalName": "orchestration-pilot",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1023,7 +1119,9 @@
     },
     {
       "logicalName": "working-backwards",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1049,7 +1147,9 @@
     },
     {
       "logicalName": "parallel-work",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1068,7 +1168,9 @@
     },
     {
       "logicalName": "release-train",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1087,7 +1189,9 @@
     },
     {
       "logicalName": "check-in",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1106,7 +1210,9 @@
     },
     {
       "logicalName": "linear-hygiene",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1125,7 +1231,9 @@
     },
     {
       "logicalName": "development-steward",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1144,7 +1252,9 @@
     },
     {
       "logicalName": "convex-guardian",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1163,7 +1273,9 @@
     },
     {
       "logicalName": "posthog-observability",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1182,7 +1294,9 @@
     },
     {
       "logicalName": "simplify-code",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1201,7 +1315,9 @@
     },
     {
       "logicalName": "behavioral-evidence",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1220,7 +1336,9 @@
     },
     {
       "logicalName": "install-anti-slop",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1241,14 +1359,18 @@
           "sourceDirectory": "artifacts/1.5.17/skills/internal/install-anti-slop",
           "destination": ".agents/skills/install-anti-slop",
           "folderSha256": "0d7c484b10c6e59432f05496a2eeecb2b2ca8355f305b7f1e6d5f2d93e775cd0",
-          "executableFiles": ["scripts/install.mjs"],
+          "executableFiles": [
+            "scripts/install.mjs"
+          ],
           "expectedMirrorOf": null
         }
       ]
     },
     {
       "logicalName": "create-product-verification",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1267,7 +1389,9 @@
     },
     {
       "logicalName": "maintain-product-verification",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1286,7 +1410,9 @@
     },
     {
       "logicalName": "exa-search",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1299,14 +1425,18 @@
           "sourceDirectory": "artifacts/1.1.1/skills/internal/exa-search",
           "destination": ".agents/skills/exa-search",
           "folderSha256": "980af8c0d136ce9d261c214a35b4840af0fffe0c9e0c2a3d85e022e4cfee7fbb",
-          "executableFiles": ["scripts/exa-search.mjs"],
+          "executableFiles": [
+            "scripts/exa-search.mjs"
+          ],
           "expectedMirrorOf": null
         }
       ]
     },
     {
       "logicalName": "global-agent-guardrails",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1319,14 +1449,18 @@
           "sourceDirectory": "artifacts/1.5.2/skills/internal/global-agent-guardrails",
           "destination": ".agents/skills/global-agent-guardrails",
           "folderSha256": "0b8c7f2d92507417cc042ff6e299922c1b01ef7ce3fc06effb704068939bafc7",
-          "executableFiles": ["scripts/command-guard.mjs"],
+          "executableFiles": [
+            "scripts/command-guard.mjs"
+          ],
           "expectedMirrorOf": null
         }
       ]
     },
     {
       "logicalName": "decisions",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1345,7 +1479,9 @@
     },
     {
       "logicalName": "setup-help",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1364,7 +1500,9 @@
     },
     {
       "logicalName": "better-accessibility",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/jakubkrehel/skills",
         "commit": "267330e1adfc66a718fb65fa6918c1f06d0a689e",
@@ -1386,7 +1524,9 @@
     },
     {
       "logicalName": "better-colors",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/jakubkrehel/skills",
         "commit": "267330e1adfc66a718fb65fa6918c1f06d0a689e",
@@ -1408,7 +1548,9 @@
     },
     {
       "logicalName": "better-interface",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1435,7 +1577,9 @@
     },
     {
       "logicalName": "better-layout",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/jakubkrehel/skills",
         "commit": "267330e1adfc66a718fb65fa6918c1f06d0a689e",
@@ -1457,7 +1601,9 @@
     },
     {
       "logicalName": "better-typography",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/jakubkrehel/skills",
         "commit": "267330e1adfc66a718fb65fa6918c1f06d0a689e",
@@ -1479,7 +1625,9 @@
     },
     {
       "logicalName": "better-ui",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/jakubkrehel/skills",
         "commit": "267330e1adfc66a718fb65fa6918c1f06d0a689e",
@@ -1501,7 +1649,9 @@
     },
     {
       "logicalName": "better-writing",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/jakubkrehel/skills",
         "commit": "267330e1adfc66a718fb65fa6918c1f06d0a689e",
@@ -1523,7 +1673,9 @@
     },
     {
       "logicalName": "break",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1550,7 +1702,9 @@
     },
     {
       "logicalName": "explain-interface",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1577,7 +1731,9 @@
     },
     {
       "logicalName": "interface-review",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1604,7 +1760,9 @@
     },
     {
       "logicalName": "variant",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1631,7 +1789,9 @@
     },
     {
       "logicalName": "make-interfaces-feel-better",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1658,7 +1818,9 @@
     },
     {
       "logicalName": "show-me",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1685,7 +1847,9 @@
     },
     {
       "logicalName": "pr-lens",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -1712,26 +1876,30 @@
     },
     {
       "logicalName": "design-quality",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "design-quality.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.18.0/skills/internal/design-quality",
+          "sourceDirectory": "artifacts/1.22.1/skills/internal/design-quality",
           "destination": ".agents/skills/design-quality",
           "expectedMirrorOf": null,
-          "folderSha256": "90ae099965424d22c8bafe2f2b14468078ff761d115dcccedbfbb9b365fde784"
+          "folderSha256": "f9d92c3006ca4e47fb82abb2355157627e514b412f49c2db8dcc0c4749588d1d"
         }
       ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.18.0/skills/internal/design-quality"
+        "path": "artifacts/1.22.1/skills/internal/design-quality"
       }
     },
     {
       "logicalName": "evidence-capture",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "evidence-capture.codex",
@@ -1750,7 +1918,9 @@
     },
     {
       "logicalName": "impeccable",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "impeccable.codex",
@@ -1759,7 +1929,9 @@
           "destination": ".agents/skills/impeccable",
           "expectedMirrorOf": null,
           "folderSha256": "f3981934df87b85ca22062c965c5f763d5b475a45cc749540be6edc888a0ece7",
-          "executableFiles": ["scripts/impeccable"]
+          "executableFiles": [
+            "scripts/impeccable"
+          ]
         },
         {
           "id": "impeccable.codex-compat",
@@ -1768,7 +1940,9 @@
           "destination": ".codex/skills/impeccable",
           "expectedMirrorOf": "impeccable.codex",
           "folderSha256": "f3981934df87b85ca22062c965c5f763d5b475a45cc749540be6edc888a0ece7",
-          "executableFiles": ["scripts/impeccable"]
+          "executableFiles": [
+            "scripts/impeccable"
+          ]
         },
         {
           "id": "impeccable.factory-compat",
@@ -1777,7 +1951,9 @@
           "destination": ".factory/skills/impeccable",
           "expectedMirrorOf": "impeccable.codex",
           "folderSha256": "f3981934df87b85ca22062c965c5f763d5b475a45cc749540be6edc888a0ece7",
-          "executableFiles": ["scripts/impeccable"]
+          "executableFiles": [
+            "scripts/impeccable"
+          ]
         }
       ],
       "source": {
@@ -1795,7 +1971,9 @@
     },
     {
       "logicalName": "adapt",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "adapt.codex",
@@ -1837,7 +2015,9 @@
     },
     {
       "logicalName": "animate",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "animate.codex",
@@ -1879,7 +2059,9 @@
     },
     {
       "logicalName": "audit",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "audit.codex",
@@ -1921,7 +2103,9 @@
     },
     {
       "logicalName": "bolder",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "bolder.codex",
@@ -1963,7 +2147,9 @@
     },
     {
       "logicalName": "clarify",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "clarify.codex",
@@ -2005,7 +2191,9 @@
     },
     {
       "logicalName": "colorize",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "colorize.codex",
@@ -2047,7 +2235,9 @@
     },
     {
       "logicalName": "critique",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "critique.codex",
@@ -2089,7 +2279,9 @@
     },
     {
       "logicalName": "delight",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "delight.codex",
@@ -2131,7 +2323,9 @@
     },
     {
       "logicalName": "distill",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "distill.codex",
@@ -2173,7 +2367,9 @@
     },
     {
       "logicalName": "layout",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "layout.codex",
@@ -2215,7 +2411,9 @@
     },
     {
       "logicalName": "optimize",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "optimize.codex",
@@ -2257,7 +2455,9 @@
     },
     {
       "logicalName": "overdrive",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "overdrive.codex",
@@ -2299,7 +2499,9 @@
     },
     {
       "logicalName": "polish",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "polish.codex",
@@ -2341,7 +2543,9 @@
     },
     {
       "logicalName": "quieter",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "quieter.codex",
@@ -2383,7 +2587,9 @@
     },
     {
       "logicalName": "shape",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "shape.codex",
@@ -2425,7 +2631,9 @@
     },
     {
       "logicalName": "typeset",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "variants": [
         {
           "id": "typeset.codex",
@@ -2467,26 +2675,30 @@
     },
     {
       "logicalName": "design-direction",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.18.0/skills/internal/design-direction"
+        "path": "artifacts/1.22.1/skills/internal/design-direction"
       },
       "variants": [
         {
           "id": "design-direction.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.18.0/skills/internal/design-direction",
+          "sourceDirectory": "artifacts/1.22.1/skills/internal/design-direction",
           "destination": ".agents/skills/design-direction",
           "expectedMirrorOf": null,
-          "folderSha256": "e073b2795683a584375700f8cc0660c8ca5ec609b752644d97ce04b5e92e6848"
+          "folderSha256": "a574fddeedba8417540316fc70abcf3b434d0637dc8e7b8d35fb9a7e63235e41"
         }
       ]
     },
     {
       "logicalName": "agent-browser",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -2512,7 +2724,9 @@
     },
     {
       "logicalName": "animation-vocabulary",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -2538,7 +2752,9 @@
     },
     {
       "logicalName": "firecrawl",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -2564,11 +2780,13 @@
     },
     {
       "logicalName": "orchestrate-work",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.20.0/skills/internal/orchestrate-work"
+        "path": "artifacts/1.24.0/skills/internal/orchestrate-work"
       },
       "variants": [
         {
@@ -2576,14 +2794,16 @@
           "harness": "codex",
           "destination": ".agents/skills/orchestrate-work",
           "expectedMirrorOf": null,
-          "sourceDirectory": "artifacts/1.20.0/skills/internal/orchestrate-work",
-          "folderSha256": "53245902cfa4c372c8c33d622be50da4e9dc4971bbe38bd26bbfe41255a0964d"
+          "sourceDirectory": "artifacts/1.24.0/skills/internal/orchestrate-work",
+          "folderSha256": "cce6e996c31af86490607c4f7f95ac654a77873f3713329cc21121f234116819"
         }
       ]
     },
     {
       "logicalName": "review-thread",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -2602,7 +2822,9 @@
     },
     {
       "logicalName": "shadcn",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
@@ -2628,7 +2850,9 @@
     },
     {
       "logicalName": "vercel-react-best-practices",
-      "physicalHarnesses": ["codex"],
+      "physicalHarnesses": [
+        "codex"
+      ],
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",

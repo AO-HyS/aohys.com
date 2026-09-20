@@ -35,3 +35,41 @@ then independent capable critique and corrections before final media. Follow
 the host's authorized browser mechanism. Tests, lint, React Doctor and reviewers
 answer different questions; choose them by the affected behavior and required
 gates rather than loading all tools for every task.
+
+## Exact execution across models
+
+Exact instructions are the default for implementation and delegated work. The
+parent resolves decisions once and supplies a small ordered packet with the
+objective, exact root/revision, owned paths, settled decisions, actions/commands,
+expected observations, mandatory checks, stop conditions and evidence receipt.
+Outcome delegation is an explicit exception with a recorded reason and the same
+acceptance bar. See coding-orchestration/references/execution-contract.md for
+the single packet protocol, correction and model-handoff requirements.
+
+Keep the execution method independent of model identity. Within authorized
+provider and quota limits, reduce task size, serialize dependent steps and add
+examples or checkpoints when a model needs more guidance. Never lower acceptance
+or silently substitute providers to obtain a pass. A model without a required
+capability reports the gap; identical quality across all models is not promised.
+
+On interruption, preserve the candidate and applicable evidence, terminate the
+old writer before ownership transfer, and hand off completed/pending steps,
+failures, actual or unknown model identity, capabilities and retained authority.
+Correct the first mismatch in a bounded packet. Repeat only checks affected by
+changes or a required gate; implementation completion is not accepted behavior.
+
+## Default development profile
+
+For a new session use Sol High. Keep the model already selected for this
+conversation as its orchestrator. The parent plans, integrates, resolves
+conflicts and owns final acceptance. Use Jev as an adviser at useful packet,
+decision, correction and review boundaries; use DeepSeek V4.1 Flash High for
+bounded exact writing and Astra XHigh for native research and independent
+reviews. Every native descendant explicitly uses Astra XHigh; Luna and silent
+model/provider fallback are excluded from this profile.
+
+For non-trivial implementation or review, follow the installed
+`coding-orchestration/references/jev-advisory.md` recipe once. Tiny direct work
+uses ordinary tools. Preserve one writer per surface, serialize dependencies
+and receive native/process completion events. The parent judges real behavior
+and closes relevant checks and corrections before delivery.

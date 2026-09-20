@@ -9,6 +9,13 @@ Optimize rápido → bien → barato: deliver the complete usable result, correc
 it with focused evidence, then reduce measured waste. The model selected when
 the conversation starts owns orchestration and the parent integrates the run.
 
+## Use the installed advisory profile
+
+For non-trivial implementation, a material decision or independent review,
+read [Jev advisory execution](../coding-orchestration/references/jev-advisory.md) once and use its
+Sol/Flash/Astra profile. The current selected parent stays the orchestrator.
+Tiny deterministic work stays direct; the recipe does not add a second planner.
+
 ## Pin the target
 
 Recover the objective or ticket, latest correction, exact root, branch or
@@ -20,15 +27,18 @@ draft.
 Before any delegation, pin the execution contract:
 
 - owned files or module surface and one writer;
-- exact instructions or outcome delegation mode;
+- exact instructions by default, or a recorded reason for a bounded outcome exception;
 - expected public behavior and observable values;
 - authorization, stop conditions and terminal state;
 - focused checks, required gates and completion receipt.
 
 Read [the packet fields](../coding-orchestration/references/execution-contract.md)
-when composing a worker handoff. Both modes use the same constraints. Exact
-mode reports a recipe mismatch; outcome mode selects its implementation while
-running every enumerated mandatory check.
+when composing a worker handoff; this reference owns the execution protocol.
+Use its ordered actions, expected observations and receipt. Adapt packet size
+and checkpoints to actual capability while preserving the acceptance standard.
+On model, quota or session change, use
+[execution continuity](../coding-orchestration/references/execution-continuity.md)
+to preserve work, authorization and evidence and transfer ownership safely.
 
 Use the repository's local canonical recipes and domain architecture. A
 workflow skill does not migrate forms or other product structures. Do not add

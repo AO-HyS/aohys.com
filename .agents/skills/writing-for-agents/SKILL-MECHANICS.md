@@ -33,13 +33,20 @@ docs. Do not require a full repository map before an unrelated small edit.
 
 ## Guide the result
 
-Assume the selected model can choose an approach. State the outcome, non-obvious
-constraints, required evidence and authorized endpoint. Use a fixed recipe only
-for a real invariant or fragile operation. Preserve model/provider choice;
-Astra-specific advice does not establish another host's capability. Define
-completion so implementation, relevant verification and corrections continue
-through the authorized endpoint. A first draft does not require a new approval
-unless the user actually requested that checkpoint.
+Write executable steps with observable completion criteria. For development
+execution, use the shared
+[exact-default protocol](../coding-orchestration/references/execution-contract.md)
+for ordered packets, capability adaptation, exception handling and receipts.
+Keep that protocol in its authoritative owner; other skills provide their
+operation-specific actions and concise pointers. Make fewer assumptions about
+model inference by resolving decisions and adding examples where needed.
+Preserve model/provider choice and require evidence of actual capabilities.
+
+Define completion so implementation, relevant verification and corrections
+continue through the authorized endpoint. A first draft does not require a new
+approval unless the user actually requested that checkpoint. Reference material
+and open research questions can remain references; an ordered workflow need not
+invent an implementation before its prerequisites are known.
 
 Validate changed frontmatter and references, then use a few representative
 positive and negative requests for a substantial routing change. Check both

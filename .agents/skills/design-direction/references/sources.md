@@ -1,9 +1,9 @@
 # Sources and adaptation
 
-Anshu Chimala, _How to turn your AI into a world-class designer_, Lenny's
+Anshu Chimala, *How to turn your AI into a world-class designer*, Lenny's
 Newsletter, September 1, 2026:
 https://www.lennysnewsletter.com/p/how-to-turn-your-ai-into-a-world
-Verified public portion September 9, 2026. Techniques 1–6 were readable; technique
+Verified public portion September 15, 2026. Techniques 1–6 were readable; technique
 7's body required subscriber access and is not represented as reviewed here.
 
 Selected method, paraphrased: explore diverse concepts; sharpen a promising
@@ -11,11 +11,19 @@ identity with the user's taste; use an independent critic grounded in visual
 references; consider image assets and, when useful, generated motion; finish by
 subtracting low-value elements. External seeds can help stalled exploration.
 
-Local adaptations: use installed provider routing, bounded defect-driven review,
-and actual runtime evidence. Generated video is an asset or exploration, never
-proof of working UI. Choose tools by the product need; decorative motion and
-provider changes are optional. The article's numerical scoring example does not
-become a completion gate. Do not reload the article during ordinary work.
+Local adaptations: preserve identity independently from composition; record
+candidates before seed use; present equal-data alternatives on Impeccable's one
+decision page; reuse one interview; and distinguish comparison readiness from
+user selection. The questionnaire may embed references that make a question
+concrete, but it does not duplicate direction selection. Use installed provider
+routing, bounded defect-driven review and actual runtime evidence. Generated
+video is an asset or exploration, never proof of working UI. Choose tools by the
+product need; decorative motion and provider changes are optional. The article's
+numerical scoring example may support judgment, but its target stays outside the
+critic prompt and never becomes an automatic completion gate. Start with one or
+two passes, inspect convergence, and change the hypothesis when gaps stall. Do
+not reload the article during ordinary work. The operational rules live in the
+skills; the URL is provenance, not a runtime dependency.
 
 The September 9 NutriPlan design session demonstrated a separate continuity need:
 keep product decisions, token sources, responsive states and obsolete-reference

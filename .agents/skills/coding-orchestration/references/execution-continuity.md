@@ -22,3 +22,30 @@ Preserve partial evidence and report unavailable capability rather than treating
 it as a product defect. Run final checks after code and visual corrections
 settle, then reconcile every requested outcome with the actual candidate and
 delivery surface.
+
+## Model, quota or session handoff
+
+Keep the starting session model as parent unless the user changes it. Availability
+changes do not authorize a provider fallback. Choose only currently available,
+authorized capabilities; if none can perform a required step, record the gap.
+
+Before transferring work, retain a compact handoff in the existing task record:
+
+- objective, acceptance criteria, settled decisions and packet mode;
+- exact root, branch/revision and dirty paths, including useful partial edits;
+- current owner, running worker/session identities and termination evidence;
+- requested and actual observed model/tool identities, availability constraints
+  and the reason for interruption; unknown runtime identity stays unknown;
+- authorization source, provider restrictions, permitted side effects and endpoint;
+- completed, failed and pending checks with receipts, candidate/content and
+  input references, plus which evidence remains applicable and why;
+- unresolved findings, prerequisite for retry and next ordered action/checkpoint.
+
+Verify the previous writer has terminated before assigning its paths. If its
+state cannot be established, keep ownership blocked and continue disjoint work.
+The replacement checks live revision and dirty content against the handoff,
+preserves prior edits, and resumes the first pending action. Changed inputs or
+content invalidate affected receipts; record that relationship and rerun those
+checks. A model change alone does not invalidate unchanged behavioral evidence.
+Completion requires the original acceptance criteria and authorized endpoint;
+partial output, a timeout or quota exhaustion never becomes a passing receipt.
