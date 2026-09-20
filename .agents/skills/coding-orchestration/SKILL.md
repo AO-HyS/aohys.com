@@ -9,6 +9,13 @@ Optimize rápido → bien → barato: reach the complete usable result quickly,
 correct it with focused evidence, and keep measured cost and complexity low.
 Preserve behavior, data boundaries and authorization.
 
+## Use the installed advisory profile
+
+For non-trivial implementation, a material decision or independent review,
+read [Jev advisory execution](references/jev-advisory.md) once and use its
+Sol/Flash/Astra profile. The current selected parent stays the orchestrator.
+Tiny deterministic work stays direct; the recipe does not add a second planner.
+
 ## Resolve the run
 
 The model selected when the conversation starts remains the orchestrator. It
@@ -25,17 +32,17 @@ conditions, and the required completion report. Read
 [the execution contract](references/execution-contract.md) for the compact
 packet fields.
 
-Use one of two modes:
+Use **exact instructions by default**: give ordered actions, expected
+observations, checks and stops using the execution contract. Outcome delegation
+is an explicit, reasoned exception for a bounded implementation decision; record
+why a recipe would be premature and keep the same acceptance requirements.
 
-- Exact instructions provide an ordered recipe, commands or actions. Follow
-  that recipe and report the first mismatch with its observed state.
-- Outcome delegation provides the observable result and constraints. The
-  worker chooses the implementation but runs every enumerated mandatory check;
-  it cannot replace an agreed check with a different one.
-
-Both modes carry the same root, ownership, authorization, behavioral,
-verification, evidence and stop-condition requirements. A mode choice never
-grants extra authority or reduces the acceptance bar.
+The method is model-agnostic. Preserve the acceptance standard when capability
+or availability changes: reduce packet size and simultaneous decisions, supply
+concrete examples and observable checkpoints, then correct from the returned
+evidence. A model label never proves capability or acceptance. If an essential
+capability is unavailable, retain the gap and continue independent work; do not
+silently substitute a provider or promise equivalent results from every model.
 
 ## Execute with useful ownership
 

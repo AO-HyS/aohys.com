@@ -1,4 +1,4 @@
-# Development System Contract 1.18.1
+# Development System Contract 1.24.0
 
 ## RÁPIDO → BIEN → BARATO
 
@@ -105,7 +105,7 @@ summarizing logs; a successful output filter does not prove a passing check.
 
 ## Skills and distribution
 
-Catalog 0.38.0 retains the Jakub interface skills, make-interfaces-feel-better,
+Catalog 0.43.0 retains the Jakub interface skills, make-interfaces-feel-better,
 Show-me and PR Lens with exact upstream commits and hashes. Impeccable remains
 the design-direction reference when installed. Choose the relevant specialty;
 do not stack every design skill on every change. Use visual explanations when
@@ -133,7 +133,7 @@ the contract and skill catalog together. Product repositories pin one tooling
 dependency and expose `pnpm ds`; changing model policy does not itself require
 deploying their applications.
 
-Published artifacts and manifests through 1.16.1 remain immutable rollback
+All previously published artifacts and manifests remain immutable rollback
 targets. HOME is generated state. Verify package installation and changes in an
 isolated HOME before applying an authorized installation to the operator.
 
@@ -152,7 +152,10 @@ and finishing the chosen Impeccable playbook, the orchestrator assigns an
 independent visual-capable critic. A distinct finish reviewer counts; self-review
 does not. Resolve its concrete findings before recording final delivery evidence
 from that candidate. Working screenshots are diagnostic, not final delivery.
-Review only affected states again after corrections; no numerical-score loops.
+Review only affected states again after corrections. A grounded numerical score
+may support visible criteria; it does not create a threshold loop or prove user
+approval. Start with one or two passes, evaluate convergence and change the
+hypothesis when named gaps stall.
 Follow `evidence-capture` for stable native tool batches and media integrity. An
 assigned bounded worker may prepare scripts or existing media, without browser
 authority unless its role has that capability. Use representative flows plus
@@ -177,6 +180,23 @@ outcome inside the delivered clip and inspect its actual end. A rejected candida
 is an incomplete attempt, not an accepted delivery with a measured completion time.
 Existing Impeccable, independent critique and evidence roles remain in place.
 
+Visual and mixed grills use one interview. `drive-development-flow` recognizes
+natural intent without requiring skill names; `design-direction` leads visual
+decisions and `grill-with-docs` provides questions, HTML and answer recovery.
+Classify brief statements as confirmed constraints, verified product facts or
+provisional agent proposals. Preserve identity separately from composition,
+hierarchy and interaction.
+
+For an open surface in an existing identity, use Impeccable's matching procedure
+and retain the observable order candidates → concept-seed → Impeccable decision
+page → human selection. That page is the only runtime comparison/selection
+surface; the questionnaire may show references but does not choose a direction.
+Equalize data, task, states and finish between alternatives. Three requested
+alternatives means exactly three materially different options. A
+rejected set records the literal correction and revises the hypothesis without
+forcing a selection. A selected direction resumes its recorded phase; a bounded
+style correction remains a refinement.
+
 ## Implementation and orchestration continuity
 
 Use flow-implement to carry state/data invariants into stateful changes and
@@ -193,3 +213,41 @@ session. Retry after relevant
 new evidence, preserve useful output and complete the authorized delivery surface.
 Required repo checks remain; broader reruns need an applicable gate or actual
 change/failure. Update superseded completion claims after rejection.
+
+## Exact execution across models
+
+Exact instructions are the default for implementation and delegated work. The
+parent resolves decisions once and supplies a small ordered packet with the
+objective, exact root/revision, owned paths, settled decisions, actions/commands,
+expected observations, mandatory checks, stop conditions and evidence receipt.
+Outcome delegation is an explicit exception with a recorded reason and the same
+acceptance bar. See coding-orchestration/references/execution-contract.md for
+the single packet protocol, correction and model-handoff requirements.
+
+Keep the execution method independent of model identity. Within authorized
+provider and quota limits, reduce task size, serialize dependent steps and add
+examples or checkpoints when a model needs more guidance. Never lower acceptance
+or silently substitute providers to obtain a pass. A model without a required
+capability reports the gap; identical quality across all models is not promised.
+
+On interruption, preserve the candidate and applicable evidence, terminate the
+old writer before ownership transfer, and hand off completed/pending steps,
+failures, actual or unknown model identity, capabilities and retained authority.
+Correct the first mismatch in a bounded packet. Repeat only checks affected by
+changes or a required gate; implementation completion is not accepted behavior.
+
+## Default development profile
+
+For a new session use Sol High. Keep the model already selected for this
+conversation as its orchestrator. The parent plans, integrates, resolves
+conflicts and owns final acceptance. Use Jev as an adviser at useful packet,
+decision, correction and review boundaries; use DeepSeek V4.1 Flash High for
+bounded exact writing and Astra XHigh for native research and independent
+reviews. Every native descendant explicitly uses Astra XHigh; Luna and silent
+model/provider fallback are excluded from this profile.
+
+For non-trivial implementation or review, follow the installed
+`coding-orchestration/references/jev-advisory.md` recipe once. Tiny direct work
+uses ordinary tools. Preserve one writer per surface, serialize dependencies
+and receive native/process completion events. The parent judges real behavior
+and closes relevant checks and corrections before delivery.

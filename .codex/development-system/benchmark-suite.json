@@ -10,18 +10,8 @@
       "checks": ["one writer", "human merge gate", "verification"],
       "forbiddenTerms": ["auto-merge"],
       "candidates": [
-        {
-          "id": "orchestration-codex-baseline",
-          "harness": "codex",
-          "model": "gpt-5.6-sol",
-          "reasoning": "high"
-        },
-        {
-          "id": "orchestration-factory-challenger",
-          "harness": "factory",
-          "model": "gpt-5.6-sol",
-          "reasoning": "high"
-        }
+        { "id": "orchestration-codex-baseline", "harness": "codex", "model": "gpt-5.6-sol", "reasoning": "high" },
+        { "id": "orchestration-factory-challenger", "harness": "factory", "model": "gpt-5.6-sol", "reasoning": "high" }
       ]
     },
     {
@@ -32,18 +22,8 @@
       "checks": ["terminalSlice", "denied", "test"],
       "forbiddenTerms": ["rewrite the lifecycle"],
       "candidates": [
-        {
-          "id": "implementation-spark-baseline",
-          "harness": "codex",
-          "model": "gpt-5.3-codex-spark",
-          "reasoning": "low"
-        },
-        {
-          "id": "implementation-factory-challenger",
-          "harness": "factory",
-          "model": "gpt-5.6-sol",
-          "reasoning": "medium"
-        }
+        { "id": "implementation-spark-baseline", "harness": "codex", "model": "gpt-5.3-codex-spark", "reasoning": "low" },
+        { "id": "implementation-factory-challenger", "harness": "factory", "model": "gpt-5.6-sol", "reasoning": "medium" }
       ]
     },
     {
@@ -54,18 +34,8 @@
       "checks": ["authorization", "one-shot", "high"],
       "forbiddenTerms": ["looks good"],
       "candidates": [
-        {
-          "id": "review-codex-baseline",
-          "harness": "codex",
-          "model": "gpt-5.6-sol",
-          "reasoning": "medium"
-        },
-        {
-          "id": "review-factory-challenger",
-          "harness": "factory",
-          "model": "claude-opus-4-8",
-          "reasoning": "medium"
-        }
+        { "id": "review-codex-baseline", "harness": "codex", "model": "gpt-5.6-sol", "reasoning": "medium" },
+        { "id": "review-factory-challenger", "harness": "factory", "model": "claude-opus-4-8", "reasoning": "medium" }
       ]
     },
     {
@@ -76,18 +46,8 @@
       "checks": ["adapter", "observable behavior", "authorization"],
       "forbiddenTerms": ["universal adapter"],
       "candidates": [
-        {
-          "id": "architecture-codex-baseline",
-          "harness": "codex",
-          "model": "gpt-5.6-sol",
-          "reasoning": "xhigh"
-        },
-        {
-          "id": "architecture-factory-challenger",
-          "harness": "factory",
-          "model": "claude-opus-4-8",
-          "reasoning": "xhigh"
-        }
+        { "id": "architecture-codex-baseline", "harness": "codex", "model": "gpt-5.6-sol", "reasoning": "xhigh" },
+        { "id": "architecture-factory-challenger", "harness": "factory", "model": "claude-opus-4-8", "reasoning": "xhigh" }
       ]
     },
     {
@@ -98,18 +58,8 @@
       "checks": ["preview", "unauthorized", "manual checklist"],
       "forbiddenTerms": ["production deploy"],
       "candidates": [
-        {
-          "id": "browser-codex-baseline",
-          "harness": "codex",
-          "model": "gpt-5.6-terra",
-          "reasoning": "max"
-        },
-        {
-          "id": "browser-factory-challenger",
-          "harness": "factory",
-          "model": "claude-sonnet-5",
-          "reasoning": "high"
-        }
+        { "id": "browser-codex-baseline", "harness": "codex", "model": "gpt-5.6-terra", "reasoning": "max" },
+        { "id": "browser-factory-challenger", "harness": "factory", "model": "claude-sonnet-5", "reasoning": "high" }
       ]
     },
     {
@@ -120,18 +70,8 @@
       "checks": ["private", "preview link", "failures and corrections"],
       "forbiddenTerms": ["publish publicly"],
       "candidates": [
-        {
-          "id": "visual-codex-baseline",
-          "harness": "codex",
-          "model": "gpt-5.6-sol",
-          "reasoning": "high"
-        },
-        {
-          "id": "visual-factory-challenger",
-          "harness": "factory",
-          "model": "claude-opus-4-8",
-          "reasoning": "high"
-        }
+        { "id": "visual-codex-baseline", "harness": "codex", "model": "gpt-5.6-sol", "reasoning": "high" },
+        { "id": "visual-factory-challenger", "harness": "factory", "model": "claude-opus-4-8", "reasoning": "high" }
       ]
     }
   ]

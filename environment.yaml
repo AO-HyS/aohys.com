@@ -29,11 +29,12 @@ maintenance:
 
   - name: Provision development system and agent assets
     run: |
+      set -e
+      mkdir -p "$HOME/.agents/skills" "$HOME/.codex"
+      cp -R .agents/skills/. "$HOME/.agents/skills/"
+      cp .codex/config.toml .codex/hooks.json "$HOME/.codex/"
+      cp -R .codex/development-system "$HOME/.codex/"
       pnpm ds setup
-      mkdir -p "$HOME/.agents/skills"
-      cp -R .agents/skills/. "$HOME/.agents/skills/" 2>/dev/null || true
-      cp .codex/config.toml .codex/hooks.json "$HOME/.codex/" 2>/dev/null || true
-      cp -R .codex/development-system "$HOME/.codex/" 2>/dev/null || true
 
   - name: Write CLI auth files from secrets
     run: |
@@ -73,9 +74,10 @@ knowledge:
     contents: |
       .agents/skills/ is the committed union of the operator's skill catalog;
       .codex/ mirrors $HOME/.codex (agents/, development-system/, config.toml,
-      hooks.json, rules/, prompts/, commands/). `pnpm ds setup` also provisions
-      $HOME from the pinned catalog; rerun it after adopting a new
-      Development System release.
+      hooks.json, rules/, prompts/, commands/). The blueprint copies these
+      assets first, then `pnpm ds setup` installs the pinned contract and catalog
+      so stale mirrors cannot overwrite the selected release. Refresh affected
+      committed mirrors when adopting a new Development System release.
   - name: secrets
     contents: |
       Org/repo secrets are injected as env vars. Provider keys needed at

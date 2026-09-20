@@ -1,7 +1,7 @@
 name = "docs_researcher"
 description = "Read-only researcher for version-sensitive framework, platform, and API documentation."
 model = "gpt-6-astra"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "xhigh"
 service_tier = "default"
 sandbox_mode = "read-only"
 developer_instructions = """
