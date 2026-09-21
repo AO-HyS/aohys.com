@@ -304,7 +304,7 @@ describe("Public Content Graph", () => {
     const projectSeo = getSeoMetadata("case-study:casa-roca", "en");
     expect(projectSeo.socialImage).toEqual({
       url: "https://aohys.com/images/proof/casa-roca-value-v2.jpg",
-      alt: "Casa Roca guest experience and conversion path preview on AOHYS",
+      alt: "Casa Roca hospitality website and reservations preview on AOHYS",
       type: "image/jpeg",
     });
 
@@ -312,7 +312,7 @@ describe("Public Content Graph", () => {
       getSeoMetadata("case-study:enterprise-systems", "en").socialImage,
     ).toEqual({
       url: "https://aohys.com/images/social/enterprise-systems-preview-v1.png",
-      alt: "Enterprise product systems under operational pressure preview on AOHYS",
+      alt: "Professional product work preview on AOHYS",
       type: "image/png",
       width: 1200,
       height: 630,
@@ -321,7 +321,7 @@ describe("Public Content Graph", () => {
       getSeoMetadata("case-study:engineering-practice", "en").socialImage,
     ).toEqual({
       url: "https://aohys.com/images/social/engineering-practice-preview-v1.png",
-      alt: "AI-native development practice with human accountability preview on AOHYS",
+      alt: "How I work with coding agents preview on AOHYS",
       type: "image/png",
       width: 1200,
       height: 630,
@@ -360,7 +360,7 @@ describe("Public Content Graph", () => {
       mainEntity: {
         "@type": "Person",
         name: "Alejandro Ortiz Corro",
-        jobTitle: "Senior Software Engineer · Desarrollo de producto AI-native",
+        jobTitle: "full stack development",
         sameAs: [
           "https://www.linkedin.com/in/alejandrortizcrr/",
           "https://github.com/corrortiz",
@@ -397,29 +397,27 @@ describe("Public Content Graph", () => {
     const englishHome = getHomePageContent("en");
     const spanishHome = getHomePageContent("es");
 
-    expect(englishHome.headline).toBe(
-      "Senior Software Engineer · AI-Native Product Development",
+    expect(englishHome.headline).toBe("full stack development");
+    expect(spanishHome.headline).toBe("full stack development");
+    expect(englishHome.deck).toMatch(
+      /frontend.*interfaces.*backend.*integrations/i,
     );
-    expect(spanishHome.headline).toBe(
-      "Senior Software Engineer · Desarrollo de producto AI-native",
-    );
-    expect(englishHome.deck).toMatch(/business goals.*product systems.*ship/i);
     expect(spanishHome.deck).toMatch(
-      /objetivos de negocio.*sistemas de producto.*producci[oó]n/i,
+      /frontend.*interfaces.*backend.*integraciones/i,
     );
     expect(englishHome.architectureStages.map((stage) => stage.label)).toEqual([
-      "Business communication",
-      "End-to-end product engineering",
-      "Backend systems",
-      "AI-native delivery",
-      "System architecture",
+      "Understand the problem",
+      "Connect the product",
+      "Backend and integrations",
+      "Work with coding agents",
+      "Check the result",
     ]);
     expect(spanishHome.architectureStages.map((stage) => stage.label)).toEqual([
-      "Comunicación con negocio",
-      "Product engineering end-to-end",
-      "Sistemas backend",
-      "Delivery AI-native",
-      "Arquitectura de sistemas",
+      "Entender el problema",
+      "Conectar el producto",
+      "Backend e integraciones",
+      "Trabajar con agentes",
+      "Comprobar el resultado",
     ]);
     expect(englishHome.selectedOutcomes).toHaveLength(6);
     expect(englishHome.selectedOutcomes.map((outcome) => outcome.path)).toEqual(
@@ -1020,8 +1018,8 @@ describe("Public Content Graph", () => {
     ]);
     expect(englishIndex.entries.map((entry) => entry.statusLabel)).toEqual([
       "Client project · In production",
-      "AI-native development practice",
-      "Enterprise product systems",
+      "Engineering method",
+      "Professional experience",
       "Approaching production",
       "Testing & production preparation",
       "Live hospitality experience",
@@ -1044,20 +1042,17 @@ describe("Public Content Graph", () => {
     const spanishResume = getResumePageContent("es");
 
     expect(englishResume.name).toBe("Alejandro Ortiz Corro");
-    expect(englishResume.role).toBe(
-      "Senior Software Engineer · AI-Native Product Development",
-    );
+    expect(englishResume.role).toBe("full stack development");
     expect(englishResume.pdf).toMatchObject({
       href: "/downloads/alejandro-ortiz-corro-resume.pdf",
       fileName: "alejandro-ortiz-corro-resume.pdf",
     });
     expect(englishResume.projects.map((project) => project.title)).toEqual([
-      "ETERIA",
-      "AI-Native Development Practice",
-      "Enterprise Product Systems",
       "The Barber Central",
-      "NutriPlan Digital",
+      "NutriPlan",
+      "ETERIA",
       "Casa Roca",
+      "AOHYS website",
     ]);
     expect(englishResume.summary.join(" ")).toMatch(
       /business|frontend|backend|agents|human accountability/i,
@@ -1075,7 +1070,7 @@ describe("Public Content Graph", () => {
       })),
     ).toEqual([
       {
-        company: "Tala Mobile",
+        company: "Tala",
         role: "Senior Frontend Developer",
         period: "2023 - Present",
       },
@@ -1086,13 +1081,11 @@ describe("Public Content Graph", () => {
       },
     ]);
     expect(
-      englishResume.experience.find((job) => job.company === "NEORIS/CEMEX")
+      englishResume.experience.find((job) => job.company === "NEORIS / CEMEX")
         ?.role,
     ).toBe("Senior Software Engineer");
 
-    expect(spanishResume.role).toBe(
-      "Senior Software Engineer · Desarrollo de producto AI-native",
-    );
+    expect(spanishResume.role).toBe("full stack development");
     expect(spanishResume.contextTitle).toBe("Más contexto en línea");
     expect(spanishResume.contextLinks.map((link) => link.href)).toEqual([
       "/es/casos/",
@@ -1107,7 +1100,7 @@ describe("Public Content Graph", () => {
       })),
     ).toEqual([
       {
-        company: "Tala Mobile",
+        company: "Tala",
         role: "Senior Frontend Developer",
         period: "2023 - Presente",
       },
@@ -1118,9 +1111,9 @@ describe("Public Content Graph", () => {
       },
     ]);
     expect(
-      spanishResume.experience.find((job) => job.company === "NEORIS/CEMEX")
+      spanishResume.experience.find((job) => job.company === "NEORIS / CEMEX")
         ?.role,
-    ).toBe("Ingeniero de software sénior");
+    ).toBe("Senior Software Engineer");
   });
 
   it("publishes ETERIA as a bilingual, public-safe production case study", () => {
@@ -1130,7 +1123,9 @@ describe("Public Content Graph", () => {
     expect(englishCaseStudy?.statusLabel).toBe(
       "Client project · In production",
     );
-    expect(englishCaseStudy?.overview).toMatch(/client project.*production/i);
+    expect(englishCaseStudy?.overview).toMatch(
+      /event.*inquiry.*planning.*closeout/i,
+    );
     expect(englishCaseStudy?.role.body).toMatch(
       /landing|lead|proposal|private web|SwiftUI/i,
     );
@@ -1138,7 +1133,7 @@ describe("Public Content Graph", () => {
       /Convex|PostHog/i,
     );
     expect(englishCaseStudy?.executionHighlights.body).toMatch(
-      /Release Train|preview|smoke/i,
+      /proposal versions.*pricing.*inventory.*closeout/i,
     );
     expect(englishCaseStudy?.publicEvidence).toEqual([
       expect.objectContaining({
@@ -1173,13 +1168,9 @@ describe("Public Content Graph", () => {
     expect(findForbiddenPublicClaims(publicCopy)).toEqual([]);
     expect(findForbiddenPublicClaims(resumeCopy)).toEqual([]);
     expect(publicCopy).not.toMatch(/\bCARE\b/);
-    expect(enterpriseCopy).toMatch(
-      /customer-support and account-recovery operations platform/i,
-    );
-    expect(enterpriseCopy).toMatch(
-      /atención al cliente y recuperación de cuentas/i,
-    );
-    expect(enterpriseCopy).toMatch(/3(?:-|–)5 seconds.*under 1 second/i);
+    expect(enterpriseCopy).toMatch(/customer-support and collections tools/i);
+    expect(enterpriseCopy).toMatch(/atención al cliente y cobranza/i);
+    expect(enterpriseCopy).not.toMatch(/3(?:-|–)5 seconds.*under 1 second/i);
     expect(enterpriseCopy).not.toMatch(/final client|cliente final|New York/i);
     expect(eteriaCopy).not.toMatch(
       /App Store|credential|private route|customer data|datos de clientes/i,
@@ -1475,23 +1466,31 @@ describe("Public Content Graph", () => {
 
     expect(englishCaseStudy?.statusLabel).toBe("Live hospitality experience");
     expect(englishCaseStudy?.overview).toMatch(
-      /boutique stay.*Roca Partida, Veracruz/i,
+      /public website.*hospitality operations.*reservation/i,
     );
     expect(englishCaseStudy?.problem).toMatchObject({
       title: "Business need",
-      body: expect.stringMatching(/needed.*bilingual public destination/i),
+      body: expect.stringMatching(
+        /public information.*reservations.*check-in.*check-out/i,
+      ),
     });
     expect(englishCaseStudy?.businessOutcome).toMatchObject({
       title: "What was built and what it enables",
-      body: expect.stringMatching(/production hospitality site.*lets guests/i),
+      body: expect.stringMatching(
+        /content-management.*reservation.*overlapping bookings/i,
+      ),
     });
-    expect(englishCaseStudy?.role.body).toMatch(/Product direction/i);
-    expect(englishCaseStudy?.constraints.body).toMatch(/two languages/i);
+    expect(englishCaseStudy?.role.body).toMatch(
+      /public website.*reservation interfaces.*backend rules/i,
+    );
+    expect(englishCaseStudy?.constraints.body).toMatch(
+      /Overlap checks.*backend rules/i,
+    );
     expect(englishCaseStudy?.architectureDecisions.body).toMatch(
-      /bilingual content/i,
+      /reservation rules.*backend.*overlapping bookings/i,
     );
     expect(englishCaseStudy?.executionHighlights.body).toMatch(
-      /production deployment/i,
+      /reservation creation.*check-in.*check-out/i,
     );
     expect(englishCaseStudy?.qualitySecurityPerformance.body).toMatch(
       /optimized media/i,
@@ -1507,24 +1506,28 @@ describe("Public Content Graph", () => {
       "Experiencia de hospitalidad en producción",
     );
     expect(spanishCaseStudy?.overview).toMatch(
-      /estancia boutique.*Roca Partida, Veracruz/i,
+      /sitio público.*operación del hospedaje.*reservas/i,
     );
     expect(spanishCaseStudy?.problem).toMatchObject({
       title: "Necesidad del negocio",
-      body: expect.stringMatching(/necesitaba.*destino público bilingüe/i),
+      body: expect.stringMatching(
+        /información pública.*gestionar reservas.*entrada.*salida/i,
+      ),
     });
     expect(spanishCaseStudy?.businessOutcome).toMatchObject({
       title: "Qué se construyó y qué permite",
       body: expect.stringMatching(
-        /sitio de hospitalidad en producción.*permite que los huéspedes/i,
+        /gestión de contenido y reservas.*entradas y salidas.*superposiciones/i,
       ),
     });
-    expect(spanishCaseStudy?.role.body).toMatch(/Dirección de producto/i);
+    expect(spanishCaseStudy?.role.body).toMatch(
+      /sitio público.*interfaces de reservas.*reglas backend/i,
+    );
     expect(spanishCaseStudy?.architectureDecisions.body).toMatch(
-      /contenido bilingüe/i,
+      /reglas de reservas.*backend.*reservas superpuestas/i,
     );
     expect(spanishCaseStudy?.executionHighlights.body).toMatch(
-      /despliegue en producción/i,
+      /creación de reservas.*entradas y salidas/i,
     );
     expect(spanishCaseStudy?.qualitySecurityPerformance.body).toMatch(
       /media optimizada/i,
@@ -1535,12 +1538,7 @@ describe("Public Content Graph", () => {
 
     const englishFacts = JSON.stringify(englishCaseStudy);
     const spanishFacts = JSON.stringify(spanishCaseStudy);
-    for (const fact of [
-      "Roca Partida",
-      "Veracruz",
-      "SEO",
-      "https://casa-roca.mx",
-    ]) {
+    for (const fact of ["backend", "metadata", "https://casa-roca.mx"]) {
       expect(englishFacts).toContain(fact);
       expect(spanishFacts).toContain(fact);
     }
@@ -1563,10 +1561,12 @@ describe("Public Content Graph", () => {
       expect(englishCase?.overview.length).toBeGreaterThan(80);
       expect(englishCase?.problem.title).toBe("Business need");
       expect(englishCase?.businessOutcome.title).toBe(
-        "What was built and what it enables",
+        caseId === "case-study:engineering-practice"
+          ? "What the method supports"
+          : "What was built and what it enables",
       );
       expect(englishCase?.businessOutcome.body).toMatch(
-        /\b(system|site|software|product|practice)\b/i,
+        /\b(system|site|software|product|practice|flow|workflows?|implementation|tools)\b/i,
       );
       expect(englishCase?.role.body.length).toBeGreaterThan(60);
       expect(englishCase?.architectureDecisions.body.length).toBeGreaterThan(
@@ -1582,10 +1582,12 @@ describe("Public Content Graph", () => {
 
       expect(spanishCase?.problem.title).toBe("Necesidad del negocio");
       expect(spanishCase?.businessOutcome.title).toBe(
-        "Qué se construyó y qué permite",
+        caseId === "case-study:engineering-practice"
+          ? "Para qué sirve el método"
+          : "Qué se construyó y qué permite",
       );
       expect(spanishCase?.businessOutcome.body).toMatch(
-        /\b(sistema|sitio|software|producto|práctica)\b/i,
+        /\b(sistema|sitio|software|producto|práctica|flujos?|implementación|herramientas|método)\b/i,
       );
       expect(spanishCase?.publicEvidence.every((item) => item.publicSafe)).toBe(
         true,
@@ -1595,17 +1597,19 @@ describe("Public Content Graph", () => {
     expect(
       getCaseStudyPageContent("case-study:the-barber-central", "en")?.problem
         .body,
-    ).toMatch(/barbershops, salons, and studios needed/i);
+    ).toMatch(/appointment.*available.*service.*paid/i);
     expect(
       getCaseStudyPageContent("case-study:nutri-plan", "en")?.problem.body,
-    ).toMatch(/nutrition teams needed/i);
+    ).toMatch(/Nutritionists need.*consultation.*progress.*Patients need/i);
     expect(
       getCaseStudyPageContent("case-study:the-barber-central", "es")?.problem
         .body,
-    ).toMatch(/barberías, salones y estudios necesitaban/i);
+    ).toMatch(/cita.*disponible.*servicio.*pagado/i);
     expect(
       getCaseStudyPageContent("case-study:nutri-plan", "es")?.problem.body,
-    ).toMatch(/equipos de nutrición necesitaban/i);
+    ).toMatch(
+      /nutriólogos necesitan.*consulta.*progreso.*pacientes necesitan/i,
+    );
   });
 
   it("returns neutral, typed product engineering practice in both locales", () => {

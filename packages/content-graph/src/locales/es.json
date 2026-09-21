@@ -2,32 +2,29 @@
   "home": {
     "path": "/es/",
     "title": "Alejandro Ortiz Corro",
-    "summary": "Senior Software Engineer que convierte objetivos de negocio en sistemas de producto que llegan a producción mediante profundidad frontend, workflows backend y desarrollo AI-native.",
-    "seoDescription": "Alejandro Ortiz Corro es Senior Software Engineer enfocado en desarrollo de producto AI-native, sistemas end-to-end, profundidad frontend, workflows backend, arquitectura y delivery responsable.",
+    "summary": "Alejandro Ortiz Corro — full stack development. Software para atención al cliente, seguimiento de pacientes, comercio y operación diaria de negocios.",
+    "seoDescription": "Alejandro Ortiz Corro construye productos completos con una base sólida en frontend. Conoce su experiencia profesional, cinco productos seleccionados y su forma de trabajar con agentes de programación.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "Senior Software Engineer · Desarrollo de producto AI-native",
-      "headlineLines": [
-        "Senior Software Engineer",
-        "Desarrollo de producto AI-native"
-      ],
-      "headlineEmphasisWords": ["AI-native", "producto"],
-      "deck": "Convierto objetivos de negocio en sistemas de producto que llegan a producción, combinando comunicación con stakeholders, product engineering end-to-end, sistemas backend, delivery AI-native, arquitectura de sistemas y experiencia profunda en frontend.",
-      "proofBoardLabel": "Ingeniería de producto en práctica",
-      "proofBoardTitle": "La intención de negocio se convierte en software funcional.",
-      "proofBoardBody": "Trabajo con clientes y stakeholders, doy forma al producto y al dominio, construyo a través del sistema y conservo la responsabilidad sobre verificación y release.",
-      "selectedOutcomesHeading": "Trabajo seleccionado, ordenado por evidencia.",
-      "selectedOutcomesIntro": "Seis sistemas que muestran el resultado, la capacidad de producto u operación y mi rol en el trabajo.",
+      "headline": "full stack development",
+      "headlineLines": ["full stack", "development"],
+      "headlineEmphasisWords": ["development"],
+      "deck": "Soy Alejandro Ortiz Corro, ingeniero de software con una base sólida en frontend. Construyo interfaces, funcionalidades backend e integraciones alrededor del trabajo que las personas necesitan resolver.",
+      "proofBoardLabel": "Cómo construyo",
+      "proofBoardTitle": "Entender el trabajo. Construir software útil.",
+      "proofBoardBody": "Empiezo por quién usa el sistema, qué información necesita y qué debe pasar después. A partir de eso conecto la interfaz, los datos y las reglas del backend.",
+      "selectedOutcomesHeading": "Productos, experiencia profesional y método.",
+      "selectedOutcomesIntro": "Seis ejemplos de productos, contribuciones profesionales y el método de ingeniería detrás de mi trabajo.",
       "selectedOutcomes": [
         {
           "contentId": "case-study:eteria",
           "label": "Proyecto de cliente · En producción",
           "title": "ETERIA",
-          "outcome": "Un sistema para un negocio de eventos que conecta landing pública, captura de leads, propuestas, operación privada y un cliente interno SwiftUI.",
-          "role": "Dirección de producto, delivery full-stack, operación y release",
+          "outcome": "Operación de eventos que conecta prospectos, versiones de propuestas, precios, inventario y cierre, con una aplicación nativa para iPhone en Swift/SwiftUI.",
+          "role": "Flujos operativos, web y móvil, backend compartido y medios",
           "evidence": {
             "label": "Landing pública",
             "altText": "Mesa de celebración al aire libre de ETERIA con textiles azules, flores marfil y lugares montados",
@@ -38,10 +35,10 @@
         },
         {
           "contentId": "case-study:engineering-practice",
-          "label": "Práctica de desarrollo AI-native",
-          "title": "Práctica de desarrollo AI-native",
-          "outcome": "Los agentes trabajan en requisitos, dominio, specs, tickets, implementación, revisión, QA y release mientras una persona conserva la responsabilidad.",
-          "role": "Orquestación, quality gates, browser QA y decisiones de release",
+          "label": "Método de ingeniería",
+          "title": "Trabajo con agentes de programación",
+          "outcome": "Un método para definir problemas, arquitectura y tareas revisables, manteniendo mi responsabilidad por la integración y el resultado.",
+          "role": "Definición del problema, arquitectura, revisión e integración",
           "evidence": {
             "label": "Lifecycle revisable",
             "altText": "Lifecycle de desarrollo AI-native desde intención de negocio hasta release",
@@ -52,10 +49,10 @@
         },
         {
           "contentId": "case-study:enterprise-systems",
-          "label": "Sistemas de producto enterprise",
-          "title": "Sistemas de producto enterprise",
-          "outcome": "Workflows de atención al cliente sensibles a performance y software mission-critical de respuesta a emergencias dentro de organizaciones complejas.",
-          "role": "Stakeholders, workflows, performance y delivery confiable",
+          "label": "Experiencia profesional",
+          "title": "Experiencia en productos",
+          "outcome": "Herramientas de atención al cliente y cobranza, sitios para pacientes, comercio electrónico, reportes y software de respuesta a emergencias.",
+          "role": "Interfaces en React, contribuciones backend e integraciones",
           "evidence": {
             "label": "Mapa sanitizado",
             "altText": "Mapa de sistemas de producto enterprise enfocado en delivery responsable y confiabilidad operativa",
@@ -68,8 +65,8 @@
           "contentId": "case-study:the-barber-central",
           "label": "Acercándose a producción",
           "title": "The Barber Central",
-          "outcome": "Un SaaS para negocios de servicios que abarca reservas, clientes, staff, inventario, reporting, analíticas y retención.",
-          "role": "Sistema de producto, operación del negocio y preparación de release",
+          "outcome": "Reservas, disponibilidad del personal, historial de clientes y fila sin cita, conectados con WhatsApp, pagos y correo.",
+          "role": "Flujos de reservas, operación del negocio e integraciones",
           "evidence": {
             "label": "Preview pública",
             "altText": "Preview pública de producto de The Barber Central",
@@ -81,9 +78,9 @@
         {
           "contentId": "case-study:nutri-plan",
           "label": "Testing y preparación para producción",
-          "title": "NutriPlan Digital",
-          "outcome": "Un SaaS clínico multi-superficie que conecta workflows profesionales, administración, acceso móvil y estado compartido de producto.",
-          "role": "Workflows de dominio, delivery multi-superficie y paridad de ambientes",
+          "title": "NutriPlan",
+          "outcome": "Citas, planes de alimentación, ejercicio, seguimiento del progreso y un portal para pacientes con acceso controlado del equipo de atención.",
+          "role": "Interfaces en React, backend en Convex, roles e invitaciones",
           "evidence": {
             "label": "Vista sanitizada",
             "altText": "Dashboard sanitizado de NutriPlan Digital sin datos clínicos ni de pacientes",
@@ -96,8 +93,8 @@
           "contentId": "case-study:casa-roca",
           "label": "Experiencia de hospitalidad en producción",
           "title": "Casa Roca",
-          "outcome": "Una experiencia pública de hospitalidad en producción con historia del lugar, páginas listas para búsqueda y contacto directo.",
-          "role": "Experiencia de huéspedes, SEO, conversión y delivery a producción",
+          "outcome": "Un sitio de hospedaje con gestión de contenido y reservas, registro de entradas y salidas y validaciones para evitar reservas superpuestas.",
+          "role": "Contenido público, interfaces de reservas y reglas backend",
           "evidence": {
             "label": "Sitio en vivo",
             "altText": "Experiencia de hospitalidad Casa Roca en producción y ruta de contacto directo",
@@ -107,44 +104,44 @@
           }
         }
       ],
-      "architectureHeading": "Los objetivos de negocio se convierten en sistemas en producción.",
-      "architectureBody": "El trabajo comienza con intención y claridad de dominio, avanza por decisiones de producto y arquitectura, y llega a producción mediante implementación, verificación y autoridad explícita de release.",
+      "architectureHeading": "Empezar por el proceso.",
+      "architectureBody": "Primero entiendo el problema. Defino el producto y la arquitectura, construyo en pasos que puedo revisar y compruebo que el resultado sirva para el proceso previsto.",
       "architectureStages": [
         {
-          "label": "Comunicación con negocio",
-          "text": "Conversaciones con stakeholders, objetivos, restricciones y modelos de dominio definen lo que el sistema debe hacer posible."
+          "label": "Entender el problema",
+          "text": "¿Quién usa el sistema, qué necesita y qué debe pasar después?"
         },
         {
-          "label": "Product engineering end-to-end",
-          "text": "Las decisiones de producto conectan experiencia, profundidad frontend, datos, workflows y necesidades operativas en un sistema coherente."
+          "label": "Conectar el producto",
+          "text": "Unir la interfaz, el modelo de datos y las reglas de operación alrededor de ese proceso."
         },
         {
-          "label": "Sistemas backend",
-          "text": "APIs, auth, reglas de negocio, ownership de datos y workflows operativos vuelven confiable el producto más allá de su interfaz."
+          "label": "Backend e integraciones",
+          "text": "Conectar permisos, pagos, notificaciones y APIs con la parte del producto que los necesita."
         },
         {
-          "label": "Delivery AI-native",
-          "text": "Los agentes ejecutan a lo largo del lifecycle; pruebas, revisión, browser QA, preview y responsabilidad humana de release mantienen el trabajo confiable."
+          "label": "Trabajar con agentes",
+          "text": "Definir la arquitectura y las restricciones, y dividir la implementación en tareas que pueda revisar."
         },
         {
-          "label": "Arquitectura de sistemas",
-          "text": "Límites claros, observabilidad, rutas de release y superficies operativas permiten evolucionar el producto sin perder responsabilidad."
+          "label": "Comprobar el resultado",
+          "text": "Revisar el trabajo, integrar las partes y mantener la responsabilidad por el comportamiento del producto."
         }
       ],
       "practiceHeading": "Cómo trabajo y aporto.",
-      "practiceBody": "Conecto criterio de producto, arquitectura, implementación y delivery responsable en sistemas completos, frentes enfocados dentro de equipos y modernizaciones que ya están en marcha.",
+      "practiceBody": "Construyo productos completos, colaboro dentro de equipos y mejoro aplicaciones existentes. La comunicación clara y entender el negocio me ayudan a decidir por dónde empezar.",
       "practicePoints": [
         {
-          "label": "Sistemas de producto",
-          "text": "Dar forma a la idea, interfaz, workflows, datos y modelo operativo como una experiencia coherente."
+          "label": "Productos completos",
+          "text": "Conectar interfaz, backend, permisos e integraciones alrededor de una necesidad operativa real."
         },
         {
-          "label": "Arquitectura y modernización",
-          "text": "Evolucionar un sistema existente con límites más claros, capacidades modernas y espacio para crecer."
+          "label": "Trabajo en equipo",
+          "text": "Aprender cómo funciona la aplicación existente, comunicarme con claridad y responsabilizarme de mi contribución."
         },
         {
-          "label": "Aceleración de delivery",
-          "text": "Integrar IA avanzada, previews, quality gates, observabilidad y operación cloud al trabajo diario."
+          "label": "Mejorar software existente",
+          "text": "Hacer cambios útiles en pasos revisables, cuidando los procesos de los que dependen las personas."
         }
       ],
       "contactHeading": "Empieza por el contexto.",
@@ -209,15 +206,15 @@
             "id": "sitio-publico",
             "contentId": "case-study:eteria",
             "label": "Producción",
-            "text": "Landing pública de ETERIA y sistema de producto de cliente end-to-end.",
+            "text": "Sitio público de ETERIA y flujos para la operación de eventos.",
             "icon": "site",
             "tone": 0
           },
           {
             "id": "operaciones",
             "contentId": "case-study:engineering-practice",
-            "label": "Práctica AI-native",
-            "text": "Agentes a lo largo del lifecycle con responsabilidad humana.",
+            "label": "Método de ingeniería",
+            "text": "Cómo defino, dirijo y reviso el trabajo con agentes de programación.",
             "icon": "operations",
             "tone": 1
           },
@@ -263,38 +260,38 @@
   "case-studies": {
     "path": "/es/casos",
     "title": "Trabajo seleccionado",
-    "summary": "Seis historias de sistemas y delivery que explican qué se construyó, qué permite cada sistema y el rol de Alejandro.",
-    "seoDescription": "Trabajo seleccionado de Alejandro Ortiz Corro: sitios en producción, productos activos, sistemas enterprise y delivery AI-native, con contexto, resultados, rol y evidencia pública.",
+    "summary": "Productos seleccionados, contribuciones profesionales y el método de ingeniería detrás de mi trabajo, con contexto, responsabilidades y ejemplos públicos.",
+    "seoDescription": "Conoce el trabajo de Alejandro Ortiz Corro en eventos, reservas, atención a pacientes, hospedaje y desarrollo profesional de software, además de su método para trabajar con agentes de programación.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
     "secondaryActionContentId": "architecture"
   },
   "case-study:eteria": {
-    "approvedAt": "2026-07-24T05:15:00.000Z",
-    "approvedHash": "783c3cccbebfb30c23dd6127480ac074d5addfe971372c8ab387b939e1a3bcc7",
+    "approvedAt": "2026-09-21T19:31:10.170Z",
+    "approvedHash": "dab3186c1a2536b4e20c1976405c433f1dacdd99ed418d6a1f4a42529840805a",
     "path": "/es/casos/eteria",
-    "title": "ETERIA: sistema de producto para un negocio de eventos",
-    "summary": "Un proyecto de cliente en producción que conecta descubrimiento público, captura de leads, propuestas, operación privada y un cliente interno SwiftUI.",
-    "seoDescription": "ETERIA es un producto de cliente en producción con landing pública, conversión por leads y WhatsApp, propuestas públicas, operación web privada, Convex, PostHog, SwiftUI y Release Train protegido.",
+    "title": "ETERIA: operación de negocios de eventos",
+    "summary": "Flujos que conectan prospectos, versiones de propuestas, precios, inventario y cierre de eventos, junto con un producto web y una aplicación nativa para iPhone en Swift/SwiftUI.",
+    "seoDescription": "ETERIA conecta el primer contacto con propuestas, precios, inventario y cierre de eventos. Alejandro trabaja en flujos operativos, web, Swift/SwiftUI y contenido visual con Cloudflare.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
       "statusLabel": "Proyecto de cliente · En producción",
-      "overview": "ETERIA es un proyecto de cliente en producción para un negocio de eventos. Conecta una landing pública y rutas reales de leads con propuestas y workflows operativos privados.",
+      "overview": "ETERIA acompaña un evento desde la primera consulta hasta la planeación y el cierre. Construyo los flujos que mantienen conectada la propuesta del cliente con la información de trabajo del equipo conforme cambia el evento.",
       "problem": {
         "title": "Necesidad del negocio",
-        "body": "El negocio necesitaba una ruta coherente desde el primer contacto público hasta una propuesta y el trabajo cotidiano necesario para entregar un evento."
+        "body": "Un evento cambia conforme el cliente y el equipo desarrollan una propuesta. Los prospectos, precios, inventario y detalles operativos necesitan mantenerse conectados durante ese proceso."
       },
       "businessOutcome": {
         "title": "Qué se construyó y qué permite",
-        "body": "El sistema en producción da al equipo un espacio público para generar confianza, capturar leads por formulario y WhatsApp, compartir propuestas versionadas y coordinar el trabajo dentro de límites autenticados."
+        "body": "La implementación conecta captura de prospectos, preparación y envío de propuestas, precios, inventario y cierre del evento. Las versiones de propuestas conservan el contexto de lo que se ha ofrecido conforme avanza la planeación."
       },
       "role": {
         "title": "Rol",
-        "body": "Dirección de producto e implementación end-to-end de landing, captura de leads, propuestas públicas, aplicación web privada, workflows operativos, backend compartido, cliente interno SwiftUI y proceso de release."
+        "body": "Construí flujos operativos y trabajo en el producto web, el backend compartido en Convex y la aplicación nativa para iPhone con Swift/SwiftUI. También trabajo en el manejo de contenido visual con servicios de Cloudflare para almacenarlo y distribuirlo."
       },
       "constraints": {
         "title": "Consideraciones de diseño",
@@ -302,11 +299,11 @@
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
-        "body": "Convex controla el estado y los workflows compartidos, PostHog aporta observabilidad en producción, la landing y las propuestas siguen siendo compartibles, y las superficies web privada y SwiftUI conservan sus límites de acceso."
+        "body": "El producto web y la aplicación nativa para iPhone usan un backend compartido en Convex. Las propuestas públicas y la información operativa privada tienen audiencias distintas y requieren los límites de acceso correspondientes."
       },
       "executionHighlights": {
         "title": "Ejecución",
-        "body": "El producto avanzó mediante un Release Train protegido con previews de desarrollo, promoción a producción, smoke checks y autorización humana explícita en los límites de release."
+        "body": "El trabajo sigue al evento desde la primera consulta hasta las versiones de propuestas, las decisiones de precios e inventario y la información que necesita el equipo para la operación y el cierre."
       },
       "qualitySecurityPerformance": {
         "title": "Calidad, seguridad y rendimiento",
@@ -331,42 +328,42 @@
     }
   },
   "case-study:casa-roca": {
-    "approvedAt": "2026-07-24T02:00:00.000Z",
-    "approvedHash": "e5345b1f60e1cb848eed6882740d6a24f6366f3623e9d300284b6c2cc34c3b31",
+    "approvedAt": "2026-09-21T19:31:10.170Z",
+    "approvedHash": "7e7a005d18940d83e05a31cd59251c884d856e2b481353f3b050413cd1b91c0c",
     "path": "/es/casos/casa-roca",
-    "title": "Casa Roca: experiencia de huéspedes y contacto directo",
-    "summary": "Una experiencia pública de hospitalidad en producción con historia clara, contacto directo y releases disciplinados.",
-    "seoDescription": "Casa Roca es un sitio de hospitalidad en vivo para una estancia boutique en Veracruz, con historia clara del lugar, contacto directo, páginas listas para búsqueda y disciplina de release.",
+    "title": "Casa Roca: sitio de hospedaje y reservas",
+    "summary": "Un sitio público de hospedaje con gestión de contenido y reservas para el personal, registro de entradas y salidas y validaciones para evitar reservas superpuestas.",
+    "seoDescription": "Casa Roca combina un sitio público de hospedaje con herramientas para actualizar contenido, gestionar reservas y registrar entradas y salidas, con reglas backend para evitar superposiciones.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
       "statusLabel": "Experiencia de hospitalidad en producción",
-      "overview": "Casa Roca es el punto de llegada digital de una estancia boutique en Roca Partida, Veracruz. Ayuda a que los huéspedes entiendan rápido el lugar, decidan si encaja con su viaje y contacten al negocio directamente.",
+      "overview": "En Casa Roca trabajo tanto en el sitio público como en las herramientas para gestionar la operación del hospedaje. El trabajo conecta la información pública con las tareas de reservas que necesita realizar el personal.",
       "problem": {
         "title": "Necesidad del negocio",
-        "body": "El negocio necesitaba un destino público bilingüe donde los huéspedes pudieran entender el lugar, decidir si encajaba con su viaje y contactar directamente a Casa Roca."
+        "body": "El personal necesita mantener actualizada la información pública y gestionar reservas desde su creación hasta la entrada y la salida. La interfaz y el backend deben coincidir en qué reservas se permiten."
       },
       "businessOutcome": {
         "title": "Qué se construyó y qué permite",
-        "body": "Un sitio de hospitalidad en producción reúne la historia del lugar, páginas localizadas para huéspedes, metadata de búsqueda, media responsive y una ruta de contacto directo. Permite que los huéspedes entiendan la estancia y contacten al negocio desde un mismo destino público."
+        "body": "Construí flujos de gestión de contenido y reservas para actualizar información pública, crear reservas y registrar entradas y salidas. La lógica de reservas incluye validaciones para evitar superposiciones."
       },
       "role": {
         "title": "Rol",
-        "body": "Dirección de producto, planeación de experiencia bilingüe, metadata SEO, verificación de release, rendimiento y entrega completa del camino del huésped."
+        "body": "Trabajo en el sitio público, las herramientas de contenido, las interfaces de reservas y las reglas backend que apoyan la operación del hospedaje."
       },
       "constraints": {
         "title": "Consideraciones de diseño",
-        "body": "La experiencia reúne velocidad, dos idiomas, una sensación tangible del lugar y un camino claro al contacto para cada huésped."
+        "body": "La información de reservas debe mantenerse consistente cuando el personal crea reservas y registra llegadas y salidas. Las validaciones de superposición conectan lo que permite la interfaz con las reglas del backend."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
-        "body": "Mantener rápidas las páginas para huéspedes, tratar contenido bilingüe y metadata SEO como decisiones de producto, y usar contacto directo como conversión principal."
+        "body": "Definir las reglas de reservas en el backend y reflejarlas en la interfaz, incluyendo validaciones para evitar reservas superpuestas. Mantener conectadas las actualizaciones de contenido público con el sitio que administra el personal."
       },
       "executionHighlights": {
         "title": "Ejecución",
-        "body": "El trabajo cubrió posicionamiento de hospitalidad, rutas localizadas, dirección visual responsive, despliegue en producción y verificación en el dominio real."
+        "body": "El trabajo abarca actualización de contenido público, creación de reservas y registro de entradas y salidas, junto con la lógica necesaria para evitar reservas superpuestas."
       },
       "qualitySecurityPerformance": {
         "title": "Calidad, seguridad y rendimiento",
@@ -390,42 +387,42 @@
     }
   },
   "case-study:the-barber-central": {
-    "approvedAt": "2026-07-24T05:25:00.000Z",
-    "approvedHash": "ae259d61e907f60bc639f482ea67b451a17a52ec2088e17631329c2f4fa0013e",
+    "approvedAt": "2026-09-21T19:31:10.170Z",
+    "approvedHash": "753dcaf60db7b5d5a400fce372a0bbd9f11bac774c2963f2fd7a79628f798b96",
     "path": "/es/casos/the-barber-central",
     "title": "The Barber Central: reservas y operación",
-    "summary": "SaaS para negocios de servicios acercándose a producción con reservas, clientes, staff, inventario, reporting, analíticas y retención.",
-    "seoDescription": "The Barber Central es un SaaS para negocios de servicios acercándose a producción con reservas, clientes, staff, inventario, reporting, analíticas y retención.",
+    "summary": "Reservas y operación diaria para negocios de belleza: servicios, disponibilidad del personal, historial de clientes, fila sin cita, WhatsApp, pagos y correo.",
+    "seoDescription": "The Barber Central conecta reservas, horarios del personal, historial de clientes y fila sin cita con WhatsApp Cloud API, Mercado Pago, suscripciones con Stripe y Resend.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
       "statusLabel": "Acercándose a producción",
-      "overview": "The Barber Central es un SaaS acercándose a producción para barberías, salones y estudios. Reservas, clientes, staff, inventario, reporting, analíticas y retención funcionan como un sistema operativo en vez de herramientas pegadas.",
+      "overview": "The Barber Central conecta los dos lados de una cita: el cliente consulta servicios, precios y duración y reserva según la disponibilidad del personal; el negocio gestiona las citas y los clientes del día.",
       "problem": {
         "title": "Necesidad del negocio",
-        "body": "Barberías, salones y estudios necesitaban un workflow diario confiable para reservas, clientes, disponibilidad del equipo, recordatorios, pagos y la operación detrás de cada cita."
+        "body": "Una cita depende de saber quién está disponible, qué necesita el cliente, qué servicio se dará y qué se ha pagado. El personal también necesita atender a quienes llegan sin reserva."
       },
       "businessOutcome": {
         "title": "Qué se construyó y qué permite",
-        "body": "Un SaaS para negocios de servicios reúne reservas, clientes, disponibilidad del equipo, recordatorios, inventario, reportes, analytics y retención en un solo sistema operativo. Permite manejar el día sin unir herramientas separadas a mano."
+        "body": "Construí herramientas para administrar servicios, horarios del personal, historial de clientes y citas, incluyendo una fila para quienes llegan sin reserva. La implementación conecta las reservas, cambios y cancelaciones por WhatsApp con la cita correspondiente."
       },
       "role": {
         "title": "Rol",
-        "body": "Arquitectura de producto, modelado de workflows, planeación full-stack, decisiones de booking, preparación para pagos, comunicación con clientes y quality gates para un build activo."
+        "body": "Construyo los flujos del producto y sus integraciones: WhatsApp mediante Cloud API de Meta, cobros con Mercado Pago, correo con Resend y suscripciones con Stripe para los negocios que usan la plataforma."
       },
       "constraints": {
         "title": "Consideraciones de diseño",
-        "body": "La lógica de reservas, disponibilidad del equipo, recordatorios, pagos y comunicación evolucionan juntas alrededor del ritmo del día."
+        "body": "Los pagos de citas y las suscripciones de negocios son flujos distintos. Cada uno debe conectarse con la reserva o la cuenta correcta, junto con la disponibilidad del personal y la comunicación con el cliente."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
-        "body": "Simplificar el camino de booking, hacer que el dashboard operativo sea task-first y tratar las integraciones como límites de negocio explícitos."
+        "body": "Mantener los detalles del servicio, la disponibilidad del personal y la información del cliente conectados con la cita. Dar a los cobros, suscripciones y notificaciones responsabilidades acordes con el proceso que apoyan."
       },
       "executionHighlights": {
         "title": "Ejecución",
-        "body": "El trabajo cubre IA de booking, forma del dashboard operativo, setup de proveedores, disciplina de ambiente y browser QA manual para flujos donde auth, origin y preview importan."
+        "body": "Los clientes pueden consultar servicios y reservar; el personal puede administrar disponibilidad, historial de clientes y llegadas sin cita. WhatsApp permite cambiar y cancelar reservas junto con las integraciones de pagos y correo."
       },
       "qualitySecurityPerformance": {
         "title": "Calidad, seguridad y rendimiento",
@@ -449,46 +446,46 @@
     }
   },
   "case-study:nutri-plan": {
-    "approvedAt": "2026-07-24T05:25:00.000Z",
-    "approvedHash": "f3c8764ac674dfe80badab501a3df515ccc8b53efaffb0445ae2b80f0ea92035",
+    "approvedAt": "2026-09-21T19:31:10.170Z",
+    "approvedHash": "33379fe2c868a8994d7c239b86de2ea372d916470019e02d6c60d4e185d95f83",
     "path": "/es/casos/nutri-plan",
-    "title": "NutriPlan Digital: sistema de producto clínico",
-    "summary": "SaaS clínico multi-superficie en testing y preparación para producción, con workflows protegidos para profesionales, administración y móvil.",
-    "seoDescription": "NutriPlan Digital es un SaaS clínico multi-superficie en testing y preparación para producción con workflows profesionales, administrativos, móviles y backend compartido.",
+    "title": "NutriPlan: nutrición y seguimiento del paciente",
+    "summary": "Citas, información clínica, planes de alimentación personalizados, programación de ejercicio y seguimiento del progreso, conectados con un portal para pacientes y acceso controlado del equipo de atención.",
+    "seoDescription": "NutriPlan conecta la consulta nutricional y el seguimiento con React y Convex: planes de alimentación, ejercicio, progreso, roles e invitaciones a pacientes.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
     "secondaryActionContentId": "case-studies",
     "caseStudyContent": {
       "statusLabel": "Testing y preparación para producción",
-      "overview": "NutriPlan Digital es un SaaS clínico multi-superficie en testing y preparación para producción. Conecta workflows profesionales, administración, acceso móvil, contenido educativo y claridad operativa mediante estado backend compartido.",
+      "overview": "NutriPlan conecta el trabajo del nutriólogo durante la consulta con el seguimiento diario del paciente. Construyo flujos para citas, información clínica, planes de alimentación personalizados y el contexto necesario para la siguiente visita.",
       "problem": {
         "title": "Necesidad del negocio",
-        "body": "Los equipos de nutrición necesitaban que los workflows profesionales, administrativos y móviles compartieran estado consistente sin sacar los registros relacionados con salud de límites claros de rol y acceso."
+        "body": "Los nutriólogos necesitan registrar la consulta y revisar el progreso con el tiempo. Los pacientes necesitan un plan útil entre citas, y el equipo de atención debe acceder a la información que corresponde a cada rol."
       },
       "businessOutcome": {
         "title": "Qué se construyó y qué permite",
-        "body": "Un producto clínico multi-superficie conecta workflows profesionales, administración, acceso móvil, contenido educativo y estado backend compartido. Permite que esas superficies operen desde el mismo modelo de producto mientras preservan límites de rol y acceso."
+        "body": "Los planes incluyen comidas, porciones, alternativas y objetivos nutricionales. Los pacientes pueden abrir su plan en el portal y solicitar sustituciones de alimentos. El producto también incluye programación de ejercicio, registro de actividad, fotos de progreso y coordinación del equipo de atención."
       },
       "role": {
         "title": "Rol",
-        "body": "Arquitectura de workflows de producto, planeación de dashboards, modelado de estado backend, coordinación móvil, práctica de calidad y disciplina de release."
+        "body": "Mi trabajo abarca interfaces en React y el backend en Convex, con roles por organización, invitaciones a pacientes y acceso controlado a información clínica. Conecto la consulta, las recomendaciones y el seguimiento."
       },
       "constraints": {
         "title": "Consideraciones de diseño",
-        "body": "Los registros relacionados con salud piden límites de acceso cuidadosos, estado consistente, roles claros y releases que respeten el trabajo con clientes."
+        "body": "La información clínica requiere acceso controlado y roles claros. Uso las normas mexicanas NOM-004 y NOM-024 como referencias de diseño para expedientes clínicos y flujos de información electrónica de salud."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
-        "body": "Mantener el backend como fuente compartida de verdad, dar responsabilidades explícitas a dashboard y móvil, e incluir ambientes y QA gates en release readiness."
+        "body": "Mantener conectadas las citas, los planes, las mediciones y el seguimiento en el backend. Los roles por organización y las invitaciones a pacientes determinan quién puede acceder a la información clínica correspondiente."
       },
       "executionHighlights": {
         "title": "Ejecución",
-        "body": "El trabajo abarca landing, dashboard, admin dashboard, app móvil, estado con Convex, route QA, verificación de preview y paridad operativa con el sistema de referencia."
+        "body": "Trabajo en el recorrido desde la consulta y el plan personalizado hasta el acceso del paciente, las solicitudes de sustitución de alimentos, el ejercicio programado y el seguimiento del progreso."
       },
       "qualitySecurityPerformance": {
         "title": "Calidad, seguridad y rendimiento",
-        "body": "El proyecto usa QA funcional, route sweeps, separación de ambientes, ramas protegidas de release y validación en preview cuando cambian auth, routing, UI o comportamiento."
+        "body": "Revisar el acceso a la información clínica y la continuidad entre los flujos del profesional y del paciente. Mantener los expedientes fuera de los ejemplos públicos."
       },
       "publicEvidenceTitle": "Enlaces públicos",
       "publicEvidence": [
@@ -508,46 +505,46 @@
     }
   },
   "case-study:enterprise-systems": {
-    "approvedAt": "2026-07-24T05:15:00.000Z",
-    "approvedHash": "e0a69dd7d05dfb59646c2ea7ccdc44ff8c3abd6288e9df41e4c88ea840ce0e66",
+    "approvedAt": "2026-09-21T19:31:10.170Z",
+    "approvedHash": "f79ca70d978d144bf658524e45eb83e34cc64eb4a6384986b192f93618c6cafa",
     "path": "/es/casos/sistemas-enterprise",
-    "title": "Sistemas de producto enterprise bajo presión operativa",
-    "summary": "Una plataforma interna de operaciones de atención al cliente y recuperación de cuentas y software mission-critical de respuesta a emergencias muestran criterio de producto, performance y delivery confiable dentro de organizaciones complejas.",
-    "seoDescription": "Sistemas de producto enterprise cubre una plataforma interna de operaciones de atención al cliente y recuperación de cuentas, una plataforma mission-critical de respuesta a emergencias para una gran ciudad de Estados Unidos, performance, workflows, observabilidad y delivery confiable.",
+    "title": "Experiencia en productos",
+    "summary": "Herramientas de atención al cliente y cobranza, sitios para pacientes, comercio electrónico, reportes y respuesta a emergencias, con contribuciones concretas en frontend y backend.",
+    "seoDescription": "Experiencia de Alejandro en atención y cobranza para crédito, actividad web B2B, sitios para pacientes, autopartes, respuesta a emergencias, reportes y despacho y entrega de cemento.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
     "secondaryActionContentId": "architecture",
     "caseStudyContent": {
-      "statusLabel": "Sistemas de producto enterprise",
-      "overview": "Una plataforma interna de operaciones de atención al cliente y recuperación de cuentas y software mission-critical de respuesta a emergencias para una gran ciudad de Estados Unidos muestran cómo operan producto, performance, observabilidad y delivery dentro de organizaciones complejas.",
+      "statusLabel": "Experiencia profesional",
+      "overview": "La mayor parte de mi trabajo profesional ha sido con React. Las aplicaciones tienen propósitos distintos, pero en cada una empiezo por entender qué necesitan hacer las personas y conectar la información adecuada con ese proceso.",
       "problem": {
         "title": "Necesidad del negocio",
-        "body": "Los equipos de atención a clientes, recuperación de cuentas y respuesta a emergencias necesitaban workflows confiables entre ownership, integraciones, handoffs operativos y caminos de soporte de alto riesgo."
+        "body": "Los agentes de atención necesitan información confiable de los clientes; los pacientes, acceso a sus resultados; los compradores, piezas compatibles; y los despachadores, controles prácticos. Cada aplicación tiene sus propios usuarios, información y restricciones operativas."
       },
       "businessOutcome": {
         "title": "Qué se construyó y qué permite",
-        "body": "Una plataforma interna de atención a clientes y recuperación de cuentas aceleró workflows complejos, mejorando cargas clave de aproximadamente 3–5 segundos a menos de 1 segundo. Software mission-critical de respuesta a emergencias soportó dispatch de alto riesgo donde importaban la confiabilidad y la precisión."
+        "body": "Para una empresa de crédito, construí un flujo de solicitud y revisión de correcciones de préstamos que reemplazó los intercambios de hojas de cálculo y registra decisiones y acciones. También construí el inicio de sesión y los controles por rol para socios e integré perfiles de clientes y detalles de préstamos. Para una empresa de autopartes, trabajé en la selección de vehículos para encontrar piezas compatibles en web y React Native."
       },
       "role": {
-        "title": "Rol",
-        "body": "En tecnología financiera: comunicación con stakeholders, definición de roadmap y workflows, profundidad frontend, trabajo server-side y de APIs, observabilidad, delivery backend-oriented y trabajo en Java en crecimiento. Antes, el trabajo de emergencia se enfocó en dispatch por teclado y pruebas rigurosas."
+        "title": "Contribuciones en frontend y backend",
+        "body": "Para aplicaciones de atención al cliente y socios, construí componentes React compartidos y un tema común, contribuyo a cambios en APIs y autenticación y ayudé a pasar pantallas de React a Next.js con renderizado del lado del servidor. Para un servicio de resonancia magnética de cuerpo completo, construí el sitio de marketing y trabajé en resultados para pacientes y APIs con React, Python y Flask, usando Docker en las aplicaciones conectadas."
       },
       "constraints": {
         "title": "Consideraciones operativas",
-        "body": "Escala, diseño de integraciones, sensibilidad de datos, ownership entre equipos y continuidad de producción dieron forma a cada decisión."
+        "body": "La información de clientes y pacientes requiere acceso controlado. El trabajo con clientes se describe mediante contribuciones genéricas, sin identificar clientes ni exponer sistemas privados."
       },
       "architectureDecisions": {
-        "title": "Decisiones de arquitectura",
-        "body": "Trabajar desde el workflow de negocio hacia atrás, aislar puntos riesgosos de integración, mantener contratos operativos explícitos y preferir caminos backend mantenibles."
+        "title": "Controles de respuesta a emergencias",
+        "body": "Para un sistema de respuesta rápida, identifiqué las combinaciones de un teclado de despacho sin documentación y las asocié con acciones de Redux Saga en React. Esto permitía usar controles conocidos para navegar y solicitar recursos de emergencia."
       },
       "executionHighlights": {
-        "title": "Ejecución",
-        "body": "El trabajo seleccionado incluye payment plan workflows, implementación de cashback, manejo de customs, ownership de escalations y backend delivery en contextos organizacionales complejos."
+        "title": "Paneles, reportes y herramientas de navegador",
+        "body": "Para analizar la actividad de sitios web B2B, construí gráficas de visitas, clics, prospectos e información disponible de visitantes, y migré una extensión de grabación de video de Manifest V2 a V3. Para reportes de logística, trabajé en archivos Excel con Node.js y React a partir de APIs del cliente. También contribuí brevemente a una aplicación Angular para la operación de parques temáticos."
       },
       "qualitySecurityPerformance": {
-        "title": "Calidad, seguridad y rendimiento",
-        "body": "El trabajo depende de change management cuidadoso, awareness de producción, sensibilidad de datos, handoffs claros y pruebas alrededor de workflows con riesgo operativo."
+        "title": "Despacho, entrega y modernización",
+        "body": "Para despacho y entrega de cemento, contribuí a interfaces para solicitar camiones, capturar direcciones y seguir su avance, además de corregir errores en la aplicación existente. En venta de autopartes, también ayudé a migrar la aplicación web de React a Next.js."
       },
       "publicEvidenceTitle": "Enlaces públicos",
       "publicEvidence": [
@@ -567,46 +564,46 @@
     }
   },
   "case-study:engineering-practice": {
-    "approvedAt": "2026-07-24T05:15:00.000Z",
-    "approvedHash": "05539ec0ab6b87303066f0eb028c9995b11579225d961438effbf97dc096c009",
+    "approvedAt": "2026-09-21T19:31:10.170Z",
+    "approvedHash": "a0499fd807007a585fca4a3e01f093f76754aec102830d24313b607e9b3a696e",
     "path": "/es/casos/practica-de-ingenieria",
-    "title": "Práctica de desarrollo AI-native con responsabilidad humana",
-    "summary": "Los agentes trabajan en requisitos, dominio, specs, tickets, implementación, revisión, QA, preview y release mientras el criterio humano conserva la responsabilidad.",
-    "seoDescription": "La práctica de desarrollo AI-native explica agentes en requisitos, dominio, specs, tickets, implementación, revisión, QA, preview y release con responsabilidad humana y límites privados.",
+    "title": "Cómo trabajo con agentes de programación",
+    "summary": "Un método de ingeniería para definir el problema, la arquitectura y las restricciones, dividir la implementación en tareas revisables y comprobar cómo se integran las partes.",
+    "seoDescription": "El método de Alejandro para trabajar con agentes de programación: entender el problema, definir la arquitectura, acotar tareas, revisar la implementación y responsabilizarse del resultado.",
     "primaryActionLabel": "Revisar la arquitectura",
     "primaryActionContentId": "architecture",
     "secondaryActionLabel": "Hablemos",
     "secondaryActionContentId": "contact",
     "caseStudyContent": {
-      "statusLabel": "Práctica de desarrollo AI-native",
-      "overview": "Desarrollo AI-native significa que los agentes ejecutan trabajo en requisitos, modelado de dominio, specs, tickets, implementación, revisión, QA, preview y release mientras yo conservo responsabilidad por decisiones, calidad y autoridad de release.",
+      "statusLabel": "Método de ingeniería",
+      "overview": "Uso agentes de programación como herramientas de implementación dentro de un proceso de ingeniería. Defino el problema, la lógica y la arquitectura, documento las reglas del proyecto y divido el trabajo en tareas que puedo revisar. Mantengo la responsabilidad por la integración y el resultado.",
       "problem": {
         "title": "Necesidad del negocio",
-        "body": "Los equipos de producto necesitan aprovechar agentes especializados a lo largo del delivery sin perder ownership de decisiones, calidad de revisión ni autoridad humana de release."
+        "body": "Generar código es solo una parte del trabajo. Un producto útil sigue necesitando un propósito claro, reglas coherentes y alguien que entienda cómo se integran sus partes."
       },
       "businessOutcome": {
-        "title": "Qué se construyó y qué permite",
-        "body": "Una práctica de delivery repetible y revisable conecta requisitos, dominio, specs, tickets, implementación, revisión, QA, preview y release. Permite ejecutar más rápido manteniendo decisiones inspeccionables y responsabilidad humana por calidad y release."
+        "title": "Para qué sirve el método",
+        "body": "Este es un método de trabajo que aplico en mis productos. Me ayuda a convertir un proceso definido en pasos de implementación que puedo inspeccionar, integrar y comprobar conforme avanza el producto."
       },
       "role": {
         "title": "Rol",
-        "body": "Dirijo el trabajo, reviso decisiones y código, elijo gates proporcionales, inspecciono el comportamiento en browser y autorizo el release. Los agentes aportan ejecución especializada a lo largo del lifecycle."
+        "body": "Aporto el contexto, decido la arquitectura y las restricciones, dirijo la implementación, reviso el resultado y me responsabilizo de lo que se entrega."
       },
       "constraints": {
         "title": "Consideraciones de diseño",
-        "body": "El Development System que coordina este trabajo es una herramienta privada y adaptable: no es open source, producto comercial ni template universal. La evidencia pública viene de sistemas entregados y artefactos sanitizados."
+        "body": "Las tareas necesitan límites claros y contexto suficiente para conservar las reglas del producto. Las herramientas internas apoyan el método; los ejemplos de productos profesionales son The Barber Central, NutriPlan, ETERIA, Casa Roca y el sitio web de AOHYS."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
-        "body": "Usar seams claros, contenido tipado desde el grafo, environment contracts explícitos, ramas protegidas, pruebas enfocadas y verificación manual de navegador."
+        "body": "Empezar por los usuarios y el proceso, y después definir interfaces, propiedad de datos, permisos e integraciones. Cada tarea de implementación debe tener un propósito y un resultado que se pueda comprobar."
       },
       "executionHighlights": {
         "title": "Ejecución",
-        "body": "El sistema de delivery incluye PR review, TDD tracers, checks visuales, flujo de issues, documentación de release y browser QA."
+        "body": "Construyo de forma incremental, reviso los cambios y los integro con el producto existente. Evalúo el trabajo de los agentes y mantengo la responsabilidad de resolver problemas y comprobar el flujo completo."
       },
       "qualitySecurityPerformance": {
         "title": "Calidad, seguridad y rendimiento",
-        "body": "Calidad incluye source checks, type checks, pruebas de comportamiento, build verification, visual QA y deploy paths auditables."
+        "body": "Usar comprobaciones acordes con el comportamiento que cambia: revisar código y reglas de datos, recorrer los flujos e inspeccionar la interfaz que usan las personas. Mantener la información privada dentro de los límites de acceso previstos."
       },
       "publicEvidenceTitle": "Enlaces públicos",
       "publicEvidence": [
@@ -621,7 +618,7 @@
       ],
       "confidentialityNote": {
         "title": "Nota de alcance",
-        "body": "Este caso se enfoca en el sistema de delivery detrás de releases confiables."
+        "body": "Esta página explica el método detrás de mi trabajo de producto."
       }
     }
   },
@@ -863,32 +860,32 @@
     }
   },
   "resume": {
-    "approvedAt": "2026-07-24T04:59:12.000Z",
-    "approvedHash": "d303c26a5fc57a1171cbd0753d274fa8c908f511ca4ce558922a971d40d7e890",
+    "approvedAt": "2026-09-21T19:31:10.170Z",
+    "approvedHash": "07043e53de6b7b6ec9a3829cab5b19a95cfe2eec6c78bd039019f5825e064c29",
     "path": "/es/curriculum",
     "title": "Sobre Alejandro",
-    "summary": "Experiencia canónica de un Senior Software Engineer que trabaja en sistemas de producto, profundidad frontend, workflows backend y delivery AI-native.",
+    "summary": "Ingeniero de software con una base sólida en frontend y experiencia construyendo productos completos para atención al cliente, salud, comercio y operación de negocios.",
     "seoTitle": "Sobre Alejandro Ortiz Corro | AOHYS",
-    "seoDescription": "Alejandro Ortiz Corro es Senior Software Engineer enfocado en desarrollo de producto AI-native, sistemas enterprise, productos seleccionados, arquitectura, frontend, backend y delivery responsable.",
+    "seoDescription": "Alejandro Ortiz Corro — full stack development. Experiencia profesional con React, backend e integraciones, cinco productos seleccionados y una forma práctica de trabajar con agentes de programación.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
     "secondaryActionContentId": "architecture",
     "resumeContent": {
       "name": "Alejandro Ortiz Corro",
-      "role": "Senior Software Engineer · Desarrollo de producto AI-native",
+      "role": "full stack development",
       "location": "México",
-      "intro": "Convierto objetivos de negocio en sistemas de producto que llegan a producción. Frontend es una especialidad profunda; mi trabajo actual también abarca comunicación con stakeholders, workflows backend, arquitectura, observabilidad y delivery AI-native con responsabilidad humana.",
+      "intro": "Soy ingeniero de software, con una base sólida en frontend y experiencia construyendo productos completos. Me gusta entender cómo funcionan las cosas, aprender lo necesario y convertirlo en software útil. Me importa comunicarme con claridad y ser alguien con quien se disfrute trabajar.",
       "pdf": {
         "label": "Abrir CV en PDF",
         "href": "/downloads/alejandro-ortiz-corro-resume.pdf",
         "fileName": "alejandro-ortiz-corro-resume.pdf",
-        "description": "Un CV compacto para hiring y revisión de delivery. El sitio suma trabajo seleccionado, decisiones de arquitectura y la práctica de release detrás de ellos."
+        "description": "Experiencia profesional, capacidades técnicas y productos seleccionados en un PDF legible. El sitio añade contexto y ejemplos de mi trabajo."
       },
       "proof": {
-        "label": "Resultados seleccionados",
-        "title": "Del contexto de negocio al software en producción.",
-        "body": "El trabajo reciente abarca ETERIA en producción, sistemas enterprise, SaaS para servicios y clínica, experiencias públicas y la práctica responsable detrás de cada release."
+        "label": "Trabajo seleccionado",
+        "title": "Software construido alrededor de procesos reales.",
+        "body": "Mi trabajo en atención al cliente, cobranza, resultados para pacientes, comercio electrónico y respuesta a emergencias aporta contexto a los productos que construyo con AOHYS."
       },
       "contactLinks": [
         {
@@ -922,7 +919,7 @@
         {
           "label": "Trabajo seleccionado",
           "href": "/es/casos",
-          "text": "Sitios en producción, builds activos, sistemas de producto y delivery enterprise."
+          "text": "Productos, trabajo profesional y el método detrás de ellos."
         },
         {
           "label": "Arquitectura",
@@ -937,71 +934,58 @@
       ],
       "summaryTitle": "Resumen profesional",
       "summary": [
-        "Senior Software Engineer con más de 9 años en sistemas enterprise, productos startup, healthcare, comercio, negocios de servicios y experiencias públicas.",
-        "Combino comunicación con negocio y stakeholders, product engineering end-to-end, workflows backend, arquitectura y experiencia profunda en React, TypeScript, Next.js, performance y sistemas UI accesibles.",
-        "AI-native significa que los agentes ejecutan requisitos, dominio, specs, tickets, implementación, revisión, QA y release mientras conservo responsabilidad humana por decisiones, calidad y autoridad de release."
+        "Soy ingeniero de software con una base sólida en frontend y experiencia construyendo productos completos. He trabajado con React a lo largo de mi carrera, desde herramientas de atención al cliente y cobranza hasta sitios para pacientes, comercio electrónico y software de respuesta a emergencias. También contribuyo a funcionalidades backend, integraciones, pagos y arquitectura de producto. Aprendo rápido, entiendo cómo funcionan los sistemas y me responsabilizo de convertir un proceso real en software que las personas puedan usar."
       ],
-      "highlightsTitle": "Resultados seleccionados",
+      "highlightsTitle": "Contribuciones seleccionadas",
       "highlights": [
         {
-          "label": "Rendimiento de la plataforma de atención y recuperación de cuentas",
-          "text": "Ayudé a reducir cargas de aproximadamente 3–5 segundos a menos de 1 segundo mediante migración enfocada en Next.js y performance."
+          "label": "Correcciones de préstamos en un solo flujo",
+          "text": "En Tala, pasé las solicitudes de corrección de datos de préstamos de hojas de cálculo a un flujo dentro de la aplicación para pedir cambios, revisarlos y registrar decisiones."
         },
         {
-          "label": "Dispatch mission-critical",
-          "text": "Implementé workflows custom de dispatch por teclado y pruebas completas para software de respuesta a emergencias de una gran ciudad de Estados Unidos."
+          "label": "Controles conocidos para responder a emergencias",
+          "text": "En Accenture, conecté un teclado de despacho sin documentación a React y Redux Saga para navegar la aplicación y solicitar recursos de emergencia."
         },
         {
-          "label": "Delivery AI-native",
-          "text": "Uso agentes en todo el lifecycle con TDD, revisión independiente, browser QA, previews, Release Trains, smoke checks y autoridad humana explícita."
-        },
-        {
-          "label": "Profundidad frontend, alcance más amplio",
-          "text": "La experiencia profunda en React, TypeScript e interfaces ahora soporta trabajo server-side y de APIs, observabilidad, workflows de producto y Java en crecimiento."
+          "label": "De la consulta al seguimiento diario",
+          "text": "En NutriPlan, conecto citas, planes de alimentación, acceso del paciente y seguimiento del progreso mediante interfaces en React y el backend de Convex."
         }
       ],
-      "projectsTitle": "Sistemas seleccionados",
+      "projectsTitle": "Proyectos seleccionados",
       "projects": [
         {
-          "title": "ETERIA",
-          "summary": "Producto de cliente en producción con landing pública, leads y WhatsApp, propuestas, operación web privada, Convex, PostHog y cliente interno SwiftUI.",
-          "bullets": [
-            "Responsable de dirección de producto, delivery end-to-end, límites público/privado y Release Train protegido."
-          ]
-        },
-        {
-          "title": "Práctica de desarrollo AI-native",
-          "summary": "Agentes en requisitos, dominio, specs, tickets, implementación, revisión, QA, preview y release con responsabilidad humana.",
-          "bullets": [
-            "El Development System que coordina el trabajo es privado y adaptable; los sistemas entregados aportan la evidencia pública."
-          ]
-        },
-        {
-          "title": "Sistemas de producto enterprise",
-          "summary": "Una plataforma interna de operaciones de atención al cliente y recuperación de cuentas y software mission-critical de respuesta a emergencias demuestran trabajo con stakeholders, performance, workflows complejos y delivery confiable.",
-          "bullets": [
-            "La plataforma mejoró de aproximadamente 3–5 segundos a menos de 1 segundo; los detalles de clientes y arquitectura privada permanecen protegidos."
-          ]
-        },
-        {
           "title": "The Barber Central",
-          "summary": "SaaS para negocios de servicios acercándose a producción con reservas, clientes, staff, inventario, reporting, analíticas y retención.",
+          "summary": "Reservas y operación para negocios de belleza: consulta de servicios, disponibilidad del personal, historial de clientes y fila para quienes llegan sin cita.",
           "bullets": [
-            "Construido como producto multi-superficie coherente con gates explícitos de calidad y release."
+            "Construí reservas, cambios y cancelaciones por WhatsApp Cloud API, con cobros mediante Mercado Pago, suscripciones de negocios con Stripe y correo con Resend."
           ]
         },
         {
-          "title": "NutriPlan Digital",
-          "summary": "SaaS clínico multi-superficie en testing y preparación para producción con backend compartido y workflows protegidos.",
+          "title": "NutriPlan",
+          "summary": "Citas, planes de alimentación personalizados, programación de ejercicio, seguimiento del progreso y un portal para pacientes con solicitudes de sustitución de alimentos.",
           "bullets": [
-            "Mantiene información clínica y de pacientes fuera de la evidencia pública mientras prueba el comportamiento real."
+            "Trabajo en React y Convex, incluyendo acceso del equipo de atención, roles por organización e invitaciones a pacientes. Uso NOM-004 y NOM-024 como referencias de diseño para expedientes clínicos e información electrónica de salud."
+          ]
+        },
+        {
+          "title": "ETERIA",
+          "summary": "Operación de negocios de eventos: prospectos, versiones de propuestas, precios, inventario y cierre del evento.",
+          "bullets": [
+            "Construí los flujos operativos y trabajo en el producto web, el backend compartido en Convex, la aplicación nativa para iPhone con Swift/SwiftUI y el manejo de contenido visual con Cloudflare."
           ]
         },
         {
           "title": "Casa Roca",
-          "summary": "Experiencia pública de hospitalidad en producción con historia del lugar, páginas listas para búsqueda, media responsiva y contacto directo.",
+          "summary": "Un sitio de hospedaje con gestión de contenido y reservas para el personal.",
           "bullets": [
-            "Entregué la experiencia de huéspedes y la verifiqué en el dominio de producción."
+            "Construí herramientas para actualizar información pública, crear reservas y registrar entradas y salidas, con validaciones backend para evitar reservas superpuestas."
+          ]
+        },
+        {
+          "title": "Sitio web de AOHYS",
+          "summary": "Un sitio bilingüe y un CMS propio para mostrar mis productos, mi trabajo y mi forma de construir software.",
+          "bullets": [
+            "Construí la publicación de proyectos y la gestión de medios con Convex e imágenes servidas por Cloudflare, además de URLs canónicas, alternativas de idioma, mapas del sitio y datos estructurados."
           ]
         }
       ],
@@ -1009,12 +993,13 @@
       "experience": [
         {
           "role": "Senior Frontend Developer",
-          "company": "Tala Mobile",
+          "company": "Tala",
           "period": "2023 - Presente",
           "bullets": [
-            "Coordino alcance, roadmap, workflows y éxito con stakeholders y múltiples equipos para una plataforma interna de operaciones de atención al cliente y recuperación de cuentas, manteniendo el título contractual Senior Frontend Developer.",
-            "Ayudé a reducir cargas de la plataforma de aproximadamente 3–5 segundos a menos de 1 segundo y a su evolución moderna con Next.js/Turborepo.",
-            "Entrego escalations, payment plans, cashback y otros workflows entre frontend, trabajo server-side y de APIs, observabilidad y rutas backend-oriented; ampliando trabajo en Java."
+            "Desarrollo herramientas internas de atención al cliente y cobranza para una empresa de crédito, incluyendo flujos para pagos vencidos y clientes atendidos por socios.",
+            "Construí el frontend y el flujo de interacción para solicitar correcciones de datos de préstamos, reemplazando los intercambios de hojas de cálculo por un proceso de solicitud, revisión y auditoría dentro de la aplicación.",
+            "Construí el inicio de sesión y los controles por rol para un portal de socios, integré perfiles de clientes y detalles de préstamos y ayudé a migrar pantallas de React a Next.js con renderizado del lado del servidor. También contribuyo a cambios en APIs y autenticación.",
+            "Construí una estructura de componentes React y un tema común para las aplicaciones de atención al cliente y socios, implementando diseños de Figma con propiedades y patrones reutilizables conforme crecía su adopción."
           ]
         },
         {
@@ -1022,8 +1007,8 @@
           "company": "AOHYS",
           "period": "2015 - Presente",
           "bullets": [
-            "Construí una práctica continua desde automatización Excel/VBA hacia Java, React y trabajo enterprise, productos completos y desarrollo AI-native.",
-            "Los sistemas actuales incluyen ETERIA, The Barber Central, NutriPlan Digital, Casa Roca y AOHYS."
+            "Construyo productos alrededor de procesos operativos reales, desde frontend, backend y modelos de datos hasta permisos, pagos, notificaciones e integraciones. Mi trabajo reciente usa React, TypeScript, Convex, Node.js y servicios de Cloudflare.",
+            "Uso agentes de programación como herramientas de implementación: defino el problema, la arquitectura y las restricciones, reviso el resultado y mantengo la responsabilidad de integrar las partes."
           ]
         },
         {
@@ -1031,8 +1016,8 @@
           "company": "Drift",
           "period": "2022 - 2023",
           "bullets": [
-            "Construí y mantuve una extensión de Chrome para grabación de video, incluyendo restricciones de APIs y manifest.",
-            "Entregué dashboards de analíticas y visualizaciones de funnel para workflows B2B de marketing y ventas."
+            "Trabajé en un panel de actividad de sitios web B2B, construyendo gráficas e interfaces para mostrar visitas, clics, prospectos e información de visitantes cuando estaba disponible.",
+            "Migré una extensión de Chrome para grabar videos de Manifest V2 a V3, adaptando una herramienta de ventas a los cambios de la plataforma de extensiones."
           ]
         },
         {
@@ -1040,17 +1025,17 @@
           "company": "Prenuvo",
           "period": "2021 - 2022",
           "bullets": [
-            "Entregué features full-stack en un equipo pequeño de medical imaging para superficies de marketing, ventas y presentación de resultados.",
-            "Consumí APIs y colaboré directamente con diseño bajo restricciones de privacidad y seguridad; no trabajé en modelos médicos de IA."
+            "Construí el sitio de marketing y trabajé en el sitio de resultados para pacientes y las APIs que lo respaldaban, para un servicio de resonancia magnética de cuerpo completo.",
+            "Conecté interfaces en React con información de otros sistemas mediante Python y Flask. Docker formaba parte del flujo de desarrollo y despliegue de las aplicaciones conectadas."
           ]
         },
         {
           "role": "Engineer Associate System IT-Development",
-          "company": "Datazone/AutoZone",
+          "company": "Datazone / AutoZone",
           "period": "2020 - 2021",
           "bullets": [
-            "Trabajé en el selector que conecta perfiles de vehículos con partes compatibles dentro de una gran plataforma e-commerce.",
-            "Contribuí a la modernización de React SPA a Next.js, delivery con React Native y metadata SEO definida por marketing."
+            "Trabajé en el selector de vehículos que ayudaba a encontrar piezas compatibles con el vehículo elegido, tanto en la experiencia web como en una implementación con React Native.",
+            "Ayudé a migrar la aplicación web de React a Next.js."
           ]
         },
         {
@@ -1058,80 +1043,69 @@
           "company": "Accenture",
           "period": "2018 - 2020",
           "bullets": [
-            "Modernicé una plataforma mission-critical de respuesta a emergencias con décadas de historia para una gran ciudad de Estados Unidos usando React y Redux.",
-            "Implementé workflows custom de dispatch por teclado con pruebas rigurosas y apoyé a ingenieros junior dentro de un programa internacional."
+            "Conecté un teclado de despacho sin documentación a un sistema de respuesta rápida en React: identifiqué sus combinaciones de teclas y las asocié con acciones de Redux Saga para solicitar recursos de emergencia.",
+            "Construí partes de una aplicación de reportes con Node.js y React que obtenía datos de APIs del cliente, preparaba archivos de Excel grandes y permitía elegir un reporte y un rango de fechas. También contribuí brevemente a una aplicación Angular para la operación de parques temáticos."
           ]
         },
         {
-          "role": "Ingeniero de software sénior",
-          "company": "NEORIS/CEMEX",
+          "role": "Senior Software Engineer",
+          "company": "NEORIS / CEMEX",
           "period": "2018",
           "bullets": [
-            "Contribuí a una superficie de facturación dentro de CEMEX GO y crecí dentro de un producto distribuido entre muchos equipos."
+            "Trabajé en la interfaz de despacho y entrega para solicitar camiones de cemento, capturar direcciones de entrega y seguir el avance de los camiones, con contribuciones y correcciones de errores en distintas partes de la aplicación existente."
           ]
         }
       ],
       "skillsTitle": "Capacidades técnicas",
       "skills": [
         {
-          "label": "Negocio e ingeniería de producto",
+          "label": "Frontend",
           "items": [
-            "Comunicación con stakeholders",
-            "Workflows de dominio",
-            "Arquitectura de producto",
-            "Requisitos y specs",
-            "Ownership de delivery"
+            "React",
+            "TypeScript",
+            "Next.js",
+            "JavaScript",
+            "Redux Saga",
+            "Angular"
           ]
         },
         {
-          "label": "Sistemas front-end",
+          "label": "Backend",
           "items": [
-            "Interfaces responsivas",
-            "React y TypeScript",
-            "Arquitectura de componentes",
-            "Performance",
-            "Movimiento y WebGL"
-          ]
-        },
-        {
-          "label": "Workflows backend y datos",
-          "items": [
-            "Next.js server-side",
-            "Integración de APIs",
+            "Node.js",
+            "Python",
+            "Flask",
+            "Java",
+            "Kotlin",
             "Convex",
-            "SQL y PostgreSQL",
-            "Java en crecimiento"
+            "APIs REST",
+            "MariaDB"
           ]
         },
         {
-          "label": "Cloud y operación",
+          "label": "Desarrollo de producto",
           "items": [
-            "Dashboards de AWS",
-            "Entrega edge",
-            "Operación Cloudflare y Vercel",
-            "Pipelines de media",
-            "Observabilidad"
+            "Desarrollo full stack",
+            "Renderizado del lado del servidor",
+            "Autenticación",
+            "Acceso basado en roles",
+            "Docker",
+            "CI/CD"
           ]
         },
         {
-          "label": "Calidad y delivery",
+          "label": "Integraciones",
           "items": [
-            "TDD",
-            "Browser QA",
-            "CI/CD",
-            "Verificación de releases",
-            "Documentación"
+            "Stripe",
+            "Mercado Pago",
+            "WhatsApp Cloud API",
+            "Resend",
+            "Cloudflare"
           ]
         },
         {
-          "label": "Desarrollo AI-native",
-          "items": [
-            "Orquestación de agentes",
-            "Dominio y specs",
-            "TDD",
-            "Revisión independiente",
-            "Browser QA y release"
-          ]
+          "label": "Móvil y escritorio",
+          "items": ["Swift", "SwiftUI", "React Native", "Electron"]
         }
       ],
       "educationTitle": "Educación",

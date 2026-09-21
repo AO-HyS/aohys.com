@@ -99,8 +99,8 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
       <SunlitProjectStage
         outcomes={homeContent.selectedOutcomes}
         locale={locale}
-        heading={labels.selectedStage}
-        intro={labels.selectedStageIntro}
+        heading={homeContent.selectedOutcomesHeading}
+        intro={homeContent.selectedOutcomesIntro}
         hero
       />
     </section>
@@ -428,11 +428,6 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
       <aside>{resumeContent.highlights.map((highlight) => <div><strong>{highlight.label}</strong><p>{highlight.text}</p></div>)}</aside>
     </section>
 
-    <section class="sunlit-profile-projects" aria-labelledby="projects-title">
-      <header><h2 id="projects-title">{resumeContent.projectsTitle}</h2></header>
-      <div>{resumeContent.projects.map((project) => <article><h3>{project.title}</h3><p>{project.summary}</p><ul>{project.bullets.map((bullet) => <li>{bullet}</li>)}</ul></article>)}</div>
-    </section>
-
     <section class="sunlit-experience" aria-labelledby="experience-title">
       <header><h2 id="experience-title">{resumeContent.experienceTitle}</h2></header>
       <div>
@@ -440,6 +435,11 @@ const isEnterpriseCase = id === "case-study:enterprise-systems";
           <article><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{job.role}</h3><p>{job.company} · {job.period}</p><ul>{job.bullets.map((bullet) => <li>{bullet}</li>)}</ul></div></article>
         ))}
       </div>
+    </section>
+
+    <section class="sunlit-profile-projects" aria-labelledby="projects-title">
+      <header><h2 id="projects-title">{resumeContent.projectsTitle}</h2></header>
+      <div>{resumeContent.projects.map((project) => <article><h3>{project.title}</h3><p>{project.summary}</p><ul>{project.bullets.map((bullet) => <li>{bullet}</li>)}</ul></article>)}</div>
     </section>
 
     <section class="sunlit-capabilities" aria-labelledby="capabilities-title">
