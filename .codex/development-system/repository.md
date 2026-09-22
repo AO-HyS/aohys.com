@@ -1,6 +1,6 @@
 # Development System repository adapter
 
-Contract version: `1.24.0`
+Contract version: `1.26.1`
 Product: `aohys.com`
 Harness: `codex`
 
@@ -22,6 +22,15 @@ proceeds through `$flow-implement`; an existing spec or settled decisions do not
 require another grill. Use `coding-orchestration` or an already selected
 `orchestrate-work` method for useful delegation, integration and verification.
 A bounded worker executes its packet without restarting parent routing.
+
+For non-trivial implementation, recover every authorized ticket linked by the
+spec and activate the installed governed Jev recipe. New sessions default to Sol
+High; fast researchers gather facts, Astra XHigh authors the plan, and a
+different fresh Astra reviews it. Bounded exact writing uses Flash High. Jev
+checks each lifecycle boundary; deterministic permits enforce the observed
+route, current evidence, dependencies and ownership. Use only supported host
+adapters and report capability gaps. Backend and other nonvisual features follow
+the same criterion coverage and acceptance chain.
 
 Explicit discovery or definition can use `$wayfinder`, `$grill-with-docs`,
 `$working-backwards`, `$to-spec` or `$to-tickets` when available. Ordinary work
@@ -48,9 +57,10 @@ Test edits are closed by default: use the repository's reviewed test-change
 policy and report missing behavioral evidence to the parent before widening it.
 Use the local construction recipes and existing components for screens, forms
 and authorized server operations. Simplification, review of test value,
-correction and objective verification are responsibilities, not mandatory new
-agents or fixed review loops. The parent reviews ordinary work; use independent
-judgment for observed complex risk or when requested. Reject weakened assertions
+correction and objective verification are responsibilities. Tiny direct work
+stays with the parent; governed features retain their independent Astra plan
+and final reviews. Select additional specialists by affected risk and preserve
+the parent's final judgment. Reject weakened assertions
 and unsupported green-check claims. File counts and style scores are not gates.
 
 Repeat checks only for relevant edits, failures, required gates or unresolved
@@ -127,7 +137,7 @@ Preview
 
 ## Installation and final report
 
-Synchronize global skill catalog `0.44.0` with the pinned
+Synchronize global skill catalog `0.46.0` with the pinned
 Development System package. Installation and structural readiness do not prove
 live loading; T3 and other hosts need their own observations. Ordinary completion
 uses a concise outcome, checks, remaining gaps and usable links. Generate a
