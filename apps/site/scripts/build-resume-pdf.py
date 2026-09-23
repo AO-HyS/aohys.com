@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from xml.sax.saxutils import escape
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.pdfgen.canvas import Canvas
-from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer
+from reportlab.platypus import KeepTogether, PageBreak, Paragraph, SimpleDocTemplate, Spacer
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -22,7 +23,7 @@ class DeterministicCanvas(Canvas):
 
 
 def paragraph(text: str, style: ParagraphStyle) -> Paragraph:
-  return Paragraph(text.replace("&", "&amp;"), style)
+  return Paragraph(escape(text), style)
 
 
 def add_heading(story: list, text: str, style: ParagraphStyle) -> None:
@@ -78,6 +79,7 @@ def build_pdf() -> None:
     "ResumeBodyBold",
     parent=body,
     fontName="Helvetica-Bold",
+    keepWithNext=True,
   )
 
   doc = SimpleDocTemplate(
@@ -89,7 +91,7 @@ def build_pdf() -> None:
     bottomMargin=0.48 * inch,
     title="Alejandro Ortiz Corro Resume",
     author="Alejandro Ortiz Corro",
-    subject="Senior Software Engineer · AI-Native Product Development",
+    subject=resume["role"],
   )
 
   story = [
@@ -104,18 +106,19 @@ def build_pdf() -> None:
   for summary in resume["summary"]:
     story.append(paragraph(summary, body))
 
-  add_heading(story, resume["projectsTitle"], heading)
-  for project in resume["projects"]:
-    story.append(paragraph(project["title"], body_bold))
-    story.append(paragraph(project["summary"], body))
+  add_heading(story, resume["experienceTitle"], heading)
+  for job in resume["experience"]:
+    job_content = [paragraph(f"{job['role']} | {job['company']} | {job['period']}", body_bold)]
+    add_bullets(job_content, job["bullets"], body)
+    story.append(KeepTogether(job_content))
 
   story.append(PageBreak())
 
-  add_heading(story, resume["experienceTitle"], heading)
-  for index, job in enumerate(resume["experience"]):
-    story.append(paragraph(f"{job['role']} | {job['company']} | {job['period']}", body_bold))
-    bullet_limit = 3 if index == 0 else 2 if job["company"] == "AOHYS" else 1
-    add_bullets(story, job["bullets"][:bullet_limit], body)
+  add_heading(story, resume["projectsTitle"], heading)
+  for project in resume["projects"]:
+    project_content = [paragraph(project["title"], body_bold), paragraph(project["summary"], body)]
+    add_bullets(project_content, project["bullets"], body)
+    story.append(KeepTogether(project_content))
 
   add_heading(story, resume["skillsTitle"], heading)
   for skill_group in resume["skills"]:

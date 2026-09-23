@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   findForbiddenPublicClaims,
   getPublicRouteMap,
+  getResumePageContent,
   getSeoMetadata,
   getSitemapEntries,
 } from "@aohys/content-graph";
@@ -162,17 +163,17 @@ describe("built public routes", () => {
     const spanishHomeHtml = readDist("es/index.html");
 
     expect(homeHtml).toContain('data-home-content-id="home"');
-    expect(homeHtml).toContain(
-      "Senior Software Engineer · AI-Native Product Development",
-    );
+    expect(homeHtml).toContain("full stack development");
     expect(homeHtml).toContain('class="sunlit-studio-hero"');
     expect(homeHtml).toContain("How I work and contribute.");
-    expect(homeHtml).toContain("Business goals become production systems.");
+    expect(homeHtml).toContain("Start with the workflow.");
     expect(homeHtml).toContain("/images/proof/enterprise-systems-map-v2.svg");
     expect(homeHtml).toContain("data-project-stage");
     expect(homeHtml).toContain('data-stage-door="left"');
     expect(homeHtml).toContain('data-stage-door="right"');
-    expect(homeHtml).toContain("Six systems showing the result");
+    expect(homeHtml).toContain(
+      "Six examples of products, professional contributions",
+    );
     expect(homeHtml).toContain("Start with the context.");
     expect(homeHtml).not.toContain("Talk about a product or role");
     expect(homeHtml).toContain(
@@ -196,16 +197,12 @@ describe("built public routes", () => {
     expect(homeHtml).not.toContain("Download ATS PDF");
 
     expect(spanishHomeHtml).toContain('data-home-content-id="home"');
-    expect(spanishHomeHtml).toContain(
-      "Senior Software Engineer · Desarrollo de producto AI-native",
-    );
+    expect(spanishHomeHtml).toContain("full stack development");
     expect(spanishHomeHtml).toContain('class="sunlit-studio-hero"');
     expect(spanishHomeHtml).toContain("Cómo trabajo y aporto.");
+    expect(spanishHomeHtml).toContain("Empezar por el proceso.");
     expect(spanishHomeHtml).toContain(
-      "Los objetivos de negocio se convierten en sistemas en producción.",
-    );
-    expect(spanishHomeHtml).toContain(
-      "Seis sistemas que muestran el resultado",
+      "Seis ejemplos de productos, contribuciones profesionales",
     );
     expect(spanishHomeHtml).toContain("Empieza por el contexto.");
     expect(spanishHomeHtml).not.toContain("Hablemos de un producto o un rol");
@@ -341,7 +338,7 @@ describe("built public routes", () => {
     expect(casaRocaHtml).toContain("Casa Roca");
     expect(casaRocaHtml).toContain("Live hospitality experience");
     expect(casaRocaHtml).toContain(
-      "Casa Roca is the digital arrival point for a boutique stay in Roca Partida, Veracruz.",
+      "For Casa Roca, I work on both the public website and the tools used to manage hospitality operations.",
     );
     expect(casaRocaHtml).toContain('data-case-beat="project"');
     expect(casaRocaHtml).toContain("Project");
@@ -354,7 +351,7 @@ describe("built public routes", () => {
     expect(casaRocaHtml).not.toMatch(/<h[23][^>]*>Opportunity<\/h[23]>/);
     expect(casaRocaHtml.match(/data-case-beat=/g)).toHaveLength(4);
     expect(
-      casaRocaHtml.indexOf("Casa Roca is the digital arrival point"),
+      casaRocaHtml.indexOf("For Casa Roca, I work on both the public website"),
     ).toBeLessThan(casaRocaHtml.indexOf('data-case-beat="project"'));
     expectHeadingSequence(casaRocaHtml, [
       { level: 2, text: "Project" },
@@ -382,7 +379,7 @@ describe("built public routes", () => {
       "Experiencia de hospitalidad en producción",
     );
     expect(spanishCasaRocaHtml).toContain(
-      "Casa Roca es el punto de llegada digital de una estancia boutique en Roca Partida, Veracruz.",
+      "En Casa Roca trabajo tanto en el sitio público como en las herramientas para gestionar la operación del hospedaje.",
     );
     expect(spanishCasaRocaHtml).toContain('data-case-beat="project"');
     expect(spanishCasaRocaHtml).toContain("Proyecto");
@@ -395,7 +392,9 @@ describe("built public routes", () => {
     expect(spanishCasaRocaHtml).not.toMatch(/<h[23][^>]*>Oportunidad<\/h[23]>/);
     expect(spanishCasaRocaHtml.match(/data-case-beat=/g)).toHaveLength(4);
     expect(
-      spanishCasaRocaHtml.indexOf("Casa Roca es el punto de llegada digital"),
+      spanishCasaRocaHtml.indexOf(
+        "En Casa Roca trabajo tanto en el sitio público",
+      ),
     ).toBeLessThan(spanishCasaRocaHtml.indexOf('data-case-beat="project"'));
     expectHeadingSequence(spanishCasaRocaHtml, [
       { level: 2, text: "Proyecto" },
@@ -444,8 +443,8 @@ describe("built public routes", () => {
     expect(indexHtml).toContain('href="/case-studies/nutri-plan/"');
     expect(indexHtml).toContain('href="/case-studies/casa-roca/"');
     expect(indexHtml).toContain("Client project · In production");
-    expect(indexHtml).toContain("AI-native development practice");
-    expect(indexHtml).toContain("Enterprise product systems");
+    expect(indexHtml).toContain("Engineering method");
+    expect(indexHtml).toContain("Professional experience");
     expect(indexHtml).toContain("Approaching production");
     expect(indexHtml).toContain("Testing &amp; production preparation");
     expect(indexHtml).toContain("Live hospitality experience");
@@ -470,8 +469,8 @@ describe("built public routes", () => {
     expect(spanishIndexHtml).toContain('href="/es/casos/nutri-plan/"');
     expect(spanishIndexHtml).toContain('href="/es/casos/casa-roca/"');
     expect(spanishIndexHtml).toContain("Proyecto de cliente · En producción");
-    expect(spanishIndexHtml).toContain("Práctica de desarrollo AI-native");
-    expect(spanishIndexHtml).toContain("Sistemas de producto enterprise");
+    expect(spanishIndexHtml).toContain("Método de ingeniería");
+    expect(spanishIndexHtml).toContain("Experiencia profesional");
     expect(spanishIndexHtml).toContain("Acercándose a producción");
     expect(spanishIndexHtml).toContain("Testing y preparación para producción");
     expect(spanishIndexHtml).toContain(
@@ -494,8 +493,9 @@ describe("built public routes", () => {
     expect(enterpriseHtml).toContain(
       'data-case-study-content-id="case-study:enterprise-systems"',
     );
-    expect(enterpriseHtml).toContain("Enterprise product systems");
-    expect(enterpriseHtml).toContain("3–5 seconds to under 1 second");
+    expect(enterpriseHtml).toContain("Professional experience");
+    expect(enterpriseHtml).toContain("Redux Saga");
+    expect(enterpriseHtml).not.toContain("3–5 seconds to under 1 second");
     expect(enterpriseHtml).toContain("Client details remain private.");
     expect(
       enterpriseHtml.match(/Client details remain private\./g),
@@ -504,16 +504,16 @@ describe("built public routes", () => {
     expect(engineeringPracticeHtml).toContain(
       'data-case-study-content-id="case-study:engineering-practice"',
     );
-    expect(engineeringPracticeHtml).toContain("AI-native development practice");
+    expect(engineeringPracticeHtml).toContain("Engineering method");
     expect(engineeringPracticeHtml).toContain("Source and process");
     expect(eteriaHtml).toContain(
       'data-case-study-content-id="case-study:eteria"',
     );
     expect(eteriaHtml).toContain("Client project · In production");
     expect(eteriaHtml).toContain("Convex");
-    expect(eteriaHtml).toContain("PostHog");
+    expect(eteriaHtml).toContain("Cloudflare");
     expect(eteriaHtml).toContain("SwiftUI");
-    expect(eteriaHtml).toContain("Release Train");
+    expect(eteriaHtml).toContain("Proposal versions");
     expect(eteriaHtml).toContain('href="https://momentos-eteria.com"');
     expect(eteriaHtml).toContain(
       "/images/proof/eteria-garden-blue-table-og.jpg",
@@ -528,7 +528,7 @@ describe("built public routes", () => {
     expect(spanishEteriaHtml).toContain('href="https://momentos-eteria.com"');
   });
 
-  it("renders the graph-backed About page and keeps an ATS-readable resume PDF aligned", async () => {
+  it("renders the approved career in both languages and preserves every employment bullet in the PDF", async () => {
     const resumeHtml = readDist("resume/index.html");
     const spanishResumeHtml = readDist("es/curriculum/index.html");
     const pdfPath = path.join(
@@ -537,83 +537,79 @@ describe("built public routes", () => {
       "alejandro-ortiz-corro-resume.pdf",
     );
 
-    expect(resumeHtml).toContain('data-resume-content-id="resume"');
-    expect(resumeHtml).toContain("About Alejandro");
-    expect(resumeHtml).toContain(
-      "Senior Software Engineer · AI-Native Product Development",
-    );
-    expect(resumeHtml).toContain("Professional summary");
-    expect(resumeHtml).toContain("Selected Systems");
-    expect(resumeHtml).toContain("Professional experience");
-    expect(resumeHtml).toContain("Technical capabilities");
-    expect(resumeHtml).toContain(
-      'href="/downloads/alejandro-ortiz-corro-resume.pdf"',
-    );
-    expect(resumeHtml).toContain("Open resume PDF");
-    expect(resumeHtml).not.toContain("Download ATS PDF");
-    expect(resumeHtml).toContain('href="/case-studies/"');
-    expect(resumeHtml).toContain('href="/architecture/"');
-    expect(resumeHtml.indexOf("Selected Systems")).toBeLessThan(
-      resumeHtml.indexOf("Professional experience"),
-    );
-    expect(resumeHtml).toContain("Senior Frontend Developer");
-    expect(resumeHtml).toContain("Tala Mobile · 2023 - Present");
-    expect(resumeHtml).toContain("Founder");
-    expect(resumeHtml).toContain("AOHYS · 2015 - Present");
-    expect(resumeHtml.indexOf("Tala Mobile · 2023 - Present")).toBeLessThan(
-      resumeHtml.indexOf("AOHYS · 2015 - Present"),
-    );
-    expect(resumeHtml.match(/\bTala(?: Mobile)?\b/gi) ?? []).toHaveLength(1);
-    expect(resumeHtml).toContain("3–5 seconds to under 1 second");
-    expect(resumeHtml).toContain("Java work in progress");
-    expect(
-      resumeHtml.slice(
-        resumeHtml.indexOf('id="projects-title"'),
-        resumeHtml.indexOf('id="experience-title"'),
-      ),
-    ).not.toMatch(/\bTala(?: Mobile)?\b/i);
-
-    expect(spanishResumeHtml).toContain('data-resume-content-id="resume"');
-    expect(spanishResumeHtml).toContain("Sobre Alejandro");
-    expect(spanishResumeHtml).toContain(
-      "Senior Software Engineer · Desarrollo de producto AI-native",
-    );
-    expect(spanishResumeHtml).toContain("Resumen profesional");
-    expect(spanishResumeHtml).toContain("Sistemas seleccionados");
-    expect(spanishResumeHtml).toContain("Experiencia profesional");
-    expect(spanishResumeHtml).toContain("Capacidades técnicas");
-    expect(spanishResumeHtml).toContain(
-      'href="/downloads/alejandro-ortiz-corro-resume.pdf"',
-    );
-    expect(spanishResumeHtml).toContain("Abrir CV en PDF");
-    expect(spanishResumeHtml).not.toContain("Descargar PDF ATS");
-    expect(spanishResumeHtml).toContain('href="/es/casos/"');
-    expect(spanishResumeHtml).toContain('href="/es/arquitectura/"');
-    expect(spanishResumeHtml.indexOf("Sistemas seleccionados")).toBeLessThan(
-      spanishResumeHtml.indexOf("Experiencia profesional"),
-    );
-    expect(spanishResumeHtml).toContain("Tala Mobile · 2023 - Presente");
-    expect(spanishResumeHtml).toContain("Founder");
-    expect(spanishResumeHtml).toContain("AOHYS · 2015 - Presente");
-    expect(
-      spanishResumeHtml.indexOf("Tala Mobile · 2023 - Presente"),
-    ).toBeLessThan(spanishResumeHtml.indexOf("AOHYS · 2015 - Presente"));
-    expect(
-      spanishResumeHtml.match(/\bTala(?: Mobile)?\b/gi) ?? [],
-    ).toHaveLength(1);
-    expect(
-      spanishResumeHtml.slice(
-        spanishResumeHtml.indexOf('id="projects-title"'),
-        spanishResumeHtml.indexOf('id="experience-title"'),
-      ),
-    ).not.toMatch(/\bTala(?: Mobile)?\b/i);
+    for (const [locale, html, headings, links] of [
+      [
+        "en",
+        resumeHtml,
+        [
+          "About Alejandro",
+          "Professional summary",
+          "Professional experience",
+          "Selected projects",
+          "Technical capabilities",
+        ],
+        ["/case-studies/", "/architecture/"],
+      ],
+      [
+        "es",
+        spanishResumeHtml,
+        [
+          "Sobre Alejandro",
+          "Resumen profesional",
+          "Experiencia profesional",
+          "Proyectos seleccionados",
+          "Capacidades técnicas",
+        ],
+        ["/es/casos/", "/es/arquitectura/"],
+      ],
+    ] as const) {
+      expect(html).toContain('data-resume-content-id="resume"');
+      expect(html).toContain("full stack development");
+      for (const heading of headings) expect(html).toContain(heading);
+      for (const href of links) expect(html).toContain(`href="${href}"`);
+      expect(html).toContain(
+        'href="/downloads/alejandro-ortiz-corro-resume.pdf"',
+      );
+      expect(html).not.toMatch(/Download ATS PDF|Descargar PDF ATS/);
+      const experienceStart = html.indexOf('id="experience-title"');
+      const projectsStart = html.indexOf('id="projects-title"');
+      const projectsEnd = html.indexOf('id="capabilities-title"');
+      expect(experienceStart).toBeGreaterThan(0);
+      expect(projectsStart).toBeGreaterThan(experienceStart);
+      expect(projectsEnd).toBeGreaterThan(projectsStart);
+      const projectSection = html.slice(projectsStart, projectsEnd);
+      expect(projectSection).toContain("The Barber Central");
+      expect(projectSection).toContain("Casa Roca");
+      expect(projectSection).not.toMatch(
+        /\bTala\b|AI-Native Development Practice/,
+      );
+      expect(
+        html.slice(experienceStart, projectsStart).match(/\bTala\b/g) ?? [],
+      ).toHaveLength(1);
+      expect(html).toContain("Senior Frontend Developer");
+      expect(html).toContain("Founder");
+      const present = locale === "en" ? "Present" : "Presente";
+      const tala = `Tala · 2023 - ${present}`;
+      const aohys = `AOHYS · 2015 - ${present}`;
+      expect(html).toContain(tala);
+      expect(html).toContain(aohys);
+      expect(html.indexOf(tala)).toBeLessThan(html.indexOf(aohys));
+      expect(html).toContain("NEORIS / CEMEX");
+      expect(html).toContain("Redux Saga");
+      expect(html).toContain("Flask");
+      expect(html).not.toMatch(
+        /billing surface|superficie de facturación|Cassandra|MySQL/,
+      );
+      expect(html).toContain(
+        locale === "en" ? "Open resume PDF" : "Abrir CV en PDF",
+      );
+    }
 
     expect(existsSync(pdfPath), "resume PDF must be copied into dist").toBe(
       true,
     );
     const pdfBytes = readFileSync(pdfPath);
     const pdfSource = pdfBytes.toString("latin1");
-
     expect(pdfBytes.subarray(0, 5).toString("utf8")).toBe("%PDF-");
     expect(pdfSource.match(/\/Type\s*\/Page\b/g)).toHaveLength(2);
     expect(pdfSource).not.toMatch(/\/Encrypt\b/);
@@ -625,15 +621,14 @@ describe("built public routes", () => {
       const atsText = extracted.text.replace(/\s+/g, " ").trim();
       const expectedOrder = [
         "Alejandro Ortiz Corro",
-        "Senior Software Engineer · AI-Native Product Development",
+        "full stack development",
         "Professional summary",
-        "Selected Systems",
         "Professional experience",
+        "Selected projects",
         "Technical capabilities",
         "Education",
         "Languages",
       ];
-
       expect(pdfInfo.total).toBe(2);
       expect(expectedOrder.every((heading) => atsText.includes(heading))).toBe(
         true,
@@ -643,21 +638,36 @@ describe("built public routes", () => {
           (a, b) => a - b,
         ),
       );
-      expect(atsText).toContain(
-        "Senior Frontend Developer | Tala Mobile | 2023 - Present",
-      );
-      expect(atsText).toContain("Founder | AOHYS | 2015 - Present");
-      expect(atsText).toContain(
-        "Current systems include ETERIA, The Barber Central, NutriPlan Digital, Casa Roca, and AOHYS.",
-      );
+      const resume = getResumePageContent("en");
+      expect(resume.experience).toHaveLength(7);
+      expect(resume.projects).toHaveLength(5);
+      for (const job of resume.experience) {
+        expect(atsText).toContain(
+          `${job.role} | ${job.company} | ${job.period}`,
+        );
+        for (const bullet of job.bullets) {
+          expect(
+            atsText,
+            `PDF must retain every approved example for ${job.company}`,
+          ).toContain(bullet.replace(/\s+/g, " ").trim());
+        }
+      }
+      for (const project of resume.projects) {
+        expect(atsText).toContain(project.title);
+        expect(atsText).toContain(project.summary.replace(/\s+/g, " ").trim());
+        for (const bullet of project.bullets)
+          expect(atsText).toContain(bullet.replace(/\s+/g, " ").trim());
+      }
+      expect(atsText.match(/\bTala\b/g) ?? []).toHaveLength(1);
       expect(
-        atsText.indexOf(
-          "Senior Frontend Developer | Tala Mobile | 2023 - Present",
-        ),
+        atsText.indexOf("Senior Frontend Developer | Tala | 2023 - Present"),
       ).toBeLessThan(atsText.indexOf("Founder | AOHYS | 2015 - Present"));
-      expect(atsText.match(/\bTala(?: Mobile)?\b/gi) ?? []).toHaveLength(1);
-      expect(atsText).toMatch(/approximately 3–5 seconds to under 1 second/i);
-      expect(atsText).not.toMatch(/\bCARE\b/);
+      expect(atsText).toContain("Redux Saga");
+      expect(atsText).toContain("Flask");
+      expect(atsText).toContain("Excel");
+      expect(atsText).toContain("Angular");
+      expect(atsText).toContain("cement trucks");
+      expect(atsText).not.toMatch(/billing surface|Cassandra|MySQL|\bCARE\b/);
       expect(atsText).not.toMatch(
         /80%|Open[- ]to[- ]Work|Available for selected projects|AI[\/-]ML Engineer|\bRAG\b|fine-tuning|model eval(?:s|uations)|New York|App Store/i,
       );
