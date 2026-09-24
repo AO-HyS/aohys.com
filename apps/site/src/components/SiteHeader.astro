@@ -1,6 +1,7 @@
 ---
 import { getAlternateLocale, getLocalizedPath, getPublicNavigation, type ContentId, type Locale } from "@aohys/content-graph";
 import { getUiCopy } from "../i18n";
+import AohysLogo from "./horizonte/AohysLogo.astro";
 
 interface Props {
   locale?: Locale;
@@ -29,8 +30,7 @@ function isCurrent(contentId?: string) {
   <a class="hz-skip" href="#main-content">{copy.skip}</a>
   <nav class="hz-nav" aria-label={copy.aria}>
     <a class="hz-wordmark" href={getLocalizedPath("home", locale)} aria-label={navigation.brand.homeLabel}>
-      <strong>AOHYS</strong>
-      <span aria-hidden="true">Alejandro Ortiz Corro</span>
+      <AohysLogo />
     </a>
 
     <div class="hz-links">

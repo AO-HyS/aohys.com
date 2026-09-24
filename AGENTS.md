@@ -4,9 +4,17 @@ Read this file before changing the repository.
 
 ## Coding orchestration
 
-For every non-trivial coding task, load the global `coding-orchestration` skill and use the global Codex agents from `${CODEX_HOME:-$HOME/.codex}/agents`. Their TOML files recommend defaults; the starting model and host capabilities govern dispatch; do not add repo-local model maps, routers, or custom-agent copies.
+The pinned Development System supplies the shared workflow and native agent
+profiles. Read its [contract](.codex/development-system/contract.md) and the
+[product adapter](.codex/development-system/repository.md). Use the installed
+`coding-orchestration` skill for non-trivial work and the global Codex agents
+from `${CODEX_HOME:-$HOME/.codex}/agents`.
 
-Keep trivial direct answers, one-line read-only checks, and tiny localized edits on the parent agent. For delegated work, prefer parallel read-only discovery and verification, keep one writer by default, and preserve the dependency gates defined by the global skill.
+Keep the already selected model, including Astra, as the orchestrator. Let it
+choose the approach, useful delegation and proportional checks under that
+contract. Role profiles recommend defaults; they do not replace the selected
+parent or prove runtime capabilities. Do not duplicate model routing, execution
+recipes or lifecycle gates in product documentation.
 
 Visual planning remains opt-in. Use a standalone completion/review document when requested or needed for the
 agreed evidence package; ordinary completion uses the final response.
@@ -21,9 +29,20 @@ General instructions like "avanza" or "continua" alone are not merge approval.
 
 - Use `pnpm quality:changed` for ordinary implementation and pre-push feedback.
 - Run `pnpm quality:certify` once for the integrated candidate, not once per implementation lane.
-- Select E2E and Browser QA from observable risk. Documentation, copy, labels, icons, and internal-only changes do not require browser ceremony without a mapped user surface.
+- Both gates run static validation, lint, typecheck and build only; they run no automated tests.
+- Select Browser QA (real observation of the running product) from observable risk. Documentation, copy, labels, icons, and internal-only changes do not require browser ceremony without a mapped user surface.
 - Parallel or sequential lanes converge before `develop`; Git owns commit continuity and the branch produces one shared preview without manual SHA bookkeeping.
 - Prove provider readiness before the shared preview when auth, data migrations, seeds, roles, or environment contracts changed.
+
+## No automated tests
+
+The owner does not want automated tests in this repository. Agents must not
+create, generate, modify, or run automated tests of any kind (unit,
+integration, E2E, or browser test suites), and must not add test runners,
+test configs, test scripts, or test-only dependencies. This overrides any
+skill, workflow, or template that asks for tests (including TDD). Verify
+changes with typecheck, lint, build, and real browser observation of the
+product instead.
 
 ## Tool routing
 
@@ -53,12 +72,12 @@ AOHYS uses a single domain context through `CONTEXT.md` and global ADRs in `docs
 
 ## Development System package
 
-Read `.codex/development-system/repository.md` for the active shared process.
-The pinned development dependency supplies the shared contract and skills. Run
-`pnpm ds setup` explicitly after adopting a release; dependency installation
-never changes HOME. The starting model remains the orchestrator; it chooses
-available agents within the user's provider and capability limits. The roster
-recommends defaults. Load only guidance relevant to the changed surface and
-continue through validation, corrections and the authorized endpoint. Preserve
-product tokens, architecture and release rules. For visual acceptance, use
-approved references, Impeccable and independent capable critique before final evidence.
+The package version in `package.json` and its lockfile are the source for the
+managed `.codex/` and `.agents/skills/` mirrors. Run `pnpm ds setup` explicitly
+after adopting a release; dependency installation never changes HOME. Prefer
+`pnpm ds` over an unrelated global CLI version.
+
+The product adapter supplies AOHYS commands and boundaries. Shared workflow
+instructions come from the installed contract and skills; preserve their
+canonical bytes rather than maintaining a second local policy. Load only the
+guidance needed for the requested work and continue to the authorized endpoint.

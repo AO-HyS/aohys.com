@@ -5,7 +5,7 @@ export function cx(...values: ClassValue[]) {
 }
 
 const displayFont =
-  "[font-family:'Mona_Sans_Variable','Mona_Sans',ui-sans-serif,system-ui,sans-serif]";
+  "[font-family:'Jost_Variable','Jost','Avenir_Next','Segoe_UI',system-ui,sans-serif]";
 const bodyFont = displayFont;
 
 export const themeVars = cx(

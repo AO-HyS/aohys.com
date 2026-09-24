@@ -3,7 +3,7 @@
   "compilerOptions": {
     "exactOptionalPropertyTypes": true,
     "noUncheckedIndexedAccess": true,
-    "types": ["node", "vitest/globals"]
+    "types": ["node"]
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  "include": ["src/**/*.ts"]
 }

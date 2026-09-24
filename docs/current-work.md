@@ -10,19 +10,20 @@
 
 - Home: WebGL lens stage with the four-phase project switch, orbit ghosts and
   labels, big AOHYS title, work list, "How I build", career strip, two paths.
-- Interior pages in Ma: case studies, case index, architecture, practice,
-  resume (career timeline), contact (form behavior unchanged), privacy.
-- New header/footer, Mona Sans (width axis) type system, `horizonte.css`.
-- Checks: `astro check`, `astro build`, `impeccable detect`, browser captures.
+- Every public page in Ma: case studies (6), case index, architecture,
+  practice, resume (career timeline), contact (form behavior unchanged),
+  privacy, and the 404 page.
+- Prototype logo (`AohysLogo.astro`) and prototype type: Spectral (display)
+  and Jost (text), self-hosted through Fontsource.
+- All automated tests removed at the owner's request; `AGENTS.md` forbids
+  adding or running tests. Verification is typecheck, lint, build and
+  screenshots in the owner's Google Chrome.
 
 ## Open
 
-- User confirmation: typeface and wordmark are provisional.
-- Existing site tests assert the previous Sunlit markup
-  (`apps/site/test/public-shell-build.test.ts`, `source-quality.test.ts`,
-  `scripts/quality/product-verification-feature-map.test.mjs`); they need
-  updating once the user authorizes test changes.
-- Review in the user's own browser; new capture of the redesigned AOHYS site
-  for its lens texture.
-- The pre-existing staged Development System adoption and `.impeccable/` mocks
-  are unrelated to this commit and remain staged.
+- `.codex/development-system/repository.md` and
+  `.development-system/repository.json` still list a `test` command; they are
+  managed Development System files and belong to the pending DS 1.29.1
+  adoption, which stays uncommitted on this branch (root `package.json` bump
+  kept in the working tree).
+- New capture of the redesigned AOHYS site for its lens texture.

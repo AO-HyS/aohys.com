@@ -15,7 +15,7 @@
     "observed": 1,
     "threshold": 1,
     "semanticCheck": {
-      "command": "pnpm performance:test",
+      "command": "pnpm performance:check",
       "exitCode": 0
     },
     "result": "passed"

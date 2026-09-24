@@ -26,14 +26,13 @@ const requiredRootScripts = [
   "react:doctor:changed",
   "react:doctor:staged",
   "typecheck",
-  "test",
   "verify",
   "verify:ci",
   "verify:foundation",
   "verify:precommit",
 ];
 
-const requiredPackageScripts = ["build", "lint", "typecheck", "test"];
+const requiredPackageScripts = ["build", "lint", "typecheck"];
 
 const requiredFiles = [
   ".env.example",

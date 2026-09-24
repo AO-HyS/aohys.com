@@ -2,6 +2,7 @@
 import { getLocalizedPath, type Locale } from "@aohys/content-graph";
 import { DASHBOARD_PUBLIC_SETTINGS } from "../generated/dashboard-public-settings";
 import { getUiCopy } from "../i18n";
+import AohysLogo from "./horizonte/AohysLogo.astro";
 
 interface Props { locale?: Locale; }
 
@@ -15,7 +16,7 @@ const publicRepositoryUrl = import.meta.env.PUBLIC_REPOSITORY_URL ?? "https://gi
 ---
 
 <footer class="hz-footer">
-  <a class="hz-wordmark" href={getLocalizedPath("home", locale)}><strong>AOHYS</strong></a>
+  <a class="hz-wordmark" href={getLocalizedPath("home", locale)} aria-label="AOHYS"><AohysLogo /></a>
   <p>{uiCopy.horizonte.footerLine}</p>
 
   <nav aria-label={copy.linksAria}>

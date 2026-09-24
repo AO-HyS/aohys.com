@@ -22,8 +22,10 @@
   --honey-full: #fec868;
   --wash: #fdd2b1;
 
-  --font:
-    "Mona Sans Variable", "Mona Sans", ui-sans-serif, system-ui, sans-serif;
+  --serif: "Spectral", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --sans:
+    "Jost Variable", "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font: var(--sans);
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -39,16 +41,15 @@ html {
 }
 
 body {
-  font-family: var(--font);
-  font-weight: 360;
-  font-stretch: 100%;
+  font-family: var(--sans);
+  font-weight: 350;
   -webkit-font-smoothing: antialiased;
 }
 
 .hz-display {
   font-family: var(--font);
   font-weight: 300;
-  font-stretch: 112%;
+  font-family: var(--serif);
   letter-spacing: -0.01em;
 }
 
@@ -112,11 +113,9 @@ body {
   text-decoration: none;
   border-radius: 6px;
 }
-.hz-wordmark strong {
-  font-weight: 330;
-  font-stretch: 125%;
-  font-size: 1.3rem;
-  letter-spacing: 0.18em;
+.hz-wordmark .hz-logo {
+  width: 88px;
+  height: auto;
 }
 .hz-wordmark span {
   font-size: 0.75rem;
@@ -243,8 +242,8 @@ body {
   font-size: 0.8125rem;
   color: var(--ink-soft);
 }
-.hz-footer .hz-wordmark strong {
-  font-size: 1.1rem;
+.hz-footer .hz-wordmark .hz-logo {
+  width: 72px;
 }
 .hz-footer p {
   margin: 0;
@@ -401,10 +400,10 @@ body {
 }
 .hz-intro h1 {
   margin: 0;
-  font-size: clamp(3.25rem, 1.4rem + 5.6vw, 7.25rem);
+  font-size: clamp(3.25rem, min(1.4rem + 5.6vw, 11svh), 7.25rem);
   line-height: 0.92;
   font-weight: 250;
-  font-stretch: 125%;
+  font-family: var(--serif);
   letter-spacing: 0.14em;
   padding-left: 0.14em;
 }
@@ -891,7 +890,7 @@ body {
   font-size: clamp(2rem, 1.3rem + 2.4vw, 3.4rem);
   line-height: 1.06;
   font-weight: 300;
-  font-stretch: 112%;
+  font-family: var(--serif);
   letter-spacing: -0.01em;
   text-wrap: balance;
 }
@@ -958,7 +957,7 @@ body {
   font-size: clamp(1.625rem, 1.2rem + 1vw, 2.2rem);
   line-height: 1.1;
   font-weight: 300;
-  font-stretch: 112%;
+  font-family: var(--serif);
 }
 .hz-meta {
   font-size: 0.75rem;
@@ -1347,7 +1346,7 @@ body {
   font-size: clamp(1.75rem, 1.3rem + 1vw, 2.3rem);
   line-height: 1.12;
   font-weight: 300;
-  font-stretch: 112%;
+  font-family: var(--serif);
 }
 .hz-path p {
   margin: 0;
@@ -1466,7 +1465,7 @@ body {
   font-size: clamp(2.5rem, 1.4rem + 3.8vw, 4.75rem);
   line-height: 1.02;
   font-weight: 280;
-  font-stretch: 112%;
+  font-family: var(--serif);
   letter-spacing: -0.015em;
   text-wrap: balance;
 }
@@ -1580,7 +1579,7 @@ body {
   font-size: clamp(1.875rem, 1.3rem + 1.6vw, 2.8rem);
   line-height: 1.1;
   font-weight: 300;
-  font-stretch: 112%;
+  font-family: var(--serif);
   text-wrap: balance;
 }
 .ma-block h3 {
@@ -1598,7 +1597,6 @@ body {
 .ma-block .ma-kicker {
   font-size: 0.8125rem;
   font-weight: 400;
-  font-stretch: 100%;
   letter-spacing: 0.12em;
   line-height: 1.4;
   color: var(--ink-soft);
@@ -1717,7 +1715,7 @@ body {
   font-size: clamp(1.75rem, 1.3rem + 1.2vw, 2.5rem);
   line-height: 1.1;
   font-weight: 300;
-  font-stretch: 112%;
+  font-family: var(--serif);
 }
 .ma-next .n-purpose {
   display: block;
@@ -1808,7 +1806,7 @@ body {
   font-size: clamp(1.6rem, 1.2rem + 1.1vw, 2.3rem);
   line-height: 1.08;
   font-weight: 300;
-  font-stretch: 112%;
+  font-family: var(--serif);
 }
 .ma-tl .ti {
   font-size: 0.9375rem;
@@ -2051,4 +2049,192 @@ body {
   ::view-transition-new(*) {
     animation-duration: 1ms !important;
   }
+}
+
+/* ---------- Type roles (Spectral display, Jost text) ---------- */
+
+.hz-caption .purpose,
+.hz-work-row .purpose,
+.hz-part .name,
+.hz-statement,
+.hz-build h3,
+.hz-career-line .co,
+.hz-founder .co,
+.ma-statement,
+.ma-block h3,
+.ma-pairs h3,
+.ma-index a strong,
+.ma-direct a {
+  font-family: var(--serif);
+}
+.hz-intro h1 {
+  font-weight: 200;
+}
+.hz-head h2,
+.hz-path h3,
+.hz-work-row h2,
+.hz-work-row h3,
+.ma-hero h1,
+.ma-block h2,
+.ma-tl h3,
+.ma-next .n-name {
+  font-weight: 300;
+  letter-spacing: -0.005em;
+}
+.hz-statement,
+.ma-statement {
+  font-weight: 300;
+}
+.ma-block .ma-kicker {
+  font-family: var(--sans);
+}
+
+/* ---------- Logo ---------- */
+
+.hz-logo {
+  display: block;
+  overflow: visible;
+  color: var(--ink);
+}
+.hz-logo path,
+.hz-logo ellipse {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.hz-logo .join {
+  stroke-width: 1.2;
+}
+.hz-header .hz-logo path,
+.hz-header .hz-logo ellipse {
+  stroke-dasharray: 1 1;
+  animation: hz-logo-draw 1400ms var(--ease-in-out) both;
+}
+.hz-header .hz-logo :nth-child(2) {
+  animation-delay: 80ms;
+}
+.hz-header .hz-logo :nth-child(3) {
+  animation-delay: 160ms;
+}
+.hz-header .hz-logo :nth-child(4) {
+  animation-delay: 240ms;
+}
+.hz-header .hz-logo :nth-child(5) {
+  animation-delay: 320ms;
+}
+.hz-header .hz-logo :nth-child(6) {
+  animation-delay: 400ms;
+}
+.hz-header .hz-logo :nth-child(7) {
+  animation-delay: 460ms;
+}
+.hz-header .hz-logo :nth-child(8) {
+  animation-delay: 520ms;
+}
+@keyframes hz-logo-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hz-header .hz-logo path,
+  .hz-header .hz-logo ellipse {
+    animation: none;
+  }
+}
+
+/* Orb media: diagrams sit whole on warm paper, photographs fill the circle. */
+.hz-orb img.contain,
+.ma-hero-orb img.contain {
+  position: absolute;
+  inset: 17%;
+  width: 66%;
+  height: 66%;
+  object-fit: contain;
+}
+.ma-hero-orb img.cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hz-skip {
+  position: fixed;
+}
+
+/* Solo heroes (no product image): a quieter height and a pastel sphere keeping the right side alive. */
+.ma-hero.solo {
+  min-height: min(calc(100svh - var(--header-h) - 220px), 560px);
+}
+.ma-hero.solo::after {
+  content: "";
+  grid-column: 9 / span 3;
+  grid-row: 1;
+  justify-self: center;
+  align-self: center;
+  width: clamp(140px, 17vw, 240px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 34% 30%,
+    #fff 0 14%,
+    var(--solo-tint, var(--apricot)) 64%,
+    color-mix(in oklab, var(--solo-tint, var(--apricot)) 70%, var(--honey)) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(71, 60, 51, 0.12),
+    0 0 0 12px #fff,
+    0 24px 90px -6px
+      color-mix(in oklab, var(--solo-tint, var(--apricot)) 85%, transparent);
+  animation: hz-float 11s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.ma[data-page="resume"] {
+  --solo-tint: var(--olive);
+}
+.ma[data-page="contact"] {
+  --solo-tint: var(--honey);
+}
+.ma[data-page="practice"] {
+  --solo-tint: #e7e6b0;
+}
+@keyframes hz-float {
+  from {
+    transform: translate3d(-8px, 6px, 0);
+  }
+  to {
+    transform: translate3d(8px, -8px, 0);
+  }
+}
+@media (max-width: 860px) {
+  .ma-hero.solo::after {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ma-hero.solo::after {
+    animation: none;
+  }
+}
+.ma-tl .card ul {
+  text-align: left;
+}
+.ma-hero.solo .ma-hero-text {
+  grid-column: 2 / span 7;
+  grid-row: 1;
+}
+@media (max-width: 860px) {
+  .ma-hero.solo .ma-hero-text {
+    grid-column: 1 / -1;
+  }
+}
+.hz-actions {
+  grid-column: 3;
+  justify-self: end;
 }

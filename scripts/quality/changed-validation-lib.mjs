@@ -78,7 +78,7 @@ export function buildChangedValidationPlan({
   baseCommands = [],
   documentationCommands = baseCommands,
   fullCommands = [],
-  affectedScripts = ["lint", "typecheck", "test", "build"],
+  affectedScripts = ["lint", "typecheck", "build"],
   affectedPackageSelectors = [],
   affectedExcludes = [],
   uiPrefixes = [],

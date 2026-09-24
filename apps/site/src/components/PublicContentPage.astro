@@ -67,6 +67,10 @@ const caseOrder = caseStudyIndexContent.entries;
 const caseIndex = caseOrder.findIndex((entry) => entry.contentId === id);
 const nextCase = caseIndex >= 0 ? caseOrder[(caseIndex + 1) % caseOrder.length] : undefined;
 const nextProject = nextCase ? getHorizonteProject(String(nextCase.contentId)) : undefined;
+const nextMedia = nextCase ? resolveProofMedia(String(nextCase.contentId)) : undefined;
+/* Diagrams and maps are shown whole inside an orb; photographs and screens fill it. */
+const DIAGRAM_KINDS = new Set(["diagram", "architecture-note", "private-system"]);
+const orbImageClass = (kind?: string) => (kind && DIAGRAM_KINDS.has(kind) ? "contain" : "cover");
 const isEnterpriseCase = id === "case-study:enterprise-systems";
 
 /* Resume */
@@ -76,7 +80,7 @@ const founderJob = resumeContent?.experience.find((job) => job.company === "AOHY
 {isHome ? (
   <HorizonteHome locale={locale} contentId={String(id)} />
 ) : (
-  <div class="ma" data-ma>
+  <div class="ma" data-ma data-page={isResume ? "resume" : isContact ? "contact" : isPractice ? "practice" : node.type}>
     <svg class="ma-line" aria-hidden="true" focusable="false"></svg>
 
     {isCaseStudy && caseStudyContent && caseMedia ? (
@@ -98,7 +102,7 @@ const founderJob = resumeContent?.experience.find((job) => job.company === "AOHY
           <figure class={caseProject ? "ma-hero-orb hz-fit" : "ma-hero-orb"} style={caseProject ? fitStyle(caseProject) : undefined}>
             {caseProject
               ? <img src={caseProject.texture} alt={caseProject.alt[locale]} fetchpriority="high" />
-              : <img class="cover" src={caseMedia.src} alt={caseMedia.alt} fetchpriority="high" />}
+              : <img class={orbImageClass(caseMedia.kind)} src={caseMedia.src} alt={caseMedia.alt} fetchpriority="high" />}
           </figure>
           <a class="ma-cue" href="#case-need">{hz.scrollCue}</a>
         </header>
@@ -158,7 +162,7 @@ const founderJob = resumeContent?.experience.find((job) => job.company === "AOHY
               <a class="ma-next" href={nextCase.path} data-vt-from="#ma-next-orb">
                 {nextProject
                   ? <span class="hz-orb hz-fit" id="ma-next-orb" style={`--tint:${nextProject.tint};${fitStyle(nextProject)}`}><img src={nextProject.texture} alt="" loading="lazy" decoding="async" /></span>
-                  : <span class="hz-orb" id="ma-next-orb" style={`--tint:${HORIZONTE_PASTELS.honey}`}></span>}
+                  : <span class="hz-orb" id="ma-next-orb" style={`--tint:${HORIZONTE_PASTELS.honey}`}>{nextMedia && <img class={orbImageClass(nextMedia.kind)} src={nextMedia.src} alt="" loading="lazy" decoding="async" />}</span>}
                 <span><span class="n-name">{nextCase.title}</span><span class="n-purpose">{nextCase.statusLabel}</span></span>
               </a>
             </div>
@@ -190,7 +194,7 @@ const founderJob = resumeContent?.experience.find((job) => job.company === "AOHY
                     <div class="w-axis">
                       {project
                         ? <span class="hz-orb hz-fit" id={`hz-orb-${slug}`} style={`--tint:${project.tint};${fitStyle(project)}`}><img src={project.texture} alt="" loading="lazy" decoding="async" /></span>
-                        : <span class="hz-orb" id={`hz-orb-${slug}`} style={`--tint:${HORIZONTE_PASTELS.olive}`}><img class="cover" src={media.src} alt="" loading="lazy" decoding="async" /></span>}
+                        : <span class="hz-orb" id={`hz-orb-${slug}`} style={`--tint:${HORIZONTE_PASTELS.olive}`}><img class={orbImageClass(media.kind)} src={media.src} alt="" loading="lazy" decoding="async" /></span>}
                     </div>
                     <div class="w-right">
                       <p class="contrib">{entry.summary}</p>

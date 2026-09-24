@@ -30,14 +30,6 @@
       "budgetMs": 8000
     },
     {
-      "id": "unit",
-      "category": "test",
-      "command": "pnpm",
-      "args": ["run", "test"],
-      "enforcement": "block",
-      "budgetMs": 5000
-    },
-    {
       "id": "build",
       "category": "build",
       "command": "pnpm",
