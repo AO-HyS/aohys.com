@@ -1,0 +1,326 @@
+---
+import {
+  getCaseStudyPageContent,
+  getHomePageContent,
+  getLocaleVariant,
+  getLocalizedPath,
+  getResumePageContent,
+  type Locale,
+} from "@aohys/content-graph";
+import { getUiCopy } from "../../i18n";
+import { HORIZONTE_PASTELS, HORIZONTE_PROJECTS, fitStyle } from "./projects";
+
+interface Props {
+  locale: Locale;
+  contentId: string;
+}
+
+const { locale, contentId } = Astro.props;
+const copy = getUiCopy(locale).horizonte;
+const home = getHomePageContent(locale);
+const resume = getResumePageContent(locale);
+const outcomes = new Map(home.selectedOutcomes.map((outcome) => [String(outcome.contentId), outcome]));
+const architecture = getLocaleVariant("architecture", locale);
+
+const projects = HORIZONTE_PROJECTS.flatMap((project) => {
+  if (project.contentId === "architecture") {
+    return [{
+      project,
+      slug: "aohys",
+      name: copy.aohysName,
+      status: copy.aohysStatus,
+      href: getLocalizedPath("architecture", locale),
+      outcome: architecture.summary,
+      role: architecture.title,
+      linkLabel: copy.readSystem,
+      liveLinks: [] as { label: string; href: string }[],
+    }];
+  }
+  const outcome = outcomes.get(project.contentId);
+  if (!outcome) return [];
+  const detail = getCaseStudyPageContent(project.contentId, locale);
+  const liveLinks = (detail?.publicEvidence ?? [])
+    .filter((evidence) => /^https?:\/\//.test(evidence.href))
+    .slice(0, 1)
+    .map((evidence) => ({ label: evidence.label, href: evidence.href }));
+  return [{
+    project,
+    slug: project.contentId.replace("case-study:", ""),
+    name: outcome.title,
+    status: outcome.label,
+    href: outcome.path,
+    outcome: outcome.outcome,
+    role: outcome.role,
+    linkLabel: copy.readCase,
+    liveLinks,
+  }];
+});
+
+const first = projects[0]!;
+const second = projects[1] ?? first;
+
+const stageData = {
+  projects: projects.map((entry) => ({
+    id: entry.slug,
+    name: entry.name,
+    status: entry.status,
+    short: entry.project.short[locale],
+    href: entry.href,
+    tint: entry.project.tint,
+    texture: entry.project.texture,
+    size: entry.project.size,
+    focus: entry.project.focus,
+    alt: entry.project.alt[locale],
+    parts: entry.project.parts.map((part) => ({ kind: part.kind, label: part.label[locale] })),
+  })),
+  versions: locale === "es" ? ["v1 · boceto", "v2 · prototipo", "entrega"] : ["v1 · sketch", "v2 · prototype", "shipped"],
+  dots: [HORIZONTE_PASTELS.honey, HORIZONTE_PASTELS.apricot, HORIZONTE_PASTELS.olive],
+};
+const stageJson = JSON.stringify(stageData).replaceAll("<", "\\u003c");
+
+const founder = resume.experience.find((job) => job.company === "AOHYS");
+const career = resume.experience.filter((job) => job !== founder).slice().reverse();
+const periodLabel = (period: string) => period.replace(" - ", " – ");
+---
+
+<section class="hz-hero" aria-labelledby="hz-title" data-home-content-id={contentId} data-hz-hero>
+  <div class="hz-daylight" aria-hidden="true">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" focusable="false">
+      <defs>
+        <filter id="hz-soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="16" /></filter>
+        <path id="hz-leaf" d="M0 0C22 -15 62 -15 86 0C62 15 22 15 0 0Z" />
+      </defs>
+      <g filter="url(#hz-soft)" fill="#473C33">
+        <path d="M-40 120L260 -60L300 -20L0 170Z" />
+        <path d="M-40 330L520 -60L560 -30L0 380Z" opacity="0.8" />
+        <g transform="translate(120 470) rotate(-18)">
+          <path d="M0 0C80 -30 170 -40 260 -20" fill="none" stroke="#473C33" stroke-width="5" />
+          <use href="#hz-leaf" transform="translate(30 -8) rotate(-40)" />
+          <use href="#hz-leaf" transform="translate(60 -14) rotate(30)" />
+          <use href="#hz-leaf" transform="translate(96 -22) rotate(-52)" />
+          <use href="#hz-leaf" transform="translate(130 -26) rotate(24)" />
+          <use href="#hz-leaf" transform="translate(170 -28) rotate(-36)" />
+          <use href="#hz-leaf" transform="translate(204 -26) rotate(38)" />
+          <use href="#hz-leaf" transform="translate(240 -22) rotate(-20) scale(0.8)" />
+        </g>
+      </g>
+    </svg>
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" focusable="false">
+      <g filter="url(#hz-soft)" fill="#473C33">
+        <path d="M1480 520L1060 960L1010 930L1440 470Z" />
+        <g transform="translate(1440 170) rotate(160)">
+          <path d="M0 0C90 -24 190 -30 300 -10" fill="none" stroke="#473C33" stroke-width="5" />
+          <use href="#hz-leaf" transform="translate(40 -10) rotate(-34)" />
+          <use href="#hz-leaf" transform="translate(80 -16) rotate(40)" />
+          <use href="#hz-leaf" transform="translate(124 -22) rotate(-46)" />
+          <use href="#hz-leaf" transform="translate(166 -24) rotate(28)" />
+          <use href="#hz-leaf" transform="translate(212 -22) rotate(-30)" />
+          <use href="#hz-leaf" transform="translate(256 -18) rotate(34) scale(0.85)" />
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hz-intro">
+    <h1 id="hz-title">AOHYS</h1>
+    <p class="hz-byline">
+      <span class="name">{copy.homeTitle}</span>
+      <span class="sep" aria-hidden="true"></span>
+      <span class="role">{copy.role}</span>
+    </p>
+  </div>
+
+  <div
+    class="hz-stage"
+    id="hz-stage"
+    role="tabpanel"
+    tabindex="0"
+    aria-labelledby={`hz-tab-${first.slug}`}
+    aria-describedby="hz-caption"
+    data-hz-stage
+    data-project-stage
+    data-initial="0"
+  >
+    <svg class="hz-orbits" aria-hidden="true" focusable="false" data-hz-orbits>
+      <ellipse class="orbit" />
+      <ellipse class="orbit faint" />
+      <ellipse class="orbit faint" />
+      <circle class="bead" r="3.5" />
+      <circle class="bead" r="2.5" />
+      <circle class="bead" r="2.5" />
+      <path class="connector" />
+      <path class="connector" />
+      <path class="connector" />
+    </svg>
+    <div class="hz-ghosts" aria-hidden="true">
+      <div class="hz-ghost"></div>
+      <div class="hz-ghost"></div>
+      <div class="hz-ghost"></div>
+    </div>
+    <div class="hz-lens" data-gl="off" data-hz-lens>
+      <div class="hz-lens-dom">
+        <div class="layer" style={fitStyle(first.project)}>
+          <img src={first.project.texture} alt={first.project.alt[locale]} data-i="0" fetchpriority="high" decoding="async" />
+        </div>
+        <div class="layer incoming" style={fitStyle(second.project)}>
+          <img src={second.project.texture} alt="" data-i="1" loading="lazy" decoding="async" />
+        </div>
+        <span class="shine" aria-hidden="true"></span>
+      </div>
+      <canvas aria-hidden="true"></canvas>
+    </div>
+    <ol class="hz-parts" aria-label={copy.parts}>
+      {first.project.parts.map((part) => (
+        <li class="hz-part"><span class="dot" aria-hidden="true"></span><span class="text"><span class="name">{part.label[locale]}</span> <span class="ver"></span></span></li>
+      ))}
+    </ol>
+  </div>
+
+  <div class="hz-selector">
+    <div class="hz-tabs" role="tablist" aria-label={copy.tabs} data-hz-tabs>
+      {projects.map((entry, index) => (
+        <button
+          type="button"
+          class="hz-tab"
+          role="tab"
+          id={`hz-tab-${entry.slug}`}
+          aria-controls="hz-stage"
+          aria-selected={index === 0 ? "true" : "false"}
+          tabindex={index === 0 ? 0 : -1}
+          style={`--tab-tint:${entry.project.tint}`}
+          data-content-id={entry.project.contentId}
+        ><span class="tab-dot" aria-hidden="true"></span>{entry.name}</button>
+      ))}
+    </div>
+    <p class="hz-caption" id="hz-caption" data-swap="in" data-hz-caption>
+      <span class="status">{first.name} · {first.status}</span>
+      <span class="purpose">{first.project.short[locale]}</span>
+    </p>
+    <span class="hz-swipe" aria-hidden="true">{copy.swipe}</span>
+    <a class="hz-btn hz-hero-cta" href={first.href} data-vt-from="[data-hz-lens]" data-hz-cta>
+      <span>{copy.cta}</span> <span class="arrow" aria-hidden="true">→</span>
+    </a>
+  </div>
+  <p class="sr-only" aria-live="polite" aria-busy="false" data-hz-announce></p>
+  <script is:inline type="application/json" data-hz-stage-data set:html={stageJson}></script>
+</section>
+
+<section class="hz-section" aria-label={copy.homeTitle}>
+  <p class="hz-statement">{home.deck}</p>
+</section>
+
+<section class="hz-section" id="trabajo" aria-labelledby="hz-work-title">
+  <div class="hz-head">
+    <span class="hz-hairline" aria-hidden="true"></span>
+    <h2 id="hz-work-title">{copy.workHeading}</h2>
+    <p>{copy.workIntro}</p>
+  </div>
+  <ol class="hz-work">
+    {projects.map((entry) => (
+      <li class="hz-work-row" data-content-id={entry.project.contentId}>
+        <div class="w-left">
+          <h3>{entry.name}</h3>
+          <span class="hz-meta">{entry.status}</span>
+        </div>
+        <div class="w-axis">
+          <span class="hz-orb hz-fit" id={`hz-orb-${entry.slug}`} style={`--tint:${entry.project.tint};${fitStyle(entry.project)}`}>
+            <img src={entry.project.texture} alt="" loading="lazy" decoding="async" />
+          </span>
+        </div>
+        <div class="w-right">
+          <p class="purpose">{entry.project.short[locale]}</p>
+          <p class="contrib">{entry.outcome}</p>
+          <div class="links">
+            <a class="hz-link" href={entry.href} data-vt-from={`#hz-orb-${entry.slug}`}>{entry.linkLabel} <span aria-hidden="true">→</span></a>
+            {entry.liveLinks.map((link) => (
+              <a class="hz-link" href={link.href} rel="noopener" target="_blank">{link.label} <span aria-hidden="true">↗</span></a>
+            ))}
+          </div>
+        </div>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<section class="hz-section" id="como-construyo" aria-labelledby="hz-build-title">
+  <div class="hz-head">
+    <span class="hz-hairline" aria-hidden="true"></span>
+    <p>{copy.buildLabel}</p>
+    <h2 id="hz-build-title">{home.architectureHeading}</h2>
+    <p>{home.architectureBody}</p>
+  </div>
+  <ol class="hz-build" style={`--n:${home.architectureStages.length}`} data-hz-inview>
+    {home.architectureStages.map((stage) => (
+      <li><h3>{stage.label}</h3><p>{stage.text}</p></li>
+    ))}
+  </ol>
+  <div class="hz-center-links">
+    <a class="hz-link" href={getLocalizedPath("architecture", locale)}>{copy.buildSystem} <span aria-hidden="true">→</span></a>
+    <a class="hz-link" href={getLocalizedPath("case-study:engineering-practice", locale)}>{copy.buildAgents} <span aria-hidden="true">→</span></a>
+  </div>
+</section>
+
+<section class="hz-section" id="trayectoria" aria-labelledby="hz-career-title">
+  <div class="hz-head">
+    <span class="hz-hairline" aria-hidden="true"></span>
+    <h2 id="hz-career-title">{copy.careerHeading}</h2>
+    <p>{copy.careerIntro}</p>
+  </div>
+  <div class="hz-career">
+    <ol class="hz-career-line" style={`--n:${career.length}`}>
+      {career.map((job) => (
+        <li>
+          <span class="hz-num">{periodLabel(job.period)}</span>
+          <span class="co">{job.company}</span>
+          <span class="ti">{job.role}</span>
+        </li>
+      ))}
+    </ol>
+    {founder && (
+      <div class="hz-founder">
+        <span class="co">{founder.company}</span>
+        <span class="track" aria-hidden="true"></span>
+        <span class="hz-num">{periodLabel(founder.period)}</span>
+        <p class="desc">{founder.role} · {copy.careerParallel}</p>
+      </div>
+    )}
+    <div class="hz-center-links">
+      <a class="hz-link" href={getLocalizedPath("resume", locale)}>{copy.careerMore} <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="hz-section" id="contacto" aria-labelledby="hz-close-title">
+  <div class="hz-head">
+    <span class="hz-hairline" aria-hidden="true"></span>
+    <h2 id="hz-close-title">{copy.closeHeading}</h2>
+    <p>{copy.closeIntro}</p>
+  </div>
+  <div class="hz-paths">
+    <div class="hz-path">
+      <span class="orb" style={`--c:${HORIZONTE_PASTELS.olive}`} aria-hidden="true"></span>
+      <h3>{copy.teamHeading}</h3>
+      <p>{copy.teamBody}</p>
+      <div class="links">
+        <a class="hz-link" href={getLocalizedPath("resume", locale)}>{copy.teamLink} <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+    <div class="hz-path">
+      <span class="orb" style={`--c:${HORIZONTE_PASTELS.apricot}`} aria-hidden="true"></span>
+      <h3>{copy.buildHeading}</h3>
+      <p>{copy.buildBody}</p>
+      <div class="links">
+        <a class="hz-link" href={getLocalizedPath("contact", locale)}>{copy.buildLink} <span aria-hidden="true">→</span></a>
+        <a class="hz-link" href={home.emailHref} data-analytics-event="email_cta_clicked" data-analytics-target="home_close">{home.emailLabel} <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { mountHorizonteStage } from "../../scripts/horizonte-home";
+  import { mountInViewFlags } from "../../scripts/ma-line";
+
+  for (const hero of document.querySelectorAll<HTMLElement>("[data-hz-hero]")) mountHorizonteStage(hero);
+  mountInViewFlags();
+</script>
