@@ -1,0 +1,58 @@
+{
+  "title": "AOHYS · Tres propuestas desde tu trabajo actual",
+  "question": "Firma en movimiento corregida y dos alternativas. Las tres parten del perfil aprobado: cinco productos, trayectoria y decisiones reales de ingeniería.",
+  "options": [
+    {
+      "id": "firma",
+      "label": "Firma en movimiento",
+      "lineage": "La dirección favorita, recuperada desde su imagen",
+      "thesis": "Una presentación personal, un gesto con textura y el trabajo en primer plano.",
+      "materials": [
+        "Trazo oliva con textura real",
+        "Sans humanista de peso ligero",
+        "Imagen de producto a gran escala"
+      ],
+      "viewport": "Nombre y perfil primero; el trazo enlaza la imagen con el caso, las decisiones y la trayectoria.",
+      "risk": "El carácter depende de conservar la calidad y las proporciones del trazo al implementarlo.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "comp": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260918-r4/firma-inicio.png"
+    },
+    {
+      "id": "corte",
+      "label": "Corte editorial",
+      "lineage": "Identidad de exposición y publicación cultural",
+      "thesis": "Tu nombre abre la página; el trabajo ocupa un encuadre amplio y preciso.",
+      "materials": [
+        "Tipografía amplia y precisa",
+        "Recortes de imágenes a sangre",
+        "Blanco con una franja de color por proyecto"
+      ],
+      "viewport": "Nombre a todo el ancho; presentación breve y una gran imagen abren una lectura de contexto, contribución y decisiones.",
+      "risk": "Exige imágenes y recortes muy cuidados para no convertirse en un portfolio editorial genérico.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "comp": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260918-r4/corte-inicio.png"
+    },
+    {
+      "id": "escena",
+      "label": "Escena de producto",
+      "lineage": "Montaje de exposición en un espacio de color",
+      "thesis": "El producto ocupa una escena completa, con tu perfil y tu contribución siempre claros.",
+      "materials": [
+        "Campo miel con luz material",
+        "Una superficie de software protagonista",
+        "Composición espacial de exposición"
+      ],
+      "viewport": "Un campo de color contiene una sola muestra de trabajo; el caso se abre conservando la posición de la imagen.",
+      "risk": "La escena necesita equilibrio para que el efecto espacial no eclipse tu perfil.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "comp": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260918-r4/escena-inicio.png"
+    }
+  ],
+  "reroll": true,
+  "steer": true,
+  "canon": false,
+  "buildPath": {
+    "value": "comp",
+    "toggle": true
+  }
+}

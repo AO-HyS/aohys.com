@@ -1,20 +1,27 @@
 {
   "schemaVersion": 1,
-  "releaseVersion": "1.24.0",
+  "releaseVersion": "1.29.0",
   "mode": "advisory-parent-execution",
+  "activePolicyVersion": "1.3.0",
+  "derivedFromReleaseVersion": "1.24.0",
   "recoveredPolicyVersion": "1.2.0-candidate.3",
   "sourceRepository": "https://github.com/AO-HyS/development-system",
   "recoveryCheckpoint": "86a5910cf6a0615116034ae31e857ec913e2e682",
   "sources": [
     {
       "path": "src/orchestration.mjs",
-      "sha256": "f9ccf4cd988945878afaa5f2fb51b3ef70873034f9ddc99c975d2d25c5501ab4",
-      "recoveredByteExact": true
+      "sha256": "4b3fad1ede07989700990e4a304b3127e686ff9e82a004979090d7a5e5015910",
+      "recoveredByteExact": false
     },
     {
-      "path": "config/1.2.0/orchestration-policy.json",
-      "sha256": "79dc345192fa955ca6b48059b8dc8600d61bfad9662449c32d03bb56619d7b23",
-      "recoveredByteExact": true
+      "path": "cli.mjs",
+      "sha256": "36cb7945ffa0e340f679fdc4cd111d80423cad0deabb9cd7a3482f3539a65217",
+      "recoveredByteExact": false
+    },
+    {
+      "path": "config/1.3.0/orchestration-policy.json",
+      "sha256": "eda4476699c613f88b72ed844a92b94e38b0dccab016b8d94acccb8136f71654",
+      "recoveredByteExact": false
     }
   ],
   "runtimeBoundary": "Only classification and parent decision recording are exposed. Recovered scheduler definitions are inert; no controller or executor is exposed."

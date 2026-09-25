@@ -1,0 +1,104 @@
+{
+  "checked_at": "2026-09-18T20:38:11.406200+00:00",
+  "base": "https://bringing-dealing-sudden-barn.trycloudflare.com",
+  "assets": [
+    {
+      "path": "sobreimpresion/index.html",
+      "status": 200,
+      "bytes": 1380,
+      "sha256": "ac6bd84b82066f7f496fb0b9de8671322071c021b0d3dc5011512ff50bda13a2",
+      "matches_local": true
+    },
+    {
+      "path": "sobreimpresion/style.css",
+      "status": 200,
+      "bytes": 14855,
+      "sha256": "2532e8dea47e338b6e9746675f28fbbe6639d2fff90aafc82af7a065faca14df",
+      "matches_local": true
+    },
+    {
+      "path": "sobreimpresion/app.js",
+      "status": 200,
+      "bytes": 12021,
+      "sha256": "b62048632b55a8710e7b7abf9358c22c24f1aadb7c2e9ee01303649ba9fcc8b9",
+      "matches_local": true
+    },
+    {
+      "path": "shared/casa.jpg",
+      "status": 200,
+      "bytes": 162187,
+      "sha256": "13197f5c636f735f4abf89e0aa2a286eb47a6488538fafac420c6338103040f9",
+      "matches_local": true
+    },
+    {
+      "path": "shared/enterprise.svg",
+      "status": 200,
+      "bytes": 1822,
+      "sha256": "2de4548b1a9a1b9168310bfc3c56196598a8ed9c09ce3db64877eaf61f67d36d",
+      "matches_local": true
+    },
+    {
+      "path": "shared/mona.woff2",
+      "status": 200,
+      "bytes": 39788,
+      "sha256": "a59061e38c5e7e6a00aaa6b6645a220c7d9c530991167f058cc0f8575f5d5844",
+      "matches_local": true
+    },
+    {
+      "path": "shared/aohys.svg",
+      "status": 200,
+      "bytes": 1797,
+      "sha256": "553d50987d42ab9cef71ffb8cd6c29d593555f297529b198b2d6a343e48d04d5",
+      "matches_local": true
+    },
+    {
+      "path": "shared/nutri.png",
+      "status": 200,
+      "bytes": 143417,
+      "sha256": "5148c6b60b38dd00f46b86161ba5fcc3ca83df622b8a54de9785de0aca32a819",
+      "matches_local": true
+    },
+    {
+      "path": "shared/barber.png",
+      "status": 200,
+      "bytes": 211296,
+      "sha256": "c8c2447798f4e155af4b626f8814cc9c963baef6f82ca651030bd0a0b6c5c850",
+      "matches_local": true
+    },
+    {
+      "path": "shared/eteria.jpg",
+      "status": 200,
+      "bytes": 102464,
+      "sha256": "ce41514ab728f2b6d8060f5d97d08511225aba5b846cec9ff04dc4a01e075714",
+      "matches_local": true
+    },
+    {
+      "path": "shared/content.js",
+      "status": 200,
+      "bytes": 8111,
+      "sha256": "c55f789db22f9cf822e2c3db3a45a82f6f49ee7558701b0bd8b11564cd1e067d",
+      "matches_local": true
+    },
+    {
+      "path": "firma/index.html",
+      "status": 200,
+      "bytes": 1406,
+      "sha256": "0ccc85f7eef588c826866a2581539447944128580b64812a39579adc6e5ea628",
+      "matches_local": true
+    },
+    {
+      "path": "firma/style.css",
+      "status": 200,
+      "bytes": 16245,
+      "sha256": "bfbac138e2df2636481d81c96cd9c0cec15db4e060c74df8b28071c507583e3f",
+      "matches_local": true
+    },
+    {
+      "path": "firma/app.js",
+      "status": 200,
+      "bytes": 12756,
+      "sha256": "40dda5fb30a22306388841a5c07f9dabf3eecf6df6e375315c01640ea462dd55",
+      "matches_local": true
+    }
+  ]
+}

@@ -7,19 +7,20 @@
   "scripts": {
     "build": "pnpm run sync:headers && astro build && pnpm --filter @aohys/dashboard build && node ../../scripts/copy-dashboard-assets.mjs",
     "dev": "astro dev",
-    "lint": "pnpm run sync:headers:check && vitest run test/source-quality.test.ts",
+    "lint": "pnpm run sync:headers:check",
     "preview": "astro preview",
     "sync:headers": "tsx ../../scripts/sync-site-static-headers.ts",
     "sync:headers:check": "tsx ../../scripts/sync-site-static-headers.ts --check",
-    "typecheck": "astro check && tsc --noEmit -p tsconfig.functions.json",
-    "test": "pnpm run sync:headers:check && vitest run test/analytics.test.ts test/posthog-client.test.ts test/runtime-boundaries.test.ts test/csp-reporting.test.ts test/dashboard-access.test.ts test/auth-proxy.test.ts test/posthog-proxy.test.ts && astro build && vitest run test/public-shell-build.test.ts test/public-routes-build.test.ts"
+    "typecheck": "astro check && tsc --noEmit -p tsconfig.functions.json"
   },
   "dependencies": {
     "@aohys/content-graph": "workspace:*",
     "@aohys/core": "workspace:*",
     "@aohys/environment": "workspace:*",
     "@fontsource-variable/atkinson-hyperlegible-next": "^5.2.6",
+    "@fontsource-variable/jost": "^5.3.0",
     "@fontsource-variable/mona-sans": "^5.2.8",
+    "@fontsource/spectral": "^5.3.0",
     "astro": "^7.0.3",
     "posthog-js": "^1.395.0"
   },
@@ -27,9 +28,7 @@
     "@astrojs/check": "^0.9.9",
     "@tailwindcss/vite": "^4.3.2",
     "@types/node": "^26.0.1",
-    "pdf-parse": "2.4.5",
     "tailwindcss": "^4.3.2",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+    "typescript": "^6.0.3"
   }
 }

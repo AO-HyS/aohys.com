@@ -20,10 +20,10 @@ This runbook is local and provider-independent. It handles the `work-archive-eag
 
 1. Restore lazy loading for every work-archive image after the first card.
 2. Run `pnpm performance:measure` to produce a fresh build measurement.
-3. Run `pnpm performance:test` to verify the semantic assertion.
+3. Run `pnpm performance:check` to verify the semantic assertion.
 
 ## Verify the fix
 
-The fix is verified only when the new measurement reports `workArchiveEagerImages <= 1` and the performance tests pass. A source edit, a green build without the metric, or a provider acknowledgement alone does not close the alert.
+The fix is verified only when the new measurement reports `workArchiveEagerImages <= 1` and `pnpm performance:check` passes. A source edit, a green build without the metric, or a provider acknowledgement alone does not close the alert.
 
 The reproducible local drill is `pnpm observability:alert-drill`; it verifies the committed evidence at `docs/observability/evidence/im-11-alert-drill.v1.json` without sending data to PostHog, Convex, or another provider.

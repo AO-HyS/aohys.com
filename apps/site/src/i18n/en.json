@@ -164,9 +164,18 @@
         }
       ],
       "serviceSignals": [
-        { "items": ["www", "app", "mobile"], "emphasisIndex": -1 },
-        { "items": ["PM", "DES", "AOHYS", "ENG", "QA"], "emphasisIndex": 2 },
-        { "items": ["now", "AI · DATA · CLOUD", "next"], "emphasisIndex": 1 }
+        {
+          "items": ["www", "app", "mobile"],
+          "emphasisIndex": -1
+        },
+        {
+          "items": ["PM", "DES", "AOHYS", "ENG", "QA"],
+          "emphasisIndex": 2
+        },
+        {
+          "items": ["now", "AI · DATA · CLOUD", "next"],
+          "emphasisIndex": 1
+        }
       ],
       "architectureHeroNodes": [
         {
@@ -421,5 +430,43 @@
     "whatsappLabel": "WhatsApp Me",
     "fallbackText": "Prefer direct contact?",
     "honeypotLabel": "Website"
+  },
+  "horizonte": {
+    "homeTitle": "Alejandro Ortiz Corro",
+    "role": "full stack development",
+    "tabs": "Products",
+    "parts": "Product parts",
+    "swipe": "Swipe the lens to change product",
+    "cta": "See this work",
+    "aohysName": "AOHYS website",
+    "aohysStatus": "Public website and Development System",
+    "workHeading": "Five products, five real jobs",
+    "workIntro": "Each one started with something concrete someone needed to get done. Here is what it solves and what I built.",
+    "readCase": "Read the case",
+    "readSystem": "See how it is built",
+    "buildLabel": "How I build",
+    "buildSystem": "My Development System",
+    "buildAgents": "How I work with coding agents",
+    "careerHeading": "Career",
+    "careerIntro": "On product teams since 2018; building my own with AOHYS since 2015.",
+    "careerMore": "See career and resume",
+    "careerParallel": "in parallel",
+    "closeHeading": "Two ways to start",
+    "closeIntro": "Pick the one that looks like what you need.",
+    "teamHeading": "Join your team",
+    "teamBody": "Strong frontend, full stack when the product needs it. I like understanding the business before writing code.",
+    "teamLink": "See career and resume",
+    "buildHeading": "Build your product",
+    "buildBody": "If you have a process that lives in notebooks, messages or spreadsheets today, let’s talk about turning it into a system.",
+    "buildLink": "Write to me",
+    "back": "Back to work",
+    "next": "Next work",
+    "scrollCue": "Follow the story",
+    "caseLinks": "Public links",
+    "otherWork": "More work",
+    "experience": "Experience",
+    "download": "Download PDF resume",
+    "direct": "Direct contact",
+    "footerLine": "Alejandro Ortiz Corro · full stack development"
   }
 }

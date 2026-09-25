@@ -1,0 +1,14 @@
+{
+  "title": "Firma en movimiento - correccion v2",
+  "scope": "direction-exploration",
+  "approved": false,
+  "status": "proposal",
+  "source_tool": "tools.image_gen__imagegen",
+  "native_source_path": "/Users/corrortiz/.codex/generated_images/01a0b2cb-e37b-7433-8e2d-2fbcb271a3a1/exec-5330b89b-ee0f-4500-b24f-09b89ad91803.png",
+  "prompt_file": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260917-r3/moving-signature-v2.prompt.txt",
+  "prompt": "Preserve all text, layout, palette, the real Central Belleza image, and the asymmetric connection into work. Reduce the olive gesture's visual weight by about 45%; remove the broad upper right sweep so there is ONE slimmer continuous stroke from near the surname to the upper/right boundary of the project aperture. Keep a confident organic pigment contour but no bulky ribbon that is a third focal object. Text remains untouched with no overlapping contour. Remove the standalone short olive rule above The Barber Central. Keep an intentional color accent, airy white and one main CTA; no other changes.",
+  "referenced_image_paths": [
+    "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260917-r3/moving-signature.png"
+  ],
+  "image_path": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260917-r3/moving-signature-v2.png"
+}

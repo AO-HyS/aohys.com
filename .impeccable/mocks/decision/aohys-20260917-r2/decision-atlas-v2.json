@@ -1,0 +1,46 @@
+{
+  "title": "Atlas de decisiones — software correction",
+  "kind": "direction-exploration",
+  "approved": false,
+  "seed": "90569fd1",
+  "reroll": 1,
+  "revision": 2,
+  "candidate": 6,
+  "sourceTool": "tools.image_gen__imagegen",
+  "operation": "edit",
+  "referenceImagePath": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260917-r2/decision-atlas.png",
+  "originalOutputPath": "/Users/corrortiz/.codex/generated_images/01a0b0d9-deb9-7943-9d24-db6cac1ac0c7/exec-164906ba-3107-4842-b193-e69aba1744aa.png",
+  "imagePath": ".impeccable/mocks/decision/aohys-20260917-r2/decision-atlas-v2.png",
+  "promptPath": ".impeccable/mocks/decision/aohys-20260917-r2/decision-atlas-v2.prompt.txt",
+  "width": 1536,
+  "height": 1024,
+  "promptEmbedded": true,
+  "generationCountThisRevision": 1,
+  "inspection": {
+    "method": "Native output and local view_image inspection; dimensions checked with sips",
+    "observedCorrections": [
+      "Broad stone buildings and landscape terrain replaced by white folded planes and large honey, olive and apricot areas.",
+      "Experience, Data and Delivery foreground now depicts software interfaces, data and delivery symbols rather than physical rooms or people.",
+      "All six case names remain readable on neutral white areas in a continuous asymmetric composition.",
+      "Exact frontend specialty sentence and Explore my work CTA are visible near author.",
+      "NutriPlan depicts anonymous clinical patient worklist, appointments, care team and roles; food and meal imagery removed.",
+      "ETERIA depicts proposal creation with small garden table context; Barber depicts calendar and staff navigation.",
+      "Casa Roca depicts a website inquiry form with a contextual landscape image.",
+      "Enterprise depicts sanitized support worklist; AOHYS depicts public portfolio and content graph.",
+      "Large bottom Content graph visibly branches to EN / ES routes, Metadata and Case studies with caption One content model, two languages and adjacent Explore the architecture link."
+    ],
+    "remainingDeviations": [
+      "Enterprise does not include the explicitly requested Request / Review / Resolve flow labels; only the sanitized support worklist is shown.",
+      "Barber shows a calendar and Staff navigation but separate staff availability semantics are not conclusively depicted.",
+      "AOHYS miniature retains an unapproved generated Software for real problems phrase and a small landscape crop; these are illustrative only.",
+      "Tiny generated UI labels are conceptual microcopy and not actual product proof."
+    ],
+    "unproven": [
+      "Independent critic confirmation pending.",
+      "No implementation or browser workflow in this asset-only packet.",
+      "Responsive transitions, keyboard focus, nested-layer dismissal, state retention and motion remain unexercised."
+    ]
+  },
+  "status": "rejected-by-user",
+  "userFeedback": "Too much information at once; page purpose and premise are unclear. Anatomy looks better; Atlas communicates the topic better. Neither selected."
+}

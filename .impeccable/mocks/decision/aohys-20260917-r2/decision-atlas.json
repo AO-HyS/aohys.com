@@ -1,0 +1,35 @@
+{
+  "title": "Atlas de decisiones",
+  "kind": "direction-exploration",
+  "approved": false,
+  "seed": "90569fd1",
+  "reroll": 1,
+  "candidate": 6,
+  "sourceTool": "tools.image_gen__imagegen",
+  "originalOutputPath": "/Users/corrortiz/.codex/generated_images/01a0b0d9-deb9-7943-9d24-db6cac1ac0c7/exec-ae242925-3491-4f0d-8021-6c76817077ae.png",
+  "imagePath": ".impeccable/mocks/decision/aohys-20260917-r2/decision-atlas.png",
+  "promptPath": ".impeccable/mocks/decision/aohys-20260917-r2/decision-atlas.prompt.txt",
+  "width": 1536,
+  "height": 1024,
+  "promptEmbedded": true,
+  "generationCount": 1,
+  "inspection": {
+    "method": "Native output followed by local view_image inspection",
+    "allSixProjectLabelsLegible": true,
+    "architectureLayersLegible": ["Experience", "Data", "Delivery"],
+    "architectureLinkLegible": true,
+    "observations": [
+      "All six cases are visible within the first viewport with direct labels.",
+      "The asymmetrical folded atlas occupies most of the viewport and shows conceptual software interfaces, an event layout, a hospitality landscape, a sanitized systems diagram and an AOHYS site illustration.",
+      "Foreground colored cutaway makes architecture visually substantial.",
+      "Provisional wordmark, personal identification, exact main sentence and navigation are visible.",
+      "Concept imagery disclaimer is present along the bottom edge."
+    ],
+    "limitations": [
+      "Natural stone and paper rendering is more beige than the requested pure-white, confidently colored balance; foreground architecture provides the strongest palette expression.",
+      "Generated secondary decorative slogans and conceptual UI microcopy are illustrative and are not approved public copy or product evidence.",
+      "Static direction comp only: responsive behavior, keyboard focus, nested-layer dismissal, state retention and motion transitions were not exercised.",
+      "No browser verification or implementation was part of this asset-only packet."
+    ]
+  }
+}

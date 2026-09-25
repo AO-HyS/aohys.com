@@ -1,0 +1,10 @@
+{
+  "prompt": "Keep every element on the LEFT unchanged. Transform the ENTIRE RIGHT HAND PROJECT GROUP (screenshot AND title/category/link) uniformly to 75% of its current size, move it to the right and DOWN so the screenshot top-left is around x825 y275. White space must clearly separate groups. Screenshot approx620pxwide; project title smaller than role on left. Do not reflow or enlarge screenshot contents; SCALE THE WHOLE GROUP AS ONE. Preserve singleproject+profile exactly.",
+  "native_output_path": "/Users/corrortiz/.codex/generated_images/01a0b2cc-157b-7cc0-a775-f779fd645a96/exec-307627b7-b494-4183-a0cc-f15e4efe8668.png",
+  "source_tool": "tools.image_gen__imagegen",
+  "referenced_image_paths": [
+    "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260917-r3/classic-v2.png"
+  ],
+  "approved": false,
+  "scope": "direction-exploration"
+}

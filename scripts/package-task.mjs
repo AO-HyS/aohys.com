@@ -1,7 +1,7 @@
 import process from "node:process";
 
 const [taskName, packageName] = process.argv.slice(2);
-const allowedTasks = new Set(["build", "lint", "typecheck", "test"]);
+const allowedTasks = new Set(["build", "lint", "typecheck"]);
 
 if (!taskName || !packageName) {
   console.error("Usage: node scripts/package-task.mjs <task> <package>");

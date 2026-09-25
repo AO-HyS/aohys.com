@@ -21,7 +21,7 @@ function uri(asset, type) {
 
 /** @param {Record<string, any>} asset @param {string} label */
 function shot(asset, label) {
-  return `<figure class="evidence-shot" data-shot="${label === "Antes" || label === "Before" ? "before" : "after"}"><figcaption><strong>${label}</strong><span>${esc(asset.revision)}${asset.capturedAt ? ` · ${esc(asset.capturedAt)}` : ""}</span></figcaption><button class="shot-expand" type="button" data-shot-expand aria-label="${label}: ${esc(asset.alt)}"><img src="${uri(asset, "image")}" alt="${esc(asset.alt)}" loading="lazy"><span aria-hidden="true">↗</span></button></figure>`;
+  return `<figure class="evidence-shot" data-shot="${label === "Antes" || label === "Before" ? "before" : "after"}"><figcaption><strong>${label}</strong><span>${esc(asset.revision)}${asset.capturedAt ? ` · ${esc(asset.capturedAt)}` : ""}</span></figcaption><button class="shot-expand" type="button" data-shot-expand aria-label="${label}: ${esc(asset.alt)}"><img src="${uri(asset, "image")}" alt="${esc(asset.alt)}" loading="lazy"><span aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 5h10v10M19 5 6 18"/></svg></span></button></figure>`;
 }
 
 /** @param {Record<string, any>} model @param {string} language */
@@ -41,7 +41,7 @@ export function renderEvidence(model, language) {
   const recordings = (evidence.recordings ?? [])
     .map(
       (/** @type {Record<string, any>} */ item) =>
-        `<figure class="evidence-recording"><figcaption><span class="recording-symbol" aria-hidden="true">▶</span><div><h3>${esc(item.title)}</h3><p>${esc(item.description)}</p></div></figcaption><video controls playsinline preload="metadata" aria-label="${esc(item.title)}"${item.poster ? ` poster="${uri(item.poster, "image")}"` : ""}><source src="${uri(item.asset, "video")}" type="${esc(item.asset.mimeType)}">${es ? "Tu navegador no puede reproducir este video." : "Your browser cannot play this video."}</video><p class="recording-note">${es ? "Grabación del recorrido" : "Recorded walkthrough"} · ${esc(item.asset.revision)}</p>${item.transcript ? `<details class="recording-transcript"><summary>${es ? "Leer el recorrido del video" : "Read the video walkthrough"}</summary><p>${esc(item.transcript)}</p></details>` : ""}</figure>`,
+        `<figure class="evidence-recording"><figcaption><span class="recording-symbol" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg></span><div><h3>${esc(item.title)}</h3><p>${esc(item.description)}</p></div></figcaption><video controls playsinline preload="metadata" aria-label="${esc(item.title)}"${item.poster ? ` poster="${uri(item.poster, "image")}"` : ""}><source src="${uri(item.asset, "video")}" type="${esc(item.asset.mimeType)}">${es ? "Tu navegador no puede reproducir este video." : "Your browser cannot play this video."}</video><p class="recording-note">${es ? "Grabación del recorrido" : "Recorded walkthrough"} · ${esc(item.asset.revision)}</p>${item.transcript ? `<details class="recording-transcript"><summary>${es ? "Leer el recorrido del video" : "Read the video walkthrough"}</summary><p>${esc(item.transcript)}</p></details>` : ""}</figure>`,
     )
     .join("");
   const gaps = (evidence.gaps ?? [])

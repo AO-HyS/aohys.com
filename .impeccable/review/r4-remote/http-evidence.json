@@ -1,0 +1,72 @@
+[
+  {
+    "path": "/",
+    "status": 200,
+    "bytes": 78938
+  },
+  {
+    "path": "/firma/",
+    "status": 200,
+    "bytes": 7857
+  },
+  {
+    "path": "/corte/",
+    "status": 200,
+    "bytes": 7838
+  },
+  {
+    "path": "/escena/",
+    "status": 200,
+    "bytes": 7866
+  },
+  {
+    "path": "/review.css",
+    "status": 200,
+    "bytes": 2329
+  },
+  {
+    "path": "/assets/firma-inicio.png",
+    "status": 200,
+    "matchesLocal": true
+  },
+  {
+    "path": "/assets/firma-interiores.png",
+    "status": 200,
+    "matchesLocal": true
+  },
+  {
+    "path": "/img/0",
+    "status": 200,
+    "matchesCurrentComp": true
+  },
+  {
+    "path": "/assets/corte-inicio.png",
+    "status": 200,
+    "matchesLocal": true
+  },
+  {
+    "path": "/assets/corte-interiores.png",
+    "status": 200,
+    "matchesLocal": true
+  },
+  {
+    "path": "/img/1",
+    "status": 200,
+    "matchesCurrentComp": true
+  },
+  {
+    "path": "/assets/escena-inicio.png",
+    "status": 200,
+    "matchesLocal": true
+  },
+  {
+    "path": "/assets/escena-interiores.png",
+    "status": 200,
+    "matchesLocal": true
+  },
+  {
+    "path": "/img/2",
+    "status": 200,
+    "matchesCurrentComp": true
+  }
+]

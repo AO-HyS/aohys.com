@@ -1,0 +1,43 @@
+{
+  "url": "https://campbell-latex-marine-reviews.trycloudflare.com",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "matches": true,
+      "disposition": null
+    },
+    {
+      "path": "/img/0",
+      "status": 200,
+      "matches": true,
+      "disposition": null
+    },
+    {
+      "path": "/img/1",
+      "status": 200,
+      "matches": true,
+      "disposition": null
+    },
+    {
+      "path": "/img/2",
+      "status": 200,
+      "matches": true,
+      "disposition": null
+    },
+    {
+      "path": "/download/aohys-diseno-r3.html",
+      "status": 200,
+      "matches": true,
+      "disposition": "attachment; filename=\"aohys-diseno-r3.html\""
+    },
+    {
+      "path": "heartbeat",
+      "status": 204
+    },
+    {
+      "path": "/.env",
+      "status": 404
+    }
+  ]
+}

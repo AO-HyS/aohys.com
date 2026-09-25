@@ -1,253 +1,80 @@
-# Development System Contract 1.24.0
+# Development contract 1.31.0
 
-## RÁPIDO → BIEN → BARATO
+This profile supersedes mandatory governance as the default. Historical contracts remain immutable.
 
-Priority order: fastest delivery of the complete usable functionality, then
-correctness, then lowest cost. Measure elapsed time through corrections and
-required delivery, not just first output. Choose capable fast workers and spend
-more on a model or an early prototype when it is expected to finish the
-requested result sooner. Preserve accepted behavior, authorization and data
-boundaries. Optional process is not a new release gate.
+## Advisory development profile
 
-The model selected in the starting conversation is the orchestrator and is never
-replaced because the roster recommends another model. The parent chooses agents;
-the editable roster and native Codex TOMLs provide requested defaults, not
-runtime evidence or an enforced provider chain. Verify the actual model and
-tools at dispatch. DeepSeek/OpenCode may use available models, and a Codex
-parent may choose available GPT/Go tools. Every role retains
-its actual host capabilities and permission boundaries. In the SWE-2 experiment,
-all descendants, including capable critics and browser roles, stay within the
-SWE family with no Codex or Go fallback. Assign design, visual review and
-Computer Use only to roles with the actual vision or browser capability needed;
-if the selected family lacks it, report the gap rather than silently substituting
-another family. General defaults may recommend Astra for visual work, but an
-explicit lane family takes precedence.
+New sessions request Sol 6 High at normal speed; keep the already selected parent.
+For nontrivial work, Luna 6 High with requested priority collects bounded source
+facts before Astra 6 XHigh authors the implementation plan. A distinct fresh
+Astra 6 XHigh reviews requirements, evidence and the plan before writers start.
+Sol 6 Medium handles general writing; Luna 6 High priority handles exact and
+mechanical packets. Independent Astra 6 XHigh reviews the integrated result.
+Tiny deterministic edits proceed directly with relevant repository checks.
 
-## Instruction precedence and follow-through
+Follow coding-orchestration/references/jev-advisory.md. Jev advises at useful
+routing, decision and correction boundaries. The parent decides, dispatches with
+native host tools, integrates and verifies. No Jev per-tool or Stop gate is active.
+An unavailable or malformed classification records failure; the parent can
+continue authorized work with an explicit rationale. Advice never grants
+permission, proves execution, or substitutes for independent review and evidence.
 
-Current user instructions and retained authorization take precedence over skill
-guidelines and historical planning text. Preserve platform security requirements
-and applicable repository protections. An old spec approval gate does not reopen
-a decision already settled by the user. Load only relevant skill references.
-If a skill actually blocks work, cite its exact file and instruction, explain
-why it applies, and distinguish that requirement from your interpretation.
-Complete independent authorized work while a genuinely missing answer is pending.
+Keep one writer per surface; parallelize only disjoint eligible work. Preserve
+historical runs and unresolved ownership without treating them as new-run gates.
+Do not resume or silently revalidate an older governed run under this profile.
+The obsolete automatic controller remains disabled. OpenCode is not a default.
 
-## Context and completion
+A roster requests model, effort and speed; actual host/provider metadata establishes
+observed identity and tier. Report missing metadata as unknown. No silent fallback.
+Astra planning and review stay XHigh. Optional coordinator effort changes use the
+native host and retain actual observations; they require no Jev permission token
+and do not establish cache reuse without provider evidence.
 
-Skill descriptions name a specific operation. Load only the relevant workflow
-and supporting references; ordinary edits do not require a full repository map,
-a new grill or a generated report. The selected execution method is sufficient:
-workflow aliases do not create additional coordinators or fixed agent counts.
-Define the requested behavior, relevant verification and authorized delivery
-endpoint; continue through corrections instead of pausing after a first draft.
-The repository adapter and local skills retain product architecture, commands,
-release policy and design references without hardcoding the parent model.
+For nontrivial delivery, provide a readable HTML report using the installed
+working-backwards report helper, including behavior passed/failed/not reached,
+elapsed time, evidence and material gaps. Preserve the field-notebook presentation,
+margin questions, browser drafts and revisioned batch submission. Markdown is
+supplementary. Serve sanitized report assets through the authorized temporary
+tunnel; state its actual URL and availability/expiry. Keep secrets and private
+transcripts outside its served directory. A report is not acceptance evidence.
 
-## Execution and review
+## Installation and recovery
 
-Use direct tools for deterministic searches, commands and evidence collection.
-Use the selected orchestrator and parent-assigned roles for feature orchestration
-and review. Use lower effort for explicitly simple work; specialists retain
-their measured effort. Active host evidence establishes the effective effort.
-Tie T3 CLI workers to their owning turn through `run-worker`; ending or losing
-the turn stops the process group. Other hosts use native attached cancellation.
-Delegate a bounded code task when another worker can reduce delivery time.
-The parent resolves the provider once; selected workers execute rather than
-restarting the fallback chain. Use compact task packets and relevant source
-pointers; full-history inheritance needs a concrete reason.
-Give each writer its repository, revision, ownership, intended behavior,
-focused checks and stop condition. Preserve useful work on a fallback and
-never restart an exhausted provider at every step. Batch independent reads and tool calls. Overlap independent CI and useful local
-work when it shortens delivery; serialize edits and commands that mutate the
-same build state. Different writers may run
-concurrently only on explicitly disjoint ownership.
+The manifest explicitly selects advisory-parent-execution. Setup removes only managed Jev handlers, preserves unrelated guards and records a reversible transition. Reinstall retains its original rollback boundary. Rollback preflights backup bytes and hook drift before writes. Old runs remain historical without granting new execution or acceptance.
 
-Simplification, behavior-first evidence, test-value review, correction and
-objective verification remain logical responsibilities. They do not require
-a new agent or conversation for each phase. Ordinary work uses one bounded
-execution and parent review. Structured planning/review is reserved for observed
-risk, dependencies or an explicit request. UX, DX and AX guide the smallest useful
-change; they do not create audit stages. The orchestrator reviews ordinary
-worker output. An independent capable reviewer assists on observed complex risk or an explicitly requested
-independent review. A correction phase with no findings is an evidenced no-op;
-after edits, review the delta and unresolved risks rather than restarting all
-exploration. Never mark a critical finding resolved merely because a timeout
-or budget elapsed. Preserve the host-bound correction and authorization checks.
+## HTML report continuity
 
-Keep authorization for implementation, installation, commit, push, PR, merge,
-release, production and paid services distinct. One explicit user instruction
-may authorize several of those operations; retain it instead of requesting
-the same permission again. An audit or a planner result grants none of them.
+The field-notebook reader and margin questions from source fb6b5dd968281cd1a5c5563b940047102982a2fa are retained, with integration corrections documented separately. Browser drafts, revisioned batch submissions, file-open copy/download, maps, charts, media, themes and offline assets remain. Opening a report grants no implementation or release authority.
 
-## Product evidence
+## Repository preparation correction
 
-Inspect the affected real flow as soon as it exists. A role with actual browser
-capability may execute Computer Use within its authorized plan; the orchestrator
-retains product judgment. Neutral delegated execution still receives only its
-authorized execution plan; private rubrics and host authority remain separate.
-Recording is a tool operation, not a reason to add another model.
-Respect repository-specific browser mechanisms and authenticated roles.
+Initialize and normalize generate the advisory repository adapter. Product-specific lifecycle extensions survive normalization; shared lifecycle policy comes from this version. The paired skill catalog is 0.50.0.
 
-Choose the quickest adequate verification for the changed behavior. New tests
-are optional and must catch a named failure that leads to correction. Static
-checks, real product flows and reviewers have distinct coverage; test counts
-do not demonstrate delivery.
-Protect authorization, data boundaries, idempotency and loss prevention.
-Do not add implementation-mirroring tests or use line counts, test counts,
-styling scores or a green workflow as proof of a usable product. Broad suites
-require an applicable repository requirement or explicit user instruction.
-Once affected checks and required gates pass, continue to the authorized delivery.
-Repeat only for a relevant edit, failure, or unresolved concern. Reuse evidence
-only while the tested candidate, command, inputs and environment remain applicable;
-never bypass required hooks or CI to save time. Preserve test exit codes when
-summarizing logs; a successful output filter does not prove a passing check.
 
-## Skills and distribution
+## Automated tests and evidence
 
-Catalog 0.43.0 retains the Jakub interface skills, make-interfaces-feel-better,
-Show-me and PR Lens with exact upstream commits and hashes. Impeccable remains
-the design-direction reference when installed. Choose the relevant specialty;
-do not stack every design skill on every change. Use visual explanations when
-they shorten review. Rendering stays local unless publication is authorized.
+By default, do not create, modify, delete, generate, or run automated tests
+unless the user explicitly asks. Preserve existing test files and CI protections.
+Use applicable build, type, lint, static validation, or real behavior observation
+as required by the task. Do not make claims from test counts. Report a concrete
+behavior gap and its smallest useful observation without adding a test suite.
 
-Ordinary development closure uses a concise final response. Generate a private
-completion document when requested or needed for a durable evidence package. On-demand review and spec
-explanations use the same `document` command and presentation. Show-me selects
-the useful visual, PR Lens supplies static SVG maps, and explicit measurements
-use HTML/CSS bars. Preserve the complete source packet for regeneration.
-Check the actual delivered file with authorized Computer Use when visual
-acceptance applies. A fixture preview does not certify the delivered document.
-Generation creates no workflow or implementation authority. The delivery
-command validates files and hashes before recording its recap step. Normal
-conversation closure relies on the loaded skill calling the command; there is
-no universal background turn-close hook. Working Backwards retains its workflow
-presentation and authority boundaries.
+## Headroom transport evidence
 
-The installable npm-format package is distributed as a versioned GitHub
-release asset. Its provenance records the canonical commit and packaged file
-hashes; the package manager's lockfile binds the downloaded tarball integrity.
-This is not a claim of a cryptographic publisher signature. Installation never
-writes HOME from a package lifecycle hook. The explicit `setup` command installs
-the contract and skill catalog together. Product repositories pin one tooling
-dependency and expose `pnpm ds`; changing model policy does not itself require
-deploying their applications.
+Headroom is an explicit same-account per-invocation option. Keep the existing
+Codex binary and CODEX_HOME, preserve caller arguments, and request lossless,
+cache-conservative operation. Provider cache reuse can still change request
+bytes; do not promise byte identity. Keep native usage from the parent and every
+actual descendant separate from proxy counters, and separate requested model or
+tier from observed identity. Use launch/completion events instead of polling.
+Proxy counters and token deltas are descriptive; without complete controlled
+evidence, do not claim Headroom caused savings.
 
-All previously published artifacts and manifests remain immutable rollback
-targets. HOME is generated state. Verify package installation and changes in an
-isolated HOME before applying an authorized installation to the operator.
 
-Measure first useful evidence, accepted delivery, provider/CI/tool waits,
-handoff failures, user corrections, and incremental provider usage. Keep
-unknown costs unknown and do not add overlapping agent time to elapsed time.
+## T3 app-server launch correction
 
-## Visual delivery evidence
+Place the Headroom provider overrides after the app-server subcommand. Codex applies command-line configuration in this position when T3 supplies its own -c settings. Ordinary exec argument ordering remains unchanged. This corrects launch configuration; transport coverage and provider usage still require observed evidence.
 
-Completion reports attach authentic before/after screenshots and an actual recording for UI or backend changes with a visible outcome. Capture the baseline before implementation; preserve revision and capture context. Missing media stays explicit. Purely nonvisual work declares its reason and uses behavioral evidence. The shared document embeds media locally; presence never establishes verification or deployment authority. Follow flow-implement and working-backwards/report-reference.md.
+## Claude Code harness
 
-## Visual acceptance before final evidence
-
-Use the full pinned Impeccable skill and `design-quality`. After implementing
-and finishing the chosen Impeccable playbook, the orchestrator assigns an
-independent visual-capable critic. A distinct finish reviewer counts; self-review
-does not. Resolve its concrete findings before recording final delivery evidence
-from that candidate. Working screenshots are diagnostic, not final delivery.
-Review only affected states again after corrections. A grounded numerical score
-may support visible criteria; it does not create a threshold loop or prove user
-approval. Start with one or two passes, evaluate convergence and change the
-hypothesis when named gaps stall.
-Follow `evidence-capture` for stable native tool batches and media integrity. An
-assigned bounded worker may prepare scripts or existing media, without browser
-authority unless its role has that capability. Use representative flows plus
-distinct risks unless the user asks for exhaustive coverage; reuse evidence only
-when candidate/state match.
-
-## Durable design direction
-
-Use `design-direction` for visual exploration and approved-design handoffs. Its
-reusable method is available without an article link; project briefs retain the
-selected identity, current corrections and approved references. Keep those briefs
-discoverable through project pointers and include them in implementation packets.
-Approved references must be retrievable and visible from the spec and relevant
-tickets in a fresh thread. Follow design-direction's handoff reference; inspect
-existing uploads before claiming them missing. Composition criteria govern
-hierarchy and density even when generated text and data are illustrative.
-
-Independent critique covers the requested composition, not only clipping or a
-bounded correction list. Material deviations block visual acceptance. Compare a
-representative screen early for a new shared language. Record the final visible
-outcome inside the delivered clip and inspect its actual end. A rejected candidate
-is an incomplete attempt, not an accepted delivery with a measured completion time.
-Existing Impeccable, independent critique and evidence roles remain in place.
-
-Visual and mixed grills use one interview. `drive-development-flow` recognizes
-natural intent without requiring skill names; `design-direction` leads visual
-decisions and `grill-with-docs` provides questions, HTML and answer recovery.
-Classify brief statements as confirmed constraints, verified product facts or
-provisional agent proposals. Preserve identity separately from composition,
-hierarchy and interaction.
-
-For an open surface in an existing identity, use Impeccable's matching procedure
-and retain the observable order candidates → concept-seed → Impeccable decision
-page → human selection. That page is the only runtime comparison/selection
-surface; the questionnaire may show references but does not choose a direction.
-Equalize data, task, states and finish between alternatives. Three requested
-alternatives means exactly three materially different options. A
-rejected set records the literal correction and revises the hypothesis without
-forcing a selection. A selected direction resumes its recorded phase; a bounded
-style correction remains a refinement.
-
-## Implementation and orchestration continuity
-
-Use flow-implement to carry state/data invariants into stateful changes and
-verify meaningful transitions. A passing check that also passed the broken
-behavior does not establish the claimed fix. Independent code review remains
-useful when it catches these defects; it is not replaced by visual review.
-
-For multi-step or resumed work, coding-orchestration's execution-continuity
-reference owns startup, compact current state, recovery and outcome reconciliation.
-Check usable account/organization and host capabilities early. Use a bounded
-browser-QA pass only when the assigned role has the required browser capability
-and the host supports the handoff; keep simple work direct and one driver per
-session. Retry after relevant
-new evidence, preserve useful output and complete the authorized delivery surface.
-Required repo checks remain; broader reruns need an applicable gate or actual
-change/failure. Update superseded completion claims after rejection.
-
-## Exact execution across models
-
-Exact instructions are the default for implementation and delegated work. The
-parent resolves decisions once and supplies a small ordered packet with the
-objective, exact root/revision, owned paths, settled decisions, actions/commands,
-expected observations, mandatory checks, stop conditions and evidence receipt.
-Outcome delegation is an explicit exception with a recorded reason and the same
-acceptance bar. See coding-orchestration/references/execution-contract.md for
-the single packet protocol, correction and model-handoff requirements.
-
-Keep the execution method independent of model identity. Within authorized
-provider and quota limits, reduce task size, serialize dependent steps and add
-examples or checkpoints when a model needs more guidance. Never lower acceptance
-or silently substitute providers to obtain a pass. A model without a required
-capability reports the gap; identical quality across all models is not promised.
-
-On interruption, preserve the candidate and applicable evidence, terminate the
-old writer before ownership transfer, and hand off completed/pending steps,
-failures, actual or unknown model identity, capabilities and retained authority.
-Correct the first mismatch in a bounded packet. Repeat only checks affected by
-changes or a required gate; implementation completion is not accepted behavior.
-
-## Default development profile
-
-For a new session use Sol High. Keep the model already selected for this
-conversation as its orchestrator. The parent plans, integrates, resolves
-conflicts and owns final acceptance. Use Jev as an adviser at useful packet,
-decision, correction and review boundaries; use DeepSeek V4.1 Flash High for
-bounded exact writing and Astra XHigh for native research and independent
-reviews. Every native descendant explicitly uses Astra XHigh; Luna and silent
-model/provider fallback are excluded from this profile.
-
-For non-trivial implementation or review, follow the installed
-`coding-orchestration/references/jev-advisory.md` recipe once. Tiny direct work
-uses ordinary tools. Preserve one writer per surface, serialize dependencies
-and receive native/process completion events. The parent judges real behavior
-and closes relevant checks and corrections before delivery.
+Claude Code is a native harness. Catalog 0.50.0 links every catalogued skill into .claude/skills from its installed copy. ~/.claude/CLAUDE.md is an operator link to the shared ~/.codex/AGENTS.md, which carries a short Claude Code host section. The destructive-command guard covers Codex hooks and Claude Code user settings. Headroom per-invocation launch is available for Claude Code. Plugins, MCP servers and other Claude settings remain operator configuration outside this manifest. File installation does not prove discovery, loading or behavioral influence.

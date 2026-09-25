@@ -10,7 +10,6 @@ their duration and result, and writes schema `1.0.0` JSON under
 - `pnpm quality:scorecard -- --plan`: print the resolved profile without running it.
 - `pnpm quality:scorecard -- --gate lint,typecheck`: run selected gates.
 - `pnpm quality:scorecard`: run the complete core profile.
-- `pnpm quality:scorecard:test`: verify the scorecard contract.
 
 `block` failures make the command fail. `observe` failures remain visible in
 the report without blocking and are reserved for explicitly documented

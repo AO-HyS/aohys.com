@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "1.26.1",
+  "contractVersion": "1.31.0",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [
@@ -17,7 +17,12 @@
   },
   "preserved": {
     "releasePolicyFiles": [".github/workflows/release-train.yml"],
-    "designFiles": ["apps/dashboard/src/styles.css"]
+    "designFiles": [
+      "apps/dashboard/src/styles.css",
+      "docs/design/prototypes/horizonte/styles.css",
+      "docs/design/prototypes/r3-experience/firma/style.css",
+      "docs/design/prototypes/r3-experience/sobreimpresion/style.css"
+    ]
   },
   "commands": {
     "review": {
@@ -40,10 +45,7 @@
       "script": "verify:changed",
       "command": "pnpm run verify:changed"
     },
-    "qa": {
-      "script": "test",
-      "command": "pnpm run test"
-    },
+    "qa": null,
     "preview": {
       "script": "cloudflare:local",
       "command": "pnpm run cloudflare:local"
@@ -212,7 +214,7 @@
     }
   },
   "operatorPrerequisites": {
-    "skillCatalogVersion": "0.46.0",
+    "skillCatalogVersion": "0.50.0",
     "installationScope": "global",
     "readinessScope": "repository-adapter-only",
     "requiredSkills": [

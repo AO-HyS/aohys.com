@@ -535,6 +535,9 @@ export function buildTechnicalReaderModel(input) {
         text(documentInput.type) ||
         "Untitled technical document",
       summary,
+      verdict: text(documentInput.verdict) || text(frontmatter.verdict) || null,
+      reference:
+        text(documentInput.reference) || text(frontmatter.reference) || null,
       priority:
         text(documentInput.priority) || text(frontmatter.priority) || null,
       profile,
@@ -552,6 +555,40 @@ export function buildTechnicalReaderModel(input) {
       repository,
       sourceFile: text(documentInput.sourceFile) || null,
       sourceHref: text(documentInput.sourceHref) || null,
+      signals: (Array.isArray(documentInput.signals)
+        ? documentInput.signals
+        : []
+      )
+        .slice(0, 4)
+        .map((entry) => {
+          const item = record(entry);
+          return {
+            tone: ["ok", "warn", "risk"].includes(text(item.tone))
+              ? text(item.tone)
+              : "ok",
+            label: text(item.label),
+            text: text(item.text),
+          };
+        })
+        .filter((item) => item.label || item.text),
+      findings: (Array.isArray(documentInput.findings)
+        ? documentInput.findings
+        : []
+      )
+        .slice(0, 12)
+        .map((entry) => {
+          const item = record(entry);
+          return {
+            title: text(item.title),
+            detail: text(item.detail),
+            status: ["verified", "estimated", "pending"].includes(
+              text(item.status),
+            )
+              ? text(item.status)
+              : null,
+          };
+        })
+        .filter((item) => item.title),
     },
     artifacts,
     outline: parsed.outline,

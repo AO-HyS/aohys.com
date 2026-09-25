@@ -164,9 +164,18 @@
         }
       ],
       "serviceSignals": [
-        { "items": ["www", "app", "mobile"], "emphasisIndex": -1 },
-        { "items": ["PM", "DES", "AOHYS", "ENG", "QA"], "emphasisIndex": 2 },
-        { "items": ["now", "AI · DATA · CLOUD", "next"], "emphasisIndex": 1 }
+        {
+          "items": ["www", "app", "mobile"],
+          "emphasisIndex": -1
+        },
+        {
+          "items": ["PM", "DES", "AOHYS", "ENG", "QA"],
+          "emphasisIndex": 2
+        },
+        {
+          "items": ["now", "AI · DATA · CLOUD", "next"],
+          "emphasisIndex": 1
+        }
       ],
       "architectureHeroNodes": [
         {
@@ -421,5 +430,43 @@
     "whatsappLabel": "Escríbeme por WhatsApp",
     "fallbackText": "¿Prefieres contacto directo?",
     "honeypotLabel": "Sitio web"
+  },
+  "horizonte": {
+    "homeTitle": "Alejandro Ortiz Corro",
+    "role": "full stack development",
+    "tabs": "Productos",
+    "parts": "Partes del producto",
+    "swipe": "Desliza la lente para cambiar de producto",
+    "cta": "Conoce este trabajo",
+    "aohysName": "Sitio AOHYS",
+    "aohysStatus": "Sitio público y Development System",
+    "workHeading": "Cinco productos, cinco trabajos reales",
+    "workIntro": "Cada uno empezó con algo concreto que alguien necesitaba resolver. Esto es lo que resuelve y lo que construí.",
+    "readCase": "Ver caso",
+    "readSystem": "Ver cómo está hecho",
+    "buildLabel": "Cómo construyo",
+    "buildSystem": "Mi Development System",
+    "buildAgents": "Cómo trabajo con agentes",
+    "careerHeading": "Trayectoria",
+    "careerIntro": "Desde 2018 en equipos de producto; desde 2015, construyendo los míos con AOHYS.",
+    "careerMore": "Ver trayectoria y CV",
+    "careerParallel": "en paralelo",
+    "closeHeading": "Dos caminos para empezar",
+    "closeIntro": "Elige el que se parezca a lo que necesitas.",
+    "teamHeading": "Sumarme a tu equipo",
+    "teamBody": "Frontend fuerte y full stack cuando el producto lo pide. Me gusta entender el negocio antes de escribir código.",
+    "teamLink": "Ver trayectoria y CV",
+    "buildHeading": "Construir tu producto",
+    "buildBody": "Si tienes un proceso que hoy vive en libretas, mensajes u hojas de cálculo, platiquemos cómo convertirlo en un sistema.",
+    "buildLink": "Escríbeme",
+    "back": "Volver al trabajo",
+    "next": "Siguiente trabajo",
+    "scrollCue": "Sigue el recorrido",
+    "caseLinks": "Enlaces públicos",
+    "otherWork": "Más trabajo",
+    "experience": "Experiencia",
+    "download": "Descargar CV en PDF",
+    "direct": "Contacto directo",
+    "footerLine": "Alejandro Ortiz Corro · full stack development"
   }
 }

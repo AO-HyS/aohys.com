@@ -1,0 +1,8 @@
+{
+  "prompt": "Edit this AOHYS homepage design comp in one bounded correction. Preserve the EXACT profile-above/work-below composition, all Spanish copy, name, full-stack role, navigation, brown pill CTA, centered single large Central Belleza interface, first-person clarity and 1536x1024 desktop frame. Keep the authored flat overprint world and pinned white #FFFFFF, brown #473C33, honey #FEC868, olive #ABC270, apricot #FDA769 palette. Make only these corrections: reduce the thick dark outline around the project screenshot to a delicate 1px or at most 2px line, with no hard shadow. Simplify the full-width lower color stage so honey clearly occupies about 85 percent of visible colored area, apricot only a narrow region near the right edge, olive a narrow overlap junction. Use flat saturated printed color, no orange gradient shading. Keep the large precise curved boundary and intentional geometric overprint overlap; do not turn it into generic rounded cards. Color should support the real work and the calm white upper profile. Do not add, remove or reword any text or add more projects, metrics, diagrams, controls or decorative shapes.",
+  "native_source": "/Users/corrortiz/.codex/generated_images/01a0a96f-a87d-7510-97c3-fbfc17af45a3/exec-dacb3d58-35a3-4911-b800-af83e36194c6.png",
+  "tool": "image_gen.imagegen",
+  "approved": false,
+  "scope": "direction-exploration",
+  "revision": "bounded correction"
+}

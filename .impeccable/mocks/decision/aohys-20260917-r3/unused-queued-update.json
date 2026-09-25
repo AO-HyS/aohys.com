@@ -1,0 +1,171 @@
+{
+  "title": "AOHYS · Primero, Alejandro",
+  "question": "La premisa ya está resuelta: ingeniero full-stack, con especial fortaleza en frontend. Estas dos propuestas presentan primero tu perfil y después el trabajo. ¿Cuál se siente más tuya?",
+  "options": [
+    {
+      "id": "overprint",
+      "label": "Sobreimpresión",
+      "lineage": "Registro de impresión a dos tintas",
+      "thesis": "Primero Alejandro; una sola imagen abre el recorrido por su trabajo.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": [
+        "Color en planos amplios",
+        "Tipografía sans de trazo preciso",
+        "Una imagen de proyecto"
+      ],
+      "viewport": "Perfil en la mitad superior; una única muestra de trabajo ocupa la inferior.",
+      "risk": "El efecto de impresión debe acompañar al software, sin parecer una marca de diseño gráfico.",
+      "comp": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260917-r3/overprint-v2.png",
+      "raised": [
+        {
+          "from": "Escritorio de trabajo",
+          "raise": "El estado activo del proyecto siempre será inequívoco."
+        },
+        {
+          "from": "Un origen, varios recorridos",
+          "raise": "Mantener un solo caso nítido, sin evidencia en competencia."
+        },
+        {
+          "from": "Planos que abren el trabajo",
+          "raise": "El cambio de proyecto será reversible y conservará el contexto."
+        },
+        {
+          "from": "Perfil y una cinta de color",
+          "raise": "Concentrar el color en una sola región para dar descanso al texto."
+        },
+        {
+          "from": "Forma en transformación",
+          "raise": "Una vista completa debe existir también sin animación."
+        },
+        {
+          "from": "Huella del trabajo",
+          "raise": "Cada imagen conserva un nombre y una contribución legibles."
+        }
+      ]
+    },
+    {
+      "id": "moving-signature",
+      "label": "Firma en movimiento",
+      "lineage": "Identidad de títulos cinéticos",
+      "thesis": "Tu nombre y un trazo continuo conducen del perfil a los proyectos.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": [
+        "Tipografía humanista",
+        "Un único gesto de color",
+        "Imagen de producto en gran formato"
+      ],
+      "viewport": "Una presentación personal y un gesto continuo que enmarca el primer proyecto.",
+      "risk": "La entrada por nombre es familiar; su carácter depende del trazo y de una transición cuidada.",
+      "kicker": "IMPECCABLE’S PICK",
+      "comp": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260917-r3/moving-signature-v2.png"
+    },
+    {
+      "id": "one-bit",
+      "label": "Escritorio de trabajo",
+      "lineage": "medium-native-one-bit-desktop",
+      "thesis": "Perfil y casos en ventanas de un escritorio de dos tonos.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Ventanas de contornos precisos"],
+      "viewport": "Perfil en una ventana y un caso activo a su lado.",
+      "risk": "El lenguaje retro y sus controles desplazan la identidad profesional.",
+      "verdict": "declined",
+      "case": "Pierde identificación y claridad: pide interpretar un escritorio antes de conocer a Alejandro.",
+      "kept": "El estado activo del proyecto siempre será inequívoco.",
+      "hero": "https://impeccable.style/worlds/cards/medium-native-one-bit-desktop-hero.webp"
+    },
+    {
+      "id": "event-display",
+      "label": "Un origen, varios recorridos",
+      "lineage": "scientific-notation-particle-detector-event-display",
+      "thesis": "Un origen personal conecta trayectorias hacia los casos.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Trazos concéntricos en la paleta propia"],
+      "viewport": "Nombre en el centro y recorridos hacia cada trabajo.",
+      "risk": "Los recorridos técnicos vuelven a saturar la entrada.",
+      "verdict": "declined",
+      "case": "Pierde ambos ejes: representa una red que el visitante debe descifrar.",
+      "kept": "Mantener un solo caso nítido, sin evidencia en competencia.",
+      "hero": "https://impeccable.style/worlds/cards/scientific-notation-particle-detector-event-display-hero.webp"
+    },
+    {
+      "id": "sliding-planes",
+      "label": "Planos que abren el trabajo",
+      "lineage": "design-canon-rietveld-sliding-house",
+      "thesis": "Planos deslizantes revelan perfil, trabajo y decisiones.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Planos blancos con bordes miel, oliva y albaricoque"],
+      "viewport": "Perfil entre planos que abren una vista de producto.",
+      "risk": "Los paneles ocultan información y su mecánica exige aprendizaje.",
+      "verdict": "declined",
+      "case": "Pierde ambos ejes: la mecánica espacial pesa más que la presentación y el acceso al trabajo.",
+      "kept": "El cambio de proyecto será reversible y conservará el contexto.",
+      "hero": "https://impeccable.style/worlds/cards/design-canon-rietveld-sliding-house-hero.webp"
+    },
+    {
+      "id": "prospectus",
+      "label": "Perfil y una cinta de color",
+      "lineage": "civic-bureau-prospectus-late-modern",
+      "thesis": "Perfil a la izquierda y una cinta material a la derecha.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Sans sobria y cinta en colores AOHYS"],
+      "viewport": "Biografía junto a una gran cinta, con evidencia debajo.",
+      "risk": "Repite un hero corporativo intercambiable y la cinta no aporta evidencia.",
+      "verdict": "declined",
+      "case": "Pierde ambos ejes: reduce la persona a otro hero corporativo y retrasa el trabajo.",
+      "kept": "Concentrar el color en una sola región para dar descanso al texto.",
+      "hero": "https://impeccable.style/worlds/cards/civic-bureau-prospectus-late-modern-hero.webp"
+    },
+    {
+      "id": "drawcord",
+      "label": "Forma en transformación",
+      "lineage": "textiles-weave-drape-fashion-drawcord-transforming-cape",
+      "thesis": "Una superficie cambia de forma para revelar un producto.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Pliegues y un control de transformación"],
+      "viewport": "Perfil junto a un volumen que se despliega.",
+      "risk": "Se asocia con indumentaria y la evidencia depende de una acción previa.",
+      "verdict": "declined",
+      "case": "Pierde ambos ejes: su objeto domina la lectura y exige manipularlo para ver software.",
+      "kept": "Una vista completa debe existir también sin animación.",
+      "hero": "https://impeccable.style/worlds/cards/textiles-weave-drape-fashion-drawcord-transforming-cape-hero.webp"
+    },
+    {
+      "id": "shadow-bazaar",
+      "label": "Huella del trabajo",
+      "lineage": "dream-surreal-impossible-worlds-moon-shadow-bazaar",
+      "thesis": "Cada proyecto aparece por su silueta y luego se revela.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Sombras suaves sobre blanco"],
+      "viewport": "Perfil y una silueta que descubre un caso.",
+      "risk": "La metáfora oculta el software y cambia el tono a un mundo fantástico.",
+      "verdict": "declined",
+      "case": "Pierde ambos ejes: no identifica el oficio y esconde la evidencia inicial.",
+      "kept": "Cada imagen conserva un nombre y una contribución legibles.",
+      "hero": "https://impeccable.style/worlds/cards/dream-surreal-impossible-worlds-moon-shadow-bazaar-hero.webp"
+    }
+  ],
+  "reroll": {
+    "registers": ["safer", "bolder"]
+  },
+  "buildPath": {
+    "value": "comp",
+    "toggle": true
+  },
+  "canon": true,
+  "canonCard": {
+    "id": "classic",
+    "label": "Perfil y proyecto",
+    "lineage": "Portfolio profesional convencional",
+    "thesis": "Una presentación personal seguida de una muestra amplia de trabajo.",
+    "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+    "materials": [
+      "Blanco y acentos de color",
+      "Sans humanista",
+      "Una captura de producto"
+    ],
+    "viewport": "Perfil a la izquierda y una captura a la derecha; después, el resto del trabajo.",
+    "risk": "Muy fácil de reconocer, con menos identidad propia.",
+    "comp": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260917-r3/classic-v3.png"
+  },
+  "steer": true
+}

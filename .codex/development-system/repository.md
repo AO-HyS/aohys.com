@@ -1,6 +1,6 @@
 # Development System repository adapter
 
-Contract version: `1.26.1`
+Contract version: `1.31.0`
 Product: `aohys.com`
 Harness: `codex`
 
@@ -23,14 +23,16 @@ require another grill. Use `coding-orchestration` or an already selected
 `orchestrate-work` method for useful delegation, integration and verification.
 A bounded worker executes its packet without restarting parent routing.
 
-For non-trivial implementation, recover every authorized ticket linked by the
-spec and activate the installed governed Jev recipe. New sessions default to Sol
-High; fast researchers gather facts, Astra XHigh authors the plan, and a
-different fresh Astra reviews it. Bounded exact writing uses Flash High. Jev
-checks each lifecycle boundary; deterministic permits enforce the observed
-route, current evidence, dependencies and ownership. Use only supported host
-adapters and report capability gaps. Backend and other nonvisual features follow
-the same criterion coverage and acceptance chain.
+For nontrivial implementation, follow the installed
+`coding-orchestration/references/jev-advisory.md` recipe. Keep the selected
+parent. New sessions request Sol 6 High; Luna 6 High priority gathers bounded
+facts, Astra 6 XHigh plans, and a different fresh Astra 6 XHigh reviews the
+plan. Sol 6 Medium writes general packets, Luna 6 High priority writes exact
+packets, and an independent Astra 6 XHigh reviews the integrated result. Jev
+advises at useful decisions; the parent dispatches through native host tools.
+No per-tool or Stop gate is active. Preserve observed model identity and report
+capability gaps. Backend and other nonvisual features need the same criterion
+coverage and acceptance chain.
 
 Explicit discovery or definition can use `$wayfinder`, `$grill-with-docs`,
 `$working-backwards`, `$to-spec` or `$to-tickets` when available. Ordinary work
@@ -58,7 +60,7 @@ policy and report missing behavioral evidence to the parent before widening it.
 Use the local construction recipes and existing components for screens, forms
 and authorized server operations. Simplification, review of test value,
 correction and objective verification are responsibilities. Tiny direct work
-stays with the parent; governed features retain their independent Astra plan
+stays with the parent; nontrivial features retain their independent Astra plan
 and final reviews. Select additional specialists by affected risk and preserve
 the parent's final judgment. Reject weakened assertions
 and unsupported green-check claims. File counts and style scores are not gates.
@@ -129,7 +131,7 @@ Legacy validation alias
 
 QA
 
-- pnpm run test
+- Not configured; repository owner action required.
 
 Preview
 
@@ -137,7 +139,7 @@ Preview
 
 ## Installation and final report
 
-Synchronize global skill catalog `0.46.0` with the pinned
+Synchronize global skill catalog `0.50.0` with the pinned
 Development System package. Installation and structural readiness do not prove
 live loading; T3 and other hosts need their own observations. Ordinary completion
 uses a concise outcome, checks, remaining gaps and usable links. Generate a

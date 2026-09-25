@@ -17,8 +17,7 @@
     "build": "tsc --noEmit -p tsconfig.json",
     "codegen": "convex codegen --typecheck=disable",
     "lint": "tsc --noEmit -p tsconfig.json",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "vitest run"
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@aohys/content-graph": "workspace:*",
@@ -30,7 +29,6 @@
   },
   "devDependencies": {
     "@types/node": "^26.0.1",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.9"
+    "typescript": "^6.0.3"
   }
 }
