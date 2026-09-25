@@ -244,6 +244,7 @@ packages:
   "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.31.0/aohys-development-system-1.31.0.tgz":
     resolution:
       {
+        integrity: sha512-mCmw4TANuT0CWuiVgy6CsHHze5yu9B9CZ/lm/DXUSt/vBTwqyAlolcFidiDJszo/goXLle3GBiHLdlmmvTsD4A==,
         tarball: https://github.com/AO-HyS/development-system/releases/download/v1.31.0/aohys-development-system-1.31.0.tgz,
       }
     version: 1.31.0
