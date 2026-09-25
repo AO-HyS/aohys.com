@@ -1,43 +1,34 @@
 ---
-import { fitStyle, type HorizonteProject } from "./projects";
+import { fitStyle, type LensPhoto } from "./projects";
 
-/* A living lens for interior pages: an animated illustration (scene) or a set of product images it cycles. */
+/* A living lens for interior pages: one photograph drifting under the glass, or several it cycles through. */
 interface Props {
-  scene?: "resume" | "practice" | "contact" | "privacy" | "architecture";
-  projects?: HorizonteProject[];
+  photos: LensPhoto[];
   locale: "en" | "es";
-  label: string;
+  label?: string;
   class?: string;
 }
 
-const { scene, projects = [], locale, label, class: className } = Astro.props;
-const first = projects[0];
-const images = projects.map((project) => ({
-  src: project.texture,
-  size: project.size,
-  focus: project.focus,
-  tint: project.tint,
-  alt: project.alt[locale],
+const { photos, locale, label, class: className } = Astro.props;
+const first = photos[0];
+const images = photos.map((photo) => ({
+  src: photo.texture,
+  size: photo.size,
+  focus: photo.focus,
+  tint: photo.tint,
+  alt: photo.alt[locale],
 }));
-const sceneTints: Record<string, string> = {
-  resume: "#D6E2B4",
-  practice: "#E7E6B0",
-  contact: "#FCE3A6",
-  privacy: "#FDD2B1",
-  architecture: "#FCE3A6",
-};
-const tint = scene ? sceneTints[scene] : first?.tint;
+const accessibleName = label ?? first?.alt[locale] ?? "";
 ---
 
 <div
   class:list={["ma-lens", className]}
   role="img"
-  aria-label={label}
+  aria-label={accessibleName}
   data-ma-lens
   data-gl="off"
-  data-scene={scene}
-  data-images={images.length ? JSON.stringify(images) : undefined}
-  style={tint ? `--tint:${tint}` : undefined}
+  data-images={JSON.stringify(images)}
+  style={first ? `--tint:${first.tint}` : undefined}
 >
   <div class="ma-lens-dom">
     {first && (

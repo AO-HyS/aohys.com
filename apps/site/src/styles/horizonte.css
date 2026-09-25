@@ -2223,12 +2223,6 @@ body {
   inset: 0;
   overflow: hidden;
 }
-.ma-lens-dom canvas.art {
-  position: absolute;
-  inset: -3%;
-  width: 106%;
-  height: 106%;
-}
 .ma-lens-dom .shine {
   position: absolute;
   inset: 0;
