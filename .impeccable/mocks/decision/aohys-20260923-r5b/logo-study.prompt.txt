@@ -1,0 +1,13 @@
+Use case: logo-brand
+Asset type: identity specimen board, landscape 1536 x 1024
+Primary request: Create a high-craft, ownable AOHYS logo system on a WHITE page. White must cover at least 70 percent of the image. The only logo word is the exact lowercase string “aohys”. Create custom connected letterforms: one folded continuous stroke passes through a, o, h, y, s, suggesting a requirement becoming a product. It should be distinctive and legible at large and at small header size.
+Scene/backdrop: Flat white page, crisp printed design-specimen layout with a fine brown #473C33 grid and ample breathing room.
+Subject: Show one large dark brown #473C33 custom lowercase “aohys” wordmark prominently at top; below show a simple compact monogram built from its continuous fold; below show small header lockup reading exactly “aohys”; bottom show two equal solid color swatches, one HONEY #FEC868 with brown logo, one BROWN #473C33 with white logo.
+Style/medium: Refined custom letterform specimen, excellent optical balance, precise vector-like edges, expressive but restrained editorial craft.
+Composition/framing: Clear modular column grid and central axis, explicit labels only if legibly spelled; strong alignment and generous spacing. Flat diagram-like presentation.
+Lighting/mood: Uniform flat print, absolutely no lighting or shading.
+Color palette: Only pure neutral WHITE #FFFFFF, HONEY #FEC868, OLIVE #ABC270, APRICOT #FDA769 and BROWN INK #473C33. Large solid color areas only.
+Materials/textures: None, perfectly flat solid fills.
+Text (verbatim): Only the logo text “aohys”. Do not add other words.
+Constraints: The page background is plain white; no background field beyond white. Color swatches are flat, bounded rectangles. Logo always has high contrast. Make the letterforms look custom-drawn, never like typed generic sans.
+Avoid: black, charcoal, dark page, brown page, gradients, glows, shadows, blur, 3D, photography, mockups, extra words, labels, metrics, badges, random decoration, watermark.

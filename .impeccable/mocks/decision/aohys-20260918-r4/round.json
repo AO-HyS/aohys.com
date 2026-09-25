@@ -1,0 +1,12 @@
+{
+  "seed": "90569fd1",
+  "reroll": 3,
+  "assignedIndex": 3,
+  "assignedCandidate": "Corte editorial",
+  "userPinned": "Firma en movimiento",
+  "presented": ["Firma en movimiento", "Corte editorial", "Escena de producto"],
+  "countConstraint": "User explicitly requests favorite corrected plus two alternatives; exactly three cards, no fourth canon",
+  "sourceRevision": 1,
+  "sourceHash": "df43b3ffede38adaa040b13d5d5808770068f9778ed3d739900172fe74a7feb4",
+  "approved": false
+}

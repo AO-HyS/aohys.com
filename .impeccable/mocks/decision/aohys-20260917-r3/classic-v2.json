@@ -1,0 +1,10 @@
+{
+  "prompt": "Preserve ALL profile copy/nav/CTA/palette and conventional clean humanist character. Preserve the distinctive conventional 2-column world. Keep left profile and one screenshot right; crop the Central Belleza project screenshot to its first hero only, removing its second content section, and reduce the screenshot to approximately 680x400 pixels, x790/y245. Move The Barber Central title, Producto para negocios de belleza descriptor, and Ver proyecto link directly BELOW the screenshot, aligned x790 with a gap of 24–32 pixels, so label and image form ONE work group. Remove the detached bottom-left project block. Remove Trabajo seleccionado eyebrow and decorative divider dashes. Preserve white ground, honey CTA, subtle frame, all text relaxed medium weight. No competing images. Maintain 1536x1024 webcomp, name first then work.",
+  "native_output_path": "/Users/corrortiz/.codex/generated_images/01a0b2cc-157b-7cc0-a775-f779fd645a96/exec-1f0c79c0-04e1-4f14-8469-0d4170994dbb.png",
+  "source_tool": "tools.image_gen__imagegen",
+  "referenced_image_paths": [
+    "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260917-r3/classic.png"
+  ],
+  "approved": false,
+  "scope": "direction-exploration"
+}

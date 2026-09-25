@@ -1,0 +1,14 @@
+{
+  "approved": false,
+  "kind": "direction-comp",
+  "prompt": "Edit this exact website composition. Preserve ALL of the current layout, artwork, typography, brush texture, image scale, content, colors and spacing. ONLY adjust the top navigation: use Trabajo / Arquitectura / CV / Contacto and add a small 'EN / ES' language switch at the far right, ES active. Fit it by modestly reducing the navigation gaps and moving its start left. Do not move the name or brush. No other changes. Return the whole same 1536x1024 composition.\n",
+  "promptFile": ".impeccable/mocks/decision/aohys-20260918-r4/firma-inicio.correction.prompt.txt",
+  "sourceProfileRevision": 1,
+  "sourceProfileHash": "df43b3ffede38adaa040b13d5d5808770068f9778ed3d739900172fe74a7feb4",
+  "renderedUI": "illustrative-static-comp",
+  "notValidated": [
+    "motion",
+    "responsive-implementation",
+    "live-product-pricing"
+  ]
+}

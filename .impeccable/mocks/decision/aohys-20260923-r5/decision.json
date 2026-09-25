@@ -1,0 +1,166 @@
+{
+  "title": "AOHYS · Ronda 5: estructura nueva, desde tu trabajo",
+  "question": "Tres direcciones que cambian la estructura, no sólo el acomodo. Todas: simetría y proporción, logros y productos al frente, sin fotos ni video, movimiento construido en código. Elige una, ajusta o pide otra mano.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Espécimen de sistema",
+      "kicker": "THE ROLL",
+      "lineage": "Hojas de espécimen de sistemas de diseño y catálogos de componentes",
+      "thesis": "Tu trabajo presentado como un espécimen: las piezas reales de cada producto, funcionando, en una retícula perfectamente proporcionada.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": [
+        "Retícula modular simétrica",
+        "Componentes reales reconstruidos en código",
+        "Tinta marrón con campos miel y oliva"
+      ],
+      "viewport": "Encabezado centrado con nombre y «full stack development»; debajo, una lámina simétrica de cinco módulos donde cada producto muestra una pieza viva (un horario reservándose, un plan que se arma) junto a su logro.",
+      "risk": "Si los módulos se ven como una biblioteca de componentes, se pierde el relato del logro.",
+      "raised": [
+        {
+          "from": "challenger-darkroom",
+          "raise": "Cada módulo emerge de boceto a estado final en una sola revelación continua."
+        },
+        {
+          "from": "challenger-hypercard",
+          "raise": "Módulos de proporción fija y enlace propio; volver conserva el recorrido."
+        },
+        {
+          "from": "challenger-quiz",
+          "raise": "El recorrido termina en una conclusión clara: las dos vías de colaboración."
+        },
+        {
+          "from": "challenger-plankton",
+          "raise": "Recorrer estados deja una huella breve del camino que siguió el usuario del producto."
+        },
+        {
+          "from": "challenger-forge",
+          "raise": "Cada cambio de estado es una sola transformación decisiva, sin efectos sueltos."
+        }
+      ],
+      "comp": ".impeccable/mocks/decision/aohys-20260923-r5/assigned-especimen.png"
+    },
+    {
+      "id": "model-pick",
+      "label": "Espejo requisito / producto",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Documentación de proceso: del requisito escrito a la interfaz entregada",
+      "thesis": "Un eje central divide la página: a un lado la necesidad del negocio, al otro lo que construiste; el eje es tu contribución.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": [
+        "Composición axial en espejo",
+        "Requisito tipográfico frente a interfaz real",
+        "Pliegue animado en el eje"
+      ],
+      "viewport": "Nombre y rol centrados sobre el eje; a la izquierda «Una barbería necesita reservas y WhatsApp sin perder el día», a la derecha la interfaz resultante; el movimiento pliega una en otra.",
+      "risk": "Es la idea más cercana a cómo presentarías un caso en una entrevista; puede sentirse familiar y cercana a un diagrama.",
+      "comp": ".impeccable/mocks/decision/aohys-20260923-r5/pick-espejo.png"
+    },
+    {
+      "id": "challenger-cabinet",
+      "label": "Gabinete en perspectiva invertida",
+      "verdict": "competitive",
+      "lineage": "Chaekgeori: biombos coreanos de estantes pintados en perspectiva invertida",
+      "thesis": "Un gabinete simétrico de cinco compartimentos que se abre hacia el visitante; cada compartimento guarda los objetos reales de un producto.",
+      "palette": ["#FFFFFF", "#473C33", "#ABC270", "#FEC868", "#FDA769"],
+      "materials": [
+        "Estantes con perspectiva invertida en CSS 3D",
+        "Objetos de producto delineados, sin sombras",
+        "Inventario ordenado"
+      ],
+      "viewport": "El gabinete ocupa el centro con nombre y rol arriba; seleccionar un compartimento lo ensancha hacia el frente y abre la evidencia del producto.",
+      "case": "Funde bien: los productos se vuelven compartimentos y la simetría es nativa; pierde en identificación porque la metáfora pide un momento para leerse.",
+      "risk": "La perspectiva invertida puede sentirse extraña o decorativa si los objetos no son interfaces reconocibles.",
+      "comp": ".impeccable/mocks/decision/aohys-20260923-r5/challenger-gabinete.png",
+      "hero": "https://impeccable.style/worlds/cards/graphic-worlds-publishing-chaekgeori-reverse-perspective-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/graphic-worlds-publishing-chaekgeori-reverse-perspective.webp"
+    },
+    {
+      "id": "challenger-darkroom",
+      "label": "Cuarto oscuro",
+      "verdict": "declined",
+      "lineage": "Laboratorio fotográfico bajo luz de seguridad ámbar",
+      "thesis": "Las imágenes aparecen lentamente en la bandeja de revelado.",
+      "palette": ["#C77A1E", "#2A2622", "#E9E4DA"],
+      "materials": ["Luz ámbar", "Plata húmeda"],
+      "viewport": "Estaciones de revelado con el trabajo emergiendo.",
+      "case": "Pierde en ambos ejes: un evaluador no se identifica con el revelado y la espera retrasa la evidencia.",
+      "risk": "Oscuridad y lentitud contrarias a una lectura rápida.",
+      "kept": "Revelación continua de cada módulo.",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-darkroom-safelight-bay-hero.webp"
+    },
+    {
+      "id": "challenger-hypercard",
+      "label": "Pila HyperCard",
+      "verdict": "declined",
+      "lineage": "Pilas de tarjetas de un bit enlazadas por botones",
+      "thesis": "Tarjetas enlazadas donde leer y crear son la misma herramienta.",
+      "palette": ["#000000", "#FFFFFF"],
+      "materials": ["Un bit", "Tramado"],
+      "viewport": "Una tarjeta fija con botones pintados.",
+      "case": "Pierde en ambos ejes: elimina la paleta confirmada y se lee como nostalgia.",
+      "risk": "Sin color, contradice la identidad fijada.",
+      "kept": "Proporciones fijas y cada módulo con enlace propio.",
+      "hero": "https://impeccable.style/worlds/cards/medium-native-hypercard-stack-shoebox-hero.webp"
+    },
+    {
+      "id": "challenger-quiz",
+      "label": "Quiz de revista juvenil",
+      "verdict": "declined",
+      "lineage": "Revistas juveniles de los noventa",
+      "thesis": "Casillas, collage y un veredicto al final.",
+      "palette": ["#FF4FA3", "#B6FF3B", "#FFFFFF"],
+      "materials": ["Semitono", "Tinta de gel"],
+      "viewport": "Doble página de quiz con veredicto.",
+      "case": "Pierde en ambos ejes: tono juvenil incompatible con una evaluación profesional.",
+      "risk": "Colores y tono fuera de la identidad.",
+      "kept": "Un cierre que se gana recorriendo la página.",
+      "hero": "https://impeccable.style/worlds/cards/pop-culture-shelf-teen-magazine-quiz-hero.webp"
+    },
+    {
+      "id": "challenger-plankton",
+      "label": "Mar bioluminiscente",
+      "verdict": "declined",
+      "lineage": "Plancton luminoso en mar nocturno",
+      "thesis": "Cada movimiento deja una estela de luz que se apaga.",
+      "palette": ["#02040A", "#2F7BFF", "#7FE3FF"],
+      "materials": ["Partículas GPU", "Estelas"],
+      "viewport": "Campo oscuro que responde al puntero.",
+      "case": "Pierde en ambos ejes: azul y cian están prohibidos y la abstracción no muestra productos.",
+      "risk": "Colores prohibidos por la identidad.",
+      "kept": "Huella breve del recorrido.",
+      "hero": "https://impeccable.style/worlds/cards/reefs-bioluminescent-nocturnal-plankton-wake-stars-hero.webp"
+    },
+    {
+      "id": "challenger-forge",
+      "label": "Forja",
+      "verdict": "declined",
+      "lineage": "Hierro al rojo bajo martillo mecánico",
+      "thesis": "Cada golpe transforma visiblemente el material.",
+      "palette": ["#FF7A1A", "#1A1614", "#6B6460"],
+      "materials": ["Hierro", "Escoria"],
+      "viewport": "Una barra que se alarga con cada golpe.",
+      "case": "Pierde en ambos ejes: brutalidad contraria al pulido pedido.",
+      "risk": "Lectura agresiva, ya rechazada como «brutish».",
+      "kept": "Un cambio de estado decisivo por acción.",
+      "hero": "https://impeccable.style/worlds/cards/metal-forging-patina-blacksmith-scale-shower-hero.webp"
+    }
+  ],
+  "reroll": { "registers": ["safer", "bolder"] },
+  "steer": true,
+  "canon": true,
+  "canonCard": {
+    "label": "Portfolio estándar bien hecho",
+    "thesis": "Lo que publica la categoría, ejecutado con cuidado.",
+    "palette": ["#FFFFFF", "#473C33", "#FEC868"],
+    "materials": [
+      "Retícula limpia",
+      "Capturas de producto",
+      "Tarjetas de proyecto"
+    ],
+    "viewport": "Presentación arriba, rejilla de proyectos y cierre de contacto.",
+    "risk": "Indistinguible de otros portfolios por diseño.",
+    "comp": ".impeccable/mocks/decision/aohys-20260923-r5/canon.png"
+  },
+  "buildPath": { "value": "comp", "toggle": true }
+}

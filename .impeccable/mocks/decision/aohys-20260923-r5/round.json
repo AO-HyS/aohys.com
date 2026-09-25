@@ -1,0 +1,20 @@
+{
+  "seed": "90569fd1",
+  "reroll": 4,
+  "assignedIndex": 4,
+  "assignedCandidate": "Espécimen de sistema",
+  "pick": "Espejo requisito / producto",
+  "fullChallengers": [
+    "graphic-worlds-publishing-chaekgeori-reverse-perspective"
+  ],
+  "declined": [
+    "signals-instruments-darkroom-safelight-bay",
+    "medium-native-hypercard-stack-shoebox",
+    "pop-culture-shelf-teen-magazine-quiz",
+    "reefs-bioluminescent-nocturnal-plankton-wake-stars",
+    "metal-forging-patina-blacksmith-scale-shower"
+  ],
+  "sourceRevision": 1,
+  "sourceHash": "df43b3ffede38adaa040b13d5d5808770068f9778ed3d739900172fe74a7feb4",
+  "approved": false
+}

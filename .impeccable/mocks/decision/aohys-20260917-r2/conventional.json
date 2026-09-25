@@ -1,0 +1,42 @@
+{
+  "approved": false,
+  "kind": "direction-exploration",
+  "seed": "90569fd1",
+  "reroll": 1,
+  "canon": true,
+  "variant": "conventional",
+  "tool": "image_gen__imagegen",
+  "runtimeTool": "tools.image_gen__imagegen",
+  "nativeOutputPath": "/Users/corrortiz/.codex/generated_images/01a0b0da-370f-7fe1-9aae-ba7f60b8a11a/exec-9c18bc2f-5ab9-4cc2-b505-f65eb9e039bb.png",
+  "imagePath": ".impeccable/mocks/decision/aohys-20260917-r2/conventional.png",
+  "promptPath": ".impeccable/mocks/decision/aohys-20260917-r2/conventional.prompt.txt",
+  "dimensions": {
+    "width": 1536,
+    "height": 1024
+  },
+  "conceptImagery": true,
+  "visualReview": {
+    "caseNames": [
+      "ETERIA",
+      "The Barber Central",
+      "NutriPlan",
+      "Casa Roca",
+      "Enterprise Product Systems",
+      "AOHYS"
+    ],
+    "architectureCallout": "Good interfaces need sound architecture.",
+    "architectureLink": "Explore architecture ↗",
+    "layout": "Six image-led case studies visible in two rows of three, with a complete architecture callout below.",
+    "defects": [
+      "Small text within conceptual UI thumbnails is not production-quality typography; case labels and primary text are legible.",
+      "Concept clinical UI includes illustrative numeric values, not verified product metrics."
+    ],
+    "corrections": 0
+  },
+  "unproven": [
+    "Responsive behavior",
+    "Keyboard navigation",
+    "Focus and nested-layer dismissal",
+    "Actual implementation accessibility"
+  ]
+}

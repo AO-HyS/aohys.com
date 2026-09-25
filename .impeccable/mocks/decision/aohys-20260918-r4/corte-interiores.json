@@ -1,0 +1,14 @@
+{
+  "approved": false,
+  "kind": "direction-interior-storyboard",
+  "prompt": "Edit this four-screen mobile website storyboard. Preserve its ALL content, four columns, exact positions, image crops, dates, diagram, dimensions, pale gutters and overall composition. The ONLY correction is typography: replace EVERY SERIF letter in headings, subheadings, company names and diagrams with the elegant clean HUMANIST SANS of the second homepage reference. There must be ZERO serif typography on any of these four screens. The second reference is authoritative for type, but its layout is NOT to be copied. Keep 'El trabajo.', 'NutriPlan.', 'Cómo lo hago.', 'Trayectoria.' as large confident SANS headings of the same size. Body already sans remains unchanged. Preserve the honey/olive/apricot left index strips, fine horizontal rules and understated 2-column career chronology. Do not add strokes or timelines. Render all the same accurate text, five products, seven jobs. Whole 1536x1024 storyboard only.\n",
+  "promptFile": ".impeccable/mocks/decision/aohys-20260918-r4/corte-interiores.correction.prompt.txt",
+  "sourceProfileRevision": 1,
+  "sourceProfileHash": "df43b3ffede38adaa040b13d5d5808770068f9778ed3d739900172fe74a7feb4",
+  "renderedUI": "illustrative-static-comp",
+  "notValidated": [
+    "motion",
+    "responsive-implementation",
+    "live-product-pricing"
+  ]
+}
