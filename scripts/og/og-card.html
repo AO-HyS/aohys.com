@@ -1,0 +1,111 @@
+<!doctype html>
+<!--
+  Social card template (1200x630) in the Horizonte language. Rendered in Chrome
+  from a temporary copy served by the site dev server; parameters come from the
+  query string. See scripts/og/README.md.
+-->
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face { font-family: "Spectral"; font-weight: 300; src: url("fonts/spectral-latin-300-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Spectral"; font-weight: 300; font-style: italic; src: url("fonts/spectral-latin-300-italic.woff2") format("woff2"); }
+      @font-face { font-family: "Jost"; font-weight: 100 900; src: url("fonts/jost-latin-wght-normal.woff2") format("woff2"); }
+      :root { --ink: #473c33; --soft: #6a6058; --tint: #fdd2b1; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #fff; }
+      body { position: relative; font-family: "Jost", sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+      .wash {
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(38% 58% at 75% 50%, color-mix(in oklab, var(--tint) 55%, transparent), transparent 72%),
+          radial-gradient(30% 30% at 76% 96%, color-mix(in oklab, var(--tint) 35%, transparent), transparent 70%);
+      }
+      .leaves { position: absolute; inset: -40px; opacity: 0.07; filter: blur(14px); }
+      .copy { position: absolute; left: 84px; top: 86px; width: 560px; display: grid; gap: 0; }
+      .logo { width: 104px; height: auto; overflow: visible; color: var(--ink); margin-bottom: 64px; }
+      .logo path, .logo ellipse { fill: none; stroke: currentColor; stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; }
+      .kicker { font-size: 18px; letter-spacing: 0.16em; color: var(--soft); margin: 0 0 14px; }
+      h1 { margin: 0; font-family: "Spectral", serif; font-weight: 300; font-size: 64px; line-height: 1.04; letter-spacing: -0.005em; text-wrap: balance; }
+      .sub { margin: 22px 0 0; font-size: 27px; font-weight: 400; line-height: 1.3; }
+      .line { margin: 12px 0 0; font-family: "Spectral", serif; font-style: italic; font-weight: 300; font-size: 25px; line-height: 1.35; color: var(--soft); text-wrap: balance; }
+      .url { position: absolute; left: 84px; bottom: 58px; font-size: 17px; letter-spacing: 0.22em; color: var(--soft); }
+      .orbit { position: absolute; left: 540px; top: 90px; width: 640px; height: 450px; border-radius: 50%; border: 1px solid rgba(71, 60, 51, 0.12); transform: rotate(-6deg); }
+      .orbit.b { left: 620px; top: 40px; width: 500px; height: 560px; border-style: dashed; border-color: rgba(71, 60, 51, 0.08); transform: rotate(4deg); }
+      .sphere {
+        position: absolute; left: 676px; top: 101px; width: 428px; height: 428px; border-radius: 50%; overflow: hidden; background: #fbf8f3;
+        box-shadow: 0 0 0 1px rgba(71, 60, 51, 0.16), 0 0 0 12px #fff, 0 40px 80px -48px rgba(71, 60, 51, 0.55), 0 24px 110px -6px color-mix(in oklab, var(--tint) 85%, transparent);
+      }
+      .sphere img { position: absolute; max-width: none; left: var(--l); top: var(--t); width: var(--w); height: var(--h); }
+      .sphere::after {
+        content: ""; position: absolute; inset: 0; border-radius: 50%;
+        background:
+          radial-gradient(30% 20% at 32% 22%, rgba(255, 255, 255, 0.75), transparent 70%),
+          radial-gradient(closest-side, transparent 72%, color-mix(in oklab, var(--tint) 58%, transparent) 93%, rgba(255, 255, 255, 0.92) 100%);
+      }
+      .bead { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--tint); box-shadow: 0 0 0 1px rgba(71, 60, 51, 0.3); }
+    </style>
+  </head>
+  <body>
+    <div class="wash"></div>
+    <svg class="leaves" viewBox="0 0 1280 710" aria-hidden="true">
+      <g fill="#473C33">
+        <path d="M-40 110L260 -60L300 -20L0 160Z" />
+        <g transform="translate(90 520) rotate(-18)">
+          <path d="M0 0C80 -30 170 -40 260 -20" fill="none" stroke="#473C33" stroke-width="5" />
+          <ellipse cx="40" cy="-12" rx="42" ry="12" transform="rotate(-40 40 -12)" />
+          <ellipse cx="96" cy="-22" rx="42" ry="12" transform="rotate(30 96 -22)" />
+          <ellipse cx="150" cy="-28" rx="42" ry="12" transform="rotate(-36 150 -28)" />
+          <ellipse cx="204" cy="-26" rx="42" ry="12" transform="rotate(38 204 -26)" />
+        </g>
+      </g>
+    </svg>
+    <div class="orbit"></div>
+    <div class="orbit b"></div>
+    <span class="bead" style="left: 612px; top: 214px"></span>
+    <span class="bead" style="left: 1146px; top: 432px"></span>
+    <div class="sphere" id="sphere"><img id="img" alt="" /></div>
+    <div class="copy">
+      <svg class="logo" viewBox="0 0 100 44" aria-hidden="true">
+        <ellipse cx="9.2" cy="24" rx="7.4" ry="8" />
+        <path d="M16.6 16.4V32" />
+        <ellipse cx="31.6" cy="24" rx="7.6" ry="8" />
+        <path d="M37.4 18.8C40.2 14.6 42.6 8.2 44.6 5.2C45.4 4 46.6 3.6 47.4 3.9V32" style="stroke-width: 1.2" />
+        <path d="M47.4 22.4C49 18.2 51.6 16 54.6 16C58.2 16 60 18.6 60 22.4V32" />
+        <path d="M65.6 16L72.4 31.2" />
+        <path d="M79.2 16L70.2 37.8C69.2 40.2 67.8 41.4 65.6 41.4" />
+        <path d="M95.2 18.6C93.8 16.8 91.9 16 89.9 16C87.1 16 85.2 17.6 85.2 19.9C85.2 22.4 87.6 23.3 90.3 24C93.2 24.7 95.6 25.7 95.6 28.3C95.6 30.7 93.4 32 90.5 32C88.1 32 86.1 31.2 84.7 29.4" />
+      </svg>
+      <p class="kicker" id="kicker"></p>
+      <h1 id="title"></h1>
+      <p class="sub" id="sub"></p>
+      <p class="line" id="line"></p>
+    </div>
+    <div class="url">AOHYS.COM</div>
+    <script>
+      const q = new URLSearchParams(location.search);
+      const set = (id, key) => {
+        const v = q.get(key);
+        const el = document.getElementById(id);
+        if (v) el.textContent = v;
+        else el.remove();
+      };
+      set("kicker", "kicker");
+      set("title", "title");
+      set("sub", "sub");
+      set("line", "line");
+      document.documentElement.lang = q.get("lang") || "es";
+      document.documentElement.style.setProperty("--tint", q.get("tint") || "#FDD2B1");
+      const size = (q.get("size") || "1024x1024").split("x").map(Number);
+      const fx = Number(q.get("fx") || 0.5), fy = Number(q.get("fy") || 0.5), zoom = Number(q.get("zoom") || 0.8);
+      const ar = size[0] / size[1], halfH = 0.5 * zoom, halfW = halfH / ar;
+      const w = 100 / (2 * halfW), h = 100 / (2 * halfH);
+      const s = document.getElementById("sphere").style;
+      s.setProperty("--w", w + "%"); s.setProperty("--h", h + "%");
+      s.setProperty("--l", 50 - fx * w + "%"); s.setProperty("--t", 50 - fy * h + "%");
+      const img = document.getElementById("img");
+      img.onload = () => document.fonts.ready.then(() => document.body.setAttribute("data-ready", "1"));
+      img.src = q.get("img");
+    </script>
+  </body>
+</html>
