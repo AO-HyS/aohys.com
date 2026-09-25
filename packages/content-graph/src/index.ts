@@ -76,10 +76,26 @@ export interface EvidenceAsset {
 export interface StaticEvidenceImageAsset {
   src: string;
   thumbSrc?: string;
-  socialSrc?: string;
   alt?: string;
   kind: "site" | "landing" | "dashboard" | "diagram";
 }
+
+/* Horizonte social cards (scripts/og): /images/social/card-<key>-<locale>.jpg */
+export const SOCIAL_CARD_BY_CONTENT_ID: Record<string, string> = {
+  home: "home",
+  "case-studies": "home",
+  practice: "practice",
+  resume: "resume",
+  architecture: "architecture",
+  contact: "contact",
+  privacy: "home",
+  "case-study:the-barber-central": "the-barber-central",
+  "case-study:nutri-plan": "nutri-plan",
+  "case-study:eteria": "eteria",
+  "case-study:casa-roca": "casa-roca",
+  "case-study:enterprise-systems": "resume",
+  "case-study:engineering-practice": "architecture",
+};
 
 export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<
   string,
@@ -123,12 +139,10 @@ export const STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID: Record<
   },
   "case-study:enterprise-systems": {
     src: "/images/proof/enterprise-systems-map-v2.svg",
-    socialSrc: "/images/social/enterprise-systems-preview-v1.png",
     kind: "diagram",
   },
   "case-study:engineering-practice": {
     src: "/images/proof/engineering-practice-release-cycle.svg",
-    socialSrc: "/images/social/engineering-practice-preview-v1.png",
     kind: "diagram",
   },
   practice: {
@@ -460,76 +474,19 @@ export interface SocialImageMetadata {
   height?: number;
 }
 
-export interface WebsiteStructuredData {
-  "@context": "https://schema.org";
-  "@type": "WebSite";
-  "@id": string;
-  url: string;
-  name: "AOHYS";
-  inLanguage: Locale[];
+export interface JsonLdNode {
+  "@type": string | string[];
+  [key: string]: unknown;
 }
 
 export interface HomeStructuredData {
   "@context": "https://schema.org";
-  "@graph": Array<
-    | Omit<WebsiteStructuredData, "@context">
-    | {
-        "@type": "Organization";
-        "@id": string;
-        name: "AOHYS";
-        url: string;
-        logo: string;
-        founder: { "@id": string };
-      }
-    | {
-        "@type": "Person";
-        "@id": string;
-        name: "Alejandro Ortiz Corro";
-        url: string;
-        jobTitle: string;
-        sameAs: [string, string];
-      }
-  >;
-}
-
-export interface ServiceStructuredData {
-  "@context": "https://schema.org";
-  "@type": "Service";
-  "@id": string;
-  url: string;
-  name: string;
-  description: string;
-  inLanguage: Locale;
-  provider: {
-    "@type": "Organization";
-    "@id": string;
-    name: "AOHYS";
-    url: string;
-  };
-}
-
-export interface ProfilePageStructuredData {
-  "@context": "https://schema.org";
-  "@type": "ProfilePage";
-  "@id": string;
-  url: string;
-  name: string;
-  description: string;
-  inLanguage: Locale;
-  mainEntity: {
-    "@type": "Person";
-    "@id": string;
-    name: "Alejandro Ortiz Corro";
-    url: string;
-    jobTitle: string;
-    sameAs: [string, string];
-  };
+  "@graph": JsonLdNode[];
 }
 
 export type SeoStructuredData =
   | HomeStructuredData
-  | ServiceStructuredData
-  | ProfilePageStructuredData;
+  | ({ "@context": "https://schema.org" } & JsonLdNode);
 
 export interface SitemapEntry {
   url: string;
@@ -1130,28 +1087,64 @@ export function getSeoMetadata(
   const localizedVariant = getLocaleVariant(node, locale);
   const i18n = getSharedI18n(locale);
   const canonicalUrl = toCanonicalUrl(localizedVariant.path);
-  const staticEvidence = STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID[contentId];
-  const evidencePath =
-    staticEvidence?.socialSrc ??
-    staticEvidence?.thumbSrc ??
-    staticEvidence?.src;
-  const socialImagePath =
-    contentId !== "home" &&
-    evidencePath &&
-    /\.(?:jpe?g|png)$/i.test(evidencePath)
-      ? evidencePath
-      : "/images/social/aohys-social-preview-v1.png";
-  const usesEvidenceImage = socialImagePath === evidencePath;
-  const usesSocialPreview = socialImagePath === staticEvidence?.socialSrc;
-  const socialImageAlt = usesEvidenceImage
-    ? formatI18n(i18n.seo.evidencePreviewAlt, { title: localizedVariant.title })
-    : i18n.seo.defaultImageAlt;
+  const socialCard = SOCIAL_CARD_BY_CONTENT_ID[contentId] ?? "home";
+  const socialImagePath = `/images/social/card-${socialCard}-${locale}.jpg`;
+  const socialImageAlt =
+    socialCard === "home"
+      ? i18n.seo.defaultImageAlt
+      : formatI18n(i18n.seo.evidencePreviewAlt, {
+          title: localizedVariant.title,
+        });
   const personId = `${SITE_URL}/#alejandro-ortiz-corro`;
   const organizationId = `${SITE_URL}/#organization`;
   const linkedProfiles: [string, string] = [
     "https://www.linkedin.com/in/alejandrortizcrr/",
     "https://github.com/corrortiz",
   ];
+  const websiteId = `${SITE_URL}/#website`;
+  const homeUrl = toCanonicalUrl(getLocaleVariant("home", locale).path);
+  const person: JsonLdNode = {
+    "@type": "Person",
+    "@id": personId,
+    name: "Alejandro Ortiz Corro",
+    url: homeUrl,
+    jobTitle: i18n.seo.resumeJobTitle,
+    description: i18n.seo.personDescription,
+    address: { "@type": "PostalAddress", addressCountry: "MX" },
+    knowsAbout: [
+      "React",
+      "TypeScript",
+      "Next.js",
+      "Node.js",
+      "Convex",
+      "Swift",
+      "SwiftUI",
+      "Stripe",
+      "Mercado Pago",
+      "WhatsApp Cloud API",
+      ...i18n.seo.serviceTypes,
+    ],
+    worksFor: { "@id": organizationId },
+    sameAs: linkedProfiles,
+  };
+  const organization: JsonLdNode = {
+    "@type": "ProfessionalService",
+    "@id": organizationId,
+    name: "AOHYS",
+    alternateName: "Alejandro Ortiz Corro",
+    url: homeUrl,
+    logo: `${SITE_URL}/images/brand/aohys-wordmark-horizonte.svg`,
+    image: toAbsoluteUrl(`/images/social/card-home-${locale}.jpg`),
+    description: i18n.seo.serviceDescription,
+    founder: { "@id": personId },
+    email: "alejandro.ortiz@aohys.com",
+    address: { "@type": "PostalAddress", addressCountry: "MX" },
+    areaServed: i18n.seo.areaServed,
+    availableLanguage: ["es", "en"],
+    knowsLanguage: ["es", "en"],
+    serviceType: i18n.seo.serviceTypes,
+    sameAs: linkedProfiles,
+  };
   const structuredData: SeoStructuredData | undefined =
     contentId === "home"
       ? {
@@ -1159,27 +1152,15 @@ export function getSeoMetadata(
           "@graph": [
             {
               "@type": "WebSite",
-              "@id": `${SITE_URL}/#website`,
+              "@id": websiteId,
               url: `${SITE_URL}/`,
               name: "AOHYS",
+              alternateName: "Alejandro Ortiz Corro",
               inLanguage: [...LOCALES],
+              publisher: { "@id": organizationId },
             },
-            {
-              "@type": "Organization",
-              "@id": organizationId,
-              name: "AOHYS",
-              url: `${SITE_URL}/`,
-              logo: `${SITE_URL}/images/brand/aohys-connections-mark-v3.svg`,
-              founder: { "@id": personId },
-            },
-            {
-              "@type": "Person",
-              "@id": personId,
-              name: "Alejandro Ortiz Corro",
-              url: `${SITE_URL}/resume/`,
-              jobTitle: i18n.seo.resumeJobTitle,
-              sameAs: linkedProfiles,
-            },
+            organization,
+            person,
           ],
         }
       : contentId === "practice"
@@ -1188,15 +1169,13 @@ export function getSeoMetadata(
             "@type": "Service",
             "@id": `${canonicalUrl}#service`,
             url: canonicalUrl,
-            name: localizedVariant.title,
+            name: i18n.seo.serviceName,
             description: localizedVariant.seoDescription,
+            serviceType: i18n.seo.serviceTypes,
+            areaServed: i18n.seo.areaServed,
+            availableLanguage: ["es", "en"],
             inLanguage: locale,
-            provider: {
-              "@type": "Organization",
-              "@id": organizationId,
-              name: "AOHYS",
-              url: `${SITE_URL}/`,
-            },
+            provider: organization,
           }
         : contentId === "resume"
           ? {
@@ -1207,16 +1186,20 @@ export function getSeoMetadata(
               name: localizedVariant.seoTitle,
               description: localizedVariant.seoDescription,
               inLanguage: locale,
-              mainEntity: {
-                "@type": "Person",
-                "@id": personId,
-                name: "Alejandro Ortiz Corro",
-                url: `${SITE_URL}/resume/`,
-                jobTitle: i18n.seo.resumeJobTitle,
-                sameAs: linkedProfiles,
-              },
+              mainEntity: person,
             }
-          : undefined;
+          : contentId === "contact"
+            ? {
+                "@context": "https://schema.org",
+                "@type": "ContactPage",
+                "@id": `${canonicalUrl}#contact-page`,
+                url: canonicalUrl,
+                name: localizedVariant.seoTitle,
+                description: localizedVariant.seoDescription,
+                inLanguage: locale,
+                about: organization,
+              }
+            : undefined;
 
   return {
     lang: locale,
@@ -1231,10 +1214,9 @@ export function getSeoMetadata(
     socialImage: {
       url: toAbsoluteUrl(socialImagePath),
       alt: socialImageAlt,
-      type: /\.png$/i.test(socialImagePath) ? "image/png" : "image/jpeg",
-      ...(usesEvidenceImage && !usesSocialPreview
-        ? {}
-        : { width: 1200, height: 630 }),
+      type: "image/jpeg",
+      width: 1200,
+      height: 630,
     },
     ...(structuredData ? { structuredData } : {}),
   };

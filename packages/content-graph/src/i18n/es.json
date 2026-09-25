@@ -28,8 +28,19 @@
     "languageName": "Spanish"
   },
   "seo": {
-    "defaultImageAlt": "Escenario Sunlit de AOHYS con la experiencia de eventos ETERIA",
-    "evidencePreviewAlt": "Vista previa de {title} en AOHYS",
-    "resumeJobTitle": "full stack development"
+    "defaultImageAlt": "Alejandro Ortiz Corro, desarrollador de software full stack: sistemas y aplicaciones web a la medida.",
+    "evidencePreviewAlt": "{title} — AOHYS",
+    "resumeJobTitle": "Desarrollador de software full stack",
+    "personDescription": "Desarrollador de software full stack en México con base sólida en frontend. Construye sistemas y aplicaciones web a la medida: reservas, pagos, WhatsApp e integraciones.",
+    "serviceName": "Desarrollo de software y sistemas a la medida",
+    "serviceDescription": "Diseño y desarrollo de sistemas, aplicaciones web y backend a la medida para negocios y equipos de producto, con integraciones como WhatsApp, Mercado Pago y Stripe.",
+    "serviceTypes": [
+      "Desarrollo de software a la medida",
+      "Desarrollo de sistemas a la medida",
+      "Desarrollo de aplicaciones web",
+      "Desarrollo full stack",
+      "Desarrollo frontend con React"
+    ],
+    "areaServed": ["México", "Estados Unidos", "Latinoamérica"]
   }
 }
