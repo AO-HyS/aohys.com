@@ -130,7 +130,7 @@ Preview deploys then seed private dashboard working data through:
 pnpm run seed:dashboard:preview
 ```
 
-The seed runs only with `AOHYS_ENV=preview`. It uses the target Convex deployment through `scripts/convex-run.ts` to read existing dashboard content first, then create missing bilingual project drafts and the public WhatsApp setting through internal dashboard functions. It can replace retired seed copy that used old "proof/evidence" language, but it must not overwrite current dashboard edits. It does not run for production and does not seed media rows.
+The seed runs only with `AOHYS_ENV=preview`. It uses the target Convex deployment through `scripts/convex-run.ts` to read existing dashboard content first, then create missing bilingual project drafts and the public WhatsApp setting through internal dashboard functions. New draft copy comes from the reviewed Public Content Graph. Existing drafts are always preserved, including older copy; updating them requires an explicit content edit. It does not run for production and does not seed media rows or resume drafts. Approved source updates retain their real `approvedAt` and content hash so publishing an older, unedited dashboard draft cannot replace newer reviewed source content.
 
 Before Astro builds, deploy commands run:
 

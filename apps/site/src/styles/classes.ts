@@ -4,8 +4,9 @@ export function cx(...values: ClassValue[]) {
   return values.filter(Boolean).join(" ");
 }
 
-const displayFont = "[font-family:'Mona_Sans_Variable','Mona_Sans',ui-sans-serif,system-ui,sans-serif]";
-const bodyFont = "[font-family:'Atkinson_Hyperlegible_Next_Variable','Atkinson_Hyperlegible_Next',ui-sans-serif,system-ui,sans-serif]";
+const displayFont =
+  "[font-family:'Jost_Variable','Jost','Avenir_Next','Segoe_UI',system-ui,sans-serif]";
+const bodyFont = displayFont;
 
 export const themeVars = cx(
   "[color-scheme:light]",
@@ -50,12 +51,8 @@ export const ui = {
     "min-h-screen overflow-x-clip bg-[var(--color-bg)] text-[color:var(--color-ink)]",
     "[&_main]:min-w-0 [&_section]:min-w-0 [&_figure]:min-w-0",
     "[&_a]:text-inherit",
-    "[&_h1]:[font-family:'Mona_Sans_Variable','Mona_Sans',ui-sans-serif,system-ui,sans-serif]",
-    "[&_h2]:[font-family:'Mona_Sans_Variable','Mona_Sans',ui-sans-serif,system-ui,sans-serif]",
-    "[&_h3]:[font-family:'Mona_Sans_Variable','Mona_Sans',ui-sans-serif,system-ui,sans-serif]",
-    "[&_p]:[font-family:'Atkinson_Hyperlegible_Next_Variable','Atkinson_Hyperlegible_Next',ui-sans-serif,system-ui,sans-serif]",
-    "[&_a:focus-visible]:[outline:3px_solid_var(--color-focus)] [&_a:focus-visible]:outline-offset-4",
-    "[&_button:focus-visible]:[outline:3px_solid_var(--color-focus)] [&_button:focus-visible]:outline-offset-4",
+    "[&_a:focus-visible]:[outline:2px_solid_var(--color-focus)] [&_a:focus-visible]:outline-offset-4",
+    "[&_button:focus-visible]:[outline:2px_solid_var(--color-focus)] [&_button:focus-visible]:outline-offset-4",
     "[&_input:focus-visible]:[outline:3px_solid_var(--color-focus)] [&_input:focus-visible]:outline-offset-2",
     "[&_select:focus-visible]:[outline:3px_solid_var(--color-focus)] [&_select:focus-visible]:outline-offset-2",
     "[&_textarea:focus-visible]:[outline:3px_solid_var(--color-focus)] [&_textarea:focus-visible]:outline-offset-2",

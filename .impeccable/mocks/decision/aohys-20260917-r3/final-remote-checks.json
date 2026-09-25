@@ -1,0 +1,20 @@
+[
+  {
+    "image": "overprint",
+    "status": 200,
+    "reviewed_version_matches": true,
+    "sha256": "b47d4ae26564f13405182ca1190a5c4d7d39f63ac77127606b8be6c5c5273f85"
+  },
+  {
+    "image": "moving-signature",
+    "status": 200,
+    "reviewed_version_matches": true,
+    "sha256": "edb4f78a58fc59dfd49bcfc324946ae7d4d7c583568e0b38070a959efecc7e66"
+  },
+  {
+    "image": "classic",
+    "status": 200,
+    "reviewed_version_matches": true,
+    "sha256": "8b34b83440c647bc65cf04ccebbfd5f89ecc638f45f9fa029f23e52fca299ae9"
+  }
+]

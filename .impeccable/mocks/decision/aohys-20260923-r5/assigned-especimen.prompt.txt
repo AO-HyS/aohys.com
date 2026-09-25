@@ -1,0 +1,1 @@
+Generated with harness GenerateImage for card 'assigned' (Espécimen de sistema), r5, seed 90569fd1 reroll 4. Figures in components are synthetic demonstration data. approved: false

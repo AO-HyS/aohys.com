@@ -27,7 +27,7 @@ maintenance:
   - name: Install dependencies
     run: pnpm install --frozen-lockfile
 
-  - name: Provision development system and agent assets
+  - name: Provision Development System 1.31.0 and agent assets
     run: |
       set -e
       mkdir -p "$HOME/.agents/skills" "$HOME/.codex"
@@ -58,8 +58,8 @@ knowledge:
       Node >= 24, pnpm >= 11. `pnpm ds` is the pinned Development System CLI.
   - name: lint
     contents: pnpm run lint
-  - name: test
-    contents: pnpm run test
+  - name: typecheck
+    contents: pnpm run typecheck (the repository has no automated tests by owner decision; do not add any)
   - name: build
     contents: pnpm run build
   - name: validate
@@ -72,12 +72,14 @@ knowledge:
       pnpm run deploy:production (main → production). Both need provider secrets.
   - name: agent-assets
     contents: |
-      .agents/skills/ is the committed union of the operator's skill catalog;
-      .codex/ mirrors $HOME/.codex (agents/, development-system/, config.toml,
-      hooks.json, rules/, prompts/, commands/). The blueprint copies these
-      assets first, then `pnpm ds setup` installs the pinned contract and catalog
-      so stale mirrors cannot overwrite the selected release. Refresh affected
-      committed mirrors when adopting a new Development System release.
+      The repository pins Development System 1.29.0 and skill catalog 0.48.0.
+      The blueprint copies the skill union, config.toml, hooks.json and the
+      development-system mirror first. `pnpm ds setup` then installs canonical
+      instructions, native agents, contract and skills from the pinned package,
+      preserving unrelated hooks and credentials. Repository config does not
+      override the host's selected model, effort or service tier. Refresh managed
+      mirrors from the package when adopting a new release; keep shared workflow
+      policy in Development System rather than duplicating it in this blueprint.
   - name: secrets
     contents: |
       Org/repo secrets are injected as env vars. Provider keys needed at

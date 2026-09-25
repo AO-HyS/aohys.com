@@ -1,6 +1,17 @@
 # Design
 
-This is the implemented design contract for the AOHYS public site. The July 2026 direction is **Sunlit Systems Studio**: warm, vivid, product-minded, and playful without becoming childish or decorative for its own sake.
+**Current implementation (September 24, 2026): Horizonte pastel + Ma.** The
+public site now ships the direction selected in
+[the September redesign brief](docs/design/landing-redesign-brief.md): a
+refractive WebGL lens on the home page that changes project with a four-phase
+transition, and the Ma language (one fine line through active empty space) on
+every interior page. Type is Spectral (display) with Jost (text), self-hosted;
+the wordmark is the fine lowercase `aohys` with the continuous o-h stroke. Code
+lives in `apps/site/src/components/horizonte/`, `apps/site/src/scripts/` and
+`apps/site/src/styles/horizonte.css`. Where the Sunlit Systems Studio contract
+below conflicts with this, Horizonte governs; the rest is kept as history.
+
+This was the implemented design contract until September 2026. The July 2026 direction is **Sunlit Systems Studio**: warm, vivid, product-minded, and playful without becoming childish or decorative for its own sake.
 
 ## Register
 
@@ -27,14 +38,14 @@ Starter OKLCH palette:
   --color-bg: oklch(1 0 0);
   --color-surface: oklch(0.975 0.008 122);
   --color-ink: oklch(0.3649 0.0215 61.4); /* #473C33 */
-  --color-muted: oklch(0.50 0.025 61.4);
+  --color-muted: oklch(0.5 0.025 61.4);
   --color-rule: oklch(0.86 0.025 80);
-  --color-primary: oklch(0.8623 0.1290 80); /* #FEC868 */
+  --color-primary: oklch(0.8623 0.129 80); /* #FEC868 */
   --color-primary-ink: oklch(0.3649 0.0215 61.4);
   --color-secondary: oklch(0.7779 0.1104 121.8); /* #ABC270 */
-  --color-secondary-ink: oklch(0.30 0.025 61.4);
+  --color-secondary-ink: oklch(0.3 0.025 61.4);
   --color-accent: oklch(0.8008 0.1283 55.5); /* #FDA769 */
-  --color-accent-ink: oklch(0.30 0.025 61.4);
+  --color-accent-ink: oklch(0.3 0.025 61.4);
   --color-dark: oklch(0.3649 0.0215 61.4);
   --color-dark-surface: oklch(0.31 0.022 61.4);
   --color-dark-ink: oklch(0.98 0.006 80);
@@ -69,8 +80,11 @@ Starter type tokens:
 
 ```css
 :root {
-  --font-display: "Mona Sans", "Mona Sans Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible Next Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    "Mona Sans", "Mona Sans Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-body:
+    "Atkinson Hyperlegible Next", "Atkinson Hyperlegible Next Fallback",
+    ui-sans-serif, system-ui, sans-serif;
 
   --text-caption: 0.8125rem;
   --text-small: 0.875rem;

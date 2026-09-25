@@ -1,0 +1,21 @@
+{
+  "prompt": "Edit the supplied 1536x1024 AOHYS website concept. Change ONLY the color of the italic word \"products\" in the headline \"I build software products.\" from orange to the exact brown ink #473C33. Preserve its italic styling, font, size, shape, position, baseline and spacing. Preserve absolutely every other pixel, text, color, image, layout, border and detail unchanged. Do not modify the period after the word. No other edits.",
+  "approved": false,
+  "approvalScope": "Selected composition and direction only; logo remains rejected/provisional; no production implementation approval is inferred.",
+  "approvalSource": "User chat: El catálogo en movimiento es lo que más me ha gustado.",
+  "kind": "direction-exploration",
+  "seed": "90569fd1",
+  "sourceImages": [
+    "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260916-r1/living-catalogue-v2.png"
+  ],
+  "nativeOutput": {
+    "tool": "image_gen.imagegen",
+    "path": "/Users/corrortiz/.codex/generated_images/01a0a988-0c06-7301-be18-d2301f6e95a2/exec-7305384f-99c7-4988-9310-dbf7fcdca08b.png",
+    "format": "image/png",
+    "width": 1536,
+    "height": 1024,
+    "resultFields": ["image_url", "output_hint"]
+  },
+  "status": "superseded",
+  "supersededBy": "User correction 2026-09-17: direction still generic and boring; only transition retained."
+}

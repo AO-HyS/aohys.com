@@ -1,0 +1,169 @@
+{
+  "title": "AOHYS · Una presencia más propia",
+  "question": "Conservamos los colores y replanteamos marca, tipografía y composición. Estas imágenes proponen una dirección; la marca es provisional y el movimiento se explorará después. ¿Cuál transmite la elegancia tranquila y la confianza que buscas?",
+  "options": [
+    {
+      "id": "work-close",
+      "label": "El trabajo, de cerca",
+      "lineage": "Revisión de producto",
+      "thesis": "Una presentación personal breve y un proyecto que puedes recorrer por vistas y decisiones.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": [
+        "Blanco limpio",
+        "Tipografía precisa y ligera",
+        "Vistas reales del proyecto"
+      ],
+      "viewport": "Introducción arriba; una gran superficie de proyecto debajo con tres vistas y una nota personal al margen.",
+      "risk": "Necesita editar muy bien las notas para no parecer una herramienta de trabajo.",
+      "comp": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260916-r1/work-close-v2.png",
+      "raised": [
+        {
+          "from": "Vidriera",
+          "raise": "Una sola zona dominante; cada región tiene una función legible."
+        },
+        {
+          "from": "Azulejo",
+          "raise": "El recorrido del caso debe entenderse también sin movimiento."
+        },
+        {
+          "from": "Cartel doble",
+          "raise": "Contraste claro entre lo principal y lo secundario."
+        },
+        {
+          "from": "Fotograma de jazz",
+          "raise": "Cada proyecto conserva un momento visual reconocible."
+        },
+        {
+          "from": "Plano de cátodos",
+          "raise": "La navegación permanece disponible al cambiar de vista."
+        },
+        {
+          "from": "Contador de laboratorio",
+          "raise": "Las transiciones siempre muestran qué estado está activo."
+        }
+      ]
+    },
+    {
+      "id": "living-catalogue",
+      "label": "Catálogo en movimiento",
+      "kicker": "PROPUESTA RECOMENDADA",
+      "lineage": "Catálogos de diseño industrial",
+      "thesis": "Tu voz abre la página y las imágenes amplias dan a cada producto el espacio para hacerse notar.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": [
+        "Fotografía e ilustración del proyecto",
+        "Superficies amplias",
+        "Tipo de estudio de diseño"
+      ],
+      "viewport": "Presentación breve en una franja superior; una imagen ancha del proyecto domina el primer pliegue y enlaza con el siguiente.",
+      "risk": "Es una composición familiar en portfolios de estudios; necesita hacer muy visible tu contribución personal.",
+      "comp": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260916-r1/living-catalogue-v3.png"
+    },
+    {
+      "id": "glazier",
+      "label": "Vidriera",
+      "verdict": "declined",
+      "lineage": "craft-making-glazier-colorfield-partition",
+      "thesis": "Cada paño sería un proyecto, con luz para señalar el activo.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Traducción a los colores de AOHYS"],
+      "viewport": "Cada paño sería un proyecto, con luz para señalar el activo.",
+      "case": "La traducción pierde frente a la propuesta principal tanto en identificación profesional como en claridad del trabajo.",
+      "risk": "El entramado introduce más marcos entre la persona y el trabajo.",
+      "kept": "Una zona dominante por tarea.",
+      "hero": "https://impeccable.style/worlds/cards/craft-making-glazier-colorfield-partition-hero.webp"
+    },
+    {
+      "id": "azulejo",
+      "label": "Azulejo",
+      "verdict": "declined",
+      "lineage": "architecture-places-azulejo-station-hall",
+      "thesis": "Cada panel contaría una parte del caso en secuencia.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Traducción a los colores de AOHYS"],
+      "viewport": "Cada panel contaría una parte del caso en secuencia.",
+      "case": "La traducción pierde frente a la propuesta principal tanto en identificación profesional como en claridad del trabajo.",
+      "risk": "Los ornamentos ocupan el lugar de las imágenes reales y alejan la lectura profesional.",
+      "kept": "Continuidad narrativa sin depender de animación.",
+      "hero": "https://impeccable.style/worlds/cards/architecture-places-azulejo-station-hall-hero.webp"
+    },
+    {
+      "id": "double-bill",
+      "label": "Cartel doble",
+      "verdict": "declined",
+      "lineage": "posters-covers-sleeves-exploitation-combo-sheet",
+      "thesis": "Dos proyectos comparten el plano con una jerarquía marcada.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Traducción a los colores de AOHYS"],
+      "viewport": "Dos proyectos comparten el plano con una jerarquía marcada.",
+      "case": "La traducción pierde frente a la propuesta principal tanto en identificación profesional como en claridad del trabajo.",
+      "risk": "La competencia entre titulares reduce tranquilidad y claridad del perfil.",
+      "kept": "Jerarquía decidida entre protagonistas y apoyo.",
+      "hero": "https://impeccable.style/worlds/cards/posters-covers-sleeves-exploitation-combo-sheet-hero.webp"
+    },
+    {
+      "id": "jazz-frame",
+      "label": "Fotograma de jazz",
+      "verdict": "declined",
+      "lineage": "pop-culture-shelf-bebop-title-card",
+      "thesis": "Cada proyecto entra como un fotograma con una composición propia.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Traducción a los colores de AOHYS"],
+      "viewport": "Cada proyecto entra como un fotograma con una composición propia.",
+      "case": "La traducción pierde frente a la propuesta principal tanto en identificación profesional como en claridad del trabajo.",
+      "risk": "Los cortes duros y el texto comprimido refuerzan la dureza que se quiere dejar atrás.",
+      "kept": "Un momento memorable por proyecto.",
+      "hero": "https://impeccable.style/worlds/cards/pop-culture-shelf-bebop-title-card-hero.webp"
+    },
+    {
+      "id": "cathode",
+      "label": "Plano de cátodos",
+      "verdict": "declined",
+      "lineage": "operate-b-struck-cathode-gauze",
+      "thesis": "Las alternativas quedan presentes detrás de la vista activa.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Traducción a los colores de AOHYS"],
+      "viewport": "Las alternativas quedan presentes detrás de la vista activa.",
+      "case": "La traducción pierde frente a la propuesta principal tanto en identificación profesional como en claridad del trabajo.",
+      "risk": "Las capas y el brillo dificultan evaluar proyectos y transmiten una interfaz técnica de nicho.",
+      "kept": "Disponibilidad continua de la navegación.",
+      "hero": "https://impeccable.style/worlds/cards/operate-b-struck-cathode-gauze-hero.webp"
+    },
+    {
+      "id": "nixie",
+      "label": "Contador de laboratorio",
+      "verdict": "declined",
+      "lineage": "signals-instruments-nixie-laboratory-counter",
+      "thesis": "El índice de proyectos cambia de estado en posiciones estables.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Traducción a los colores de AOHYS"],
+      "viewport": "El índice de proyectos cambia de estado en posiciones estables.",
+      "case": "La traducción pierde frente a la propuesta principal tanto en identificación profesional como en claridad del trabajo.",
+      "risk": "Los números pasan a ser protagonistas de un portfolio que necesita imágenes y responsabilidad personal.",
+      "kept": "Estado activo inequívoco.",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-nixie-laboratory-counter-hero.webp"
+    }
+  ],
+  "reroll": {
+    "registers": ["safer", "bolder"]
+  },
+  "buildPath": {
+    "value": "comp",
+    "toggle": true
+  },
+  "canon": true,
+  "canonCard": {
+    "label": "Composición convencional",
+    "thesis": "Una presentación personal a la izquierda y una vista clara del proyecto a la derecha.",
+    "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+    "materials": [
+      "Retícula simple",
+      "Imagen de producto",
+      "Tipografía contenida"
+    ],
+    "viewport": "Título y contacto a la izquierda; proyecto amplio a la derecha; índice de trabajo en el siguiente pliegue.",
+    "risk": "Se reconoce enseguida como un portfolio; ofrece menos personalidad compositiva.",
+    "comp": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260916-r1/conventional-v2.png"
+  },
+  "steer": true
+}

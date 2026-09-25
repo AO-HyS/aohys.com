@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <script>window.__errs=[];window.addEventListener("error",function(e){window.__errs.push(String(e.message||e))});window.addEventListener("unhandledrejection",function(e){window.__errs.push(String(e.reason))});</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Alejandro Ortiz Corro — full stack development · Prototipo Horizonte</title>
+    <meta name="description" content="Prototipo de diseño Horizonte pastel para el sitio AOHYS. No es el sitio publicado." />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Jost:wght@300..500&family=Spectral:ital,wght@0,200;0,300;0,400;1,300&display=swap"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preload" as="image" href="assets/lens-barber.jpg" />
+  </head>
+  <body>
+    <a class="skip" href="#main" data-i18n="skip">Saltar al contenido</a>
+
+    <header class="site-header">
+      <a class="logo" href="index.html" aria-label="aohys — inicio">
+        <svg viewBox="0 0 100 44" aria-hidden="true" focusable="false">
+          <ellipse cx="9.2" cy="24" rx="7.4" ry="8" />
+          <path d="M16.6 16.4V32" />
+          <ellipse cx="31.6" cy="24" rx="7.6" ry="8" />
+          <path class="join" d="M37.4 18.8C40.2 14.6 42.6 8.2 44.6 5.2C45.4 4 46.6 3.6 47.4 3.9V32" />
+          <path d="M47.4 22.4C49 18.2 51.6 16 54.6 16C58.2 16 60 18.6 60 22.4V32" />
+          <path d="M65.6 16L72.4 31.2" />
+          <path d="M79.2 16L70.2 37.8C69.2 40.2 67.8 41.4 65.6 41.4" />
+          <path d="M95.2 18.6C93.8 16.8 91.9 16 89.9 16C87.1 16 85.2 17.6 85.2 19.9C85.2 22.4 87.6 23.3 90.3 24C93.2 24.7 95.6 25.7 95.6 28.3C95.6 30.7 93.4 32 90.5 32C88.1 32 86.1 31.2 84.7 29.4" />
+        </svg>
+      </a>
+      <nav class="nav" data-i18n-aria="nav.label" aria-label="Principal">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-list" data-i18n="menu">Menú</button>
+        <ul id="nav-list">
+          <li><a href="#trabajo" data-i18n="nav.work">Trabajo</a></li>
+          <li><a href="#como-trabajo" data-i18n="nav.method">Cómo trabajo</a></li>
+          <li><a href="trayectoria.html" data-i18n="nav.career">Trayectoria</a></li>
+          <li><a href="https://aohys.com/es/curriculum" data-href-es="https://aohys.com/es/curriculum" data-href-en="https://aohys.com/resume" data-i18n="nav.cv">CV</a></li>
+          <li><a href="#contacto" data-i18n="nav.contact">Contacto</a></li>
+        </ul>
+        <div class="lang" role="group" data-i18n-aria="lang.label" aria-label="Idioma">
+          <button type="button" data-lang="es" aria-pressed="true" lang="es">ES</button>
+          <button type="button" data-lang="en" aria-pressed="false" lang="en">EN</button>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-name">
+        <div class="daylight" aria-hidden="true">
+          <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="16" /></filter>
+              <path id="leaf" d="M0 0C22 -15 62 -15 86 0C62 15 22 15 0 0Z" />
+            </defs>
+            <g filter="url(#soft)" fill="#473C33">
+              <path d="M-40 120L260 -60L300 -20L0 170Z" />
+              <path d="M-40 330L520 -60L560 -30L0 380Z" opacity="0.8" />
+              <g transform="translate(120 470) rotate(-18)">
+                <path d="M0 0C80 -30 170 -40 260 -20" fill="none" stroke="#473C33" stroke-width="5" />
+                <use href="#leaf" transform="translate(30 -8) rotate(-40)" />
+                <use href="#leaf" transform="translate(60 -14) rotate(30)" />
+                <use href="#leaf" transform="translate(96 -22) rotate(-52)" />
+                <use href="#leaf" transform="translate(130 -26) rotate(24)" />
+                <use href="#leaf" transform="translate(170 -28) rotate(-36)" />
+                <use href="#leaf" transform="translate(204 -26) rotate(38)" />
+                <use href="#leaf" transform="translate(240 -22) rotate(-20) scale(0.8)" />
+              </g>
+            </g>
+          </svg>
+          <svg class="second" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+            <g filter="url(#soft)" fill="#473C33">
+              <path d="M1480 520L1060 960L1010 930L1440 470Z" />
+              <g transform="translate(1440 170) rotate(160)">
+                <path d="M0 0C90 -24 190 -30 300 -10" fill="none" stroke="#473C33" stroke-width="5" />
+                <use href="#leaf" transform="translate(40 -10) rotate(-34)" />
+                <use href="#leaf" transform="translate(80 -16) rotate(40)" />
+                <use href="#leaf" transform="translate(124 -22) rotate(-46)" />
+                <use href="#leaf" transform="translate(166 -24) rotate(28)" />
+                <use href="#leaf" transform="translate(212 -22) rotate(-30)" />
+                <use href="#leaf" transform="translate(256 -18) rotate(34) scale(0.85)" />
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <div class="intro">
+          <h1 id="hero-name">Alejandro Ortiz Corro</h1>
+          <p class="role">full stack development</p>
+          <p class="lede" data-i18n="hero.lede">
+            Ingeniero de software full stack con una base fuerte en frontend. Llevo productos del requisito a la entrega.
+          </p>
+        </div>
+
+        <div class="stage" id="stage" role="tabpanel" tabindex="0" aria-labelledby="tab-the-barber-central" aria-describedby="caption">
+          <svg class="orbits" aria-hidden="true" focusable="false">
+            <ellipse class="orbit" />
+            <ellipse class="orbit faint" />
+            <ellipse class="orbit faint" />
+            <circle class="bead" r="3.5" />
+            <circle class="bead" r="2.5" />
+            <circle class="bead" r="2.5" />
+            <path class="connector" />
+            <path class="connector" />
+            <path class="connector" />
+          </svg>
+          <div class="ghosts" aria-hidden="true">
+            <div class="ghost"></div>
+            <div class="ghost"></div>
+            <div class="ghost"></div>
+          </div>
+          <div class="lens" id="lens" data-gl="off">
+            <div class="lens-dom">
+              <div class="layer"><img src="assets/lens-barber.jpg" alt="" data-i="0" /></div>
+              <div class="layer incoming"><img src="assets/lens-nutriplan.jpg" alt="" data-i="1" /></div>
+              <span class="shine" aria-hidden="true"></span>
+            </div>
+            <canvas aria-hidden="true"></canvas>
+          </div>
+          <ol class="parts" data-i18n-aria="parts.label" aria-label="Partes del producto">
+            <li class="part"><span class="dot" aria-hidden="true"></span><span class="text"><span class="name"></span> <span class="ver"></span></span></li>
+            <li class="part"><span class="dot" aria-hidden="true"></span><span class="text"><span class="name"></span> <span class="ver"></span></span></li>
+            <li class="part"><span class="dot" aria-hidden="true"></span><span class="text"><span class="name"></span> <span class="ver"></span></span></li>
+          </ol>
+        </div>
+
+        <div class="selector">
+          <div class="tabs" role="tablist" data-i18n-aria="tabs.label" aria-label="Productos"></div>
+          <p class="caption" id="caption" data-swap="in">
+            <span class="status"></span>
+            <span class="purpose"></span>
+          </p>
+          <span class="swipe-hint" aria-hidden="true" data-i18n="swipe">Desliza la lente para cambiar de producto</span>
+        </div>
+
+        <a class="btn-primary hero-cta" id="hero-cta" href="caso.html?p=the-barber-central" data-vt-from="#lens">
+          <span data-i18n="hero.cta">Conoce mi trabajo</span> <span class="arrow" aria-hidden="true">→</span>
+        </a>
+        <p class="sr-only" id="announce" aria-live="polite"></p>
+      </section>
+
+      <section class="section" id="trabajo" aria-labelledby="work-h">
+        <div class="section-head">
+          <span class="hairline" aria-hidden="true"></span>
+          <h2 id="work-h" data-i18n="work.h">Cinco productos, del requisito a la entrega</h2>
+          <p data-i18n="work.p">Cada uno empezó con un trabajo concreto que alguien necesitaba resolver. Esto es lo que resuelve y lo que construí.</p>
+        </div>
+        <ol class="work-list" id="work-list"></ol>
+      </section>
+
+      <section class="section" id="como-trabajo" aria-labelledby="how-h">
+        <div class="section-head">
+          <span class="hairline" aria-hidden="true"></span>
+          <h2 id="how-h" data-i18n="how.h">Fallar rápido, aprender, volver a hacer</h2>
+        </div>
+        <div class="loop-wrap">
+          <svg class="loop" viewBox="-150 24 820 470" role="img" data-i18n-aria="loop.label" aria-label="Ciclo de trabajo: fallar rápido, moverme rápido, fallar, aprender, volver a hacer.">
+            <circle class="ring-soft" cx="260" cy="260" r="180" />
+            <circle class="ring" cx="260" cy="260" r="180" />
+            <g class="station" style="--i: 0">
+              <circle cx="260" cy="80" r="6" style="animation-delay: 0s" />
+              <text x="260" y="58" text-anchor="middle" data-i18n="loop.1">Fallar rápido</text>
+            </g>
+            <g class="station">
+              <circle cx="431.2" cy="204.4" r="6" style="animation-delay: 3s" />
+              <text x="452" y="210" text-anchor="start" data-i18n="loop.2">Moverme rápido</text>
+            </g>
+            <g class="station">
+              <circle cx="365.8" cy="405.6" r="6" style="animation-delay: 6s" />
+              <text x="382" y="440" text-anchor="start" data-i18n="loop.3">Fallar</text>
+            </g>
+            <g class="station">
+              <circle cx="154.2" cy="405.6" r="6" style="animation-delay: 9s" />
+              <text x="138" y="440" text-anchor="end" data-i18n="loop.4">Aprender</text>
+            </g>
+            <g class="station">
+              <circle cx="88.8" cy="204.4" r="6" style="animation-delay: 12s" />
+              <text x="68" y="210" text-anchor="end" data-i18n="loop.5">Volver a hacer</text>
+            </g>
+            <g class="runner">
+              <circle class="guide" cx="260" cy="260" r="180" />
+              <circle class="dot" cx="260" cy="80" r="9" />
+            </g>
+            <text class="center-title" x="260" y="258" text-anchor="middle" data-i18n="loop.center">v1 → v2 → entrega</text>
+            <text class="center-sub" x="260" y="290" text-anchor="middle" data-i18n="loop.sub">CADA VUELTA DEJA ALGO</text>
+          </svg>
+          <div class="loop-copy">
+            <p data-i18n="how.p1">Prefiero poner algo real frente a las personas pronto. Cada intento me enseña qué entendí mal; lo corrijo y vuelvo a construir.</p>
+            <p data-i18n="how.p2">Empiezo por quién usa el sistema, qué información necesita y qué debe pasar después.</p>
+            <p class="energy" data-i18n="how.energy">Soy alegre, me gusta construir cosas y me apasiona hablar de productos hasta convertirlos en sistemas.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="trayectoria" aria-labelledby="career-h">
+        <div class="section-head">
+          <span class="hairline" aria-hidden="true"></span>
+          <h2 id="career-h" data-i18n="career.h">Trayectoria</h2>
+          <p data-i18n="career.p">Desde 2018 en equipos de producto; desde 2015, construyendo los míos con AOHYS.</p>
+        </div>
+        <div class="career">
+          <ol class="career-line" id="career-line"></ol>
+          <div class="founder-line" id="founder-line"></div>
+          <div class="center-link">
+            <a class="text-link" href="trayectoria.html"><span data-i18n="career.more">Ver trayectoria completa</span> <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="contacto" aria-labelledby="close-h">
+        <div class="section-head">
+          <span class="hairline" aria-hidden="true"></span>
+          <h2 id="close-h" data-i18n="close.h">Dos caminos para empezar</h2>
+          <p data-i18n="close.p">Elige el que se parezca a lo que necesitas.</p>
+        </div>
+        <div class="paths">
+          <div class="path">
+            <span class="orb" style="--c: #d6e2b4" aria-hidden="true"></span>
+            <h3 data-i18n="team.h">Sumarme a tu equipo</h3>
+            <p data-i18n="team.p">Frontend fuerte y full stack cuando el producto lo pide. Me gusta entender el negocio antes de escribir código.</p>
+            <div class="links">
+              <a class="text-link" href="trayectoria.html"><span data-i18n="team.l1">Ver trayectoria</span> <span aria-hidden="true">→</span></a>
+              <a class="text-link" href="https://aohys.com/es/curriculum" data-href-es="https://aohys.com/es/curriculum" data-href-en="https://aohys.com/resume"><span data-i18n="team.l2">Ver CV</span> <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+          <div class="path">
+            <span class="orb" style="--c: #fdd2b1" aria-hidden="true"></span>
+            <h3 data-i18n="build.h">Construir tu producto</h3>
+            <p data-i18n="build.p">Si tienes un proceso que hoy vive en libretas, mensajes u hojas de cálculo, platiquemos cómo convertirlo en un sistema.</p>
+            <div class="links">
+              <a class="text-link" href="https://aohys.com/es/contacto" data-href-es="https://aohys.com/es/contacto" data-href-en="https://aohys.com/contact"><span data-i18n="build.l1">Escríbeme</span> <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="caso.html?p=the-barber-central"><span data-i18n="build.l2">Ver un caso</span> <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="logo" href="index.html" aria-label="aohys — inicio">
+        <svg viewBox="0 0 100 44" aria-hidden="true" focusable="false">
+          <ellipse cx="9.2" cy="24" rx="7.4" ry="8" />
+          <path d="M16.6 16.4V32" />
+          <ellipse cx="31.6" cy="24" rx="7.6" ry="8" />
+          <path class="join" d="M37.4 18.8C40.2 14.6 42.6 8.2 44.6 5.2C45.4 4 46.6 3.6 47.4 3.9V32" />
+          <path d="M47.4 22.4C49 18.2 51.6 16 54.6 16C58.2 16 60 18.6 60 22.4V32" />
+          <path d="M65.6 16L72.4 31.2" />
+          <path d="M79.2 16L70.2 37.8C69.2 40.2 67.8 41.4 65.6 41.4" />
+          <path d="M95.2 18.6C93.8 16.8 91.9 16 89.9 16C87.1 16 85.2 17.6 85.2 19.9C85.2 22.4 87.6 23.3 90.3 24C93.2 24.7 95.6 25.7 95.6 28.3C95.6 30.7 93.4 32 90.5 32C88.1 32 86.1 31.2 84.7 29.4" />
+        </svg>
+      </a>
+      <p data-i18n="footer.line">Alejandro Ortiz Corro · full stack development</p>
+      <p data-i18n="footer.note">Prototipo de diseño Horizonte. No es el sitio publicado.</p>
+    </footer>
+
+    <script src="content.js"></script>
+    <script src="site.js"></script>
+    <script src="lens.js"></script>
+    <script src="home.js"></script>
+  </body>
+</html>

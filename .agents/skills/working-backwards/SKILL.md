@@ -92,6 +92,12 @@ summary: <one or two sentence settled summary>
 
 The implementation map also declares `working_backwards_first_slice: <ticket-id>` and contains that exact ticket with satisfied dependencies and an executable acceptance path.
 
+The helper's first-slice field identifies the first executable frontier. It
+does not reduce a later instruction to implement the spec to that one ticket.
+The spec links every ticket, and parent-owned implementation retrieves and tracks
+all authorized tickets through their required evidence. Current and retained
+user authorization determines the endpoint across threads.
+
 Create or revise exactly one artifact at a time. Begin from the user's ordinary sentence and draft the first useful version yourself. Ask only when an unresolved decision can change the active document; inspect repository facts and use settled conversation context instead of asking the user to repeat discoverable information. Write every settled answer into that Markdown, keep the document concise, and regenerate `<initiative-slug>.html`. Remain on the active document until the user clearly approves it.
 
 ### Ask by Topic
@@ -200,7 +206,15 @@ The first three documents use document approval. Hold exactly three formal defin
 - `technical-contract` -> `approve-technical-contract`
 - `implementation-map` -> `approve-implementation-map`
 
-The helper persists canonical, hash-bound receipts privately under `~/.development-system/private/working-backwards/<workflow-id>/`. It also binds the absolute repository root, exact Git revision, and approved first slice. Repository or artifact drift returns to the earliest affected checkpoint. Implement Preview and every delivery operation re-read Git HEAD and fail closed when it no longer matches; the requested terminal slice must equal the approved first slice. A stale or concurrent lifecycle operation fails closed.
+The definition helper persists canonical, hash-bound receipts privately under
+`~/.development-system/private/working-backwards/<workflow-id>/`, binding the
+absolute root, Git revision and first executable slice. Its legacy Implement
+Preview operation still accepts only that exact first slice and rejects stale
+or concurrent state. That legacy operation is not the execution endpoint for a
+whole-spec request. A later authorized whole-feature implementation uses the
+parent-owned advisory workflow covering every linked ticket, retains definition receipts
+as sources and revalidates current repository facts before planning. Drift does
+not silently discard tickets or replace the user's retained authorization.
 
 At `create-private-handoff`, write the final handoff only to the helper's `privateHandoffPath`. Populate its required binding frontmatter from `workflowId`, `gateReceiptPath`, repository evidence, all three receipt hashes, the implementation-map hash, and the exact first slice. Run `render` again. Only `action: handoff-ready` proves the handoff matches the approved planning state.
 
@@ -210,4 +224,14 @@ Default to Standard. Use Quick only for settled, narrow, reversible behavior on 
 
 This workflow defines work; it does not execute it. Do not implement, publish tracker tickets, commit, push, open a PR, merge, release, deploy, spend money, or perform destructive operations. When `handoff-ready`, tell the user:
 
-> Working Backwards terminó. El primer slice es **<ticket-id>**. Para implementarlo en una sesión fresca de T3 Code, abre el handoff y solicita un **Implement Preview**.
+> Working Backwards terminó. El spec enlaza todos los tickets y conserva los criterios de aceptación. En una sesión nueva puedes pedir implementar ese spec completo hasta su endpoint autorizado.
+
+## Spec and ticket handoff
+
+Use [the shared definition contract](../coding-orchestration/references/spec-ticket-contract.md)
+for stable criteria, linked tickets, dependencies, rules and required evidence.
+Astra XHigh authors definition and the implementation plan; a different fresh
+Astra XHigh reviews that plan. Fast researchers supply bounded source facts.
+When implementation is authorized, use coding-orchestration and its advisory
+Jev recipe across the complete feature, including nonvisual behavior. Retrieve
+all tickets linked by the spec; preserve settled decisions across threads.

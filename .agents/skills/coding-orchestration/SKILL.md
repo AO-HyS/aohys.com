@@ -9,12 +9,14 @@ Optimize rápido → bien → barato: reach the complete usable result quickly,
 correct it with focused evidence, and keep measured cost and complexity low.
 Preserve behavior, data boundaries and authorization.
 
-## Use the installed advisory profile
+## Coordinate the full feature
 
-For non-trivial implementation, a material decision or independent review,
-read [Jev advisory execution](references/jev-advisory.md) once and use its
-Sol/Flash/Astra profile. The current selected parent stays the orchestrator.
-Tiny deterministic work stays direct; the recipe does not add a second planner.
+Read [Jev advisory execution](references/jev-advisory.md) once for nontrivial work.
+Keep the selected parent. Use fast research, Astra XHigh planning, a different
+fresh Astra XHigh plan review, bounded writers, independent final review and
+actual behavior evidence. Jev advises at useful routing and correction decisions;
+the parent records the decision and executes through native tools. Classification
+failure does not globally block work. Tiny deterministic edits stay direct.
 
 ## Resolve the run
 
@@ -47,8 +49,7 @@ silently substitute a provider or promise equivalent results from every model.
 ## Execute with useful ownership
 
 The parent owns decomposition, architecture, integration, conflicts,
-verification, findings and the terminal state. Do not add another coordinator,
-engine, tracker, approval protocol or browser bridge. Execute the repository's
+verification, findings and the terminal state. Jev advises this parent; native host tools perform the work. Execute the repository's
 local canonical recipe; a skill does not migrate a product's form or other
 domain architecture to match its own examples.
 
@@ -66,26 +67,13 @@ expected receipt and known failures when resuming. Workers preserve unrelated
 edits and return changed paths, commands, results and remaining gaps. A clean
 diff, first implementation or passing lint does not close unverified behavior.
 
-## Test changes and evidence gaps
+## Automated tests and evidence
 
-Treat tests as evidence for observable behavior. The default policy is
-allowedChanges = []: a worker does not add, modify, delete or generate a test
-file unless the parent closes a reviewed policy exception first. Never create
-one test per form or feature as a reflex. When a required behavior lacks
-evidence, report the actual gap and its smallest useful check to the parent;
-the worker does not widen test scope on its own.
-
-When test files do change, the parent invokes the shared runtime policy helper:
-findTestPolicyViolations({root, baseRef, policyPath:
-"config/test-change-policy.json"}). It returns a violation array. An exception
-must name each path, its SHA-256 (or null for an authorized deletion), the
-reason, issue and reviewed content. Do not hide a violation with a skipped
-assertion, ignore, disable or fake mock.
-
-Choose the quickest adequate existing check plus the checks named in the
-contract. Preserve exit codes and rerun only after a relevant change, failure,
-required gate or unresolved risk. A test count or green run never substitutes
-for the accepted objective.
+By default, do not create, modify, delete, generate, or run automated tests
+unless the user explicitly asks. Preserve existing test files and CI protections.
+Use applicable build, type, lint, static validation, or real behavior observation
+as required by the task. Do not make claims from test counts. Report a concrete
+behavior gap and its smallest useful observation without adding a test suite.
 
 ## UI acceptance and evidence
 
@@ -114,3 +102,5 @@ For host-specific CLI dispatch, read [host-dispatch](references/host-dispatch.md
 For interruption or ownership recovery, read
 [execution-continuity](references/execution-continuity.md). T3 packet details
 are in [worker-reference](worker-reference.md).
+
+For nontrivial delivery and benchmark results, default to a readable HTML report with passed/failed/not-reached behavior, timing, evidence and limitations. Markdown is supplementary. Publish sanitized report assets through the user-authorized temporary tunnel and state its actual lifetime conditions; keep secrets and raw transcripts outside the served directory. A post-deadline report cannot convert a failed timed run into success.

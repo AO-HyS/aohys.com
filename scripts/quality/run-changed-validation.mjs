@@ -17,12 +17,11 @@ const plan = buildChangedValidationPlan({
   fullCommands: [
     ["pnpm", ["run", "lint"]],
     ["pnpm", ["run", "typecheck"]],
-    ["pnpm", ["run", "test"]],
     ["pnpm", ["run", "build"]],
   ],
   // Every affected package currently aliases `lint` to its TypeScript check.
   // Running `typecheck` as well repeated the same compiler invocation.
-  affectedScripts: ["lint", "test"],
+  affectedScripts: ["lint"],
   affectedPackageSelectors: [
     { prefix: "apps/dashboard", selector: "@aohys/dashboard" },
     { prefix: "apps/site", selector: "@aohys/site" },

@@ -1,0 +1,40 @@
+{
+  "approved": false,
+  "kind": "direction-exploration",
+  "seed": "90569fd1",
+  "reroll": 1,
+  "canon": true,
+  "variant": "conventional",
+  "revision": 2,
+  "correctionCount": 1,
+  "tool": "image_gen__imagegen",
+  "runtimeTool": "tools.image_gen__imagegen",
+  "nativeOutputPath": "/Users/corrortiz/.codex/generated_images/01a0b0da-370f-7fe1-9aae-ba7f60b8a11a/exec-87e8fc19-577d-4e2b-8ba2-a6f21a8668d4.png",
+  "sourceImage": ".impeccable/mocks/decision/aohys-20260917-r2/conventional.png",
+  "imagePath": ".impeccable/mocks/decision/aohys-20260917-r2/conventional-v2.png",
+  "promptPath": ".impeccable/mocks/decision/aohys-20260917-r2/conventional-v2.prompt.txt",
+  "dimensions": {
+    "width": 1536,
+    "height": 1024
+  },
+  "conceptImagery": true,
+  "visualReview": {
+    "confirmed": [
+      "All six project names and two-row layout preserved",
+      "Architecture callout preserved",
+      "Astro, Content graph, Publishing visible in AOHYS architecture nodes",
+      "Lower AOHYS miniature slogan removed",
+      "NutriPlan labels Appointments, Care team, Roles visible",
+      "NutriPlan outcome percentages, calorie values, patient identity and chart removed"
+    ],
+    "caveats": [
+      "Generation also simplified Barber appointment details into anonymous blocks and slightly regenerated photography.",
+      "NutriPlan schedule contains tiny faint schematic time ticks; these are not clinical measurements."
+    ],
+    "unproven": [
+      "Responsive behavior",
+      "Keyboard and focus interactions",
+      "Nested-layer dismissal"
+    ]
+  }
+}

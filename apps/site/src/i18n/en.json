@@ -90,7 +90,7 @@
       "scene": "AOHYS product systems stage"
     },
     "publicContent": {
-      "available": "Product systems · AI-native delivery",
+      "available": "Software for real workflows",
       "work": "Work",
       "practice": "Practice",
       "architecture": "Architecture",
@@ -98,12 +98,12 @@
       "talk": "Let's talk",
       "viewWork": "View work",
       "viewProject": "Open case",
-      "publicProof": "Selected system",
-      "selectedStage": "Selected work, ordered by evidence.",
-      "selectedStageIntro": "Six systems showing the result, the product or operational capability, and my role in the work.",
+      "publicProof": "Selected work",
+      "selectedStage": "Products, professional work, and method.",
+      "selectedStageIntro": "Six examples of products, professional contributions and the engineering method behind my work.",
       "process": "Great outcomes start with clear systems.",
       "workArchive": "Work archive",
-      "workArchiveBody": "Six systems told through business context, what was built, what each enables, and the role behind the result.",
+      "workArchiveBody": "Products, professional contributions and an engineering method, with the context and role behind each example.",
       "evidence": "Project links",
       "readCase": "Read case",
       "source": "Public source",
@@ -164,9 +164,18 @@
         }
       ],
       "serviceSignals": [
-        { "items": ["www", "app", "mobile"], "emphasisIndex": -1 },
-        { "items": ["PM", "DES", "AOHYS", "ENG", "QA"], "emphasisIndex": 2 },
-        { "items": ["now", "AI · DATA · CLOUD", "next"], "emphasisIndex": 1 }
+        {
+          "items": ["www", "app", "mobile"],
+          "emphasisIndex": -1
+        },
+        {
+          "items": ["PM", "DES", "AOHYS", "ENG", "QA"],
+          "emphasisIndex": 2
+        },
+        {
+          "items": ["now", "AI · DATA · CLOUD", "next"],
+          "emphasisIndex": 1
+        }
       ],
       "architectureHeroNodes": [
         {
@@ -421,5 +430,43 @@
     "whatsappLabel": "WhatsApp Me",
     "fallbackText": "Prefer direct contact?",
     "honeypotLabel": "Website"
+  },
+  "horizonte": {
+    "homeTitle": "Alejandro Ortiz Corro",
+    "role": "full stack development",
+    "tabs": "Products",
+    "parts": "Product parts",
+    "swipe": "Swipe the lens to change product",
+    "cta": "See this work",
+    "aohysName": "AOHYS website",
+    "aohysStatus": "Public website and Development System",
+    "workHeading": "Five products, five real jobs",
+    "workIntro": "Each one started with something concrete someone needed to get done. Here is what it solves and what I built.",
+    "readCase": "Read the case",
+    "readSystem": "See how it is built",
+    "buildLabel": "How I build",
+    "buildSystem": "My Development System",
+    "buildAgents": "How I work with coding agents",
+    "careerHeading": "Career",
+    "careerIntro": "On product teams since 2018; building my own with AOHYS since 2015.",
+    "careerMore": "See career and resume",
+    "careerParallel": "in parallel",
+    "closeHeading": "Two ways to start",
+    "closeIntro": "Pick the one that looks like what you need.",
+    "teamHeading": "Join your team",
+    "teamBody": "Strong frontend, full stack when the product needs it. I like understanding the business before writing code.",
+    "teamLink": "See career and resume",
+    "buildHeading": "Build your product",
+    "buildBody": "If you have a process that lives in notebooks, messages or spreadsheets today, let’s talk about turning it into a system.",
+    "buildLink": "Write to me",
+    "back": "Back to work",
+    "next": "Next work",
+    "scrollCue": "Follow the story",
+    "caseLinks": "Public links",
+    "otherWork": "More work",
+    "experience": "Experience",
+    "download": "Download PDF resume",
+    "direct": "Direct contact",
+    "footerLine": "Alejandro Ortiz Corro · full stack development"
   }
 }

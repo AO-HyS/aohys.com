@@ -122,13 +122,13 @@ export async function collectFreshLocalMeasurement() {
       ["scripts/performance/measure.mjs", "--output", measurementPath],
       { cwd: repositoryRoot, stdio: "ignore" },
     );
-    execFileSync("pnpm", ["performance:test"], {
+    execFileSync("pnpm", ["performance:check"], {
       cwd: repositoryRoot,
       stdio: "inherit",
     });
     return {
       measurement: JSON.parse(await readFile(measurementPath, "utf8")),
-      semanticCheck: { command: "pnpm performance:test", exitCode: 0 },
+      semanticCheck: { command: "pnpm performance:check", exitCode: 0 },
     };
   } finally {
     rmSync(temporaryDirectory, { recursive: true, force: true });
@@ -174,7 +174,7 @@ export function assertCommittedEvidence(evidence, catalog, baseline) {
   assert.equal(evidence.verification?.threshold, alert.verifiedFix.value);
   assert.equal(
     evidence.verification?.semanticCheck?.command,
-    "pnpm performance:test",
+    "pnpm performance:check",
   );
   const semanticCheckPassed =
     evidence.verification?.semanticCheck?.exitCode === 0;

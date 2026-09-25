@@ -1,0 +1,169 @@
+{
+  "title": "AOHYS · Ronda 2 — revisión descartada",
+  "question": "Ambas direcciones fueron descartadas: hay demasiada información y falta una premisa clara. Anatomía funciona mejor visualmente; Atlas explica mejor el tema. Esta página conserva la ronda para revisarla; ninguna dirección está seleccionada. La siguiente exploración debe aclarar primero quién soy, qué aporto y para qué contactarme.",
+  "options": [
+    {
+      "id": "decision-atlas",
+      "label": "Atlas de decisiones",
+      "lineage": "Cartografía y planos a distintas escalas",
+      "thesis": "Seis trabajos forman un mapa visual: puedes mirar el producto y entrar en las decisiones que lo sostienen.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": [
+        "Imagen axonométrica propia",
+        "Índice legible de seis casos",
+        "Planos y recortes con profundidad"
+      ],
+      "viewport": "Identidad personal arriba; un atlas asimétrico de seis trabajos ocupa el centro; arquitectura entra en el mismo plano.",
+      "risk": "La cartografía no debe exigir aprender controles. Todos los casos tendrán acceso textual directo.",
+      "comp": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260917-r2/decision-atlas-v2.png",
+      "raised": [
+        {
+          "from": "Montaje superpuesto",
+          "raise": "Dar presencia simultánea a todo el trabajo."
+        },
+        {
+          "from": "Composición radial",
+          "raise": "Una jerarquía con un foco dominante."
+        },
+        {
+          "from": "Anillos de profundidad",
+          "raise": "Mostrar profundidad sin exigir movimiento."
+        },
+        {
+          "from": "Estantes de proyectos",
+          "raise": "Declarar estado y alcance de cada proyecto."
+        },
+        {
+          "from": "Índice direccionable",
+          "raise": "Acceso directo y estable a cada caso."
+        },
+        {
+          "from": "Explicación ilustrada",
+          "raise": "Explicar arquitectura con ejemplos comprensibles."
+        }
+      ]
+    },
+    {
+      "id": "product-anatomy",
+      "label": "Anatomía del producto",
+      "kicker": "SIN SELECCIÓN",
+      "lineage": "Despiece de diseño industrial",
+      "thesis": "Una imagen propia conecta lo que ves de un producto con las decisiones e infraestructura que hay debajo.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": [
+        "Escultura de interfaces y capas",
+        "Volumen en miel, oliva y albaricoque",
+        "Tipografía sans precisa"
+      ],
+      "viewport": "Presentación breve a la izquierda, imagen de producto en profundidad al centro y seis casos a la derecha; debajo, arquitectura.",
+      "risk": "El render puede volverse decorativo: debe mostrar software reconocible y conducir a evidencia real. Es una técnica familiar que necesita una composición propia.",
+      "comp": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260917-r2/product-anatomy-v3.png"
+    },
+    {
+      "id": "gyaru",
+      "label": "Montaje superpuesto",
+      "verdict": "declined",
+      "lineage": "pop-culture-shelf-gyaru-magazine-density",
+      "thesis": "Seis productos superpuestos con anotaciones sobre la contribución.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Forma traducida a los colores confirmados"],
+      "viewport": "Seis productos superpuestos con anotaciones sobre la contribución.",
+      "case": "Pierde frente al atlas en identificación profesional y claridad del trabajo.",
+      "risk": "La multitud de llamadas compite con la identidad personal y dificulta leer los seis casos.",
+      "kept": "Dar presencia simultánea a todo el trabajo.",
+      "hero": "https://impeccable.style/worlds/cards/pop-culture-shelf-gyaru-magazine-density-hero.webp"
+    },
+    {
+      "id": "angura",
+      "label": "Composición radial",
+      "verdict": "declined",
+      "lineage": "posters-covers-sleeves-angura-theatre-poster",
+      "thesis": "Seis caminos de producto desde un origen; navegación en el borde.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Forma traducida a los colores confirmados"],
+      "viewport": "Seis caminos de producto desde un origen; navegación en el borde.",
+      "case": "Pierde frente al atlas en identificación profesional y claridad del trabajo.",
+      "risk": "El despliegue teatral desplaza al profesional y los rayos confunden el orden de lectura.",
+      "kept": "Una jerarquía con un foco dominante.",
+      "hero": "https://impeccable.style/worlds/cards/posters-covers-sleeves-angura-theatre-poster-hero.webp"
+    },
+    {
+      "id": "accretion",
+      "label": "Anillos de profundidad",
+      "verdict": "declined",
+      "lineage": "galaxies-nebulae-deep-time-accretion-disk-threshold",
+      "thesis": "Ir de superficie a arquitectura mediante capas concéntricas.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Forma traducida a los colores confirmados"],
+      "viewport": "Ir de superficie a arquitectura mediante capas concéntricas.",
+      "case": "Pierde frente al atlas en identificación profesional y claridad del trabajo.",
+      "risk": "El espacio cósmico no identifica a Alejandro y reduce proyectos concretos a etiquetas orbitales.",
+      "kept": "Mostrar profundidad sin exigir movimiento.",
+      "hero": "https://impeccable.style/worlds/cards/galaxies-nebulae-deep-time-accretion-disk-threshold-hero.webp"
+    },
+    {
+      "id": "brine",
+      "label": "Estantes de proyectos",
+      "verdict": "declined",
+      "lineage": "food-fermentation-culinary-theater-pickling-brine-calendar",
+      "thesis": "Productos ordenados por estado y evolución.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Forma traducida a los colores confirmados"],
+      "viewport": "Productos ordenados por estado y evolución.",
+      "case": "Pierde frente al atlas en identificación profesional y claridad del trabajo.",
+      "risk": "Los recipientes sugieren otro sector y ocultan interfaces; la maduración no explica contribución.",
+      "kept": "Declarar estado y alcance de cada proyecto.",
+      "hero": "https://impeccable.style/worlds/cards/food-fermentation-culinary-theater-pickling-brine-calendar-hero.webp"
+    },
+    {
+      "id": "teletext",
+      "label": "Índice direccionable",
+      "verdict": "declined",
+      "lineage": "broadcast-programming-teletext-service",
+      "thesis": "Cada caso tiene acceso directo; arquitectura tiene su propia página.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Forma traducida a los colores confirmados"],
+      "viewport": "Cada caso tiene acceso directo; arquitectura tiene su propia página.",
+      "case": "Pierde frente al atlas en identificación profesional y claridad del trabajo.",
+      "risk": "El lenguaje retro desplaza al profesional y empobrece las imágenes actuales.",
+      "kept": "Acceso directo y estable a cada caso.",
+      "hero": "https://impeccable.style/worlds/cards/broadcast-programming-teletext-service-hero.webp"
+    },
+    {
+      "id": "zine",
+      "label": "Explicación ilustrada",
+      "verdict": "declined",
+      "lineage": "hand-drawn-zine-explainer",
+      "thesis": "Viñetas explican decisiones detrás de los productos.",
+      "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+      "materials": ["Forma traducida a los colores confirmados"],
+      "viewport": "Viñetas explican decisiones detrás de los productos.",
+      "case": "Pierde frente al atlas en identificación profesional y claridad del trabajo.",
+      "risk": "Las mascotas debilitan la elegancia y los bocadillos fragmentan el inventario en demasiadas notas.",
+      "kept": "Explicar arquitectura con ejemplos comprensibles.",
+      "hero": "https://impeccable.style/worlds/cards/hand-drawn-zine-explainer-hero.webp"
+    }
+  ],
+  "reroll": {
+    "registers": ["safer", "bolder"]
+  },
+  "buildPath": {
+    "value": "comp",
+    "toggle": true
+  },
+  "canon": true,
+  "canonCard": {
+    "label": "Índice visual convencional",
+    "thesis": "Presentación breve y seis casos en una retícula clara, con acceso directo a arquitectura y CV.",
+    "palette": ["#FFFFFF", "#473C33", "#FEC868", "#ABC270", "#FDA769"],
+    "materials": [
+      "Blanco y color de proyecto",
+      "Retícula fotográfica",
+      "Tipografía sans"
+    ],
+    "viewport": "Identidad, seis casos en dos filas y arquitectura como siguiente bloque.",
+    "risk": "Es legible y familiar, pero tiene menos carácter propio.",
+    "comp": "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260917-r2/conventional-v2.png"
+  },
+  "steer": true
+}

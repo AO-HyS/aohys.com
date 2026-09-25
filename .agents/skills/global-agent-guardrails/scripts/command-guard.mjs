@@ -141,7 +141,8 @@ async function main() {
     throw new Error("Usage: command-guard.mjs <check|hook> [options]");
   const harnessIndex = args.indexOf("--harness");
   const harness = harnessIndex >= 0 ? args[harnessIndex + 1] : null;
-  if (harness !== "codex") throw new Error("hook requires --harness codex");
+  if (harness !== "codex" && harness !== "claude")
+    throw new Error("hook requires --harness codex or claude");
   try {
     const commands = commandsFrom(await stdinJson());
     if (commands.length === 0)

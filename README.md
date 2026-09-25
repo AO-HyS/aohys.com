@@ -38,7 +38,7 @@ pnpm verify
 pnpm --filter @aohys/site dev
 ```
 
-`pnpm verify` is the main local quality gate. It runs foundation validation, linting, type checks, Vitest route/content tests, and builds across the monorepo.
+`pnpm verify` is the main local quality gate. It runs foundation validation, linting, type checks, architecture and observability validation, and builds across the monorepo. The repository intentionally has no automated tests.
 
 To evaluate the Cloudflare Pages shape locally:
 
@@ -52,13 +52,13 @@ The public pages can be inspected without secrets. Provider-backed flows such as
 
 The repo uses visible local and remote gates because this site is also a public engineering sample.
 
-| Gate              | Command                               | Runs                                                                               |
-| ----------------- | ------------------------------------- | ---------------------------------------------------------------------------------- |
-| Pre-commit        | `pnpm run verify:precommit`           | staged formatting, foundation validation, React Doctor                             |
-| Pre-push          | `pnpm run quality:push`               | lint, typecheck, tests, build, React Doctor                                        |
-| Local full verify | `pnpm verify`                         | foundation validation, lint, typecheck, tests, build                               |
-| Pull request CI   | `.github/workflows/quality-gates.yml` | install with frozen lockfile, foundation validation, lint, typecheck, tests, build |
-| Release Train     | `.github/workflows/release-train.yml` | verify, then Cloudflare preview/production deploys on protected branch pushes      |
+| Gate              | Command                               | Runs                                                                          |
+| ----------------- | ------------------------------------- | ----------------------------------------------------------------------------- |
+| Pre-commit        | `pnpm run verify:precommit`           | staged formatting, foundation validation, React Doctor                        |
+| Pre-push          | `pnpm run quality:push`               | lint, typecheck, build, React Doctor                                          |
+| Local full verify | `pnpm verify`                         | foundation validation, lint, typecheck, build                                 |
+| Pull request CI   | `.github/workflows/quality-gates.yml` | install with frozen lockfile, foundation validation, lint, typecheck, build   |
+| Release Train     | `.github/workflows/release-train.yml` | verify, then Cloudflare preview/production deploys on protected branch pushes |
 
 Husky installs through the root `prepare` script and owns both local
 boundaries. `.husky/pre-commit` keeps commit feedback fast, while
@@ -123,7 +123,7 @@ Copy `.env.example` to `.env.local` for local development. Real local secrets st
 
 | Environment  | Purpose                                        | Source of truth                  | Credential expectation                                                                                  |
 | ------------ | ---------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `local`      | Developer machine and public-source evaluation | `.env.local` plus `.env.example` | Public pages and tests run without private provider secrets; live provider workflows need local secrets |
+| `local`      | Developer machine and public-source evaluation | `.env.local` plus `.env.example` | Public pages build and run without private provider secrets; live provider workflows need local secrets |
 | `preview`    | `develop` branch verification                  | GitHub Environment `preview`     | Non-production Cloudflare, Convex, Resend, Better Auth, and Google OAuth values; no PostHog key         |
 | `production` | `main` branch and `aohys.com`                  | GitHub Environment `production`  | Production Cloudflare, Convex, PostHog, Resend, Better Auth, and Google OAuth values                    |
 

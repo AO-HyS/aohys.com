@@ -1,0 +1,15 @@
+{
+  "prompt": "Edit the supplied AOHYS website concept. Preserve its 1536x1024 desktop layout, horizontal introduction, large Central Belleza project spread, calm typography and next-project glimpse. This is a targeted correction of an unapproved web design concept, not a new direction.\n1. Replace the leaf logo with a refined typography-only AOHYS wordmark. No leaves, flower or other icon. Beside the wordmark, visibly add exactly \"Alejandro Ortiz Corro · Software engineer\" in an understated legible sans. Keep the other navigation labels.\n2. Move the featured-project name \"Central Belleza\" and the personal credit \"My role: product direction, frontend, backend and release.\" to a compact single caption row at the TOP of the project spread, before the imagery. Remove duplicate name and role labels from below. Keep the factual description \"Bookings, teams and the day-to-day work of a beauty business.\" near the same project, once.\n3. Give the actual Central Belleza WEBSITE screenshot about 60 percent of the broad spread's width, making it the dominant readable object; the human illustration occupies about 40 percent. Preserve the artistic wide composition, but clarify that the person builds SOFTWARE and the salon artwork is part of that project. A slight natural shared edge is enough; no giant floating card or device frame. Keep the exact Central Belleza imagery from the supplied concept.\n4. Remove the giant honey oval, all ornamental leaves and branches in the AOHYS page, project numbers and little decorative rules. Preserve plants that are actually part of the original Central Belleza or NutriPlan artwork. Let clean neutral WHITE breathe around the spread. Color can appear as one small flat olive or honey field beside the caption, never as a decorative blob.\n5. Recolor the italic \"products\" to the approved apricot #FDA769; no saturated burnt orange. All other AOHYS text brown ink #473C33. Honey #FEC868 CTA, olive #ABC270 accent, neutral white background; no gradients. Keep original project media colors unchanged.\n6. In the next-project area keep only \"Next: NutriPlan\" and its real project image; remove invented supporting copy and decorative numbering or leaves.\nKeep exactly \"I build software products.\" / \"From the first conversation to release.\" / \"My specialty is frontend. I also work across business workflows, backend and delivery.\" / \"Let's talk\". Do not add any other slogan, metric, claim, symbol or ornamental motif. The final image must feel polished, elegant, warm, professional and calmly confident.\n",
+  "approved": false,
+  "kind": "direction-exploration",
+  "seed": "90569fd1",
+  "sourceImages": [
+    "/Users/corrortiz/Documents/AO/aohys/.impeccable/mocks/decision/aohys-20260916-r1/living-catalogue.png"
+  ],
+  "nativeOutput": {
+    "tool": "image_gen.imagegen",
+    "path": "/Users/corrortiz/.codex/generated_images/01a0a988-0c06-7301-be18-d2301f6e95a2/exec-db148852-111c-4f3c-9fd9-51e0b0b80cce.png",
+    "format": "image/png",
+    "resultFields": ["image_url", "output_hint"]
+  }
+}

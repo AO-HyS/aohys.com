@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>De un proyecto al siguiente — Estudio de movimiento</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #473c33;
+        --honey: #fec868;
+        --olive: #abc270;
+        --apricot: #fda769;
+        color: var(--ink);
+        background: #fff;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        font-synthesis: none;
+        scrollbar-color: var(--ink) #fff;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      ::selection { color: var(--ink); background: var(--honey); }
+      main { width: min(100%, 1536px); margin: auto; padding: clamp(24px, 4vw, 64px); }
+      header { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 40px; }
+      h1, h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; letter-spacing: -.03em; text-wrap: balance; }
+      h1 { font-size: clamp(2.4rem, 4.1vw, 4rem); line-height: 1.08; margin: 0 0 14px; }
+      header p { margin: 0; font-size: 1rem; line-height: 1.5; }
+      .study-label { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+      .study-label::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--olive); }
+      .controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px 32px; padding: 20px 0; border-top: 1px solid #d9d4d0; }
+      .projects { display: flex; gap: 8px; flex-wrap: wrap; }
+      button { font: inherit; color: inherit; cursor: pointer; min-height: 46px; padding: 10px 18px; border: 0; border-radius: 4px; background: transparent; }
+      .projects button { box-shadow: inset 0 -1px var(--ink); border-radius: 0; }
+      .projects button[aria-pressed="true"] { background: var(--honey); box-shadow: inset 0 -2px var(--ink); }
+      button:hover { background: var(--apricot); }
+      button:active { background: var(--olive); }
+      button:disabled { opacity: .5; cursor: wait; }
+      :focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+      .preferences { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 24px; }
+      .replay { text-decoration: underline; text-underline-offset: 5px; }
+      .reduce { display: flex; align-items: center; gap: 9px; min-height: 46px; cursor: pointer; font-size: .9375rem; }
+      input { width: 19px; height: 19px; margin: 0; accent-color: var(--ink); cursor: pointer; }
+      .project-info { display: grid; margin: 10px 0 24px; }
+      .caption { grid-area: 1 / 1; display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 24px; }
+      h2 { font-size: clamp(2rem, 3vw, 2.75rem); line-height: 1.12; margin: 0; }
+      .caption p { font-size: .9375rem; line-height: 1.5; margin: 0; max-width: 65ch; }
+      .caption[aria-hidden="true"] { visibility: hidden; }
+      figure { margin: 0; }
+      .media { position: relative; aspect-ratio: 2545 / 1288; overflow: hidden; background: #fff; border-radius: 6px; isolation: isolate; }
+      .frame { display: block; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+      .frame[aria-hidden="true"] { visibility: hidden; }
+      .caption.is-incoming, .frame.is-incoming { visibility: visible; }
+      .frame.is-incoming { z-index: 1; }
+      figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding: 16px 0; font-size: .875rem; line-height: 1.5; }
+      #status { min-height: 1.5em; margin: 0; }
+      .media-note { margin: 0; }
+      footer { border-top: 1px solid #d9d4d0; padding-top: 20px; }
+      footer p { max-width: 65ch; margin: 0; font-size: .9375rem; line-height: 1.6; }
+      @media (max-width: 720px) {
+        header { display: block; margin-bottom: 28px; }
+        .study-label { margin-top: 16px; }
+        .controls { align-items: stretch; gap: 12px; }
+        .preferences { width: 100%; justify-content: space-between; gap: 4px 12px; }
+        .replay { padding-left: 0; padding-right: 0; }
+        .project-info { margin: 14px 0 20px; }
+        .caption { display: block; }
+        .caption p { margin-top: 10px; }
+        .media { border-radius: 3px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <h1>De un proyecto al siguiente</h1>
+          <p>Elige un proyecto para ver cómo cambia el catálogo.</p>
+        </div>
+        <p class="study-label">Estudio de movimiento</p>
+      </header>
+      <div class="controls">
+        <div class="projects" role="group" aria-label="Elegir proyecto">
+          <button type="button" data-project="barber" aria-pressed="true" aria-controls="project-preview" disabled>Central Belleza</button>
+          <button type="button" data-project="nutriplan" aria-pressed="false" aria-controls="project-preview" disabled>NutriPlan</button>
+        </div>
+        <div class="preferences">
+          <button class="replay" id="replay" type="button" disabled>Repetir transición</button>
+          <label class="reduce"><input id="reduce-motion" type="checkbox" />Reducir movimiento</label>
+        </div>
+      </div>
+      <section id="project-preview" aria-label="Vista del proyecto">
+        <div class="project-info">
+          <div class="caption" data-caption="barber">
+            <h2>Central Belleza</h2>
+            <p>Mi rol: dirección de producto, frontend, backend y entrega.</p>
+          </div>
+          <div class="caption" data-caption="nutriplan" aria-hidden="true">
+            <h2>NutriPlan</h2>
+            <p>Mi rol: dirección de producto, frontend, backend y entrega.</p>
+          </div>
+        </div>
+        <figure>
+          <div class="media">
+            <img class="frame" data-frame="barber" src="media/barber-current-hero.png" width="2545" height="1288" alt="Captura de la landing de Central Belleza: Tu talento, en tus clientes. Tu negocio, en orden." />
+            <img class="frame" data-frame="nutriplan" src="media/nutriplan-current-hero.png" width="2545" height="1288" alt="Captura de la landing de NutriPlan: Tu consulta, con más claridad." aria-hidden="true" />
+          </div>
+          <figcaption>
+            <p class="media-note">Capturas reales · 16 de septiembre de 2026</p>
+            <p id="status" role="status" aria-live="polite" aria-atomic="true">Proyecto actual: Central Belleza</p>
+          </figcaption>
+        </figure>
+      </section>
+      <footer>
+        <p>Una captura revela la siguiente; el título y el rol cambian con ella. Las imágenes son referencias visuales: sus botones no son interactivos.</p>
+      </footer>
+      <noscript><p>Activa JavaScript para probar la transición. La captura de Central Belleza permanece disponible.</p></noscript>
+    </main>
+    <script>
+      (() => {
+        const duration = 650;
+        const easing = 'cubic-bezier(.22,1,.36,1)';
+        const buttons = [...document.querySelectorAll('[data-project]')];
+        const frames = Object.fromEntries([...document.querySelectorAll('[data-frame]')].map(node => [node.dataset.frame, node]));
+        const captions = Object.fromEntries([...document.querySelectorAll('[data-caption]')].map(node => [node.dataset.caption, node]));
+        const names = { barber: 'Central Belleza', nutriplan: 'NutriPlan' };
+        const status = document.querySelector('#status');
+        const replay = document.querySelector('#replay');
+        const reduce = document.querySelector('#reduce-motion');
+        const preference = matchMedia('(prefers-reduced-motion: reduce)');
+        let current = 'barber';
+        let requested = current;
+        let busy = false;
+        let version = 0;
+        let animations = [];
+        reduce.checked = preference.matches;
+
+        const reduced = () => reduce.checked || preference.matches;
+        const updateButtons = () => buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.project === requested)));
+
+        function settle(project) {
+          version += 1;
+          animations.forEach(animation => animation.cancel());
+          animations = [];
+          for (const key of Object.keys(frames)) {
+            for (const element of [frames[key], captions[key]]) {
+              element.classList.remove('is-incoming');
+              element.removeAttribute('style');
+              if (key === project) element.removeAttribute('aria-hidden');
+              else element.setAttribute('aria-hidden', 'true');
+            }
+          }
+          current = project;
+          busy = false;
+          status.textContent = `Proyecto actual: ${names[project]}`;
+        }
+
+        async function transition(project) {
+          if (reduced() || !Element.prototype.animate) {
+            settle(project);
+            return;
+          }
+          busy = true;
+          const ownVersion = ++version;
+          const outgoing = current;
+          status.textContent = 'Transición en curso';
+          frames[project].classList.add('is-incoming');
+          captions[project].classList.add('is-incoming');
+          const timing = { duration, easing, fill: 'both' };
+          animations = [
+            frames[project].animate([{ clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0)' }], timing),
+            frames[outgoing].animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-2%)' }], timing),
+            captions[outgoing].animate([{ opacity: 1 }, { opacity: 0, offset: .35 }, { opacity: 0 }], timing),
+            captions[project].animate([{ opacity: 0 }, { opacity: 0, offset: .2 }, { opacity: 1 }], timing),
+          ];
+          try { await Promise.all(animations.map(animation => animation.finished)); }
+          catch { return; }
+          if (ownVersion !== version) return;
+          settle(project);
+          if (requested !== current) transition(requested);
+        }
+
+        function select(project) {
+          requested = project;
+          updateButtons();
+          if (reduced()) settle(requested);
+          else if (!busy && requested !== current) transition(requested);
+        }
+
+        buttons.forEach(button => button.addEventListener('click', () => select(button.dataset.project)));
+        replay.addEventListener('click', () => {
+          const target = requested;
+          if (reduced()) { settle(target); return; }
+          settle(target === 'barber' ? 'nutriplan' : 'barber');
+          transition(target);
+        });
+        reduce.addEventListener('change', () => {
+          if (preference.matches) reduce.checked = true;
+          if (reduced()) settle(requested);
+        });
+        preference.addEventListener('change', () => {
+          reduce.checked = preference.matches;
+          if (reduced()) settle(requested);
+        });
+        Promise.all(Object.values(frames).map(frame => frame.decode())).then(() => {
+          buttons.forEach(button => { button.disabled = false; });
+          replay.disabled = false;
+        }).catch(() => {
+          status.textContent = 'No se pudieron cargar las capturas. Recarga la página para volver a intentar.';
+        });
+      })();
+    </script>
+  </body>
+</html>

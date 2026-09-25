@@ -1,0 +1,162 @@
+{
+  "title": "AOHYS · Ronda 6: desde tu calibración",
+  "question": "Luminoso y limpio, blanco y café con pasteles, un protagonista con profundidad, tipografía fina y tu ciclo de fallar, aprender y rehacer. Elige una, ajusta o pide otra mano.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Horizonte pastel",
+      "kicker": "THE ROLL",
+      "lineage": "Óptica y astronomía traducidas a luz de día",
+      "thesis": "Una esfera suave en el centro de una página blanca: cada producto aparece a través de su lente, y tus iteraciones orbitan alrededor como versiones anteriores.",
+      "palette": ["#FFFFFF", "#473C33", "#FCE3A6", "#D6E2B4", "#FDD2B1"],
+      "materials": [
+        "Esfera translúcida con lente suave",
+        "Tipografía fina y espaciada",
+        "Órbitas de versiones anteriores"
+      ],
+      "viewport": "Nombre y «full stack development» en tipografía fina arriba; al centro la esfera pastel deja ver The Barber Central a través de la lente; debajo, una sola acción.",
+      "risk": "La metáfora puede sentirse ajena al trabajo si la lente no muestra producto real con claridad.",
+      "raised": [
+        {
+          "from": "challenger-jcard",
+          "raise": "Cada producto se abre por etapas, un panel a la vez, en lugar de mostrarse todo junto."
+        },
+        {
+          "from": "challenger-mook",
+          "raise": "Etiquetas finas que se despliegan y nombran cada parte del producto y tu contribución."
+        },
+        {
+          "from": "challenger-blind",
+          "raise": "Cada cambio avanza un paso con un pequeño rebote; un intento fallido se muestra a medio paso, sin ocultarlo."
+        },
+        {
+          "from": "challenger-segment",
+          "raise": "Las versiones anteriores siguen visibles como fantasmas: lo ausente también está diseñado."
+        }
+      ],
+      "comp": ".impeccable/mocks/decision/aohys-20260923-r6/horizonte.png"
+    },
+    {
+      "id": "model-pick",
+      "label": "Iteración visible",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Desarrollo de producto industrial: boceto, prototipo, producto",
+      "thesis": "Un solo objeto protagonista muestra cómo trabajas: sus versiones previas quedan como estelas y el movimiento es fallar, aprender y rehacer.",
+      "palette": ["#FFFFFF", "#473C33", "#FCE3A6", "#D6E2B4", "#FDD2B1"],
+      "materials": [
+        "Objeto 3D suave en luz natural",
+        "Estelas translúcidas de versiones",
+        "Mucho blanco y tipografía fina"
+      ],
+      "viewport": "Al centro, la interfaz de un producto real emerge de dos versiones previas translúcidas; nombre, rol y una acción arriba en calma.",
+      "risk": "Es la idea más directa de tu método; puede sentirse familiar si las versiones parecen simples sombras.",
+      "comp": ".impeccable/mocks/decision/aohys-20260923-r6/iteracion.png"
+    },
+    {
+      "id": "challenger-cloud",
+      "label": "Borde iridiscente",
+      "verdict": "competitive",
+      "lineage": "Nubes iridiscentes: la luz se difracta sólo en el borde",
+      "thesis": "Todo es blanco y tranquilo; el color vive únicamente en el borde de cada producto y cambia según su estado.",
+      "palette": ["#FFFFFF", "#473C33", "#FCE3A6", "#D6E2B4", "#FDD2B1"],
+      "materials": [
+        "Blanco nube",
+        "Franjas pastel en el borde",
+        "Sans humanista fina con márgenes amplios"
+      ],
+      "viewport": "Una gran forma blanca que contiene el producto actual; su borde brilla en pasteles; el texto queda acromático y amplio.",
+      "case": "Funde bien con tu calibración (blanco, fino, pastel); pierde en identificación porque la nube no dice software por sí sola.",
+      "risk": "Puede sentirse demasiado etéreo si el producto no ocupa la forma central.",
+      "comp": ".impeccable/mocks/decision/aohys-20260923-r6/borde.png",
+      "hero": "https://impeccable.style/worlds/cards/clouds-storms-auroras-iridescent-cloud-edge-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/clouds-storms-auroras-iridescent-cloud-edge.webp"
+    },
+    {
+      "id": "challenger-ikebana",
+      "label": "Ma: espacio activo",
+      "verdict": "competitive",
+      "lineage": "Ikebana en un tokonoma: una línea principal y el vacío como material",
+      "thesis": "Una sola línea de trabajo cruza la página blanca; el espacio vacío es tan importante como el producto que sostiene.",
+      "palette": ["#FFFFFF", "#473C33", "#FCE3A6", "#D6E2B4", "#FDD2B1"],
+      "materials": [
+        "Yeso claro",
+        "Una línea protagonista",
+        "Tres acentos pastel"
+      ],
+      "viewport": "Composición asimétrica equilibrada: una línea sube desde un producto hacia tu nombre, dejando un triángulo de vacío activo.",
+      "case": "Funde bien con la calma y un solo protagonista; pierde en claridad de producto porque pide leer composición antes que contenido.",
+      "risk": "La asimetría debe sentirse proporcionada, no desacomodada.",
+      "comp": ".impeccable/mocks/decision/aohys-20260923-r6/ma.png",
+      "hero": "https://impeccable.style/worlds/cards/growth-metamorphosis-branching-ikebana-ma-arrangement-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/growth-metamorphosis-branching-ikebana-ma-arrangement.webp"
+    },
+    {
+      "id": "challenger-jcard",
+      "label": "Portada de casete",
+      "verdict": "declined",
+      "lineage": "J-card dibujada a mano y fotocopiada",
+      "thesis": "Una portada doblada que se despliega panel por panel.",
+      "palette": ["#EDEBE6", "#3A3A3A"],
+      "materials": ["Fotocopia", "Tinta a mano"],
+      "viewport": "Panel doblado con título a mano.",
+      "case": "Pierde en ambos ejes: dibujo a mano y estética retro, que rechazaste.",
+      "risk": "Nostalgia y textura sucia.",
+      "kept": "Desplegar por etapas.",
+      "hero": "https://impeccable.style/worlds/cards/posters-covers-sleeves-dungeon-tape-jcard-hero.webp"
+    },
+    {
+      "id": "challenger-mook",
+      "label": "Revista de moda japonesa",
+      "verdict": "declined",
+      "lineage": "Mook con fotos superpuestas y cintas de anotación",
+      "thesis": "Cada prenda nombrada con una cinta dibujada.",
+      "palette": ["#111111", "#8B1A1A", "#F3EAD8"],
+      "materials": ["Encaje impreso", "Cintas"],
+      "viewport": "Doble página con fotos escalonadas.",
+      "case": "Pierde en ambos ejes: ornamento y colores oscuros fuera de tu gusto.",
+      "risk": "Recargado.",
+      "kept": "Etiquetas que nombran cada parte.",
+      "hero": "https://impeccable.style/worlds/cards/pop-culture-shelf-gothic-lolita-mook-hero.webp"
+    },
+    {
+      "id": "challenger-blind",
+      "label": "Letrero de destino",
+      "verdict": "declined",
+      "lineage": "Persianas de destino de tela en una terminal",
+      "thesis": "El contenido avanza por pasos bajo una ventana fija.",
+      "palette": ["#1F5A3A", "#F2C200", "#F4F1E8"],
+      "materials": ["Tela teñida", "Mayúsculas condensadas"],
+      "viewport": "Una ventana fija con franjas que avanzan.",
+      "case": "Pierde en ambos ejes: color saturado y tipografía pesada.",
+      "risk": "Industrial y denso.",
+      "kept": "Avance por pasos con el error visible a medio paso.",
+      "hero": "https://impeccable.style/worlds/cards/operate-c-depot-blind-courses-hero.webp"
+    },
+    {
+      "id": "challenger-segment",
+      "label": "Display de siete segmentos",
+      "verdict": "declined",
+      "lineage": "Relojes y marcadores LED",
+      "thesis": "Una máscara fija donde los segmentos apagados también se diseñan.",
+      "palette": ["#111111", "#FF3B30"],
+      "materials": ["LED", "Celdas fantasma"],
+      "viewport": "Dígitos rojos sobre negro.",
+      "case": "Pierde en ambos ejes: oscuro e instrumental, cercano al contador Nixie que rechazaste.",
+      "risk": "Frío y nocturno.",
+      "kept": "Versiones anteriores visibles como fantasmas.",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-seven-segment-alarm-clock-hero.webp"
+    }
+  ],
+  "reroll": { "registers": ["safer", "bolder"] },
+  "steer": true,
+  "canon": true,
+  "canonCard": {
+    "label": "Portfolio estándar bien hecho",
+    "thesis": "Lo que publica la categoría, ejecutado con cuidado.",
+    "palette": ["#FFFFFF", "#473C33", "#FCE3A6"],
+    "materials": ["Retícula limpia", "Capturas de producto"],
+    "viewport": "Presentación arriba, proyectos en rejilla y contacto.",
+    "risk": "Indistinguible de otros portfolios por diseño."
+  },
+  "buildPath": { "value": "comp", "toggle": true }
+}
