@@ -8,8 +8,8 @@ importers:
   .:
     devDependencies:
       "@aohys/development-system":
-        specifier: https://github.com/AO-HyS/development-system/releases/download/v1.26.1/aohys-development-system-1.26.1.tgz
-        version: https://github.com/AO-HyS/development-system/releases/download/v1.26.1/aohys-development-system-1.26.1.tgz
+        specifier: https://github.com/AO-HyS/development-system/releases/download/v1.31.0/aohys-development-system-1.31.0.tgz
+        version: https://github.com/AO-HyS/development-system/releases/download/v1.31.0/aohys-development-system-1.31.0.tgz
       "@aohys/environment":
         specifier: workspace:*
         version: link:packages/environment
@@ -241,13 +241,12 @@ importers:
         version: 6.0.3
 
 packages:
-  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.26.1/aohys-development-system-1.26.1.tgz":
+  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.31.0/aohys-development-system-1.31.0.tgz":
     resolution:
       {
-        integrity: sha512-qcQHI5DdKVoMFXh2B2ClD6rCe7awW6rvaUVgDnY2RsHdH3RybiURRDy2Rz41ywBBCAhSM1sMb+TvIcc5u8nfhw==,
-        tarball: https://github.com/AO-HyS/development-system/releases/download/v1.26.1/aohys-development-system-1.26.1.tgz,
+        tarball: https://github.com/AO-HyS/development-system/releases/download/v1.31.0/aohys-development-system-1.31.0.tgz,
       }
-    version: 1.26.1
+    version: 1.31.0
     engines: { node: ^22.13.0 || >=23.4.0 }
     hasBin: true
 
@@ -8873,7 +8872,7 @@ packages:
       }
 
 snapshots:
-  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.26.1/aohys-development-system-1.26.1.tgz":
+  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.31.0/aohys-development-system-1.31.0.tgz":
     {}
 
   "@apm-js-collab/code-transformer-bundler-plugins@0.7.2":

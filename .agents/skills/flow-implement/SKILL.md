@@ -51,3 +51,31 @@ requested review link; code, Preview and production are separate claims.
 For a requested standalone completion report or a durable media package, read
 [completion-report.md](references/completion-report.md). Ordinary completion
 uses the final response and useful evidence links without another document tool.
+
+## Automated tests and evidence
+
+By default, do not create, modify, delete, generate, or run automated tests
+unless the user explicitly asks. Preserve existing test files and CI protections.
+Use applicable build, type, lint, static validation, or real behavior observation
+as required by the task. Do not make claims from test counts. Report a concrete
+behavior gap and its smallest useful observation without adding a test suite.
+## Headroom transport evidence
+
+Headroom is an explicit same-account per-invocation option. Keep the existing
+Codex binary and CODEX_HOME, preserve caller arguments, and request lossless,
+cache-conservative operation. Provider cache reuse can still change request
+bytes; do not promise byte identity. Keep native usage from the parent and every
+actual descendant separate from proxy counters, and separate requested model or
+tier from observed identity. Use launch/completion events instead of polling.
+Proxy counters and token deltas are descriptive; without complete controlled
+evidence, do not claim Headroom caused savings.
+
+## Spec and ticket handoff
+
+Use [the shared definition contract](../coding-orchestration/references/spec-ticket-contract.md)
+for stable criteria, linked tickets, dependencies, rules and required evidence.
+Astra XHigh authors definition and the implementation plan; a different fresh
+Astra XHigh reviews that plan. Fast researchers supply bounded source facts.
+When implementation is authorized, use coding-orchestration and its advisory
+Jev recipe across the complete feature, including nonvisual behavior. Retrieve
+all tickets linked by the spec; preserve settled decisions across threads.

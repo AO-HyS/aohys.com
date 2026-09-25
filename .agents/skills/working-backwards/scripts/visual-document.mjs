@@ -4,15 +4,20 @@ import { readFileSync } from "node:fs";
 
 import { renderEvidence, evidenceController } from "./report-evidence.mjs";
 
+const asset = (/** @type {string} */ name) =>
+  new URL(`../assets/${name}`, import.meta.url);
+const font = (/** @type {string} */ name) =>
+  readFileSync(asset(name)).toString("base64");
+const fonts = `@font-face{font-family:"Bricolage Grotesque";src:url(data:font/woff2;base64,${font("bricolage-grotesque-latin.woff2")}) format("woff2");font-style:normal;font-weight:200 800;font-stretch:75% 100%;font-display:swap}
+@font-face{font-family:"Atkinson Hyperlegible Next";src:url(data:font/woff2;base64,${font("atkinson-hyperlegible-next-latin.woff2")}) format("woff2");font-style:normal;font-weight:200 800;font-display:swap}
+@font-face{font-family:"Monaspace Neon";src:url(data:font/woff2;base64,${font("monaspace-neon-latin-400.woff2")}) format("woff2");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"Monaspace Neon";src:url(data:font/woff2;base64,${font("monaspace-neon-latin-600.woff2")}) format("woff2");font-style:normal;font-weight:600;font-display:swap}
+`;
 const css =
-  readFileSync(
-    new URL("../assets/visual-document.css", import.meta.url),
-    "utf8",
-  ) +
-  readFileSync(
-    new URL("../assets/report-evidence.css", import.meta.url),
-    "utf8",
-  );
+  fonts +
+  readFileSync(asset("visual-document.css"), "utf8") +
+  readFileSync(asset("report-evidence.css"), "utf8");
+const notebookController = readFileSync(asset("report-notebook.js"), "utf8");
 const string = (/** @type {unknown} */ value) =>
   typeof value === "string" ? value : "";
 const esc = (/** @type {unknown} */ value) =>
@@ -22,6 +27,7 @@ const esc = (/** @type {unknown} */ value) =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+const two = (/** @type {number} */ value) => String(value).padStart(2, "0");
 
 /** SVG is embedded as an image, never inserted as active document markup. @param {unknown} svg */
 export function visualImage(svg) {
@@ -138,16 +144,54 @@ function bars(block, language) {
     )}</ol>${data.note ? `<p class="chart-note">${esc(data.note)}</p>` : ""}</figure>`;
 }
 
-const controller =
-  evidenceController +
-  `(()=>{const root=document.documentElement;const reduced=matchMedia('(prefers-reduced-motion: reduce)');let expanded=null;const collapse=()=>{if(!expanded)return;expanded.classList.remove('is-expanded');expanded.querySelector('[data-map-expand]').setAttribute('aria-expanded','false');expanded.querySelector('[data-map-expand]').textContent=root.lang==='es'?'Ampliar mapa':'Expand map';expanded.querySelector('[data-map-expand]').focus();expanded=null;document.body.classList.remove('map-open')};document.addEventListener('click',event=>{const button=event.target.closest('button');if(!button)return;if(button.hasAttribute('data-theme-toggle')){const dark=root.dataset.theme==='dark';root.dataset.theme=dark?'light':'dark';button.setAttribute('aria-pressed',String(!dark));return}if(button.hasAttribute('data-print')){window.print();return}const map=button.closest('[data-map]');if(!map)return;if(button.hasAttribute('data-map-expand')){if(expanded===map){collapse();return}collapse();expanded=map;map.classList.add('is-expanded');button.setAttribute('aria-expanded','true');button.textContent=root.lang==='es'?'Cerrar mapa':'Close map';document.body.classList.add('map-open');return}if(button.hasAttribute('data-map-motion')){const image=map.querySelector('img'),playing=button.getAttribute('aria-pressed')!=='true';image.src=playing?image.dataset.animated:image.dataset.still;button.setAttribute('aria-pressed',String(playing));button.textContent=playing?(root.lang==='es'?'Pausar recorrido':'Pause flow'):(root.lang==='es'?'Animar recorrido':'Animate flow')}});document.addEventListener('keydown',event=>{if(event.key==='Escape')collapse();if(event.key==='Tab'&&expanded){const controls=[...expanded.querySelectorAll('button,summary,[tabindex="0"]')].filter(el=>el.getClientRects().length);const first=controls[0],last=controls[controls.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}}});reduced.addEventListener('change',()=>{if(reduced.matches)document.querySelectorAll('[data-map-motion][aria-pressed="true"]').forEach(button=>button.click())});document.querySelectorAll('.document-nav a').forEach(link=>link.addEventListener('click',()=>document.querySelector('.document-nav').open=false));const navLinks=[...document.querySelectorAll('.document-sidebar nav a')];const headings=[...document.querySelectorAll('.brief-section h2')];let requested=null;navLinks.forEach(link=>link.addEventListener('click',()=>{requested=link.hash;mark()}));const releaseRequested=()=>{requested=null};document.addEventListener('wheel',releaseRequested,{passive:true});document.addEventListener('touchmove',releaseRequested,{passive:true});document.addEventListener('keydown',event=>{if(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '].includes(event.key))releaseRequested()});const mark=()=>{let active=headings[0];for(const heading of headings){if(heading.getBoundingClientRect().top<180)active=heading}if(requested)active=headings.find(heading=>'#'+heading.id===requested)||active;navLinks.forEach(link=>{if(active&&link.hash==='#'+active.id)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')})};let pending=false;document.addEventListener('scroll',()=>{if(!pending){pending=true;requestAnimationFrame(()=>{mark();pending=false})}},{passive:true});mark();})();`;
+/** A bold opening sentence is the author's verdict; long summaries stay prose.
+ * @param {Record<string, any>} doc */
+function verdictOf(doc) {
+  const summary = string(doc.summary).trim();
+  if (string(doc.verdict))
+    return {
+      verdict: string(doc.verdict),
+      lede: summary === string(doc.verdict) ? "" : summary,
+    };
+  const lead = /^\*\*([^*]+?)\*\*\s*([\s\S]*)$/u.exec(summary);
+  if (lead && lead[1].length <= 170) return { verdict: lead[1], lede: lead[2] };
+  if (summary.length <= 150) return { verdict: summary, lede: "" };
+  return { verdict: "", lede: summary };
+}
 
-/** Shared report, completion, review and explanation presentation.
+const calloutLabel = /** @type {Record<string, Record<string, string>>} */ ({
+  es: {
+    note: "Nota",
+    warning: "Advertencia",
+    important: "Importante",
+    decision: "Decisión",
+    risk: "Riesgo",
+  },
+  en: {
+    note: "Note",
+    warning: "Warning",
+    important: "Important",
+    decision: "Decision",
+    risk: "Risk",
+  },
+});
+
+const statusMark = {
+  verified:
+    '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="currentColor"/></svg>',
+  estimated:
+    '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 2a6 6 0 0 0 0 12z" fill="currentColor"/></svg>',
+  pending:
+    '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>',
+};
+
+/** Shared report presentation: a field-notebook page with margin questions.
  * @param {Record<string, any>} model
  * @param {{renderBlock:(block:Record<string, any>)=>string,inlineMarkdown:(text:string)=>string}} helpers
  */
 export function renderVisualDocument(model, helpers) {
   const language = model.language === "en" ? "en" : "es";
+  const es = language === "es";
   const doc = model.document;
   const sections = [];
   /** @type {{heading: Record<string, any>|null, blocks: Record<string, any>[]}} */
@@ -160,38 +204,138 @@ export function renderVisualDocument(model, helpers) {
     } else current.blocks.push(block);
   }
   if (current.heading || current.blocks.length) sections.push(current);
+
+  // Stable block ids let saved questions find their paragraph after a rebuild.
+  const askable = (/** @type {string} */ html, /** @type {string} */ id) => {
+    if (/^<li>/u.test(html)) return html;
+    if (/^<(?:ul|ol)>/u.test(html)) {
+      let index = 0;
+      return html.replace(
+        /<li>/gu,
+        () => `<li data-q="${esc(id)}-${++index}">`,
+      );
+    }
+    return html.replace(
+      /^<(p|blockquote|aside|div class="table-scroll"|figure class="(?:document-chart|code-block)[^"]*")/u,
+      (tag) => `${tag} data-q="${esc(id)}"`,
+    );
+  };
   const render = (/** @type {Record<string, any>} */ block) => {
     if (block.language === "pr-lens") return graph(block, model, language);
-    if (block.type === "chart")
-      return bars(block, language) ?? helpers.renderBlock(block);
+    if (block.type === "chart") {
+      const chart = bars(block, language);
+      return chart ? askable(chart, block.id) : helpers.renderBlock(block);
+    }
     if (block.type === "mermaid")
-      return `<details class="document-source legacy-diagram" open><summary>${esc(block.filename || "Mermaid")} · ${language === "es" ? "fuente del diagrama" : "diagram source"}</summary><p>${language === "es" ? "Este documento conserva la fuente. Para mostrar un mapa portátil, adjunta la vista SVG de PR Lens." : "The source is preserved. Attach a PR Lens SVG view to show a portable map."}</p><pre>${esc(block.source)}</pre></details>`;
-    return helpers.renderBlock(block);
+      return `<details class="document-source legacy-diagram" open><summary>${esc(block.filename || "Mermaid")} · ${es ? "fuente del diagrama" : "diagram source"}</summary><p>${es ? "Este documento conserva la fuente. Para mostrar un mapa portátil, adjunta la vista SVG de PR Lens." : "The source is preserved. Attach a PR Lens SVG view to show a portable map."}</p><pre>${esc(block.source)}</pre></details>`;
+    if (block.type === "heading") return helpers.renderBlock(block);
+    if (block.type === "callout")
+      return askable(
+        helpers
+          .renderBlock(block)
+          .replace(
+            /<strong>([a-z]+)<\/strong>/u,
+            (tag, tone) =>
+              `<strong>${esc(calloutLabel[language][tone] ?? tone)}</strong>`,
+          ),
+        block.id,
+      );
+    return askable(helpers.renderBlock(block), block.id);
   };
+
+  const evidence = renderEvidence(model, language);
+  let number = 0;
+  const numeral = () =>
+    `<span class="section-num" aria-hidden="true">${two(++number)}</span>`;
+  const evidenceHtml = evidence
+    ? evidence.replace(
+        /(<h2 id="delivery-evidence"[^>]*>)/u,
+        (tag) => `${tag}${numeral()}`,
+      )
+    : "";
   const content = sections
     .map((section) => {
       const intro =
         section.heading && section.blocks[0]?.type === "paragraph"
           ? section.blocks[0]
           : null;
-      return `<section class="brief-section"${section.heading ? ` aria-labelledby="${esc(section.heading.anchorId)}"` : ""}>${section.heading ? `<div class="section-heading">${render(section.heading)}${intro ? `<div class="section-intro">${render(intro)}</div>` : ""}</div>` : ""}<div class="section-content">${section.blocks
+      const heading = section.heading
+        ? render(section.heading).replace(
+            /^(<h2[^>]*>)/u,
+            (tag) => `${tag}${numeral()}`,
+          )
+        : "";
+      return `<section class="brief-section"${section.heading ? ` aria-labelledby="${esc(section.heading.anchorId)}"` : ""}>${section.heading ? `<div class="section-heading">${heading}${intro ? `<div class="section-intro">${render(intro)}</div>` : ""}</div>` : ""}<div class="section-content">${section.blocks
         .filter((block) => block !== intro)
         .map(render)
         .join("\n")}</div></section>`;
     })
     .join("\n");
-  const evidence = renderEvidence(model, language);
-  const links =
-    (evidence
-      ? `<a href="#delivery-evidence">${language === "es" ? "El resultado, a la vista" : "See the result"}</a>`
-      : "") +
-    model.outline
-      .filter((/** @type {Record<string, any>} */ entry) => entry.level === 2)
-      .map(
-        (/** @type {Record<string, any>} */ entry) =>
-          `<a href="#${esc(entry.id)}">${esc(entry.label)}</a>`,
-      )
-      .join("");
+
+  const entries = [
+    ...(evidence
+      ? [
+          {
+            id: "delivery-evidence",
+            label: es ? "El resultado, a la vista" : "See the result",
+          },
+        ]
+      : []),
+    ...model.outline.filter(
+      (/** @type {Record<string, any>} */ entry) => entry.level === 2,
+    ),
+  ];
+  const links = entries
+    .map(
+      (entry, index) =>
+        `<a href="#${esc(entry.id)}"><span class="toc-num">${two(index + 1)}</span><span class="toc-label">${esc(entry.label)}</span></a>`,
+    )
+    .join("");
+
+  const { verdict, lede } = verdictOf(doc);
+  const stamp = [
+    es ? "Informe" : "Report",
+    string(doc.updatedAt),
+    string(doc.reference),
+  ]
+    .filter(Boolean)
+    .map(esc)
+    .join('<span aria-hidden="true"> · </span>');
+  const signals = doc.signals?.length
+    ? doc.signals
+        .map(
+          (/** @type {Record<string, any>} */ signal) =>
+            `<li class="signal tone-${esc(signal.tone)}"><i aria-hidden="true"></i>${signal.label ? `<strong>${esc(signal.label)}:</strong> ` : ""}<span>${esc(signal.text)}</span></li>`,
+        )
+        .join("")
+    : `<li class="signal tone-plain"><i aria-hidden="true"></i><strong>${es ? "Estado" : "Status"}:</strong> <span>${esc(doc.status)}</span></li>`;
+  const statusLabel = /** @type {Record<string,string>} */ (
+    es
+      ? { verified: "verificado", estimated: "estimado", pending: "pendiente" }
+      : { verified: "verified", estimated: "estimated", pending: "pending" }
+  );
+  const findings = doc.findings?.length
+    ? `<section class="findings" aria-labelledby="findings-title"><h2 id="findings-title" class="notebook-label">${es ? "Hallazgos" : "Findings"}</h2><ol>${doc.findings.map((/** @type {Record<string, any>} */ finding, /** @type {number} */ index) => `<li class="finding" data-q="finding-${index + 1}"><span class="finding-num" aria-hidden="true">${index + 1}</span><p><strong>${esc(finding.title)}.</strong> ${helpers.inlineMarkdown(string(finding.detail))}</p>${finding.status ? `<span class="finding-status status-${esc(finding.status)}">${statusMark[/** @type {"verified"} */ (finding.status)]}${statusLabel[finding.status]}</span>` : "<span></span>"}</li>`).join("")}</ol></section>`
+    : "";
+  const documentId = createHash("sha256")
+    .update(`${string(doc.title)}\n${string(doc.markdown)}`)
+    .digest("hex")
+    .slice(0, 16);
+
+  const controller = evidenceController + notebookController;
   const hash = createHash("sha256").update(controller).digest("base64");
-  return `<!doctype html><html lang="${language}" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="development-system-technical-reader"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; connect-src 'none'; font-src data:; form-action 'none'; frame-src 'none'; img-src data:; media-src data:; object-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; worker-src 'none'"><title>${esc(doc.title)} · ${esc(model.productName)}</title><style>${css}</style></head><body class="reader-report"><a class="skip-link" href="#document">${language === "es" ? "Ir al documento" : "Skip to document"}</a><header class="brief-topbar"><a class="document-brand" href="#document"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 3h11l5 5v13H4zM15 3v6h5M8 12h8M8 16h6"/></svg><span class="brand-project">${esc(model.productName)}</span><span class="brand-task">${esc(doc.title)}</span></a><details class="document-nav"><summary>${language === "es" ? "Índice" : "Contents"}</summary><nav aria-label="${language === "es" ? "Contenido del documento" : "Document contents"}">${links}</nav></details><button type="button" class="theme-control" data-theme-toggle aria-label="${language === "es" ? "Cambiar tema" : "Change theme"}" aria-pressed="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20.5 14.2A8.6 8.6 0 0 1 9.8 3.5a8.7 8.7 0 1 0 10.7 10.7Z"/></svg></button></header><div class="document-layout"><aside class="document-sidebar"><p>${language === "es" ? "En este documento" : "In this document"}</p><nav aria-label="${language === "es" ? "Secciones" : "Sections"}">${links}</nav><div class="sidebar-note">${esc(doc.type)}<span>${doc.readTimeMinutes || 1} min ${language === "es" ? "de lectura" : "read"}</span></div></aside><main id="document" class="brief"><header class="brief-header"><div><h1>${esc(doc.title)}</h1>${doc.summary ? `<p class="brief-summary">${helpers.inlineMarkdown(doc.summary)}</p>` : ""}</div><div class="document-facts"><strong>${esc(doc.type)}</strong><p>${esc(doc.status)}</p>${doc.updatedAt ? `<p>${esc(doc.updatedAt)}</p>` : ""}${doc.readTimeMinutes ? `<p>${doc.readTimeMinutes} min ${language === "es" ? "de lectura" : "read"}</p>` : ""}</div></header><div class="document-body">${evidence}${content}</div><footer class="brief-footer"><details class="document-source"><summary>${language === "es" ? "Fuente de este documento" : "Document source"}</summary><pre>${esc(doc.markdown || "")}</pre></details><p>${language === "es" ? "Documento local · conserva la evidencia y el alcance de la entrega." : "Local document · preserves delivery evidence and scope."}</p><button type="button" data-print>${language === "es" ? "Imprimir / guardar PDF" : "Print / save PDF"}</button></footer></main></div><script>${controller}</script></body></html>`;
+  const moon =
+    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20.5 14.2A8.6 8.6 0 0 1 9.8 3.5a8.7 8.7 0 1 0 10.7 10.7Z"/></svg>';
+  const themeButton = (/** @type {string} */ extra) =>
+    `<button type="button" class="theme-control${extra}" data-theme-toggle aria-pressed="false">${moon}<span>${es ? "Libreta nocturna" : "Night notebook"}</span></button>`;
+  const readTime = `${doc.readTimeMinutes || 1} min ${es ? "de lectura" : "read"}`;
+  return (
+    `<!doctype html><html lang="${language}" data-theme="light" data-document="${documentId}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="development-system-technical-reader"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; connect-src 'self'; font-src data:; form-action 'none'; frame-src 'none'; img-src data: blob:; media-src data:; object-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; worker-src 'none'"><title>${esc(doc.title)} · ${esc(model.productName)}</title><style>${css}</style></head><body class="reader-report"><a class="skip-link" href="#document">${es ? "Ir al documento" : "Skip to document"}</a>` +
+    `<header class="brief-topbar"><a class="document-brand" href="#document"><span class="brand-project">${esc(model.productName)}</span><span class="brand-task">${esc(doc.title)}</span></a><details class="document-nav"><summary>${es ? "Índice" : "Contents"}</summary><nav aria-label="${es ? "Contenido del documento" : "Document contents"}">${links}</nav></details>${themeButton(" is-compact")}</header>` +
+    `<div class="document-layout"><aside class="document-sidebar"><p class="notebook-label">${es ? "Contenido" : "Contents"}</p><nav aria-label="${es ? "Secciones" : "Sections"}">${links}</nav><div class="sidebar-note"><strong>${esc(doc.type)}</strong><span>${esc(model.productName)}</span><span>${readTime}</span>${themeButton("")}</div></aside>` +
+    `<main id="document" class="brief"><header class="brief-header"><p class="doc-stamp">${stamp}</p><h1>${esc(doc.title)}</h1>${verdict ? `<p class="verdict" data-q="verdict">${helpers.inlineMarkdown(verdict)}</p>` : ""}${lede ? `<p class="brief-summary" data-q="summary">${helpers.inlineMarkdown(lede)}</p>` : ""}<ul class="signals" aria-label="${es ? "Estado del informe" : "Report status"}">${signals}</ul>${findings}</header>` +
+    `<div class="document-body">${evidenceHtml}${content}</div><footer class="brief-footer"><details class="document-source"><summary>${es ? "Fuente de este documento" : "Document source"}</summary><pre>${esc(doc.markdown || "")}</pre></details><p>${es ? "Documento local · conserva la evidencia y el alcance de la entrega." : "Local document · preserves delivery evidence and scope."} ${esc(doc.type)} · ${esc(doc.status)}${doc.updatedAt ? ` · ${esc(doc.updatedAt)}` : ""} · ${readTime}</p><button type="button" data-print>${es ? "Imprimir / guardar PDF" : "Print / save PDF"}</button></footer></main>` +
+    `<aside class="margin-notes" aria-label="${es ? "Preguntas en el margen" : "Margin questions"}" data-margin><ol class="margin-list" data-notes></ol></aside></div>` +
+    `<script>${controller}</script></body></html>`
+  );
 }

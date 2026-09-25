@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "title": "Sol + Jev advisory development profile",
-  "purpose": "New sessions default to Sol High; the selected parent remains fixed. Bounded writers use Flash High; native delegates use Astra XHigh. No automatic fallback; requested profiles require observed runtime evidence.",
+  "title": "GPT-6 + Jev advisory development profile",
+  "purpose": "The selected parent coordinates native execution; Sol writes general packets, Luna supplies fast research and exact writing, and Astra plans and independently reviews. Jev advises at useful routing and correction decisions. Requested identity requires runtime evidence.",
   "editInstructions": [
     "Order candidates as suggestions for an undecided parent, not mandatory dispatch or fallbacks. Explicit user model and family selections take precedence.",
     "Keep ids unique and use exact runtime model identifiers.",
@@ -21,21 +21,49 @@
       "capability": "orchestration",
       "routeSlot": "orchestration",
       "does": [
-        "descomponer trabajo",
-        "resolver ambiguedad",
-        "tomar decisiones de arquitectura",
-        "integrar y dar el veredicto final"
+        "localizar el trabajo",
+        "coordinar el plan de Astra",
+        "integrar trabajo y resolver correcciones",
+        "aceptar comportamiento con evidencia"
       ],
-      "when": "Las sesiones nuevas usan Sol High. El modelo elegido al iniciar conserva la orquestacion y decide la delegacion.",
+      "when": "Las sesiones nuevas solicitan Sol 6 High normal; el modelo elegido al iniciar conserva la orquestacion y decide la delegacion.",
       "candidates": [
         {
           "id": "advisory-orchestration",
           "harness": "codex",
-          "model": "gpt-5.6-sol",
+          "model": "gpt-6-sol",
           "reasoning": "high",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
           "independenceBoundary": "session-selected parent owns integration",
+          "serviceTier": {
+            "tier": "default",
+            "label": "normal",
+            "status": "runtime-required"
+          }
+        }
+      ]
+    },
+    {
+      "id": "general-implementation",
+      "label": "Implementacion general",
+      "role": "implementer",
+      "capability": "implementation",
+      "routeSlot": "general-implementation",
+      "does": [
+        "ejecutar paquetes acotados",
+        "corregir codigo y pruebas dentro del ownership asignado"
+      ],
+      "when": "Sol 6 Medium escribe paquetes generales con ownership exclusivo y verificacion del parent.",
+      "candidates": [
+        {
+          "id": "advisory-general-implementation",
+          "harness": "codex",
+          "model": "gpt-6-sol",
+          "reasoning": "medium",
+          "evidenceStatus": "provisional",
+          "mappingStatus": "runtime-required",
+          "independenceBoundary": "exact bounded packet and exclusive ownership; no native fallback",
           "serviceTier": {
             "tier": "default",
             "label": "normal",
@@ -58,16 +86,21 @@
         "generar y editar codigo",
         "aplicar correcciones"
       ],
-      "when": "Escritura acotada con Flash High y ownership exclusivo; el parent resuelve el contrato y verifica el resultado. No hay sustitucion automatica si el proveedor no esta disponible.",
+      "when": "Escritura acotada con Luna 6 High priority y ownership exclusivo; el parent resuelve el contrato y verifica el resultado. No hay sustitucion automatica si el proveedor no esta disponible.",
       "candidates": [
         {
           "id": "advisory-fast-execution",
-          "harness": "opencode",
-          "model": "opencode-go/deepseek-v4.1-flash",
+          "harness": "codex",
+          "model": "gpt-6-luna",
           "reasoning": "high",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
-          "independenceBoundary": "exact bounded packet and exclusive ownership; no native fallback"
+          "independenceBoundary": "exact bounded packet and exclusive ownership; no native fallback",
+          "serviceTier": {
+            "tier": "priority",
+            "label": "fast",
+            "status": "runtime-required"
+          }
         }
       ]
     },
@@ -82,7 +115,7 @@
         "detectar regresiones",
         "verificar el objetivo sin editar"
       ],
-      "when": "Solo cuando el riesgo complejo observado o una solicitud explicita requiere revision independiente; no es un relevo obligatorio para cada cambio.",
+      "when": "Independent fresh Astra review of the plan before writing and integrated behavior before acceptance; specialize further where affected risk requires it.",
       "candidates": [
         {
           "id": "advisory-adversarial-review",
@@ -262,22 +295,25 @@
         "mapear APIs y versiones",
         "entregar evidencia sin editar producto"
       ],
-      "when": "Cuando la respuesta depende de documentacion o informacion versionada.",
+      "when": "Bounded source research and code mapping use an observed available fast profile. User/provider limits apply; no silent fallback.",
       "candidates": [
         {
           "id": "advisory-research",
           "harness": "codex",
-          "model": "gpt-6-astra",
-          "reasoning": "xhigh",
+          "model": "gpt-6-luna",
+          "reasoning": "high",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
-          "independenceBoundary": "fresh context and distinct mandate for review",
+          "independenceBoundary": "read-only bounded evidence collection; substantive decisions return to parent",
           "serviceTier": {
-            "tier": "default",
-            "label": "normal",
+            "tier": "priority",
+            "label": "fast",
             "status": "runtime-required"
           }
         }
+      ],
+      "aliases": [
+        "code-mapping"
       ]
     },
     {
@@ -329,6 +365,35 @@
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
           "independenceBoundary": "fresh context and distinct mandate for review",
+          "serviceTier": {
+            "tier": "default",
+            "label": "normal",
+            "status": "runtime-required"
+          }
+        }
+      ]
+    },
+    {
+      "id": "implementation-planning",
+      "label": "Plan tecnico",
+      "role": "architecture_planner",
+      "capability": "planning",
+      "routeSlot": "implementation-planning",
+      "does": [
+        "crear el plan desde spec y tickets",
+        "resolver decisiones tecnicas",
+        "dividir paquetes y dependencias"
+      ],
+      "when": "Astra authors the implementation plan; another fresh Astra reviews before any writer.",
+      "candidates": [
+        {
+          "id": "governed-implementation-planning",
+          "harness": "codex",
+          "model": "gpt-6-astra",
+          "reasoning": "xhigh",
+          "evidenceStatus": "provisional",
+          "mappingStatus": "runtime-required",
+          "independenceBoundary": "plan author must differ from fresh plan reviewer",
           "serviceTier": {
             "tier": "default",
             "label": "normal",

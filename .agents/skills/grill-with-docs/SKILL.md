@@ -69,3 +69,13 @@ complete its visual handoff: selected images must be retrievable and visible to
 a fresh thread, with the composition criteria that distinguish the approved
 direction. Questionnaire images calibrate or clarify; they do not become an
 approved direction without an explicit choice on Impeccable's page.
+
+## Spec and ticket handoff
+
+Use [the shared definition contract](../coding-orchestration/references/spec-ticket-contract.md)
+for stable criteria, linked tickets, dependencies, rules and required evidence.
+Astra XHigh authors definition and the implementation plan; a different fresh
+Astra XHigh reviews that plan. Fast researchers supply bounded source facts.
+When implementation is authorized, use coding-orchestration and its advisory
+Jev recipe across the complete feature, including nonvisual behavior. Retrieve
+all tickets linked by the spec; preserve settled decisions across threads.

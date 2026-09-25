@@ -6,7 +6,7 @@ import { lstat, mkdir, open, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, isAbsolute, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { classifyAtomWithJev, orchestrationPolicy, recordRouteDecision } from "./src/orchestration.mjs";
+import { classifyAtomWithJev, failedClassificationReceipt, orchestrationPolicy, recordRouteDecision } from "./src/orchestration.mjs";
 
 class AdvisoryInputError extends Error {}
 const safeId = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,127}$/u;
@@ -168,9 +168,20 @@ async function writeReceipt(path, receipt) {
 /** @param {unknown} error */
 function classificationError(error) {
   const message = error instanceof Error ? error.message : "";
-  if (/^Jev request (exceeds byte cap|timed out|failed with HTTP [1-5][0-9]{2})$/u.test(message)
+  if (/^TYPESAFE_API_KEY is required for Jev classification/u.test(message)
+    || /^Jev request (exceeds byte cap|timed out|failed with HTTP [1-5][0-9]{2})$/u.test(message)
     || /^Jev returned (an invalid (route|has_open_decision|context_sufficient|needs_browser|semantic_overlap) answer|invalid route probabilities|an unpinned model|invalid usage facts)$/u.test(message)) return new AdvisoryInputError(message);
   return new AdvisoryInputError("Jev classification failed; no retry was attempted.");
+}
+
+/** @param {unknown} error */
+function classificationFailureCode(error) {
+  const message = error instanceof Error ? error.message : "";
+  if (message === "Jev request timed out") return "timeout";
+  if (message === "Jev request exceeds byte cap") return "request_too_large";
+  if (message.startsWith("Jev returned ")) return "malformed_response";
+  if (/credential|TYPESAFE_API_KEY/iu.test(message)) return "credential_missing";
+  return "provider_failure";
 }
 
 /** @param {string[]} argv */
@@ -182,15 +193,18 @@ export async function runAdvisory(argv) {
     if (command === "status") {
       const key = await loadApiKey(options);
       result = {
-        ok: true, operation: "advisory-status", version: "1.24.0", mode: "advisory-parent-execution",
+        ok: true, operation: "advisory-status", version: "1.29.0", mode: "advisory-parent-execution",
         policyVersion: orchestrationPolicy.version,
         modelProfile: {
-          newSessionDefault: { model: "gpt-5.6-sol", effort: "high" },
+          newSessionDefault: { model: "gpt-6-sol", effort: "high", tier: "default", identity: "requested" },
           existingParent: "preserve-session-selected-orchestrator",
-          boundedWriter: orchestrationPolicy.routes.deepseek_exact,
+          exactImplementation: orchestrationPolicy.routes.exact_implementation,
+          generalImplementation: orchestrationPolicy.routes.general_implementation,
+          readOnlyMapper: orchestrationPolicy.routes.read_only_mapper,
           nativeDelegates: { model: "gpt-6-astra", effort: "xhigh" },
-          excludedModels: ["Luna"],
+          browserExecutor: orchestrationPolicy.routes.browser_executor,
           classifier: { provider: orchestrationPolicy.classifier.provider, model: orchestrationPolicy.model },
+          actualModel: null, actualEffort: null, actualTier: null,
           identityEvidence: "requested-profiles-not-observed-runtime-identity",
         },
         keyPresent: Boolean(key), networkAccessed: false, automaticExecution: false,
@@ -202,12 +216,16 @@ export async function runAdvisory(argv) {
       await checkReceiptDestination(options["--receipt"]);
       if (command === "classify-atom") {
         const activeAtoms = await readActiveAtoms(options["--active-atoms"]);
-        const key = await loadApiKey(options);
-        if (!key) invalid("TYPESAFE_API_KEY is required for Jev classification; configure the environment or private credential file.");
         let receipt;
-        try { receipt = await classifyAtomWithJev({ atom, run, activeAtoms, apiKey: /** @type {string} */ (key) }); }
-        catch (error) { throw classificationError(error); }
-        if (JSON.stringify(receipt).includes(JSON.stringify(key).slice(1, -1))) invalid("Jev response contained protected credential data and was discarded.");
+        try {
+          const key = await loadApiKey(options);
+          if (!key) invalid("TYPESAFE_API_KEY is required for Jev classification; configure the environment or private credential file.");
+          receipt = await classifyAtomWithJev({ atom, run, activeAtoms, apiKey: /** @type {string} */ (key) });
+          if (JSON.stringify(receipt).includes(JSON.stringify(key).slice(1, -1))) invalid("Jev response contained protected credential data and was discarded.");
+        } catch (error) {
+          await writeReceipt(options["--receipt"], failedClassificationReceipt({ atom, run, activeAtoms, failureCode: classificationFailureCode(error) }));
+          throw classificationError(error);
+        }
         await writeReceipt(options["--receipt"], receipt);
         result = { ok: true, operation: "classify-atom", ...receipt };
       } else {
@@ -220,7 +238,7 @@ export async function runAdvisory(argv) {
       }
     }
     const output = json ? JSON.stringify(result) : command === "status"
-      ? `Development System 1.24.0: advisory-parent-execution; credential ${result.keyPresent ? "available" : "missing"}; automatic execution disabled.`
+      ? `Development System 1.29.0: advisory-parent-execution; credential ${result.keyPresent ? "available" : "missing"}; automatic execution disabled.`
       : `${command} recorded; parent owns execution and authorization.`;
     return { result, output, json };
   } catch (error) {

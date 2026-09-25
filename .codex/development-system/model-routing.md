@@ -1,36 +1,21 @@
-# Model routing 1.24.0
+# Model routing 1.30.0
 
-New sessions default to Sol High. The model already selected for a conversation
-remains its orchestrator. It owns decomposition, integration, conflicts,
-verification, corrections and delivery; a release does not replace a live parent.
+| Stage | Requested profile | Responsibility |
+| --- | --- | --- |
+| Coordination | Selected parent; new Sol 6 High normal | Scope, dispatch, integration and acceptance |
+| Research | Luna 6 High priority | Bounded read-only facts |
+| Plan | Astra 6 XHigh | Decisions, files, dependencies and checks |
+| Plan review | Different fresh Astra 6 XHigh | Independent review before writing |
+| General writing | Sol 6 Medium normal | Owned implementation packets |
+| Exact/mechanical writing | Luna 6 High priority | Settled bounded instructions |
+| Final review | Independent Astra 6 XHigh | Correctness, security and acceptance evidence |
+| Useful routing/correction decisions | Jev 1.13.0 | Advisory classification; parent decides |
 
-| Responsibility | Requested profile |
-| --- | --- |
-| New-session coordination | gpt-5.6-sol, high |
-| Bounded exact writing | opencode-go/deepseek-v4.1-flash, high |
-| Native research, decisions and independent review | gpt-6-astra, xhigh |
-| Typed advice at useful boundaries | Jev 1.13.0, advisory |
+Requested profiles are not observed runtime identity or tier. No silent fallback.
+Browser and vision work require actual capabilities. Native effort changes are
+optional; Astra plan/review stays XHigh. Cache metrics remain unknown unless
+observed. Use coding-orchestration/references/jev-advisory.md. Historical governance
+tools remain installed for explicit history/recovery and are inactive by default.
 
-Use the installed coding-orchestration/references/jev-advisory.md recipe for
-non-trivial work. Native profiles and the roster request these settings;
-session/provider metadata establishes observed identity. Every native descendant
-in this profile uses Astra XHigh. Luna and silent model/provider fallbacks are
-excluded. A missing essential capability remains a gap. An explicit user-selected
-family or model overrides defaults while retaining its capability restrictions.
 
-Keep one writer per surface and at most two independent writers. Serialize
-dependent work and shared provider state. Jev advises; the parent chooses and
-executes using existing host tools. Tiny integration stays with the parent.
-Receive completion events, retain raw usage and judge actual behavior before
-acceptance. Historical automatic controllers are disabled in 1.24.0.
-
-Codex and T3 use their actual native model and browser capabilities. Remote
-development environments load the same package and generated instructions;
-copying files does not prove runtime influence. Record requested and observed
-profiles separately. Existing running agents keep their current context; load
-the release in a new session before relying on its defaults.
-
-BARBER-205 measured one complete accepted Sol run at 35:15 / USD18.885702 and
-one Astra run at 49:09 / USD33.334097 on 2026-09-20. Both used Flash and Jev.
-These are API-equivalent full-arm costs and one-task observations, not universal
-performance guarantees or subscription invoices.
+For a new Codex T3 coordinator thread, Sol 6 High may be requested through the supported per-invocation setting. This does not change the selected session parent or any global role route. Requested and observed model/tier values remain separate.

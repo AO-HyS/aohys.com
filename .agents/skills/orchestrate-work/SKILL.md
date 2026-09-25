@@ -1,6 +1,6 @@
 ---
 name: orchestrate-work
-description: Coordinate or resume repository delivery with a pinned task contract and the selected model's native agents.
+description: Coordinate or resume repository delivery with a pinned task contract and bounded native workers.
 ---
 
 # Orchestrate work
@@ -9,12 +9,14 @@ Optimize rápido → bien → barato: deliver the complete usable result, correc
 it with focused evidence, then reduce measured waste. The model selected when
 the conversation starts owns orchestration and the parent integrates the run.
 
-## Use the installed advisory profile
+## Coordinate the full feature
 
-For non-trivial implementation, a material decision or independent review,
-read [Jev advisory execution](../coding-orchestration/references/jev-advisory.md) once and use its
-Sol/Flash/Astra profile. The current selected parent stays the orchestrator.
-Tiny deterministic work stays direct; the recipe does not add a second planner.
+Read [Jev advisory execution](../coding-orchestration/references/jev-advisory.md) once for nontrivial work.
+Keep the selected parent. Use fast research, Astra XHigh planning, a different
+fresh Astra XHigh plan review, bounded writers, independent final review and
+actual behavior evidence. Jev advises at useful routing and correction decisions;
+the parent records the decision and executes through native tools. Classification
+failure does not globally block work. Tiny deterministic edits stay direct.
 
 ## Pin the target
 
@@ -41,13 +43,13 @@ On model, quota or session change, use
 to preserve work, authorization and evidence and transfer ownership safely.
 
 Use the repository's local canonical recipes and domain architecture. A
-workflow skill does not migrate forms or other product structures. Do not add
-another coordinator, engine, tracker or approval gate.
+workflow skill does not migrate forms or other product structures. Use Jev advice without adding global execution gates.
 
-## Use native agents
+## Dispatch supported workers
 
 Choose currently available workers within the user's provider, capability and
 quota constraints. A roster or profile does not establish runtime identity.
+Use native host tools and completion events; record actual observed identity. An unsupported route remains a capability gap.
 Design, visual judgment and Computer Use require their actual capabilities;
 report a gap instead of silently substituting a family.
 
@@ -62,21 +64,23 @@ terminal state. A worker packet states the root, revision, owned surface,
 settled routing, behavior, checks, evidence shape, stop conditions and expected
 receipt. Preserve unrelated edits.
 
-## Test and review boundaries
+## Automated tests and evidence
 
-The default test-change policy has allowedChanges = []. Do not add, modify or
-delete test files, or generate one test per form or feature, until the parent
-closes a reviewed exception. The shared runtime check is
-findTestPolicyViolations({root, baseRef, policyPath:
-"config/test-change-policy.json"}), which returns a violation array. An
-exception identifies path, SHA-256 or null for an authorized deletion, reason,
-issue and reviewed content. Report a real evidence gap to the parent instead
-of widening scope.
+By default, do not create, modify, delete, generate, or run automated tests
+unless the user explicitly asks. Preserve existing test files and CI protections.
+Use applicable build, type, lint, static validation, or real behavior observation
+as required by the task. Do not make claims from test counts. Report a concrete
+behavior gap and its smallest useful observation without adding a test suite.
+## Headroom transport evidence
 
-Use the smallest adequate checks and preserve their exit codes. Independent
-review derives its oracle from the accepted objective and public interface.
-Green tests, counts and coverage do not override weakened assertions or an
-unproven requirement.
+Headroom is an explicit same-account per-invocation option. Keep the existing
+Codex binary and CODEX_HOME, preserve caller arguments, and request lossless,
+cache-conservative operation. Provider cache reuse can still change request
+bytes; do not promise byte identity. Keep native usage from the parent and every
+actual descendant separate from proxy counters, and separate requested model or
+tier from observed identity. Use launch/completion events instead of polling.
+Proxy counters and token deltas are descriptive; without complete controlled
+evidence, do not claim Headroom caused savings.
 
 ## UI and benchmark evidence
 

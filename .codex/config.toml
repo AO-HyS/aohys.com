@@ -1,13 +1,12 @@
 # Codex preferences mirrored from the operator's machine; secrets stay in
 # the agent host's secret store. Provisioned to $HOME/.codex/config.toml
 # by the cloud environment blueprint.
-model = "gpt-5.6-sol"
-model_reasoning_effort = "high"
+# Model, effort and service tier follow the selected host session.
+# The Development System supplies role recommendations without overriding it.
 personality = "pragmatic"
 approval_policy = "never"
 sandbox_mode = "danger-full-access"
 approvals_reviewer = "user"
-service_tier = "priority"
 
 [mcp_servers.expect]
 command = "npx"
