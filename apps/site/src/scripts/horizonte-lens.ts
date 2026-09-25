@@ -202,7 +202,9 @@ export interface LensFrame {
 
 export interface Lens {
   version: 1 | 2;
-  addTexture(key: number, img: HTMLImageElement): void;
+  addTexture(key: number, img: TexImageSource): void;
+  /* Re-upload an existing texture in place, for animated canvas sources. */
+  updateTexture(key: number, source: TexImageSource): void;
   resize(cssSize: number, dpr: number): void;
   render(frame: LensFrame): boolean;
   destroy(): void;
@@ -242,7 +244,7 @@ export function createLens(
   let buf: WebGLBuffer | null = null;
   const loc = new Map<UniformName, WebGLUniformLocation | null>();
   let textures = new Map<number, WebGLTexture>();
-  let images = new Map<number, HTMLImageElement>();
+  let images = new Map<number, TexImageSource>();
   let lost = false;
 
   const u = (name: UniformName) => loc.get(name) ?? null;
@@ -260,7 +262,7 @@ export function createLens(
     return shader;
   }
 
-  function upload(ctx: GL, key: number, img: HTMLImageElement) {
+  function upload(ctx: GL, key: number, img: TexImageSource) {
     const tex = ctx.createTexture();
     if (!tex) return;
     ctx.bindTexture(ctx.TEXTURE_2D, tex);
@@ -360,6 +362,24 @@ export function createLens(
     addTexture(key, img) {
       images.set(key, img);
       if (!lost) upload(ctx, key, img);
+    },
+    updateTexture(key, source) {
+      images.set(key, source);
+      if (lost) return;
+      const tex = textures.get(key);
+      if (!tex) {
+        upload(ctx, key, source);
+        return;
+      }
+      ctx.bindTexture(ctx.TEXTURE_2D, tex);
+      ctx.texImage2D(
+        ctx.TEXTURE_2D,
+        0,
+        ctx.RGBA,
+        ctx.RGBA,
+        ctx.UNSIGNED_BYTE,
+        source,
+      );
     },
     resize(cssSize, dpr) {
       const px = Math.max(2, Math.round(cssSize * dpr));
