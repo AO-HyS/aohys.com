@@ -201,18 +201,24 @@ export async function synchronizeCloudflarePagesRuntime({
     `Cloudflare Pages ${environment} runtime bindings could not be updated.`,
   );
 
-  const verifiedProject = await readPagesProject({
-    accountId,
-    apiToken,
-    projectName,
-    fetchImplementation,
-  });
-  if (!runtimeMatches(verifiedProject, environment, values)) {
-    throw new Error(
-      `Cloudflare Pages ${environment} runtime verification failed after update.`,
-    );
+  // The Pages API is eventually consistent: a read right after the PATCH can
+  // still return the previous values, so verify with a short backoff.
+  const verifyDelaysMs = [0, 1500, 3000, 5000, 8000];
+  for (const delayMs of verifyDelaysMs) {
+    if (delayMs) await new Promise((resolve) => setTimeout(resolve, delayMs));
+    const verifiedProject = await readPagesProject({
+      accountId,
+      apiToken,
+      projectName,
+      fetchImplementation,
+    });
+    if (runtimeMatches(verifiedProject, environment, values)) {
+      return { changed: true, bindingCount: Object.keys(values).length };
+    }
   }
-  return { changed: true, bindingCount: Object.keys(values).length };
+  throw new Error(
+    `Cloudflare Pages ${environment} runtime verification failed after update.`,
+  );
 }
 
 async function main(): Promise<void> {
