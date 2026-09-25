@@ -875,13 +875,13 @@ body {
 
 .hz-section {
   position: relative;
-  padding: clamp(96px, 13vw, 176px) var(--gutter);
+  padding: clamp(56px, 7vw, 104px) var(--gutter);
 }
 .hz-head {
   display: grid;
   justify-items: center;
   gap: 18px;
-  margin-bottom: clamp(56px, 8vw, 104px);
+  margin-bottom: clamp(40px, 5vw, 72px);
   text-align: center;
 }
 .hz-head h2 {
@@ -919,7 +919,7 @@ body {
 .hz-work {
   position: relative;
   display: grid;
-  gap: clamp(64px, 8vw, 112px);
+  gap: clamp(48px, 6vw, 84px);
   max-width: 1120px;
   margin: 0 auto;
   padding: 0;
@@ -2168,58 +2168,93 @@ body {
   position: fixed;
 }
 
-/* Solo heroes (no product image): a quieter height and a pastel sphere keeping the right side alive. */
+/* Solo heroes: a quieter height and a living lens keeping the right side alive. */
 .ma-hero.solo {
   min-height: min(calc(100svh - var(--header-h) - 220px), 560px);
 }
-.ma-hero.solo::after {
-  content: "";
-  grid-column: 9 / span 3;
+.ma-lens {
+  position: relative;
   grid-row: 1;
   justify-self: center;
   align-self: center;
-  width: clamp(140px, 17vw, 240px);
+  width: clamp(220px, 24vw, 360px);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 34% 30%,
-    #fff 0 14%,
-    var(--solo-tint, var(--apricot)) 64%,
-    color-mix(in oklab, var(--solo-tint, var(--apricot)) 70%, var(--honey)) 100%
-  );
-  box-shadow:
-    0 0 0 1px rgba(71, 60, 51, 0.12),
-    0 0 0 12px #fff,
-    0 24px 90px -6px
-      color-mix(in oklab, var(--solo-tint, var(--apricot)) 85%, transparent);
-  animation: hz-float 11s ease-in-out infinite alternate;
+}
+.ma-hero.solo .ma-lens {
+  grid-column: 9 / span 3;
+}
+.ma-hero .ma-lens.wide {
+  grid-column: 7 / span 5;
+  width: min(36vw, 440px);
+}
+.ma-lens canvas[data-gl] {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 136%;
+  height: 136%;
+  transform: translate(-50%, -50%);
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 500ms ease;
 }
-.ma[data-page="resume"] {
-  --solo-tint: var(--olive);
+.ma-lens[data-gl="on"] canvas[data-gl] {
+  opacity: 1;
 }
-.ma[data-page="contact"] {
-  --solo-tint: var(--honey);
+.ma-lens-dom {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--paper-warm);
+  box-shadow:
+    0 0 0 1px rgba(71, 60, 51, 0.14),
+    0 30px 60px -40px rgba(71, 60, 51, 0.5),
+    0 18px 80px -8px
+      color-mix(in oklab, var(--tint, var(--wash)) 75%, transparent);
+  transition: opacity 500ms ease;
 }
-.ma[data-page="practice"] {
-  --solo-tint: #e7e6b0;
+.ma-lens[data-gl="on"] .ma-lens-dom {
+  opacity: 0;
 }
-@keyframes hz-float {
-  from {
-    transform: translate3d(-8px, 6px, 0);
-  }
-  to {
-    transform: translate3d(8px, -8px, 0);
-  }
+.ma-lens-dom .layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.ma-lens-dom canvas.art {
+  position: absolute;
+  inset: -3%;
+  width: 106%;
+  height: 106%;
+}
+.ma-lens-dom .shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      34% 22% at 32% 22%,
+      rgba(255, 255, 255, 0.7),
+      transparent 70%
+    ),
+    radial-gradient(
+      closest-side,
+      transparent 74%,
+      color-mix(in oklab, var(--tint, var(--wash)) 55%, transparent) 93%,
+      rgba(255, 255, 255, 0.88) 100%
+    );
 }
 @media (max-width: 860px) {
-  .ma-hero.solo::after {
-    display: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ma-hero.solo::after {
-    animation: none;
+  .ma-hero.solo .ma-lens,
+  .ma-hero .ma-lens.wide {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    justify-self: end;
+    width: min(62vw, 280px);
+    margin-top: 12px;
   }
 }
 .ma-tl .card ul {

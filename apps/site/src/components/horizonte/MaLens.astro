@@ -1,0 +1,51 @@
+---
+import { fitStyle, type HorizonteProject } from "./projects";
+
+/* A living lens for interior pages: an animated illustration (scene) or a set of product images it cycles. */
+interface Props {
+  scene?: "resume" | "practice" | "contact" | "privacy" | "architecture";
+  projects?: HorizonteProject[];
+  locale: "en" | "es";
+  label: string;
+  class?: string;
+}
+
+const { scene, projects = [], locale, label, class: className } = Astro.props;
+const first = projects[0];
+const images = projects.map((project) => ({
+  src: project.texture,
+  size: project.size,
+  focus: project.focus,
+  tint: project.tint,
+  alt: project.alt[locale],
+}));
+const sceneTints: Record<string, string> = {
+  resume: "#D6E2B4",
+  practice: "#E7E6B0",
+  contact: "#FCE3A6",
+  privacy: "#FDD2B1",
+  architecture: "#FCE3A6",
+};
+const tint = scene ? sceneTints[scene] : first?.tint;
+---
+
+<div
+  class:list={["ma-lens", className]}
+  role="img"
+  aria-label={label}
+  data-ma-lens
+  data-gl="off"
+  data-scene={scene}
+  data-images={images.length ? JSON.stringify(images) : undefined}
+  style={tint ? `--tint:${tint}` : undefined}
+>
+  <div class="ma-lens-dom">
+    {first && (
+      <div class="layer hz-fit" style={fitStyle(first)}>
+        <img src={first.texture} alt="" decoding="async" />
+      </div>
+    )}
+    <span class="shine" aria-hidden="true"></span>
+  </div>
+  <canvas data-gl aria-hidden="true"></canvas>
+</div>
