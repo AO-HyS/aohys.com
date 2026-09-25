@@ -398,8 +398,9 @@ body {
   display: grid;
   justify-items: center;
 }
-.hz-intro h1 {
+.hz-intro .hz-mark {
   margin: 0;
+  font-family: var(--serif);
   font-size: clamp(3.25rem, min(1.4rem + 5.6vw, 11svh), 7.25rem);
   line-height: 0.92;
   font-weight: 250;
@@ -408,6 +409,8 @@ body {
   padding-left: 0.14em;
 }
 .hz-intro .hz-byline {
+  font-size: 1rem;
+  font-weight: 400;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -776,7 +779,7 @@ body {
   .hz-hero {
     --D: min(84vw, 46svh, 380px);
   }
-  .hz-intro h1 {
+  .hz-intro .hz-mark {
     letter-spacing: 0.1em;
     padding-left: 0.1em;
   }
@@ -2067,7 +2070,7 @@ body {
 .ma-direct a {
   font-family: var(--serif);
 }
-.hz-intro h1 {
+.hz-intro .hz-mark {
   font-weight: 200;
 }
 .hz-head h2,

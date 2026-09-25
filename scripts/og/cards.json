@@ -1,0 +1,180 @@
+{
+  "home": {
+    "img": "/images/horizonte/lens-barber.jpg",
+    "size": "1600x809",
+    "fx": 0.5,
+    "fy": 0.44,
+    "zoom": 0.62,
+    "tint": "#FDD2B1",
+    "es": {
+      "title": "Alejandro Ortiz Corro",
+      "sub": "Desarrollador de software full stack",
+      "line": "Sistemas y aplicaciones web a la medida"
+    },
+    "en": {
+      "title": "Alejandro Ortiz Corro",
+      "sub": "Full stack software developer",
+      "line": "Custom systems and web applications"
+    }
+  },
+  "practice": {
+    "img": "/images/horizonte/lens-practice.jpg",
+    "size": "1024x1024",
+    "fx": 0.5,
+    "fy": 0.52,
+    "zoom": 0.74,
+    "tint": "#E7E6B0",
+    "es": {
+      "kicker": "Desarrollo a la medida",
+      "title": "Software y sistemas para tu negocio",
+      "sub": "Del proceso en libretas, WhatsApp u hojas de cálculo a un sistema que funciona",
+      "line": "Alejandro Ortiz Corro · full stack"
+    },
+    "en": {
+      "kicker": "Custom development",
+      "title": "Software and systems for your business",
+      "sub": "From notebooks, WhatsApp and spreadsheets to a system that works",
+      "line": "Alejandro Ortiz Corro · full stack"
+    }
+  },
+  "resume": {
+    "img": "/images/horizonte/lens-resume.jpg",
+    "size": "1024x1024",
+    "fx": 0.5,
+    "fy": 0.54,
+    "zoom": 0.72,
+    "tint": "#D6E2B4",
+    "es": {
+      "kicker": "CV",
+      "title": "Alejandro Ortiz Corro",
+      "sub": "Desarrollador de software full stack",
+      "line": "React, TypeScript, backend e integraciones"
+    },
+    "en": {
+      "kicker": "Resume",
+      "title": "Alejandro Ortiz Corro",
+      "sub": "Full stack software developer",
+      "line": "React, TypeScript, backend and integrations"
+    }
+  },
+  "architecture": {
+    "img": "/images/horizonte/lens-architecture.jpg",
+    "size": "1024x1024",
+    "fx": 0.5,
+    "fy": 0.5,
+    "zoom": 0.76,
+    "tint": "#FCE3A6",
+    "es": {
+      "kicker": "Arquitectura",
+      "title": "Cómo construyo software",
+      "sub": "De la necesidad del negocio a producción",
+      "line": "Mi Development System"
+    },
+    "en": {
+      "kicker": "Architecture",
+      "title": "How I build software",
+      "sub": "From business need to production",
+      "line": "My Development System"
+    }
+  },
+  "contact": {
+    "img": "/images/horizonte/lens-contact.jpg",
+    "size": "1024x1024",
+    "fx": 0.5,
+    "fy": 0.53,
+    "zoom": 0.72,
+    "tint": "#FCE3A6",
+    "es": {
+      "kicker": "Contacto",
+      "title": "Cuéntame qué estás construyendo",
+      "sub": "Desarrollador full stack para tu equipo o tu proyecto",
+      "line": "Respondo personalmente por WhatsApp o correo"
+    },
+    "en": {
+      "kicker": "Contact",
+      "title": "Tell me what you are building",
+      "sub": "A full stack developer for your team or your project",
+      "line": "I reply personally by WhatsApp or email"
+    }
+  },
+  "the-barber-central": {
+    "img": "/images/horizonte/lens-barber.jpg",
+    "size": "1600x809",
+    "fx": 0.5,
+    "fy": 0.44,
+    "zoom": 0.62,
+    "tint": "#FDD2B1",
+    "es": {
+      "kicker": "Caso",
+      "title": "The Barber Central",
+      "sub": "Sistema de reservas y operación para barberías y salones",
+      "line": "Reservas, WhatsApp, pagos y operación diaria"
+    },
+    "en": {
+      "kicker": "Case study",
+      "title": "The Barber Central",
+      "sub": "Booking and operations system for barbershops and salons",
+      "line": "Booking, WhatsApp, payments and daily operations"
+    }
+  },
+  "nutri-plan": {
+    "img": "/images/horizonte/lens-nutriplan.jpg",
+    "size": "1400x1288",
+    "fx": 0.5,
+    "fy": 0.36,
+    "zoom": 0.62,
+    "tint": "#D6E2B4",
+    "es": {
+      "kicker": "Caso",
+      "title": "NutriPlan",
+      "sub": "Plataforma para nutriólogos y sus pacientes",
+      "line": "Citas, planes de alimentación y seguimiento"
+    },
+    "en": {
+      "kicker": "Case study",
+      "title": "NutriPlan",
+      "sub": "A platform for nutritionists and their patients",
+      "line": "Appointments, meal plans and follow-up"
+    }
+  },
+  "eteria": {
+    "img": "/images/horizonte/lens-eteria.jpg",
+    "size": "1200x630",
+    "fx": 0.52,
+    "fy": 0.5,
+    "zoom": 0.94,
+    "tint": "#FCE3A6",
+    "es": {
+      "kicker": "Caso",
+      "title": "ETERIA",
+      "sub": "Sistema de propuestas y operación de eventos",
+      "line": "Web, backend compartido y app para iPhone"
+    },
+    "en": {
+      "kicker": "Case study",
+      "title": "ETERIA",
+      "sub": "Event proposals and operations system",
+      "line": "Web, shared backend and iPhone app"
+    }
+  },
+  "casa-roca": {
+    "img": "/images/horizonte/lens-casaroca.jpg",
+    "size": "1432x960",
+    "fx": 0.5,
+    "fy": 0.47,
+    "zoom": 0.8,
+    "tint": "#E7E6B0",
+    "es": {
+      "kicker": "Caso",
+      "title": "Casa Roca",
+      "sub": "Sitio de hospedaje y sistema de reservaciones",
+      "line": "Contenido, reservas y entradas y salidas"
+    },
+    "en": {
+      "kicker": "Case study",
+      "title": "Casa Roca",
+      "sub": "Hospitality website and reservation system",
+      "line": "Content, reservations, check-in and check-out"
+    }
+  }
+}

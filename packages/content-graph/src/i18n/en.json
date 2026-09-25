@@ -28,8 +28,19 @@
     "languageName": "English"
   },
   "seo": {
-    "defaultImageAlt": "AOHYS Sunlit product stage featuring the ETERIA event experience",
-    "evidencePreviewAlt": "{title} preview on AOHYS",
-    "resumeJobTitle": "full stack development"
+    "defaultImageAlt": "Alejandro Ortiz Corro, full stack software developer: custom systems and web applications.",
+    "evidencePreviewAlt": "{title} — AOHYS",
+    "resumeJobTitle": "Full stack software developer",
+    "personDescription": "Full stack software developer in Mexico with a strong frontend background. Builds custom systems and web applications: booking, payments, WhatsApp and integrations.",
+    "serviceName": "Custom software and system development",
+    "serviceDescription": "Design and development of custom systems, web applications and backends for businesses and product teams, with integrations such as WhatsApp, Mercado Pago and Stripe.",
+    "serviceTypes": [
+      "Custom software development",
+      "Custom system development",
+      "Web application development",
+      "Full stack development",
+      "React frontend development"
+    ],
+    "areaServed": ["Mexico", "United States", "Latin America"]
   }
 }
