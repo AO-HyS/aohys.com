@@ -14,7 +14,7 @@ import { DASHBOARD_PUBLIC_SETTINGS } from "../generated/dashboard-public-setting
 import { getUiCopy } from "../i18n";
 import HorizonteHome from "./horizonte/HorizonteHome.astro";
 import MaLens from "./horizonte/MaLens.astro";
-import { HORIZONTE_PASTELS, HORIZONTE_PROJECTS, fitStyle, getHorizonteProject } from "./horizonte/projects";
+import { HORIZONTE_PASTELS, HORIZONTE_PROJECTS, PAGE_LENS_PHOTOS, fitStyle, getHorizonteProject } from "./horizonte/projects";
 import { resolveProofMedia } from "./sunlit/proof-media";
 
 interface Props { route: PublicRoute; }
@@ -75,24 +75,10 @@ const orbImageClass = (kind?: string) => (kind && DIAGRAM_KINDS.has(kind) ? "con
 const isEnterpriseCase = id === "case-study:enterprise-systems";
 
 
-/* Accessible names for the living lenses. */
-const lensLabels = locale === "es"
-  ? {
-      work: "Lente animada que recorre los cinco productos.",
-      practice: "Ilustración animada: bloques pastel que se ensamblan en un sistema.",
-      resume: "Ilustración animada: siete empleos que se encienden sobre una línea.",
-      contact: "Ilustración animada: dos esferas que conversan.",
-      privacy: "Ilustración animada: un sobre detrás de vidrio esmerilado y un candado.",
-      architecture: "Ilustración animada: capas de un sistema unidas por pernos.",
-    }
-  : {
-      work: "Animated lens cycling through the five products.",
-      practice: "Animated illustration: pastel blocks assembling into a system.",
-      resume: "Animated illustration: seven roles lighting up along one line.",
-      contact: "Animated illustration: two spheres in conversation.",
-      privacy: "Animated illustration: an envelope behind frosted glass and a lock.",
-      architecture: "Animated illustration: system layers joined by pins.",
-    };
+/* Accessible name for the work-index lens; single photographs use their own alt text. */
+const lensLabels = {
+  work: locale === "es" ? "Lente que recorre los cinco productos." : "Lens cycling through the five products.",
+};
 
 /* Resume */
 const founderJob = resumeContent?.experience.find((job) => job.company === "AOHYS");
@@ -198,7 +184,7 @@ const founderJob = resumeContent?.experience.find((job) => job.company === "AOHY
             <h1 id="work-title">{caseStudyIndexContent.heading}</h1>
             <p class="ma-lede">{caseStudyIndexContent.intro}</p>
           </div>
-          <MaLens projects={HORIZONTE_PROJECTS} locale={locale} label={lensLabels.work} />
+          <MaLens photos={HORIZONTE_PROJECTS} locale={locale} label={lensLabels.work} />
         </section>
         <section class="ma-section ma-grid" aria-label={labels.workArchive}>
           <div class="ma-block pos-wide" data-ma-block>
@@ -241,7 +227,7 @@ const founderJob = resumeContent?.experience.find((job) => job.company === "AOHY
               {secondaryRouteActions.map((action) => <a class="hz-link" href={action.href}>{action.label} <span aria-hidden="true">→</span></a>)}
             </div>
           </div>
-          <MaLens scene="practice" locale={locale} label={lensLabels.practice} />
+          <MaLens photos={[PAGE_LENS_PHOTOS.practice]} locale={locale} />
         </section>
         {practiceContent.services.map((service, index) => (
           <section class="ma-section ma-grid" id={service.id} aria-labelledby={`${service.id}-title`}>
@@ -286,7 +272,7 @@ const founderJob = resumeContent?.experience.find((job) => job.company === "AOHY
               {secondaryRouteActions.filter((action) => action.contentId !== "architecture").map((action) => <a class="hz-link" href={action.href}>{action.label} <span aria-hidden="true">→</span></a>)}
             </div>
           </div>
-          <MaLens scene="architecture" locale={locale} label={lensLabels.architecture} class="wide" />
+          <MaLens photos={[PAGE_LENS_PHOTOS.architecture]} locale={locale} class="wide" />
           <a class="ma-cue" href="#architecture-system">{hz.scrollCue}</a>
         </section>
 
@@ -345,7 +331,7 @@ const founderJob = resumeContent?.experience.find((job) => job.company === "AOHY
               <a class="hz-link" href={contactHref}>{labels.talk} <span aria-hidden="true">→</span></a>
             </div>
           </div>
-          <MaLens scene="resume" locale={locale} label={lensLabels.resume} />
+          <MaLens photos={[PAGE_LENS_PHOTOS.resume]} locale={locale} />
         </section>
 
         <section class="ma-section ma-grid" aria-labelledby="profile-title">
@@ -424,7 +410,7 @@ const founderJob = resumeContent?.experience.find((job) => job.company === "AOHY
               <a class="hz-link" href={directEmailHref} data-analytics-event="email_cta_clicked" data-analytics-target="contact_direct_panel">{publicContactEmail} <span aria-hidden="true">↗</span></a>
             </div>
           </div>
-          <MaLens scene="contact" locale={locale} label={lensLabels.contact} />
+          <MaLens photos={[PAGE_LENS_PHOTOS.contact]} locale={locale} />
         </section>
 
         <section class="ma-section ma-grid" aria-label={contactCopy.formTitle}>
@@ -578,7 +564,7 @@ const founderJob = resumeContent?.experience.find((job) => job.company === "AOHY
             <h1 id="privacy-title">{privacyContent.heading}</h1>
             <p class="ma-lede">{privacyContent.intro}</p>
           </div>
-          <MaLens scene="privacy" locale={locale} label={lensLabels.privacy} />
+          <MaLens photos={[PAGE_LENS_PHOTOS.privacy]} locale={locale} />
         </section>
         <section class="ma-section ma-grid" aria-labelledby="privacy-sections-title">
           <div class="ma-block pos-right" data-ma-block>
