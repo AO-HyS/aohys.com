@@ -1,4 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import process from "node:process";
 
 function normalizePath(filePath) {
@@ -150,11 +151,13 @@ export function buildChangedValidationPlan({
 
   if (nativeChanged) plan.push(...nativeCommands);
   if (uiChanged) {
-    const uiFiles = files.filter((filePath) =>
-      matchesSourcePrefix(filePath, uiPrefixes),
+    // Deleted files still count as UI changes but cannot be scanned.
+    const uiFiles = files.filter(
+      (filePath) =>
+        matchesSourcePrefix(filePath, uiPrefixes) && existsSync(filePath),
     );
     plan.push(
-      uiCommandPrefix
+      uiCommandPrefix && uiFiles.length > 0
         ? [uiCommandPrefix[0], [...uiCommandPrefix[1], ...uiFiles]]
         : ["pnpm", ["run", "quality:impeccable"]],
     );
