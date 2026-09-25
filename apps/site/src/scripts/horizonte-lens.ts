@@ -203,8 +203,6 @@ export interface LensFrame {
 export interface Lens {
   version: 1 | 2;
   addTexture(key: number, img: TexImageSource): void;
-  /* Re-upload an existing texture in place, for animated canvas sources. */
-  updateTexture(key: number, source: TexImageSource): void;
   resize(cssSize: number, dpr: number): void;
   render(frame: LensFrame): boolean;
   destroy(): void;
@@ -362,24 +360,6 @@ export function createLens(
     addTexture(key, img) {
       images.set(key, img);
       if (!lost) upload(ctx, key, img);
-    },
-    updateTexture(key, source) {
-      images.set(key, source);
-      if (lost) return;
-      const tex = textures.get(key);
-      if (!tex) {
-        upload(ctx, key, source);
-        return;
-      }
-      ctx.bindTexture(ctx.TEXTURE_2D, tex);
-      ctx.texImage2D(
-        ctx.TEXTURE_2D,
-        0,
-        ctx.RGBA,
-        ctx.RGBA,
-        ctx.UNSIGNED_BYTE,
-        source,
-      );
     },
     resize(cssSize, dpr) {
       const px = Math.max(2, Math.round(cssSize * dpr));
