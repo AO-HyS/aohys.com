@@ -170,6 +170,6 @@ The Release Train depends on this contract. A release is not healthy if it can d
 
 Issue #13 implements release-facing validation through `pnpm run release:env:preview` and `pnpm run release:env:production`. Issues #10, #11, #12, and #14 implement provider-specific runtime parts behind the same seam.
 
-## TDD Connection
+## Verification Connection
 
-The Environment Contract is verified through observable validation behavior (`pnpm verify` and `verify:product`). Validation checks missing required values, production/preview separation, runtime vs release requirements, and secret/public separation without sending real emails, mutating production data, or leaking secrets.
+Deployment configuration and release credential/target separation are checked by `pnpm run release:env:preview` and `pnpm run release:env:production` (`scripts/validate-release-env.ts`). `pnpm verify` and `verify:product` are static validation of the verification configuration and documentation, not of runtime environments. The release-environment validator checks missing required values, production/preview separation, runtime vs release requirements, and secret/public separation without sending real emails, mutating production data, or leaking secrets.

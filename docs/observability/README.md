@@ -4,7 +4,6 @@
 
 ```sh
 node scripts/observability/validate-signal-catalog.mjs
-node --test scripts/observability/*.test.mjs
 ```
 
 `alert-catalog.v1.json` separately defines local alert operations. Every actionable alert has an owner, signal and correlation keys, a threshold copied from the measured IM-12 baseline, a measurement window, deduplication and quieting rules, a runbook, and a verified-fix criterion. Dimensions whose runtime evidence is still unproven remain `report-only` with `numericThreshold: null`.

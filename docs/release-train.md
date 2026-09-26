@@ -168,6 +168,6 @@ The Release Train affects these existing issues:
 - #17 Privacy, security, and launch hardening: verify production readiness, environment separation, dashboard privacy, and launch smoke checks.
 - #18 Public README and source evaluation package: document the release path for technical evaluators.
 
-## TDD Connection
+## Verification Connection
 
 The Release Train is verified through observable behavior, not private workflow internals. Current checks validate the release deploy plan, release environment validation, GitHub Actions workflow surface, and Cloudflare Redirect Rules manifest. Later Browser checks should verify live preview URL behavior, production URL behavior, canonical redirects, and dashboard noindex/auth behavior.

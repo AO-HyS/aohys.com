@@ -26,7 +26,7 @@ Follow these questions in order. Stop at the first answer that provides a clear 
 6. **Is the target generated?** Change the owning schema, manifest, or generator and regenerate the artifact. Never make a generated file the architectural source of truth.
 7. **Is ownership still ambiguous?** Do not default to a global `lib`, `types`, `utils`, or catch-all package. Assign an owner in Linear and, when the decision is durable or costly to reverse, capture it in an ADR before adding a new boundary.
 
-After placement, verify the dependency points toward the owner, the owner's public interface stays small, and the focused behavior test lives with the behavior. A directory name alone is not evidence of ownership.
+After placement, verify the dependency points toward the owner, the owner's public interface stays small, and the behavior is observed with real verification (see `docs/aohys-verification-plan.md`). A directory name alone is not evidence of ownership.
 
 ## Durable Navigation
 

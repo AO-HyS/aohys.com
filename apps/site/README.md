@@ -10,9 +10,11 @@ This surface owns public SEO pages, bilingual routes, metadata rendering, sitema
 pnpm --filter @aohys/site dev
 pnpm --filter @aohys/site lint
 pnpm --filter @aohys/site typecheck
-pnpm --filter @aohys/site test
 pnpm --filter @aohys/site build
+pnpm run verify:product
 ```
+
+aohys has no automated tests. Confirm behavior with Browser or computer-use observation as described in `docs/aohys-verification-plan.md`.
 
 Local Cloudflare Pages Functions QA needs explicit Wrangler bindings; shell-prefixed env vars are not enough for `pages dev`:
 
