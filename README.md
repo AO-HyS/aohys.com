@@ -20,7 +20,7 @@ Start with the docs:
 
 - [PRD](docs/aohys-prd.md)
 - [Issue breakdown](docs/aohys-issue-breakdown.md)
-- [TDD plan](docs/aohys-tdd-plan.md)
+- [Verification plan](docs/aohys-verification-plan.md)
 - [Release Train](docs/release-train.md)
 - [Environment Contract](docs/environment-contract.md)
 - [Public Content Graph](docs/public-content-graph.md)
@@ -75,7 +75,7 @@ before any commit reaches GitHub.
 | Environment Contract  | `packages/environment`                                             | Shared variable registry, local/preview/production validation, public-vs-secret boundaries                                                              |
 | Public Content Graph  | `packages/content-graph`                                           | Stable content IDs, localized routes, SEO metadata, sitemap eligibility, public-safe content relationships, and the editorial order of selected systems |
 | Release Train         | `packages/release-train` and `.github/workflows/release-train.yml` | Branch-to-environment release plan, Cloudflare deploy commands, smoke checks, redirect manifest                                                         |
-| Documentation         | `docs/`                                                            | Product, architecture, TDD, release, environment, dashboard, privacy, and issue planning                                                                |
+| Documentation         | `docs/`                                                            | Product, architecture, verification, release, environment, dashboard, privacy, and issue planning                                                       |
 
 The system intentionally keeps public communication separate from private operational work. Public Astro pages present selected systems, outcomes, evidence, and the six-stage delivery lifecycle for SEO and direct reading; authenticated workflows and the adaptable Development System remain behind private boundaries.
 
@@ -103,7 +103,7 @@ Publicly inspectable:
 - the architecture and release documentation;
 - public-safe case-study framing;
 - public route, SEO, i18n, privacy, contact, and dashboard-boundary implementation;
-- testing and verification structure.
+- verification structure (no automated tests).
 
 Not public:
 
@@ -207,7 +207,7 @@ Current protections:
 - [Site plan](docs/aohys-site-plan.md)
 - [PRD](docs/aohys-prd.md)
 - [Issue breakdown draft](docs/aohys-issue-breakdown.md)
-- [TDD plan](docs/aohys-tdd-plan.md)
+- [Verification plan](docs/aohys-verification-plan.md)
 - [Release Train](docs/release-train.md)
 - [Launch Hardening](docs/launch-hardening.md)
 - [Environment Contract](docs/environment-contract.md)

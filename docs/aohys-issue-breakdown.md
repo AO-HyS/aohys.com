@@ -4,7 +4,7 @@ This document breaks `docs/aohys-prd.md` into independently grabbable tracer-bul
 
 Parent PRD issue: https://github.com/AO-HyS/aohys.com/issues/1
 
-TDD plan: `docs/aohys-tdd-plan.md`
+Verification plan: `docs/aohys-verification-plan.md`
 
 Release Train: `docs/release-train.md`
 
@@ -16,25 +16,25 @@ Dashboard architecture: `docs/dashboard-ui-kit.md`
 
 ## Published Issues
 
-| Issue | Title |
-| --- | --- |
-| https://github.com/AO-HyS/aohys.com/issues/2 | Repository and Monorepo Foundation |
-| https://github.com/AO-HyS/aohys.com/issues/3 | Public Astro Shell With Design Tokens |
-| https://github.com/AO-HyS/aohys.com/issues/4 | Bilingual Routing, SEO, and Public Page Skeletons |
-| https://github.com/AO-HyS/aohys.com/issues/5 | Home Page Proof Narrative |
-| https://github.com/AO-HyS/aohys.com/issues/6 | Architecture and Public Code Sample Page |
-| https://github.com/AO-HyS/aohys.com/issues/7 | Case Study Template and Casa Roca Detail |
-| https://github.com/AO-HyS/aohys.com/issues/8 | Remaining Selected Work Case Studies |
-| https://github.com/AO-HyS/aohys.com/issues/9 | Resume Page and ATS-Friendly PDF |
-| https://github.com/AO-HyS/aohys.com/issues/10 | Convex Backend Foundation |
-| https://github.com/AO-HyS/aohys.com/issues/11 | Contact Lead Capture With Email Notification |
-| https://github.com/AO-HyS/aohys.com/issues/12 | PostHog Analytics and Error Capture |
-| https://github.com/AO-HyS/aohys.com/issues/13 | Cloudflare and Wrangler Deployment Path |
-| https://github.com/AO-HyS/aohys.com/issues/14 | Better Auth and Private Dashboard Shell |
-| https://github.com/AO-HyS/aohys.com/issues/15 | Dashboard Lead Review Workflow |
-| https://github.com/AO-HyS/aohys.com/issues/16 | Dashboard Content and Media Workflow |
-| https://github.com/AO-HyS/aohys.com/issues/17 | Privacy, Security, and Launch Hardening |
-| https://github.com/AO-HyS/aohys.com/issues/18 | Public README and Source Evaluation Package |
+| Issue                                         | Title                                                              |
+| --------------------------------------------- | ------------------------------------------------------------------ |
+| https://github.com/AO-HyS/aohys.com/issues/2  | Repository and Monorepo Foundation                                 |
+| https://github.com/AO-HyS/aohys.com/issues/3  | Public Astro Shell With Design Tokens                              |
+| https://github.com/AO-HyS/aohys.com/issues/4  | Bilingual Routing, SEO, and Public Page Skeletons                  |
+| https://github.com/AO-HyS/aohys.com/issues/5  | Home Page Proof Narrative                                          |
+| https://github.com/AO-HyS/aohys.com/issues/6  | Architecture and Public Code Sample Page                           |
+| https://github.com/AO-HyS/aohys.com/issues/7  | Case Study Template and Casa Roca Detail                           |
+| https://github.com/AO-HyS/aohys.com/issues/8  | Remaining Selected Work Case Studies                               |
+| https://github.com/AO-HyS/aohys.com/issues/9  | Resume Page and ATS-Friendly PDF                                   |
+| https://github.com/AO-HyS/aohys.com/issues/10 | Convex Backend Foundation                                          |
+| https://github.com/AO-HyS/aohys.com/issues/11 | Contact Lead Capture With Email Notification                       |
+| https://github.com/AO-HyS/aohys.com/issues/12 | PostHog Analytics and Error Capture                                |
+| https://github.com/AO-HyS/aohys.com/issues/13 | Cloudflare and Wrangler Deployment Path                            |
+| https://github.com/AO-HyS/aohys.com/issues/14 | Better Auth and Private Dashboard Shell                            |
+| https://github.com/AO-HyS/aohys.com/issues/15 | Dashboard Lead Review Workflow                                     |
+| https://github.com/AO-HyS/aohys.com/issues/16 | Dashboard Content and Media Workflow                               |
+| https://github.com/AO-HyS/aohys.com/issues/17 | Privacy, Security, and Launch Hardening                            |
+| https://github.com/AO-HyS/aohys.com/issues/18 | Public README and Source Evaluation Package                        |
 | https://github.com/AO-HyS/aohys.com/issues/31 | Quality Gates: Husky pre-commit and GitHub Actions verify workflow |
 
 ## Proposed Vertical Slices
@@ -159,7 +159,7 @@ Current implementation status: Cloudflare Pages functions protect `/dashboard`, 
 
 Build the first real dashboard workflow in the React dashboard app: list incoming leads, view details, update review/contact status, preserve privacy, represent loading/empty/error/saved states, and verify that changes reflect in Convex.
 
-Current implementation status: Cloudflare Pages serves the React app at `/dashboard/leads`, verifies the Better Auth session and admin allowlist before serving the shell, and the dashboard reads/updates lead review status through admin-gated Convex functions. Local tests cover noindex sign-in, unauthorized access, direct Convex dashboard hooks, and persisted status updates.
+Current implementation status: Cloudflare Pages serves the React app at `/dashboard/leads`, verifies the Better Auth session and admin allowlist before serving the shell, and the dashboard reads/updates lead review status through admin-gated Convex functions. Historical: local tests (since removed) covered noindex sign-in, unauthorized access, direct Convex dashboard hooks, and persisted status updates.
 
 ### 15. Dashboard Content and Media Workflow
 
@@ -189,7 +189,7 @@ Current implementation status: privacy pages render graph-backed bilingual copy 
 
 Write the public README and evaluation package: architecture overview, local development, environment variables, Convex, Cloudflare, PostHog, Resend, media, privacy/security, dashboard architecture, Public Content Graph, Environment Contract, Release Train, license boundaries, and no-contribution framing.
 
-Current implementation status: `README.md` now acts as the public evaluation package. It explains how to inspect and run the repo without private credentials, maps the architecture and providers, documents dashboard boundaries, distinguishes local/preview/production credentials, links the PRD, issue breakdown, TDD plan, Release Train, Environment Contract, Public Content Graph, dashboard architecture, and Launch Hardening docs, and states the MIT-code versus reserved-content/license boundary. `verify:foundation` now checks for the required README sections and boundary language.
+Current implementation status: `README.md` now acts as the public evaluation package. It explains how to inspect and run the repo without private credentials, maps the architecture and providers, documents dashboard boundaries, distinguishes local/preview/production credentials, links the PRD, issue breakdown, verification plan, Release Train, Environment Contract, Public Content Graph, dashboard architecture, and Launch Hardening docs, and states the MIT-code versus reserved-content/license boundary. `verify:foundation` now checks for the required README sections and boundary language.
 
 ### 18. Quality Gates: Husky pre-commit and GitHub Actions verify workflow
 
@@ -197,9 +197,9 @@ Current implementation status: `README.md` now acts as the public evaluation pac
 
 **User stories covered:** 63, 64, 65, 66, 67, 68.
 
-Add the baseline quality gates for local and pull-request review: Husky pre-commit, a GitHub Actions verify workflow, dependency-install validation, lint/typecheck/test/build coverage, and clear behavior for checks that do not require private provider secrets. This issue exists so testing and quality standards are not scattered across feature slices.
+Add the baseline quality gates for local and pull-request review: Husky pre-commit, a GitHub Actions verify workflow, dependency-install validation, lint/typecheck/build coverage, and clear behavior for checks that do not require private provider secrets. This issue exists so quality standards are not scattered across feature slices.
 
-Current implementation status: Husky is installed through the root `prepare` script and `.husky/pre-commit` runs `pnpm run verify:precommit` with foundation validation, lint, typecheck, and tests. `pnpm verify` delegates to `verify:ci`, which runs foundation validation, lint, typecheck, tests, and build. `.github/workflows/quality-gates.yml` runs pull-request checks into `develop` and `main` with readable install/foundation/lint/typecheck/test/build steps that do not require private provider secrets. Pre-push remains manual so local iteration stays practical; meaningful PRs should run `pnpm verify` before merge.
+Current implementation status: Husky is installed through the root `prepare` script and `.husky/pre-commit` runs `pnpm run verify:precommit` with foundation validation, lint, typecheck, and build checks. `pnpm verify` delegates to `verify:ci`, which runs foundation validation, lint, typecheck, and build; there are no automated tests. `.github/workflows/quality-gates.yml` runs pull-request checks into `develop` and `main` with readable install/foundation/lint/typecheck/build steps that do not require private provider secrets. Pre-push remains manual so local iteration stays practical; meaningful PRs should run `pnpm verify` before merge.
 
 ## Architecture Review Notes
 
@@ -224,4 +224,4 @@ The dashboard app should create locality for private routes, project workflows, 
 
 The breakdown intentionally starts with two foundation issues, then switches to demoable vertical slices. It avoids creating separate horizontal tickets for "CSS", "schema", "routes", or "tests" unless they are part of a complete user-visible path.
 
-Every issue should be executed with the project TDD plan: choose the public interface, write one failing behavior test, implement the minimal path, then refactor while green.
+Every issue should be executed with the project verification plan: choose the public interface, implement the minimal path, then verify the behavior with lint, typecheck, build, Browser or computer use observation, and `pnpm run verify:product`. aohys has no automated tests.

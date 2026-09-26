@@ -163,31 +163,32 @@ The visual implementation will follow the Impeccable process and the approved de
 - Dashboard sections for V1 are Overview, Leads, Case studies, Media, Site settings, and Resume.
 - Dashboard overview should be checklist-driven with quick links and operational status, not a PostHog replacement.
 
-## Testing Decisions
+## Verification Decisions
 
-- Tests should validate external behavior and user-visible outcomes, not internal implementation details.
-- Implementation follows `/tdd`: one behavior test, minimal implementation, then refactor only while green.
-- Do not write all tests first and all implementation afterward. Each issue should move through tracer-bullet red-green-refactor cycles.
-- Each issue should identify the public interface under test before adding code.
-- The primary high-level test seam for the public site is browser-level route verification: build or run the site, visit representative English and Spanish routes, verify content, navigation, metadata, accessibility basics, responsive layout, and console cleanliness.
-- The primary high-level test seam for contact is end-to-end lead submission in a safe environment: submit the public form, verify the lead is stored, verify notification behavior, verify validation/errors, and verify analytics do not capture sensitive message content.
-- The primary high-level test seam for dashboard access is authenticated browser behavior: unauthorized users cannot access dashboard content, the allowlisted admin can access it, and private routes are noindexed.
-- The primary deployment seam is Cloudflare/Wrangler smoke testing: validate build output, environment wiring, canonical domain behavior, redirects, and production/preview smoke checks.
-- Release Train tests should validate observable release behavior: local verification, Cloudflare-compatible build output, preview smoke checks, production smoke checks, and branch/source assumptions.
-- Environment Contract tests should validate observable configuration behavior: missing required values fail, safe local placeholders pass local validation, and production validation rejects preview/local provider targets.
-- Public Content Graph tests should validate observable route and metadata behavior: stable IDs resolve to English/Spanish paths, canonical URLs and language alternates are correct, sitemap eligibility is explicit, and private dashboard routes remain excluded.
-- Dashboard app tests should validate authenticated workflow behavior: shell access, routed navigation, state surfaces, mobile layout, no duplicate controls, direct Convex data access, and preservation of Public Content Graph and Environment Contract invariants.
+- aohys has no automated tests. Every behavior below is verified with lint, typecheck, build, Browser or computer use observation, and `pnpm run verify:product`; "check" means real observation, not an automated test.
+- Verification should validate external behavior and user-visible outcomes, not internal implementation details.
+- Implementation proceeds one behavior at a time: minimal implementation, observed verification, then refactor.
+- Each issue moves through thin vertical slices verified in the running product.
+- Each issue should identify the public interface being verified before adding code.
+- The primary high-level verification surface for the public site is browser-level route verification: build or run the site, visit representative English and Spanish routes, verify content, navigation, metadata, accessibility basics, responsive layout, and console cleanliness.
+- The primary high-level verification surface for contact is end-to-end lead submission in a safe environment: submit the public form, verify the lead is stored, verify notification behavior, verify validation/errors, and verify analytics do not capture sensitive message content.
+- The primary high-level verification surface for dashboard access is authenticated browser behavior: unauthorized users cannot access dashboard content, the allowlisted admin can access it, and private routes are noindexed.
+- The primary deployment seam is Cloudflare/Wrangler smoke checks: validate build output, environment wiring, canonical domain behavior, redirects, and production/preview smoke checks.
+- Release Train checks should validate observable release behavior: local verification, Cloudflare-compatible build output, preview smoke checks, production smoke checks, and branch/source assumptions.
+- Environment Contract checks should validate observable configuration behavior: missing required values fail, safe local placeholders pass local validation, and production validation rejects preview/local provider targets.
+- Public Content Graph checks should validate observable route and metadata behavior: stable IDs resolve to English/Spanish paths, canonical URLs and language alternates are correct, sitemap eligibility is explicit, and private dashboard routes remain excluded.
+- Dashboard app checks should validate authenticated workflow behavior: shell access, routed navigation, state surfaces, mobile layout, no duplicate controls, direct Convex data access, and preservation of Public Content Graph and Environment Contract invariants.
 - The visual QA seam is Impeccable-backed browser review: use the approved design context, check typography, color, spatial rhythm, responsive behavior, motion, UX copy, and slop-pattern avoidance.
-- Public page tests should cover the home page, case study index, one case study detail page, architecture page, resume page, contact page, and privacy page in both language trees where applicable.
-- SEO tests should verify canonical URLs, localized alternates, page titles, meta descriptions, robots behavior, sitemap inclusion/exclusion, and dashboard noindex.
-- Accessibility tests should verify semantic landmarks, keyboard navigation, visible focus, contrast, readable line lengths, reduced-motion support, alt text requirements, and no color-only meaning.
-- Content tests should verify that public-source copy does not imply open-source community collaboration and does not imply private client code is public.
-- Media tests should verify that images render, have alt text, are optimized through the chosen Cloudflare path, and do not expose private information.
-- Resume tests should verify that the dynamic resume is readable and that the PDF remains text-based, single-column, and ATS-friendly.
-- Analytics tests should verify explicit pageview/event behavior, environment separation, disabled autocapture, and error capture wiring.
-- Email tests should verify sender configuration, notification content, SPF/DKIM/DMARC readiness, and safe handling of failed sends.
-- There is no prior code test suite in this workspace yet. The first implementation should create the test seams alongside the app rather than retrofit them later.
-- The project-level TDD plan lives in `docs/aohys-tdd-plan.md`.
+- Public page checks should cover the home page, case study index, one case study detail page, architecture page, resume page, contact page, and privacy page in both language trees where applicable.
+- SEO checks should verify canonical URLs, localized alternates, page titles, meta descriptions, robots behavior, sitemap inclusion/exclusion, and dashboard noindex.
+- Accessibility checks should verify semantic landmarks, keyboard navigation, visible focus, contrast, readable line lengths, reduced-motion support, alt text requirements, and no color-only meaning.
+- Content checks should verify that public-source copy does not imply open-source community collaboration and does not imply private client code is public.
+- Media checks should verify that images render, have alt text, are optimized through the chosen Cloudflare path, and do not expose private information.
+- Resume checks should verify that the dynamic resume is readable and that the PDF remains text-based, single-column, and ATS-friendly.
+- Analytics checks should verify explicit pageview/event behavior, environment separation, disabled autocapture, and error capture wiring.
+- Email checks should verify sender configuration, notification content, SPF/DKIM/DMARC readiness, and safe handling of failed sends.
+- The first implementation should expose verification surfaces (routes, public functions, the verification CLI) alongside the app.
+- The project-level verification plan lives in `docs/aohys-verification-plan.md`.
 
 ## Out of Scope
 

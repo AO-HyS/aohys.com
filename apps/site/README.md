@@ -44,7 +44,7 @@ Only the deploy command sets `AOHYS_DASHBOARD_CONTENT_APPLIED=1`, after the auth
 
 Curated case studies use the public-safe evidence assets committed with their copy by default. Dashboard media can replace one only after an admin explicitly selects that asset later than the case study's code-reviewed `approvedAt`; publishing alone does not refresh that per-asset review signal.
 
-The current shell includes the graph-backed home proof narrative, selected-work index, case-study detail pages, resume page, text-based PDF artifact, bilingual route skeletons, global tokens, font loading, graph-backed metadata, navigation, footer, sitemap, robots output, Astro native i18n config, and Vitest route/build smoke checks.
+The current shell includes the graph-backed home proof narrative, selected-work index, case-study detail pages, resume page, text-based PDF artifact, bilingual route skeletons, global tokens, font loading, graph-backed metadata, navigation, footer, sitemap, robots output, Astro native i18n config, and route/build smoke checks through the build and Browser observation.
 
 Cloudflare Pages security headers are authored in `src/security-headers.ts`. `public/_headers` is generated from that shared source with `pnpm --filter @aohys/site sync:headers`, and `sync:headers:check` guards it during site lint/test. Pages Functions responses such as `/dashboard` and `/observability/csp` use the same module directly. The route build tests verify the generated header artifact alongside sitemap, robots, privacy, analytics, and contact failure-state behavior.
 
