@@ -1,18 +1,22 @@
 // Claude Code orchestration guard (operator-level, private).
 // PreToolUse Agent: only roster roles at their fixed model; writer packets carry owned
-// paths and a finish line and never share a path with an active writer; Jev classifies
-// writer/planner packets (with the active write sets), a strong mismatch needs a
-// rationale, and the chosen route is recorded against Jev's receipt. Jev also picks the
-// model tier (Sonnet, Opus low/medium/high, Fable) for implement, plan and review work,
-// using the operator's memory of how similar packets went. With policy.review.engine
-// "codex", reviews go to codex-review (Astra XHigh): retired reviewers are refused and
-// Claude reviewers and browser-qa need a "Codex fallback:" line (then skip the Jev gate);
-// computer use goes to codex-review --computer-use.
+// paths (one path token per entry) and a finish line and never share a path with an
+// active writer; Jev classifies writer/planner packets (with the active write sets) and
+// picks the model tier (Sonnet, Opus low/medium/high, Fable) for implement, plan and
+// review work, using the operator's memory of how similar packets went. With jev.mode
+// "advisory" (1.35.0) its route and tier are advice recorded against its receipt and
+// shown to the coordinator; only "gate" refuses. With policy.review.engine "codex",
+// reviews go to codex-review (Astra XHigh): retired reviewers are refused and Claude
+// reviewers and browser-qa need a "Codex fallback:" line (then skip Jev); computer use
+// goes to codex-review --computer-use.
 // PreToolUse Read/screenshot: per-agent image budget, with the coordinator nearly
 // image-free. PostToolUse Agent and SubagentStop: ledger with the observed model and
-// release of the writer's paths.
+// release of the writer's paths; an expired hold is logged as writer-hold-expired.
+// Every read-modify-write of active-writers.json runs under one session lock directory.
 // CLI mode `mapper-bash` (code-mapper frontmatter hook): PreToolUse Bash limited to
 // read-only git commands and typechecks.
+// CLI mode `writer-bash` (writer frontmatter hook): PreToolUse Bash denies git commands
+// that change the index, refs or worktree; the coordinator owns staging and commits.
 // Internal failures allow the call and are logged: the guard never breaks the host.
 import { execFile, execFileSync } from "node:child_process";
 import fs from "node:fs";
@@ -83,33 +87,67 @@ const agentsForRoute = (route) =>
     .filter(([, r]) => r.route === route)
     .map(([n]) => n);
 
-function packetList(prompt, label, cwd) {
-  const match = prompt.match(
-    new RegExp(`${label}:([\\s\\S]*?)(?:\\n\\s*\\n|\\n[A-Z][\\w /]+:|$)`),
-  );
-  if (!match) return [];
-  return match[1]
-    .split(/[\n,]/)
-    .map(
-      (p) =>
-        p
-          .replace(/^[\s*-]+|[`\s]+$/g, "")
-          .replace(/^`/, "")
-          .split(/\s+/)[0],
-    )
-    .filter(Boolean)
-    .map((p) => (path.isAbsolute(p) ? path.relative(cwd, p) : p))
-    .map((p) => p.replace(/\/\*\*$|\/+$/g, "").replace(/^\.\//, ""))
-    .filter(
-      (p) =>
-        p &&
-        p !== "none" &&
-        !p.split("/").some((part) => !part || part === "." || part === "..") &&
-        !path.isAbsolute(p),
-    )
-    .slice(0, 40);
+// Packet lists: entries on the label line separated by commas and/or following "- "
+// lines; the list ends at a blank line or the next "Header:" line. Each entry is one path
+// token (optional backticks) with `*` inside a segment and a trailing `/**` as the only
+// globs; prose is rejected, never guessed at. Absolute paths inside cwd become relative;
+// outside it they stay absolute (held, but not sent to Jev, which takes repo paths only).
+// "none" is an empty list except for Owned paths.
+const LIST_HEADER = /^[A-Z][\w /-]*:/;
+const OWNED_FORMAT =
+  "Owned paths must be one path per entry: `Owned paths: src/a.ts, src/b/**` or one `- path` line each.";
+function listPath(token, cwd) {
+  if (!token || /[\s`[\]?{}\\]/.test(token)) return null;
+  let p = token.replace(/\/\*\*$/, "");
+  if (p.includes("**")) return null;
+  p = p.replace(/\/+$/, "").replace(/^(\.\/)+/, "");
+  if (
+    p
+      .split("/")
+      .slice(path.isAbsolute(p) ? 1 : 0)
+      .some((part) => !part || part === "." || part === "..")
+  )
+    return null;
+  if (!path.isAbsolute(p)) return p;
+  const rel = path.relative(cwd, p);
+  return rel === ".." || rel.startsWith("../") || path.isAbsolute(rel)
+    ? p
+    : rel;
 }
-const ownedPaths = (prompt, cwd) => packetList(prompt, "Owned paths", cwd);
+function packetList(prompt, label, cwd) {
+  const lines = String(prompt).replace(/\r\n?/g, "\n").split("\n");
+  const head = new RegExp(`^\\s*(?:[-*]\\s+)?(?:\\*\\*)?${label}:(?:\\*\\*)?`);
+  let at = lines.findIndex((line) => head.test(line));
+  let first = at >= 0 ? lines[at].replace(head, "") : null;
+  if (at < 0) {
+    at = lines.findIndex((line) => line.includes(`${label}:`));
+    if (at < 0) return { paths: [], rejected: [] };
+    first = lines[at].slice(lines[at].indexOf(`${label}:`) + label.length + 1);
+  }
+  const entries = first.split(",");
+  const rejected = [];
+  for (const line of lines.slice(at + 1)) {
+    if (!line.trim() || LIST_HEADER.test(line)) break;
+    if (/^\s*- /.test(line))
+      entries.push(...line.replace(/^\s*- /, "").split(","));
+    else rejected.push(line.trim());
+  }
+  const paths = [];
+  for (const entry of entries.map((e) => e.trim()).filter(Boolean)) {
+    const token = entry.replace(/^`([^`]*)`$/, "$1");
+    if (token === "none") {
+      if (label === "Owned paths") rejected.push(entry);
+      continue;
+    }
+    const p = listPath(token, cwd);
+    if (p === null) rejected.push(entry);
+    else if (p) paths.push(p);
+  }
+  return { paths: [...new Set(paths)].slice(0, 40), rejected };
+}
+const ownedPaths = (prompt, cwd) =>
+  packetList(prompt, "Owned paths", cwd).paths;
+const repoPaths = (paths) => paths.filter((p) => !path.isAbsolute(p));
 
 // Active writers of this session, so parallel packets never share a path and Jev can
 // judge semantic overlap. Entries end on the Agent result or on SubagentStop. A lost
@@ -137,18 +175,123 @@ function transcriptMtime(agentId) {
     return null;
   }
 }
-function alive(w) {
+// Null while the hold is alive, else why it expired.
+function staleReason(w) {
   const now = Date.now();
-  if (w.at < now - STALE.maxHours * 3600e3) return false;
-  if (!w.agentId) return w.at > now - STALE.foregroundMinutes * 60e3;
+  if (w.at < now - STALE.maxHours * 3600e3) return "maxHours";
+  if (!w.agentId)
+    return w.at > now - STALE.foregroundMinutes * 60e3 ? null : "foreground";
   const moved = transcriptMtime(w.agentId) ?? w.at;
-  return moved > now - STALE.idleMinutes * 60e3;
+  return moved > now - STALE.idleMinutes * 60e3 ? null : "idle";
 }
-function activeWriters() {
+// An expired hold is logged once and dropped from the saved map. Call under the lock:
+// only the process that actually removes the entry logs it.
+function prunedActive() {
   const all = fs.existsSync(ACTIVE)
     ? JSON.parse(fs.readFileSync(ACTIVE, "utf8"))
     : {};
-  return Object.fromEntries(Object.entries(all).filter(([, w]) => alive(w)));
+  const kept = {};
+  let expired = false;
+  for (const [key, w] of Object.entries(all)) {
+    const reason = staleReason(w);
+    if (!reason) {
+      kept[key] = w;
+      continue;
+    }
+    ledger({
+      event: "writer-hold-expired",
+      toolUseId: key,
+      id: w.id ?? null,
+      type: w.type ?? null,
+      writeSet: w.writeSet ?? null,
+      reason,
+    });
+    expired = true;
+  }
+  if (expired) saveActive(kept);
+  return kept;
+}
+// Without the lock, a reader sees the saved holds but prunes and saves nothing.
+const activeWriters = () =>
+  withActiveLock(prunedActive, () =>
+    fs.existsSync(ACTIVE) ? JSON.parse(fs.readFileSync(ACTIVE, "utf8")) : {},
+  );
+
+// Session lock for active-writers.json: a directory with owner.json {pid, token}. A dead
+// owner (or a missing owner.json older than 5 s) is reclaimed by rename then removal.
+// After 2 s the call proceeds unlocked and logs active-lock-timeout: never stall a hook.
+const LOCK = `${ACTIVE}.lock`;
+const pause = (ms) =>
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+function lockIsStale() {
+  try {
+    const { pid } = JSON.parse(
+      fs.readFileSync(path.join(LOCK, "owner.json"), "utf8"),
+    );
+    try {
+      process.kill(pid, 0);
+      return false;
+    } catch (e) {
+      return e.code === "ESRCH";
+    }
+  } catch {
+    try {
+      return fs.statSync(LOCK).mtimeMs < Date.now() - 5000;
+    } catch {
+      return false;
+    }
+  }
+}
+// fn runs only while this process owns the lock; on timeout onTimeout runs instead
+// (default: skip the update), so a delayed process never overwrites newer state.
+function withActiveLock(fn, onTimeout = () => undefined) {
+  const token = `${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const deadline = Date.now() + 2000;
+  let held = false;
+  fs.mkdirSync(sessionDir, { recursive: true });
+  while (!held) {
+    try {
+      fs.mkdirSync(LOCK);
+      fs.writeFileSync(
+        path.join(LOCK, "owner.json"),
+        JSON.stringify({ pid: process.pid, token }),
+      );
+      held = true;
+    } catch (e) {
+      if (e.code !== "EEXIST") throw e;
+      if (lockIsStale()) {
+        const stale = `${LOCK}.stale-${token}`;
+        try {
+          fs.renameSync(LOCK, stale);
+          fs.rmSync(stale, { recursive: true, force: true });
+        } catch {
+          /* another process reclaimed it */
+        }
+        continue;
+      }
+      if (Date.now() >= deadline) break;
+      pause(20);
+    }
+  }
+  if (!held) {
+    ledger({ event: "active-lock-timeout" });
+    return onTimeout();
+  }
+  try {
+    return fn();
+  } finally {
+    if (held) {
+      try {
+        const owner = JSON.parse(
+          fs.readFileSync(path.join(LOCK, "owner.json"), "utf8"),
+        );
+        if (owner.token === token)
+          fs.rmSync(LOCK, { recursive: true, force: true });
+      } catch {
+        /* lock already gone */
+      }
+    }
+  }
 }
 
 // Jev may refuse, but it must never stall the work: the same packet is refused at most
@@ -171,6 +314,17 @@ function saveActive(all) {
   fs.mkdirSync(sessionDir, { recursive: true });
   fs.writeFileSync(ACTIVE, JSON.stringify(all));
 }
+const clashes = (active, owned) => [
+  ...new Set(
+    Object.values(active).flatMap((w) =>
+      w.writeSet.flatMap((a) =>
+        owned
+          .filter((b) => pathsOverlap(a, b))
+          .map((b) => `${b} (held by ${w.type} "${w.id}")`),
+      ),
+    ),
+  ),
+];
 const pathsOverlap = (a, b) =>
   a === b ||
   a.startsWith(`${b}/`) ||
@@ -217,13 +371,13 @@ async function classify(type, input, active) {
   }
   const id = safeId(description || type);
   const owned = ownedPaths(prompt, cwd);
-  const readSet = [
+  const readSet = repoPaths([
     ...new Set([
-      ...packetList(prompt, "Read", cwd),
-      ...packetList(prompt, "Context files", cwd),
+      ...packetList(prompt, "Read", cwd).paths,
+      ...packetList(prompt, "Context files", cwd).paths,
       ...owned,
     ]),
-  ].slice(0, 60);
+  ]).slice(0, 60);
   const objective = (
     prompt.match(/Objective:\s*(.+)/)?.[1] ??
     description ??
@@ -233,7 +387,7 @@ async function classify(type, input, active) {
     id,
     objective,
     readSet,
-    writeSet: POLICY.roster[type].writer ? owned : [],
+    writeSet: POLICY.roster[type].writer ? repoPaths(owned) : [],
     dependsOn: [],
     acceptanceIds: [`${id}-done`],
     riskSignals: RISK.filter(([, re]) => re.test(prompt)).map(([name]) => name),
@@ -261,7 +415,10 @@ async function classify(type, input, active) {
     files.active,
     JSON.stringify(
       Object.values(active)
-        .map((w) => ({ id: safeId(w.id), writeSet: w.writeSet }))
+        .map((w) => ({
+          id: safeId(w.id),
+          writeSet: repoPaths(w.writeSet ?? []),
+        }))
         .filter((w, i, all) => all.findIndex((o) => o.id === w.id) === i),
     ),
   );
@@ -626,36 +783,57 @@ async function agentCall() {
   }
   const cwd = input.cwd ?? process.cwd();
   const active = role.writer || role.jev ? activeWriters() : {};
-  const owned = role.writer ? ownedPaths(prompt, cwd) : [];
+  const list = role.writer
+    ? packetList(prompt, "Owned paths", cwd)
+    : { paths: [], rejected: [] };
+  const owned = list.paths;
   if (role.writer) {
-    const clash = [
-      ...new Set(
-        Object.values(active).flatMap((w) =>
-          w.writeSet.flatMap((a) =>
-            owned
-              .filter((b) => pathsOverlap(a, b))
-              .map((b) => `${b} (held by ${w.type} "${w.id}")`),
-          ),
-        ),
-      ),
-    ];
+    if (list.rejected.length || !owned.length)
+      deny(
+        `${OWNED_FORMAT} Rejected: ${list.rejected.length ? list.rejected.slice(0, 3).join("; ") : "an empty list"}`,
+        {
+          ...entry,
+          blockedBy: "owned-paths",
+          rejected: list.rejected.slice(0, 3),
+        },
+      );
+    const clash = clashes(active, owned);
     if (clash.length)
       deny(
         `One writer per surface: ${clash.slice(0, 6).join("; ")}. Wait for that writer to finish, or re-scope the owned paths. (A hold whose writer stopped without a release expires once its transcript is idle ${STALE.idleMinutes} min.)`,
         { ...entry, clash: clash.slice(0, 6) },
       );
   }
+  // Re-read and re-check the clash under the lock, so a concurrent add is never lost.
   const register = () => {
     if (!role.writer || !input.tool_use_id) return;
-    const all = activeWriters();
-    all[input.tool_use_id] = {
-      id: (ti.description || type).slice(0, 80),
-      type,
-      writeSet: owned,
-      at: Date.now(),
-      agentId: null,
-    };
-    saveActive(all);
+    const clash = withActiveLock(
+      () => {
+        const all = prunedActive();
+        const found = clashes(all, owned);
+        if (found.length) return found;
+        all[input.tool_use_id] = {
+          id: (ti.description || type).slice(0, 80),
+          type,
+          writeSet: owned,
+          at: Date.now(),
+          agentId: null,
+        };
+        saveActive(all);
+        return [];
+      },
+      () => null,
+    );
+    if (clash === null)
+      deny(
+        "The guard could not lock the active-writer list within 2 s; dispatch the same packet again.",
+        { ...entry, lock: "timeout" },
+      );
+    if (clash.length)
+      deny(
+        `One writer per surface: ${clash.slice(0, 6).join("; ")}. A concurrent dispatch took that path first; wait for it to finish, or re-scope the owned paths.`,
+        { ...entry, clash: clash.slice(0, 6) },
+      );
   };
   const mode = POLICY.jev.mode ?? "gate";
   const tiered = mode !== "off" && tierLadder(role.family).length > 1;
@@ -1038,8 +1216,221 @@ function mapperBash() {
   allow(null, null);
 }
 
+// writer-bash: every command runs except a git invocation whose subcommand can change the
+// index, refs, config or worktree. Not a security boundary (`sh -c`, aliases and scripts
+// get around it); it stops the habit of a writer staging or committing what the
+// coordinator owns.
+const WRITER_GIT_HELP =
+  "The coordinator owns the Git index and commits: report the files you changed and the coordinator stages them.";
+const GIT_READ = new Set([
+  "status",
+  "diff",
+  "log",
+  "show",
+  "blame",
+  "rev-parse",
+  "ls-files",
+  "grep",
+  "shortlog",
+  "describe",
+  "cat-file",
+  "ls-tree",
+  "merge-base",
+]);
+const GIT_BRANCH_READ = new Set([
+  "--show-current",
+  "--list",
+  "-a",
+  "-r",
+  "-v",
+  "-vv",
+]);
+const GIT_CONFIG_READ = new Set(["--get", "--get-all", "--list", "-l"]);
+const GIT_CONFIG_FLAGS = new Set([
+  ...GIT_CONFIG_READ,
+  "--global",
+  "--local",
+  "--system",
+  "--show-origin",
+  "--show-scope",
+  "--name-only",
+  "-z",
+  "--null",
+]);
+const COMMAND_WRAPPERS = new Set([
+  "command",
+  "exec",
+  "env",
+  "time",
+  "nohup",
+  "xargs",
+]);
+const SHELL_KEYWORDS = new Set([
+  "{",
+  "!",
+  "if",
+  "then",
+  "else",
+  "elif",
+  "do",
+  "while",
+  "until",
+]);
+// Splits on every unquoted command boundary (newlines, ; && || | & ( )) and at both ends
+// of each $( ) and backtick substitution, also inside double quotes.
+function commandPieces(command) {
+  const pieces = [];
+  const frames = [];
+  let current = "";
+  let quote = null;
+  const cut = () => {
+    pieces.push(current.trim());
+    current = "";
+  };
+  for (let i = 0; i < command.length; i += 1) {
+    const c = command[i];
+    const next = command[i + 1];
+    if (quote === "'") {
+      current += c;
+      if (c === "'") quote = null;
+      continue;
+    }
+    if (c === "\\") {
+      if (next !== "\n") current += c + (next ?? "");
+      i += 1;
+      continue;
+    }
+    if (c === "$" && next === "(") {
+      frames.push({ quote, close: ")" });
+      quote = null;
+      cut();
+      i += 1;
+      continue;
+    }
+    if (c === "`") {
+      if (quote === null && frames.at(-1)?.close === "`") {
+        cut();
+        quote = frames.pop().quote;
+      } else {
+        frames.push({ quote, close: "`" });
+        quote = null;
+        cut();
+      }
+      continue;
+    }
+    if (quote === '"') {
+      current += c;
+      if (c === '"') quote = null;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      quote = c;
+      current += c;
+      continue;
+    }
+    if (c === ")") {
+      cut();
+      if (frames.at(-1)?.close === ")") quote = frames.pop().quote;
+      continue;
+    }
+    if ("(;\n\r".includes(c)) {
+      cut();
+      continue;
+    }
+    if (c === "|") {
+      cut();
+      if (next === "|" || next === "&") i += 1;
+      continue;
+    }
+    if (c === "&") {
+      if (next === "&") {
+        cut();
+        i += 1;
+        continue;
+      }
+      if (/[<>]$/.test(current) || next === ">") {
+        current += c;
+        continue;
+      }
+      cut();
+      continue;
+    }
+    current += c;
+  }
+  cut();
+  return pieces.filter(Boolean);
+}
+function gitPieceAllowed(piece) {
+  // Redirections are not arguments: `2>/dev/null`, or `>` followed by its target.
+  const words = [];
+  const raw = shellWords(piece);
+  for (let i = 0; i < raw.length; i += 1) {
+    if (/^(\d+|&)?(>>?|<)&?$/.test(raw[i])) {
+      i += 1;
+      continue;
+    }
+    if (!/^(\d+|&)?(>>?|<)/.test(raw[i])) words.push(raw[i]);
+  }
+  let i = 0;
+  while (i < words.length) {
+    if (/^[A-Za-z_]\w*=/.test(words[i]) || SHELL_KEYWORDS.has(words[i])) {
+      i += 1;
+      continue;
+    }
+    if (!COMMAND_WRAPPERS.has(words[i])) break;
+    i += 1;
+    while (words[i]?.startsWith("-")) i += 1;
+  }
+  if (path.basename(words[i] ?? "") !== "git") return true;
+  i += 1;
+  while (i < words.length) {
+    if (["-C", "-c", "--git-dir", "--work-tree"].includes(words[i])) i += 2;
+    else if (
+      [
+        "--no-pager",
+        "--paginate",
+        "-p",
+        "--bare",
+        "--literal-pathspecs",
+      ].includes(words[i]) ||
+      /^--(git-dir|work-tree)=/.test(words[i])
+    )
+      i += 1;
+    else break;
+  }
+  const [sub, ...args] = words.slice(i);
+  if (sub === undefined || GIT_READ.has(sub)) return true;
+  if (sub === "branch") return args.every((a) => GIT_BRANCH_READ.has(a));
+  if (sub === "remote")
+    return !args.length || (args.length === 1 && args[0] === "-v");
+  if (sub === "config")
+    return (
+      args.some((a) => GIT_CONFIG_READ.has(a)) &&
+      args.every((a) => !a.startsWith("-") || GIT_CONFIG_FLAGS.has(a))
+    );
+  if (sub === "stash") return ["list", "show"].includes(args[0]);
+  return false;
+}
+function writerBash() {
+  if (input.tool_name && input.tool_name !== "Bash") process.exit(0);
+  const command = String(input.tool_input?.command ?? "");
+  const entry = {
+    tool: "Bash",
+    mode: "writer-bash",
+    type: input.agent_type ?? null,
+    command: command.slice(0, 200),
+  };
+  const denied = commandPieces(command).find(
+    (piece) => !gitPieceAllowed(piece),
+  );
+  if (denied)
+    deny(`${WRITER_GIT_HELP} Denied: \`${denied.slice(0, 200)}\``, entry);
+  allow(null, null);
+}
+
 try {
   if (process.argv[2] === "mapper-bash") mapperBash();
+  if (process.argv[2] === "writer-bash") writerBash();
   if (input.hook_event_name === "PostToolUse" && input.tool_name === "Agent") {
     const r = input.tool_response ?? {};
     ledger({
@@ -1052,23 +1443,28 @@ try {
       toolUses: r.totalToolUseCount ?? null,
       agentId: r.agentId ?? null,
     });
-    const all = activeWriters();
-    if (input.tool_use_id && all[input.tool_use_id]) {
-      if (/launch|running|async/i.test(String(r.status)))
-        all[input.tool_use_id].agentId = r.agentId ?? null;
-      else delete all[input.tool_use_id];
-      saveActive(all);
-    }
+    withActiveLock(() => {
+      const all = prunedActive();
+      if (input.tool_use_id && all[input.tool_use_id]) {
+        if (/launch|running|async/i.test(String(r.status)))
+          all[input.tool_use_id].agentId = r.agentId ?? null;
+        else delete all[input.tool_use_id];
+        saveActive(all);
+      }
+    });
     process.exit(0);
   }
   if (input.hook_event_name === "SubagentStop") {
-    const all = activeWriters();
-    const kept = Object.fromEntries(
-      Object.entries(all).filter(
-        ([, w]) => !w.agentId || w.agentId !== input.agent_id,
-      ),
-    );
-    if (Object.keys(kept).length !== Object.keys(all).length) saveActive(kept);
+    withActiveLock(() => {
+      const all = prunedActive();
+      const kept = Object.fromEntries(
+        Object.entries(all).filter(
+          ([, w]) => !w.agentId || w.agentId !== input.agent_id,
+        ),
+      );
+      if (Object.keys(kept).length !== Object.keys(all).length)
+        saveActive(kept);
+    });
     process.exit(0);
   }
   if (input.tool_name === "Agent") await agentCall();

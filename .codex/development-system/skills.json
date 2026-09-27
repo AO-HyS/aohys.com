@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "0.52.0",
+  "catalogVersion": "0.53.0",
   "supportedHarnesses": [
     {
       "id": "codex",
@@ -1295,23 +1295,23 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.34.1/skills/internal/flow-implement"
+        "path": "artifacts/1.35.0/skills/internal/flow-implement"
       },
       "variants": [
         {
           "id": "flow-implement.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.34.1/skills/internal/flow-implement",
+          "sourceDirectory": "artifacts/1.35.0/skills/internal/flow-implement",
           "destination": ".agents/skills/flow-implement",
-          "folderSha256": "7cfd66d6f3494639a90b258826b034d64fe5df6c1368d593674c794797c26e4d",
+          "folderSha256": "d25521e42bcf46b23c488f114e9a0484d369d42d56e3a7bb5327ab565bead196",
           "expectedMirrorOf": null
         },
         {
           "id": "flow-implement.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.34.1/skills/internal/flow-implement",
+          "sourceDirectory": "artifacts/1.35.0/skills/internal/flow-implement",
           "destination": ".claude/skills/flow-implement",
-          "folderSha256": "7cfd66d6f3494639a90b258826b034d64fe5df6c1368d593674c794797c26e4d",
+          "folderSha256": "d25521e42bcf46b23c488f114e9a0484d369d42d56e3a7bb5327ab565bead196",
           "expectedMirrorOf": "flow-implement.codex",
           "install": "symlink"
         }
@@ -1427,33 +1427,33 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.34.1/skills/internal/coding-orchestration"
+        "path": "artifacts/1.35.0/skills/internal/coding-orchestration"
       },
       "variants": [
         {
           "id": "coding-orchestration.codex-adapter",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.34.1/skills/internal/coding-orchestration",
+          "sourceDirectory": "artifacts/1.35.0/skills/internal/coding-orchestration",
           "destination": ".codex/skills/coding-orchestration",
-          "folderSha256": "f71948eb42b371deeb2de03b60d98cc504e9ddca2f8614df5b218bbb3b162efb",
+          "folderSha256": "6fd1e38ec70e0c93487535fc94d96ac9e764d0d97e9389bc182d7d036aee80d9",
           "expectedMirrorOf": null,
           "adapterContract": "authorized-initiative-orchestration-v2"
         },
         {
           "id": "coding-orchestration.agents",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.34.1/skills/internal/coding-orchestration",
+          "sourceDirectory": "artifacts/1.35.0/skills/internal/coding-orchestration",
           "destination": ".agents/skills/coding-orchestration",
-          "folderSha256": "f71948eb42b371deeb2de03b60d98cc504e9ddca2f8614df5b218bbb3b162efb",
+          "folderSha256": "6fd1e38ec70e0c93487535fc94d96ac9e764d0d97e9389bc182d7d036aee80d9",
           "expectedMirrorOf": "coding-orchestration.codex-adapter",
           "adapterContract": "authorized-initiative-orchestration-v2"
         },
         {
           "id": "coding-orchestration.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.34.1/skills/internal/coding-orchestration",
+          "sourceDirectory": "artifacts/1.35.0/skills/internal/coding-orchestration",
           "destination": ".claude/skills/coding-orchestration",
-          "folderSha256": "f71948eb42b371deeb2de03b60d98cc504e9ddca2f8614df5b218bbb3b162efb",
+          "folderSha256": "6fd1e38ec70e0c93487535fc94d96ac9e764d0d97e9389bc182d7d036aee80d9",
           "expectedMirrorOf": "coding-orchestration.codex-adapter",
           "install": "symlink",
           "adapterContract": "authorized-initiative-orchestration-v2"
@@ -1594,15 +1594,15 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.34.1/skills/internal/working-backwards"
+        "path": "artifacts/1.35.0/skills/internal/working-backwards"
       },
       "variants": [
         {
           "id": "working-backwards.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.34.1/skills/internal/working-backwards",
+          "sourceDirectory": "artifacts/1.35.0/skills/internal/working-backwards",
           "destination": ".agents/skills/working-backwards",
-          "folderSha256": "789635c336ade103087cbd911e2f927737df86917ac0a0201ff830fa220ffbb4",
+          "folderSha256": "46ed201753c4ccbe1a96333e34310395aa658cfd91a92c9268c77c198f02997a",
           "executableFiles": [
             "scripts/t3-workflow.mjs",
             "scripts/t3-reader.mjs",
@@ -1615,9 +1615,9 @@
         {
           "id": "working-backwards.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.34.1/skills/internal/working-backwards",
+          "sourceDirectory": "artifacts/1.35.0/skills/internal/working-backwards",
           "destination": ".claude/skills/working-backwards",
-          "folderSha256": "789635c336ade103087cbd911e2f927737df86917ac0a0201ff830fa220ffbb4",
+          "folderSha256": "46ed201753c4ccbe1a96333e34310395aa658cfd91a92c9268c77c198f02997a",
           "executableFiles": [
             "scripts/t3-workflow.mjs",
             "scripts/t3-reader.mjs",
