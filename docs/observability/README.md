@@ -4,7 +4,6 @@
 
 ```sh
 node scripts/observability/validate-signal-catalog.mjs
-node --test scripts/observability/*.test.mjs
 ```
 
 `alert-catalog.v1.json` separately defines local alert operations. Every actionable alert has an owner, signal and correlation keys, a threshold copied from the measured IM-12 baseline, a measurement window, deduplication and quieting rules, a runbook, and a verified-fix criterion. Dimensions whose runtime evidence is still unproven remain `report-only` with `numericThreshold: null`.
@@ -14,7 +13,7 @@ pnpm observability:validate
 pnpm observability:alert-drill
 ```
 
-The drill creates a production build, writes a fresh measurement only to a temporary directory, runs the real semantic performance tests, and evaluates the runbook's verified-fix criteria. Its trigger exercise is explicitly a simulation; its successful verification is a fresh local result. It performs no provider writes and does not claim that an alert is live.
+The drill creates a production build, writes a fresh measurement only to a temporary directory, runs `pnpm performance:check` (a syntax check of the browser performance harness), and evaluates the runbook's verified-fix criteria. Its trigger exercise is explicitly a simulation; its successful verification is a fresh local result. It performs no provider writes and does not claim that an alert is live.
 
 Public-site and dashboard browser exceptions use PostHog `captureException` so the SDK creates the structured exception list. The final `before_send` boundary removes messages and other arbitrary nested values while retaining the error type and sanitized stack frames. Browser, edge, and contact-backend events include `release` only when the injected value is a complete 40-character Git commit SHA. LCP, INP, and CLS are the only catalogued Core Web Vitals; `first-input` is not used as an INP substitute.
 

@@ -44,6 +44,9 @@ skill, workflow, or template that asks for tests (including TDD). Verify
 changes with typecheck, lint, build, and real browser observation of the
 product instead.
 
+Reviews run on Astra XHigh through `codex-review`, launched in the background;
+Claude reviewers run only under a declared `Codex fallback:` line.
+
 ## Tool routing
 
 - Use the bundled Browser plugin for browser and visual QA.

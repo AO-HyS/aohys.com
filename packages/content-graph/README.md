@@ -36,4 +36,4 @@ Astro routes, sitemap generation, metadata helpers, resume rendering, case-study
 
 The first consumer is `apps/site`, but future dashboard publishing should preserve these invariants instead of writing isolated Astro routes.
 
-Canonical public content lives in JSON dictionaries under `src/locales`; shared application labels live under `src/i18n`. Consumers must select copy through these typed catalogs instead of locale-driven ternaries or `if` branches. Tests are written with Vitest and cover route resolution, localized paths, shared labels, SEO metadata, sitemap entries, private route exclusions, and missing locale failures.
+Canonical public content lives in JSON dictionaries under `src/locales`; shared application labels live under `src/i18n`. Consumers must select copy through these typed catalogs instead of locale-driven ternaries or `if` branches. There are no automated tests; typecheck, build, and Browser checks of routes verify route resolution, localized paths, shared labels, SEO metadata, sitemap entries, private route exclusions, and missing locale failures.

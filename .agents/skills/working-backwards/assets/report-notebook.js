@@ -199,7 +199,10 @@
         sentAll: "Enviadas al modelo",
         panel: "Preguntas para el modelo",
         close: "Cerrar",
-        hint: "Haz clic en cualquier párrafo, hallazgo o tabla y escribe tu pregunta en el margen. Puedes juntar varias y enviarlas al final.",
+        askDocument: "Preguntar sobre el documento",
+        hint: "Pulsa «Preguntar» junto a cualquier sección, o haz clic en un párrafo, hallazgo o tabla, y escribe tu pregunta en el margen. Puedes juntar varias y enviarlas al final.",
+        sectionPlaceholder: (name) => `¿Qué quieres preguntar sobre «${name}»?`,
+        sectionLabel: (name) => `Tu pregunta sobre la sección «${name}»`,
         keyboard: "Elegir un párrafo con el teclado",
         copy: "Copiar para el chat",
         download: "Descargar JSON",
@@ -241,7 +244,11 @@
         sentAll: "Sent to the model",
         panel: "Questions for the model",
         close: "Close",
-        hint: "Click any paragraph, finding or table and write your question in the margin. Gather several and send them together.",
+        askDocument: "Ask about the document",
+        hint: "Press “Ask” beside any section, or click a paragraph, finding or table, and write your question in the margin. Gather several and send them together.",
+        sectionPlaceholder: (name) =>
+          `What do you want to ask about “${name}”?`,
+        sectionLabel: (name) => `Your question about the “${name}” section`,
         keyboard: "Choose a paragraph with the keyboard",
         copy: "Copy for the chat",
         download: "Download JSON",
@@ -328,6 +335,14 @@
   panel.setAttribute("aria-labelledby", "question-panel-title");
   panel.innerHTML = `<div class="panel-head"><h2 id="question-panel-title"></h2><button type="button" class="panel-close"></button></div><p class="panel-hint"></p><ol class="panel-list"></ol><div class="panel-actions"><button type="button" class="panel-send"></button><button type="button" class="panel-copy"></button><button type="button" class="panel-download"></button><button type="button" class="panel-keyboard"></button></div><p class="panel-status" role="status" aria-live="polite"></p>`;
   panel.querySelector("h2").textContent = t.panel;
+  // Every heading offers the same «Preguntar» button; here it asks about the whole document.
+  const sectionAsk = document.querySelector(".section-ask[data-section-ask]");
+  if (sectionAsk) {
+    const panelAsk = sectionAsk.cloneNode(true);
+    panelAsk.dataset.sectionAsk = "document";
+    panelAsk.setAttribute("aria-label", t.askDocument);
+    panel.querySelector("h2").after(panelAsk);
+  }
   panel.querySelector(".panel-close").textContent = t.close;
   panel.querySelector(".panel-hint").textContent = t.hint;
   panel.querySelector(".panel-copy").textContent = t.copy;
@@ -339,10 +354,21 @@
 
   let active = null;
   let editing = null;
+  let askOrigin = null;
   const blockFor = (id) =>
     document.querySelector(`[data-q="${CSS.escape(id)}"]`);
-  const excerptOf = (block) =>
-    block.innerText.replace(/\s+/g, " ").trim().slice(0, 240);
+  const excerptOf = (block) => {
+    if (block.dataset.sectionTitle) {
+      const intro = block.querySelector(".section-intro");
+      return [block.dataset.sectionTitle, intro ? intro.innerText : ""]
+        .join(" — ")
+        .replace(/\s+/g, " ")
+        .replace(/ — $/, "")
+        .trim()
+        .slice(0, 240);
+    }
+    return block.innerText.replace(/\s+/g, " ").trim().slice(0, 240);
+  };
   const sectionOf = (block) => {
     if (block.closest(".findings")) return t.findings;
     if (block.closest(".brief-header")) return t.header;
@@ -379,6 +405,7 @@
     pill.hidden = true;
   }
   function select(block) {
+    askOrigin = null;
     if (active && active !== block) active.classList.remove("is-asking");
     active = block;
     block.classList.add("is-asking");
@@ -390,10 +417,18 @@
     select(block);
     editing = question || null;
     pill.hidden = true;
+    tray.hidden = true;
     composer.hidden = false;
     composer.querySelector(".ask-excerpt").textContent = excerptOf(block);
     composer.querySelector(".ask-error").textContent = "";
     input.value = question ? question.question : "";
+    const sectionName = block.dataset.sectionTitle;
+    input.placeholder = sectionName
+      ? t.sectionPlaceholder(sectionName)
+      : t.placeholder;
+    composer.querySelector("label").textContent = sectionName
+      ? t.sectionLabel(sectionName)
+      : t.label;
     layout();
     input.focus({ preventScroll: true });
     const smooth = reduced.matches ? "auto" : "smooth";
@@ -425,10 +460,15 @@
   }
   function closeComposer(restore) {
     composer.hidden = true;
+    tray.hidden = false;
     editing = null;
     const block = active;
+    const origin = askOrigin;
+    askOrigin = null;
     clearSelection();
-    if (restore && block && block.hasAttribute("tabindex"))
+    if (restore && origin && origin.isConnected)
+      origin.focus({ preventScroll: true });
+    else if (restore && block && block.hasAttribute("tabindex"))
       block.focus({ preventScroll: true });
   }
   function stopPicking() {
@@ -769,6 +809,31 @@
     .querySelector(".panel-keyboard")
     .addEventListener("click", startPicking);
 
+  // Section buttons open the same composer, anchored to the section heading.
+  document.addEventListener("click", (event) => {
+    const button =
+      event.target instanceof Element
+        ? event.target.closest("[data-section-ask]")
+        : null;
+    if (!button) return;
+    const block =
+      button.closest("[data-q]") ||
+      (button.dataset.sectionAsk === "document"
+        ? blockFor("summary") ||
+          blockFor("verdict") ||
+          document.querySelector(".brief [data-q]")
+        : null);
+    if (!block) return;
+    if (!composer.hidden && input.value.trim() && active !== block) {
+      input.focus();
+      return;
+    }
+    if (root.dataset.picking) stopPicking();
+    panel.hidden = true;
+    renderTray();
+    openComposer(block);
+    askOrigin = button;
+  });
   document.addEventListener("click", (event) => {
     const target = event.target;
     if (

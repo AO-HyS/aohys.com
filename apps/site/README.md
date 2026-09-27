@@ -10,9 +10,11 @@ This surface owns public SEO pages, bilingual routes, metadata rendering, sitema
 pnpm --filter @aohys/site dev
 pnpm --filter @aohys/site lint
 pnpm --filter @aohys/site typecheck
-pnpm --filter @aohys/site test
 pnpm --filter @aohys/site build
+pnpm run verify:product
 ```
+
+aohys has no automated tests. Confirm behavior with Browser or computer-use observation as described in `docs/aohys-verification-plan.md`.
 
 Local Cloudflare Pages Functions QA needs explicit Wrangler bindings; shell-prefixed env vars are not enough for `pages dev`:
 
@@ -36,7 +38,7 @@ Regenerate the text-based resume PDF after editing English resume graph content:
 pnpm run build:resume-pdf
 ```
 
-Preview and production deploys run `publish:content:build` and then `verify:published-content`. That post-publish gate regenerates the PDF from the applied canonical resume, extracts it in the public-route test, and rebuilds the site before Cloudflare receives any files. A dashboard revision can replace curated static content only when its own `updatedAt` is later than the entry's `approvedAt`; republishing old copy does not make it fresh. Bump `approvedAt` whenever a curated locale entry is reviewed and changed in source.
+Preview and production deploys run `publish:content:build` and then `verify:published-content`. That post-publish gate regenerates the PDF from the applied canonical resume, typechecks the content graph and site, and rebuilds the site before Cloudflare receives any files. A dashboard revision can replace curated static content only when its own `updatedAt` is later than the entry's `approvedAt`; republishing old copy does not make it fresh. Bump `approvedAt` whenever a curated locale entry is reviewed and changed in source.
 
 Each curated case study and resume entry also carries an `approvedHash`. Source changes must update both the approval timestamp and hash; CI recomputes the digest so forgetting the approval boundary cannot silently expose an older dashboard revision.
 
@@ -44,9 +46,9 @@ Only the deploy command sets `AOHYS_DASHBOARD_CONTENT_APPLIED=1`, after the auth
 
 Curated case studies use the public-safe evidence assets committed with their copy by default. Dashboard media can replace one only after an admin explicitly selects that asset later than the case study's code-reviewed `approvedAt`; publishing alone does not refresh that per-asset review signal.
 
-The current shell includes the graph-backed home proof narrative, selected-work index, case-study detail pages, resume page, text-based PDF artifact, bilingual route skeletons, global tokens, font loading, graph-backed metadata, navigation, footer, sitemap, robots output, Astro native i18n config, and Vitest route/build smoke checks.
+The current shell includes the graph-backed home proof narrative, selected-work index, case-study detail pages, resume page, text-based PDF artifact, bilingual route skeletons, global tokens, font loading, graph-backed metadata, navigation, footer, sitemap, robots output, Astro native i18n config, and route output produced by the build; routes are confirmed by browser observation.
 
-Cloudflare Pages security headers are authored in `src/security-headers.ts`. `public/_headers` is generated from that shared source with `pnpm --filter @aohys/site sync:headers`, and `sync:headers:check` guards it during site lint/test. Pages Functions responses such as `/dashboard` and `/observability/csp` use the same module directly. The route build tests verify the generated header artifact alongside sitemap, robots, privacy, analytics, and contact failure-state behavior.
+Cloudflare Pages security headers are authored in `src/security-headers.ts`. `public/_headers` is generated from that shared source with `pnpm --filter @aohys/site sync:headers`, and `sync:headers:check` guards it during site lint. Pages Functions responses such as `/dashboard` and `/observability/csp` use the same module directly. The site build regenerates the header artifact alongside sitemap and robots output; privacy, analytics, and contact failure-state behavior are confirmed by browser observation.
 
 UI copy that belongs to the shell lives in locale JSON files under `src/i18n`. Shared labels and route decisions used by the graph, dashboard, backend, or publishing bridge live in `@aohys/content-graph` locale catalogs. Production components select copy through those typed dictionaries; locale-driven ternaries and `if` branches are not the localization contract. Public page identity, localized slugs, SEO metadata, and sitemap eligibility also come from `@aohys/content-graph`.
 

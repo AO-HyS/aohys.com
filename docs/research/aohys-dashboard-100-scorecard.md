@@ -1,23 +1,25 @@
 # AOHYS Dashboard 100/100 Quality Scorecard
 
+> Historical; aohys has no automated tests (2026-09-26).
+
 Status: accepted research result for the AOHYS dashboard program.
 
 ## Current completion audit — 2026-07-11
 
 The implementation, defensive review, release train, Preview Deployment, and final provider/browser verification are complete. The current **evidence score is 100/100** against this scorecard.
 
-| Category | Earned | Evidence |
-| --- | ---: | --- |
-| Product workflows and UX | 15/15 | Overview, Projects, Leads, Resume, Settings, aliases, async states, guarded destructive/publish actions, and Browser route matrix passed in Preview. |
-| Visual system and interaction craft | 15/15 | Operations Desk tokens/adapters, shared shadcn primitives, page-by-page redesign, and Impeccable detector with zero findings. |
-| Accessibility and responsive behavior | 10/10 | Labels, keyboard semantics, focus contracts, contained tables, mobile task surfaces, a 25-case deployed route/viewport matrix, 200% reflow, and reduced-motion proof passed. |
-| Security and privacy | 15/15 | Defensive review reports zero unresolved validated Critical/High findings; private headers/auth boundaries, analytics sanitization, dependency audit, and negative tests passed. |
-| Convex, Better Auth, and data boundaries | 10/10 | Admin authorization, explicit validators/returns, cursor pagination, indexed rate limiting, bounded reads, atomic bilingual project creation, locale-aware slug collision guards, shared policies, and zero remaining `.collect()` calls. |
-| Architecture and code organization | 15/15 | Typed navigation, stable Content IDs with independent localized slugs, a drift-tested static-route registry, shared media/settings policy, editable-state modules, and deletion of the legacy 928-line workflow package. |
-| React, TanStack, and runtime performance | 10/10 | Effects remain only for external synchronization/cleanup; TanStack Router/Table ownership is explicit; route chunks are lazy; entry fell from ~549 kB to 257.47 kB without a build warning. |
-| PostHog observability | 5/5 | Preview/Production separation passed; `$pageview` and `dashboard_surface_viewed` are visible in Preview project 492205. The final dashboard receipt records `environment=preview`, `path=/dashboard/projects`, `surface=projects`, `GeoIP disabled=true`, and no prohibited private properties. |
-| Testing, delivery, and public-sample clarity | 5/5 | Frozen install, repeated `verify:ci`, 24-route Astro build, dependency audit, successful Release Train, Preview smoke, PR #81, and updated public documentation. |
-| **Total** | **100/100** | **All rubric points and release gates are proven on the current Preview build.** |
+| Category                                     |      Earned | Evidence                                                                                                                                                                                                                                                                                        |
+| -------------------------------------------- | ----------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Product workflows and UX                     |       15/15 | Overview, Projects, Leads, Resume, Settings, aliases, async states, guarded destructive/publish actions, and Browser route matrix passed in Preview.                                                                                                                                            |
+| Visual system and interaction craft          |       15/15 | Operations Desk tokens/adapters, shared shadcn primitives, page-by-page redesign, and Impeccable detector with zero findings.                                                                                                                                                                   |
+| Accessibility and responsive behavior        |       10/10 | Labels, keyboard semantics, focus contracts, contained tables, mobile task surfaces, a 25-case deployed route/viewport matrix, 200% reflow, and reduced-motion proof passed.                                                                                                                    |
+| Security and privacy                         |       15/15 | Defensive review reports zero unresolved validated Critical/High findings; private headers/auth boundaries, analytics sanitization, dependency audit, and negative tests passed.                                                                                                                |
+| Convex, Better Auth, and data boundaries     |       10/10 | Admin authorization, explicit validators/returns, cursor pagination, indexed rate limiting, bounded reads, atomic bilingual project creation, locale-aware slug collision guards, shared policies, and zero remaining `.collect()` calls.                                                       |
+| Architecture and code organization           |       15/15 | Typed navigation, stable Content IDs with independent localized slugs, a drift-tested static-route registry, shared media/settings policy, editable-state modules, and deletion of the legacy 928-line workflow package.                                                                        |
+| React, TanStack, and runtime performance     |       10/10 | Effects remain only for external synchronization/cleanup; TanStack Router/Table ownership is explicit; route chunks are lazy; entry fell from ~549 kB to 257.47 kB without a build warning.                                                                                                     |
+| PostHog observability                        |         5/5 | Preview/Production separation passed; `$pageview` and `dashboard_surface_viewed` are visible in Preview project 492205. The final dashboard receipt records `environment=preview`, `path=/dashboard/projects`, `surface=projects`, `GeoIP disabled=true`, and no prohibited private properties. |
+| Testing, delivery, and public-sample clarity |         5/5 | Frozen install, repeated `verify:ci`, 24-route Astro build, dependency audit, successful Release Train, Preview smoke, PR #81, and updated public documentation.                                                                                                                                |
+| **Total**                                    | **100/100** | **All rubric points and release gates are proven on the current Preview build.**                                                                                                                                                                                                                |
 
 - Preview: `https://c4720451.aohys-com.pages.dev`
 - Stable Preview alias: `https://develop.aohys-com.pages.dev`
@@ -47,24 +49,24 @@ The dashboard reaches **100/100 only when it earns all 100 points and every rele
 2. **Data integrity:** create, update, publish, archive, delete, and status workflows preserve the Public Content Graph, Environment Contract, and Release Train invariants without silent loss or partial success presented as success.
 3. **Accessibility:** the complete authenticated processes conform to WCAG 2.2 AA; no keyboard trap, inaccessible authentication step, obscured focus, missing accessible name, or blocking contrast/reflow defect remains.
 4. **Runtime health:** every dashboard route and required Workflow State renders without uncaught exceptions, failed required requests, hydration/runtime warnings, or persistent console errors in the deployed Preview Environment.
-5. **Verification:** `pnpm verify` passes from a clean install; behavior tests cover changed contracts; Browser evidence covers desktop and mobile; Preview Deployment and Smoke Checks succeed.
+5. **Verification:** `pnpm verify` passes from a clean install; Browser and verify:product evidence covers changed contracts; Browser evidence covers desktop and mobile; Preview Deployment and Smoke Checks succeed.
 6. **Observability:** required PostHog events and exceptions are visible in the correct preview project with the documented safe property shape; preview and production keys remain separated.
 7. **Evidence integrity:** a requirement is incomplete when its only proof is source-text matching, a mocked happy path, or an uninspected screenshot.
 
 ## Weighted rubric
 
-| Category | Points |
-| --- | ---: |
-| Product workflows and UX | 15 |
-| Visual system and interaction craft | 15 |
-| Accessibility and responsive behavior | 10 |
-| Security and privacy | 15 |
-| Convex, Better Auth, and data boundaries | 10 |
-| Architecture and code organization | 15 |
-| React, TanStack, and runtime performance | 10 |
-| PostHog observability | 5 |
-| Testing, delivery, and public-sample clarity | 5 |
-| **Total** | **100** |
+| Category                                     |  Points |
+| -------------------------------------------- | ------: |
+| Product workflows and UX                     |      15 |
+| Visual system and interaction craft          |      15 |
+| Accessibility and responsive behavior        |      10 |
+| Security and privacy                         |      15 |
+| Convex, Better Auth, and data boundaries     |      10 |
+| Architecture and code organization           |      15 |
+| React, TanStack, and runtime performance     |      10 |
+| PostHog observability                        |       5 |
+| Testing, delivery, and public-sample clarity |       5 |
+| **Total**                                    | **100** |
 
 ## 1. Product workflows and UX — 15 points
 
@@ -81,7 +83,7 @@ Required evidence:
 
 - Route-by-route workflow matrix with expected states and observed results.
 - Browser recordings or screenshots plus console/network evidence at 1440px, 768px, 390px, and 320px.
-- Behavior tests for success, invalid input, unauthorized access, provider failure, and recovery.
+- Browser evidence for success, invalid input, unauthorized access, provider failure, and recovery.
 
 Scoring: 3 points for route/IA clarity, 4 for workflow completeness, 3 for state/error quality, 3 for mobile parity, and 2 for truthful destructive/publishing feedback.
 

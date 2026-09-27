@@ -67,13 +67,18 @@ expected receipt and known failures when resuming. Workers preserve unrelated
 edits and return changed paths, commands, results and remaining gaps. A clean
 diff, first implementation or passing lint does not close unverified behavior.
 
+Writer packets: `Done when:` is executable (command plus expected
+observation); the writer retries up to 3 times and the coordinator reruns it.
+`Outcome:` is optional.
+
 ## Automated tests and evidence
 
-By default, do not create, modify, delete, generate, or run automated tests
-unless the user explicitly asks. Preserve existing test files and CI protections.
-Use applicable build, type, lint, static validation, or real behavior observation
-as required by the task. Do not make claims from test counts. Report a concrete
-behavior gap and its smallest useful observation without adding a test suite.
+No automated tests anywhere: do not create, run or restore them; delete them
+when found (`check-no-tests` and the guard enforce this). Every task includes
+real verification without being asked: computer use, browser, and the
+repository's verification CLI and feature map. Report passed / failed / not
+reached with evidence.
+
 
 ## UI acceptance and evidence
 
@@ -97,6 +102,23 @@ and acceptance. Report the candidate, actual observed model/tool identity,
 changed paths, checks, evidence references and remaining gaps. If blocked,
 name the concrete dependency and finish independent work; a timeout or missing
 receipt cannot become a passing result.
+
+## Close every task
+
+Every task that changed files ends with a report:
+
+1. Write the concise packet (`flow-implement/references/completion-report.md`)
+   with the sections Veredicto, Qué cambió, Verificación real (pasó / falló /
+   no se alcanzó, con evidencia), Pendiente, Preguntas al margen and one
+   Jardinero line: "un error visto dos veces se propone como regla dura al
+   nivel más alto: código > lint/CI/guard > regla/skill".
+2. Render it with `development-system document --input <packet> --json`.
+3. Serve it with working-backwards `reader-live.mjs --tunnel` from a
+   per-report copy directory.
+4. Put the URL in the final answer.
+
+A Stop hook asks once when files changed and no report was produced. If a
+report is truly not useful, say why in one line.
 
 For host-specific CLI dispatch, read [host-dispatch](references/host-dispatch.md).
 For interruption or ownership recovery, read

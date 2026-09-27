@@ -27,7 +27,7 @@ Describe **what** the system should do, not **how** to implement it. The agent w
 
 ### Complete acceptance criteria
 
-The agent needs to know when it's done. Every agent brief must have concrete, testable acceptance criteria. Each criterion should be independently verifiable.
+The agent needs to know when it's done. Every agent brief must have concrete, verifiable acceptance criteria. Each criterion should be independently verifiable.
 
 - **Good:** "Running `gh issue list --label needs-triage` returns issues that have been through initial classification"
 - **Bad:** "Triage should work correctly"
@@ -60,9 +60,9 @@ Be specific about edge cases and error conditions.
 
 **Acceptance criteria:**
 
-- [ ] Specific, testable criterion 1
-- [ ] Specific, testable criterion 2
-- [ ] Specific, testable criterion 3
+- [ ] Specific, verifiable criterion 1
+- [ ] Specific, verifiable criterion 2
+- [ ] Specific, verifiable criterion 3
 
 **Out of scope:**
 
@@ -168,7 +168,7 @@ For a PR, "Current behavior" describes the state of the diff, and the brief asks
 The PR adds a `--json` flag that serializes the issue list to JSON. The happy
 path works and the diff matches the project's command structure. Two gaps
 remain: errors are still printed as human text (not JSON), and the new flag has
-no test coverage.
+no real verification evidence.
 
 **Desired behavior:**
 With `--json`, all output (including errors) is well-formed JSON on stdout,
@@ -185,7 +185,7 @@ is untouched when the flag is absent.
 
 - [ ] `triage list --json` emits valid JSON for both success and error cases
 - [ ] Exit codes match the non-JSON command
-- [ ] A test covers the `--json` success output and one error case
+- [ ] Real verification (the verification CLI or the browser) shows the `--json` success output and one error case
 - [ ] Default (non-JSON) output is byte-for-byte unchanged
 
 **Out of scope:**

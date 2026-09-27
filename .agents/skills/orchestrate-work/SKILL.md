@@ -64,13 +64,18 @@ terminal state. A worker packet states the root, revision, owned surface,
 settled routing, behavior, checks, evidence shape, stop conditions and expected
 receipt. Preserve unrelated edits.
 
+Writer packets: `Done when:` is executable (command plus expected
+observation); the writer retries up to 3 times and the coordinator reruns it.
+`Outcome:` is optional.
+
 ## Automated tests and evidence
 
-By default, do not create, modify, delete, generate, or run automated tests
-unless the user explicitly asks. Preserve existing test files and CI protections.
-Use applicable build, type, lint, static validation, or real behavior observation
-as required by the task. Do not make claims from test counts. Report a concrete
-behavior gap and its smallest useful observation without adding a test suite.
+No automated tests anywhere: do not create, run or restore them; delete them
+when found (`check-no-tests` and the guard enforce this). Every task includes
+real verification without being asked: computer use, browser, and the
+repository's verification CLI and feature map. Report passed / failed / not
+reached with evidence.
+
 ## Headroom transport evidence
 
 Headroom is an explicit same-account per-invocation option. Keep the existing
@@ -96,3 +101,21 @@ Inspect the integrated diff against the full objective, correct material
 findings and run the named final checks after changes settle. Report candidate,
 actual model/tool identity, receipt, checks, links and remaining gaps. Keep
 source, local runtime, PR, Preview, production and acceptance claims separate.
+
+## Close every task
+
+Every task that changed files ends with a report:
+
+1. Write the concise packet (`flow-implement/references/completion-report.md`)
+   with the sections Veredicto, Qué cambió, Verificación real (pasó / falló /
+   no se alcanzó, con evidencia), Pendiente, Preguntas al margen and one
+   Jardinero line: "un error visto dos veces se propone como regla dura al
+   nivel más alto: código > lint/CI/guard > regla/skill".
+2. Render it with `development-system document --input <packet> --json`.
+3. Serve it with working-backwards `reader-live.mjs --tunnel` from a
+   per-report copy directory.
+4. Put the URL in the final answer.
+
+A Stop hook asks once when files changed and no report was produced. If a
+report is truly not useful, say why in one line.
+

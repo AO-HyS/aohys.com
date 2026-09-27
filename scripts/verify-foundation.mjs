@@ -233,7 +233,7 @@ includesAll("README.md", [
   "## License and Asset Boundaries",
   "docs/aohys-prd.md",
   "docs/aohys-issue-breakdown.md",
-  "docs/aohys-tdd-plan.md",
+  "docs/aohys-verification-plan.md",
   "pnpm install",
   "pnpm verify",
   "pnpm run verify:precommit",

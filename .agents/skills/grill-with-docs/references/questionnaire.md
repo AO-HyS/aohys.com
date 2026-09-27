@@ -3,6 +3,12 @@
 One HTML template, one JSON per round. Uses Python 3 standard library on macOS or
 Linux; `cloudflared` is needed only for a public tunnel. No frontend installation.
 
+The questionnaire uses the same field-notebook frame as reports: `assets/reader/`
+holds byte copies of the working-backwards reader stylesheet, fonts and font
+licenses, and `assets/questionnaire.css` adds only the answering controls. Do not
+edit the `assets/reader/` copies here; change the reader and copy it again.
+`client.js` and the saved answer format are unchanged.
+
 ## Prepare questions
 
 Copy the shape in [questions.example.json](questions.example.json). Use a unique

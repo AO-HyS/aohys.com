@@ -111,7 +111,24 @@ Use a `chart` fence with actual numeric data. Example shape:
 `{"type":"bar","title":"Size","labels":["Before","After"],"values":[3.79,0.11],
 "unit":"MB","precision":2,"note":"Example only; replace with measured values."}`.
 Bars and numbers are HTML/CSS. Include units, sample sizes, comparability limits
-and sources. Never invent a metric to fill a chart; use a table when clearer.
+and sources. Never invent a metric to fill a chart; use a short list when clearer.
+
+## Write for reading, not scanning tables
+
+- Prose and short lists first. A reader follows sentences; tables make them hunt.
+- Use a table only for a real comparison: at least two options against at least
+  two criteria. Steps, checks, file lists and pending items are lists.
+- When the work has a flow (a request, a message, a handoff), draw one PR Lens
+  visual and explain it in two or three sentences; do not restate it as a table.
+- Tables with more than 8 rows, more than 4 columns or more than 30 cells render
+  folded behind a one-line summary («Tabla: N filas» · «Abrir tabla»), unless the
+  table is the first block of its section. Put the conclusion in the prose
+  before it; the folded table is supporting detail. Fold any other long detail
+  (logs, full check lists) the same way instead of expanding the report.
+- Completion reports stay at about 600 words or fewer. Reviews and explanations
+  cut anything the reader does not need to decide or act.
+- Every section shows a «Preguntar» button and paragraphs accept margin
+  questions. End with one short line inviting questions about anything unclear.
 
 ## Content and acceptance
 

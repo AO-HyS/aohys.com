@@ -24,7 +24,7 @@ Feature branches should target `develop`. Production promotion should target `ma
 ## Promotion Flow
 
 1. Create a feature branch from `develop`.
-2. Implement the vertical slice using the TDD plan.
+2. Implement the vertical slice using the verification plan.
 3. Open a pull request into `develop`.
 4. Let Husky run staged pre-commit checks and changed validation at pre-push.
 5. Integrate the implementation lanes and run `pnpm run quality:certify` once
@@ -45,8 +45,8 @@ Feature branches should target `develop`. Production promotion should target `ma
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `pnpm run verify:precommit`                    | Fast Husky pre-commit gate: staged formatting, foundation checks, and React Doctor CLI.                                                                                                                                                                                              |
 | `pnpm run quality:push`                        | Incremental pre-push gate: foundation, affected workspace checks, mapped visual checks, and React Doctor against the branch delta.                                                                                                                                                   |
-| `pnpm run quality:certify`                     | Full local candidate gate: foundation, lint, typecheck, tests, build, Impeccable, and React Doctor. Run once for the integrated SHA before `develop`.                                                                                                                                |
-| `pnpm verify`                                  | Full local and CI quality gate: foundation, lint, typecheck, tests, build.                                                                                                                                                                                                           |
+| `pnpm run quality:certify`                     | Full local candidate gate: foundation, lint, typecheck, build, Impeccable, and React Doctor. Run once for the integrated SHA before `develop`.                                                                                                                                       |
+| `pnpm verify`                                  | Full local and CI quality gate: foundation, lint, typecheck, build.                                                                                                                                                                                                                  |
 | `pnpm run cloudflare:local`                    | Build the Astro site and serve `apps/site/dist` with Wrangler Pages dev.                                                                                                                                                                                                             |
 | `pnpm run release:env:preview`                 | Validate GitHub Environment values for preview deploys without printing secrets.                                                                                                                                                                                                     |
 | `pnpm run release:env:production`              | Validate GitHub Environment values for production deploys without printing secrets.                                                                                                                                                                                                  |
@@ -81,7 +81,7 @@ The launch-readiness checklist is maintained in [Launch Hardening Checklist](lau
 `main`, plus explicit manual deploys. Pushes to `develop` deploy preview through
 GitHub Environment `preview`; pushes to `main` deploy production through GitHub
 Environment `production`. It installs only what deployment needs and does not
-repeat lint, typecheck, tests, or build-only quality gates before deployment.
+repeat lint, typecheck, or build-only quality gates before deployment.
 Workflow concurrency is partitioned by target environment: newer preview runs
 cancel older preview runs, while production runs are never canceled in progress.
 Manual dispatches use their selected target environment, so a preview run cannot
@@ -168,6 +168,6 @@ The Release Train affects these existing issues:
 - #17 Privacy, security, and launch hardening: verify production readiness, environment separation, dashboard privacy, and launch smoke checks.
 - #18 Public README and source evaluation package: document the release path for technical evaluators.
 
-## TDD Connection
+## Verification Connection
 
-The Release Train is tested through observable behavior, not private workflow internals. Current tests validate the release deploy plan, release environment validation, GitHub Actions workflow surface, and Cloudflare Redirect Rules manifest. Later tracers should verify live preview URL behavior, production URL behavior, canonical redirects, and dashboard noindex/auth behavior.
+The Release Train is verified through observable behavior, not private workflow internals. Current checks validate the release deploy plan, release environment validation, GitHub Actions workflow surface, and Cloudflare Redirect Rules manifest. Later Browser checks should verify live preview URL behavior, production URL behavior, canonical redirects, and dashboard noindex/auth behavior.

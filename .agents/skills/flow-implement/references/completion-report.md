@@ -1,7 +1,7 @@
 # Completion report and media package
 
-Read when the user requests a standalone completion document or a durable media
-package. Classify its evidence as `ui`, `backend-visible`, or `nonvisual` based on
+Read at the end of every task that changed files, and when the user requests a
+standalone completion document or a durable media package. Classify its evidence as `ui`, `backend-visible`, or `nonvisual` based on
 the changed outcome. Use the existing product-verification capability; loading
 its maintenance skill is only necessary when changing that capability.
 
@@ -23,10 +23,10 @@ Never fabricate media or claim visual acceptance from file presence.
 Use `show-me` or `pr-lens` only when a visualization helps explain the result.
 For the Development System Reader format, read `working-backwards/report-reference.md`
 and run the installed `development-system document --input packet.json --home HOME
---json`. A normal final response does not require this renderer. If the command
-is unavailable, provide the requested report in Markdown with working media links.
+--json`. If the command is unavailable, provide the requested report in Markdown with working media links.
 
-The packet carries `schemaVersion: 1`, `kind` (`completion`), a non-empty
+The report is about 600 words or fewer: prose and short lists first, detail
+after. `schemaVersion: 1` is required. The packet carries `schemaVersion: 1`, `kind` (`completion`), a non-empty
 `title`, `markdown` and editorial `status`, plus optional `source` and
 `visuals`, plus `evidence` following `working-backwards/report-reference.md`.
 Attach the actual media paths; describing captures in Markdown does not embed them.
@@ -38,6 +38,6 @@ actions, so this already requested local document needs no extra approvals.
 If the work is partial or blocked, say so plainly in the document and the
 final message; never claim completion. When the user asks for a review of the
 work or an explanation of a spec or implementation, request the matching
-`review` or `explanation` document on demand. Conversational automation ends
-with this explicit CLI call before the final message; there is no universal
-hook or daemon that generates documents on its own.
+`review` or `explanation` document on demand. Every task ends
+with this explicit CLI call before the final message; a Stop hook reminds once
+when files changed and no report was produced.

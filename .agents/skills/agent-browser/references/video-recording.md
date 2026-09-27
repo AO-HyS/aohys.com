@@ -89,23 +89,23 @@ agent-browser wait 1000  # Show result
 agent-browser record stop
 ```
 
-### CI/CD Test Evidence
+### Verification Evidence
 
 ```bash
 #!/bin/bash
-# Record E2E test runs for CI artifacts
+# Record a verification run as evidence
 
-TEST_NAME="${1:-e2e-test}"
-RECORDING_DIR="./test-recordings"
+RUN_NAME="${1:-verification-run}"
+RECORDING_DIR="./verification-recordings"
 mkdir -p "$RECORDING_DIR"
 
-agent-browser record start "$RECORDING_DIR/$TEST_NAME-$(date +%s).webm"
+agent-browser record start "$RECORDING_DIR/$RUN_NAME-$(date +%s).webm"
 
-# Run test
-if run_e2e_test; then
-    echo "Test passed"
+# Run the real verification (the repository's verification CLI or browser steps)
+if run_verification; then
+    echo "Verification passed"
 else
-    echo "Test failed - recording saved"
+    echo "Verification failed - recording saved"
 fi
 
 agent-browser record stop

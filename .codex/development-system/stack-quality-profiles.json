@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "1.5.0",
+  "contractVersion": "1.34.1",
   "operation": "stack-quality-catalog",
   "defaultNewMobileProfile": "expo-react-native",
   "oracles": {
@@ -8,7 +8,7 @@
     "react-doctor": "React component composition, hooks, rendering, and React-specific performance evidence.",
     "lint": "Syntax, style, forbidden TypeScript escape syntax, and repository-declared static rules.",
     "typecheck": "Type compatibility and inference across owned TypeScript boundaries.",
-    "focused-tests": "Observable behavior of the changed surface and its regression contract.",
+    "real-verification": "Observable behavior of the changed surface proved with real verification (computer use, the browser or the repository's verification CLI); no automated tests.",
     "impeccable": "Visual hierarchy, responsive behavior, accessibility craft, and interaction polish; it does not own functional correctness.",
     "codex-security": "General trust boundaries, secrets, permissions, injection, and data-exposure risk outside Convex-specific function rules.",
     "convex-review": "Convex authorization, validators, indexes, pagination, bounded reads, contention, actions, scheduling, storage, and component selection.",
@@ -42,7 +42,7 @@
   "rules": {
     "quality.no-type-erasure": { "oracle": "lint", "level": "finding", "sourceIds": ["typescript-any"], "exceptionPolicy": "narrow-external-adapter" },
     "quality.type-contract": { "oracle": "typecheck", "level": "finding", "sourceIds": ["typescript-any"], "exceptionPolicy": "none" },
-    "quality.focused-behavior": { "oracle": "focused-tests", "level": "finding", "sourceIds": ["react-thinking"], "exceptionPolicy": "documented-repository" },
+    "quality.focused-behavior": { "oracle": "real-verification", "level": "finding", "sourceIds": ["react-thinking"], "exceptionPolicy": "documented-repository" },
     "quality.visual-craft": { "oracle": "impeccable", "level": "recommendation", "sourceIds": ["wcag"], "exceptionPolicy": "documented-repository" },
     "security.trust-boundaries": { "oracle": "codex-security", "level": "finding", "sourceIds": ["owasp-asvs"], "exceptionPolicy": "none" },
     "react.composition": { "oracle": "react-doctor", "level": "finding", "sourceIds": ["react-thinking"], "exceptionPolicy": "documented-repository" },

@@ -11,7 +11,6 @@ A structured repository for creating and maintaining React Best Practices optimi
 - `src/` - Build scripts and utilities
 - `metadata.json` - Document metadata (version, organization, abstract)
 - **`AGENTS.md`** - Compiled output (generated)
-- **`test-cases.json`** - Test cases for LLM evaluation (generated)
 
 ## Getting Started
 
@@ -28,14 +27,8 @@ A structured repository for creating and maintaining React Best Practices optimi
    ```
 
 3. Validate rule files:
-
    ```bash
    pnpm validate
-   ```
-
-4. Extract test cases:
-   ```bash
-   pnpm extract-tests
    ```
 
 ## Creating a New Rule
@@ -52,7 +45,7 @@ A structured repository for creating and maintaining React Best Practices optimi
    - `advanced-` for Advanced Patterns (Section 8)
 3. Fill in the frontmatter and content
 4. Ensure you have clear examples with explanations
-5. Run `pnpm build` to regenerate AGENTS.md and test-cases.json
+5. Run `pnpm build` to regenerate AGENTS.md
 
 ## Rule File Structure
 
@@ -108,7 +101,6 @@ Reference: [Link](https://example.com)
 
 - `pnpm build` - Compile rules into AGENTS.md
 - `pnpm validate` - Validate all rule files
-- `pnpm extract-tests` - Extract test cases for LLM evaluation
 - `pnpm dev` - Build and validate
 
 ## Contributing
@@ -119,7 +111,7 @@ When adding or modifying rules:
 2. Follow the `_template.md` structure
 3. Include clear bad/good examples with explanations
 4. Add appropriate tags
-5. Run `pnpm build` to regenerate AGENTS.md and test-cases.json
+5. Run `pnpm build` to regenerate AGENTS.md
 6. Rules are automatically sorted by title - no need to manage numbers!
 
 ## Acknowledgments

@@ -13,7 +13,7 @@ mutation, action, migration, backfill, scheduled function, or provider write.
 ## Collect concrete evidence
 
 Build a normalized packet for `auditConvexGuardian` from source and existing
-read-only test or runtime evidence. Give every item a stable id and, when
+read-only runtime or real-verification evidence. Give every item a stable id and, when
 available, an exact path, line, and evidence statement. Inventory:
 
 - public and internal queries, mutations, actions, and HTTP actions;
