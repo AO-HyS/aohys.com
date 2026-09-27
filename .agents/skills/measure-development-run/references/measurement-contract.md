@@ -6,7 +6,7 @@ Use evidence in this order:
 
 1. Runtime or production behavior.
 2. Preview or browser QA behavior.
-3. Executed tests and checks whose real surface is known.
+3. Executed real verification checks whose surface is known.
 4. Independent review findings and dispositions.
 5. Git, PR, CI, deployment, and tracker records.
 6. Conversation claims.

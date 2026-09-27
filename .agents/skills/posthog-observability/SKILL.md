@@ -44,7 +44,7 @@ Prepare a draft-fix intent only when the evidence packet contains all of:
 
 - deterministic reproduction at an exact Git revision with concrete steps;
 - a bounded root cause naming its module and explanation;
-- a passing regression test with an exact path.
+- passing real verification (the repository's verification CLI, the browser or computer use) with its evidence path or URL.
 
 The audit decision is `prepare-draft-fix`, but the audit never creates the
 draft. Any missing or ambiguous element produces `investigate`.

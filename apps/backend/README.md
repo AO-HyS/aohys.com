@@ -19,7 +19,6 @@ The local deployment is for development and codegen only. Production deploys sho
 ```sh
 pnpm --filter @aohys/backend exec convex dev --once --typecheck=disable --tail-logs disable
 pnpm --filter @aohys/backend codegen
-pnpm --filter @aohys/backend test
 pnpm --filter @aohys/backend typecheck
 pnpm --filter @aohys/backend build
 ```

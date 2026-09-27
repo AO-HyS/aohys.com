@@ -18,10 +18,10 @@ The seam is content resolution. Astro pages, sitemap generation, metadata helper
 
 ## Stable Locale Rules
 
-| Locale | Role | Route prefix | Notes |
-| --- | --- | --- | --- |
-| `en` | Default public language | none | English routes live at canonical root paths like `/architecture`. |
-| `es` | Spanish public language | `/es` | Spanish routes live under `/es` with localized slugs. |
+| Locale | Role                    | Route prefix | Notes                                                             |
+| ------ | ----------------------- | ------------ | ----------------------------------------------------------------- |
+| `en`   | Default public language | none         | English routes live at canonical root paths like `/architecture`. |
+| `es`   | Spanish public language | `/es`        | Spanish routes live under `/es` with localized slugs.             |
 
 Rules:
 
@@ -37,20 +37,20 @@ Content IDs are internal and should not change when slugs or titles change.
 
 Initial IDs:
 
-| Content ID | English route | Spanish route | Type |
-| --- | --- | --- | --- |
-| `home` | `/` | `/es/` | landing page |
-| `case-studies` | `/case-studies` | `/es/casos` | index |
-| `case-study:casa-roca` | `/case-studies/casa-roca` | `/es/casos/casa-roca` | case study |
-| `case-study:the-barber-central` | `/case-studies/the-barber-central` | `/es/casos/the-barber-central` | case study |
-| `case-study:nutri-plan` | `/case-studies/nutri-plan` | `/es/casos/nutri-plan` | case study |
-| `case-study:enterprise-systems` | `/case-studies/enterprise-systems` | `/es/casos/sistemas-enterprise` | case study |
-| `case-study:engineering-practice` | `/case-studies/engineering-practice` | `/es/casos/practica-de-ingenieria` | case study |
-| `practice` | `/practice` | `/es/practica` | practice page |
-| `architecture` | `/architecture` | `/es/arquitectura` | architecture page |
-| `resume` | `/resume` | `/es/cv` | resume page |
-| `contact` | `/contact` | `/es/contacto` | contact page |
-| `privacy` | `/privacy` | `/es/privacidad` | privacy page |
+| Content ID                        | English route                        | Spanish route                      | Type              |
+| --------------------------------- | ------------------------------------ | ---------------------------------- | ----------------- |
+| `home`                            | `/`                                  | `/es/`                             | landing page      |
+| `case-studies`                    | `/case-studies`                      | `/es/casos`                        | index             |
+| `case-study:casa-roca`            | `/case-studies/casa-roca`            | `/es/casos/casa-roca`              | case study        |
+| `case-study:the-barber-central`   | `/case-studies/the-barber-central`   | `/es/casos/the-barber-central`     | case study        |
+| `case-study:nutri-plan`           | `/case-studies/nutri-plan`           | `/es/casos/nutri-plan`             | case study        |
+| `case-study:enterprise-systems`   | `/case-studies/enterprise-systems`   | `/es/casos/sistemas-enterprise`    | case study        |
+| `case-study:engineering-practice` | `/case-studies/engineering-practice` | `/es/casos/practica-de-ingenieria` | case study        |
+| `practice`                        | `/practice`                          | `/es/practica`                     | practice page     |
+| `architecture`                    | `/architecture`                      | `/es/arquitectura`                 | architecture page |
+| `resume`                          | `/resume`                            | `/es/cv`                           | resume page       |
+| `contact`                         | `/contact`                           | `/es/contacto`                     | contact page      |
+| `privacy`                         | `/privacy`                           | `/es/privacidad`                   | privacy page      |
 
 ## Content Node Shape
 
@@ -131,7 +131,7 @@ The private dashboard can now manage metadata for case-study content, media, sit
 
 ## Current Test Surface
 
-The Public Content Graph is tested with Vitest through route and metadata behavior:
+The Public Content Graph is verified through the build, typecheck, and Browser checks of route and metadata behavior:
 
 - stable content IDs resolve to English and Spanish paths;
 - route paths resolve back to graph nodes;
@@ -140,7 +140,7 @@ The Public Content Graph is tested with Vitest through route and metadata behavi
 - `/dashboard` and private routes are excluded;
 - missing locale variants fail explicitly.
 
-Astro route smoke tests consume the built site output instead of using ad hoc Node assertions. Later tracers should cover richer case-study content shape, resume/PDF relationships, public-media safety, and dashboard publishing invariants.
+Route behavior is confirmed by `pnpm build` output and browser observation of the built site. Later tracers should cover richer case-study content shape, resume/PDF relationships, public-media safety, and dashboard publishing invariants.
 
 The current home tracer also uses the graph for the public work narrative: selected outcomes resolve to localized case-study paths, public entries carry safe labels, optional sanitized image sources, and accessible text, and the contact CTA keeps the institutional email plus WhatsApp path in the same locale-aware content seam.
 

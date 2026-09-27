@@ -1,6 +1,6 @@
 # Development System repository adapter
 
-Contract version: `1.31.0`
+Contract version: `1.34.1`
 Product: `aohys.com`
 Harness: `codex`
 
@@ -55,15 +55,18 @@ A plan or installed skill grants no additional authority; platform and repositor
 
 Use changed validation for ordinary feedback and required certification once the
 integrated candidate stabilizes. Choose checks by the changed public behavior.
-Test edits are closed by default: use the repository's reviewed test-change
-policy and report missing behavioral evidence to the parent before widening it.
+This repository has no automated tests: `development-system check-no-tests`
+guards it and lint runs it. Every task ends with real verification through the
+repository's verification CLI and feature map, the browser or computer use.
+Reviews run on Astra XHigh through codex-review launched in the background;
+Claude reviewers run only with a declared `Codex fallback:` line.
 Use the local construction recipes and existing components for screens, forms
-and authorized server operations. Simplification, review of test value,
-correction and objective verification are responsibilities. Tiny direct work
-stays with the parent; nontrivial features retain their independent Astra plan
-and final reviews. Select additional specialists by affected risk and preserve
-the parent's final judgment. Reject weakened assertions
-and unsupported green-check claims. File counts and style scores are not gates.
+and authorized server operations. Simplification, correction and objective
+verification are responsibilities. Tiny direct work stays with the parent;
+nontrivial features retain their independent Astra plan and final reviews.
+Select additional specialists by affected risk and preserve the parent's final
+judgment. Reject unsupported green-check claims. File counts and style scores
+are not gates.
 
 Repeat checks only for relevant edits, failures, required gates or unresolved
 concerns. Preserve exit codes and still-valid evidence. Never bypass hooks or CI.
@@ -131,7 +134,7 @@ Legacy validation alias
 
 QA
 
-- Not configured; repository owner action required.
+- pnpm run qa
 
 Preview
 
@@ -139,7 +142,7 @@ Preview
 
 ## Installation and final report
 
-Synchronize global skill catalog `0.50.0` with the pinned
+Synchronize global skill catalog `0.52.0` with the pinned
 Development System package. Installation and structural readiness do not prove
 live loading; T3 and other hosts need their own observations. Ordinary completion
 uses a concise outcome, checks, remaining gaps and usable links. Generate a

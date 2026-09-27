@@ -9,7 +9,7 @@ This skill reviews a change rather than a screen. It resolves the scope, expands
 
 Scope is all it owns. Domain rules belong to the `better-*` skills. Severity, consolidation, coverage, the cap and the verdict belong to `better-interface`, which this skill hands the review to.
 
-Correctness, tests, security and performance belong to the project's general code review. Name the concern once and move on.
+Correctness, security and performance belong to the project's general code review. Name the concern once and move on.
 
 ## The change, not the codebase
 
@@ -116,7 +116,7 @@ Rendered verification is opt-in. Mark visual and runtime claims **Not verified**
 | A pull request checked out to review it                  | Fetch the ref and review it in place                                             |
 | Line numbers cited that do not exist on the reviewed ref | Cite against the head ref named in the scope block                               |
 | The severity scale or the finding cap restated here      | Defer to `better-interface`                                                      |
-| Correctness, test, or security findings in the report    | Name the concern once, point at the project's code review and drop it            |
+| Correctness or security findings in the report           | Name the concern once, point at the project's code review and drop it            |
 
 ## Review output format
 

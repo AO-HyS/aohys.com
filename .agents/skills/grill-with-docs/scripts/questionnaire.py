@@ -22,6 +22,14 @@ from urllib.parse import urlsplit
 import uuid
 
 ASSETS = Path(__file__).resolve().parent.parent / 'assets'
+# Byte copies of the working-backwards reader frame; the builder asserts equality.
+READER = ASSETS / 'reader'
+READER_FONTS = (
+    ('Bricolage Grotesque', 'bricolage-grotesque-latin.woff2', 'font-style:normal;font-weight:200 800;font-stretch:75% 100%'),
+    ('Atkinson Hyperlegible Next', 'atkinson-hyperlegible-next-latin.woff2', 'font-style:normal;font-weight:200 800'),
+    ('Monaspace Neon', 'monaspace-neon-latin-400.woff2', 'font-style:normal;font-weight:400'),
+    ('Monaspace Neon', 'monaspace-neon-latin-600.woff2', 'font-style:normal;font-weight:600'),
+)
 SAFE_ID = re.compile(r'[A-Za-z][A-Za-z0-9_-]{0,79}\Z')
 MAX_BODY = 2_000_000
 MAX_IMAGE_BYTES = 5_000_000
@@ -135,13 +143,21 @@ def normalize_questions(raw, source_directory=None, embed_media=True):
     return config
 
 
+def reader_style():
+    """Shared reader fonts and CSS, then the questionnaire additions."""
+    faces = ''.join(
+        f'@font-face{{font-family:"{family}";src:url(data:font/woff2;base64,{base64.b64encode((READER / name).read_bytes()).decode()}) format("woff2");{style};font-display:swap}}\n'
+        for family, name, style in READER_FONTS)
+    return faces + (READER / 'visual-document.css').read_text() + (ASSETS / 'questionnaire.css').read_text()
+
+
 def render(config):
     esc = html.escape
     nav, sections, groups = [], [], set()
     for i, q in enumerate(config['questions'], 1):
         ident = q['id']
         if q['group'] not in groups:
-            nav.append(f'<a href="#q-{ident}"><span>{i:02}</span>{esc(q["group"])}</a>')
+            nav.append(f'<a href="#q-{ident}"><span class="toc-num">{i:02}</span><span class="toc-label">{esc(q["group"])}</span></a>')
             groups.add(q['group'])
         options = ''.join(f'<label class="option"><input type="radio" name="answer-{ident}" value="{k}"><span class="letter" aria-hidden="true">{k}</span><span>{esc(v)}</span></label>' for k, v in q['options'].items())
         choice_field = f'<fieldset><legend>Elige una opción o escribe tu propia respuesta.</legend><div class="options">{options}</div></fieldset>' if q['options'] else ''
@@ -155,15 +171,15 @@ def render(config):
             references.append(f'''<figure class="visual-reference" data-reference-id="{esc(reference['id'], quote=True)}">
 <img src="{esc(reference['dataUrl'], quote=True)}" alt="{esc(reference['alt'], quote=True)}" loading="lazy"><figcaption>{title}{caption}<p class="reference-function"><span>Qué aporta</span>{esc(reference['function'])}</p>{source}</figcaption></figure>''')
         reference_gallery = f'<div class="reference-gallery" aria-label="Referencias visuales">{"".join(references)}</div>' if references else ''
-        sections.append(f'''<section class="question" id="q-{ident}" data-question-id="{ident}" aria-labelledby="title-{ident}" tabindex="-1">
-<p class="group-label">{esc(q['group'])} · {i} de {len(config['questions'])}</p><h2 id="title-{ident}">{i}. {esc(q['title'])}</h2>
-<p class="question-context">{esc(q['context'])}</p>{reference_gallery}{choice_field}{recommendation}
+        sections.append(f'''<section class="question brief-section" id="q-{ident}" data-question-id="{ident}" aria-labelledby="title-{ident}" tabindex="-1">
+<div class="section-heading"><p class="group-label">{esc(q['group'])} · {i} de {len(config['questions'])}</p><h2 id="title-{ident}"><span class="section-num" aria-hidden="true">{i:02}</span><span>{esc(q['title'])}</span></h2></div>
+<div class="section-content"><p class="question-context">{esc(q['context'])}</p>{reference_gallery}{choice_field}{recommendation}
 <details id="details-{ident}" {"open" if not q["options"] else ""}><summary>Mi respuesta, matiz o ejemplo</summary><label class="sr-only" for="note-{ident}">Comentario: {esc(q['title'])}</label><textarea id="note-{ident}" name="note-{ident}" rows="3" maxlength="6000" placeholder="Puedes combinar opciones, proponer algo distinto o contar un caso real."></textarea></details>
-<div class="question-actions"><button type="button" class="compact-action" data-defer="{ident}" aria-pressed="false">Dejar para después</button>{clear_choice}</div><p class="answer-state" id="state-{ident}">Sin responder</p></section>''')
+<div class="question-actions"><button type="button" class="compact-action" data-defer="{ident}" aria-pressed="false">Dejar para después</button>{clear_choice}</div><p class="answer-state" id="state-{ident}">Sin responder</p></div></section>''')
     data = json.dumps(config, ensure_ascii=False).replace('<', '\\u003c').replace('&', '\\u0026')
     values = dict(TITLE=esc(config['title']), PRODUCT=esc(config['productName']), ID=esc(config['sessionId']),
                   INTRO=esc(config['introduction']), COUNT=str(len(config['questions'])),
-                  NAV=''.join(nav), QUESTIONS=''.join(sections), DATA=data,
+                  NAV=''.join(nav), QUESTIONS=''.join(sections), DATA=data, STYLE=reader_style(),
                   SCRIPT=(ASSETS / 'client.js').read_text())
     # Single substitution pass: question text cannot introduce template directives.
     return re.sub(r'@@([A-Z]+)@@', lambda m: values[m[1]], (ASSETS / 'questionnaire.html').read_text())
@@ -267,7 +283,7 @@ def make_server(directory, config, port=0):
             self.send_response(status)
             for k, v in {'Content-Type': mime, 'Content-Length': str(len(raw)), 'Cache-Control': 'no-store',
                          'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex, nofollow', 'Referrer-Policy': 'no-referrer',
-                         'Content-Security-Policy': "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"}.items():
+                         'Content-Security-Policy': "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; font-src data:; img-src data:; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"}.items():
                 self.send_header(k, v)
             self.end_headers()
             self.wfile.write(raw)

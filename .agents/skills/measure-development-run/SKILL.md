@@ -38,7 +38,7 @@ Measure first; interpret second. Never turn missing telemetry into an estimate.
      --output "$measurement_work_dir/assessment.json"
    ```
 
-6. Inspect the telemetry, the visible conversation, repository evidence, and any relevant read-only Git, test, CI, PR, preview, production, or tracker evidence. If compaction hides necessary history, inspect only the required user and assistant records from the exact `source.sessionPath` reported by telemetry. Do not copy or persist a full transcript.
+6. Inspect the telemetry, the visible conversation, repository evidence, and any relevant read-only Git, verification CLI, CI, PR, preview, production, or tracker evidence. If compaction hides necessary history, inspect only the required user and assistant records from the exact `source.sessionPath` reported by telemetry. Do not copy or persist a full transcript.
 7. Replace every placeholder in `assessment.json`. Use direct evidence. Mark unavailable evidence as `unavailable`; do not infer success from implementation, labels, or file presence.
 8. Finalize the immutable JSON and Markdown reports:
 
@@ -65,7 +65,7 @@ Measure first; interpret second. Never turn missing telemetry into an estimate.
 - Treat between-turn gaps as unattributed idle time and exclude them from the headline unless direct external evidence records a non-overlapping wait.
 - Keep controlled model benchmarks separate from real-work measurements.
 - Count parallel agent time as agent-minutes, not additional elapsed time.
-- Separate product defects, test defects, infrastructure blockers, permission blockers, harness limitations, scope changes, and human waits.
+- Separate product defects, verification defects, infrastructure blockers, permission blockers, harness limitations, scope changes, and human waits.
 - Treat outcome correctness and verified quality as prior to scope, speed, and cost.
 - Do not create one composite score.
 - Never store raw prompts, assistant messages, reasoning, tool inputs, tool outputs, secrets, credentials, or environment values in the measurement artifacts.

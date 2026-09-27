@@ -1,5 +1,7 @@
 # AOHYS React, TanStack, and codebase-health audit
 
+> Historical; aohys has no automated tests (2026-09-26).
+
 Date: 2026-07-11  
 Linear: AOH-74  
 Scope: React 19 dashboard, TanStack Router/Table, Convex client ownership, editable state, composition, bundle output, module organization, duplication, and tests.
@@ -119,7 +121,7 @@ Target: derive transport results/IDs from generated Convex types and build typed
 
 ### RCT-10 — No TanStack Query responsibility is proven
 
-Strength: Do not add  
+Strength: Do not add
 
 Convex already provides reactive caching, deduplication, loading state, mutation integration, and pagination hooks for operational data. Cloudflare upload is a one-time event-driven transfer, not server state shared across screens. GitHub publication dispatch happens in Convex.
 

@@ -1,6 +1,6 @@
 ---
 name: bootstrap-release-train
-description: Audit, install, migrate, or simplify a repository release train into a local-first contract with Husky, lint-staged, the React Doctor CLI, focused existing E2E, lightweight pull-request policy, preview deployment from develop, and production promotion from main. Use when adopting an old or new repository, reducing slow or expensive GitHub Actions, standardizing develop-to-main releases, preserving existing Cloudflare, Convex, Vercel, or mobile artifact deployment behavior, or diagnosing whether a release train matches this contract.
+description: Audit, install, migrate, or simplify a repository release train into a local-first contract with Husky, lint-staged, the React Doctor CLI, `check-no-tests`, lightweight pull-request policy, preview deployment from develop, and production promotion from main. Use when adopting an old or new repository, reducing slow or expensive GitHub Actions, standardizing develop-to-main releases, preserving existing Cloudflare, Convex, Vercel, or mobile artifact deployment behavior, or diagnosing whether a release train matches this contract.
 ---
 
 # Bootstrap Release Train
@@ -56,14 +56,14 @@ Use files under `assets/templates/` as starting contracts, not blind replacement
 4. Define these semantic scripts using the repo's real commands:
    - `doctor`: direct `react-doctor` entrypoint so the CLI recognizes the installation;
    - `quality:commit`: fast deterministic checks plus `react:doctor:staged`;
-   - `quality:push`: the full local gate plus `react:doctor:changed` and focused E2E when an existing selector is available;
+   - `quality:push`: the full local gate plus `react:doctor:changed`;
    - `react:doctor:staged`: staged lines only;
    - `react:doctor:changed`: branch diff against `origin/develop` or the detected integration branch.
 5. Make `.husky/pre-commit` run lint-staged and `quality:commit`.
 6. Make `.husky/pre-push` reject any dirty tree before running `quality:push`.
 7. Run the normal package installation and confirm Husky generated `.husky/_`; verify `core.hooksPath` points to it.
 
-Keep commit-time feedback short. Put typecheck, broad unit tests, builds, and focused E2E in pre-push unless the repository proves they are cheap enough for pre-commit.
+Keep commit-time feedback short. Put typecheck, builds, and `pnpm ds check-no-tests` in pre-push unless the repository proves they are cheap enough for pre-commit. Do not add or run automated tests; behavior is confirmed by real verification (`pnpm verify:product`, browser, or computer use).
 
 Do not invent E2E or mobile artifact infrastructure. Preserve and focus what already exists; document an absent capability as absent.
 
@@ -109,7 +109,7 @@ Also verify:
 - hook files are executable;
 - `git diff --check` passes;
 - React Doctor runs from the installed dependency without downloading a package;
-- focused E2E selects the expected tests and uses isolated local ports;
+- `check-no-tests` reports no automated tests;
 - no secret values appear in logs or committed files;
 - existing native artifact commands remain present when the audit found them.
 

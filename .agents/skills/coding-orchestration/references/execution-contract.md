@@ -33,7 +33,7 @@ cannot reliably carry the whole sequence, split at an observable checkpoint,
 resolve choices before dispatch, provide a concrete example, and issue the next
 small packet after assessing its receipt. Use the same approach when the parent
 model has limited capability. Examples illustrate inputs and receipt shape;
-they do not replace a repository's canonical implementation or test oracle.
+they do not replace a repository's canonical implementation or verification oracle.
 
 For example: inspect the named handler and report the current transition; then
 change the owned handler following the settled decision; then run the named

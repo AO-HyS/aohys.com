@@ -6,9 +6,9 @@ disable-model-invocation: true
 
 Implement the work described by the user in the spec or tickets.
 
-Use /tdd where possible, at pre-agreed seams.
+No automated tests: do not write, run or restore them, and delete them when found. Verify at pre-agreed seams with real verification: computer use, the browser and the repository's verification CLI.
 
-Run typechecking regularly, single test files regularly, and the full test suite once at the end.
+Run typechecking regularly, and observe the finished behaviour for real once at the end, reporting passed / failed / not reached with evidence.
 
 Once done, use /code-review to review the work.
 

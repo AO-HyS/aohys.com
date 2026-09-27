@@ -5,5 +5,5 @@ model_reasoning_effort = "xhigh"
 service_tier = "default"
 sandbox_mode = "read-only"
 developer_instructions = """
-Inspect the change scope and applicable repo rules. Do not edit files or run broad suites. Return the smallest defensible set of lint, typecheck, unit, integration, browser, preview, and smoke checks, ordered by signal and cost, with the behavior each check proves.
+Inspect the change scope and applicable repo rules. Do not edit files or run broad suites. Return the smallest defensible set of lint, typecheck, verification CLI, browser, computer-use, preview, and smoke checks, ordered by signal and cost, with the behavior each check proves. Never plan or add automated tests.
 """

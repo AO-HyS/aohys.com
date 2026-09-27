@@ -2,11 +2,11 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash|exec",
+        "matcher": "Bash|exec|apply_patch",
         "hooks": [
           {
             "type": "command",
-            "command": "[ ! -f \".agents/skills/global-agent-guardrails/scripts/command-guard.mjs\" ] || AOHYS_GLOBAL_AGENT_GUARDRAILS=1 node \".agents/skills/global-agent-guardrails/scripts/command-guard.mjs\" hook --harness codex",
+            "command": "[ ! -f \".agents/skills/global-agent-guardrails/scripts/command-guard.mjs\" ] || AOHYS_GLOBAL_AGENT_GUARDRAILS=1 node \".agents/skills/global-agent-guardrails/scripts/command-guard.mjs\" hook --harness codex || exit 2",
             "timeout": 5,
             "statusMessage": "Checking destructive-command policy",
             "commandWindows": "if exist \".agents/skills/global-agent-guardrails/scripts/command-guard.mjs\" (set AOHYS_GLOBAL_AGENT_GUARDRAILS=1 & node \".agents/skills/global-agent-guardrails/scripts/command-guard.mjs\" hook --harness codex & exit /b)"
@@ -20,10 +20,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ ! -f \".agents/skills/impeccable/scripts/hook.mjs\" ] || node \".agents/skills/impeccable/scripts/hook.mjs\"",
+            "command": "[ ! -f \".agents/skills/impeccable/scripts/impeccable\" ] || \".agents/skills/impeccable/scripts/impeccable\" hook",
             "timeout": 5,
             "statusMessage": "Checking UI changes",
-            "commandWindows": "if exist \".agents/skills/impeccable/scripts/hook.mjs\" (node \".agents/skills/impeccable/scripts/hook.mjs\" & exit /b)"
+            "commandWindows": "if exist \".agents/skills/impeccable/scripts/impeccable.cmd\" (\".agents/skills/impeccable/scripts/impeccable.cmd\" hook & exit /b)"
           }
         ]
       }
@@ -33,10 +33,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ ! -f \".agents/skills/impeccable/scripts/hook.mjs\" ] || node \".agents/skills/impeccable/scripts/hook.mjs\"",
+            "command": "[ ! -f \".agents/skills/impeccable/scripts/impeccable\" ] || \".agents/skills/impeccable/scripts/impeccable\" hook",
             "timeout": 30,
             "statusMessage": "Design deep pass",
-            "commandWindows": "if exist \".agents/skills/impeccable/scripts/hook.mjs\" (node \".agents/skills/impeccable/scripts/hook.mjs\" & exit /b)"
+            "commandWindows": "if exist \".agents/skills/impeccable/scripts/impeccable.cmd\" (\".agents/skills/impeccable/scripts/impeccable.cmd\" hook & exit /b)"
           }
         ]
       }

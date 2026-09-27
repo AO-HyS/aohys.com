@@ -32,7 +32,8 @@ distinct external action does not stop independent authorized preparation.
 
 For visual acceptance, use approved references and the current design workflow,
 then independent capable critique and corrections before final media. Follow
-the host's authorized browser mechanism. Tests, lint, React Doctor and reviewers
+the host's authorized browser mechanism. Real verification (computer use, the
+browser, the repository's verification CLI), lint, React Doctor and Astra reviews
 answer different questions; choose them by the affected behavior and required
 gates rather than loading all tools for every task.
 
@@ -96,11 +97,20 @@ transcripts outside its served directory. A report is not acceptance evidence.
 
 ## Automated tests and evidence
 
-By default, do not create, modify, delete, generate, or run automated tests
-unless the user explicitly asks. Preserve existing test files and CI protections.
-Use applicable build, type, lint, static validation, or real behavior observation
-as required by the task. Do not make claims from test counts. Report a concrete
-behavior gap and its smallest useful observation without adding a test suite.
+No automated tests anywhere: do not create, run or restore them; delete them
+when found (`check-no-tests` and the guard enforce this). Every task includes
+real verification without being asked: computer use, browser, and the
+repository's verification CLI and feature map. Report passed / failed / not
+reached with evidence.
+
+## Decisions
+
+- `Done when:` is executable: a command and the expected observation; the writer retries up to 3 times and the coordinator reruns it.
+- `Outcome:` is optional, only when it adds signal.
+- Develop merges are autonomous after real verification plus an independent review with no blocking findings; main, releases and production wait for the user.
+- Two-way decisions (reversible: a screen on develop, a rename, a revertible PR) the agent decides and records in the report; one-way decisions (deleting data, destructive migrations, production, money, messages to customers) stop and ask.
+- Gardener ladder (Lauren Tan): make the error impossible in code > lint/CI/guard > rule/skill; never a style guide alone. A mistake seen twice becomes a proposed hard rule at the highest possible level.
+- No evals.
 
 
 ## Headroom transport evidence
@@ -125,3 +135,4 @@ The user or host sets effort; recommend a change rather than claiming one. Opus
 5.5 always thinks: do not add "think carefully", and hand over the whole task
 with its finish line. Headroom for Claude Code uses the installed claude.mjs
 launcher.
+No Haiku; Sonnet at low effort only for mechanical or read-only roles (Explore, code-mapper, docs-researcher, mechanical-worker); there is no per-subagent thinking switch.

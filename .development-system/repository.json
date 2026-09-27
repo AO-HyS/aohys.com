@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "1.31.0",
+  "contractVersion": "1.34.1",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [
@@ -45,7 +45,10 @@
       "script": "verify:changed",
       "command": "pnpm run verify:changed"
     },
-    "qa": null,
+    "qa": {
+      "script": "qa",
+      "command": "pnpm run qa"
+    },
     "preview": {
       "script": "cloudflare:local",
       "command": "pnpm run cloudflare:local"
@@ -105,7 +108,7 @@
       "terminalState": "ready-for-human",
       "autonomousOperations": [
         "implement",
-        "test",
+        "real-verification",
         "validate",
         "review",
         "correct",
@@ -188,7 +191,7 @@
         "dependsOn": ["deletion-pass"]
       }
     ],
-    "testsAreSubordinateEvidence": true,
+    "automatedTests": "none-real-verification-only",
     "independentVerification": "oracle-derived-from-objective-and-public-interface",
     "excludedMetrics": [
       "lines-of-code",
@@ -214,7 +217,7 @@
     }
   },
   "operatorPrerequisites": {
-    "skillCatalogVersion": "0.50.0",
+    "skillCatalogVersion": "0.52.0",
     "installationScope": "global",
     "readinessScope": "repository-adapter-only",
     "requiredSkills": [
