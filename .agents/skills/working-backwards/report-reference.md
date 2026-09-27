@@ -10,7 +10,11 @@ Run `development-system document --input packet.json --home HOME --json`.
 The packet requires `schemaVersion:1`, `kind` (`completion`, `review` or
 `explanation`), `title`, canonical `markdown`, and an honest editorial `status`.
 Optional: `language`, `productName`, `source:{repository,revision,references}`,
-`visuals`, and `evidence`. A request to explain a spec maps to `explanation`.
+`visuals`, `evidence` and `allowTables`. A request to explain a spec maps to
+`explanation`. A `completion` Markdown opens with at most 600 characters, then
+the `##` sections Qué se hizo, Hallazgos, Qué sigue, Detalle in that order
+(`language: "en"`: What was done, Findings, What's next, Detail); the command
+rejects a report without them.
 
 ## Result evidence
 
@@ -116,8 +120,9 @@ and sources. Never invent a metric to fill a chart; use a short list when cleare
 ## Write for reading, not scanning tables
 
 - Prose and short lists first. A reader follows sentences; tables make them hunt.
-- Use a table only for a real comparison: at least two options against at least
-  two criteria. Steps, checks, file lists and pending items are lists.
+- The command rejects tables in every kind unless the packet sets
+  `"allowTables": true`. Set it only for a real comparison: at least two options
+  against at least two criteria. Steps, checks, file lists and pending items are lists.
 - When the work has a flow (a request, a message, a handoff), draw one PR Lens
   visual and explain it in two or three sentences; do not restate it as a table.
 - Tables with more than 8 rows, more than 4 columns or more than 30 cells render

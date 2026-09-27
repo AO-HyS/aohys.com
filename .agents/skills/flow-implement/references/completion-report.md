@@ -26,9 +26,24 @@ and run the installed `development-system document --input packet.json --home HO
 --json`. If the command is unavailable, provide the requested report in Markdown with working media links.
 
 The report is about 600 words or fewer: prose and short lists first, detail
-after. `schemaVersion: 1` is required. The packet carries `schemaVersion: 1`, `kind` (`completion`), a non-empty
-`title`, `markdown` and editorial `status`, plus optional `source` and
-`visuals`, plus `evidence` following `working-backwards/report-reference.md`.
+after. The packet carries `schemaVersion: 1`, `kind` (`completion`), a non-empty
+`title`, `markdown` and editorial `status`, plus optional `language`, `source`,
+`visuals`, `allowTables` and `evidence` following `working-backwards/report-reference.md`.
+
+The Markdown starts with at most 600 characters (the result in one or two
+sentences), then these `##` sections in order; the command rejects anything else:
+
+- `## Qué se hizo`: the behavior delivered and its real verification, marked
+  pasó / falló / no se alcanzó with evidence.
+- `## Hallazgos`: what was found, including a mistake seen twice proposed as a
+  hard rule at the highest level (código > lint/CI/guard > regla/skill).
+- `## Qué sigue`: what the user must decide or do, and what remains unverified.
+- `## Detalle`: changed paths, commands and supporting detail.
+
+With `language: "en"` the headings are What was done, Findings, What's next,
+Detail. Tables are rejected unless `"allowTables": true` for a real comparison.
+When the user asks for the answer in the chat only, write no document and open
+no tunnel.
 Attach the actual media paths; describing captures in Markdown does not embed them.
 The command writes canonical Markdown and shared-reader HTML under
 `HOME/.development-system/private/documents` and returns file paths with

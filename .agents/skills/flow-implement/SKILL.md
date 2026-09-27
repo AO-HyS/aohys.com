@@ -55,18 +55,18 @@ For a requested standalone completion report or a durable media package, read
 
 Every task that changed files ends with a report:
 
-1. Write the concise packet (`flow-implement/references/completion-report.md`)
-   with the sections Veredicto, Qué cambió, Verificación real (pasó / falló /
-   no se alcanzó, con evidencia), Pendiente, Preguntas al margen and one
-   Jardinero line: "un error visto dos veces se propone como regla dura al
-   nivel más alto: código > lint/CI/guard > regla/skill".
+1. Write the concise packet (`references/completion-report.md`). Its
+   Markdown opens with the sections Qué se hizo, Hallazgos, Qué sigue, Detalle
+   in that order (English: What was done, Findings, What's next, Detail);
+   the command rejects other shapes and tables without `allowTables`.
 2. Render it with `development-system document --input <packet> --json`.
 3. Serve it with working-backwards `reader-live.mjs --tunnel` from a
    per-report copy directory.
 4. Put the URL in the final answer.
 
 A Stop hook asks once when files changed and no report was produced. If a
-report is truly not useful, say why in one line.
+report is truly not useful, say why in one line. When the user asks for the
+answer in the chat only, produce no document and no tunnel.
 
 ## Automated tests and evidence
 

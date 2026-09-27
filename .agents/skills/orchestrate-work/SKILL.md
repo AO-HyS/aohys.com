@@ -106,16 +106,18 @@ source, local runtime, PR, Preview, production and acceptance claims separate.
 
 Every task that changed files ends with a report:
 
-1. Write the concise packet (`flow-implement/references/completion-report.md`)
-   with the sections Veredicto, Qué cambió, Verificación real (pasó / falló /
-   no se alcanzó, con evidencia), Pendiente, Preguntas al margen and one
-   Jardinero line: "un error visto dos veces se propone como regla dura al
-   nivel más alto: código > lint/CI/guard > regla/skill".
+1. Write the concise packet (`flow-implement/references/completion-report.md`):
+   at most 600 characters with the result, then the sections `## Qué se hizo`
+   (real verification marked pasó / falló / no se alcanzó, with evidence),
+   `## Hallazgos` (a mistake seen twice proposed as a hard rule at the highest
+   level: código > lint/CI/guard > regla/skill), `## Qué sigue` and
+   `## Detalle`, in that order. No tables unless `"allowTables": true`.
 2. Render it with `development-system document --input <packet> --json`.
 3. Serve it with working-backwards `reader-live.mjs --tunnel` from a
    per-report copy directory.
 4. Put the URL in the final answer.
 
-A Stop hook asks once when files changed and no report was produced. If a
-report is truly not useful, say why in one line.
+When the user asks for the answer in the chat only, write no document and open
+no tunnel. A Stop hook asks once when files changed and no report was produced.
+If a report is truly not useful, say why in one line.
 
