@@ -1,4 +1,4 @@
-# Development contract 1.35.0
+# Development contract 1.35.1
 
 This profile supersedes mandatory governance as the default. Historical contracts remain immutable.
 
@@ -48,7 +48,7 @@ The field-notebook reader and margin questions from source fb6b5dd968281cd1a5c55
 
 ## Repository preparation correction
 
-Initialize and normalize generate the advisory repository adapter. Product-specific lifecycle extensions survive normalization; shared lifecycle policy comes from this version. The paired skill catalog is 0.53.0.
+Initialize and normalize generate the advisory repository adapter. Product-specific lifecycle extensions survive normalization; shared lifecycle policy comes from this version. The paired skill catalog is 0.53.1.
 
 
 ## Automated tests and evidence
@@ -98,3 +98,7 @@ Contract 1.34.1 removes every remaining instruction that asked for automated tes
 ## Stable review rounds, advisory Jev and fixed report sections
 
 Contract 1.35.0 fixes the orchestration defects observed in the NutriPlan rescue of 2026-09-27. codex-review requires a `Task-Id: <slug>` line for reviews and counts rounds per task and repository, so rewording the objective no longer resets the count. A round counts only when Codex exits cleanly and findings.md ends with a `Verdict:` line; every other ending is recorded in attempts.jsonl and does not count. A complete round is not approval. Reservation of a review slot runs under an ownership-aware lock, so concurrent launches cannot exceed the cap, and a lock is reclaimed only when its owner process is gone. When an earlier complete round exists for the task, its findings are copied into the new run and the reviewer states for each one whether it is fixed, still open or dismissed. `--out` must be a new or empty directory. The roster guard runs Jev in advisory mode: it classifies each writer or planner packet and records the suggested route without refusing. `Owned paths:` accepts one path per entry, comma-separated or one `- path` line each, with `*` and a trailing `/**` as the only globs; prose is denied with the format instead of being guessed. The six writer roles carry a `writer-bash` hook that denies Git commands that change the index, the history or the working tree, because the coordinator owns staging and commits; it is a habit stop, not a security boundary. Writers never restructure code so a lint or React Doctor rule stops recognizing it. An expired writer hold is logged as `writer-hold-expired`. `development-system document` requires completion Markdown to open with at most 600 characters and then the sections Qué se hizo, Hallazgos, Qué sigue and Detalle (What was done, Findings, What's next and Detail in English), and rejects tables in every kind unless the packet sets `allowTables: true`; the delivery recap follows the English sections. Catalog 0.53.0 moves flow-implement, coding-orchestration and working-backwards to 1.35.0 copies that describe these sections, `allowTables`, and that a chat-only request produces no document and no tunnel. Installed files do not prove that a harness follows these instructions; that needs observed-session evidence.
+
+## Report sections in orchestrate-work
+
+Contract 1.35.1 moves orchestrate-work to a 1.35.1 copy whose close-every-task step prescribes the completion sections that `development-system document` has required since 1.35.0: at most 600 characters with the result, then Qué se hizo, Hallazgos, Qué sigue and Detalle, with no tables unless `allowTables: true`, and no document or tunnel when the user asks for the answer in the chat only. Catalog 0.53.1 carries that copy. The release build now fails when any installed instruction names the retired report sections. Installed files do not prove that a harness follows these instructions; that needs observed-session evidence.
