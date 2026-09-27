@@ -107,18 +107,21 @@ receipt cannot become a passing result.
 
 Every task that changed files ends with a report:
 
-1. Write the concise packet (`flow-implement/references/completion-report.md`)
-   with the sections Veredicto, Qué cambió, Verificación real (pasó / falló /
-   no se alcanzó, con evidencia), Pendiente, Preguntas al margen and one
-   Jardinero line: "un error visto dos veces se propone como regla dura al
-   nivel más alto: código > lint/CI/guard > regla/skill".
+1. Write the concise packet (`flow-implement/references/completion-report.md`).
+   Its Markdown opens with the four sections the command requires, in order:
+   Qué se hizo, Hallazgos, Qué sigue, Detalle (English: What was done,
+   Findings, What's next, Detail). Real verification (pasó / falló / no se
+   alcanzó, con evidencia) goes in Qué se hizo; a mistake seen twice goes in
+   Hallazgos as a proposed hard rule at the highest level (código >
+   lint/CI/guard > regla/skill). No tables unless a real comparison needs one.
 2. Render it with `development-system document --input <packet> --json`.
 3. Serve it with working-backwards `reader-live.mjs --tunnel` from a
    per-report copy directory.
 4. Put the URL in the final answer.
 
 A Stop hook asks once when files changed and no report was produced. If a
-report is truly not useful, say why in one line.
+report is truly not useful, say why in one line. When the user asks for the
+answer in the chat only, produce no document and no tunnel.
 
 For host-specific CLI dispatch, read [host-dispatch](references/host-dispatch.md).
 For interruption or ownership recovery, read

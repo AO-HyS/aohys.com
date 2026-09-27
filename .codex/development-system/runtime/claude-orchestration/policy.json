@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-26.1",
+  "version": "2026-09-27.1",
   "maxConcurrentSubagents": 4,
   "roster": {
     "Explore": {
@@ -140,7 +140,7 @@
     "timeoutMs": 8000,
     "acceptChosenRouteProbability": 0.2,
     "denyOpenDecisionAbove": 0.75,
-    "mode": "gate",
+    "mode": "advisory",
     "recordTimeoutMs": 4000,
     "maxRefusalsPerSession": 3
   },
