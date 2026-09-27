@@ -19,8 +19,8 @@ The accountable human decides business intent, scope, review, and release. The a
 Follow these questions in order. Stop at the first answer that provides a clear owner.
 
 1. **Does the change alter domain language or business responsibility?** Start in `CONTEXT.md`. Resolve the term or responsibility before writing code; record a consequential boundary decision in an ADR.
-2. **Does an existing contract already own the behavior?** Follow that contract's documentation to its source, tests, and public interface. Add behavior behind the owner rather than beside it.
-3. **Is this behavior private to one product capability?** Place UI, state, actions, validators, and tests together inside the capability that owns the user or operational outcome. Let the nearest manifest and public export confirm the boundary.
+2. **Does an existing contract already own the behavior?** Follow that contract's documentation to its source and public interface. Add behavior behind the owner rather than beside it.
+3. **Is this behavior private to one product capability?** Place UI, state, actions, and validators together inside the capability that owns the user or operational outcome. Let the nearest manifest and public export confirm the boundary.
 4. **Must multiple capabilities use it?** First prefer a behavior-oriented facade owned by one capability. Create or extend a shared primitive only when the callers genuinely share the same invariant, not merely similar syntax.
 5. **Does it cross a runtime or provider boundary?** Put validation and translation at the boundary named by the Environment Contract. Keep provider details behind that interface and keep release operations in the Release Train.
 6. **Is the target generated?** Change the owning schema, manifest, or generator and regenerate the artifact. Never make a generated file the architectural source of truth.
@@ -41,7 +41,7 @@ Use the source that matches the question instead of searching for a manually cur
 | How is a release, recovery, or smoke check performed?     | `docs/release-train.md` and `docs/launch-hardening.md`                                                        |
 | What exists at this commit?                               | Workspace/package manifests, imports, exports, generated artifacts, and source-derived graphs for that commit |
 
-When code moves, update its manifest, imports, public exports, tests, and any affected contract or ADR. Do not update this guide with a synchronized list of directories or modules.
+When code moves, update its manifest, imports, public exports, and any affected contract or ADR, then rerun the static checks (`pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm ds check-no-tests`) and real verification (`pnpm verify:product`, browser, or computer use). Do not update this guide with a synchronized list of directories or modules.
 
 ## Illustrative, Non-Exhaustive Example
 

@@ -56,7 +56,7 @@ Ask especially when any of these are unclear:
 ## Task Rules
 
 - Preserve completed task status unless the underlying plan invalidates it; if you change completed work, explain why.
-- Every task must include tests or an explicit N/A with justification.
+- Every task must name its real verification (a command, browser or computer-use check) and the expected observation.
 - Every task must include acceptance criteria checkboxes.
 - Every task must include context to read, including `AGENTS.md`, `CLAUDE.md`, and repo docs when present.
 - Every task must include skills or workflows to load when applicable.
@@ -83,7 +83,7 @@ Each task must include:
 - Files or areas.
 - Context to read.
 - Skills or workflows to load.
-- Tests.
+- Real verification and expected observation.
 - Acceptance criteria.
 - Depends on.
 

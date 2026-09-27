@@ -2,15 +2,15 @@
 
 ## Core ownership
 
-| Layer                  | Owner                         | Required result                                                                                            |
-| ---------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Fast staged feedback   | Husky pre-commit              | Formatting, targeted static checks, React Doctor staged scan                                               |
-| Full candidate quality | Husky pre-push                | Lint, architecture/security checks, typecheck, unit/build, React Doctor changed scan, focused existing E2E |
-| PR automation          | GitHub Actions policy job     | Release-path validation only                                                                               |
-| PR preview             | Existing provider integration | Optional review environment without duplicated quality gates                                               |
-| `develop` push         | Release Train                 | Preview deploy, backend synchronization, post-deploy smoke                                                 |
-| `develop -> main` PR   | Policy job                    | Canonical source branch; Git owns commit ancestry and continuity                                           |
-| `main` push            | Release Train                 | Production deploy and live smoke                                                                           |
+| Layer                  | Owner                         | Required result                                                                                   |
+| ---------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------- |
+| Fast staged feedback   | Husky pre-commit              | Formatting, targeted static checks, React Doctor staged scan                                      |
+| Full candidate quality | Husky pre-push                | Lint, architecture/security checks, typecheck, build, `check-no-tests`, React Doctor changed scan |
+| PR automation          | GitHub Actions policy job     | Release-path validation only                                                                      |
+| PR preview             | Existing provider integration | Optional review environment without duplicated quality gates                                      |
+| `develop` push         | Release Train                 | Preview deploy, backend synchronization, post-deploy smoke                                        |
+| `develop -> main` PR   | Policy job                    | Canonical source branch; Git owns commit ancestry and continuity                                  |
+| `main` push            | Release Train                 | Production deploy and live smoke                                                                  |
 
 ## Non-negotiable invariants
 
@@ -42,7 +42,7 @@ Use semantic entrypoints even when underlying commands differ:
 {
   "doctor": "react-doctor",
   "quality:commit": "<fast checks> && <react doctor staged>",
-  "quality:push": "<full local verification> && <react doctor changed> && <focused existing e2e>",
+  "quality:push": "<full local verification> && <react doctor changed>",
   "react:doctor:staged": "react-doctor --staged --scope lines --no-dead-code --no-supply-chain --no-score --blocking warning",
   "react:doctor:changed": "react-doctor --scope changed --base origin/develop --no-dead-code --no-supply-chain --no-score --blocking warning"
 }
