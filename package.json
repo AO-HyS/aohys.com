@@ -53,7 +53,7 @@
     "verify:foundation": "node scripts/verify-foundation.mjs",
     "verify:product": "node scripts/quality/check-product-verification.mjs",
     "verify:product:changed": "node scripts/quality/product-verification-changed.mjs",
-    "qa": "pnpm verify:product:changed",
+    "qa": "pnpm verify:product",
     "verify:product:doctor": "node scripts/quality/product-verification-doctor.mjs",
     "verify:product:plan": "node scripts/quality/product-verification-plan.mjs",
     "verify:precommit": "pnpm exec lint-staged && pnpm run quality:commit",
