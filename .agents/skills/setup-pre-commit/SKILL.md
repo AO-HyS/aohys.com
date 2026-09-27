@@ -1,6 +1,6 @@
 ---
 name: setup-pre-commit
-description: Set up Husky pre-commit hooks with lint-staged (Prettier), type checking, and tests in the current repo. Use when user wants to add pre-commit hooks, set up Husky, configure lint-staged, or add commit-time formatting/typechecking/testing.
+description: Set up Husky pre-commit hooks with lint-staged (Prettier), type checking, and the repository lint (which includes `development-system check-no-tests`) in the current repo; the hook never runs automated tests. Use when user wants to add pre-commit hooks, set up Husky, configure lint-staged, or add commit-time formatting/typechecking/linting.
 ---
 
 # Setup Pre-Commit Hooks
@@ -10,7 +10,7 @@ description: Set up Husky pre-commit hooks with lint-staged (Prettier), type che
 - **Husky** pre-commit hook
 - **lint-staged** running Prettier on all staged files
 - **Prettier** config (if missing)
-- **typecheck** and **test** scripts in the pre-commit hook
+- **typecheck** and **lint** scripts in the pre-commit hook (the lint includes `development-system check-no-tests`; the hook never runs automated tests)
 
 ## Steps
 
@@ -41,10 +41,10 @@ Write this file (no shebang needed for Husky v9+):
 ```
 npx lint-staged
 npm run typecheck
-npm run test
+npm run lint
 ```
 
-**Adapt**: Replace `npm` with detected package manager. If repo has no `typecheck` or `test` script in package.json, omit those lines and tell the user.
+**Adapt**: Replace `npm` with detected package manager. If repo has no `typecheck` or `lint` script in package.json, omit those lines and tell the user.
 
 ### 5. Create `.lintstagedrc`
 
@@ -82,10 +82,10 @@ Only create if no Prettier config exists. Use these defaults:
 
 Stage all changed/created files and commit with message: `Add pre-commit hooks (husky + lint-staged + prettier)`
 
-This will run through the new pre-commit hooks: a good smoke test that everything works.
+This will run through the new pre-commit hooks: a good smoke check that everything works.
 
 ## Notes
 
 - Husky v9+ doesn't need shebangs in hook files
 - `prettier --ignore-unknown` skips files Prettier can't parse (images, etc.)
-- The pre-commit runs lint-staged first (fast, staged-only), then full typecheck and tests
+- The pre-commit runs lint-staged first (fast, staged-only), then full typecheck and the repository lint (which runs `development-system check-no-tests`); it never runs automated tests

@@ -2,7 +2,11 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 
-import { renderEvidence, evidenceController } from "./report-evidence.mjs";
+import {
+  renderEvidence,
+  pendingEvidenceLine,
+  evidenceController,
+} from "./report-evidence.mjs";
 
 const asset = (/** @type {string} */ name) =>
   new URL(`../assets/${name}`, import.meta.url);
@@ -28,6 +32,9 @@ const esc = (/** @type {unknown} */ value) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 const two = (/** @type {number} */ value) => String(value).padStart(2, "0");
+const FOLD_ROWS = 8;
+const FOLD_COLUMNS = 4;
+const FOLD_CELLS = 30;
 
 /** SVG is embedded as an image, never inserted as active document markup. @param {unknown} svg */
 export function visualImage(svg) {
@@ -100,7 +107,7 @@ function graph(block, model, language) {
   const title = string(visual.title) || string(block.filename) || "PR Lens";
   const description = string(visual.description) || title;
   const label = language === "es" ? "Ampliar mapa" : "Expand map";
-  return `<figure class="document-map" data-map><figcaption><strong>${esc(title)}</strong><div class="map-actions"><button type="button" data-map-expand aria-expanded="false">${label}</button>${image.hasMotion ? `<button type="button" data-map-motion aria-pressed="false">${language === "es" ? "Animar recorrido" : "Animate flow"}</button>` : ""}</div></figcaption><p class="map-scroll-hint">${language === "es" ? "Desliza horizontalmente para recorrer el mapa." : "Scroll horizontally to explore the map."}</p><div class="map-scroll" tabindex="0" role="region" aria-label="${esc(description)}"><img class="map-image" src="${image.still}" data-still="${image.still}"${image.hasMotion ? ` data-animated="${image.animated}"` : ""} width="${image.width}" height="${image.height}" alt="${esc(description)}"></div>${visual.caption ? `<p class="map-caption">${esc(visual.caption)}</p>` : ""}<details class="map-description"><summary>${language === "es" ? "Leer el recorrido" : "Read the flow"}</summary><p>${esc(description)}</p></details></figure>`;
+  return `<figure class="document-map" data-map><figcaption><strong>${esc(title)}</strong><div class="map-actions"><button type="button" data-map-expand aria-expanded="false">${label}</button>${image.hasMotion ? `<button type="button" data-map-motion aria-pressed="false">${language === "es" ? "Animar recorrido" : "Animate flow"}</button>` : ""}</div></figcaption><p class="map-scroll-hint">${language === "es" ? "Desliza horizontalmente para recorrer el mapa." : "Scroll horizontally to explore the map."}</p><div class="map-scroll" tabindex="0" role="region" aria-label="${esc(description)}"><img class="map-image" src="${image.still}" data-still="${image.still}"${image.hasMotion ? ` data-animated="${image.animated}"` : ""} width="${image.width}" height="${image.height}" style="--map-w:${Math.round(image.width)}" alt="${esc(description)}"></div>${visual.caption ? `<p class="map-caption">${esc(visual.caption)}</p>` : ""}<details class="map-description"><summary>${language === "es" ? "Leer el recorrido" : "Read the flow"}</summary><p>${esc(description)}</p></details></figure>`;
 }
 
 /** @param {Record<string, any>} block @param {string} language */
@@ -220,8 +227,40 @@ export function renderVisualDocument(model, helpers) {
       (tag) => `${tag} data-q="${esc(id)}"`,
     );
   };
-  const render = (/** @type {Record<string, any>} */ block) => {
+  // Long or wide tables fold behind a one-line summary, except when the table
+  // opens its section: then it is the content the reader came for.
+  const table = (
+    /** @type {Record<string, any>} */ block,
+    /** @type {boolean} */ first,
+  ) => {
+    const html = askable(helpers.renderBlock(block), block.id);
+    const rows = Array.isArray(block.rows) ? block.rows.length : 0;
+    const columns = Array.isArray(block.columns)
+      ? block.columns
+          .map((/** @type {unknown} */ column) =>
+            String(column)
+              .replace(/[*_`~]/gu, "")
+              .replace(/\[([^\]]*)\]\([^)]*\)/gu, "$1")
+              .trim(),
+          )
+          .filter(Boolean)
+      : [];
+    if (
+      first ||
+      (rows <= FOLD_ROWS &&
+        columns.length <= FOLD_COLUMNS &&
+        rows * Math.max(columns.length, 1) <= FOLD_CELLS)
+    )
+      return html;
+    const heads = columns.join(" · ");
+    return `<details class="table-fold"><summary><span class="fold-label"><strong>${es ? "Tabla" : "Table"}: ${rows} ${es ? (rows === 1 ? "fila" : "filas") : rows === 1 ? "row" : "rows"}</strong>${heads ? `<span class="fold-heads">${esc(heads.length > 90 ? `${heads.slice(0, 89)}…` : heads)}</span>` : ""}</span><span class="fold-action" aria-hidden="true"><span class="fold-open">${es ? "Abrir tabla" : "Open table"}</span><span class="fold-close">${es ? "Cerrar tabla" : "Close table"}</span></span></summary>${html}</details>`;
+  };
+  const render = (
+    /** @type {Record<string, any>} */ block,
+    /** @type {number} */ index = -1,
+  ) => {
     if (block.language === "pr-lens") return graph(block, model, language);
+    if (block.type === "table") return table(block, index === 0);
     if (block.type === "chart") {
       const chart = bars(block, language);
       return chart ? askable(chart, block.id) : helpers.renderBlock(block);
@@ -244,17 +283,46 @@ export function renderVisualDocument(model, helpers) {
   };
 
   const evidence = renderEvidence(model, language);
+  // When nothing was captured yet, one line after "what changed" replaces the evidence section.
+  const pendingLine = pendingEvidenceLine(model, language);
+  const changedPattern = es ? /^qu[ée] cambi[óo]/iu : /^what changed/iu;
+  const pendingAt = pendingLine
+    ? Math.max(
+        0,
+        sections.findIndex((section) =>
+          changedPattern.test(string(section.heading?.text).trim()),
+        ),
+      )
+    : -1;
   let number = 0;
   const numeral = () =>
     `<span class="section-num" aria-hidden="true">${two(++number)}</span>`;
+  // Every section offers a visible way to ask; it opens the margin-question composer.
+  const askIcon =
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 5.5h15v10h-8l-4.5 3.5v-3.5h-2.5z"/><path d="M10.2 9.2a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1"/><path d="M12 13.6h.01"/></svg>';
+  const askButton = (/** @type {string} */ id, /** @type {string} */ title) =>
+    `\n<button type="button" class="section-ask" data-section-ask="${esc(id)}" aria-label="${esc(es ? `Preguntar sobre «${title}»` : `Ask about “${title}”`)}">${askIcon}<span>${es ? "Preguntar" : "Ask"}</span></button>`;
+  const labelOf = (/** @type {string} */ id) =>
+    string(
+      model.outline.find(
+        (/** @type {Record<string, any>} */ entry) => entry.id === id,
+      )?.label,
+    );
+  const evidenceTitle = es ? "El resultado, a la vista" : "See the result";
   const evidenceHtml = evidence
-    ? evidence.replace(
-        /(<h2 id="delivery-evidence"[^>]*>)/u,
-        (tag) => `${tag}${numeral()}`,
-      )
+    ? evidence
+        .replace(
+          /(<h2 id="delivery-evidence"[^>]*>)/u,
+          (tag) => `${tag}${numeral()}`,
+        )
+        .replace(
+          /<div class="section-heading">(<h2 id="delivery-evidence"[\s\S]*?<\/h2>)/u,
+          (_match, h2) =>
+            `<div class="section-heading" data-q="section-delivery-evidence" data-section-title="${esc(evidenceTitle)}"><div class="section-title">${h2}${askButton("delivery-evidence", evidenceTitle)}</div>`,
+        )
     : "";
   const content = sections
-    .map((section) => {
+    .map((section, sectionIndex) => {
       const intro =
         section.heading && section.blocks[0]?.type === "paragraph"
           ? section.blocks[0]
@@ -265,10 +333,14 @@ export function renderVisualDocument(model, helpers) {
             (tag) => `${tag}${numeral()}`,
           )
         : "";
-      return `<section class="brief-section"${section.heading ? ` aria-labelledby="${esc(section.heading.anchorId)}"` : ""}>${section.heading ? `<div class="section-heading">${heading}${intro ? `<div class="section-intro">${render(intro)}</div>` : ""}</div>` : ""}<div class="section-content">${section.blocks
+      const id = section.heading ? string(section.heading.anchorId) : "";
+      const title = labelOf(id) || string(section.heading?.text);
+      return `<section class="brief-section"${section.heading ? ` aria-labelledby="${esc(id)}"` : ""}>${section.heading ? `<div class="section-heading" data-q="section-${esc(id)}" data-section-title="${esc(title)}"><div class="section-title">${heading}${askButton(id, title)}</div>${intro ? `<div class="section-intro">${render(intro)}</div>` : ""}</div>` : ""}<div class="section-content">${section.blocks
         .filter((block) => block !== intro)
-        .map(render)
-        .join("\n")}</div></section>`;
+        .map((block) => render(block, section.blocks.indexOf(block)))
+        .join(
+          "\n",
+        )}${sectionIndex === pendingAt ? `\n${pendingLine}` : ""}</div></section>`;
     })
     .join("\n");
 
@@ -315,7 +387,7 @@ export function renderVisualDocument(model, helpers) {
       : { verified: "verified", estimated: "estimated", pending: "pending" }
   );
   const findings = doc.findings?.length
-    ? `<section class="findings" aria-labelledby="findings-title"><h2 id="findings-title" class="notebook-label">${es ? "Hallazgos" : "Findings"}</h2><ol>${doc.findings.map((/** @type {Record<string, any>} */ finding, /** @type {number} */ index) => `<li class="finding" data-q="finding-${index + 1}"><span class="finding-num" aria-hidden="true">${index + 1}</span><p><strong>${esc(finding.title)}.</strong> ${helpers.inlineMarkdown(string(finding.detail))}</p>${finding.status ? `<span class="finding-status status-${esc(finding.status)}">${statusMark[/** @type {"verified"} */ (finding.status)]}${statusLabel[finding.status]}</span>` : "<span></span>"}</li>`).join("")}</ol></section>`
+    ? `<section class="findings" aria-labelledby="findings-title" data-q="section-findings" data-section-title="${es ? "Hallazgos" : "Findings"}"><div class="section-title"><h2 id="findings-title" class="notebook-label">${es ? "Hallazgos" : "Findings"}</h2>${askButton("findings", es ? "Hallazgos" : "Findings")}</div><ol>${doc.findings.map((/** @type {Record<string, any>} */ finding, /** @type {number} */ index) => `<li class="finding" data-q="finding-${index + 1}"><span class="finding-num" aria-hidden="true">${index + 1}</span><p><strong>${esc(finding.title)}.</strong> ${helpers.inlineMarkdown(string(finding.detail))}</p>${finding.status ? `<span class="finding-status status-${esc(finding.status)}">${statusMark[/** @type {"verified"} */ (finding.status)]}${statusLabel[finding.status]}</span>` : "<span></span>"}</li>`).join("")}</ol></section>`
     : "";
   const documentId = createHash("sha256")
     .update(`${string(doc.title)}\n${string(doc.markdown)}`)
@@ -334,7 +406,7 @@ export function renderVisualDocument(model, helpers) {
     `<header class="brief-topbar"><a class="document-brand" href="#document"><span class="brand-project">${esc(model.productName)}</span><span class="brand-task">${esc(doc.title)}</span></a><details class="document-nav"><summary>${es ? "Índice" : "Contents"}</summary><nav aria-label="${es ? "Contenido del documento" : "Document contents"}">${links}</nav></details>${themeButton(" is-compact")}</header>` +
     `<div class="document-layout"><aside class="document-sidebar"><p class="notebook-label">${es ? "Contenido" : "Contents"}</p><nav aria-label="${es ? "Secciones" : "Sections"}">${links}</nav><div class="sidebar-note"><strong>${esc(doc.type)}</strong><span>${esc(model.productName)}</span><span>${readTime}</span>${themeButton("")}</div></aside>` +
     `<main id="document" class="brief"><header class="brief-header"><p class="doc-stamp">${stamp}</p><h1>${esc(doc.title)}</h1>${verdict ? `<p class="verdict" data-q="verdict">${helpers.inlineMarkdown(verdict)}</p>` : ""}${lede ? `<p class="brief-summary" data-q="summary">${helpers.inlineMarkdown(lede)}</p>` : ""}<ul class="signals" aria-label="${es ? "Estado del informe" : "Report status"}">${signals}</ul>${findings}</header>` +
-    `<div class="document-body">${evidenceHtml}${content}</div><footer class="brief-footer"><details class="document-source"><summary>${es ? "Fuente de este documento" : "Document source"}</summary><pre>${esc(doc.markdown || "")}</pre></details><p>${es ? "Documento local · conserva la evidencia y el alcance de la entrega." : "Local document · preserves delivery evidence and scope."} ${esc(doc.type)} · ${esc(doc.status)}${doc.updatedAt ? ` · ${esc(doc.updatedAt)}` : ""} · ${readTime}</p><button type="button" data-print>${es ? "Imprimir / guardar PDF" : "Print / save PDF"}</button></footer></main>` +
+    `<div class="document-body">${evidenceHtml}\n${content}</div><footer class="brief-footer"><details class="document-source"><summary>${es ? "Fuente de este documento" : "Document source"}</summary><pre>${esc(doc.markdown || "")}</pre></details><p>${es ? "Documento local · conserva la evidencia y el alcance de la entrega." : "Local document · preserves delivery evidence and scope."} ${esc(doc.type)} · ${esc(doc.status)}${doc.updatedAt ? ` · ${esc(doc.updatedAt)}` : ""} · ${readTime}</p><button type="button" data-print>${es ? "Imprimir / guardar PDF" : "Print / save PDF"}</button></footer></main>` +
     `<aside class="margin-notes" aria-label="${es ? "Preguntas en el margen" : "Margin questions"}" data-margin><ol class="margin-list" data-notes></ol></aside></div>` +
     `<script>${controller}</script></body></html>`
   );

@@ -4,8 +4,8 @@
 // Each package under the packages root is a DEEP MODULE: a lot of behaviour
 // behind a small interface. A package's PUBLIC SURFACE is its ENTRY POINTS:
 // the files at the package root. Implementation lives in SUBFOLDERS and is
-// private (by convention `lib/` for implementation and `tests/` for tests,
-// though any subfolder is private). A package may expose several small entry
+// private (by convention `lib/` for implementation, though any subfolder is
+// private). A package may expose several small entry
 // points (index.ts, client.ts, server.ts, …); prefer that over one giant
 // barrel index.
 //
@@ -39,31 +39,12 @@ module.exports = {
       comment:
         "A package's own files import each other freely, but may reach OTHER packages only through their entry points, never their internals.",
       severity: "error",
-      // importer is inside a package ($1), but is not a test file
-      from: { path: `^${R}/([^/]+)/`, pathNot: `^${R}/[^/]+/tests/` },
+      // importer is inside a package ($1)
+      from: { path: `^${R}/([^/]+)/` },
       to: {
         path: PACKAGE_INTERNALS,
         pathNot: `^${R}/$1/`, // same package → intra-package freedom
       },
-    },
-    {
-      name: "tests-through-entrypoints",
-      comment:
-        "A package's tests exercise it through its entry points like everyone else: they may import any package's entry points and their own tests/ fixtures, but never any package's internals, not even their own.",
-      severity: "error",
-      from: { path: `^${R}/([^/]+)/tests/` }, // a test file, in package $1
-      to: {
-        path: PACKAGE_INTERNALS,
-        pathNot: `^${R}/$1/tests/`, // own tests/ fixtures → allowed
-      },
-    },
-    {
-      name: "tests-folder-is-private",
-      comment:
-        "A package's tests/ folder is reachable only from tests: nothing else may import fixtures.",
-      severity: "error",
-      from: { pathNot: `^${R}/[^/]+/tests/` }, // importer is not itself a test
-      to: { path: `^${R}/[^/]+/tests/` },
     },
     {
       name: "no-circular",

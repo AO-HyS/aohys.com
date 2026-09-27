@@ -329,7 +329,7 @@ agent-browser click @e2            # Perform action
 agent-browser diff snapshot        # See what changed (auto-compares to last snapshot)
 ```
 
-For visual regression testing or monitoring:
+For visual comparison or monitoring:
 
 ```bash
 # Save a baseline screenshot, then compare later

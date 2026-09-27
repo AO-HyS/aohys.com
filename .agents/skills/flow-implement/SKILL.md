@@ -26,9 +26,9 @@ For a visual redesign, recover the approved assets and criteria through
 `design-direction` before implementation. Refinements preserve the current identity.
 
 Use checks that establish the changed behavior and required repository gates.
-A new test is useful when it catches a named failure better than existing checks;
-it is not a required file per edit. A regression claim needs evidence that
-distinguishes the broken and corrected behavior. Preserve command exit codes,
+Add no automated tests; real verification observes the changed behavior. A
+regression claim needs evidence that distinguishes the broken and corrected
+behavior. Preserve command exit codes,
 resolve actual findings and rerun affected checks. Reuse still-valid evidence.
 Continue through authorized implementation, verification and correction without
 asking for another continuation message after the first pass.
@@ -49,16 +49,33 @@ response covers the complete outcome, checks, remaining gaps, candidate and
 requested review link; code, Preview and production are separate claims.
 
 For a requested standalone completion report or a durable media package, read
-[completion-report.md](references/completion-report.md). Ordinary completion
-uses the final response and useful evidence links without another document tool.
+[completion-report.md](references/completion-report.md).
+
+## Close every task
+
+Every task that changed files ends with a report:
+
+1. Write the concise packet (`flow-implement/references/completion-report.md`)
+   with the sections Veredicto, Qué cambió, Verificación real (pasó / falló /
+   no se alcanzó, con evidencia), Pendiente, Preguntas al margen and one
+   Jardinero line: "un error visto dos veces se propone como regla dura al
+   nivel más alto: código > lint/CI/guard > regla/skill".
+2. Render it with `development-system document --input <packet> --json`.
+3. Serve it with working-backwards `reader-live.mjs --tunnel` from a
+   per-report copy directory.
+4. Put the URL in the final answer.
+
+A Stop hook asks once when files changed and no report was produced. If a
+report is truly not useful, say why in one line.
 
 ## Automated tests and evidence
 
-By default, do not create, modify, delete, generate, or run automated tests
-unless the user explicitly asks. Preserve existing test files and CI protections.
-Use applicable build, type, lint, static validation, or real behavior observation
-as required by the task. Do not make claims from test counts. Report a concrete
-behavior gap and its smallest useful observation without adding a test suite.
+No automated tests anywhere: do not create, run or restore them; delete them
+when found (`check-no-tests` and the guard enforce this). Every task includes
+real verification without being asked: computer use, browser, and the
+repository's verification CLI and feature map. Report passed / failed / not
+reached with evidence.
+
 ## Headroom transport evidence
 
 Headroom is an explicit same-account per-invocation option. Keep the existing

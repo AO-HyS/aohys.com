@@ -58,11 +58,11 @@ Use exactly this order for the Standard profile:
 
 1. `product-grill`: Product Grill With Docs by Topic. Settle actor, problem, desired outcome, future experience, boundaries, and expectations. Do not design entities, interfaces, storage, or architecture here.
 2. `customer-story`: a compact, non-technical future customer narrative derived from the approved Product Grill.
-3. `technical-grill`: Technical Grill With Docs driven by the approved story, selected profile, repository evidence, and risk triggers. Settle behavior, entities, states, interfaces, data, security, testing, rollout, and technical trade-offs without repeating product Topics.
+3. `technical-grill`: Technical Grill With Docs driven by the approved story, selected profile, repository evidence, and risk triggers. Settle behavior, entities, states, interfaces, data, security, real verification, rollout, and technical trade-offs without repeating product Topics.
 4. `research-questions`: only questions about current behavior, code, users, or external facts still unresolved after the Technical Grill.
 5. `research-report`: live code/runtime and primary-source answers, with facts, inferences, and unknowns separated.
 6. `product-contract`: observable behavior, scope, success, states, permissions, errors, recovery, compatibility, and rejected product options.
-7. `technical-contract`: entities, invariants, interfaces, reads, writes, events, migrations, security, rollback, test seams, and rejected technical options.
+7. `technical-contract`: entities, invariants, interfaces, reads, writes, events, migrations, security, rollback, real-verification seams, and rejected technical options.
 8. `implementation-map`: narrow vertical tickets with outcome, acceptance, checks, dependencies, and one truthful executable frontier.
 9. `t3-handoff`: compact private handoff bound to the approved artifacts and exact first slice; `implementationAuthorized: false`.
 
@@ -147,9 +147,9 @@ When an opted-in product-convergence prompt requests a repository-wide architect
 
 `repository-map`, `module-boundaries`, `dependency-direction`, `file-placement`, `frontend-composition`, `component-design`, `backend-contracts`, `type-contracts`, `testing-strategy`, `documentation`, `performance-security`, `observability`, and `migration-sequencing`.
 
-Do not infer that a repository is understandable merely because its top-level apps have names. Inspect representative paths, imports, public Interfaces, runtime boundaries, tests, docs, generated code, compatibility surfaces, provider adapters, and automation. For components and modules, judge cohesion, responsibility, state ownership, dependency direction, Interface depth, and reuse by proven invariant; never invent a universal line-count limit. For Convex, cover queries, mutations, actions, validators, authorization, indexes, pagination, bounded reads, subscriptions, contention, scheduling, storage, maintained components, and provider adapters.
+Do not infer that a repository is understandable merely because its top-level apps have names. Inspect representative paths, imports, public Interfaces, runtime boundaries, the verification CLI and feature map, docs, generated code, compatibility surfaces, provider adapters, and automation. For components and modules, judge cohesion, responsibility, state ownership, dependency direction, Interface depth, and reuse by proven invariant; never invent a universal line-count limit. For Convex, cover queries, mutations, actions, validators, authorization, indexes, pagination, bounded reads, subscriptions, contention, scheduling, storage, maintained components, and provider adapters.
 
-Agent guardrails, global anti-slop policy, and Release Train design belong to the Development System. Product convergence may verify the installed repository adapter and the product commands it declares, but it must not create product migration workstreams or tickets to redesign those capabilities. Product-specific documentation still explains domain ownership and file/test locality; release execution evidence may appear in the final delivery report without making Release Train part of the architecture migration.
+Agent guardrails, global anti-slop policy, and Release Train design belong to the Development System. Product convergence may verify the installed repository adapter and the product commands it declares, but it must not create product migration workstreams or tickets to redesign those capabilities. Product-specific documentation still explains domain ownership and file locality; release execution evidence may appear in the final delivery report without making Release Train part of the architecture migration.
 
 An incomplete matrix fails closed at Technical Grill approval. A row marked `unproven` creates a focused research obligation. Every `change`, `remove`, and unresolved `unproven` row must remain traceable through Product Contract, Technical Contract, and Implementation Map to an executable ticket, an evidence-backed no-change conclusion, or a blocking human gate. Research about one provider or hotspot never replaces the repository-wide architecture program.
 
@@ -168,7 +168,7 @@ The generated `<initiative-slug>.html` is the current-phase entrypoint. Every av
 - an active `On this page` outline from descriptive headings;
 - restrained title, summary, status, priority, profile, reading time, dates, and repository metadata;
 - the next action and exact human gate in plain language;
-- first-class diagrams, code, tables, decisions, risks, testing, and rollout evidence;
+- first-class diagrams, code, tables, decisions, risks, real verification, and rollout evidence;
 - `implementationAuthorized: false` until a separate Implement Preview.
 
 On narrow screens, the document comes first and artifact/outline navigation becomes secondary controls. The Reader model is plain JSON derived from canonical Markdown and workflow state. Other local development-system surfaces may reuse the same renderer by supplying that model; Working Backwards does not create another presentation system.

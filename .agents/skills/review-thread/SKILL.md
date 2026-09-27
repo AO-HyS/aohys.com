@@ -40,7 +40,7 @@ it. Tests that mock away a service restriction cannot settle that question.
 Separate confirmed defects, corrected findings and unverified claims. Confirm
 check exit codes and what each check covers. Reuse evidence while its revision,
 environment and inputs still apply; rerun only checks needed to resolve an
-actual uncertainty. Do not demand another full audit or test suite by default.
+actual uncertainty. Do not demand another full audit by default.
 
 For visual claims, open approved references and the actual rendered evidence
 with a vision-capable reviewer. Check route, role, loaded data, viewport and

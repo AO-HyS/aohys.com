@@ -59,7 +59,7 @@ Each candidate is one `<article>`:
 - **Before / After diagram**: the centrepiece. Two columns, side by side. See patterns below.
 - **Problem**: one sentence. What hurts.
 - **Solution**: one sentence. What changes.
-- **Wins**: bullets, ≤6 words each. e.g. "Tests hit one interface", "Pricing logic stops leaking", "Delete 4 shallow wrappers".
+- **Wins**: bullets, ≤6 words each. e.g. "Verify through one interface", "Pricing logic stops leaking", "Delete 4 shallow wrappers".
 - **ADR callout** (if applicable): one line in an amber-tinted box.
 
 No paragraphs of explanation. If the diagram needs a paragraph to be understood, redraw the diagram.
@@ -125,8 +125,8 @@ Plain English, concise, but the architectural nouns and verbs come straight from
 
 - "Order intake module is shallow: interface nearly matches the implementation."
 - "Pricing leaks across the seam."
-- "Deepen: one interface, one place to test."
-- "Two adapters justify the seam: HTTP in prod, in-memory in tests."
+- "Deepen: one interface, one place to verify."
+- "Two adapters justify the seam: HTTP in prod, in-memory for local verification."
 
 **Wins bullets** name the gain in glossary terms: _"locality: bugs concentrate in one module"_, _"leverage: one interface, N call sites"_, _"interface shrinks; implementation absorbs the wrappers"_. Don't write _"easier to maintain"_ or _"cleaner code"_, because those terms aren't in the glossary and don't earn their place.
 

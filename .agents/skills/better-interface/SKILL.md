@@ -37,7 +37,7 @@ When `interface-review` hands a review back, it supplies the change scope, a sta
 
 ### 3. Recon before judgment
 
-Identify the framework, styling system, component library, design tokens, supported viewports and any preview or test command. Write every fix in the project's own idiom, so no finding arrives as a request to adopt a different stack. That governs the form of the fix, not whether the code is good enough.
+Identify the framework, styling system, component library, design tokens, supported viewports and any preview or verification command. Write every fix in the project's own idiom, so no finding arrives as a request to adopt a different stack. That governs the form of the fix, not whether the code is good enough.
 
 Then read what the project has written about its own interface: `CONTRIBUTING.md`, `CODING_STANDARDS.md`, `AGENTS.md`, `CLAUDE.md`, a design-system doc, Storybook docs, interface ADRs. Name which you found, or that there are none.
 

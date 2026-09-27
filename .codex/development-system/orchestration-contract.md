@@ -38,11 +38,12 @@ transcripts outside its served directory. A report is not acceptance evidence.
 
 ## Automated tests and evidence
 
-By default, do not create, modify, delete, generate, or run automated tests
-unless the user explicitly asks. Preserve existing test files and CI protections.
-Use applicable build, type, lint, static validation, or real behavior observation
-as required by the task. Do not make claims from test counts. Report a concrete
-behavior gap and its smallest useful observation without adding a test suite.
+No automated tests in any repository: do not create, run or restore them, and
+delete them when found (`development-system check-no-tests` enforces this).
+Preserve CI protections. Every task ends with real verification: computer use,
+the browser, and the repository's verification CLI and feature map; build, type,
+lint and static validation support it. Report a concrete behavior gap and its
+smallest useful real observation.
 
 
 ## Headroom transport evidence

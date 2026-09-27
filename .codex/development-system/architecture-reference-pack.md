@@ -43,7 +43,7 @@ Keep domain records and relationships in Convex. Prefer Cloudflare for suitable 
 | --- | --- | --- | --- |
 | React Native / Expo | [Expo](https://github.com/expo/expo), [Callstack React Native practices](https://github.com/callstackincubator/agent-skills), and [Software Mansion](https://github.com/software-mansion-labs) | New shared mobile product work by default; measure renders, lists, memory, bundle, startup and native-boundary work. | Forcing web abstractions into native UI or hiding a capability that requires Swift/Kotlin. |
 | Android | [Now in Android](https://github.com/android/nowinandroid) plus [Pocket Casts Android](https://github.com/Automattic/pocket-casts-android) | Compose features, unidirectional data flow, dependency direction, builds and production-product reality checks. | Copying Google's sample modules without a matching product boundary. |
-| iOS | Apple guidance, [isowords](https://github.com/pointfreeco/isowords) and [Pocket Casts iOS](https://github.com/Automattic/pocket-casts-ios) | Explicit feature state/effects, testable seams, previews and multiple targets. | Requiring one state-management library or sharing code merely for symmetry. |
+| iOS | Apple guidance, [isowords](https://github.com/pointfreeco/isowords) and [Pocket Casts iOS](https://github.com/Automattic/pocket-casts-ios) | Explicit feature state/effects, verifiable seams, previews and multiple targets. | Requiring one state-management library or sharing code merely for symmetry. |
 | Electron | [T3 Code](https://github.com/pingdotgg/t3code) and [Actual Budget](https://github.com/actualbudget/actual) | Desktop/web/server contracts, process boundaries, local-first behavior, incremental builds and agent-oriented sessions. | Treating T3 Code as a Convex product example or copying a desktop process model into a normal web app. |
 
 Expo/React Native is the default for new mobile work. Native Swift/Kotlin remains the correct choice when a product has an explicit platform capability, an existing native contract, or measured performance evidence.
@@ -83,12 +83,12 @@ Before that Grill can be approved, it must contain a human-readable matrix with 
 | `repository-map` | Composition roots, applications, packages, runtimes, providers, generated code, compatibility surfaces, and ownership. |
 | `module-boundaries` | Domain and feature ownership, deep-module Interfaces, public exports, and what must remain local. |
 | `dependency-direction` | Allowed and forbidden imports, application-to-package flow, cycles, provider direction, and generated dependencies. |
-| `file-placement` | Where new domain code, feature UI, adapters, utilities, schemas, tests, documentation, fixtures, and generated artifacts belong. |
+| `file-placement` | Where new domain code, feature UI, adapters, utilities, schemas, documentation, fixtures, and generated artifacts belong. |
 | `frontend-composition` | Route/load boundaries, server and client state, form ownership, feature composition, shared UI, accessibility, and rendering seams. |
 | `component-design` | Cohesion, responsibility, prop/API depth, state ownership, reuse by proven invariant, and extraction triggers. Never substitute arbitrary line limits. |
 | `backend-contracts` | Convex queries, mutations, actions, validators, authorization, indexes, pagination, bounded reads, subscriptions, contention, scheduled work, storage, and providers. |
 | `type-contracts` | Canonical models, invalid states, generated types, runtime validation, public Interfaces, and removal of `any`, casts, duplicate DTOs, or type tricks. |
-| `testing-strategy` | Test locality, unit/contract/integration/browser boundaries, fixtures, behavior seams, changed-surface selection, and production-safe evidence. |
+| `testing-strategy` | Real verification only (no automated tests; found ones are deleted): computer-use, browser and verification-CLI evidence, feature-map coverage, fixtures, behavior seams, changed-surface selection, and production-safe evidence. |
 | `documentation` | Repository entrypoints, domain maps, ADRs, runbooks, generated documentation, ownership, and the exact location for future guidance. |
 | `performance-security` | Rendering, bundles, queries, subscriptions, cost-sensitive paths, authz, secrets, PII, abuse, provider boundaries, and measurable budgets derived from evidence. |
 | `observability` | Production signals, errors, conversions, release identity, privacy, source maps when justified, alerts, and the path from finding to verified fix. |
@@ -98,4 +98,4 @@ Every row must state `keep`, `change`, `remove`, or `unproven` in ordinary langu
 
 ### Development System boundary
 
-Agent guardrails, the global anti-slop policy, and Release Train design are Development System capabilities. A product architecture migration must confirm that the current repository adapter and declared product commands are compatible, but it must not redesign, duplicate, or ticket those global capabilities. Product-specific architecture still owns its domain map, file and test locality, public Interfaces, types, performance, security, observability, and migration sequence. Release execution and evidence remain part of delivery, not an architecture-convergence workstream.
+Agent guardrails, the global anti-slop policy, and Release Train design are Development System capabilities. A product architecture migration must confirm that the current repository adapter and declared product commands are compatible, but it must not redesign, duplicate, or ticket those global capabilities. Product-specific architecture still owns its domain map, file locality, public Interfaces, types, performance, security, observability, and migration sequence. Release execution and evidence remain part of delivery, not an architecture-convergence workstream.

@@ -300,12 +300,12 @@ const throttledScroll = throttle(handleScroll, 100);
 - Test keyboard-only navigation
 - Test on old browsers
 
-**Automated testing**:
-- Unit tests for edge cases
-- Integration tests for error scenarios
-- E2E tests for critical paths
-- Visual regression tests
-- Accessibility tests (axe, WAVE)
+**Real verification** (no automated tests; delete them when found):
+- Edge cases observed with computer use or the browser
+- Error scenarios driven through the repository's verification CLI
+- Critical paths walked end to end in the browser
+- Visual states compared against the approved reference
+- Accessibility checked in the browser (axe, WAVE)
 
 **IMPORTANT**: Hardening is about expecting the unexpected. Real users will do things you never imagined.
 
