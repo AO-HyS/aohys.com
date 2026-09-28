@@ -8,8 +8,8 @@ importers:
   .:
     devDependencies:
       "@aohys/development-system":
-        specifier: https://github.com/AO-HyS/development-system/releases/download/v1.35.1/aohys-development-system-1.35.1.tgz
-        version: https://github.com/AO-HyS/development-system/releases/download/v1.35.1/aohys-development-system-1.35.1.tgz
+        specifier: https://github.com/AO-HyS/development-system/releases/download/v1.36.0/aohys-development-system-1.36.0.tgz
+        version: https://github.com/AO-HyS/development-system/releases/download/v1.36.0/aohys-development-system-1.36.0.tgz
       "@aohys/environment":
         specifier: workspace:*
         version: link:packages/environment
@@ -241,13 +241,13 @@ importers:
         version: 6.0.3
 
 packages:
-  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.35.1/aohys-development-system-1.35.1.tgz":
+  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.36.0/aohys-development-system-1.36.0.tgz":
     resolution:
       {
-        integrity: sha512-A5QQtOLW2D73OYnpQfjXLd2E2J0c9brQVU3S6einFjSm9unCQmGn3BmvgBYm90fwGO6BEPcle/jZSrTPLibzbg==,
-        tarball: https://github.com/AO-HyS/development-system/releases/download/v1.35.1/aohys-development-system-1.35.1.tgz,
+        integrity: sha512-8q3dIIKaz0s1GKIWVLxpRLU97so34DTXB3QmstDBqmLscXh4BY88fd/wvsZUbHXl7k9XjOQCewj3WtUuIc/5Zg==,
+        tarball: https://github.com/AO-HyS/development-system/releases/download/v1.36.0/aohys-development-system-1.36.0.tgz,
       }
-    version: 1.35.1
+    version: 1.36.0
     engines: { node: ^22.13.0 || >=23.4.0 }
     hasBin: true
 
@@ -8873,7 +8873,7 @@ packages:
       }
 
 snapshots:
-  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.35.1/aohys-development-system-1.35.1.tgz":
+  "@aohys/development-system@https://github.com/AO-HyS/development-system/releases/download/v1.36.0/aohys-development-system-1.36.0.tgz":
     {}
 
   "@apm-js-collab/code-transformer-bundler-plugins@0.7.2":
