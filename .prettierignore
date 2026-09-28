@@ -46,3 +46,11 @@
 .codex/development-system/runtime/src/orchestration.mjs
 .codex/development-system/skills.json
 .codex/development-system/stack-quality-profiles.json
+.agents/skills/development-steward/
+.agents/skills/exa-search/
+.agents/skills/flow-implement/
+.agents/skills/jevgrep/
+.agents/skills/posthog-production-audit/
+.agents/skills/retro/
+.agents/skills/working-backwards/
+.codex/development-system/runtime/claude-orchestration/

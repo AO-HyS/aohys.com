@@ -24,6 +24,20 @@ The user has asked for a **retrospective**. You are suggesting improvements to t
 
 4. Present these candidates to the user, in order of severity.
 
+## Mistake log
+
+Before the analysis in step 3, run `development-system mistake list --repeated` and read it.
+
+For each root cause you find, record it:
+
+```
+development-system mistake add --id <slug> --incident <PR/thread/commit ref> --evidence <path|URL|commit> --summary "..." [--fix "..."] [--control "..."]
+```
+
+Reuse an existing id when it is the same mistake.
+
+A repeated id, or a mechanical mistake (a command, a forbidden path, a missing check), gets a proposed deterministic control at the highest level of the Gardener ladder: code > lint/CI/guard > rule/skill. Never propose a style note alone. Keep coding standards for judgment calls only.
+
 ## Reference
 
 ### Implementation vs Review

@@ -1,10 +1,7 @@
 // @ts-check
 // A bounded development preview. Only synthetic content is served, never files.
 import { createServer } from "node:http";
-import {
-  buildTechnicalReaderModel,
-  renderTechnicalReaderHtml,
-} from "./t3-reader.mjs";
+import { buildTechnicalReaderModel, renderTechnicalReaderHtml } from "./t3-reader.mjs";
 
 const markdown = `# Un sistema listo para una prueba real
 
@@ -46,31 +43,13 @@ Estos valores ilustran la presentación. No son evidencia de rendimiento de esta
 
 Comprobar navegación con teclado, cambio de tema, lectura en móvil, tabla y diagrama. Terminar con una decisión que la evidencia permita sostener.
 `;
-const html = renderTechnicalReaderHtml(
-  buildTechnicalReaderModel({
-    presentation: "report",
-    language: "es",
-    productName: "Development System",
-    document: {
-      markdown,
-      type: "Vista de desarrollo",
-      status: "Datos de ejemplo",
-      updatedAt: "4 de septiembre de 2026",
-    },
-  }),
-);
+const html = renderTechnicalReaderHtml(buildTechnicalReaderModel({ presentation: "report", language: "es", productName: "Development System", document: { markdown, type: "Vista de desarrollo", status: "Datos de ejemplo", updatedAt: "4 de septiembre de 2026" } }));
 const server = createServer((request, response) => {
   if (request.method !== "GET" || request.url !== "/") {
     response.writeHead(404).end();
     return;
   }
-  response.writeHead(200, {
-    "Content-Type": "text/html; charset=utf-8",
-    "Cache-Control": "no-store",
-    "X-Content-Type-Options": "nosniff",
-  });
+  response.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" });
   response.end(html);
 });
-server.listen(43170, "127.0.0.1", () =>
-  process.stdout.write("Synthetic Reader preview: http://127.0.0.1:43170/\n"),
-);
+server.listen(43170, "127.0.0.1", () => process.stdout.write("Synthetic Reader preview: http://127.0.0.1:43170/\n"));

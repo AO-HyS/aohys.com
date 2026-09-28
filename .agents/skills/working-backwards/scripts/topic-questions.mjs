@@ -50,13 +50,10 @@ export function composeTopicQuestions(input) {
     : [];
   const decisions = Array.isArray(value.decisions) ? value.decisions : [];
 
-  if (!identifierPattern.test(topicId))
-    errors.push("topic.id must be stable snake_case");
+  if (!identifierPattern.test(topicId)) errors.push("topic.id must be stable snake_case");
   if (!topicLabel) errors.push("topic.label is required");
   if (decisions.length < 1 || decisions.length > 3) {
-    errors.push(
-      "one Topic must contain between one and three related decisions",
-    );
+    errors.push("one Topic must contain between one and three related decisions");
   }
 
   /** @type {Array<{header: string, id: string, question: string, options: Array<{label: string, description: string}>}>} */
@@ -72,15 +69,12 @@ export function composeTopicQuestions(input) {
     const question = cleanText(decision.question);
     const options = Array.isArray(decision.options) ? decision.options : [];
 
-    if (!identifierPattern.test(id))
-      errors.push(`${prefix}.id must be stable snake_case`);
+    if (!identifierPattern.test(id)) errors.push(`${prefix}.id must be stable snake_case`);
     if (seenIds.has(id)) errors.push(`${prefix}.id must be unique`);
     seenIds.add(id);
-    if (!header || header.length > 12)
-      errors.push(`${prefix}.header must contain 1-12 characters`);
+    if (!header || header.length > 12) errors.push(`${prefix}.header must contain 1-12 characters`);
     if (!question) errors.push(`${prefix}.question is required`);
-    if (options.length < 2 || options.length > 3)
-      errors.push(`${prefix}.options must contain two or three choices`);
+    if (options.length < 2 || options.length > 3) errors.push(`${prefix}.options must contain two or three choices`);
 
     const normalizedOptions = options.map((rawOption, optionIndex) => {
       const option = isRecord(rawOption) ? rawOption : {};
@@ -88,35 +82,20 @@ export function composeTopicQuestions(input) {
       const impact = cleanText(option.impact);
       const example = cleanText(option.example);
       const recommended = option.recommended === true;
-      if (!label || wordCount(label) > 5)
-        errors.push(
-          `${prefix}.options[${optionIndex}].label must contain 1-5 words`,
-        );
-      if (recommended && wordCount(label) > 4)
-        errors.push(
-          `${prefix}.options[${optionIndex}].recommended label must leave room for the Recommended suffix`,
-        );
-      if (!impact)
-        errors.push(`${prefix}.options[${optionIndex}].impact is required`);
-      if (!example)
-        errors.push(`${prefix}.options[${optionIndex}].example is required`);
+      if (!label || wordCount(label) > 5) errors.push(`${prefix}.options[${optionIndex}].label must contain 1-5 words`);
+      if (recommended && wordCount(label) > 4) errors.push(`${prefix}.options[${optionIndex}].recommended label must leave room for the Recommended suffix`);
+      if (!impact) errors.push(`${prefix}.options[${optionIndex}].impact is required`);
+      if (!example) errors.push(`${prefix}.options[${optionIndex}].example is required`);
       return { label, impact, example, recommended };
     });
 
-    const recommended = normalizedOptions.filter(
-      (option) => option.recommended,
-    );
-    if (recommended.length !== 1)
-      errors.push(
-        `${prefix}.options must contain exactly one recommended choice`,
-      );
+    const recommended = normalizedOptions.filter((option) => option.recommended);
+    if (recommended.length !== 1) errors.push(`${prefix}.options must contain exactly one recommended choice`);
     const orderedOptions = [
       ...recommended,
       ...normalizedOptions.filter((option) => !option.recommended),
     ].map((option) => ({
-      label: option.recommended
-        ? `${option.label} (Recommended)`
-        : option.label,
+      label: option.recommended ? `${option.label} (Recommended)` : option.label,
       description: optionDescription(option.impact, option.example),
     }));
 
@@ -129,25 +108,17 @@ export function composeTopicQuestions(input) {
     ? [
         `Topic: ${topicLabel}`,
         ...(settledContext.length > 0
-          ? [
-              "",
-              "Ya está asentado:",
-              ...settledContext.map((item) => `- ${item}`),
-            ]
+          ? ["", "Ya está asentado:", ...settledContext.map((item) => `- ${item}`)]
           : []),
         "",
         ...questions.flatMap((question, questionIndex) => [
           `${questionIndex + 1}. ${question.question}`,
-          ...question.options.map(
-            (option, optionIndex) =>
-              `   ${String.fromCharCode(65 + optionIndex)}. ${option.label} — ${option.description}`,
-          ),
+          ...question.options.map((option, optionIndex) =>
+            `   ${String.fromCharCode(65 + optionIndex)}. ${option.label} — ${option.description}`),
           "",
         ]),
         `Responde ${questions.map((_, index) => `${index + 1}<letra>`).join(", ")} (por ejemplo, 1A, 2C) y agrega cualquier matiz. También puedes escribir una opción distinta.`,
-      ]
-        .join("\n")
-        .replace(/\n{3,}/gu, "\n\n")
+      ].join("\n").replace(/\n{3,}/gu, "\n\n")
     : null;
 
   return {
@@ -175,12 +146,8 @@ function parseArgs(args) {
   const formatIndex = args.indexOf("--format");
   const inputPath = inputIndex >= 0 ? args[inputIndex + 1] : "";
   const format = formatIndex >= 0 ? args[formatIndex + 1] : "both";
-  if (!inputPath)
-    throw new Error(
-      "Usage: topic-questions.mjs --input <json-path> [--format native|chat|both]",
-    );
-  if (!formats.has(format))
-    throw new Error("--format must be native, chat, or both");
+  if (!inputPath) throw new Error("Usage: topic-questions.mjs --input <json-path> [--format native|chat|both]");
+  if (!formats.has(format)) throw new Error("--format must be native, chat, or both");
   return { inputPath, format };
 }
 
@@ -193,15 +160,11 @@ async function main() {
     process.exitCode = 1;
     return;
   }
-  if (format === "native")
-    process.stdout.write(`${JSON.stringify(result.native, null, 2)}\n`);
+  if (format === "native") process.stdout.write(`${JSON.stringify(result.native, null, 2)}\n`);
   else if (format === "chat") process.stdout.write(`${result.chat}\n`);
   else process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 }
 
-if (
-  process.argv[1] &&
-  import.meta.url === pathToFileURL(process.argv[1]).href
-) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   await main();
 }

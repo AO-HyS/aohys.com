@@ -121,10 +121,22 @@
       "tier": "opus_low"
     }
   },
-  "builtinsAllowed": ["Plan", "statusline-setup", "claude-code-guide"],
-  "otherAgentsRequireModel": ["opus", "sonnet"],
-  "readOnlyModels": ["sonnet"],
-  "writerMarkers": ["Owned paths:", "Done when:"],
+  "builtinsAllowed": [
+    "Plan",
+    "statusline-setup",
+    "claude-code-guide"
+  ],
+  "otherAgentsRequireModel": [
+    "opus",
+    "sonnet"
+  ],
+  "readOnlyModels": [
+    "sonnet"
+  ],
+  "writerMarkers": [
+    "Owned paths:",
+    "Done when:"
+  ],
   "overrideMarker": "Route rationale:",
   "imageBudget": {
     "main": 2,
