@@ -34,38 +34,18 @@ Pass this top-level shape to `development-system document`:
 {
   "evidence": {
     "impact": "ui",
-    "comparisons": [
-      {
-        "id": "main-flow",
-        "title": "What changed",
-        "description": "Same route, viewport and data.",
-        "before": {
-          "path": "/absolute/private/before.png",
-          "alt": "Initial state",
-          "revision": "actual-before-revision",
-          "capturedAt": "2026-09-05T00:00:00Z"
-        },
-        "after": {
-          "path": "/absolute/private/after.png",
-          "alt": "Resulting state",
-          "revision": "actual-after-revision",
-          "capturedAt": "2026-09-05T00:01:00Z"
-        }
-      }
-    ],
-    "recordings": [
-      {
-        "id": "walkthrough",
-        "title": "The affected flow",
-        "description": "What the recording demonstrates and its limits.",
-        "transcript": "Actions taken and observed result. Include relevant dialogue if present.",
-        "asset": {
-          "path": "/absolute/private/flow.mp4",
-          "alt": "Recorded interaction",
-          "revision": "actual-after-revision"
-        }
-      }
-    ]
+    "comparisons": [{
+      "id": "main-flow", "title": "What changed",
+      "description": "Same route, viewport and data.",
+      "before": {"path": "/absolute/private/before.png", "alt": "Initial state", "revision": "actual-before-revision", "capturedAt": "2026-09-05T00:00:00Z"},
+      "after": {"path": "/absolute/private/after.png", "alt": "Resulting state", "revision": "actual-after-revision", "capturedAt": "2026-09-05T00:01:00Z"}
+    }],
+    "recordings": [{
+      "id": "walkthrough", "title": "The affected flow",
+      "description": "What the recording demonstrates and its limits.",
+      "transcript": "Actions taken and observed result. Include relevant dialogue if present.",
+      "asset": {"path": "/absolute/private/flow.mp4", "alt": "Recorded interaction", "revision": "actual-after-revision"}
+    }]
   }
 }
 ```

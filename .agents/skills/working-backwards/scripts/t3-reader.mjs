@@ -12,13 +12,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { renderVisualDocument } from "./visual-document.mjs";
 
-const calloutTones = new Set([
-  "warning",
-  "important",
-  "decision",
-  "risk",
-  "note",
-]);
+const calloutTones = new Set(["warning", "important", "decision", "risk", "note"]);
 
 const labelsByLanguage = Object.freeze({
   en: {
@@ -100,19 +94,13 @@ function text(value) {
 
 /** @param {unknown} value @returns {Record<string, any>} */
 function record(value) {
-  return value && typeof value === "object" && !Array.isArray(value)
-    ? value
-    : {};
+  return value && typeof value === "object" && !Array.isArray(value) ? value : {};
 }
 
 /** @param {string} value */
 function unquote(value) {
   const trimmed = value.trim();
-  if (
-    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-    (trimmed.startsWith("'") && trimmed.endsWith("'"))
-  )
-    return trimmed.slice(1, -1);
+  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) return trimmed.slice(1, -1);
   return trimmed;
 }
 
@@ -148,18 +136,13 @@ function safeInlineHref(value) {
 function inlineMarkdown(value) {
   /** @type {string[]} */
   const links = [];
-  const withLinkTokens = value.replace(
-    /\[([^\]\n]+)\]\(([^)\s]+)\)/gu,
-    (match, label, href) => {
-      const safeHref = safeInlineHref(href);
-      if (!safeHref) return match;
-      const remote = /^https?:\/\//iu.test(safeHref);
-      links.push(
-        `<a href="${escapeHtml(safeHref)}"${remote ? ' target="_blank" rel="noopener noreferrer"' : ""}>${escapeHtml(label)}</a>`,
-      );
-      return `\uE000${links.length - 1}\uE001`;
-    },
-  );
+  const withLinkTokens = value.replace(/\[([^\]\n]+)\]\(([^)\s]+)\)/gu, (match, label, href) => {
+    const safeHref = safeInlineHref(href);
+    if (!safeHref) return match;
+    const remote = /^https?:\/\//iu.test(safeHref);
+    links.push(`<a href="${escapeHtml(safeHref)}"${remote ? ' target="_blank" rel="noopener noreferrer"' : ""}>${escapeHtml(label)}</a>`);
+    return `\uE000${links.length - 1}\uE001`;
+  });
   return escapeHtml(withLinkTokens)
     .replace(/`([^`]+)`/gu, "<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/gu, "<strong>$1</strong>")
@@ -169,16 +152,8 @@ function inlineMarkdown(value) {
 
 /** @param {string} value */
 function baseHeadingId(value) {
-  const normalized = plainInline(value)
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/gu, "-")
-    .replace(/^-+|-+$/gu, "");
-  return (
-    normalized ||
-    `section-${createHash("sha256").update(value).digest("hex").slice(0, 8)}`
-  );
+  const normalized = plainInline(value).normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().replace(/[^a-z0-9]+/gu, "-").replace(/^-+|-+$/gu, "");
+  return normalized || `section-${createHash("sha256").update(value).digest("hex").slice(0, 8)}`;
 }
 
 /** @param {Map<string, number>} counts @param {string} value */
@@ -192,9 +167,7 @@ function uniqueHeadingId(counts, value) {
 /** @param {string} row */
 function tableCells(row) {
   const trimmed = row.trim().replace(/^\|/u, "").replace(/\|$/u, "");
-  return trimmed
-    .split(/(?<!\\)\|/u)
-    .map((cell) => cell.replaceAll("\\|", "|").trim());
+  return trimmed.split(/(?<!\\)\|/u).map((cell) => cell.replaceAll("\\|", "|").trim());
 }
 
 /** @param {string} row */
@@ -220,19 +193,13 @@ function rangeLines(value) {
 function parseFenceInfo(info) {
   const trimmed = info.trim();
   const language = trimmed.split(/\s+/u)[0]?.toLowerCase() || "text";
-  const filename = /(?:filename|title)=(?:"([^"]+)"|'([^']+)'|([^\s]+))/u.exec(
-    trimmed,
-  );
-  const highlight =
-    /\{([0-9,\-\s]+)\}/u.exec(trimmed) ??
-    /highlight=(?:"([0-9,\-\s]+)"|'([0-9,\-\s]+)'|([^\s]+))/u.exec(trimmed);
+  const filename = /(?:filename|title)=(?:"([^"]+)"|'([^']+)'|([^\s]+))/u.exec(trimmed);
+  const highlight = /\{([0-9,\-\s]+)\}/u.exec(trimmed) ?? /highlight=(?:"([0-9,\-\s]+)"|'([0-9,\-\s]+)'|([^\s]+))/u.exec(trimmed);
   return {
     language,
     filename: text(filename?.[1] ?? filename?.[2] ?? filename?.[3]),
     showLineNumbers: !/\bnoLineNumbers\b/iu.test(trimmed),
-    highlightLines: rangeLines(
-      text(highlight?.[1] ?? highlight?.[2] ?? highlight?.[3]),
-    ),
+    highlightLines: rangeLines(text(highlight?.[1] ?? highlight?.[2] ?? highlight?.[3])),
     wrap: /\bwrap\b/iu.test(trimmed),
     diff: language === "diff" || /\bdiff\b/iu.test(trimmed),
   };
@@ -253,7 +220,7 @@ function parseMarkdown(markdown) {
   const headingCounts = new Map();
   let title = "";
 
-  for (let index = 0; index < lines.length; ) {
+  for (let index = 0; index < lines.length;) {
     const line = lines[index];
     if (!line.trim()) {
       index += 1;
@@ -272,12 +239,7 @@ function parseMarkdown(markdown) {
       const options = parseFenceInfo(fence[1]);
       blocks.push({
         id: `block-${blocks.length + 1}`,
-        type:
-          options.language === "mermaid"
-            ? "mermaid"
-            : options.language === "chart"
-              ? "chart"
-              : "code",
+        type: options.language === "mermaid" ? "mermaid" : options.language === "chart" ? "chart" : "code",
         source: source.join("\n"),
         ...options,
       });
@@ -291,15 +253,8 @@ function parseMarkdown(markdown) {
       const id = uniqueHeadingId(headingCounts, headingText);
       if (level === 1 && !title) title = plainInline(headingText);
       else {
-        blocks.push({
-          id: `block-${blocks.length + 1}`,
-          type: "heading",
-          level,
-          text: headingText,
-          anchorId: id,
-        });
-        if (level === 2 || level === 3)
-          outline.push({ id, level, label: plainInline(headingText) });
+        blocks.push({ id: `block-${blocks.length + 1}`, type: "heading", level, text: headingText, anchorId: id });
+        if (level === 2 || level === 3) outline.push({ id, level, label: plainInline(headingText) });
       }
       index += 1;
       continue;
@@ -323,37 +278,17 @@ function parseMarkdown(markdown) {
       continue;
     }
 
-    if (
-      line.includes("|") &&
-      index + 1 < lines.length &&
-      isTableDelimiter(lines[index + 1])
-    ) {
+    if (line.includes("|") && index + 1 < lines.length && isTableDelimiter(lines[index + 1])) {
       const columns = tableCells(line);
-      const alignments = tableCells(lines[index + 1]).map((cell) =>
-        cell.startsWith(":") && cell.endsWith(":")
-          ? "center"
-          : cell.endsWith(":")
-            ? "right"
-            : "left",
-      );
+      const alignments = tableCells(lines[index + 1]).map((cell) => cell.startsWith(":") && cell.endsWith(":") ? "center" : cell.endsWith(":") ? "right" : "left");
       const rows = [];
       index += 2;
-      while (
-        index < lines.length &&
-        lines[index].includes("|") &&
-        lines[index].trim()
-      ) {
+      while (index < lines.length && lines[index].includes("|") && lines[index].trim()) {
         const cells = tableCells(lines[index]);
         rows.push(columns.map((_, columnIndex) => cells[columnIndex] ?? ""));
         index += 1;
       }
-      blocks.push({
-        id: `block-${blocks.length + 1}`,
-        type: "table",
-        columns,
-        alignments,
-        rows,
-      });
+      blocks.push({ id: `block-${blocks.length + 1}`, type: "table", columns, alignments, rows });
       continue;
     }
 
@@ -363,19 +298,12 @@ function parseMarkdown(markdown) {
       const isOrdered = Boolean(ordered);
       const items = [];
       while (index < lines.length) {
-        const item = isOrdered
-          ? /^\s*\d+[.)]\s+(.+)$/u.exec(lines[index])
-          : /^\s*[-*]\s+(.+)$/u.exec(lines[index]);
+        const item = isOrdered ? /^\s*\d+[.)]\s+(.+)$/u.exec(lines[index]) : /^\s*[-*]\s+(.+)$/u.exec(lines[index]);
         if (!item) break;
         items.push(item[1]);
         index += 1;
       }
-      blocks.push({
-        id: `block-${blocks.length + 1}`,
-        type: "list",
-        ordered: isOrdered,
-        items,
-      });
+      blocks.push({ id: `block-${blocks.length + 1}`, type: "list", ordered: isOrdered, items });
       continue;
     }
 
@@ -385,11 +313,7 @@ function parseMarkdown(markdown) {
         quote.push(lines[index].replace(/^>\s?/u, ""));
         index += 1;
       }
-      blocks.push({
-        id: `block-${blocks.length + 1}`,
-        type: "blockquote",
-        text: quote.join(" ").trim(),
-      });
+      blocks.push({ id: `block-${blocks.length + 1}`, type: "blockquote", text: quote.join(" ").trim() });
       continue;
     }
 
@@ -402,25 +326,11 @@ function parseMarkdown(markdown) {
     const paragraph = [];
     while (index < lines.length && lines[index].trim()) {
       const candidate = lines[index];
-      if (
-        paragraph.length > 0 &&
-        (/^```/u.test(candidate) ||
-          /^#{1,4}\s/u.test(candidate) ||
-          /^>\s?/u.test(candidate) ||
-          /^\s*(?:[-*]|\d+[.)])\s+/u.test(candidate) ||
-          (candidate.includes("|") &&
-            index + 1 < lines.length &&
-            isTableDelimiter(lines[index + 1])))
-      )
-        break;
+      if (paragraph.length > 0 && (/^```/u.test(candidate) || /^#{1,4}\s/u.test(candidate) || /^>\s?/u.test(candidate) || /^\s*(?:[-*]|\d+[.)])\s+/u.test(candidate) || (candidate.includes("|") && index + 1 < lines.length && isTableDelimiter(lines[index + 1])))) break;
       paragraph.push(candidate.trim());
       index += 1;
     }
-    blocks.push({
-      id: `block-${blocks.length + 1}`,
-      type: "paragraph",
-      text: paragraph.join(" "),
-    });
+    blocks.push({ id: `block-${blocks.length + 1}`, type: "paragraph", text: paragraph.join(" ") });
   }
 
   return { frontmatter, body, blocks, outline, title };
@@ -428,10 +338,7 @@ function parseMarkdown(markdown) {
 
 /** @param {string} body */
 function readingMinutes(body) {
-  const words =
-    body
-      .replace(/```[\s\S]*?```/gu, " ")
-      .match(/[\p{L}\p{N}][\p{L}\p{N}'’-]*/gu)?.length ?? 0;
+  const words = body.replace(/```[\s\S]*?```/gu, " ").match(/[\p{L}\p{N}][\p{L}\p{N}'’-]*/gu)?.length ?? 0;
   return Math.max(1, Math.ceil(words / 210));
 }
 
@@ -444,58 +351,31 @@ function readingMinutes(body) {
 export function buildTechnicalReaderModel(input) {
   const source = record(input);
   const documentInput = record(source.document);
-  if (
-    source.presentation !== undefined &&
-    !["report", "workflow"].includes(source.presentation)
-  )
-    throw new Error("Unknown Reader presentation");
+  if (source.presentation !== undefined && !["report", "workflow"].includes(source.presentation)) throw new Error("Unknown Reader presentation");
   const presentation = source.presentation === "report" ? "report" : "workflow";
-  const workflowInput =
-    presentation === "report" ? {} : record(source.workflow);
-  const markdown =
-    typeof documentInput.markdown === "string" ? documentInput.markdown : "";
+  const workflowInput = presentation === "report" ? {} : record(source.workflow);
+  const markdown = typeof documentInput.markdown === "string" ? documentInput.markdown : "";
   const parsed = parseMarkdown(markdown);
   const frontmatter = parsed.frontmatter;
   const language = text(source.language).toLowerCase() === "en" ? "en" : "es";
-  const firstParagraph = parsed.blocks.find(
-    (block) => block.type === "paragraph" && text(block.text),
-  );
-  const explicitSummary =
-    text(documentInput.summary) || text(frontmatter.summary);
+  const firstParagraph = parsed.blocks.find((block) => block.type === "paragraph" && text(block.text));
+  const explicitSummary = text(documentInput.summary) || text(frontmatter.summary);
   const summary = explicitSummary || text(firstParagraph?.text);
   if (!explicitSummary && firstParagraph) firstParagraph.headerOnly = true;
-  const artifacts = Array.isArray(source.artifacts)
-    ? source.artifacts.map((artifact, index) => {
-        const item = record(artifact);
-        const state = ["complete", "active", "pending"].includes(
-          text(item.state),
-        )
-          ? text(item.state)
-          : "pending";
-        return {
-          id: text(item.id) || `artifact-${index + 1}`,
-          label: text(item.label) || text(item.id) || `Artifact ${index + 1}`,
-          state,
-          fileName: text(item.fileName) || null,
-          href: text(item.href) || null,
-        };
-      })
-    : [];
-  const profile =
-    text(documentInput.profile) ||
-    text(frontmatter.profile) ||
-    text(workflowInput.profile) ||
-    null;
-  const repository =
-    text(documentInput.repository) ||
-    text(frontmatter.repository) ||
-    text(workflowInput.repository) ||
-    null;
-  const status =
-    text(documentInput.status) ||
-    text(frontmatter.working_backwards_status) ||
-    text(frontmatter.status) ||
-    "Draft";
+  const artifacts = Array.isArray(source.artifacts) ? source.artifacts.map((artifact, index) => {
+    const item = record(artifact);
+    const state = ["complete", "active", "pending"].includes(text(item.state)) ? text(item.state) : "pending";
+    return {
+      id: text(item.id) || `artifact-${index + 1}`,
+      label: text(item.label) || text(item.id) || `Artifact ${index + 1}`,
+      state,
+      fileName: text(item.fileName) || null,
+      href: text(item.href) || null,
+    };
+  }) : [];
+  const profile = text(documentInput.profile) || text(frontmatter.profile) || text(workflowInput.profile) || null;
+  const repository = text(documentInput.repository) || text(frontmatter.repository) || text(workflowInput.repository) || null;
+  const status = text(documentInput.status) || text(frontmatter.working_backwards_status) || text(frontmatter.status) || "Draft";
 
   return {
     schemaVersion: 1,
@@ -507,12 +387,7 @@ export function buildTechnicalReaderModel(input) {
     productName: text(source.productName) || "Technical Reader",
     workflow: {
       id: text(workflowInput.id) || "local-reader",
-      name:
-        text(workflowInput.name) ||
-        text(documentInput.initiative) ||
-        text(frontmatter.initiative) ||
-        text(frontmatter.initiative_name) ||
-        "",
+      name: text(workflowInput.name) || text(documentInput.initiative) || text(frontmatter.initiative) || text(frontmatter.initiative_name) || "",
       slug: text(workflowInput.slug) || "",
       action: text(workflowInput.action) || null,
       implementationAuthorized: workflowInput.implementationAuthorized === true,
@@ -523,72 +398,28 @@ export function buildTechnicalReaderModel(input) {
     },
     document: {
       markdown,
-      type:
-        text(documentInput.type) ||
-        text(frontmatter.working_backwards_role) ||
-        "Technical document",
+      type: text(documentInput.type) || text(frontmatter.working_backwards_role) || "Technical document",
       status,
-      title:
-        text(documentInput.title) ||
-        text(frontmatter.title) ||
-        parsed.title ||
-        text(documentInput.type) ||
-        "Untitled technical document",
+      title: text(documentInput.title) || text(frontmatter.title) || parsed.title || text(documentInput.type) || "Untitled technical document",
       summary,
       verdict: text(documentInput.verdict) || text(frontmatter.verdict) || null,
-      reference:
-        text(documentInput.reference) || text(frontmatter.reference) || null,
-      priority:
-        text(documentInput.priority) || text(frontmatter.priority) || null,
+      reference: text(documentInput.reference) || text(frontmatter.reference) || null,
+      priority: text(documentInput.priority) || text(frontmatter.priority) || null,
       profile,
       readTimeMinutes: readingMinutes(parsed.body),
-      createdAt:
-        text(documentInput.createdAt) ||
-        text(frontmatter.created_at) ||
-        text(frontmatter.createdAt) ||
-        null,
-      updatedAt:
-        text(documentInput.updatedAt) ||
-        text(frontmatter.updated_at) ||
-        text(frontmatter.updatedAt) ||
-        null,
+      createdAt: text(documentInput.createdAt) || text(frontmatter.created_at) || text(frontmatter.createdAt) || null,
+      updatedAt: text(documentInput.updatedAt) || text(frontmatter.updated_at) || text(frontmatter.updatedAt) || null,
       repository,
       sourceFile: text(documentInput.sourceFile) || null,
       sourceHref: text(documentInput.sourceHref) || null,
-      signals: (Array.isArray(documentInput.signals)
-        ? documentInput.signals
-        : []
-      )
-        .slice(0, 4)
-        .map((entry) => {
-          const item = record(entry);
-          return {
-            tone: ["ok", "warn", "risk"].includes(text(item.tone))
-              ? text(item.tone)
-              : "ok",
-            label: text(item.label),
-            text: text(item.text),
-          };
-        })
-        .filter((item) => item.label || item.text),
-      findings: (Array.isArray(documentInput.findings)
-        ? documentInput.findings
-        : []
-      )
-        .slice(0, 12)
-        .map((entry) => {
-          const item = record(entry);
-          return {
-            title: text(item.title),
-            detail: text(item.detail),
-            status: ["verified", "estimated", "pending"].includes(
-              text(item.status),
-            )
-              ? text(item.status)
-              : null,
-          };
-        })
-        .filter((item) => item.title),
+      signals: (Array.isArray(documentInput.signals) ? documentInput.signals : []).slice(0, 4).map((entry) => {
+        const item = record(entry);
+        return { tone: ["ok", "warn", "risk"].includes(text(item.tone)) ? text(item.tone) : "ok", label: text(item.label), text: text(item.text) };
+      }).filter((item) => item.label || item.text),
+      findings: (Array.isArray(documentInput.findings) ? documentInput.findings : []).slice(0, 12).map((entry) => {
+        const item = record(entry);
+        return { title: text(item.title), detail: text(item.detail), status: ["verified", "estimated", "pending"].includes(text(item.status)) ? text(item.status) : null };
+      }).filter((item) => item.title),
     },
     artifacts,
     outline: parsed.outline,
@@ -600,28 +431,15 @@ export function buildTechnicalReaderModel(input) {
 function renderCodeBlock(block, labels) {
   const source = text(block.source);
   const lines = source.split(/\r?\n/u);
-  const highlighted = new Set(
-    Array.isArray(block.highlightLines) ? block.highlightLines : [],
-  );
+  const highlighted = new Set(Array.isArray(block.highlightLines) ? block.highlightLines : []);
   const showLineNumbers = block.showLineNumbers !== false;
-  const rows = lines
-    .map((line, index) => {
-      const number = index + 1;
-      const diffClass =
-        block.diff === true
-          ? line.startsWith("+")
-            ? " diff-added"
-            : line.startsWith("-")
-              ? " diff-removed"
-              : " diff-context"
-          : "";
-      const highlightClass = highlighted.has(number) ? " is-highlighted" : "";
-      const label = showLineNumbers
-        ? `<span class="line-number" aria-hidden="true">${number}</span>`
-        : "";
-      return `<span class="code-line${highlightClass}${diffClass}">${label}<span class="line-source">${escapeHtml(line) || " "}</span></span>`;
-    })
-    .join("\n");
+  const rows = lines.map((line, index) => {
+    const number = index + 1;
+    const diffClass = block.diff === true ? line.startsWith("+") ? " diff-added" : line.startsWith("-") ? " diff-removed" : " diff-context" : "";
+    const highlightClass = highlighted.has(number) ? " is-highlighted" : "";
+    const label = showLineNumbers ? `<span class="line-number" aria-hidden="true">${number}</span>` : "";
+    return `<span class="code-line${highlightClass}${diffClass}">${label}<span class="line-source">${escapeHtml(line) || " "}</span></span>`;
+  }).join("\n");
   const filename = text(block.filename);
   const language = text(block.language) || "text";
   return `<figure class="code-block${block.wrap === true ? " code-wrap" : ""}" data-copied-label="${escapeHtml(labels.copied)}"><figcaption><div><strong>${escapeHtml(filename || language)}</strong>${filename ? `<span>${escapeHtml(language)}</span>` : ""}</div><button type="button" data-copy-code aria-label="${escapeHtml(labels.copy)} ${escapeHtml(filename || language)}"><span>${escapeHtml(labels.copy)}</span></button></figcaption><pre tabindex="0"><code>${rows}</code></pre><pre hidden data-code-source>${escapeHtml(source)}</pre><span class="copy-status" aria-live="polite"></span></figure>`;
@@ -630,12 +448,7 @@ function renderCodeBlock(block, labels) {
 /** @param {Record<string, any>} block @param {Record<string, string>} labels */
 function renderMermaid(block, labels) {
   const source = text(block.source);
-  const firstDirective =
-    source
-      .split(/\r?\n/u)
-      .map((line) => line.trim())
-      .find((line) => line && !line.startsWith("%%") && line !== "---") ??
-    "Mermaid";
+  const firstDirective = source.split(/\r?\n/u).map((line) => line.trim()).find((line) => line && !line.startsWith("%%") && line !== "---") ?? "Mermaid";
   const diagramType = firstDirective.split(/[\s:{]/u)[0] || "Mermaid";
   return `<figure class="visual-block mermaid-block" data-mermaid data-rendered="false" data-copied-label="${escapeHtml(labels.copied)}"><figcaption><div class="visual-title"><strong>${escapeHtml(text(block.filename) || labels.diagram)}</strong>${block.filename ? "" : `<span>${escapeHtml(diagramType)}</span>`}</div><div class="visual-actions" role="toolbar" aria-label="Mermaid"><button type="button" data-action="zoom-out" aria-label="${escapeHtml(labels.zoomOut)}">−</button><button type="button" data-action="zoom-in" aria-label="${escapeHtml(labels.zoomIn)}">+</button><button type="button" data-action="fit">${escapeHtml(labels.fit)}</button><button type="button" data-action="reset">${escapeHtml(labels.reset)}</button><button type="button" data-action="expand" aria-pressed="false">${escapeHtml(labels.expand)}</button><button type="button" data-action="fullscreen">${escapeHtml(labels.fullscreen)}</button><button type="button" data-action="copy-source">${escapeHtml(labels.copy)}</button><button type="button" data-action="view-source">${escapeHtml(labels.viewSource)}</button></div></figcaption><div class="diagram-viewport" tabindex="0" aria-label="${escapeHtml(labels.diagram)}"><div class="diagram-loading" data-diagram-loading role="status">Mermaid · ${escapeHtml(diagramType)}</div><div class="diagram-canvas" data-diagram-canvas></div></div><details class="diagram-source"><summary>${escapeHtml(labels.viewSource)}</summary><pre><code data-diagram-source>${escapeHtml(source)}</code></pre></details><span class="copy-status" aria-live="polite"></span></figure>`;
 }
@@ -652,18 +465,10 @@ function renderChart(block, labels) {
   const title = text(parsed?.title) || "Chart";
   const type = parsed?.type === "line" ? "line" : "bar";
   /** @type {string[]} */
-  const chartLabels = Array.isArray(parsed?.labels)
-    ? parsed.labels.map(String).slice(0, 12)
-    : [];
+  const chartLabels = Array.isArray(parsed?.labels) ? parsed.labels.map(String).slice(0, 12) : [];
   /** @type {number[]} */
-  const values = Array.isArray(parsed?.values)
-    ? parsed.values.map(Number).slice(0, 12)
-    : [];
-  if (
-    chartLabels.length === 0 ||
-    chartLabels.length !== values.length ||
-    values.some((value) => !Number.isFinite(value))
-  ) {
+  const values = Array.isArray(parsed?.values) ? parsed.values.map(Number).slice(0, 12) : [];
+  if (chartLabels.length === 0 || chartLabels.length !== values.length || values.some((value) => !Number.isFinite(value))) {
     return `<div class="render-error" role="note"><strong>Chart data is incomplete.</strong><p><code>labels</code> and <code>values</code> must be finite arrays of equal length.</p>${renderCodeBlock({ ...block, language: "json" }, labels)}</div>`;
   }
   const width = 860;
@@ -677,34 +482,23 @@ function renderChart(block, labels) {
   const minimum = Math.min(0, ...values);
   const maximum = Math.max(0, ...values);
   const range = maximum - minimum || 1;
-  const y = (/** @type {number} */ value) =>
-    top + ((maximum - value) / range) * plotHeight;
+  const y = (/** @type {number} */ value) => top + ((maximum - value) / range) * plotHeight;
   const baseline = y(0);
   const step = plotWidth / values.length;
-  const grid = [0, 0.25, 0.5, 0.75, 1]
-    .map((ratio) => {
-      const value = minimum + range * ratio;
-      const position = y(value);
-      return `<g class="chart-grid"><line x1="${left}" y1="${position}" x2="${width - right}" y2="${position}"/><text x="${left - 10}" y="${position + 4}" text-anchor="end">${Math.round(value * 100) / 100}</text></g>`;
-    })
-    .join("");
-  const marks =
-    type === "line"
-      ? `<polyline class="chart-line" points="${values.map((value, index) => `${left + step * index + step / 2},${y(value)}`).join(" ")}"/>${values.map((value, index) => `<circle class="chart-dot" cx="${left + step * index + step / 2}" cy="${y(value)}" r="5"><title>${escapeHtml(chartLabels[index])}: ${value}</title></circle>`).join("")}`
-      : values
-          .map((value, index) => {
-            const valueY = y(value);
-            return `<rect class="chart-bar" x="${left + step * index + step * 0.18}" y="${Math.min(valueY, baseline)}" width="${step * 0.64}" height="${Math.max(2, Math.abs(baseline - valueY))}" rx="4"><title>${escapeHtml(chartLabels[index])}: ${value}</title></rect>`;
-          })
-          .join("");
-  const axisLabels = chartLabels
-    .map(
-      (label, index) =>
-        `<text class="chart-label" x="${left + step * index + step / 2}" y="${height - 26}" text-anchor="middle">${escapeHtml(label.length > 14 ? `${label.slice(0, 13)}…` : label)}</text>`,
-    )
-    .join("");
+  const grid = [0, .25, .5, .75, 1].map((ratio) => {
+    const value = minimum + range * ratio;
+    const position = y(value);
+    return `<g class="chart-grid"><line x1="${left}" y1="${position}" x2="${width - right}" y2="${position}"/><text x="${left - 10}" y="${position + 4}" text-anchor="end">${Math.round(value * 100) / 100}</text></g>`;
+  }).join("");
+  const marks = type === "line"
+    ? `<polyline class="chart-line" points="${values.map((value, index) => `${left + step * index + step / 2},${y(value)}`).join(" ")}"/>${values.map((value, index) => `<circle class="chart-dot" cx="${left + step * index + step / 2}" cy="${y(value)}" r="5"><title>${escapeHtml(chartLabels[index])}: ${value}</title></circle>`).join("")}`
+    : values.map((value, index) => {
+      const valueY = y(value);
+      return `<rect class="chart-bar" x="${left + step * index + step * .18}" y="${Math.min(valueY, baseline)}" width="${step * .64}" height="${Math.max(2, Math.abs(baseline - valueY))}" rx="4"><title>${escapeHtml(chartLabels[index])}: ${value}</title></rect>`;
+    }).join("");
+  const axisLabels = chartLabels.map((label, index) => `<text class="chart-label" x="${left + step * index + step / 2}" y="${height - 26}" text-anchor="middle">${escapeHtml(label.length > 14 ? `${label.slice(0, 13)}…` : label)}</text>`).join("");
   const table = `<table class="chart-data-table"><caption>${escapeHtml(labels.viewData)} · ${escapeHtml(title)}</caption><thead><tr><th scope="col">${labels.viewData === "Datos accesibles" ? "Medición" : "Label"}</th><th scope="col">${labels.viewData === "Datos accesibles" ? "Valor" : "Value"}</th></tr></thead><tbody>${chartLabels.map((label, index) => `<tr><th scope="row">${escapeHtml(label)}</th><td>${values[index]}</td></tr>`).join("")}</tbody></table>`;
-  return `<figure class="visual-block chart-block"><figcaption><strong>${escapeHtml(title)}</strong><span>${labels.viewData === "Datos accesibles" ? (type === "line" ? "Tendencia" : "Comparación") : type === "line" ? "Trend" : "Comparison"}</span></figcaption><div class="chart-viewport"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(title)}">${grid}${marks}${axisLabels}</svg></div>${table}</figure>`;
+  return `<figure class="visual-block chart-block"><figcaption><strong>${escapeHtml(title)}</strong><span>${labels.viewData === "Datos accesibles" ? (type === "line" ? "Tendencia" : "Comparación") : (type === "line" ? "Trend" : "Comparison")}</span></figcaption><div class="chart-viewport"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(title)}">${grid}${marks}${axisLabels}</svg></div>${table}</figure>`;
 }
 
 /** @param {Record<string, any>} block */
@@ -717,18 +511,13 @@ function renderTable(block) {
 
 /** @param {Record<string, any>} block @param {Record<string, string>} labels */
 function renderBlock(block, labels) {
-  if (block.type === "heading")
-    return `<h${block.level} id="${escapeHtml(block.anchorId)}" tabindex="-1">${inlineMarkdown(text(block.text))}</h${block.level}>`;
-  if (block.type === "paragraph")
-    return block.headerOnly === true
-      ? ""
-      : `<p>${inlineMarkdown(text(block.text))}</p>`;
+  if (block.type === "heading") return `<h${block.level} id="${escapeHtml(block.anchorId)}" tabindex="-1">${inlineMarkdown(text(block.text))}</h${block.level}>`;
+  if (block.type === "paragraph") return block.headerOnly === true ? "" : `<p>${inlineMarkdown(text(block.text))}</p>`;
   if (block.type === "list") {
     const tag = block.ordered === true ? "ol" : "ul";
     return `<${tag}>${(Array.isArray(block.items) ? block.items : []).map((item) => `<li>${inlineMarkdown(String(item))}</li>`).join("")}</${tag}>`;
   }
-  if (block.type === "blockquote")
-    return `<blockquote>${inlineMarkdown(text(block.text))}</blockquote>`;
+  if (block.type === "blockquote") return `<blockquote>${inlineMarkdown(text(block.text))}</blockquote>`;
   if (block.type === "callout") {
     const tone = calloutTones.has(text(block.tone)) ? text(block.tone) : "note";
     return `<aside class="callout callout-${tone}" role="note"><strong>${escapeHtml(tone)}</strong><p>${inlineMarkdown(text(block.text))}</p></aside>`;
@@ -743,38 +532,17 @@ function renderBlock(block, labels) {
 
 /** @param {Record<string, any>} model */
 function assertModel(model) {
-  if (
-    model.schemaVersion !== 1 ||
-    !record(model.document).title ||
-    !Array.isArray(model.blocks) ||
-    !Array.isArray(model.artifacts) ||
-    !Array.isArray(model.outline)
-  ) {
+  if (model.schemaVersion !== 1 || !record(model.document).title || !Array.isArray(model.blocks) || !Array.isArray(model.artifacts) || !Array.isArray(model.outline)) {
     throw new Error("Technical reader model is invalid");
   }
 }
 
-const mermaidRuntime = readFileSync(
-  new URL("../assets/mermaid.min.js", import.meta.url),
-  "utf8",
-).replaceAll("</script", "<\\/script");
-const panzoomRuntime = readFileSync(
-  new URL("../assets/panzoom.min.js", import.meta.url),
-  "utf8",
-).replaceAll("</script", "<\\/script");
-const atkinsonFont = readFileSync(
-  new URL("../assets/atkinson-hyperlegible-next-latin.woff2", import.meta.url),
-).toString("base64");
-const monaspaceRegularFont = readFileSync(
-  new URL("../assets/monaspace-neon-latin-400.woff2", import.meta.url),
-).toString("base64");
-const monaspaceSemiboldFont = readFileSync(
-  new URL("../assets/monaspace-neon-latin-600.woff2", import.meta.url),
-).toString("base64");
-const reportCss = readFileSync(
-  new URL("../assets/report.css", import.meta.url),
-  "utf8",
-);
+const mermaidRuntime = readFileSync(new URL("../assets/mermaid.min.js", import.meta.url), "utf8").replaceAll("</script", "<\\/script");
+const panzoomRuntime = readFileSync(new URL("../assets/panzoom.min.js", import.meta.url), "utf8").replaceAll("</script", "<\\/script");
+const atkinsonFont = readFileSync(new URL("../assets/atkinson-hyperlegible-next-latin.woff2", import.meta.url)).toString("base64");
+const monaspaceRegularFont = readFileSync(new URL("../assets/monaspace-neon-latin-400.woff2", import.meta.url)).toString("base64");
+const monaspaceSemiboldFont = readFileSync(new URL("../assets/monaspace-neon-latin-600.woff2", import.meta.url)).toString("base64");
+const reportCss = readFileSync(new URL("../assets/report.css", import.meta.url), "utf8");
 
 const controller = `(()=>{"use strict";
 const root=document.documentElement;
@@ -844,11 +612,7 @@ export function renderTechnicalReaderHtml(model) {
   const isReport = model.presentation === "report";
   const language = model.language === "en" ? "en" : "es";
   const labels = labelsByLanguage[language];
-  if (isReport)
-    return renderVisualDocument(model, {
-      renderBlock: (block) => renderBlock(block, labels),
-      inlineMarkdown,
-    });
+  if (isReport) return renderVisualDocument(model, { renderBlock: (block) => renderBlock(block, labels), inlineMarkdown });
   const document = record(model.document);
   const workflow = isReport ? {} : record(model.workflow);
   /** @type {Record<string, any>[]} */
@@ -861,65 +625,33 @@ export function renderTechnicalReaderHtml(model) {
     workflow.name ? [labels.initiative, workflow.name] : null,
     document.profile ? [labels.profile, document.profile] : null,
     document.priority ? [labels.priority, document.priority] : null,
-    document.readTimeMinutes
-      ? [labels.readTime, `${document.readTimeMinutes} min`]
-      : null,
+    document.readTimeMinutes ? [labels.readTime, `${document.readTimeMinutes} min`] : null,
     document.createdAt ? [labels.created, document.createdAt] : null,
     document.updatedAt ? [labels.updated, document.updatedAt] : null,
     document.repository ? [labels.repository, document.repository] : null,
     workflow.revision ? ["Revision", workflow.revision] : null,
   ].filter((entry) => entry !== null);
-  const artifactItems = artifacts
-    .map((artifact, index) => {
-      const item = record(artifact);
-      const state = text(item.state) || "pending";
-      const marker =
-        state === "complete" ? "✓" : String(index + 1).padStart(2, "0");
-      const body = `<span class="artifact-marker">${escapeHtml(marker)}</span><span><strong>${escapeHtml(item.label)}</strong>${item.fileName ? `<small>${escapeHtml(item.fileName)}</small>` : ""}</span>`;
-      const href =
-        text(item.href) ||
-        (item.fileName ? encodeURIComponent(text(item.fileName)) : "");
-      return `<li>${href ? `<a class="artifact-link is-${escapeHtml(state)}" href="${escapeHtml(href)}"${state === "active" ? ' aria-current="page"' : ""}>${body}</a>` : `<span class="artifact-link is-${escapeHtml(state)}">${body}</span>`}</li>`;
-    })
-    .join("");
-  const tocItems = outline
-    .map(
-      (entry) =>
-        `<li><a class="toc-link level-${entry.level}" href="#${escapeHtml(entry.id)}">${escapeHtml(entry.label)}</a></li>`,
-    )
-    .join("");
-  const sourceButton = document.sourceFile
-    ? `<a class="source-button" href="${escapeHtml(text(document.sourceHref) || encodeURIComponent(text(document.sourceFile)))}">${escapeHtml(labels.source)}</a>`
-    : "";
-  const libraryButton = workflow.libraryHref
-    ? `<a class="source-button library-link" href="${escapeHtml(text(workflow.libraryHref))}">${escapeHtml(labels.library)}</a>`
-    : "";
+  const artifactItems = artifacts.map((artifact, index) => {
+    const item = record(artifact);
+    const state = text(item.state) || "pending";
+    const marker = state === "complete" ? "✓" : String(index + 1).padStart(2, "0");
+    const body = `<span class="artifact-marker">${escapeHtml(marker)}</span><span><strong>${escapeHtml(item.label)}</strong>${item.fileName ? `<small>${escapeHtml(item.fileName)}</small>` : ""}</span>`;
+    const href = text(item.href) || (item.fileName ? encodeURIComponent(text(item.fileName)) : "");
+    return `<li>${href ? `<a class="artifact-link is-${escapeHtml(state)}" href="${escapeHtml(href)}"${state === "active" ? ' aria-current="page"' : ""}>${body}</a>` : `<span class="artifact-link is-${escapeHtml(state)}">${body}</span>`}</li>`;
+  }).join("");
+  const tocItems = outline.map((entry) => `<li><a class="toc-link level-${entry.level}" href="#${escapeHtml(entry.id)}">${escapeHtml(entry.label)}</a></li>`).join("");
+  const sourceButton = document.sourceFile ? `<a class="source-button" href="${escapeHtml(text(document.sourceHref) || encodeURIComponent(text(document.sourceFile)))}">${escapeHtml(labels.source)}</a>` : "";
+  const libraryButton = workflow.libraryHref ? `<a class="source-button library-link" href="${escapeHtml(text(workflow.libraryHref))}">${escapeHtml(labels.library)}</a>` : "";
   const runtimeScript = `${mermaidRuntime}\n${panzoomRuntime}\n${controller}`;
-  const controllerHash = createHash("sha256")
-    .update(runtimeScript)
-    .digest("base64");
+  const controllerHash = createHash("sha256").update(runtimeScript).digest("base64");
   const copiedLabel = labels.copied;
-  const authorizationLabel =
-    workflow.implementationAuthorized === true
-      ? labels.authorized
-      : labels.authority;
+  const authorizationLabel = workflow.implementationAuthorized === true ? labels.authorized : labels.authority;
   const reportStatusLabel = text(workflow.reportStatusLabel);
-  const reportState = isReport
-    ? `<span class="report-state">${escapeHtml(document.status)}</span>`
-    : reportStatusLabel
-      ? `<span class="report-state" title="${escapeHtml(reportStatusLabel)}">${escapeHtml(reportStatusLabel)}</span>`
-      : "";
-  const gateReportState = reportStatusLabel
-    ? `<span class="report-status">${escapeHtml(reportStatusLabel)}</span>`
-    : "";
+  const reportState = isReport ? `<span class="report-state">${escapeHtml(document.status)}</span>` : reportStatusLabel ? `<span class="report-state" title="${escapeHtml(reportStatusLabel)}">${escapeHtml(reportStatusLabel)}</span>` : "";
+  const gateReportState = reportStatusLabel ? `<span class="report-status">${escapeHtml(reportStatusLabel)}</span>` : "";
   const gateLabel = text(workflow.gateLabel) || labels.gate;
-  const mobileLinks =
-    libraryButton || sourceButton
-      ? `<div class="mobile-reader-links">${libraryButton}${sourceButton}</div>`
-      : "";
-  const mobileContext = isReport
-    ? `<div class="mobile-context"><strong>${escapeHtml(document.type)}</strong><p>${escapeHtml(document.status)}</p>${mobileLinks}</div>`
-    : `<div class="mobile-context" data-mobile-context>${workflow.action ? `<div class="rail-action"><span>${escapeHtml(labels.nextAction)}</span><strong>${escapeHtml(workflow.action)}</strong></div>` : ""}<div class="gate-card"><span>${escapeHtml(gateLabel)}</span><strong>${escapeHtml(document.type)}</strong>${gateReportState}<span class="authorization-label">${escapeHtml(authorizationLabel)}</span></div>${mobileLinks}</div>`;
+  const mobileLinks = libraryButton || sourceButton ? `<div class="mobile-reader-links">${libraryButton}${sourceButton}</div>` : "";
+  const mobileContext = isReport ? `<div class="mobile-context"><strong>${escapeHtml(document.type)}</strong><p>${escapeHtml(document.status)}</p>${mobileLinks}</div>` : `<div class="mobile-context" data-mobile-context>${workflow.action ? `<div class="rail-action"><span>${escapeHtml(labels.nextAction)}</span><strong>${escapeHtml(workflow.action)}</strong></div>` : ""}<div class="gate-card"><span>${escapeHtml(gateLabel)}</span><strong>${escapeHtml(document.type)}</strong>${gateReportState}<span class="authorization-label">${escapeHtml(authorizationLabel)}</span></div>${mobileLinks}</div>`;
   return `<!doctype html>
 <html lang="${language}">
 <head>
@@ -961,8 +693,7 @@ export function renderTechnicalReaderHtml(model) {
 /** @param {unknown} value */
 function readerLibraryHref(value) {
   const href = text(value);
-  if (!href || href.startsWith("//") || /^[a-z][a-z0-9+.-]*:/iu.test(href))
-    return null;
+  if (!href || href.startsWith("//") || /^[a-z][a-z0-9+.-]*:/iu.test(href)) return null;
   return href;
 }
 
@@ -974,79 +705,54 @@ function readerLibraryHref(value) {
 export function renderTechnicalReaderLibraryHtml(input) {
   const source = record(input);
   const language = text(source.language).toLowerCase() === "en" ? "en" : "es";
-  const entries = (Array.isArray(source.entries) ? source.entries : [])
-    .map((candidate) => {
-      const item = record(candidate);
-      return {
-        id: text(item.id),
-        name: text(item.name) || text(item.slug) || "Untitled initiative",
-        slug: text(item.slug),
-        repository: text(item.repository),
-        phase: text(item.phase),
-        status: text(item.status),
-        createdAt: text(item.createdAt),
-        updatedAt: text(item.updatedAt),
-        nextAction: text(item.nextAction),
-        readerHref: readerLibraryHref(item.readerHref),
-      };
-    })
-    .filter((entry) => entry.id && entry.slug && entry.readerHref)
-    .sort(
-      (left, right) =>
-        right.updatedAt.localeCompare(left.updatedAt) ||
-        left.name.localeCompare(right.name),
-    );
-  const copy =
-    language === "en"
-      ? {
-          title: "Technical Reader Library",
-          summary:
-            "Private initiatives, current workflow position, and the next human action.",
-          search: "Search initiatives",
-          empty: "No workflow Readers have been generated yet.",
-          noResults: "No initiatives match this search.",
-          result: "initiative",
-          results: "initiatives",
-          phase: "Current phase",
-          updated: "Updated",
-          next: "Next action",
-          open: "Open Reader",
-          theme: "Toggle light and dark theme",
-        }
-      : {
-          title: "Biblioteca del Technical Reader",
-          summary:
-            "Iniciativas privadas, posición actual del workflow y la siguiente acción humana.",
-          search: "Buscar iniciativas",
-          empty: "Todavía no se ha generado ningún Reader de workflow.",
-          noResults: "Ninguna iniciativa coincide con esta búsqueda.",
-          result: "iniciativa",
-          results: "iniciativas",
-          phase: "Fase actual",
-          updated: "Actualizado",
-          next: "Siguiente acción",
-          open: "Abrir Reader",
-          theme: "Alternar tema claro y oscuro",
-        };
-  const rows = entries
-    .map((entry) => {
-      const searchValue = [
-        entry.name,
-        entry.slug,
-        entry.repository,
-        entry.phase,
-        entry.status,
-        entry.nextAction,
-      ]
-        .join(" ")
-        .toLocaleLowerCase(language);
-      return `<li class="library-entry" data-library-entry data-search="${escapeHtml(searchValue)}"><a href="${escapeHtml(entry.readerHref)}"><span class="entry-main"><strong>${escapeHtml(entry.name)}</strong><span>${escapeHtml(entry.repository || entry.slug)}</span></span><span class="entry-state"><span>${escapeHtml(entry.phase)}</span><small>${escapeHtml(entry.status)}</small></span><span class="entry-date"><span>${escapeHtml(copy.updated)}</span><time datetime="${escapeHtml(entry.updatedAt)}">${escapeHtml(entry.updatedAt.slice(0, 10))}</time></span><span class="entry-action"><span>${escapeHtml(copy.next)}</span><strong>${escapeHtml(entry.nextAction)}</strong></span><span class="entry-open">${escapeHtml(copy.open)} <span aria-hidden="true">→</span></span></a></li>`;
-    })
-    .join("");
+  const entries = (Array.isArray(source.entries) ? source.entries : []).map((candidate) => {
+    const item = record(candidate);
+    return {
+      id: text(item.id),
+      name: text(item.name) || text(item.slug) || "Untitled initiative",
+      slug: text(item.slug),
+      repository: text(item.repository),
+      phase: text(item.phase),
+      status: text(item.status),
+      createdAt: text(item.createdAt),
+      updatedAt: text(item.updatedAt),
+      nextAction: text(item.nextAction),
+      readerHref: readerLibraryHref(item.readerHref),
+    };
+  }).filter((entry) => entry.id && entry.slug && entry.readerHref).sort((left, right) => right.updatedAt.localeCompare(left.updatedAt) || left.name.localeCompare(right.name));
+  const copy = language === "en" ? {
+    title: "Technical Reader Library",
+    summary: "Private initiatives, current workflow position, and the next human action.",
+    search: "Search initiatives",
+    empty: "No workflow Readers have been generated yet.",
+    noResults: "No initiatives match this search.",
+    result: "initiative",
+    results: "initiatives",
+    phase: "Current phase",
+    updated: "Updated",
+    next: "Next action",
+    open: "Open Reader",
+    theme: "Toggle light and dark theme",
+  } : {
+    title: "Biblioteca del Technical Reader",
+    summary: "Iniciativas privadas, posición actual del workflow y la siguiente acción humana.",
+    search: "Buscar iniciativas",
+    empty: "Todavía no se ha generado ningún Reader de workflow.",
+    noResults: "Ninguna iniciativa coincide con esta búsqueda.",
+    result: "iniciativa",
+    results: "iniciativas",
+    phase: "Fase actual",
+    updated: "Actualizado",
+    next: "Siguiente acción",
+    open: "Abrir Reader",
+    theme: "Alternar tema claro y oscuro",
+  };
+  const rows = entries.map((entry) => {
+    const searchValue = [entry.name, entry.slug, entry.repository, entry.phase, entry.status, entry.nextAction].join(" ").toLocaleLowerCase(language);
+    return `<li class="library-entry" data-library-entry data-search="${escapeHtml(searchValue)}"><a href="${escapeHtml(entry.readerHref)}"><span class="entry-main"><strong>${escapeHtml(entry.name)}</strong><span>${escapeHtml(entry.repository || entry.slug)}</span></span><span class="entry-state"><span>${escapeHtml(entry.phase)}</span><small>${escapeHtml(entry.status)}</small></span><span class="entry-date"><span>${escapeHtml(copy.updated)}</span><time datetime="${escapeHtml(entry.updatedAt)}">${escapeHtml(entry.updatedAt.slice(0, 10))}</time></span><span class="entry-action"><span>${escapeHtml(copy.next)}</span><strong>${escapeHtml(entry.nextAction)}</strong></span><span class="entry-open">${escapeHtml(copy.open)} <span aria-hidden="true">→</span></span></a></li>`;
+  }).join("");
   const libraryController = `(()=>{"use strict";const root=document.documentElement;const search=document.querySelector("[data-library-search]");const entries=[...document.querySelectorAll("[data-library-entry]")];const count=document.querySelector("[data-library-count]");const empty=document.querySelector("[data-library-empty]");const theme=document.querySelector("[data-theme-toggle]");const apply=()=>{const query=(search?.value||"").trim().toLocaleLowerCase();let visible=0;for(const entry of entries){const matches=!query||(entry.dataset.search||"").includes(query);entry.hidden=!matches;if(matches)visible+=1}if(count)count.textContent=visible+" "+(visible===1?count.dataset.singular:count.dataset.plural);if(empty){empty.hidden=visible!==0;empty.textContent=query?empty.dataset.noResults:empty.dataset.empty}};search?.addEventListener("input",apply);theme?.addEventListener("click",()=>{const prefersDark=window.matchMedia&&window.matchMedia("(prefers-color-scheme:dark)").matches;const current=root.dataset.theme||(prefersDark?"dark":"light");root.dataset.theme=current==="light"?"dark":"light";theme.setAttribute("aria-pressed",String(root.dataset.theme==="dark"))});apply()})();`;
-  const controllerHash = createHash("sha256")
-    .update(libraryController)
-    .digest("base64");
+  const controllerHash = createHash("sha256").update(libraryController).digest("base64");
   const libraryCss = String.raw`
 @font-face{font-family:"Atkinson Hyperlegible Next";src:url(data:font/woff2;base64,${atkinsonFont}) format("woff2");font-style:normal;font-weight:200 800;font-display:swap}
 :root{color-scheme:light;--page:#f2f3f0;--document:#f7f8f5;--ink:#202522;--muted:#69716d;--faint:#858d88;--line:#d8ddd8;--accent:#176b68;--accent-soft:rgba(23,107,104,.08);--focus:#176b68}
