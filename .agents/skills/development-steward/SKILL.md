@@ -13,6 +13,8 @@ Inspect skills, Codex Security, React, TanStack, shadcn, Convex, Cloudflare, Exp
 
 For the Matt Pocock bundle, verify both provenance and behavior: the installed `grilling` skill must ask the whole current question frontier in one numbered round and give a recommendation for every question. A version label alone is insufficient evidence. For Impeccable, report the CLI and skill versions independently because they use separate release lines.
 
+Read repeated mistakes with `development-system mistake list --repeated --json`. The report carries them as `repeatedMistakes: [{ id, incidents, proposedControl }]`. For each id, add one bounded item that proposes the hard control at the highest level of the Gardener ladder (code > lint/CI/guard > rule/skill), or states the existing control when one is recorded. Never propose a style note alone.
+
 Discovery is read-only. Keep repository failures local and report missing or stale evidence as unproven. Produce one short private report with what changed, what remains healthy, what needs action, links/evidence, and whether each human action is mobile or computer work. Feed that report into Check-in.
 
 A deterministic safe update may prepare a branch and draft PR after focused checks. It must never auto-merge, release, promote production, run destructive migrations, or delete tracker state. Those operations keep their separate human authorization.

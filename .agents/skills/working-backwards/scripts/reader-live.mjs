@@ -66,11 +66,7 @@ async function assertSafeDirectory(root, target) {
 /** @param {string} path @param {unknown} value */
 async function writeJsonAtomic(path, value) {
   const temporary = `${path}.${randomBytes(6).toString("hex")}.tmp`;
-  await writeFile(temporary, `${JSON.stringify(value, null, 2)}\n`, {
-    encoding: "utf8",
-    flag: "wx",
-    mode: 0o600,
-  });
+  await writeFile(temporary, `${JSON.stringify(value, null, 2)}\n`, { encoding: "utf8", flag: "wx", mode: 0o600 });
   await rename(temporary, path);
 }
 
@@ -80,20 +76,7 @@ const QUESTION_BODY_LIMIT = 256 * 1024;
 function validQuestions(data) {
   if (!data || typeof data !== "object" || Array.isArray(data)) return false;
   const questions = /** @type {Record<string, unknown>} */ (data).questions;
-  return (
-    Array.isArray(questions) &&
-    questions.length <= 200 &&
-    questions.every(
-      (item) =>
-        item &&
-        typeof item === "object" &&
-        typeof item.question === "string" &&
-        item.question.length > 0 &&
-        item.question.length <= 2000 &&
-        typeof item.blockId === "string" &&
-        item.blockId.length <= 120,
-    )
-  );
+  return Array.isArray(questions) && questions.length <= 200 && questions.every((item) => item && typeof item === "object" && typeof item.question === "string" && item.question.length > 0 && item.question.length <= 2000 && typeof item.blockId === "string" && item.blockId.length <= 120);
 }
 
 /** @param {import("node:http").IncomingMessage} request */
@@ -102,8 +85,7 @@ async function readBody(request) {
   let size = 0;
   for await (const chunk of request) {
     size += chunk.length;
-    if (size > QUESTION_BODY_LIMIT)
-      throw Object.assign(new Error("Payload too large"), { status: 413 });
+    if (size > QUESTION_BODY_LIMIT) throw Object.assign(new Error("Payload too large"), { status: 413 });
     chunks.push(chunk);
   }
   return Buffer.concat(chunks).toString("utf8");
@@ -111,19 +93,13 @@ async function readBody(request) {
 
 /** @param {import("node:http").ServerResponse} response @param {number} status @param {unknown} body */
 function sendJson(response, status, body) {
-  response.writeHead(status, {
-    "Cache-Control": "no-store, private",
-    "Content-Type": "application/json; charset=utf-8",
-    "X-Content-Type-Options": "nosniff",
-  });
+  response.writeHead(status, { "Cache-Control": "no-store, private", "Content-Type": "application/json; charset=utf-8", "X-Content-Type-Options": "nosniff" });
   response.end(JSON.stringify(body));
 }
 
 /** @param {string} value */
 function contentType(value) {
-  return value.endsWith(".html")
-    ? "text/html; charset=utf-8"
-    : "text/markdown; charset=utf-8";
+  return value.endsWith(".html") ? "text/html; charset=utf-8" : "text/markdown; charset=utf-8";
 }
 
 /**
@@ -145,136 +121,47 @@ export async function startReaderLive(input) {
   let stopped = false;
   /** @type {() => void} */
   let resolveClosed = () => {};
-  const closed = new Promise((resolvePromise) => {
-    resolveClosed = resolvePromise;
-  });
+  const closed = new Promise((resolvePromise) => { resolveClosed = resolvePromise; });
   // One server owns each answer file; revisions coordinate tabs, the chain orders writes.
   let questionWrites = Promise.resolve();
 
   /** @param {import("node:http").IncomingMessage} request @param {import("node:http").ServerResponse} response @param {string[]} rest */
   async function handleQuestions(request, response, rest) {
     const name = rest[rest.length - 1];
-    const reader = resolve(
-      workspaceDir,
-      ...rest.slice(0, -1),
-      name.replace(/\.questions\.json$/u, ".html"),
-    );
+    const reader = resolve(workspaceDir, ...rest.slice(0, -1), name.replace(/\.questions\.json$/u, ".html"));
     const questionsRoot = resolve(workspaceDir, ".questions");
-    const directory = resolve(
-      questionsRoot,
-      ...rest.slice(0, -1),
-      name.replace(/\.questions\.json$/u, ""),
-    );
-    if (
-      !isContained(questionsRoot, directory) ||
-      !(await assertReadableRegularFile(workspaceDir, reader)) ||
-      !(await assertSafeDirectory(workspaceDir, directory))
-    ) {
-      response.writeHead(404).end();
-      return;
-    }
+    const directory = resolve(questionsRoot, ...rest.slice(0, -1), name.replace(/\.questions\.json$/u, ""));
+    if (!isContained(questionsRoot, directory) || !(await assertReadableRegularFile(workspaceDir, reader)) || !(await assertSafeDirectory(workspaceDir, directory))) { response.writeHead(404).end(); return; }
     const responsesPath = resolve(directory, "responses.json");
     const current = async () => {
       try {
         const entry = await lstat(responsesPath);
-        if (!entry.isFile() || entry.isSymbolicLink())
-          throw new Error("Questions file is not a regular file");
+        if (!entry.isFile() || entry.isSymbolicLink()) throw new Error("Questions file is not a regular file");
         return JSON.parse(await readFile(responsesPath, "utf8"));
       } catch (error) {
         if (isMissing(error)) return { revision: 0, data: null };
         throw error;
       }
     };
-    if (request.method === "GET" || request.method === "HEAD") {
-      sendJson(response, 200, await current());
-      return;
-    }
-    if (request.method !== "POST") {
-      response.writeHead(405, { Allow: "GET, HEAD, POST" }).end();
-      return;
-    }
+    if (request.method === "GET" || request.method === "HEAD") { sendJson(response, 200, await current()); return; }
+    if (request.method !== "POST") { response.writeHead(405, { Allow: "GET, HEAD, POST" }).end(); return; }
     const origin = request.headers.origin;
-    if (
-      origin &&
-      (() => {
-        try {
-          return new URL(origin).host !== request.headers.host;
-        } catch {
-          return true;
-        }
-      })()
-    ) {
-      sendJson(response, 403, { error: "Cross-origin questions are refused" });
-      return;
-    }
-    if (
-      !String(request.headers["content-type"] ?? "").startsWith(
-        "application/json",
-      )
-    ) {
-      sendJson(response, 415, { error: "Send JSON" });
-      return;
-    }
+    if (origin && (() => { try { return new URL(origin).host !== request.headers.host; } catch { return true; } })()) { sendJson(response, 403, { error: "Cross-origin questions are refused" }); return; }
+    if (!String(request.headers["content-type"] ?? "").startsWith("application/json")) { sendJson(response, 415, { error: "Send JSON" }); return; }
     let payload;
-    try {
-      payload = JSON.parse(await readBody(request));
-    } catch (error) {
-      sendJson(response, /** @type {any} */ (error).status ?? 400, {
-        error: "Invalid questions payload",
-      });
-      return;
-    }
-    if (
-      !payload ||
-      !Number.isInteger(payload.expectedRevision) ||
-      !validQuestions(payload.data)
-    ) {
-      sendJson(response, 400, { error: "Invalid questions payload" });
-      return;
-    }
+    try { payload = JSON.parse(await readBody(request)); } catch (error) { sendJson(response, /** @type {any} */ (error).status ?? 400, { error: "Invalid questions payload" }); return; }
+    if (!payload || !Number.isInteger(payload.expectedRevision) || !validQuestions(payload.data)) { sendJson(response, 400, { error: "Invalid questions payload" }); return; }
     const write = questionWrites.then(async () => {
       const saved = await current();
-      if (payload.expectedRevision !== saved.revision)
-        return {
-          status: 409,
-          body: {
-            error: "Revision conflict",
-            revision: saved.revision,
-            data: saved.data,
-          },
-        };
-      await mkdir(resolve(directory, "submissions"), {
-        recursive: true,
-        mode: 0o700,
-      });
-      if (
-        !(await assertSafeDirectory(
-          workspaceDir,
-          resolve(directory, "submissions"),
-        ))
-      )
-        throw new Error("Questions directory changed");
+      if (payload.expectedRevision !== saved.revision) return { status: 409, body: { error: "Revision conflict", revision: saved.revision, data: saved.data } };
+      await mkdir(resolve(directory, "submissions"), { recursive: true, mode: 0o700 });
+      if (!(await assertSafeDirectory(workspaceDir, resolve(directory, "submissions")))) throw new Error("Questions directory changed");
       const submittedAt = new Date().toISOString();
       const receipt = `${submittedAt.replace(/[-:]/gu, "").replace(/\.\d+Z$/u, "")}-${randomBytes(6).toString("hex")}`;
-      const result = {
-        revision: saved.revision + 1,
-        receipt,
-        submittedAt,
-        reader: relative(workspaceDir, reader),
-        data: payload.data,
-      };
-      await writeJsonAtomic(
-        resolve(directory, "submissions", `${receipt}.json`),
-        result,
-      );
+      const result = { revision: saved.revision + 1, receipt, submittedAt, reader: relative(workspaceDir, reader), data: payload.data };
+      await writeJsonAtomic(resolve(directory, "submissions", `${receipt}.json`), result);
       await writeJsonAtomic(responsesPath, result);
-      input.onQuestions?.({
-        reader: relative(workspaceDir, reader),
-        responsesPath,
-        revision: result.revision,
-        receipt,
-        count: payload.data.questions.length,
-      });
+      input.onQuestions?.({ reader: relative(workspaceDir, reader), responsesPath, revision: result.revision, receipt, count: payload.data.questions.length });
       return { status: 200, body: { revision: result.revision, receipt } };
     });
     questionWrites = write.catch(() => {});
@@ -285,30 +172,12 @@ export async function startReaderLive(input) {
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url ?? "/", "http://127.0.0.1");
-      const segments = url.pathname
-        .split("/")
-        .filter(Boolean)
-        .map((segment) => decodeURIComponent(segment));
-      if (
-        segments.shift() !== token ||
-        segments.some(
-          (segment) =>
-            !segment ||
-            segment === "." ||
-            segment === ".." ||
-            segment.includes("/") ||
-            segment.includes("\\") ||
-            segment.includes("\0"),
-        )
-      ) {
+      const segments = url.pathname.split("/").filter(Boolean).map((segment) => decodeURIComponent(segment));
+      if (segments.shift() !== token || segments.some((segment) => !segment || segment === "." || segment === ".." || segment.includes("/") || segment.includes("\\") || segment.includes("\0"))) {
         response.writeHead(404).end();
         return;
       }
-      if (
-        segments.length > 1 &&
-        segments[0] === workspaceSlug &&
-        segments[segments.length - 1].endsWith(".questions.json")
-      ) {
+      if (segments.length > 1 && segments[0] === workspaceSlug && segments[segments.length - 1].endsWith(".questions.json")) {
         await handleQuestions(request, response, segments.slice(1));
         return;
       }
@@ -317,18 +186,9 @@ export async function startReaderLive(input) {
         return;
       }
       let target = "";
-      if (segments.length === 1 && segments[0] === "index.html")
-        target = resolve(root, "index.html");
-      else if (segments.shift() === workspaceSlug && segments.length > 0)
-        target = resolve(workspaceDir, ...segments);
-      if (
-        !target ||
-        !/\.(?:html|md)$/iu.test(target) ||
-        !(await assertReadableRegularFile(
-          target === resolve(root, "index.html") ? root : workspaceDir,
-          target,
-        ))
-      ) {
+      if (segments.length === 1 && segments[0] === "index.html") target = resolve(root, "index.html");
+      else if (segments.shift() === workspaceSlug && segments.length > 0) target = resolve(workspaceDir, ...segments);
+      if (!target || !/\.(?:html|md)$/iu.test(target) || !(await assertReadableRegularFile(target === resolve(root, "index.html") ? root : workspaceDir, target))) {
         response.writeHead(404).end();
         return;
       }
@@ -351,8 +211,7 @@ export async function startReaderLive(input) {
     server.listen(0, "127.0.0.1", resolvePromise);
   });
   const address = server.address();
-  if (!address || typeof address === "string")
-    throw new Error("Reader live server did not bind a TCP port");
+  if (!address || typeof address === "string") throw new Error("Reader live server did not bind a TCP port");
   const path = `/${token}/${encodeURIComponent(workspaceSlug)}/${encodeURIComponent(readerFileName)}`;
   const localUrl = `http://127.0.0.1:${address.port}${path}`;
 
@@ -361,107 +220,50 @@ export async function startReaderLive(input) {
     stopped = true;
     clearTimeout(expiry);
     if (tunnelProcess && !tunnelProcess.killed) tunnelProcess.kill("SIGTERM");
-    await new Promise((resolvePromise) =>
-      server.close(() => resolvePromise(undefined)),
-    );
+    await new Promise((resolvePromise) => server.close(() => resolvePromise(undefined)));
     resolveClosed();
   }
-  const expiry = setTimeout(() => {
-    void stop();
-  }, ttlMs);
+  const expiry = setTimeout(() => { void stop(); }, ttlMs);
   expiry.unref();
 
   let remoteUrl = null;
   if (input.tunnel === true) {
     const cloudflaredPath = input.cloudflaredPath ?? "cloudflared";
-    tunnelProcess = spawn(
-      cloudflaredPath,
-      [
-        "tunnel",
-        "--no-autoupdate",
-        "--url",
-        `http://127.0.0.1:${address.port}`,
-      ],
-      { stdio: ["ignore", "pipe", "pipe"] },
-    );
+    tunnelProcess = spawn(cloudflaredPath, ["tunnel", "--no-autoupdate", "--url", `http://127.0.0.1:${address.port}`], { stdio: ["ignore", "pipe", "pipe"] });
     remoteUrl = await new Promise((resolvePromise, reject) => {
-      const timer = setTimeout(
-        () =>
-          reject(
-            new Error("Timed out waiting for the temporary Reader tunnel"),
-          ),
-        30_000,
-      );
+      const timer = setTimeout(() => reject(new Error("Timed out waiting for the temporary Reader tunnel")), 30_000);
       const inspect = (chunk) => {
-        const match = String(chunk).match(
-          /https:\/\/[a-z0-9-]+\.trycloudflare\.com/iu,
-        );
+        const match = String(chunk).match(/https:\/\/[a-z0-9-]+\.trycloudflare\.com/iu);
         if (!match) return;
         clearTimeout(timer);
         resolvePromise(`${match[0]}${path}`);
       };
       tunnelProcess?.stdout.on("data", inspect);
       tunnelProcess?.stderr.on("data", inspect);
-      tunnelProcess?.once("error", (error) => {
-        clearTimeout(timer);
-        reject(error);
-      });
-      tunnelProcess?.once("exit", (code) => {
-        if (code && remoteUrl === null) {
-          clearTimeout(timer);
-          reject(new Error(`Temporary Reader tunnel exited with code ${code}`));
-        }
-      });
-    }).catch(async (error) => {
-      await stop();
-      throw error;
-    });
+      tunnelProcess?.once("error", (error) => { clearTimeout(timer); reject(error); });
+      tunnelProcess?.once("exit", (code) => { if (code && remoteUrl === null) { clearTimeout(timer); reject(new Error(`Temporary Reader tunnel exited with code ${code}`)); } });
+    }).catch(async (error) => { await stop(); throw error; });
   }
-  return {
-    localUrl,
-    remoteUrl,
-    expiresAt: new Date(Date.now() + ttlMs).toISOString(),
-    closed,
-    stop,
-  };
+  return { localUrl, remoteUrl, expiresAt: new Date(Date.now() + ttlMs).toISOString(), closed, stop };
 }
 
 function parseCli(argv) {
-  const result = {
-    workspaceDir: "",
-    readerFileName: "",
-    ttlMs: 7_200_000,
-    tunnel: false,
-  };
+  const result = { workspaceDir: "", readerFileName: "", ttlMs: 7_200_000, tunnel: false };
   for (let index = 0; index < argv.length; index += 1) {
     const value = argv[index];
     if (value === "--workspace") result.workspaceDir = argv[++index] ?? "";
     else if (value === "--reader") result.readerFileName = argv[++index] ?? "";
-    else if (value === "--ttl-minutes")
-      result.ttlMs = Number(argv[++index] ?? 120) * 60_000;
+    else if (value === "--ttl-minutes") result.ttlMs = Number(argv[++index] ?? 120) * 60_000;
     else if (value === "--tunnel") result.tunnel = true;
   }
-  if (!result.workspaceDir || !result.readerFileName)
-    throw new Error(
-      "Usage: reader-live.mjs --workspace <private-workspace> --reader <reader.html> [--tunnel] [--ttl-minutes 120]",
-    );
+  if (!result.workspaceDir || !result.readerFileName) throw new Error("Usage: reader-live.mjs --workspace <private-workspace> --reader <reader.html> [--tunnel] [--ttl-minutes 120]");
   return result;
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
-  const live = await startReaderLive({
-    ...parseCli(process.argv.slice(2)),
-    onQuestions: (event) =>
-      process.stdout.write(
-        `${JSON.stringify({ event: "questions", ...event })}\n`,
-      ),
-  });
-  process.stdout.write(
-    `${JSON.stringify({ localUrl: live.localUrl, remoteUrl: live.remoteUrl, expiresAt: live.expiresAt })}\n`,
-  );
-  const shutdown = () => {
-    void live.stop();
-  };
+  const live = await startReaderLive({ ...parseCli(process.argv.slice(2)), onQuestions: (event) => process.stdout.write(`${JSON.stringify({ event: "questions", ...event })}\n`) });
+  process.stdout.write(`${JSON.stringify({ localUrl: live.localUrl, remoteUrl: live.remoteUrl, expiresAt: live.expiresAt })}\n`);
+  const shutdown = () => { void live.stop(); };
   process.once("SIGINT", shutdown);
   process.once("SIGTERM", shutdown);
   await live.closed;

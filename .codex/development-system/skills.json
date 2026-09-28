@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "0.53.1",
+  "catalogVersion": "0.54.0",
   "supportedHarnesses": [
     {
       "id": "codex",
@@ -970,7 +970,7 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.34.1/skills/upstream/retro",
+        "path": "artifacts/1.36.0/skills/upstream/retro",
         "upstreamReference": {
           "repository": "https://github.com/mattpocock/skills",
           "commit": "6654f6b60cd9d5be8b54c6fafe44346dabeb3b76",
@@ -981,18 +981,54 @@
         {
           "id": "retro.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.34.1/skills/upstream/retro",
+          "sourceDirectory": "artifacts/1.36.0/skills/upstream/retro",
           "destination": ".agents/skills/retro",
-          "folderSha256": "e69e879dc550a24448e1a23e7fccb210eec32921b3a7989932b57ec9fff4a598",
+          "folderSha256": "3d8a340d811caced910aceebef19570455b5e003afd78cdaffc93aa2929ea2e6",
           "expectedMirrorOf": null
         },
         {
           "id": "retro.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.34.1/skills/upstream/retro",
+          "sourceDirectory": "artifacts/1.36.0/skills/upstream/retro",
           "destination": ".claude/skills/retro",
-          "folderSha256": "e69e879dc550a24448e1a23e7fccb210eec32921b3a7989932b57ec9fff4a598",
+          "folderSha256": "3d8a340d811caced910aceebef19570455b5e003afd78cdaffc93aa2929ea2e6",
           "expectedMirrorOf": "retro.codex",
+          "install": "symlink"
+        }
+      ]
+    },
+    {
+      "logicalName": "jevgrep",
+      "physicalHarnesses": [
+        "codex",
+        "claude"
+      ],
+      "source": {
+        "repository": "https://github.com/AO-HyS/development-system",
+        "commit": "$INSTALL_COMMIT",
+        "path": "artifacts/1.36.0/skills/upstream/jevgrep",
+        "upstreamReference": {
+          "package": "@dzhng/jevgrep",
+          "version": "0.4.0",
+          "path": "dist/skills/jevgrep/SKILL.md"
+        }
+      },
+      "variants": [
+        {
+          "id": "jevgrep.codex",
+          "harness": "codex",
+          "sourceDirectory": "artifacts/1.36.0/skills/upstream/jevgrep",
+          "destination": ".agents/skills/jevgrep",
+          "folderSha256": "fa24b7537af797197cf5629c831f29cdb8c2575a35081d8162de1406b3133707",
+          "expectedMirrorOf": null
+        },
+        {
+          "id": "jevgrep.claude",
+          "harness": "claude",
+          "sourceDirectory": "artifacts/1.36.0/skills/upstream/jevgrep",
+          "destination": ".claude/skills/jevgrep",
+          "folderSha256": "fa24b7537af797197cf5629c831f29cdb8c2575a35081d8162de1406b3133707",
+          "expectedMirrorOf": "jevgrep.codex",
           "install": "symlink"
         }
       ]
@@ -1295,23 +1331,23 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.35.0/skills/internal/flow-implement"
+        "path": "artifacts/1.36.0/skills/internal/flow-implement"
       },
       "variants": [
         {
           "id": "flow-implement.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.35.0/skills/internal/flow-implement",
+          "sourceDirectory": "artifacts/1.36.0/skills/internal/flow-implement",
           "destination": ".agents/skills/flow-implement",
-          "folderSha256": "d25521e42bcf46b23c488f114e9a0484d369d42d56e3a7bb5327ab565bead196",
+          "folderSha256": "8186d2e7f19ab9eca0270478f33d2333bc5d911b3da8b258c6896c5f122aa6b8",
           "expectedMirrorOf": null
         },
         {
           "id": "flow-implement.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.35.0/skills/internal/flow-implement",
+          "sourceDirectory": "artifacts/1.36.0/skills/internal/flow-implement",
           "destination": ".claude/skills/flow-implement",
-          "folderSha256": "d25521e42bcf46b23c488f114e9a0484d369d42d56e3a7bb5327ab565bead196",
+          "folderSha256": "8186d2e7f19ab9eca0270478f33d2333bc5d911b3da8b258c6896c5f122aa6b8",
           "expectedMirrorOf": "flow-implement.codex",
           "install": "symlink"
         }
@@ -1594,15 +1630,15 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.35.1/skills/internal/working-backwards"
+        "path": "artifacts/1.36.0/skills/internal/working-backwards"
       },
       "variants": [
         {
           "id": "working-backwards.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.35.1/skills/internal/working-backwards",
+          "sourceDirectory": "artifacts/1.36.0/skills/internal/working-backwards",
           "destination": ".agents/skills/working-backwards",
-          "folderSha256": "25ef66818a7b8caf49d8bc9d8eb34dd29f7313982b52a8b9f7583aa2d5f8aeb0",
+          "folderSha256": "a1210601a983aa809c730458d37ea172e12bcbcb3dadf642e5440676dd23e5ad",
           "executableFiles": [
             "scripts/t3-workflow.mjs",
             "scripts/t3-reader.mjs",
@@ -1615,9 +1651,9 @@
         {
           "id": "working-backwards.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.35.1/skills/internal/working-backwards",
+          "sourceDirectory": "artifacts/1.36.0/skills/internal/working-backwards",
           "destination": ".claude/skills/working-backwards",
-          "folderSha256": "25ef66818a7b8caf49d8bc9d8eb34dd29f7313982b52a8b9f7583aa2d5f8aeb0",
+          "folderSha256": "a1210601a983aa809c730458d37ea172e12bcbcb3dadf642e5440676dd23e5ad",
           "executableFiles": [
             "scripts/t3-workflow.mjs",
             "scripts/t3-reader.mjs",
@@ -1763,23 +1799,23 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.5.11/skills/internal/development-steward"
+        "path": "artifacts/1.36.0/skills/internal/development-steward"
       },
       "variants": [
         {
           "id": "development-steward.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.5.11/skills/internal/development-steward",
+          "sourceDirectory": "artifacts/1.36.0/skills/internal/development-steward",
           "destination": ".agents/skills/development-steward",
-          "folderSha256": "24e72cad59217d41b848f28df5ecba7fc16407520330c7acda956ed3443efe00",
+          "folderSha256": "f3b947dbf68269cae0727defc10c2372de73d552613902eedc3076561217e9bf",
           "expectedMirrorOf": null
         },
         {
           "id": "development-steward.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.5.11/skills/internal/development-steward",
+          "sourceDirectory": "artifacts/1.36.0/skills/internal/development-steward",
           "destination": ".claude/skills/development-steward",
-          "folderSha256": "24e72cad59217d41b848f28df5ecba7fc16407520330c7acda956ed3443efe00",
+          "folderSha256": "f3b947dbf68269cae0727defc10c2372de73d552613902eedc3076561217e9bf",
           "expectedMirrorOf": "development-steward.codex",
           "install": "symlink"
         }
@@ -3814,7 +3850,7 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.35.1/skills/internal/orchestrate-work"
+        "path": "artifacts/1.36.0/skills/internal/orchestrate-work"
       },
       "variants": [
         {
@@ -3822,15 +3858,15 @@
           "harness": "codex",
           "destination": ".agents/skills/orchestrate-work",
           "expectedMirrorOf": null,
-          "sourceDirectory": "artifacts/1.35.1/skills/internal/orchestrate-work",
-          "folderSha256": "bd38e5da6f27d2d1b825d62e8448b64ca79139474bb341d8502084e3bded0875"
+          "sourceDirectory": "artifacts/1.36.0/skills/internal/orchestrate-work",
+          "folderSha256": "4b6a06b795c82618eb08853abb72fe529b7260facab57a18e8831abbd6c88241"
         },
         {
           "id": "orchestrate-work.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.35.1/skills/internal/orchestrate-work",
+          "sourceDirectory": "artifacts/1.36.0/skills/internal/orchestrate-work",
           "destination": ".claude/skills/orchestrate-work",
-          "folderSha256": "bd38e5da6f27d2d1b825d62e8448b64ca79139474bb341d8502084e3bded0875",
+          "folderSha256": "4b6a06b795c82618eb08853abb72fe529b7260facab57a18e8831abbd6c88241",
           "expectedMirrorOf": "orchestrate-work.codex",
           "install": "symlink"
         }

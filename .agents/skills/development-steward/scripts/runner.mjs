@@ -3,16 +3,9 @@
 
 import { randomUUID } from "node:crypto";
 import { spawn } from "node:child_process";
-import {
-  chmod,
-  mkdir,
-  readFile,
-  rename,
-  unlink,
-  writeFile,
-} from "node:fs/promises";
+import { chmod, mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 /** @param {unknown} error */
 function missing(error) {
@@ -21,11 +14,8 @@ function missing(error) {
 
 /** @param {string} path */
 async function removeIfPresent(path) {
-  try {
-    await unlink(path);
-  } catch (error) {
-    if (!missing(error)) throw error;
-  }
+  try { await unlink(path); }
+  catch (error) { if (!missing(error)) throw error; }
 }
 
 /**
@@ -41,9 +31,7 @@ function spawnCodex(invocation) {
     });
     let stderr = "";
     child.stderr.setEncoding("utf8");
-    child.stderr.on("data", (chunk) => {
-      stderr += chunk;
-    });
+    child.stderr.on("data", (chunk) => { stderr += chunk; });
     child.on("error", reject);
     child.on("close", (status) => fulfill({ status: status ?? 1, stderr }));
   });
@@ -55,10 +43,7 @@ function spawnCodex(invocation) {
  */
 export async function runDevelopmentSteward(options) {
   for (const [name, value] of Object.entries(options)) {
-    if (
-      name !== "runCodex" &&
-      (typeof value !== "string" || !isAbsolute(value))
-    ) {
+    if (name !== "runCodex" && (typeof value !== "string" || !isAbsolute(value))) {
       throw new Error(`${name} must be an absolute path`);
     }
   }
@@ -80,48 +65,29 @@ export async function runDevelopmentSteward(options) {
   const args = [
     "exec",
     "--ephemeral",
-    "--sandbox",
-    "read-only",
+    "--sandbox", "read-only",
     "--skip-git-repo-check",
-    "--color",
-    "never",
-    "--cd",
-    workingDirectory,
-    "--output-last-message",
-    rawOutput,
+    "--color", "never",
+    "--cd", workingDirectory,
+    "--output-last-message", rawOutput,
     prompt,
   ];
   const runCodex = options.runCodex ?? spawnCodex;
   try {
-    const result = await runCodex({
-      command: nodePath,
-      args: [codexPath, ...args],
-      cwd: workingDirectory,
-      outputPath: rawOutput,
-    });
-    if (result.status !== 0)
-      throw new Error(
-        `codex exec failed with status ${result.status}: ${result.stderr.trim()}`,
-      );
+    const result = await runCodex({ command: nodePath, args: [codexPath, ...args], cwd: workingDirectory, outputPath: rawOutput });
+    if (result.status !== 0) throw new Error(`codex exec failed with status ${result.status}: ${result.stderr.trim()}`);
     const raw = await readFile(rawOutput, "utf8");
     let collected;
-    try {
-      collected = JSON.parse(raw);
-    } catch {
-      throw new Error(
-        "codex exec did not produce the required raw JSON evidence",
-      );
-    }
-    const [{ buildDevelopmentStewardReview }, { buildCheckIn }] =
-      await Promise.all([
-        import(pathToFileURL(stewardContractPath).href),
-        import(pathToFileURL(checkInContractPath).href),
-      ]);
-    const steward = buildDevelopmentStewardReview(collected);
-    if (!steward.valid)
-      throw new Error(
-        `Development Steward evidence failed validation: ${steward.errors.join("; ")}`,
-      );
+    try { collected = JSON.parse(raw); }
+    catch { throw new Error("codex exec did not produce the required raw JSON evidence"); }
+    const [{ buildDevelopmentStewardReview }, { buildCheckIn }] = await Promise.all([
+      import(pathToFileURL(stewardContractPath).href),
+      import(pathToFileURL(checkInContractPath).href),
+    ]);
+    // The scheduler installs this runner at <home>/.development-system/steward/runner.mjs.
+    const home = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+    const steward = buildDevelopmentStewardReview(collected, { home });
+    if (!steward.valid) throw new Error(`Development Steward evidence failed validation: ${steward.errors.join("; ")}`);
     const checkIn = buildCheckIn({
       request: "Ya llegué",
       now: steward.observedAt,
@@ -129,47 +95,33 @@ export async function runDevelopmentSteward(options) {
       evidence: steward.checkInEvidence,
       maxActions: 5,
     });
-    if (!checkIn.valid)
-      throw new Error(
-        `Check-in evidence failed validation: ${checkIn.errors.join("; ")}`,
-      );
+    if (!checkIn.valid) throw new Error(`Check-in evidence failed validation: ${checkIn.errors.join("; ")}`);
     const markdown = [
       "# Development Steward weekly review",
       "",
       steward.report.summary,
       "",
-      ...steward.report.items.flatMap((item) => [
-        `- **${item.title}** — ${item.detail}`,
-        "",
-      ]),
+      ...steward.report.items.flatMap((item) => [`- **${item.title}** — ${item.detail}`, ""]),
+      ...(steward.report.repeatedMistakes ?? []).flatMap((mistake) => [
+        `- **Repeated mistake ${mistake.id}** — ${mistake.incidents.length} incidents; control: ${mistake.proposedControl ?? "none proposed yet"}`, ""]),
       `Check-in: ${checkIn.summary}`,
       "",
     ].join("\n");
-    const completeReport = Buffer.from(
-      `${JSON.stringify(
-        {
-          schemaVersion: 1,
-          contractVersion: "1.5.11",
-          operation: "development-steward-weekly-report",
-          observedAt: steward.observedAt,
-          steward,
-          checkIn,
-          markdown,
-        },
-        null,
-        2,
-      )}\n`,
-    );
+    const completeReport = Buffer.from(`${JSON.stringify({
+      schemaVersion: 1,
+    contractVersion: "1.5.11",
+      operation: "development-steward-weekly-report",
+      observedAt: steward.observedAt,
+      steward,
+      checkIn,
+      markdown,
+    }, null, 2)}\n`);
     await writeFile(temporaryReport, completeReport, { mode: 0o600 });
     await chmod(temporaryReport, 0o600);
     await rename(temporaryReport, reportPath);
     await chmod(reportPath, 0o600);
     await removeIfPresent(rawOutput);
-    return {
-      status: "completed",
-      reportPath,
-      itemCount: steward.report.items.length,
-    };
+    return { status: "completed", reportPath, itemCount: steward.report.items.length };
   } catch (error) {
     await removeIfPresent(rawOutput);
     await removeIfPresent(temporaryReport);
@@ -184,17 +136,13 @@ function parseArguments(argv) {
   for (let index = 0; index < argv.length; index += 2) {
     const key = argv[index];
     const value = argv[index + 1];
-    if (!key?.startsWith("--") || !value)
-      throw new Error(`Invalid runner argument: ${key ?? "<missing>"}`);
+    if (!key?.startsWith("--") || !value) throw new Error(`Invalid runner argument: ${key ?? "<missing>"}`);
     values[key.slice(2)] = value;
   }
   return values;
 }
 
-if (
-  process.argv[1] &&
-  import.meta.url === pathToFileURL(resolve(process.argv[1])).href
-) {
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const values = parseArguments(process.argv.slice(2));
   await runDevelopmentSteward({
     codexPath: values.codex,

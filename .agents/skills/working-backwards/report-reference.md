@@ -14,7 +14,11 @@ Optional: `language`, `productName`, `source:{repository,revision,references}`,
 `explanation`. A `completion` Markdown opens with at most 600 characters, then
 the `##` sections Qué se hizo, Hallazgos, Qué sigue, Detalle in that order
 (`language: "en"`: What was done, Findings, What's next, Detail); the command
-rejects a report without them.
+rejects a report without them. Detalle must contain a line starting
+`Alcance de la verificación:` (`Verification scope:` in English) with three
+clauses: what the verification covers, what it does not cover and the real
+effects, e.g. `Alcance de la verificación: cubre typecheck y el login en el
+navegador; no cubre pagos; efectos reales: PR #12 abierto, sin despliegue.`
 
 ## Result evidence
 
@@ -30,38 +34,18 @@ Pass this top-level shape to `development-system document`:
 {
   "evidence": {
     "impact": "ui",
-    "comparisons": [
-      {
-        "id": "main-flow",
-        "title": "What changed",
-        "description": "Same route, viewport and data.",
-        "before": {
-          "path": "/absolute/private/before.png",
-          "alt": "Initial state",
-          "revision": "actual-before-revision",
-          "capturedAt": "2026-09-05T00:00:00Z"
-        },
-        "after": {
-          "path": "/absolute/private/after.png",
-          "alt": "Resulting state",
-          "revision": "actual-after-revision",
-          "capturedAt": "2026-09-05T00:01:00Z"
-        }
-      }
-    ],
-    "recordings": [
-      {
-        "id": "walkthrough",
-        "title": "The affected flow",
-        "description": "What the recording demonstrates and its limits.",
-        "transcript": "Actions taken and observed result. Include relevant dialogue if present.",
-        "asset": {
-          "path": "/absolute/private/flow.mp4",
-          "alt": "Recorded interaction",
-          "revision": "actual-after-revision"
-        }
-      }
-    ]
+    "comparisons": [{
+      "id": "main-flow", "title": "What changed",
+      "description": "Same route, viewport and data.",
+      "before": {"path": "/absolute/private/before.png", "alt": "Initial state", "revision": "actual-before-revision", "capturedAt": "2026-09-05T00:00:00Z"},
+      "after": {"path": "/absolute/private/after.png", "alt": "Resulting state", "revision": "actual-after-revision", "capturedAt": "2026-09-05T00:01:00Z"}
+    }],
+    "recordings": [{
+      "id": "walkthrough", "title": "The affected flow",
+      "description": "What the recording demonstrates and its limits.",
+      "transcript": "Actions taken and observed result. Include relevant dialogue if present.",
+      "asset": {"path": "/absolute/private/flow.mp4", "alt": "Recorded interaction", "revision": "actual-after-revision"}
+    }]
   }
 }
 ```
