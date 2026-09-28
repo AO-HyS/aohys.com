@@ -12,7 +12,7 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { dirname, isAbsolute, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 /** @param {unknown} error */
 function missing(error) {
@@ -117,7 +117,9 @@ export async function runDevelopmentSteward(options) {
         import(pathToFileURL(stewardContractPath).href),
         import(pathToFileURL(checkInContractPath).href),
       ]);
-    const steward = buildDevelopmentStewardReview(collected);
+    // The scheduler installs this runner at <home>/.development-system/steward/runner.mjs.
+    const home = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+    const steward = buildDevelopmentStewardReview(collected, { home });
     if (!steward.valid)
       throw new Error(
         `Development Steward evidence failed validation: ${steward.errors.join("; ")}`,
@@ -140,6 +142,10 @@ export async function runDevelopmentSteward(options) {
       "",
       ...steward.report.items.flatMap((item) => [
         `- **${item.title}** — ${item.detail}`,
+        "",
+      ]),
+      ...(steward.report.repeatedMistakes ?? []).flatMap((mistake) => [
+        `- **Repeated mistake ${mistake.id}** — ${mistake.incidents.length} incidents; control: ${mistake.proposedControl ?? "none proposed yet"}`,
         "",
       ]),
       `Check-in: ${checkIn.summary}`,

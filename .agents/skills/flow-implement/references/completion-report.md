@@ -38,7 +38,12 @@ sentences), then these `##` sections in order; the command rejects anything else
 - `## Hallazgos`: what was found, including a mistake seen twice proposed as a
   hard rule at the highest level (código > lint/CI/guard > regla/skill).
 - `## Qué sigue`: what the user must decide or do, and what remains unverified.
-- `## Detalle`: changed paths, commands and supporting detail.
+- `## Detalle`: changed paths, commands and supporting detail. It must contain
+  a line starting `Alcance de la verificación:` (`Verification scope:` in
+  English) that states what the verification covers, what it does not cover and
+  the real effects (or "sin efectos reales" / "no real effects"); the command
+  rejects the report without it. Example:
+  `**Alcance de la verificación:** cubre typecheck y el flujo de login en el navegador; no cubre pagos ni móvil; efectos reales: PR #12 abierto, sin despliegue.`
 
 With `language: "en"` the headings are What was done, Findings, What's next,
 Detail. Tables are rejected unless `"allowTables": true` for a real comparison.

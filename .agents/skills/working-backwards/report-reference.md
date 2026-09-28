@@ -14,7 +14,11 @@ Optional: `language`, `productName`, `source:{repository,revision,references}`,
 `explanation`. A `completion` Markdown opens with at most 600 characters, then
 the `##` sections Qué se hizo, Hallazgos, Qué sigue, Detalle in that order
 (`language: "en"`: What was done, Findings, What's next, Detail); the command
-rejects a report without them.
+rejects a report without them. Detalle must contain a line starting
+`Alcance de la verificación:` (`Verification scope:` in English) with three
+clauses: what the verification covers, what it does not cover and the real
+effects, e.g. `Alcance de la verificación: cubre typecheck y el login en el
+navegador; no cubre pagos; efectos reales: PR #12 abierto, sin despliegue.`
 
 ## Result evidence
 

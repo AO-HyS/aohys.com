@@ -14,7 +14,7 @@
 // release of the writer's paths; an expired hold is logged as writer-hold-expired.
 // Every read-modify-write of active-writers.json runs under one session lock directory.
 // CLI mode `mapper-bash` (code-mapper frontmatter hook): PreToolUse Bash limited to
-// read-only git commands and typechecks.
+// read-only git commands, typechecks and jevgrep (`jg "<question>" <relative root>`).
 // CLI mode `writer-bash` (writer frontmatter hook): PreToolUse Bash denies git commands
 // that change the index, refs or worktree; the coordinator owns staging and commits.
 // Internal failures allow the call and are logged: the guard never breaks the host.
@@ -154,7 +154,8 @@ const repoPaths = (paths) => paths.filter((p) => !path.isAbsolute(p));
 // release (interrupted turn, crashed agent) must not hold a path: a foreground entry
 // that never got an agent id is stale after a few minutes (the coordinator cannot
 // dispatch while its foreground agents run), and a background one is stale once its
-// transcript stops moving.
+// transcript stops moving. A background dispatch (run_in_background) that never got an
+// agent id has no transcript to watch: it holds until maxHours or an explicit release.
 const ACTIVE = path.join(sessionDir, "active-writers.json");
 const STALE = POLICY.staleWriter ?? {
   foregroundMinutes: 5,
@@ -179,8 +180,10 @@ function transcriptMtime(agentId) {
 function staleReason(w) {
   const now = Date.now();
   if (w.at < now - STALE.maxHours * 3600e3) return "maxHours";
-  if (!w.agentId)
+  if (!w.agentId) {
+    if (w.background === true) return null;
     return w.at > now - STALE.foregroundMinutes * 60e3 ? null : "foreground";
+  }
   const moved = transcriptMtime(w.agentId) ?? w.at;
   return moved > now - STALE.idleMinutes * 60e3 ? null : "idle";
 }
@@ -800,7 +803,7 @@ async function agentCall() {
     const clash = clashes(active, owned);
     if (clash.length)
       deny(
-        `One writer per surface: ${clash.slice(0, 6).join("; ")}. Wait for that writer to finish, or re-scope the owned paths. (A hold whose writer stopped without a release expires once its transcript is idle ${STALE.idleMinutes} min.)`,
+        `One writer per surface: ${clash.slice(0, 6).join("; ")}. Wait for that writer to finish, or re-scope the owned paths. (A hold whose writer stopped without a release expires once its transcript is idle ${STALE.idleMinutes} min; a background dispatch without an agent id is held until the ${STALE.maxHours} h maxHours limit or an explicit release.)`,
         { ...entry, clash: clash.slice(0, 6) },
       );
   }
@@ -818,6 +821,7 @@ async function agentCall() {
           writeSet: owned,
           at: Date.now(),
           agentId: null,
+          background: ti.run_in_background === true,
         };
         saveActive(all);
         return [];
@@ -1047,10 +1051,90 @@ function imageCall() {
 }
 
 // mapper-bash: an optional `cd <path> &&` prefix, then git show/log/diff/blame/status/
-// rev-parse/ls-files/grep or a typecheck, optionally piped into head/tail/wc/sort/uniq/
-// cut/rg/grep. Substitutions, file redirects, command lists and anything else are denied.
+// rev-parse/ls-files/grep, a typecheck, or jevgrep (`jg --version`, or `jg "<question>"
+// [relative root] [--max-source-bytes N] [--concurrency N] [--no-cache]`), optionally
+// piped into head/tail/wc/sort/uniq/cut/rg/grep. jg subcommands (auth, doctor, skill,
+// cache) and help/version words are denied even when quoted, a double-quoted question may
+// not hold $, ` or \, and a cd before jg and the jg root must be plain relative paths (no
+// quotes, -, ..) that resolve inside the working directory with symlinks followed.
+// Filter-disabling flags, substitutions, file redirects and command lists are denied too.
 const MAPPER_HELP =
-  "code-mapper Bash runs only git show/log/diff/blame/status/rev-parse/ls-files/grep or a typecheck (pnpm typecheck, pnpm exec tsc --noEmit, npx tsc --noEmit), optionally piped into head/tail/wc/sort/uniq/cut/rg/grep. Use Grep, Glob and Read for everything else.";
+  'code-mapper Bash runs only git show/log/diff/blame/status/rev-parse/ls-files/grep, a typecheck (pnpm typecheck, pnpm exec tsc --noEmit, npx tsc --noEmit) or jevgrep (jg --version, or jg "<question>" [relative root] with only --max-source-bytes N, --concurrency N, --no-cache; no subcommands, and $ ` \\ only inside a single-quoted question), optionally piped into head/tail/wc/sort/uniq/cut/rg/grep. Use Grep, Glob and Read for everything else.';
+// jevgrep for the mapper: null when allowed, else why not. Works on raw shell words
+// (quotes kept) so the question must be one quoted word and the root stays a plain
+// relative path inside the working directory.
+const JG_OPTIONS = new Set([
+  "--max-source-bytes",
+  "--concurrency",
+  "--no-cache",
+]);
+// From `jg --help`; jevgrep sees the unquoted word, so a quoted "auth" still dispatches.
+const JG_RESERVED = new Set([
+  "auth",
+  "doctor",
+  "skill",
+  "cache",
+  "help",
+  "version",
+  "--help",
+  "-h",
+  "--version",
+]);
+// A jg directory must resolve (symlinks followed) to the working directory or inside it.
+const JG_BASE = (() => {
+  try {
+    return fs.realpathSync(input.cwd ?? process.cwd());
+  } catch {
+    return null;
+  }
+})();
+function jgInside(dir) {
+  let real;
+  try {
+    real = fs.realpathSync(dir);
+  } catch {
+    return false;
+  }
+  return !!JG_BASE && (real === JG_BASE || real.startsWith(JG_BASE + path.sep));
+}
+function jgRefusal(step, dir = JG_BASE ?? ".") {
+  const words = step.match(/(?:'[^']*'|"(?:\\.|[^"\\])*"|[^\s'"])+/g) ?? [];
+  if (words.length === 2 && words[1] === "--version") return null;
+  const question = words[1] ?? "";
+  if (!/^("(?:\\.|[^"\\])*"|'[^']*')$/.test(question))
+    return `\`jg ${question}\`: jg takes one quoted question (jg "<question>" [root]); subcommands and other flags are not allowed.`;
+  const text = question.slice(1, -1);
+  if (question.startsWith('"') && /[$`\\]/.test(text))
+    return "A double-quoted jg question must not contain $, ` or \\; use single quotes for literal text.";
+  if (JG_RESERVED.has(text.trim().toLowerCase()))
+    return `\`jg ${question}\` names a jg subcommand or help word; ask a question instead.`;
+  if (!text.trim() || text.startsWith("-"))
+    return "The jg question must be non-empty and must not start with `-`.";
+  let i = 2;
+  if (words[i] !== undefined && !words[i].startsWith("-")) {
+    const root = words[i];
+    if (
+      !/^[\w@%+=:,.\/-]+$/.test(root) ||
+      root.startsWith("/") ||
+      root.split("/").includes("..")
+    )
+      return `The jg root \`${root}\` must be a plain relative path inside the working directory (no leading / or -, no .. segment, no quotes, ~, $ or globs).`;
+    if (!jgInside(path.resolve(dir, root)))
+      return `The jg root \`${root}\` must be an existing directory that resolves inside the working directory (symlinks are followed).`;
+    i += 1;
+  }
+  for (; i < words.length; i += 1) {
+    const word = words[i];
+    if (!JG_OPTIONS.has(word))
+      return `\`jg ${word}\` is not allowed: only --max-source-bytes N, --concurrency N and --no-cache, after the question and optional root.`;
+    if (word !== "--no-cache") {
+      i += 1;
+      if (!/^\d+$/.test(words[i] ?? ""))
+        return `\`jg ${word}\` takes a number.`;
+    }
+  }
+  return null;
+}
 // Splits on unquoted | and &&; null for any other unquoted list, subshell, input redirect
 // or background job.
 function splitShell(command) {
@@ -1129,10 +1213,28 @@ function mapperBash() {
       "Command lists, subshells, input redirects and background jobs are not allowed.",
     );
   let { segments, separators } = parsed;
-  if (
-    separators[0] === "&&" &&
-    /^cd\s+("[^"]+"|'[^']+'|[^\s"']+)$/.test(segments[0])
-  ) {
+  const cdMatch =
+    separators[0] === "&&"
+      ? segments[0].match(/^cd\s+("[^"]+"|'[^']+'|[^\s"']+)$/)
+      : null;
+  let jgDir = JG_BASE ?? ".";
+  if (cdMatch) {
+    // jg reads a whole tree, so its cd prefix must stay inside the working directory.
+    const next = shellWords(segments[1] ?? "");
+    const cdPath = cdMatch[1];
+    if (next[0] === "jg" && !(next.length === 2 && next[1] === "--version")) {
+      if (
+        !/^[\w@%+=:,.\/-]+$/.test(cdPath) ||
+        /^[-\/~$]/.test(cdPath) ||
+        cdPath.split("/").includes("..") ||
+        !jgInside(path.resolve(JG_BASE ?? ".", cdPath))
+      ) {
+        refuse(
+          `\`cd ${cdPath}\` before jg must be a plain relative path that resolves inside the working directory (no quotes, backslashes, leading -, /, ~ or $, no .. segment; symlinks are followed).`,
+        );
+      }
+      jgDir = path.resolve(JG_BASE ?? ".", cdPath);
+    }
     segments = segments.slice(1);
     separators = separators.slice(1);
   }
@@ -1149,7 +1251,11 @@ function mapperBash() {
     refuse("Redirecting output into a file is not allowed.");
   const [first, ...rest] = steps.map(shellWords);
   let ok = false;
-  if (first[0] === "git") {
+  if (first[0] === "jg") {
+    const why = jgRefusal(steps[0], jgDir);
+    if (why) refuse(why);
+    ok = true;
+  } else if (first[0] === "git") {
     let i = 1;
     while (first[i] === "--no-pager" || first[i] === "-C")
       i += first[i] === "-C" ? 2 : 1;
