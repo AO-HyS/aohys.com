@@ -4,6 +4,12 @@ Date: 2026-07-11
 Linear: AOH-72  
 Scope: `apps/backend/convex`, backend adapters, dashboard Convex client usage, Better Auth integration, schema/indexes, and operational data separation.
 
+> Historical audit: the automated-test results below describe what was observed
+> on 2026-07-11; they do not prescribe current work. Its recommendations to
+> preserve or add automated tests are superseded by the repository's no-tests
+> policy and [current verification plan](../aohys-verification-plan.md). Verify
+> affected behavior through that plan. All other findings remain intact.
+
 ## Executive assessment
 
 The current backend is materially safer and more production-shaped than the dashboard score suggests. Public dashboard functions consistently call `requireAdmin`, sensitive helper functions are internal, every first-party registered Convex function has argument and return validators, provider credentials remain server-side, and the React dashboard correctly uses Convex subscriptions rather than adding TanStack Query over reactive server state.
@@ -90,7 +96,7 @@ What is already correct:
 
 Decisions to make explicit:
 
-1. `trustedProxyHeaders: true` is safe only while allowed hosts/trusted origins remain closed and the Convex auth origin cannot turn arbitrary forwarded hosts into accepted origins. Preserve tests for unknown hosts and preview patterns.
+1. `trustedProxyHeaders: true` is safe only while allowed hosts/trusted origins remain closed and the Convex auth origin cannot turn arbitrary forwarded hosts into accepted origins. The historical recommendation to preserve automated tests for unknown hosts and preview patterns is superseded by the current verification plan; verify those behaviors there.
 2. Admin policy currently trusts a matching Better Auth email. If the product requires verified-email enforcement in addition to Google OAuth, add it as an explicit invariant after confirming existing account state; do not silently lock out the current admin.
 
 ## Fixes completed in this audit
@@ -120,20 +126,20 @@ Deletion was verified by repository-wide caller search and backend typecheck/tes
 
 ## Recommended target contract
 
-| Area | Target |
-| --- | --- |
-| Public functions | Every public function has explicit access policy, args validator, returns validator, and stable error codes. |
-| Internal functions | Scripts, schedulers, actions, and HTTP actions call only internal functions for privileged implementation work. |
-| Reactive reads | One query per Dashboard Surface; no TanStack Query over Convex subscriptions. |
-| Growing collections | Cursor pagination or an explicit proven cardinality bound; never a silent slice. |
-| Indexes | Query predicates live in indexes; no duplicated prefix index unless ordering proves it necessary. |
-| Writes | Idempotent where retries are expected; direct patch when a prior read adds no invariant. |
-| Publication | Durable request identity, observable states, idempotent dispatch, separate persistence/provider failure. |
-| Errors | Structured `ConvexError` codes for expected failures; provider/private detail stays server-side. |
-| Types | Transport and IDs derive from generated Convex types; dashboard owns only UI projections. |
-| Auth | Better Auth/Convex component stays canonical; trusted origins, preview hosts, secure cookies, proxy assumptions, verified-email policy, and rate limits have direct tests. |
-| Data separation | Public build receives only classified public values and published Evidence Assets; Private Work remains admin/internal. |
-| Tooling | Add `@convex-dev/eslint-plugin` recommended rules plus focused no-filter/no-collect checks once the query split lands. |
+| Area                | Target                                                                                                                                                                                                |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Public functions    | Every public function has explicit access policy, args validator, returns validator, and stable error codes.                                                                                          |
+| Internal functions  | Scripts, schedulers, actions, and HTTP actions call only internal functions for privileged implementation work.                                                                                       |
+| Reactive reads      | One query per Dashboard Surface; no TanStack Query over Convex subscriptions.                                                                                                                         |
+| Growing collections | Cursor pagination or an explicit proven cardinality bound; never a silent slice.                                                                                                                      |
+| Indexes             | Query predicates live in indexes; no duplicated prefix index unless ordering proves it necessary.                                                                                                     |
+| Writes              | Idempotent where retries are expected; direct patch when a prior read adds no invariant.                                                                                                              |
+| Publication         | Durable request identity, observable states, idempotent dispatch, separate persistence/provider failure.                                                                                              |
+| Errors              | Structured `ConvexError` codes for expected failures; provider/private detail stays server-side.                                                                                                      |
+| Types               | Transport and IDs derive from generated Convex types; dashboard owns only UI projections.                                                                                                             |
+| Auth                | Better Auth/Convex component stays canonical; verify trusted origins, preview hosts, secure cookies, proxy assumptions, verified-email policy, and rate limits through the current verification plan. |
+| Data separation     | Public build receives only classified public values and published Evidence Assets; Private Work remains admin/internal.                                                                               |
+| Tooling             | Add `@convex-dev/eslint-plugin` recommended rules plus focused no-filter/no-collect checks once the query split lands.                                                                                |
 
 ## Verification
 
