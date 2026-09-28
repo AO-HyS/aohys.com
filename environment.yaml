@@ -27,7 +27,7 @@ maintenance:
   - name: Install dependencies
     run: pnpm install --frozen-lockfile
 
-  - name: Provision Development System 1.36.0 and agent assets
+  - name: Provision Development System 1.36.1 and agent assets
     run: |
       set -e
       mkdir -p "$HOME/.agents/skills" "$HOME/.codex"
@@ -72,7 +72,7 @@ knowledge:
       pnpm run deploy:production (main → production). Both need provider secrets.
   - name: agent-assets
     contents: |
-      The repository pins Development System 1.36.0 and skill catalog 0.54.0.
+      The repository pins Development System 1.36.1 and skill catalog 0.54.0.
       The blueprint copies the skill union, config.toml, hooks.json and the
       development-system mirror first. `pnpm ds setup` then installs canonical
       instructions, native agents, contract and skills from the pinned package,
