@@ -4,16 +4,16 @@ The selected parent owns execution. Read this once for nontrivial work; workers
 execute bounded packets without repeating lifecycle selection.
 
 1. Pin the objective, authorized endpoint, root/revision, requirements and checks.
-2. Luna 6 High priority collects missing source facts. Astra 6 XHigh writes the
-   plan; a different fresh Astra 6 XHigh reviews requirements, rules, plan and
+2. Luna 6 High priority collects missing source facts. Sol 6.1 High writes the
+   plan; a different fresh Sol 6.1 High reviews requirements, rules, plan and
    evidence before writers start. Reuse accepted planning on resume.
 3. Ask Jev at a meaningful routing or correction decision, using a small typed
    packet and current ownership. Record the parent's selected route and rationale.
    Do not call Jev on every read, file, wait, tool invocation or lifecycle event.
-4. Dispatch exact owned packets through the native host. Sol 6 Medium writes
+4. Dispatch exact owned packets through the native host. Sol 6.1 Medium writes
    general packets; Luna 6 High priority writes mechanical/exact packets. Run
    disjoint packets concurrently only when dependencies and capacity allow.
-5. Integrate, run relevant checks, receive independent Astra 6 XHigh review,
+5. Integrate, run relevant checks, receive independent Sol 6.1 High review,
    correct actual findings and verify behavior through the authorized endpoint.
 
 The installed CLI is
@@ -29,7 +29,7 @@ file, never packets or output.
 Record a decision using the same atom/context plus `--route-receipt`,
 `--chosen-route`, `--rationale` and a fresh `--receipt`.
 `exact_implementation` requests Luna 6 High priority; `general_implementation`
-requests Sol 6 Medium normal. Preserve actual capability gaps.
+requests Sol 6.1 Medium normal. Preserve actual capability gaps.
 
 A valid request that fails classification writes a sanitized bound failure receipt
 when a receipt destination is supplied. The parent records continuation with a
