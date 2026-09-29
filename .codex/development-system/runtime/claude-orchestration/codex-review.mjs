@@ -1,7 +1,7 @@
 // Codex review wrapper (operator-level, private).
-// Runs one independent review on Sol 6.1 High through `codex exec` in a read-only sandbox.
+// Runs one independent review with sequential local-profile availability recovery on Sol 6.1 High through `codex exec` in a read-only sandbox.
 // The coordinator launches it with Bash run_in_background: true and is woken when it exits.
-// Usage: node codex-review.mjs [--computer-use] --packet <file> [--root <dir>] [--out <dir>] [--image <file>]...
+// Usage: node codex-review.mjs --accounts | [--computer-use] --packet <file> [--root <dir>] [--out <dir>] [--image <file>]...
 // A review packet needs an Objective line and a `Task-Id: <slug>` line; rounds are keyed on
 // (Task-Id, root), so rewording the objective does not reset them. A round counts only when it
 // completes: Codex exits 0 and findings.md ends with `Verdict: merge` or `Verdict: do not merge`
@@ -16,6 +16,7 @@
 // refuses a second launch; a refusal after the claim leaves the directory burned. Refusals exit 2 before any launch. Prints one JSON receipt line: requested
 // model and effort, the observed ones from the Codex session log ("unknown" if absent), and
 // the outcome ("review" = complete round, "attempt" = not counted).
+import { discoverAccounts, classifyAttempt } from './codex-accounts.mjs';
 import { spawn } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -47,15 +48,16 @@ function parseArgs(argv) {
   const args = { images: [], computerUse: false };
   for (let i = 0; i < argv.length; i += 1) {
     const flag = argv[i];
+    if (flag === '--accounts') { args.accounts = true; continue; }
     if (flag === '--computer-use') { args.computerUse = true; continue; }
     const value = argv[i + 1];
-    if (!['--packet', '--root', '--out', '--image'].includes(flag)) refuse(`unknown argument ${flag}. Usage: node codex-review.mjs [--computer-use] --packet <file> [--root <dir>] [--out <dir>] [--image <file>]...`);
+    if (!['--packet', '--root', '--out', '--image'].includes(flag)) refuse(`unknown argument ${flag}. Usage: node codex-review.mjs --accounts | [--computer-use] --packet <file> [--root <dir>] [--out <dir>] [--image <file>]...`);
     if (value === undefined || value.startsWith('--')) refuse(`${flag} needs a value`);
     if (flag === '--image') args.images.push(path.resolve(value));
     else args[flag.slice(2)] = value;
     i += 1;
   }
-  if (!args.packet) refuse('--packet <file> is required');
+  if (!args.packet && !args.accounts) refuse('--packet <file> is required');
   return args;
 }
 
@@ -94,11 +96,11 @@ function threadId(eventsFile) {
 }
 
 // The last turn_context of the matching rollout in the three newest date directories.
-function observedIdentity(id) {
+function observedIdentity(id, selectedHome) {
   const unknown = { model: 'unknown', effort: 'unknown' };
   if (!id) return unknown;
   try {
-    const sessions = path.join(process.env.CODEX_HOME ? path.resolve(process.env.CODEX_HOME) : path.join(os.homedir(), '.codex'), 'sessions');
+    const sessions = path.join(selectedHome, 'sessions');
     const list = (dir) => (fs.existsSync(dir) ? fs.readdirSync(dir).filter((name) => /^\d+$/.test(name)).sort() : []);
     const days = list(sessions).flatMap((y) => list(path.join(sessions, y)).flatMap((m) => list(path.join(sessions, y, m)).map((d) => path.join(sessions, y, m, d))));
     for (const day of days.slice(-3).reverse()) {
@@ -172,13 +174,20 @@ function releaseLock(token) {
 }
 
 const args = parseArgs(process.argv.slice(2));
+const inventory = discoverAccounts(REVIEW);
+if (args.accounts) { process.stdout.write(`${JSON.stringify(inventory)}\n`); process.exit(0); }
+const accountLimit = REVIEW.maxAccountAttempts ?? 2;
+if (!Number.isInteger(accountLimit) || accountLimit < 1 || accountLimit > 2) refuse('review.maxAccountAttempts must be 1 or 2');
+inventory.skipped.push(...inventory.accounts.slice(accountLimit).map((account) => ({ ...account, reason: 'outside two-profile recovery budget' })));
+inventory.accounts = inventory.accounts.slice(0, accountLimit);
 const packetFile = path.resolve(args.packet);
 if (!fs.existsSync(packetFile)) refuse(`packet ${packetFile} does not exist`);
-const packet = fs.readFileSync(packetFile, 'utf8');
+const packetBytes = fs.readFileSync(packetFile);
+const packet = packetBytes.toString('utf8');
 const objective = packet.match(/^\s*Objective:\s*(\S.*)$/m)?.[1];
 if (!objective) refuse('the packet needs an "Objective: ..." line');
 for (const image of args.images) if (!fs.existsSync(image)) refuse(`image ${image} does not exist`);
-const root = path.resolve(args.root ?? process.cwd());
+const root = fs.realpathSync(path.resolve(args.root ?? process.cwd()));
 if (!fs.existsSync(root)) refuse(`root ${root} does not exist`);
 
 const mode = args.computerUse ? 'computer-use' : 'review';
@@ -258,7 +267,7 @@ const refusal = reserve();
 if (refusal) refuse(refusal);
 
 const files = Object.fromEntries(['packet.md', 'findings.md', 'events.jsonl', 'stderr.log', 'receipt.json', 'previous-findings.md'].map((name) => [name, path.join(outDir, name)]));
-fs.writeFileSync(files['packet.md'], packet);
+fs.writeFileSync(files['packet.md'], packetBytes);
 const preamble = mode === 'computer-use' ? COMPUTER_USE_PREAMBLE(outDir) : PREAMBLE;
 
 // Previous findings: the latest complete round's findings, only if unchanged since it ended.
@@ -281,97 +290,96 @@ if (previous) {
 
 const started = Date.now();
 let child = null;
-let childExited = false;
-let finalized = false;
-// The child leads its own process group, so a signal reaches everything Codex started.
-const signalChild = (signal) => { try { process.kill(-child.pid, signal); } catch { try { child.kill(signal); } catch { /* gone */ } } };
-const childAlive = () => child && !childExited && child.exitCode === null && child.signalCode === null;
-
-// One finalizer for every ending: terminate a live child, record the round or attempt, write
-// the receipt, remove the marker.
-function finalize(exitCode, reason = null) {
-  if (finalized) return;
-  finalized = true;
-  if (child?.pid) signalChild('SIGKILL');
-  let observed = { model: 'unknown', effort: 'unknown' };
-  try { observed = observedIdentity(threadId(files['events.jsonl'])); } catch { /* best effort */ }
-  const verdict = readVerdict(files['findings.md']);
-  let outcome = null;
-  let recordError = null;
-  if (mode === 'review') {
-    const at = new Date().toISOString();
-    outcome = exitCode === 0 && !reason && verdict ? 'review' : 'attempt';
-    try {
-      if (outcome === 'review') {
-        const findingsSha256 = sha256(fs.readFileSync(files['findings.md']));
-        fs.appendFileSync(roundsFile, `${JSON.stringify({ taskId, root, runId, verdict, findingsPath: files['findings.md'], findingsSha256, at })}\n`);
-      } else {
-        const why = reason ?? (exitCode !== 0 ? `exit ${exitCode}` : 'no verdict');
-        fs.appendFileSync(attemptsFile, `${JSON.stringify({ taskId, root, runId, exitCode, reason: why, at })}\n`);
-      }
-    } catch (error) { recordError = String(error?.message ?? error).slice(0, 200); }
-  }
-  const receipt = {
-    status: exitCode === 0 && !reason ? 'succeeded' : 'failed',
-    ...(reason ? { reason } : {}),
-    exitCode,
-    mode,
-    taskId,
-    outcome,
-    verdict,
-    requested,
-    observed,
-    findings: files['findings.md'],
-    round,
-    ...(recordError ? { recordError } : {}),
-    seconds: Math.round((Date.now() - started) / 1000),
-    runId,
-  };
-  try { fs.writeFileSync(files['receipt.json'], `${JSON.stringify(receipt, null, 2)}\n`); } catch { /* best effort */ }
-  removeMarker();
-  process.stdout.write(`${JSON.stringify(receipt)}\n`);
-}
-
-// On a signal: pass it to the child, wait up to 10 s for its exit (then SIGKILL), write a
-// cancelled receipt, remove the marker, then exit.
 let cancelling = false;
+let cancelCode = null;
+const attempts = [];
+const signalChild = (signal) => { if (!child?.pid) return; try { process.kill(-child.pid, signal); } catch { try { child.kill(signal); } catch { /* gone */ } } };
 for (const [signal, code] of [['SIGINT', 130], ['SIGTERM', 143]]) {
   process.on(signal, () => {
     if (cancelling) return;
     cancelling = true;
-    const done = () => { finalize(code, 'cancelled'); process.exit(code); };
-    if (!childAlive()) { done(); return; }
-    const timer = setTimeout(() => { signalChild('SIGKILL'); done(); }, 10000);
-    child.once('exit', () => { clearTimeout(timer); done(); });
+    cancelCode = code;
     signalChild(signal);
+    const timer = setTimeout(() => signalChild('SIGKILL'), 10000);
+    timer.unref();
+    child?.once('close', () => clearTimeout(timer));
   });
 }
-
 let exitCode = 1;
-let failure = null;
+let reason = null;
+let observed = { model: 'unknown', effort: 'unknown' };
+let verdict = null;
+let eligible = inventory.accounts.length === 0;
 try {
-  const events = fs.openSync(files['events.jsonl'], 'w');
-  const stderr = fs.openSync(files['stderr.log'], 'w');
-  const codexArgs = ['exec', '-m', requested.model, '-c', `model_reasoning_effort="${requested.effort}"`, '-s', 'read-only', '-C', root,
-    '--skip-git-repo-check', '--json', '-o', files['findings.md'], ...args.images.flatMap((image) => ['-i', image]), '-'];
-  exitCode = await new Promise((resolve) => {
-    // Callback work is guarded: any failure resolves through the one finalizer.
-    const guard = (fn) => (...a) => { try { fn(...a); } catch (error) { failure = `callback: ${String(error?.message ?? error).slice(0, 200)}`; resolve(1); } };
-    child = spawn('codex', codexArgs, { cwd: root, stdio: ['pipe', events, stderr], detached: true });
-    child.on('error', guard((error) => {
-      resolve(127);
-      fs.appendFileSync(files['stderr.log'], `codex-review: could not run codex: ${error.message}\n`);
-    }));
-    child.on('exit', () => { childExited = true; });
-    child.on('close', guard((code, signal) => resolve(code ?? (signal ? 1 : 0))));
-    child.stdin.on('error', () => { /* codex exited before reading the prompt */ });
-    child.stdin.end(`${preamble}\n\n${packet}${previousSection}`);
-  });
-  try { fs.closeSync(events); fs.closeSync(stderr); } catch { /* best effort */ }
+  for (const [index, account] of inventory.accounts.entries()) {
+    if (cancelling) break;
+    const attemptDir = path.join(outDir, `attempt-${index + 1}`);
+    fs.mkdirSync(attemptDir);
+    const paths = Object.fromEntries(['events.jsonl', 'stderr.log', 'findings.md'].map((name) => [name, path.join(attemptDir, name)]));
+    const events = fs.openSync(paths['events.jsonl'], 'w');
+    const stderr = fs.openSync(paths['stderr.log'], 'w');
+    let spawnError = null;
+    let childSignal = null;
+    const env = { ...process.env, CODEX_HOME: account.home };
+    delete env.OPENAI_API_KEY;
+    delete env.CODEX_API_KEY;
+    const codexArgs = ['exec', '-m', requested.model, '-c', `model_reasoning_effort="${requested.effort}"`, '-s', 'read-only', '-C', root,
+      '--skip-git-repo-check', '--json', '-o', paths['findings.md'], ...args.images.flatMap((image) => ['-i', image]), '-'];
+    try {
+      exitCode = await new Promise((resolve) => {
+        child = spawn('codex', codexArgs, { cwd: root, env, stdio: ['pipe', events, stderr], detached: true });
+        child.on('error', (error) => { spawnError = error.code ?? 'spawn failure'; });
+        // close, including spawn failure, is the barrier before another account starts.
+        child.once('close', (code, signal) => { childSignal = signal; signalChild('SIGKILL'); child = null; resolve(code ?? (spawnError ? 127 : signal ? 1 : 0)); });
+        child.stdin.on('error', () => { /* exited before reading */ });
+        child.stdin.end(`${preamble}\n\n${packet}${previousSection}`);
+      });
+    } finally { fs.closeSync(events); fs.closeSync(stderr); }
+    observed = observedIdentity(threadId(paths['events.jsonl']), account.home);
+    verdict = readVerdict(paths['findings.md']);
+    const classified = cancelling ? { classification: 'cancelled', retryEligible: false, reason: 'cancelled' }
+      : classifyAttempt({ eventsFile: paths['events.jsonl'], stderrFile: paths['stderr.log'], exitCode, spawnError, signal: childSignal, mode, verdict });
+    attempts.push({ accountIndex: index + 1, home: account.home, authPath: account.authPath, exitCode, ...classified, observed,
+      eventsPath: paths['events.jsonl'], stderrPath: paths['stderr.log'], findingsPath: paths['findings.md'] });
+    reason = classified.reason;
+    eligible = classified.retryEligible;
+    if (classified.classification === 'succeeded') {
+      if (fs.existsSync(paths['findings.md'])) fs.copyFileSync(paths['findings.md'], files['findings.md']);
+      eligible = false;
+      break;
+    }
+    if (!eligible || spawnError === 'ENOENT') break;
+  }
 } catch (error) {
-  failure = String(error?.message ?? error).slice(0, 200);
-  exitCode = exitCode === 0 ? 1 : exitCode;
-} finally {
-  if (!cancelling) finalize(exitCode, failure);
+  reason = 'local_failure'; eligible = false; exitCode = 1;
+  if (child) {
+    const closing = new Promise((resolve) => child.once('close', resolve));
+    signalChild('SIGKILL');
+    await closing;
+  }
 }
-if (!cancelling) process.exitCode = exitCode;
+if (cancelling) { eligible = false; exitCode = cancelCode; reason = 'cancelled'; }
+const succeeded = attempts.at(-1)?.classification === 'succeeded' && !cancelling;
+if (eligible) { exitCode = 75; reason = reason ?? 'No local authenticated Codex profiles discovered'; }
+else if (!succeeded && exitCode === 0) exitCode = 1;
+let outcome = mode === 'review' ? (succeeded && verdict ? 'review' : 'attempt') : null;
+let recordError = null;
+try {
+  const at = new Date().toISOString();
+  if (outcome === 'review') fs.appendFileSync(roundsFile, `${JSON.stringify({ taskId, root, runId, verdict, findingsPath: files['findings.md'], findingsSha256: sha256(fs.readFileSync(files['findings.md'])), at })}\n`);
+  else if (outcome === 'attempt') fs.appendFileSync(attemptsFile, `${JSON.stringify({ taskId, root, runId, exitCode, reason, at })}\n`);
+} catch (error) { recordError = 'round_record_failed'; }
+const packetSha256 = sha256(packetBytes);
+const receipt = {
+  schemaVersion: 2, status: eligible ? 'fallback_required' : succeeded ? 'succeeded' : 'failed', reason, exitCode,
+  root, packetPath: files['packet.md'], packetSha256, mode, taskId, outcome, verdict, requested, observed,
+  accounts: inventory.accounts, skippedAccounts: inventory.skipped, attempts, findings: files['findings.md'], round,
+  ...(recordError ? { recordError } : {}), seconds: Math.round((Date.now() - started) / 1000), runId,
+  ...(eligible ? { fallback: { eligible: true, role: mode === 'computer-use' ? 'browser-qa' : args.images.length ? 'visual-reviewer' : 'reviewer',
+    reason, receiptPath: files['receipt.json'], packetPath: files['packet.md'], packetSha256,
+    prompt: `${packet}\nCodex fallback: ${reason}\nCodex fallback receipt: ${files['receipt.json']}\nCodex fallback packet: ${files['packet.md']}\n` } } : {}),
+};
+try { fs.writeFileSync(files['receipt.json'], `${JSON.stringify(receipt, null, 2)}\n`); }
+finally { removeMarker(); }
+process.stdout.write(`${JSON.stringify(receipt)}\n`);
+process.exitCode = exitCode;

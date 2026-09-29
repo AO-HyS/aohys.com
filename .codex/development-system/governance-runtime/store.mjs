@@ -3,27 +3,11 @@
 import { execFile } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { constants } from "node:fs";
-import {
-  chmod,
-  link,
-  lstat,
-  mkdir,
-  open,
-  readdir,
-  readFile,
-  realpath,
-  rename,
-  unlink,
-} from "node:fs/promises";
+import { chmod, link, lstat, mkdir, open, readdir, readFile, realpath, rename, unlink } from "node:fs/promises";
 import { homedir, hostname } from "node:os";
 import { isAbsolute, join, relative, resolve, sep } from "node:path";
 import { promisify } from "node:util";
-import {
-  GovernanceError,
-  isRecord,
-  sha256Hex,
-  stableHash,
-} from "./schemas.mjs";
+import { GovernanceError, isRecord, sha256Hex, stableHash } from "./schemas.mjs";
 
 const execFileAsync = promisify(execFile);
 
@@ -37,19 +21,12 @@ const MAX_SNAPSHOT_ENTRIES = 20000;
 
 /** @param {unknown} error @param {string} code */
 function hasCode(error, code) {
-  return (
-    error instanceof Error &&
-    /** @type {NodeJS.ErrnoException} */ (error).code === code
-  );
+  return error instanceof Error && /** @type {NodeJS.ErrnoException} */ (error).code === code;
 }
 
 /** @param {string | undefined} home @returns {string} */
 export function resolveHome(home) {
-  if (
-    home !== undefined &&
-    (typeof home !== "string" || home.trim().length === 0)
-  )
-    throw new GovernanceError("home must be a non-empty path");
+  if (home !== undefined && (typeof home !== "string" || home.trim().length === 0)) throw new GovernanceError("home must be a non-empty path");
   return resolve(home ?? homedir());
 }
 
@@ -79,34 +56,23 @@ export function runSnapshotPath(runDirectory) {
 }
 
 /** @param {string} code @returns {never} */
-function lockError(code) {
-  throw new GovernanceError("Governance lock operation failed", code);
-}
+function lockError(code) { throw new GovernanceError("Governance lock operation failed", code); }
 
 /** @param {import("node:fs").BigIntStats} left @param {import("node:fs").BigIntStats} right */
-function sameInode(left, right) {
-  return left.dev === right.dev && left.ino === right.ino;
-}
+function sameInode(left, right) { return left.dev === right.dev && left.ino === right.ino; }
 
 /** @param {string} path */
 async function syncDirectory(path) {
   const handle = await open(path, constants.O_RDONLY | constants.O_NOFOLLOW);
-  try {
-    await handle.sync();
-  } finally {
-    await handle.close();
-  }
+  try { await handle.sync(); } finally { await handle.close(); }
 }
 
 /** A private directory prevents other users from replacing mutex sidecars.
  * This is a local, same-host protocol, not a distributed filesystem lock.
  * @param {string} path */
 async function privateLockDirectory(path) {
-  try {
-    await mkdir(path, { mode: 0o700 });
-  } catch (error) {
-    if (!hasCode(error, "EEXIST")) throw error;
-  }
+  try { await mkdir(path, { mode: 0o700 }); }
+  catch (error) { if (!hasCode(error, "EEXIST")) throw error; }
   const stat = await lstat(path, { bigint: true });
   if (!stat.isDirectory() || stat.isSymbolicLink()) lockError("lock-unknown");
   if ((stat.mode & 0o777n) !== 0o700n) await chmod(path, 0o700);
@@ -128,19 +94,14 @@ async function mutexFileStat(path) {
 
 /** @param {unknown} error */
 function sqliteBusy(error) {
-  return (
-    error instanceof Error &&
-    /** @type {{errcode?:number}} */ (error).errcode === 5
-  );
+  return error instanceof Error && /** @type {{errcode?:number}} */ (error).errcode === 5;
 }
 
 /** @param {number} deadline @param {number} retryMs */
 async function retryLock(deadline, retryMs) {
   const remaining = deadline - Date.now();
   if (remaining <= 0) lockError("lock-timeout");
-  await new Promise((resolveDelay) =>
-    setTimeout(resolveDelay, Math.min(retryMs, remaining)),
-  );
+  await new Promise((resolveDelay) => setTimeout(resolveDelay, Math.min(retryMs, remaining)));
 }
 
 /** Read a bounded, stable, regular file without following a symlink or waiting
@@ -149,49 +110,23 @@ async function retryLock(deadline, retryMs) {
 async function inspectLock(path, limit = MAX_LOCK_BYTES) {
   try {
     const before = await lstat(path, { bigint: true });
-    if (
-      !before.isFile() ||
-      before.isSymbolicLink() ||
-      before.size > BigInt(limit)
-    )
-      lockError("lock-unknown");
-    const handle = await open(
-      path,
-      constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK,
-    );
+    if (!before.isFile() || before.isSymbolicLink() || before.size > BigInt(limit)) lockError("lock-unknown");
+    const handle = await open(path, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
     try {
       const stat = await handle.stat({ bigint: true });
-      if (
-        !stat.isFile() ||
-        !sameInode(before, stat) ||
-        stat.size > BigInt(limit)
-      )
-        lockError("lock-unknown");
+      if (!stat.isFile() || !sameInode(before, stat) || stat.size > BigInt(limit)) lockError("lock-unknown");
       const buffer = Buffer.alloc(limit + 1);
       let length = 0;
       for (;;) {
-        const { bytesRead } = await handle.read(
-          buffer,
-          length,
-          buffer.length - length,
-          length,
-        );
+        const { bytesRead } = await handle.read(buffer, length, buffer.length - length, length);
         length += bytesRead;
         if (length > limit) lockError("lock-unknown");
         if (bytesRead === 0) break;
       }
       const after = await handle.stat({ bigint: true });
-      if (
-        after.size !== BigInt(length) ||
-        stat.size !== after.size ||
-        stat.mtimeNs !== after.mtimeNs ||
-        stat.ctimeNs !== after.ctimeNs
-      )
-        lockError("lock-unknown");
+      if (after.size !== BigInt(length) || stat.size !== after.size || stat.mtimeNs !== after.mtimeNs || stat.ctimeNs !== after.ctimeNs) lockError("lock-unknown");
       return { stat, bytes: buffer.subarray(0, length) };
-    } finally {
-      await handle.close();
-    }
+    } finally { await handle.close(); }
   } catch (error) {
     if (hasCode(error, "ENOENT")) return null;
     if (error instanceof GovernanceError) throw error;
@@ -203,35 +138,17 @@ async function inspectLock(path, limit = MAX_LOCK_BYTES) {
 function parseLock(bytes) {
   try {
     const record = JSON.parse(bytes.toString("utf8"));
-    if (
-      !isRecord(record) ||
-      !Number.isSafeInteger(record.pid) ||
-      record.pid <= 0 ||
-      typeof record.acquiredAt !== "string" ||
-      !Number.isFinite(Date.parse(record.acquiredAt))
-    )
-      lockError("lock-unknown");
+    if (!isRecord(record) || !Number.isSafeInteger(record.pid) || record.pid <= 0
+      || typeof record.acquiredAt !== "string" || !Number.isFinite(Date.parse(record.acquiredAt))) lockError("lock-unknown");
     const keys = Object.keys(record).sort().join(",");
     if (keys === "acquiredAt,pid") return { kind: "legacy", record };
-    if (
-      keys !== "acquiredAt,hostname,mutexDev,mutexIno,pid,protocol,token" ||
-      record.protocol !== LOCK_PROTOCOL ||
-      typeof record.token !== "string" ||
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(
-        record.token,
-      ) ||
-      typeof record.hostname !== "string" ||
-      record.hostname.length === 0 ||
-      typeof record.mutexDev !== "string" ||
-      !/^(0|[1-9][0-9]*)$/u.test(record.mutexDev) ||
-      typeof record.mutexIno !== "string" ||
-      !/^[1-9][0-9]*$/u.test(record.mutexIno)
-    )
-      lockError("lock-unknown");
+    if (keys !== "acquiredAt,hostname,mutexDev,mutexIno,pid,protocol,token" || record.protocol !== LOCK_PROTOCOL
+      || typeof record.token !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u.test(record.token)
+      || typeof record.hostname !== "string" || record.hostname.length === 0
+      || typeof record.mutexDev !== "string" || !/^(0|[1-9][0-9]*)$/u.test(record.mutexDev)
+      || typeof record.mutexIno !== "string" || !/^[1-9][0-9]*$/u.test(record.mutexIno)) lockError("lock-unknown");
     return { kind: "v2", record };
-  } catch {
-    lockError("lock-unknown");
-  }
+  } catch { lockError("lock-unknown"); }
 }
 
 /** @param {ReturnType<typeof parseLock>} owner @param {import("node:fs").BigIntStats} mutexStat */
@@ -239,18 +156,12 @@ function recoverableLock(owner, mutexStat) {
   if (owner.kind === "v2") {
     // Acquiring this exact permanent DB proves the old critical section ended.
     // PID reuse (including this process) is irrelevant for a v2 record.
-    if (
-      owner.record.hostname !== hostname() ||
-      owner.record.mutexDev !== String(mutexStat.dev) ||
-      owner.record.mutexIno !== String(mutexStat.ino)
-    )
-      lockError("lock-unknown");
+    if (owner.record.hostname !== hostname() || owner.record.mutexDev !== String(mutexStat.dev)
+      || owner.record.mutexIno !== String(mutexStat.ino)) lockError("lock-unknown");
     return true;
   }
-  try {
-    process.kill(owner.record.pid, 0);
-    return false;
-  } catch (error) {
+  try { process.kill(owner.record.pid, 0); return false; }
+  catch (error) {
     if (hasCode(error, "ESRCH")) return true;
     lockError("lock-unknown"); // EPERM and indeterminate ownership never authorize recovery.
   }
@@ -262,11 +173,8 @@ function recoverableLock(owner, mutexStat) {
 async function publishLockReceipt(path, bytes) {
   const temporary = `${path}.${randomUUID()}.tmp`;
   await writeImmutablePrivate(temporary, bytes);
-  try {
-    await link(temporary, path);
-  } finally {
-    await unlink(temporary);
-  }
+  try { await link(temporary, path); }
+  finally { await unlink(temporary); }
 }
 
 /** Resume the one pending archive under the permanent DB mutex. Crash windows
@@ -279,47 +187,26 @@ async function resumeLockRecovery(path, directory, mutexStat) {
     const pending = await inspectLock(pendingPath, MAX_LOCK_BYTES * 4);
     if (!pending) return;
     const observation = JSON.parse(pending.bytes.toString("utf8"));
-    if (
-      !isRecord(observation) ||
-      observation.state !== "observed" ||
-      typeof observation.recoveryId !== "string" ||
-      !/^recovery-[0-9a-f-]{36}$/u.test(observation.recoveryId) ||
-      typeof observation.rawBytes !== "string"
-    )
-      lockError("lock-recovery-failed");
+    if (!isRecord(observation) || observation.state !== "observed"
+      || typeof observation.recoveryId !== "string" || !/^recovery-[0-9a-f-]{36}$/u.test(observation.recoveryId)
+      || typeof observation.rawBytes !== "string") lockError("lock-recovery-failed");
     const original = Buffer.from(observation.rawBytes, "base64");
-    if (
-      original.length > MAX_LOCK_BYTES ||
-      sha256Hex(original) !== observation.sha256 ||
-      original.length !== observation.size ||
-      observation.hostname !== hostname() ||
-      observation.mutexDev !== String(mutexStat.dev) ||
-      observation.mutexIno !== String(mutexStat.ino)
-    )
-      lockError("lock-recovery-failed");
+    if (original.length > MAX_LOCK_BYTES || sha256Hex(original) !== observation.sha256
+      || original.length !== observation.size || observation.hostname !== hostname()
+      || observation.mutexDev !== String(mutexStat.dev) || observation.mutexIno !== String(mutexStat.ino)) lockError("lock-recovery-failed");
     const recovery = join(directory, observation.recoveryId);
     const stat = await lstat(recovery);
-    if (!stat.isDirectory() || stat.isSymbolicLink())
-      lockError("lock-recovery-failed");
-    const observed = await inspectLock(
-      join(recovery, "observed.json"),
-      MAX_LOCK_BYTES * 4,
-    );
-    if (!observed || !observed.bytes.equals(pending.bytes))
-      lockError("lock-recovery-failed");
+    if (!stat.isDirectory() || stat.isSymbolicLink()) lockError("lock-recovery-failed");
+    const observed = await inspectLock(join(recovery, "observed.json"), MAX_LOCK_BYTES * 4);
+    if (!observed || !observed.bytes.equals(pending.bytes)) lockError("lock-recovery-failed");
     const orphanPath = join(recovery, "orphan.lock");
     let orphan = await inspectLock(orphanPath);
     let state = "recovered";
     if (!orphan) {
       const current = await inspectLock(path);
-      if (
-        current &&
-        String(current.stat.dev) === observation.dev &&
-        String(current.stat.ino) === observation.ino &&
-        current.bytes.equals(original)
-      ) {
-        if (!recoverableLock(parseLock(current.bytes), mutexStat))
-          lockError("lock-recovery-failed");
+      if (current && String(current.stat.dev) === observation.dev && String(current.stat.ino) === observation.ino
+        && current.bytes.equals(original)) {
+        if (!recoverableLock(parseLock(current.bytes), mutexStat)) lockError("lock-recovery-failed");
         await rename(path, orphanPath);
         orphan = await inspectLock(orphanPath);
       } else {
@@ -328,14 +215,8 @@ async function resumeLockRecovery(path, directory, mutexStat) {
         state = "aborted";
       }
     }
-    if (
-      state === "recovered" &&
-      (!orphan ||
-        !orphan.bytes.equals(original) ||
-        String(orphan.stat.dev) !== observation.dev ||
-        String(orphan.stat.ino) !== observation.ino)
-    )
-      lockError("lock-recovery-failed");
+    if (state === "recovered" && (!orphan || !orphan.bytes.equals(original)
+      || String(orphan.stat.dev) !== observation.dev || String(orphan.stat.ino) !== observation.ino)) lockError("lock-recovery-failed");
     await syncDirectory(resolve(path, ".."));
     await syncDirectory(recovery);
     const receiptPath = join(recovery, `${state}.json`);
@@ -343,31 +224,16 @@ async function resumeLockRecovery(path, directory, mutexStat) {
     const observationHash = sha256Hex(pending.bytes);
     if (completed) {
       const receipt = JSON.parse(completed.bytes.toString("utf8"));
-      if (
-        receipt.state !== state ||
-        receipt.recoveryId !== observation.recoveryId ||
-        receipt.observationHash !== observationHash ||
-        receipt.sha256 !== observation.sha256
-      )
-        lockError("lock-recovery-failed");
+      if (receipt.state !== state || receipt.recoveryId !== observation.recoveryId
+        || receipt.observationHash !== observationHash || receipt.sha256 !== observation.sha256) lockError("lock-recovery-failed");
     } else {
-      await publishLockReceipt(
-        receiptPath,
-        `${JSON.stringify({
-          state,
-          recoveryId: observation.recoveryId,
-          completedAt: new Date().toISOString(),
-          observationHash,
-          sha256: observation.sha256,
-        })}\n`,
-      );
+      await publishLockReceipt(receiptPath, `${JSON.stringify({ state, recoveryId: observation.recoveryId,
+        completedAt: new Date().toISOString(), observationHash, sha256: observation.sha256 })}\n`);
     }
     await syncDirectory(recovery);
     await unlink(pendingPath);
     await syncDirectory(directory);
-  } catch {
-    lockError("lock-recovery-failed");
-  }
+  } catch { lockError("lock-recovery-failed"); }
 }
 
 /** @param {string} path @param {NonNullable<Awaited<ReturnType<typeof inspectLock>>>} observed
@@ -378,57 +244,27 @@ async function archiveOrphan(path, observed, directory, mutexStat) {
   try {
     await mkdir(recovery, { mode: 0o700 });
     await syncDirectory(directory);
-    const observation = `${JSON.stringify({
-      state: "observed",
-      recoveryId,
-      observedAt: new Date().toISOString(),
-      observerPid: process.pid,
-      hostname: hostname(),
-      dev: String(observed.stat.dev),
-      ino: String(observed.stat.ino),
-      mutexDev: String(mutexStat.dev),
-      mutexIno: String(mutexStat.ino),
-      rawBytes: observed.bytes.toString("base64"),
-      sha256: sha256Hex(observed.bytes),
-      size: observed.bytes.length,
-    })}\n`;
+    const observation = `${JSON.stringify({ state: "observed", recoveryId, observedAt: new Date().toISOString(),
+      observerPid: process.pid, hostname: hostname(), dev: String(observed.stat.dev), ino: String(observed.stat.ino),
+      mutexDev: String(mutexStat.dev), mutexIno: String(mutexStat.ino), rawBytes: observed.bytes.toString("base64"),
+      sha256: sha256Hex(observed.bytes), size: observed.bytes.length })}\n`;
     await writeImmutablePrivate(join(recovery, "observed.json"), observation);
     await syncDirectory(recovery);
-    await link(
-      join(recovery, "observed.json"),
-      join(directory, "recovery-pending.json"),
-    );
+    await link(join(recovery, "observed.json"), join(directory, "recovery-pending.json"));
     await syncDirectory(directory);
     await resumeLockRecovery(path, directory, mutexStat);
-  } catch {
-    lockError("lock-recovery-failed");
-  }
+  } catch { lockError("lock-recovery-failed"); }
 }
 
 /** Publish complete metadata atomically for compatibility with old runtimes.
  * The unique owner file remains linked until our critical section finishes.
  * @param {string} path @param {string} directory @param {import("node:fs").BigIntStats} mutexStat
  * @param {number} deadline @param {number} retryMs */
-async function acquireCompatibilityLock(
-  path,
-  directory,
-  mutexStat,
-  deadline,
-  retryMs,
-) {
+async function acquireCompatibilityLock(path, directory, mutexStat, deadline, retryMs) {
   const token = randomUUID();
   const ownerPath = join(directory, `owner-${token}.json`);
-  const bytes = Buffer.from(
-    `${JSON.stringify({
-      protocol: LOCK_PROTOCOL,
-      token,
-      pid: process.pid,
-      acquiredAt: new Date().toISOString(),
-      hostname: hostname(),
-      mutexDev: String(mutexStat.dev),
-      mutexIno: String(mutexStat.ino),
-    })}\n`,
-  );
+  const bytes = Buffer.from(`${JSON.stringify({ protocol: LOCK_PROTOCOL, token, pid: process.pid,
+    acquiredAt: new Date().toISOString(), hostname: hostname(), mutexDev: String(mutexStat.dev), mutexIno: String(mutexStat.ino) })}\n`);
   await writeImmutablePrivate(ownerPath, bytes);
   const owner = await inspectLock(ownerPath);
   if (!owner) lockError("lock-unknown");
@@ -436,13 +272,8 @@ async function acquireCompatibilityLock(
   let retried = false;
   try {
     for (;;) {
-      try {
-        await link(ownerPath, path);
-        published = true;
-        return { ...owner, ownerPath, token };
-      } catch (error) {
-        if (!hasCode(error, "EEXIST")) throw error;
-      }
+      try { await link(ownerPath, path); published = true; return { ...owner, ownerPath, token }; }
+      catch (error) { if (!hasCode(error, "EEXIST")) throw error; }
       if (retried && Date.now() >= deadline) lockError("lock-timeout");
       retried = true;
       const existing = await inspectLock(path);
@@ -458,11 +289,8 @@ async function acquireCompatibilityLock(
     lockError("lock-unknown");
   } finally {
     if (!published) {
-      try {
-        await unlink(ownerPath);
-      } catch {
-        lockError("lock-release-failed");
-      }
+      try { await unlink(ownerPath); }
+      catch { lockError("lock-release-failed"); }
     }
   }
 }
@@ -472,21 +300,12 @@ async function releaseCompatibilityLock(path, owner) {
   try {
     const current = await inspectLock(path);
     const source = await inspectLock(owner.ownerPath);
-    if (
-      !current ||
-      !sameInode(current.stat, owner.stat) ||
-      !current.bytes.equals(owner.bytes) ||
-      !source ||
-      !sameInode(source.stat, owner.stat) ||
-      !source.bytes.equals(owner.bytes) ||
-      parseLock(current.bytes).record.token !== owner.token
-    )
-      lockError("lock-release-failed");
+    if (!current || !sameInode(current.stat, owner.stat) || !current.bytes.equals(owner.bytes)
+      || !source || !sameInode(source.stat, owner.stat) || !source.bytes.equals(owner.bytes)
+      || parseLock(current.bytes).record.token !== owner.token) lockError("lock-release-failed");
     await unlink(path);
     await unlink(owner.ownerPath);
-  } catch {
-    lockError("lock-release-failed");
-  }
+  } catch { lockError("lock-release-failed"); }
 }
 
 /** Bounded acquisition using a permanent SQLite OS mutex for the full critical
@@ -497,19 +316,10 @@ async function releaseCompatibilityLock(path, owner) {
 export async function withLock(path, action, options = {}) {
   const waitMs = options.waitMs ?? LOCK_WAIT_MS;
   const retryMs = options.retryMs ?? LOCK_RETRY_MS;
-  if (
-    !Number.isFinite(waitMs) ||
-    waitMs < 0 ||
-    !Number.isFinite(retryMs) ||
-    retryMs <= 0
-  )
-    lockError("invalid");
+  if (!Number.isFinite(waitMs) || waitMs < 0 || !Number.isFinite(retryMs) || retryMs <= 0) lockError("invalid");
   let DatabaseSync;
-  try {
-    ({ DatabaseSync } = await import("node:sqlite"));
-  } catch {
-    lockError("lock-runtime-unavailable");
-  }
+  try { ({ DatabaseSync } = await import("node:sqlite")); }
+  catch { lockError("lock-runtime-unavailable"); }
   if (typeof DatabaseSync !== "function") lockError("lock-runtime-unavailable");
   const deadline = Date.now() + waitMs;
   const directory = `${path}.mutex`;
@@ -525,16 +335,11 @@ export async function withLock(path, action, options = {}) {
       database = new DatabaseSync(databasePath);
       database.exec("PRAGMA busy_timeout = 0");
       mutexStat = await mutexFileStat(databasePath);
-      if (!mutexStat || (before && !sameInode(before, mutexStat)))
-        lockError("lock-unknown");
-      if ((mutexStat.mode & 0o777n) !== 0o600n)
-        await chmod(databasePath, 0o600);
+      if (!mutexStat || (before && !sameInode(before, mutexStat))) lockError("lock-unknown");
+      if ((mutexStat.mode & 0o777n) !== 0o600n) await chmod(databasePath, 0o600);
       for (;;) {
-        try {
-          database.exec("BEGIN IMMEDIATE");
-          transaction = true;
-          break;
-        } catch (error) {
+        try { database.exec("BEGIN IMMEDIATE"); transaction = true; break; }
+        catch (error) {
           if (!sqliteBusy(error)) throw error;
           await retryLock(deadline, retryMs);
         }
@@ -546,33 +351,18 @@ export async function withLock(path, action, options = {}) {
       if (error instanceof GovernanceError) throw error;
       lockError("lock-unknown");
     }
-    const owner = await acquireCompatibilityLock(
-      path,
-      directory,
-      mutexStat,
-      deadline,
-      retryMs,
-    );
-    try {
-      return await action();
-    } finally {
-      await releaseCompatibilityLock(path, owner);
-    }
+    const owner = await acquireCompatibilityLock(path, directory, mutexStat, deadline, retryMs);
+    try { return await action(); }
+    finally { await releaseCompatibilityLock(path, owner); }
   } finally {
     try {
       if (transaction) {
-        try {
-          database?.exec("ROLLBACK");
-        } catch {
-          lockError("lock-release-failed");
-        }
+        try { database?.exec("ROLLBACK"); }
+        catch { lockError("lock-release-failed"); }
       }
     } finally {
-      try {
-        database?.close();
-      } catch {
-        lockError("lock-release-failed");
-      }
+      try { database?.close(); }
+      catch { lockError("lock-release-failed"); }
     }
   }
 }
@@ -630,8 +420,7 @@ export async function readSnapshot(path, label) {
   try {
     text = await readFile(path, "utf8");
   } catch (error) {
-    if (hasCode(error, "ENOENT"))
-      throw new GovernanceError(`${label} does not exist`, "missing");
+    if (hasCode(error, "ENOENT")) throw new GovernanceError(`${label} does not exist`, "missing");
     throw error;
   }
   /** @type {any} */
@@ -641,50 +430,28 @@ export async function readSnapshot(path, label) {
   } catch {
     throw new GovernanceError(`${label} is not valid JSON`, "corrupt");
   }
-  if (!isRecord(parsed) || typeof parsed.checksum !== "string")
-    throw new GovernanceError(`${label} envelope is malformed`, "corrupt");
+  if (!isRecord(parsed) || typeof parsed.checksum !== "string") throw new GovernanceError(`${label} envelope is malformed`, "corrupt");
   const { checksum, ...payload } = parsed;
-  if (checksum !== stableHash(payload))
-    throw new GovernanceError(`${label} checksum mismatch`, "corrupt");
+  if (checksum !== stableHash(payload)) throw new GovernanceError(`${label} checksum mismatch`, "corrupt");
   return payload;
 }
 
 /** @returns {Promise<Record<string, any>>} */
 async function emptyRegistry() {
-  return {
-    schemaVersion: REGISTRY_SCHEMA_VERSION,
-    revision: 0,
-    sessions: {},
-    runs: {},
-  };
+  return { schemaVersion: REGISTRY_SCHEMA_VERSION, revision: 0, sessions: {}, runs: {} };
 }
 
 /** @param {string} home @returns {Promise<Record<string, any>>} */
 export async function readRegistry(home) {
   try {
-    const registry = await readSnapshot(
-      registryPath(home),
-      "governance registry",
-    );
-    if (
-      ![1, REGISTRY_SCHEMA_VERSION].includes(registry.schemaVersion) ||
-      !isRecord(registry.sessions) ||
-      !isRecord(registry.runs) ||
-      (registry.schemaVersion === 1 &&
-        Object.values(registry.runs).some(
-          (entry) =>
-            entry.hostRoot !== undefined && entry.hostRoot !== entry.root,
-        ))
-    ) {
-      throw new GovernanceError(
-        "governance registry has an unsupported shape",
-        "corrupt",
-      );
+    const registry = await readSnapshot(registryPath(home), "governance registry");
+    if (![1, REGISTRY_SCHEMA_VERSION].includes(registry.schemaVersion) || !isRecord(registry.sessions) || !isRecord(registry.runs)
+      || (registry.schemaVersion === 1 && Object.values(registry.runs).some((entry) => entry.hostRoot !== undefined && entry.hostRoot !== entry.root))) {
+      throw new GovernanceError("governance registry has an unsupported shape", "corrupt");
     }
     return registry;
   } catch (error) {
-    if (error instanceof GovernanceError && error.code === "missing")
-      return emptyRegistry();
+    if (error instanceof GovernanceError && error.code === "missing") return emptyRegistry();
     throw error;
   }
 }
@@ -696,8 +463,7 @@ export async function readRegistry(home) {
 export async function writeRegistry(home, registry) {
   const payload = {
     schemaVersion: REGISTRY_SCHEMA_VERSION,
-    revision:
-      (Number.isSafeInteger(registry.revision) ? registry.revision : 0) + 1,
+    revision: (Number.isSafeInteger(registry.revision) ? registry.revision : 0) + 1,
     sessions: registry.sessions ?? {},
     runs: registry.runs ?? {},
     passiveTools: registry.passiveTools ?? {},
@@ -709,58 +475,30 @@ export async function writeRegistry(home, registry) {
 /** @param {string} home @param {string} sessionId @returns {Promise<Record<string, any> | null>} */
 export async function readSessionObservation(home, sessionId) {
   const registry = await readRegistry(home);
-  return isRecord(registry.sessions[sessionId])
-    ? registry.sessions[sessionId]
-    : null;
+  return isRecord(registry.sessions[sessionId]) ? registry.sessions[sessionId] : null;
 }
 
 /** @param {string} home @param {string} sessionId @param {{includeFinished?:boolean}} [options] @returns {Promise<string | null>} */
 export async function registryRunDirectory(home, sessionId, options = {}) {
   const registry = await readRegistry(home);
   await registeredRuns(home, registry);
-  const matches = Object.values(registry.runs).filter(
-    (/** @type {any} */ entry) =>
-      entry.rootSessionId === sessionId ||
-      entry.childSessionIds?.includes(sessionId),
-  );
-  let entry = matches.find(
-    (/** @type {any} */ candidate) => candidate.finished !== true,
-  );
-  if (!entry)
-    for (const candidate of matches) {
-      const run = await loadRun(candidate.runDirectory);
-      if (hasUnresolvedOwnership(run)) {
-        entry = candidate;
-        break;
-      }
-    }
+  const matches = Object.values(registry.runs).filter((/** @type {any} */ entry) => entry.rootSessionId === sessionId || entry.childSessionIds?.includes(sessionId));
+  let entry = matches.find((/** @type {any} */ candidate) => candidate.finished !== true);
+  if (!entry) for (const candidate of matches) {
+    const run = await loadRun(candidate.runDirectory);
+    if (hasUnresolvedOwnership(run)) { entry = candidate; break; }
+  }
   if (!entry && options.includeFinished) entry = matches.at(-1);
-  return isRecord(entry) && typeof entry.runDirectory === "string"
-    ? entry.runDirectory
-    : null;
+  return isRecord(entry) && typeof entry.runDirectory === "string" ? entry.runDirectory : null;
 }
 
 /** @param {string} runDirectory @returns {Promise<Record<string, any>>} */
 export async function loadRun(runDirectory) {
-  const snapshot = await readSnapshot(
-    runSnapshotPath(runDirectory),
-    "governance run",
-  );
-  if (
-    ![1, RUN_SCHEMA_VERSION].includes(snapshot.schemaVersion) ||
-    !isRecord(snapshot.run) ||
-    snapshot.run.schemaVersion !== snapshot.schemaVersion ||
-    (snapshot.schemaVersion === 1 &&
-      snapshot.run.hostRoot !== undefined &&
-      snapshot.run.hostRoot !== snapshot.run.root) ||
-    (snapshot.schemaVersion === 2 &&
-      (!isRecord(snapshot.run.rootIdentity) ||
-        typeof snapshot.run.hostRoot !== "string"))
-  )
-    throw new GovernanceError(
-      "governance run has an unsupported shape",
-      "corrupt",
-    );
+  const snapshot = await readSnapshot(runSnapshotPath(runDirectory), "governance run");
+  if (![1, RUN_SCHEMA_VERSION].includes(snapshot.schemaVersion) || !isRecord(snapshot.run)
+    || snapshot.run.schemaVersion !== snapshot.schemaVersion
+    || (snapshot.schemaVersion === 1 && snapshot.run.hostRoot !== undefined && snapshot.run.hostRoot !== snapshot.run.root)
+    || (snapshot.schemaVersion === 2 && (!isRecord(snapshot.run.rootIdentity) || typeof snapshot.run.hostRoot !== "string"))) throw new GovernanceError("governance run has an unsupported shape", "corrupt");
   return snapshot.run;
 }
 
@@ -768,43 +506,25 @@ export async function loadRun(runDirectory) {
 export async function saveRun(runDirectory, run) {
   // Reading legacy history never silently converts an active run.
   const schemaVersion = run.schemaVersion ?? 1;
-  if (
-    ![1, RUN_SCHEMA_VERSION].includes(schemaVersion) ||
-    (schemaVersion === 1 &&
-      run.hostRoot !== undefined &&
-      run.hostRoot !== run.root)
-  )
-    throw new GovernanceError("unsupported run schema", "corrupt");
+  if (![1, RUN_SCHEMA_VERSION].includes(schemaVersion) || (schemaVersion === 1 && run.hostRoot !== undefined && run.hostRoot !== run.root)) throw new GovernanceError("unsupported run schema", "corrupt");
   await writeSnapshot(runSnapshotPath(runDirectory), { schemaVersion, run });
 }
 
 /** @param {any} run */
-export function hostRootFor(run) {
-  return run.hostRoot ?? run.root;
-}
+export function hostRootFor(run) { return run.hostRoot ?? run.root; }
 
 /** Both directions matter: a parent workspace also owns its descendants.
  * @param {string} left @param {string} right */
 export function rootsOverlap(left, right) {
-  return (
-    left === right ||
-    left.startsWith(`${right}${sep}`) ||
-    right.startsWith(`${left}${sep}`)
-  );
+  return left === right || left.startsWith(`${right}${sep}`) || right.startsWith(`${left}${sep}`);
 }
 
 /** Git identity must come from the requested worktree, not inherited Git overrides.
  * @param {string} root @param {string[]} args */
 async function worktreeGit(root, args) {
   const env = { ...process.env };
-  for (const key of Object.keys(env))
-    if (key.startsWith("GIT_")) delete env[key];
-  return execFileAsync("git", args, {
-    cwd: root,
-    env,
-    timeout: 5000,
-    maxBuffer: 4 * 1024 * 1024,
-  });
+  for (const key of Object.keys(env)) if (key.startsWith("GIT_")) delete env[key];
+  return execFileAsync("git", args, { cwd: root, env, timeout: 5000, maxBuffer: 4 * 1024 * 1024 });
 }
 
 /** A path, a registered Git worktree and its filesystem object are all pinned.
@@ -812,122 +532,47 @@ async function worktreeGit(root, args) {
  * @param {string} root */
 export async function readWorktreeIdentity(root) {
   try {
-    if (
-      typeof root !== "string" ||
-      !isAbsolute(root) ||
-      resolve(root) !== root ||
-      (await canonicalDirectory(root)) !== root
-    )
-      throw new GovernanceError("worktree root must be canonical", "candidate");
-    const { stdout: top } = await worktreeGit(root, [
-      "rev-parse",
-      "--show-toplevel",
-    ]);
-    if (top.trim() !== root)
-      throw new GovernanceError(
-        "root must be a Git worktree top level",
-        "candidate",
-      );
-    const { stdout: common } = await worktreeGit(root, [
-      "rev-parse",
-      "--path-format=absolute",
-      "--git-common-dir",
-    ]);
-    const { stdout: git } = await worktreeGit(root, [
-      "rev-parse",
-      "--absolute-git-dir",
-    ]);
-    const commonDir = common.trim(),
-      gitDir = git.trim();
-    if (
-      (await canonicalDirectory(commonDir)) !== commonDir ||
-      (await canonicalDirectory(gitDir)) !== gitDir
-    )
-      throw new GovernanceError(
-        "Git metadata paths must be canonical",
-        "candidate",
-      );
-    const { stdout: list } = await worktreeGit(root, [
-      "worktree",
-      "list",
-      "--porcelain",
-      "-z",
-    ]);
-    if (
-      list.split("\0").filter((line) => line === `worktree ${root}`).length !==
-      1
-    )
-      throw new GovernanceError(
-        "root must be a registered Git worktree",
-        "candidate",
-      );
+    if (typeof root !== "string" || !isAbsolute(root) || resolve(root) !== root || await canonicalDirectory(root) !== root) throw new GovernanceError("worktree root must be canonical", "candidate");
+    const { stdout: top } = await worktreeGit(root, ["rev-parse", "--show-toplevel"]);
+    if (top.trim() !== root) throw new GovernanceError("root must be a Git worktree top level", "candidate");
+    const { stdout: common } = await worktreeGit(root, ["rev-parse", "--path-format=absolute", "--git-common-dir"]);
+    const { stdout: git } = await worktreeGit(root, ["rev-parse", "--absolute-git-dir"]);
+    const commonDir = common.trim(), gitDir = git.trim();
+    if (await canonicalDirectory(commonDir) !== commonDir || await canonicalDirectory(gitDir) !== gitDir) throw new GovernanceError("Git metadata paths must be canonical", "candidate");
+    const { stdout: list } = await worktreeGit(root, ["worktree", "list", "--porcelain", "-z"]);
+    if (list.split("\0").filter((line) => line === `worktree ${root}`).length !== 1) throw new GovernanceError("root must be a registered Git worktree", "candidate");
     const { stdout: head } = await worktreeGit(root, ["rev-parse", "HEAD"]);
-    if (!/^[a-f0-9]{40}$/u.test(head.trim()))
-      throw new GovernanceError("worktree HEAD is invalid", "candidate");
+    if (!/^[a-f0-9]{40}$/u.test(head.trim())) throw new GovernanceError("worktree HEAD is invalid", "candidate");
     /** @param {string} path */
     const objectIdentity = async (path) => {
       const stat = await lstat(path, { bigint: true });
-      if (stat.isSymbolicLink())
-        throw new GovernanceError(
-          "Git identity cannot use symlinks",
-          "candidate",
-        );
+      if (stat.isSymbolicLink()) throw new GovernanceError("Git identity cannot use symlinks", "candidate");
       return { dev: String(stat.dev), ino: String(stat.ino) };
     };
-    return {
-      root,
-      gitDir,
-      commonDir,
-      rootObject: await objectIdentity(root),
-      gitObject: await objectIdentity(gitDir),
-      commonObject: await objectIdentity(commonDir),
-      markerObject: await objectIdentity(join(root, ".git")),
-      head: head.trim(),
-    };
+    return { root, gitDir, commonDir, rootObject: await objectIdentity(root), gitObject: await objectIdentity(gitDir), commonObject: await objectIdentity(commonDir), markerObject: await objectIdentity(join(root, ".git")), head: head.trim() };
   } catch (error) {
     if (error instanceof GovernanceError) throw error;
-    throw new GovernanceError(
-      "Registered Git worktree identity is unavailable",
-      "candidate",
-    );
+    throw new GovernanceError("Registered Git worktree identity is unavailable", "candidate");
   }
 }
 
 /** @param {Awaited<ReturnType<typeof readWorktreeIdentity>>} identity */
-function withoutHead(identity) {
-  const { head, ...worktree } = identity;
-  return worktree;
-}
+function withoutHead(identity) { const { head, ...worktree } = identity; return worktree; }
 
 /** @param {{root:string,hostRoot?:string}} contract */
 async function readRegisteredRootIdentity(contract) {
   const integration = await readWorktreeIdentity(contract.root);
   const hostRoot = hostRootFor(contract);
-  const host =
-    hostRoot === contract.root
-      ? integration
-      : await readWorktreeIdentity(hostRoot);
-  if (
-    hostRoot !== contract.root &&
-    (rootsOverlap(hostRoot, contract.root) ||
-      host.commonDir !== integration.commonDir ||
-      stableHash(host.commonObject) !== stableHash(integration.commonObject))
-  )
-    throw new GovernanceError(
-      "Host and integration require separate registered worktrees of the same repository",
-      "candidate",
-    );
+  const host = hostRoot === contract.root ? integration : await readWorktreeIdentity(hostRoot);
+  if (hostRoot !== contract.root && (rootsOverlap(hostRoot, contract.root) || host.commonDir !== integration.commonDir
+    || stableHash(host.commonObject) !== stableHash(integration.commonObject))) throw new GovernanceError("Host and integration require separate registered worktrees of the same repository", "candidate");
   return { host: withoutHead(host), integration };
 }
 
 /** @param {{root:string,hostRoot?:string,baseSha:string}} contract */
 export async function readRootIdentity(contract) {
   const identity = await readRegisteredRootIdentity(contract);
-  if (identity.integration.head !== contract.baseSha)
-    throw new GovernanceError(
-      "Integration HEAD differs from the pinned revision",
-      "base",
-    );
+  if (identity.integration.head !== contract.baseSha) throw new GovernanceError("Integration HEAD differs from the pinned revision", "base");
   return identity;
 }
 
@@ -936,21 +581,12 @@ export async function readRootIdentity(contract) {
  * @param {any} run */
 export async function assertRunRootOwnership(run) {
   if ((run.schemaVersion ?? 1) === 1) {
-    if (hostRootFor(run) !== run.root)
-      throw new GovernanceError("Legacy runs cannot split roots", "corrupt");
+    if (hostRootFor(run) !== run.root) throw new GovernanceError("Legacy runs cannot split roots", "corrupt");
     return null;
   }
   const current = await readRegisteredRootIdentity(run);
-  if (
-    !run.rootIdentity?.integration ||
-    stableHash(current.host) !== stableHash(run.rootIdentity.host) ||
-    stableHash(withoutHead(current.integration)) !==
-      stableHash(withoutHead(run.rootIdentity.integration))
-  )
-    throw new GovernanceError(
-      "Registered worktree ownership changed",
-      "candidate",
-    );
+  if (!run.rootIdentity?.integration || stableHash(current.host) !== stableHash(run.rootIdentity.host)
+    || stableHash(withoutHead(current.integration)) !== stableHash(withoutHead(run.rootIdentity.integration))) throw new GovernanceError("Registered worktree ownership changed", "candidate");
   return current;
 }
 
@@ -958,16 +594,11 @@ export async function assertRunRootOwnership(run) {
  * @param {any} run */
 export async function assertRunRoots(run) {
   if ((run.schemaVersion ?? 1) === 1) {
-    if (hostRootFor(run) !== run.root)
-      throw new GovernanceError("Legacy runs cannot split roots", "corrupt");
+    if (hostRootFor(run) !== run.root) throw new GovernanceError("Legacy runs cannot split roots", "corrupt");
     return null;
   }
   const current = await readRootIdentity(run);
-  if (stableHash(current) !== stableHash(run.rootIdentity))
-    throw new GovernanceError(
-      "Registered worktree identity changed",
-      "candidate",
-    );
+  if (stableHash(current) !== stableHash(run.rootIdentity)) throw new GovernanceError("Registered worktree identity changed", "candidate");
   return current;
 }
 
@@ -977,33 +608,10 @@ export async function readProcessRootIdentity(run, candidateRoot, role) {
   await assertRunRoots(run);
   const candidate = await readWorktreeIdentity(candidateRoot);
   if (role === "writer") {
-    if (
-      [run.root, hostRootFor(run)].some((root) =>
-        rootsOverlap(root, candidateRoot),
-      )
-    )
-      throw new GovernanceError(
-        "Writer requires a third separate workspace",
-        "candidate",
-      );
-    try {
-      await worktreeGit(candidateRoot, [
-        "merge-base",
-        "--is-ancestor",
-        run.baseSha,
-        "HEAD",
-      ]);
-    } catch {
-      throw new GovernanceError(
-        "Writer workspace does not contain the pinned integration revision",
-        "candidate",
-      );
-    }
-  } else if (candidateRoot !== run.root)
-    throw new GovernanceError(
-      "Read-only process must use the integration root",
-      "candidate",
-    );
+    if ([run.root, hostRootFor(run)].some((root) => rootsOverlap(root, candidateRoot))) throw new GovernanceError("Writer requires a third separate workspace", "candidate");
+    try { await worktreeGit(candidateRoot, ["merge-base", "--is-ancestor", run.baseSha, "HEAD"]); }
+    catch { throw new GovernanceError("Writer workspace does not contain the pinned integration revision", "candidate"); }
+  } else if (candidateRoot !== run.root) throw new GovernanceError("Read-only process must use the integration root", "candidate");
   return candidate;
 }
 
@@ -1015,58 +623,21 @@ export async function assertRootsAvailable(home, roots, owner = {}) {
   const registry = await readRegistry(home);
   for (const { entry, run } of await registeredRuns(home, registry)) {
     if (entry.finished === true && !hasUnresolvedOwnership(run)) continue;
-    if (run.runId !== owner.runId && owner.sessionId === run.rootSessionId)
-      throw new GovernanceError(
-        "Session already owns an unfinished run",
-        "binding",
-      );
-    const reserved =
-      run.runId === owner.runId ? [] : [run.root, hostRootFor(run)];
+    if (run.runId !== owner.runId && owner.sessionId === run.rootSessionId) throw new GovernanceError("Session already owns an unfinished run", "binding");
+    const reserved = run.runId === owner.runId ? [] : [run.root, hostRootFor(run)];
     for (const attempt of run.attempts ?? []) {
       if (run.runId === owner.runId && attempt.id === owner.attemptId) continue;
-      if (
-        !hasUnresolvedOwnership({ leases: {}, attempts: [attempt] }) &&
-        !Object.values(run.leases ?? {}).includes(attempt.id)
-      )
-        continue;
-      for (const root of [
-        attempt.launch?.candidateRoot,
-        attempt.processBinding?.candidateRoot,
-        attempt.process?.candidateRoot,
-      ]) {
-        if (
-          root !== undefined &&
-          !(
-            run.runId === owner.runId &&
-            attempt.role !== "writer" &&
-            root === run.root
-          )
-        )
-          reserved.push(root);
+      if (!hasUnresolvedOwnership({ leases: {}, attempts: [attempt] }) && !Object.values(run.leases ?? {}).includes(attempt.id)) continue;
+      for (const root of [attempt.launch?.candidateRoot, attempt.processBinding?.candidateRoot, attempt.process?.candidateRoot]) {
+        if (root !== undefined && !(run.runId === owner.runId && attempt.role !== "writer" && root === run.root)) reserved.push(root);
       }
     }
     for (const reservedRoot of reserved) {
-      if (typeof reservedRoot !== "string" || !isAbsolute(reservedRoot))
-        throw new GovernanceError("Reserved root is malformed", "corrupt");
+      if (typeof reservedRoot !== "string" || !isAbsolute(reservedRoot)) throw new GovernanceError("Reserved root is malformed", "corrupt");
       const aliases = [reservedRoot];
-      try {
-        aliases.push(await realpath(reservedRoot));
-      } catch (error) {
-        if (!hasCode(error, "ENOENT"))
-          throw new GovernanceError(
-            "Reserved workspace identity is unavailable",
-            "binding",
-          );
-      }
-      if (
-        roots.some((root) =>
-          aliases.some((reserved) => rootsOverlap(root, reserved)),
-        )
-      )
-        throw new GovernanceError(
-          "Workspace is already reserved by unresolved ownership",
-          "binding",
-        );
+      try { aliases.push(await realpath(reservedRoot)); }
+      catch (error) { if (!hasCode(error, "ENOENT")) throw new GovernanceError("Reserved workspace identity is unavailable", "binding"); }
+      if (roots.some((root) => aliases.some((reserved) => rootsOverlap(root, reserved)))) throw new GovernanceError("Workspace is already reserved by unresolved ownership", "binding");
     }
   }
 }
@@ -1076,49 +647,15 @@ export async function assertRootsAvailable(home, roots, owner = {}) {
  * @param {string} home @param {any} registry */
 async function registeredRuns(home, registry) {
   /** @type {string[]} */ let directories = [];
-  try {
-    directories = await readdir(runsDirectory(home));
-  } catch (error) {
-    if (!hasCode(error, "ENOENT")) throw error;
-  }
+  try { directories = await readdir(runsDirectory(home)); } catch (error) { if (!hasCode(error, "ENOENT")) throw error; }
   for (const directory of directories) {
-    if (
-      (await pathExists(
-        runSnapshotPath(join(runsDirectory(home), directory)),
-      )) &&
-      !Object.values(registry.runs).some(
-        (/** @type {any} */ entry) =>
-          entry.runDirectory === join(runsDirectory(home), directory),
-      )
-    )
-      throw new GovernanceError(
-        "Orphan run requires ownership reconciliation",
-        "binding",
-      );
+    if (await pathExists(runSnapshotPath(join(runsDirectory(home), directory))) && !Object.values(registry.runs).some((/** @type {any} */ entry) => entry.runDirectory === join(runsDirectory(home), directory))) throw new GovernanceError("Orphan run requires ownership reconciliation", "binding");
   }
   const registered = [];
   for (const entry of Object.values(registry.runs)) {
-    if (
-      !isRecord(entry) ||
-      typeof entry.runId !== "string" ||
-      entry.runDirectory !== runDirectoryFor(home, entry.runId)
-    )
-      throw new GovernanceError(
-        "Registry run directory is inconsistent",
-        "corrupt",
-      );
+    if (!isRecord(entry) || typeof entry.runId !== "string" || entry.runDirectory !== runDirectoryFor(home, entry.runId)) throw new GovernanceError("Registry run directory is inconsistent", "corrupt");
     const run = await loadRun(entry.runDirectory);
-    if (
-      entry.runId !== run.runId ||
-      entry.root !== run.root ||
-      hostRootFor(entry) !== hostRootFor(run) ||
-      entry.rootSessionId !== run.rootSessionId ||
-      (registry.schemaVersion === 1 && run.schemaVersion !== 1)
-    )
-      throw new GovernanceError(
-        "Registry root mapping is inconsistent",
-        "corrupt",
-      );
+    if (entry.runId !== run.runId || entry.root !== run.root || hostRootFor(entry) !== hostRootFor(run) || entry.rootSessionId !== run.rootSessionId || (registry.schemaVersion === 1 && run.schemaVersion !== 1)) throw new GovernanceError("Registry root mapping is inconsistent", "corrupt");
     registered.push({ entry, run });
   }
   return registered;
@@ -1127,10 +664,7 @@ async function registeredRuns(home, registry) {
 /** @param {string} root @returns {Promise<string>} */
 export async function readGitHead(root) {
   try {
-    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: root,
-      timeout: 5000,
-    });
+    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root, timeout: 5000 });
     return stdout.trim();
   } catch {
     throw new GovernanceError("root is not a readable Git repository", "git");
@@ -1145,26 +679,18 @@ export async function hashRegularFile(root, relativePath) {
   const absolute = resolveInsideRoot(root, relativePath);
   await assertNoSymlinkAncestors(root, relativePath);
   const stat = await lstat(absolute);
-  if (stat.isSymbolicLink())
-    throw new GovernanceError(`source ${relativePath} must not be a symlink`);
-  if (!stat.isFile())
-    throw new GovernanceError(`source ${relativePath} must be a regular file`);
+  if (stat.isSymbolicLink()) throw new GovernanceError(`source ${relativePath} must not be a symlink`);
+  if (!stat.isFile()) throw new GovernanceError(`source ${relativePath} must be a regular file`);
   const bytes = await readFile(absolute);
-  return {
-    sha256: sha256Hex(bytes),
-    size: bytes.length,
-    mode: stat.mode & 0o777,
-  };
+  return { sha256: sha256Hex(bytes), size: bytes.length, mode: stat.mode & 0o777 };
 }
 
 /** @param {string} root @param {string} relativePath */
 function resolveInsideRoot(root, relativePath) {
-  if (isAbsolute(relativePath))
-    throw new GovernanceError(`path ${relativePath} must be relative`);
+  if (isAbsolute(relativePath)) throw new GovernanceError(`path ${relativePath} must be relative`);
   const absolute = resolve(root, relativePath);
   const rel = relative(root, absolute);
-  if (rel === ".." || rel.startsWith(`..${sep}`) || isAbsolute(rel))
-    throw new GovernanceError(`path ${relativePath} escapes the root`);
+  if (rel === ".." || rel.startsWith(`..${sep}`) || isAbsolute(rel)) throw new GovernanceError(`path ${relativePath} escapes the root`);
   return absolute;
 }
 
@@ -1172,15 +698,10 @@ function resolveInsideRoot(root, relativePath) {
 async function assertNoSymlinkAncestors(root, relativePath) {
   let current = root;
   for (const part of relativePath.split("/")) {
-    if (!part || part === "." || part === "..")
-      throw new GovernanceError("noncanonical snapshot path");
+    if (!part || part === "." || part === "..") throw new GovernanceError("noncanonical snapshot path");
     current = join(current, part);
-    try {
-      if ((await lstat(current)).isSymbolicLink())
-        throw new GovernanceError("symlink path components are unsupported");
-    } catch (error) {
-      if (!hasCode(error, "ENOENT")) throw error;
-    }
+    try { if ((await lstat(current)).isSymbolicLink()) throw new GovernanceError("symlink path components are unsupported"); }
+    catch (error) { if (!hasCode(error, "ENOENT")) throw error; }
   }
 }
 
@@ -1192,10 +713,7 @@ async function assertNoSymlinkAncestors(root, relativePath) {
  * @returns {Promise<Array<{path:string,state:"file"|"directory"|"missing",mode:number|null,sha256:string|null,size:number|null}>>}
  */
 export async function snapshotPaths(root, paths) {
-  if (!Array.isArray(paths))
-    throw new GovernanceError(
-      "snapshotPaths requires an array of relative paths",
-    );
+  if (!Array.isArray(paths)) throw new GovernanceError("snapshotPaths requires an array of relative paths");
   /** @type {Map<string, {path:string,state:"file"|"directory"|"missing",mode:number|null,sha256:string|null,size:number|null}>} */
   const entries = new Map();
   let count = 0;
@@ -1203,8 +721,7 @@ export async function snapshotPaths(root, paths) {
    * @param {string} relativePath
    */
   const capture = async (relativePath) => {
-    if (count >= MAX_SNAPSHOT_ENTRIES)
-      throw new GovernanceError("filesystem snapshot exceeds the entry cap");
+    if (count >= MAX_SNAPSHOT_ENTRIES) throw new GovernanceError("filesystem snapshot exceeds the entry cap");
     count += 1;
     const absolute = resolveInsideRoot(root, relativePath);
     await assertNoSymlinkAncestors(root, relativePath);
@@ -1213,56 +730,27 @@ export async function snapshotPaths(root, paths) {
       stat = await lstat(absolute);
     } catch (error) {
       if (hasCode(error, "ENOENT")) {
-        if (!entries.has(relativePath))
-          entries.set(relativePath, {
-            path: relativePath,
-            state: "missing",
-            mode: null,
-            sha256: null,
-            size: null,
-          });
+        if (!entries.has(relativePath)) entries.set(relativePath, { path: relativePath, state: "missing", mode: null, sha256: null, size: null });
         return;
       }
       throw error;
     }
-    if (stat.isSymbolicLink())
-      throw new GovernanceError(
-        `snapshot path ${relativePath} must not be a symlink`,
-      );
+    if (stat.isSymbolicLink()) throw new GovernanceError(`snapshot path ${relativePath} must not be a symlink`);
     if (stat.isDirectory()) {
-      if (!entries.has(relativePath))
-        entries.set(relativePath, {
-          path: relativePath,
-          state: "directory",
-          mode: stat.mode & 0o777,
-          sha256: null,
-          size: null,
-        });
+      if (!entries.has(relativePath)) entries.set(relativePath, { path: relativePath, state: "directory", mode: stat.mode & 0o777, sha256: null, size: null });
       const children = (await readdir(absolute)).sort();
       for (const child of children) await capture(`${relativePath}/${child}`);
       return;
     }
-    if (!stat.isFile())
-      throw new GovernanceError(
-        `snapshot path ${relativePath} must be a regular file or directory`,
-      );
+    if (!stat.isFile()) throw new GovernanceError(`snapshot path ${relativePath} must be a regular file or directory`);
     const bytes = await readFile(absolute);
-    entries.set(relativePath, {
-      path: relativePath,
-      state: "file",
-      mode: stat.mode & 0o777,
-      sha256: sha256Hex(bytes),
-      size: bytes.length,
-    });
+    entries.set(relativePath, { path: relativePath, state: "file", mode: stat.mode & 0o777, sha256: sha256Hex(bytes), size: bytes.length });
   };
   for (const relativePath of [...new Set(paths)].sort()) {
-    if (typeof relativePath !== "string" || relativePath.length === 0)
-      throw new GovernanceError("snapshot paths must be non-empty strings");
+    if (typeof relativePath !== "string" || relativePath.length === 0) throw new GovernanceError("snapshot paths must be non-empty strings");
     await capture(relativePath);
   }
-  return [...entries.values()].sort((left, right) =>
-    left.path < right.path ? -1 : left.path > right.path ? 1 : 0,
-  );
+  return [...entries.values()].sort((left, right) => (left.path < right.path ? -1 : left.path > right.path ? 1 : 0));
 }
 
 /** @param {string} root @param {string[]} paths */
@@ -1274,11 +762,7 @@ export async function hashPaths(root, paths) {
  * are never integration inputs and this is not an OS filesystem sandbox.
  * @param {string} root */
 export async function snapshotRepository(root) {
-  const { stdout } = await execFileAsync(
-    "git",
-    ["ls-files", "-z", "--cached", "--others", "--exclude-standard"],
-    { cwd: root, timeout: 10000, maxBuffer: 4 * 1024 * 1024 },
-  );
+  const { stdout } = await execFileAsync("git", ["ls-files", "-z", "--cached", "--others", "--exclude-standard"], { cwd: root, timeout: 10000, maxBuffer: 4 * 1024 * 1024 });
   const paths = [...new Set(stdout.split("\0").filter(Boolean))].sort();
   return snapshotPaths(root, paths);
 }
@@ -1287,13 +771,7 @@ export async function snapshotRepository(root) {
 export function repositoryDelta(before, after) {
   const previous = new Map(before.map((file) => [file.path, file]));
   const current = new Map(after.map((file) => [file.path, file]));
-  return [...new Set([...previous.keys(), ...current.keys()])]
-    .filter(
-      (path) =>
-        stableHash(previous.get(path) ?? { path, state: "missing" }) !==
-        stableHash(current.get(path) ?? { path, state: "missing" }),
-    )
-    .sort();
+  return [...new Set([...previous.keys(), ...current.keys()])].filter((path) => stableHash(previous.get(path) ?? { path, state: "missing" }) !== stableHash(current.get(path) ?? { path, state: "missing" })).sort();
 }
 
 /** @param {string} directory */
@@ -1333,8 +811,7 @@ export async function canonicalDirectory(path) {
   try {
     const canonical = await realpath(path);
     const stat = await lstat(canonical);
-    if (!stat.isDirectory())
-      throw new GovernanceError(`${path} must be a directory`);
+    if (!stat.isDirectory()) throw new GovernanceError(`${path} must be a directory`);
     return canonical;
   } catch (error) {
     if (error instanceof GovernanceError) throw error;
@@ -1345,20 +822,8 @@ export async function canonicalDirectory(path) {
 /** Finished registry metadata cannot hide unresolved ownership.
  * @param {any} run */
 export function hasUnresolvedOwnership(run) {
-  return (
-    Object.keys(run.leases ?? {}).length > 0 ||
-    (run.attempts ?? []).some(
-      (/** @type {any} */ attempt) =>
-        [
-          "running",
-          "awaiting-post",
-          "cancelling",
-          "recovery-required",
-        ].includes(attempt.status) ||
-        !attempt.invocationObserved ||
-        (attempt.process && !attempt.process.terminated),
-    )
-  );
+  return Object.keys(run.leases ?? {}).length > 0 || (run.attempts ?? []).some((/** @type {any} */ attempt) =>
+    ["running", "awaiting-post", "cancelling", "recovery-required"].includes(attempt.status) || !attempt.invocationObserved || (attempt.process && !attempt.process.terminated));
 }
 
 /** Immutable private bytes. Existing files must match exactly; never overwrite.
@@ -1368,20 +833,11 @@ export async function writeImmutablePrivate(path, bytes) {
   const content = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes);
   try {
     const file = await open(path, "wx", 0o600);
-    try {
-      await file.writeFile(content);
-      await file.sync();
-    } finally {
-      await file.close();
-    }
+    try { await file.writeFile(content); await file.sync(); } finally { await file.close(); }
   } catch (error) {
     if (!hasCode(error, "EEXIST")) throw error;
     const existing = await readPrivateArtifact(path, content.length);
-    if (!existing.equals(content))
-      throw new GovernanceError(
-        "Immutable observation artifact conflicts with existing bytes",
-        "observation_invalid",
-      );
+    if (!existing.equals(content)) throw new GovernanceError("Immutable observation artifact conflicts with existing bytes", "observation_invalid");
   }
   return { path, sha256: sha256Hex(content), size: content.length };
 }
@@ -1389,23 +845,11 @@ export async function writeImmutablePrivate(path, bytes) {
 /** @param {string} path @param {number} [limit] */
 export async function readPrivateArtifact(path, limit = 8 * 1024 * 1024) {
   let file;
-  try {
-    file = await open(path, constants.O_RDONLY | constants.O_NOFOLLOW);
-  } catch {
-    throw new GovernanceError(
-      "Observation artifact is missing or unavailable",
-      "observation_missing",
-    );
-  }
+  try { file = await open(path, constants.O_RDONLY | constants.O_NOFOLLOW); }
+  catch { throw new GovernanceError("Observation artifact is missing or unavailable", "observation_missing"); }
   try {
     const stat = await file.stat();
-    if (!stat.isFile() || stat.size > limit)
-      throw new GovernanceError(
-        "Observation artifact exceeds its bounded size",
-        "observation_invalid",
-      );
+    if (!stat.isFile() || stat.size > limit) throw new GovernanceError("Observation artifact exceeds its bounded size", "observation_invalid");
     return await file.readFile();
-  } finally {
-    await file.close();
-  }
+  } finally { await file.close(); }
 }

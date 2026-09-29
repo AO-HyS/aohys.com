@@ -10,16 +10,12 @@ Every schema here is **strict**: an unknown key is a rejection, not a warning. A
 
 ```json
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.2.0",
   "kind": "graph",
   "title": "Batch broadcast sending through Postmark",
   "summary": "One paragraph answering: what does this change do?",
   "lenses": ["architecture", "data-flow"],
-  "provenance": {
-    "repo": { "owner": "…", "name": "…" },
-    "base": { "sha": "…" },
-    "head": { "sha": "…" }
-  },
+  "provenance": { "repo": { "owner": "…", "name": "…" }, "base": { "sha": "…" }, "head": { "sha": "…" } },
   "lanes": [],
   "nodes": [],
   "edges": [],
@@ -48,12 +44,7 @@ Every node, edge, flow and flow step declares one: `added`, `modified`, `removed
 1 to 16. Every node belongs to exactly one.
 
 ```json
-{
-  "id": "functions",
-  "label": "Cloud Functions",
-  "subtitle": "Node 20",
-  "order": 1
-}
+{ "id": "functions", "label": "Cloud Functions", "subtitle": "Node 20", "order": 1 }
 ```
 
 `order` (0-64) places lanes left to right; ties fall back to array order. Give a lane a `delta` only when the lane itself is new or gone.
@@ -72,13 +63,7 @@ Every node, edge, flow and flow step declares one: `added`, `modified`, `removed
   "group": "broadcast-lib",
   "subtitle": "(broadcastId) => Promise<void>",
   "summary": "Claims the broadcast, builds one bulk payload and posts it.",
-  "files": [
-    {
-      "path": "functions/src/broadcast/sendBroadcastBulk.ts",
-      "startLine": 1,
-      "endLine": 142
-    }
-  ],
+  "files": [{ "path": "functions/src/broadcast/sendBroadcastBulk.ts", "startLine": 1, "endLine": 142 }],
   "badges": ["retry"]
 }
 ```
@@ -115,37 +100,11 @@ Up to 16, for the data-flow lens.
   "id": "send-pipeline",
   "title": "Sending a broadcast",
   "delta": "modified",
-  "participants": [
-    { "node": "queue-route" },
-    { "node": "send-broadcast-bulk" },
-    { "node": "postmark" }
-  ],
+  "participants": [{ "node": "queue-route" }, { "node": "send-broadcast-bulk" }, { "node": "postmark" }],
   "messages": [
-    {
-      "id": "enqueue",
-      "from": "queue-route",
-      "to": "send-broadcast-bulk",
-      "label": "enqueue job",
-      "kind": "async",
-      "delta": "modified"
-    },
-    {
-      "id": "send",
-      "from": "send-broadcast-bulk",
-      "to": "postmark",
-      "label": "POST /email/bulk",
-      "kind": "sync",
-      "delta": "added",
-      "repeat": 4
-    },
-    {
-      "id": "accepted",
-      "from": "postmark",
-      "to": "send-broadcast-bulk",
-      "label": "200 Accepted",
-      "kind": "return",
-      "delta": "added"
-    }
+    { "id": "enqueue", "from": "queue-route", "to": "send-broadcast-bulk", "label": "enqueue job", "kind": "async", "delta": "modified" },
+    { "id": "send", "from": "send-broadcast-bulk", "to": "postmark", "label": "POST /email/bulk", "kind": "sync", "delta": "added", "repeat": 4 },
+    { "id": "accepted", "from": "postmark", "to": "send-broadcast-bulk", "label": "200 Accepted", "kind": "return", "delta": "added" }
   ]
 }
 ```
@@ -155,18 +114,44 @@ Up to 16, for the data-flow lens.
 - `kind` is `sync`, `async`, `return` or `self`. `self` requires `from === to`, and no other kind may have them equal.
 - Both endpoints must be participants of that flow, not merely nodes of the document.
 - `repeat` says a step happens more than once per run, e.g. 4 batched requests.
+- `payload`: what travels on the step. Optional. Only a canvas draws it, so leave it out of a document that is not going to one.
+
+### Sample traffic
+
+```json
+{
+  "id": "send",
+  "from": "send-broadcast-bulk",
+  "to": "postmark",
+  "label": "POST /email/bulk",
+  "kind": "sync",
+  "delta": "added",
+  "payload": {
+    "request": {
+      "type": "EmailBatch[500]",
+      "shape": "Email[]  // max 500\nEmail = { From: string; To: string; Subject: string }",
+      "sample": [{ "From": "news@example.com", "To": "ada@example.com", "Subject": "The batching issue, fixed" }],
+      "before": [{ "From": "news@example.com", "To": "ada@example.com", "Cc": "ops@example.com", "Subject": "The batching issue, fixed" }],
+      "source": { "path": "tests/fixtures/postmark-batch.json" }
+    },
+    "response": { "type": "void" }
+  }
+}
+```
+
+- A payload has `request`, `response` or both. One with neither is rejected.
+- `type` is required on a side: a name a reader of the code would know, with the count in it for a collection (`EmailBatch[500]`). `void` for a side that carries nothing.
+- `shape` is the type signature as text, up to 2048 bytes.
+- `sample` and `before` are JSON values written inline, not JSON strings. A string where a value belongs is rejected. Each is at most 8 levels deep and 4096 bytes once serialised. The parser refuses a value over either cap rather than truncating it.
+- `before` needs a `sample` to differ from.
+- `source` is a file reference, the fixture or type the side was taken from.
+- `changedPaths` is filled in when the document is stored, from `before` and `sample`. Do not write it. Up to 64 paths of the form `Metadata.batchId`, `[0].Cc` or `headers["Content-Type"]`.
+- Use placeholder values in samples: `ada@example.com`, `cmp_0001`. Never one that could belong to a real person or unlock anything.
 
 ## Stats
 
 ```json
-{
-  "filesChanged": 27,
-  "additions": 1979,
-  "deletions": 1370,
-  "chips": [
-    { "label": "Postmark calls", "value": "500x fewer", "tone": "hero" }
-  ]
-}
+{ "filesChanged": 27, "additions": 1979, "deletions": 1370, "chips": [{ "label": "Postmark calls", "value": "500x fewer", "tone": "hero" }] }
 ```
 
 Up to 8 chips, `tone` one of `neutral added modified removed hero`. Per-delta element counts are deliberately absent from the schema: they are derivable from the document, and a stored copy can only go stale.
@@ -182,10 +167,7 @@ The drill-down tree in the comment: up to 32 at the root, nesting up to 32 child
   "lens": "architecture",
   "summary": "What replaced the per-recipient loop.",
   "defaultOpen": false,
-  "scope": {
-    "kind": "selection",
-    "nodes": ["send-broadcast-bulk", "postmark"]
-  },
+  "scope": { "kind": "selection", "nodes": ["send-broadcast-bulk", "postmark"] },
   "children": []
 }
 ```
@@ -217,17 +199,8 @@ This compact fragment shows the shape. The selected ids refer to elements declar
       "defaultOpen": true,
       "scope": {
         "kind": "selection",
-        "nodes": [
-          "shopper",
-          "commerce-platform",
-          "payment-provider",
-          "fulfilment-system"
-        ],
-        "edges": [
-          "shopper-to-commerce",
-          "commerce-to-payment",
-          "commerce-to-fulfilment"
-        ]
+        "nodes": ["shopper", "commerce-platform", "payment-provider", "fulfilment-system"],
+        "edges": ["shopper-to-commerce", "commerce-to-payment", "commerce-to-fulfilment"]
       },
       "children": [
         {
@@ -236,17 +209,8 @@ This compact fragment shows the shape. The selected ids refer to elements declar
           "lens": "architecture",
           "scope": {
             "kind": "selection",
-            "nodes": [
-              "storefront",
-              "checkout-api",
-              "orders-db",
-              "payment-provider"
-            ],
-            "edges": [
-              "storefront-to-checkout",
-              "checkout-to-orders",
-              "checkout-to-payment"
-            ]
+            "nodes": ["storefront", "checkout-api", "orders-db", "payment-provider"],
+            "edges": ["storefront-to-checkout", "checkout-to-orders", "checkout-to-payment"]
           },
           "children": [
             {
@@ -273,14 +237,55 @@ This compact fragment shows the shape. The selected ids refer to elements declar
 }
 ```
 
-## Layout
+## Walkthrough
+
+Optional in the format, but write one for anything that is not trivial: more than one diagram, a diagram with several changed parts, or any flow. Skip it only when the document is one small diagram whose single step would just repeat the title. A canvas or a share page plays it.
 
 ```json
 {
-  "direction": "right",
-  "laneOrder": ["api", "functions", "external"],
-  "rank": { "send-broadcast-bulk": 2 }
+  "walkthrough": {
+    "steps": [
+      {
+        "id": "four-batch-calls",
+        "heading": "Postmark now gets 500 emails per call",
+        "body": "One call per batch, and Postmark answers with a result for each message.",
+        "stage": { "kind": "flow", "flow": "send-pipeline" },
+        "focus": { "kind": "selection", "messages": ["batch-post", "batch-results"] }
+      },
+      {
+        "id": "blast-radius",
+        "heading": "4 parts added, 2 removed, across 3 lanes",
+        "body": "A 2,000-person broadcast used to make 2,000 calls to Postmark. It now makes 4.",
+        "stage": { "kind": "view", "view": "overview" },
+        "focus": { "kind": "all" }
+      }
+    ]
+  }
 }
+```
+
+A walkthrough is a short guided tour of the diagrams. It has two to twelve steps. Each step shows one diagram, points at one part of it, and says a few words about it.
+
+Every step is one change, never a description of the diagram: the heading names the thing and what happened to it, built from change words such as added, removed, replaced, now, moved and split, and the body is one line on what that means for behaviour, with the numbers when they matter. The headline change is step one. Write it all for a smart twelve-year-old, in short common words and active voice. The skill page has the rule in full, with examples of a step written well and the same step written badly.
+
+Each step has:
+
+- `heading`: the thing and what happened to it, up to 48 characters, in sentence case. For example "Postmark now gets 500 emails per call".
+- `body`: one line under the heading, up to 140 characters, on what the change means for behaviour. For example "One call per batch instead of one call per person". Required: a heading with no body reads as unfinished.
+- `stage`: which diagram to show. A document can have several diagrams: its views (the drill-down diagrams) and its flows (the sequence diagrams). `{ "kind": "view", "view": "overview" }` shows the view called `overview`. `{ "kind": "flow", "flow": "send-pipeline" }` shows the flow called `send-pipeline`. Leave `stage` out and the step uses the diagram the reader is already on.
+- `focus`: what to zoom in on inside that diagram. `{ "kind": "all" }`, the default, means the whole diagram. A selection means "just these things": name any lanes, nodes, edges or flow steps (`messages`) by id, and the camera zooms to them while everything else dims. A selection must name at least one thing.
+
+The validator checks:
+
+- Every id you name exists in the document. A flow step you name must belong to the flow the stage shows, because flow step ids are only unique inside their own flow.
+- `messages` needs a stage that shows a flow. Leave it out when the stage is an architecture view.
+- Step ids are unique within the walkthrough. Two steps minimum, twelve maximum.
+- A stored map never carries a walkthrough. A map describes the system; a walkthrough tells the story of one change.
+
+## Layout
+
+```json
+{ "direction": "right", "laneOrder": ["api", "functions", "external"], "rank": { "send-broadcast-bulk": 2 } }
 ```
 
 Hints, not instructions: the renderer owns final placement, so a diagram stays deterministic and a stale hint cannot break it. Absolute coordinates are not expressible. Omitting `layout` entirely is normal.
@@ -288,19 +293,14 @@ Hints, not instructions: the renderer owns final placement, so a diagram stays d
 ## File references
 
 ```json
-{
-  "path": "functions/src/broadcast/sendBroadcastBulk.ts",
-  "startLine": 1,
-  "endLine": 142,
-  "revision": "head"
-}
+{ "path": "functions/src/broadcast/sendBroadcastBulk.ts", "startLine": 1, "endLine": 142, "revision": "head" }
 ```
 
 Repository-relative POSIX paths: no leading `/`, no drive letter, no backslash, no `..` segment. Lines are 1-based, `endLine` requires `startLine` and may not precede it. `revision` defaults to `head`; use `base` on elements the change removes.
 
 ## Length limits
 
-Labels 120 characters, summaries 2000, chip values 32. They are display fields: a label that needs 120 characters is a label the diagram cannot draw.
+Labels 120 characters, summaries 2000, chip values 32. They are display fields: a label that needs 120 characters is a label the diagram cannot draw. On a payload side, `shape` 2048 bytes, `sample` and `before` 4096 bytes each once serialised and 8 levels deep, `changedPaths` 64 entries.
 
 ## Then validate
 
