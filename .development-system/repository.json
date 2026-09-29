@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractVersion": "1.36.1",
+  "contractVersion": "1.37.0",
   "preparation": {
     "mode": "normalize",
     "mutationScope": [

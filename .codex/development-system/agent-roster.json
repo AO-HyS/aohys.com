@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "title": "GPT-6 + Jev advisory development profile",
-  "purpose": "The selected parent coordinates native execution; Sol writes general packets, Luna supplies fast research and exact writing, and Astra plans and independently reviews. Jev advises at useful routing and correction decisions. Requested identity requires runtime evidence.",
+  "purpose": "The selected parent coordinates native execution; Sol 6.1 writes general packets, Luna supplies fast research and exact writing, and Sol 6.1 plans and independently reviews. Jev advises at useful routing and correction decisions. Requested identity requires runtime evidence.",
   "editInstructions": [
     "Order candidates as suggestions for an undecided parent, not mandatory dispatch or fallbacks. Explicit user model and family selections take precedence.",
     "Keep ids unique and use exact runtime model identifiers.",
@@ -22,16 +22,16 @@
       "routeSlot": "orchestration",
       "does": [
         "localizar el trabajo",
-        "coordinar el plan de Astra",
+        "coordinar el plan de Sol 6.1",
         "integrar trabajo y resolver correcciones",
         "aceptar comportamiento con evidencia"
       ],
-      "when": "Las sesiones nuevas solicitan Sol 6 High normal; el modelo elegido al iniciar conserva la orquestacion y decide la delegacion.",
+      "when": "Las sesiones nuevas solicitan Sol 6.1 High normal; el modelo elegido al iniciar conserva la orquestacion y decide la delegacion.",
       "candidates": [
         {
           "id": "advisory-orchestration",
           "harness": "codex",
-          "model": "gpt-6-sol",
+          "model": "gpt-6.1-sol",
           "reasoning": "high",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
@@ -54,12 +54,12 @@
         "ejecutar paquetes acotados",
         "corregir codigo y pruebas dentro del ownership asignado"
       ],
-      "when": "Sol 6 Medium escribe paquetes generales con ownership exclusivo y verificacion del parent.",
+      "when": "Sol 6.1 Medium escribe paquetes generales con ownership exclusivo y verificacion del parent.",
       "candidates": [
         {
           "id": "advisory-general-implementation",
           "harness": "codex",
-          "model": "gpt-6-sol",
+          "model": "gpt-6.1-sol",
           "reasoning": "medium",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
@@ -115,13 +115,13 @@
         "detectar regresiones",
         "verificar el objetivo sin editar"
       ],
-      "when": "Independent fresh Astra review of the plan before writing and integrated behavior before acceptance; specialize further where affected risk requires it.",
+      "when": "Independent fresh Sol 6.1 High review of the plan before writing and integrated behavior before acceptance; specialize further where affected risk requires it.",
       "candidates": [
         {
           "id": "advisory-adversarial-review",
           "harness": "codex",
-          "model": "gpt-6-astra",
-          "reasoning": "xhigh",
+          "model": "gpt-6.1-sol",
+          "reasoning": "high",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
           "independenceBoundary": "fresh context and distinct mandate for review",
@@ -149,8 +149,8 @@
         {
           "id": "advisory-general-review",
           "harness": "codex",
-          "model": "gpt-6-astra",
-          "reasoning": "xhigh",
+          "model": "gpt-6.1-sol",
+          "reasoning": "high",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
           "independenceBoundary": "fresh context and distinct mandate for review",
@@ -178,8 +178,8 @@
         {
           "id": "advisory-security-review",
           "harness": "codex",
-          "model": "gpt-6-astra",
-          "reasoning": "xhigh",
+          "model": "gpt-6.1-sol",
+          "reasoning": "high",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
           "independenceBoundary": "fresh context and distinct mandate for review",
@@ -210,8 +210,8 @@
         {
           "id": "advisory-backend-review",
           "harness": "codex",
-          "model": "gpt-6-astra",
-          "reasoning": "xhigh",
+          "model": "gpt-6.1-sol",
+          "reasoning": "high",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
           "independenceBoundary": "fresh context and distinct mandate for review",
@@ -239,8 +239,8 @@
         {
           "id": "advisory-performance-review",
           "harness": "codex",
-          "model": "gpt-6-astra",
-          "reasoning": "xhigh",
+          "model": "gpt-6.1-sol",
+          "reasoning": "high",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
           "independenceBoundary": "fresh context and distinct mandate for review",
@@ -271,8 +271,8 @@
         {
           "id": "advisory-visual-review",
           "harness": "codex",
-          "model": "gpt-6-astra",
-          "reasoning": "xhigh",
+          "model": "gpt-6.1-sol",
+          "reasoning": "high",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
           "independenceBoundary": "fresh context and distinct mandate for review",
@@ -332,8 +332,8 @@
         {
           "id": "advisory-computer-use",
           "harness": "codex",
-          "model": "gpt-6-astra",
-          "reasoning": "xhigh",
+          "model": "gpt-6.1-sol",
+          "reasoning": "high",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
           "independenceBoundary": "fresh context and distinct mandate for review",
@@ -360,8 +360,8 @@
         {
           "id": "advisory-evidence-preparation",
           "harness": "codex",
-          "model": "gpt-6-astra",
-          "reasoning": "xhigh",
+          "model": "gpt-6.1-sol",
+          "reasoning": "high",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
           "independenceBoundary": "fresh context and distinct mandate for review",
@@ -384,13 +384,13 @@
         "resolver decisiones tecnicas",
         "dividir paquetes y dependencias"
       ],
-      "when": "Astra authors the implementation plan; another fresh Astra reviews before any writer.",
+      "when": "Sol 6.1 High authors the implementation plan; another fresh Sol 6.1 High reviews before any writer.",
       "candidates": [
         {
           "id": "governed-implementation-planning",
           "harness": "codex",
-          "model": "gpt-6-astra",
-          "reasoning": "xhigh",
+          "model": "gpt-6.1-sol",
+          "reasoning": "high",
           "evidenceStatus": "provisional",
           "mappingStatus": "runtime-required",
           "independenceBoundary": "plan author must differ from fresh plan reviewer",

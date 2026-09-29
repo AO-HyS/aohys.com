@@ -10,7 +10,7 @@ profiles. Read its [contract](.codex/development-system/contract.md) and the
 `coding-orchestration` skill for non-trivial work and the global Codex agents
 from `${CODEX_HOME:-$HOME/.codex}/agents`.
 
-Keep the already selected model, including Astra, as the orchestrator. Let it
+Keep the already selected model, including Sol 6.1, as the orchestrator. Let it
 choose the approach, useful delegation and proportional checks under that
 contract. Role profiles recommend defaults; they do not replace the selected
 parent or prove runtime capabilities. Do not duplicate model routing, execution
@@ -44,7 +44,7 @@ skill, workflow, or template that asks for tests (including TDD). Verify
 changes with typecheck, lint, build, and real browser observation of the
 product instead.
 
-Reviews run on Astra XHigh through `codex-review`, launched in the background;
+Reviews run on Sol 6.1 High through `codex-review`, launched in the background;
 Claude reviewers run only under a declared `Codex fallback:` line.
 
 ## Tool routing

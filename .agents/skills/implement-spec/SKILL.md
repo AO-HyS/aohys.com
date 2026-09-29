@@ -12,7 +12,7 @@ operation when dependencies or disjoint ownership need an explicit frontier.
 Load the advisory execution recipe once before dispatch. Preserve settled definition; do not repeat the original interview.
 
 The user's request may authorize a named spec and its scoped tickets; the user
-need not recite IDs or repeat retained authorization. Astra authors the plan and a different fresh Astra reviews it. Jev may advise on coverage and routing; the parent decides eligible dispatch. Planning itself grants no authority. Before dispatch, the parent verifies that the repository, revision,
+need not recite IDs or repeat retained authorization. Sol 6.1 authors the plan and a different fresh Sol 6.1 reviews it. Jev may advise on coverage and routing; the parent decides eligible dispatch. Planning itself grants no authority. Before dispatch, the parent verifies that the repository, revision,
 ticket IDs, owned surfaces, protected boundaries, and requested operation still
 match the current user instruction.
 
@@ -45,8 +45,8 @@ reached with evidence.
 
 Use [the shared definition contract](../coding-orchestration/references/spec-ticket-contract.md)
 for stable criteria, linked tickets, dependencies, rules and required evidence.
-Astra XHigh authors definition and the implementation plan; a different fresh
-Astra XHigh reviews that plan. Fast researchers supply bounded source facts.
+Sol 6.1 High authors definition and the implementation plan; a different fresh
+Sol 6.1 High reviews that plan. Fast researchers supply bounded source facts.
 When implementation is authorized, use coding-orchestration and its advisory
 Jev recipe across the complete feature, including nonvisual behavior. Retrieve
 all tickets linked by the spec; preserve settled decisions across threads.
