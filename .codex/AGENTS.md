@@ -40,7 +40,7 @@ and evidence.
 Visual acceptance: approved references and the current design workflow, then
 independent capable critique and corrections before final media, via the host's
 authorized browser mechanism. Choose real verification, lint, React Doctor and
-Astra reviews by affected behavior and required gates.
+Sol 6.1 reviews by affected behavior and required gates.
 
 For "where does this behavior live" questions in unfamiliar code,
 `jg "<question>" <root>` (jevgrep, via Jev) may locate it before reading; rg for
@@ -106,11 +106,10 @@ controlled evidence, never claim Headroom caused savings.
 
 ## Codex host
 
-New sessions request Sol 6 High, normal speed; keep an already selected parent.
-Nontrivial work: Luna 6 High priority collects bounded source facts; Astra 6
-XHigh plans; a distinct fresh Astra 6 XHigh reviews requirements, evidence and
-plan before writers start; an independent Astra 6 XHigh reviews the integrated
-result; Astra planning and review stay XHigh. Sol 6 Medium writes; Luna 6 High
+New sessions request Sol 6.1 High, normal speed; keep an already selected parent.
+Nontrivial work: Luna 6 High priority collects bounded source facts; Sol 6.1 High plans; a distinct fresh Sol 6.1 High reviews requirements, evidence and
+plan before writers start; an independent Sol 6.1 High reviews the integrated
+result; Sol 6.1 planning and review stay High. Sol 6.1 Medium writes; Luna 6 High
 priority takes exact and mechanical packets. Tiny deterministic edits go direct
 with relevant repository checks.
 
@@ -132,7 +131,7 @@ caller arguments.
 
 Claude Code loads this file through ~/.claude/CLAUDE.md, a link to it. The
 selected Claude model is the parent; native subagents take roster roles by
-function; Sol, Astra, Luna, Jev and Codex computer use run only through an
+function; Sol, Sol 6.1, Luna, Jev and Codex computer use run only through an
 observed Codex invocation. Tool mapping: spawn_agent to Agent, apply_patch to
 Edit or Write, update_plan to the task list. The user or host sets effort;
 recommend a change, never claim one. Opus 5.5 always thinks: do not add "think

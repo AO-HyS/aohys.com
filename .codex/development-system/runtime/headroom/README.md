@@ -21,7 +21,8 @@ executable shim that invokes `node runtime/headroom/cli.mjs --config
 shim forwards those arguments unchanged and does not append a second command.
 The wrapper does not choose a model, effort, service tier,
 role, sandbox mode, or approval mode. Caller-selected models must be from the
-current Sol, Astra, or Luna GPT-6 family. App-server model changes after launch
+current `gpt-6.1-sol` profile or the explicitly selected legacy `gpt-6-sol`,
+`gpt-6-astra`, or `gpt-6-luna` models. App-server model changes after launch
 remain the host's responsibility and need separate observation.
 
 `--version` and `--help` go directly to the configured Codex binary. Other

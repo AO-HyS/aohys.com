@@ -1,26 +1,26 @@
 {
   "schemaVersion": 1,
-  "releaseVersion": "1.29.0",
+  "releaseVersion": "1.37.0",
   "mode": "advisory-parent-execution",
-  "activePolicyVersion": "1.3.0",
-  "derivedFromReleaseVersion": "1.24.0",
+  "activePolicyVersion": "1.4.0",
+  "derivedFromReleaseVersion": "1.29.0",
   "recoveredPolicyVersion": "1.2.0-candidate.3",
   "sourceRepository": "https://github.com/AO-HyS/development-system",
   "recoveryCheckpoint": "86a5910cf6a0615116034ae31e857ec913e2e682",
   "sources": [
     {
       "path": "src/orchestration.mjs",
-      "sha256": "4b3fad1ede07989700990e4a304b3127e686ff9e82a004979090d7a5e5015910",
+      "sha256": "a0babd842cd5b28417208c0713f94d9f560ae6b25797a2c61446282e194715ce",
       "recoveredByteExact": false
     },
     {
       "path": "cli.mjs",
-      "sha256": "36cb7945ffa0e340f679fdc4cd111d80423cad0deabb9cd7a3482f3539a65217",
+      "sha256": "081283d9b4c1fd8db331cf2223a5cc2c0de86da1335f4bd0754d6db82bb5b889",
       "recoveredByteExact": false
     },
     {
-      "path": "config/1.3.0/orchestration-policy.json",
-      "sha256": "eda4476699c613f88b72ed844a92b94e38b0dccab016b8d94acccb8136f71654",
+      "path": "config/1.4.0/orchestration-policy.json",
+      "sha256": "397b2858401298b4da9d57396b75e9c5fdcdaf4d0bbd4d9d66b7597eaeabc014",
       "recoveredByteExact": false
     }
   ],

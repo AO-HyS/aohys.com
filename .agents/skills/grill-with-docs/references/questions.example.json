@@ -9,10 +9,7 @@
       "group": "Prueba de lectura",
       "text": "¿Cómo prefieres recorrer estas preguntas?",
       "context": "Puedes cambiar entre verlas todas y leer una por una desde los controles de la página.",
-      "options": {
-        "A": "Ver todas para tener el contexto completo.",
-        "B": "Ir una por una para concentrarme en cada respuesta."
-      },
+      "options": {"A": "Ver todas para tener el contexto completo.", "B": "Ir una por una para concentrarme en cada respuesta."},
       "recommendation": "Prueba ambos modos; cambiar la vista conserva lo que hayas escrito."
     },
     {

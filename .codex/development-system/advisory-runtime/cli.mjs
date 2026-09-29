@@ -193,15 +193,15 @@ export async function runAdvisory(argv) {
     if (command === "status") {
       const key = await loadApiKey(options);
       result = {
-        ok: true, operation: "advisory-status", version: "1.29.0", mode: "advisory-parent-execution",
+        ok: true, operation: "advisory-status", version: "1.37.0", mode: "advisory-parent-execution",
         policyVersion: orchestrationPolicy.version,
         modelProfile: {
-          newSessionDefault: { model: "gpt-6-sol", effort: "high", tier: "default", identity: "requested" },
+          newSessionDefault: { model: "gpt-6.1-sol", effort: "high", tier: "default", identity: "requested" },
           existingParent: "preserve-session-selected-orchestrator",
           exactImplementation: orchestrationPolicy.routes.exact_implementation,
           generalImplementation: orchestrationPolicy.routes.general_implementation,
           readOnlyMapper: orchestrationPolicy.routes.read_only_mapper,
-          nativeDelegates: { model: "gpt-6-astra", effort: "xhigh" },
+          nativeDelegates: { model: "gpt-6.1-sol", effort: "high" },
           browserExecutor: orchestrationPolicy.routes.browser_executor,
           classifier: { provider: orchestrationPolicy.classifier.provider, model: orchestrationPolicy.model },
           actualModel: null, actualEffort: null, actualTier: null,
@@ -238,7 +238,7 @@ export async function runAdvisory(argv) {
       }
     }
     const output = json ? JSON.stringify(result) : command === "status"
-      ? `Development System 1.29.0: advisory-parent-execution; credential ${result.keyPresent ? "available" : "missing"}; automatic execution disabled.`
+      ? `Development System 1.37.0: advisory-parent-execution; credential ${result.keyPresent ? "available" : "missing"}; automatic execution disabled.`
       : `${command} recorded; parent owns execution and authorization.`;
     return { result, output, json };
   } catch (error) {

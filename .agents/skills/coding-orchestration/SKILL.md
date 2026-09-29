@@ -12,8 +12,8 @@ Preserve behavior, data boundaries and authorization.
 ## Coordinate the full feature
 
 Read [Jev advisory execution](references/jev-advisory.md) once for nontrivial work.
-Keep the selected parent. Use fast research, Astra XHigh planning, a different
-fresh Astra XHigh plan review, bounded writers, independent final review and
+Keep the selected parent. Use fast research, Sol 6.1 High planning, a different
+fresh Sol 6.1 High plan review, bounded writers, independent final review and
 actual behavior evidence. Jev advises at useful routing and correction decisions;
 the parent records the decision and executes through native tools. Classification
 failure does not globally block work. Tiny deterministic edits stay direct.

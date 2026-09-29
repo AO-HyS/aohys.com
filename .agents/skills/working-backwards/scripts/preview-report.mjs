@@ -5,7 +5,7 @@ import { buildTechnicalReaderModel, renderTechnicalReaderHtml } from "./t3-reade
 
 const markdown = `# Un sistema listo para una prueba real
 
-Astra conduce; OpenCode Go ejecuta. Esta vista de desarrollo utiliza datos de ejemplo para comprobar la lectura, los diagramas y las interacciones del Reader compartido.
+Sol 6.1 conduce; OpenCode Go ejecuta. Esta vista de desarrollo utiliza datos de ejemplo para comprobar la lectura, los diagramas y las interacciones del Reader compartido.
 
 ## La decisión
 
