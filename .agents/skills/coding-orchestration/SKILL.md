@@ -129,3 +129,26 @@ For interruption or ownership recovery, read
 are in [worker-reference](worker-reference.md).
 
 For nontrivial delivery and benchmark results, default to a readable HTML report with passed/failed/not-reached behavior, timing, evidence and limitations. Markdown is supplementary. Publish sanitized report assets through the user-authorized temporary tunnel and state its actual lifetime conditions; keep secrets and raw transcripts outside the served directory. A post-deadline report cannot convert a failed timed run into success.
+
+## Authorized Claude Code account recovery (1.39.0)
+
+For Claude Code review and computer use, the operator explicitly authorizes the
+local Codex credential-home sequence followed by a fresh native Claude role.
+Run codex-review once; it discovers existing profiles without copying credentials
+and records at most two sequential profile attempts. Read receipt.json as well as findings.
+When status is fallback_required and fallback.eligible is true, immediately
+dispatch reviewer (plan, diff or security), visual-reviewer (image review) or
+browser-qa (computer use) through the native Agent tool with the original packet.
+Copy fallback.prompt verbatim from the receipt; it contains the original packet
+and Codex fallback:, Codex fallback receipt: and Codex fallback packet: lines.
+The guard verifies the full dispatched packet, hash, root, mode and Task-Id and
+rejects resume so the native agent stays fresh. Computer-use fallback receipts
+are admitted once only; a consumed receipt requires reconciliation, not replay.
+Do not let a failed Codex attempt silently omit the independent review or absorb
+it into the coordinator. Preserve the endpoint and actual capability requirements.
+Cancellation, safety refusal and uncertain computer-use effects are not fallback
+permission: reconcile observed state before more actions. If the native role lacks
+vision or an authorized browser, retain the gap and continue independent work.
+Report the provider change and actual or unknown identity. This explicit Claude
+exception does not change restricted Codex-only tasks or Headroom's same-account
+per-invocation contract. HOME installation does not prove live host loading.

@@ -1,4 +1,4 @@
-# Development contract 1.37.0
+# Development contract 1.39.0
 
 This profile supersedes mandatory governance as the default. Historical contracts remain immutable.
 
@@ -48,7 +48,7 @@ The field-notebook reader and margin questions from source fb6b5dd968281cd1a5c55
 
 ## Repository preparation correction
 
-Initialize and normalize generate the advisory repository adapter. Product-specific lifecycle extensions survive normalization; shared lifecycle policy comes from this version. The paired skill catalog is 0.55.0.
+Initialize and normalize generate the advisory repository adapter. Product-specific lifecycle extensions survive normalization; shared lifecycle policy comes from this version. The paired skill catalog is 0.57.0.
 
 
 ## Automated tests and evidence
@@ -114,3 +114,30 @@ Contract 1.36.0 installs shorter shared global instructions at `.codex/AGENTS.md
 ## 1.37.0: GPT-6.1 Sol defaults
 
 This release supersedes previous model selections only: new Codex sessions request gpt-6.1-sol/high at normal speed, former Astra roles request gpt-6.1-sol/high, general writers request gpt-6.1-sol/medium, and Luna roles stay unchanged. Preserve the selected parent and independent fresh plan and final reviews. These mappings remain provisional; no benchmark, evaluation or model exercise was performed for this migration. Legacy governed policies and historical run receipts retain their explicit old profiles.
+
+## 1.38.0: external capability refresh
+
+Catalog 0.56.0 refreshes installed third-party capabilities from recorded upstream commits while retaining AOHYS adapters, authorization, browser routing and the no-automated-tests rule. The Impeccable skill stays at released version 4.3.1; its engine is pinned separately to released engine 0.1.7 with asset hashes in refresh-provenance.json. AO-authored workflows remain unchanged. Upstream removals are reported as retained-last-available rather than silently mapped to different capabilities. This tooling update requires no application production deployment. Publication and product pin rollouts remain separate authorized operations. Editable standalone skills outside the catalog retain their own upstream lock and reversible install receipts. Provider-managed builtins and runtime bundles are not rewritten by this catalog.
+
+## Authorized Claude Code account recovery (1.39.0)
+
+For Claude Code review and computer use, the operator explicitly authorizes the
+local Codex credential-home sequence followed by a fresh native Claude role.
+Run codex-review once; it discovers existing profiles without copying credentials
+and records at most two sequential profile attempts. Read receipt.json as well as findings.
+When status is fallback_required and fallback.eligible is true, immediately
+dispatch reviewer (plan, diff or security), visual-reviewer (image review) or
+browser-qa (computer use) through the native Agent tool with the original packet.
+Copy fallback.prompt verbatim from the receipt; it contains the original packet
+and Codex fallback:, Codex fallback receipt: and Codex fallback packet: lines.
+The guard verifies the full dispatched packet, hash, root, mode and Task-Id and
+rejects resume so the native agent stays fresh. Computer-use fallback receipts
+are admitted once only; a consumed receipt requires reconciliation, not replay.
+Do not let a failed Codex attempt silently omit the independent review or absorb
+it into the coordinator. Preserve the endpoint and actual capability requirements.
+Cancellation, safety refusal and uncertain computer-use effects are not fallback
+permission: reconcile observed state before more actions. If the native role lacks
+vision or an authorized browser, retain the gap and continue independent work.
+Report the provider change and actual or unknown identity. This explicit Claude
+exception does not change restricted Codex-only tasks or Headroom's same-account
+per-invocation contract. HOME installation does not prove live host loading.

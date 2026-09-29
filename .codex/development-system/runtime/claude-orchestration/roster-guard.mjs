@@ -20,6 +20,7 @@
 // Internal failures allow the call and are logged: the guard never breaks the host.
 import { execFile, execFileSync } from 'node:child_process';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
@@ -44,7 +45,7 @@ function ledger(entry) {
     `${JSON.stringify({ at: new Date().toISOString(), session, ...entry })}\n`);
 }
 function deny(reason, entry) {
-  ledger({ decision: 'deny', ...entry, reason });
+  try { ledger({ decision: 'deny', ...entry, reason }); } catch { /* denial must survive ledger failure */ }
   process.stdout.write(JSON.stringify({ hookSpecificOutput: {
     hookEventName: 'PreToolUse', permissionDecision: 'deny', permissionDecisionReason: reason } }));
   process.exit(0);
@@ -343,6 +344,38 @@ async function askTier(role, type, prompt, description, cwd) {
     ms: Date.now() - started, memory: { stats: state.memory.stats, similar: state.memory.similar.length } };
 }
 
+// Receipt validation is fail-closed locally, independent of the hook's legacy error policy.
+function fallbackReceipt(prompt, type) {
+  const line = (label) => prompt.match(new RegExp(`^\\s*${label}:\\s*(\\S.*)$`, 'm'))?.[1]?.trim();
+  const receiptPath = line('Codex fallback receipt');
+  const originalPath = line('Codex fallback packet');
+  if (!line('Codex fallback') || !path.isAbsolute(receiptPath ?? '') || !path.isAbsolute(originalPath ?? '')) throw new Error('fallback reason, absolute receipt and original packet paths required');
+  const receipt = JSON.parse(fs.readFileSync(receiptPath, 'utf8'));
+  const expectedMode = type === 'browser-qa' ? 'computer-use' : 'review';
+  const taskId = prompt.match(/^\s*Task-Id:\s*([a-z0-9][a-z0-9._-]{2,79})\s*$/im)?.[1]?.toLowerCase() ?? null;
+  const digest = (file) => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  if (receipt.schemaVersion !== 2 || receipt.status !== 'fallback_required' || receipt.exitCode !== 75 || receipt.fallback?.eligible !== true) throw new Error('receipt does not authorize fallback');
+  if (receipt.root !== fs.realpathSync(input.cwd ?? process.cwd()) || receipt.mode !== expectedMode || receipt.taskId !== taskId) throw new Error('receipt root, mode or Task-Id mismatch');
+  if (!path.isAbsolute(receipt.packetPath ?? '') || !/^[a-f0-9]{64}$/.test(receipt.packetSha256 ?? '') || digest(receipt.packetPath) !== receipt.packetSha256 || digest(originalPath) !== receipt.packetSha256) throw new Error('snapshot or original packet hash mismatch');
+  const originalTask = fs.readFileSync(originalPath, 'utf8').match(/^\s*Task-Id:\s*([a-z0-9][a-z0-9._-]{2,79})\s*$/im)?.[1]?.toLowerCase() ?? null;
+  if (originalTask !== taskId || receipt.fallback.packetPath !== receipt.packetPath || receipt.fallback.packetSha256 !== receipt.packetSha256 || fs.realpathSync(receipt.fallback.receiptPath) !== fs.realpathSync(receiptPath)) throw new Error('fallback packet binding mismatch');
+  if (!/^[0-9]{8}T[0-9]{9}Z-[a-f0-9]{6}$/.test(receipt.runId ?? '')) throw new Error('invalid fallback runId');
+  const allowedReasons = ['quota', 'auth', 'connectivity', 'Codex binary missing', 'No local authenticated Codex profiles discovered'];
+  if (!allowedReasons.includes(receipt.fallback.reason) || receipt.reason !== receipt.fallback.reason) throw new Error('invalid fallback reason');
+  if (originalPath !== receipt.packetPath || receipt.fallback.receiptPath !== receiptPath) throw new Error('noncanonical fallback paths');
+  const expectedPrompt = `${fs.readFileSync(receipt.packetPath, 'utf8')}\nCodex fallback: ${receipt.fallback.reason}\nCodex fallback receipt: ${receiptPath}\nCodex fallback packet: ${receipt.packetPath}\n`;
+  const withoutTrailingNewlines = (text) => text.replace(/\n+$/, '');
+  if (receipt.fallback.prompt !== expectedPrompt || withoutTrailingNewlines(prompt) !== withoutTrailingNewlines(expectedPrompt)) throw new Error('fallback prompt must exactly match the receipt envelope');
+  const expectedRole = type === 'reviewer-medium' ? 'reviewer' : type;
+  if (receipt.fallback.role !== expectedRole) throw new Error('fallback role mismatch');
+  if (!Array.isArray(receipt.attempts) || !Array.isArray(receipt.accounts)) throw new Error('account attempt evidence missing');
+  const allowed = expectedMode === 'computer-use' ? ['quota', 'auth', 'unavailable'] : ['quota', 'auth', 'connectivity', 'unavailable'];
+  if (receipt.accounts.length > 2 || receipt.attempts.length > 2) throw new Error('two-profile recovery budget exceeded');
+  if (receipt.attempts.some((attempt) => attempt.retryEligible !== true || !allowed.includes(attempt.classification))) throw new Error('attempt is not safely retryable');
+  if (receipt.accounts.length && (receipt.attempts.length === 0 || (receipt.attempts.length !== receipt.accounts.length && receipt.attempts.at(-1).classification !== 'unavailable'))) throw new Error('not all accounts exhausted');
+  return receipt;
+}
+
 async function agentCall() {
   const ti = input.tool_input ?? {};
   const type = ti.subagent_type ?? 'general-purpose';
@@ -377,7 +410,22 @@ async function agentCall() {
     if (['review', 'visual'].includes(role.family) && !fallbackLine) deny(`${type} is a fallback: reviews run on Sol 6.1 High through codex-review. ${launch}`, { ...entry, blockedBy: 'codex-review' });
     // An accepted fallback skips the Jev tier and route gate: the parent already declared why.
     if (['review', 'visual', 'browser'].includes(role.family)) {
-      allow(null, { ...entry, codexFallback: fallbackReason, jev: 'skipped', tier: null, why: 'accepted Codex fallback' });
+      let receipt;
+      try {
+        if (ti.resume !== undefined) throw new Error('fallback requires a fresh Agent; resume is forbidden');
+        receipt = fallbackReceipt(prompt, type);
+        if (receipt.mode === 'computer-use') {
+          const consumeDir = path.join(POLICY.stateDir, 'native-fallback');
+          fs.mkdirSync(consumeDir, { recursive: true });
+          try {
+            fs.writeFileSync(path.join(consumeDir, `${receipt.runId}.json`), `${JSON.stringify({ runId: receipt.runId, packetSha256: receipt.packetSha256, session, receiptPath: receipt.fallback.receiptPath })}\n`, { flag: 'wx' });
+          } catch (error) {
+            throw new Error(error?.code === 'EEXIST' ? 'computer-use receipt already consumed; reconcile before any new run' : 'cannot atomically consume computer-use receipt');
+          }
+        }
+      }
+      catch (error) { deny(`Invalid Codex fallback receipt: ${error.message}`, { ...entry, blockedBy: 'codex-fallback-receipt' }); }
+      allow(null, { ...entry, codexFallback: fallbackReason, receiptRunId: receipt.runId, jev: 'skipped', tier: null, why: 'accepted receipt-bound Codex fallback' });
     }
   }
   // Fable is kept for very large or ultra-hard specs: Jev has to pick it, or the parent

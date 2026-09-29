@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-27.1",
+  "version": "2026-09-29.1",
   "maxConcurrentSubagents": 4,
   "roster": {
     "Explore": {
@@ -190,6 +190,8 @@
     "maxParallel": 5,
     "maxComputerUse": 1,
     "roundsWithoutRationale": 3,
-    "stateDir": "~/.development-system/private/runs/codex-review"
+    "stateDir": "~/.development-system/private/runs/codex-review",
+    "accountHomes": null,
+    "maxAccountAttempts": 2
   }
 }

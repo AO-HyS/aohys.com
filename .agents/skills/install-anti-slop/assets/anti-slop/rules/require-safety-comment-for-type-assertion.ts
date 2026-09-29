@@ -29,9 +29,7 @@ function configuredSafetyMarkers(option: unknown): readonly string[] {
   const configured = option.markers;
   if (!Array.isArray(configured)) return DEFAULT_SAFETY_MARKERS;
   const markers = configured.flatMap((marker) =>
-    typeof marker === "string" && marker.trim().length > 0
-      ? [marker.trim()]
-      : [],
+    typeof marker === "string" && marker.trim().length > 0 ? [marker.trim()] : [],
   );
   return markers.length > 0 ? markers : DEFAULT_SAFETY_MARKERS;
 }
@@ -55,8 +53,7 @@ function hasSafetyJustificationBefore(
   return sourceCode
     .getCommentsBefore(owner)
     .some(
-      (comment) =>
-        comment.end <= assertion.start && pattern.test(comment.value),
+      (comment) => comment.end <= assertion.start && pattern.test(comment.value),
     );
 }
 
@@ -67,19 +64,13 @@ function hasSafetyComment(
 ): boolean {
   let current: ESTree.Node = node;
   while (true) {
-    if (hasSafetyJustificationBefore(sourceCode, current, node, pattern))
-      return true;
+    if (hasSafetyJustificationBefore(sourceCode, current, node, pattern)) return true;
     if (commentOwnerKinds.has(current.type)) {
       const exportDeclaration = current.parent;
       return (
         exportDeclaration.type === "ExportNamedDeclaration" &&
         exportDeclaration.declaration === current &&
-        hasSafetyJustificationBefore(
-          sourceCode,
-          exportDeclaration,
-          node,
-          pattern,
-        )
+        hasSafetyJustificationBefore(sourceCode, exportDeclaration, node, pattern)
       );
     }
     if (current.parent.type === "Program") return false;
