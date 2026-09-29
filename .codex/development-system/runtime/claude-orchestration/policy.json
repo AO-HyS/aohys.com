@@ -54,7 +54,7 @@
     },
     "senior-implementer": {
       "model": "opus",
-      "route": "astra_xhigh_decision",
+      "route": "sol61_high_decision",
       "writer": true,
       "jev": true,
       "family": "implement",
@@ -70,14 +70,14 @@
     },
     "planner-medium": {
       "model": "opus",
-      "route": "astra_xhigh_decision",
+      "route": "sol61_high_decision",
       "jev": true,
       "family": "plan",
       "tier": "opus_medium"
     },
     "planner": {
       "model": "opus",
-      "route": "astra_xhigh_decision",
+      "route": "sol61_high_decision",
       "jev": true,
       "family": "plan",
       "tier": "opus_high"
@@ -185,8 +185,8 @@
   },
   "review": {
     "engine": "codex",
-    "model": "gpt-6-astra",
-    "effort": "xhigh",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
     "maxParallel": 5,
     "maxComputerUse": 1,
     "roundsWithoutRationale": 3,

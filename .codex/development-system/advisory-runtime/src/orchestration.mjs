@@ -4,7 +4,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { isAbsolute, relative, resolve, sep } from "node:path";
 
-const policy = JSON.parse(await readFile(new URL("../config/1.3.0/orchestration-policy.json", import.meta.url), "utf8"));
+const policy = JSON.parse(await readFile(new URL("../config/1.4.0/orchestration-policy.json", import.meta.url), "utf8"));
 export const orchestrationPolicy = Object.freeze({ ...policy, version: policy.policyVersion, model: policy.classifier.model });
 const safeId = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,127}$/;
 
@@ -235,7 +235,7 @@ function jevQuestions() {
         root_direct: "Tiny integration best completed by the current root without delegation",
         exact_implementation: "Bounded implementation with settled decisions and sufficient exact context",
         general_implementation: "General bounded implementation requiring ordinary technical decisions",
-        astra_xhigh_decision: "Open product, architecture, permissions, or contract decision requiring strongest judgment",
+        sol61_high_decision: "Open product, architecture, permissions, or contract decision requiring strongest judgment",
         read_only_mapper: "Read-only codebase discovery or dependency mapping",
         browser_executor: "Requires real browser, vision, or Computer Use capability",
         specialist_review: "Independent security, logic, code, or visual review",

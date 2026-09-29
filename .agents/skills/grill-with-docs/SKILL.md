@@ -74,8 +74,8 @@ approved direction without an explicit choice on Impeccable's page.
 
 Use [the shared definition contract](../coding-orchestration/references/spec-ticket-contract.md)
 for stable criteria, linked tickets, dependencies, rules and required evidence.
-Astra XHigh authors definition and the implementation plan; a different fresh
-Astra XHigh reviews that plan. Fast researchers supply bounded source facts.
+Sol 6.1 High authors definition and the implementation plan; a different fresh
+Sol 6.1 High reviews that plan. Fast researchers supply bounded source facts.
 When implementation is authorized, use coding-orchestration and its advisory
 Jev recipe across the complete feature, including nonvisual behavior. Retrieve
 all tickets linked by the spec; preserve settled decisions across threads.

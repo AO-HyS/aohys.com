@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "0.54.0",
+  "catalogVersion": "0.55.0",
   "supportedHarnesses": [
     {
       "id": "codex",
@@ -1269,23 +1269,23 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.33.0/skills/internal/implement-spec"
+        "path": "artifacts/1.37.0/skills/internal/implement-spec"
       },
       "variants": [
         {
           "id": "implement-spec.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.33.0/skills/internal/implement-spec",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/implement-spec",
           "destination": ".agents/skills/implement-spec",
-          "folderSha256": "1fcce3dcaeb76f11fbf98da2f87f481f141a496a312d37dc6e338efeb34ae951",
+          "folderSha256": "b43aba9249f2068559f155e2dea8c123351e650422419bb70ee32bcadf52f157",
           "expectedMirrorOf": null
         },
         {
           "id": "implement-spec.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.33.0/skills/internal/implement-spec",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/implement-spec",
           "destination": ".claude/skills/implement-spec",
-          "folderSha256": "1fcce3dcaeb76f11fbf98da2f87f481f141a496a312d37dc6e338efeb34ae951",
+          "folderSha256": "b43aba9249f2068559f155e2dea8c123351e650422419bb70ee32bcadf52f157",
           "expectedMirrorOf": "implement-spec.codex",
           "install": "symlink"
         }
@@ -1331,23 +1331,23 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.36.0/skills/internal/flow-implement"
+        "path": "artifacts/1.37.0/skills/internal/flow-implement"
       },
       "variants": [
         {
           "id": "flow-implement.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.36.0/skills/internal/flow-implement",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/flow-implement",
           "destination": ".agents/skills/flow-implement",
-          "folderSha256": "8186d2e7f19ab9eca0270478f33d2333bc5d911b3da8b258c6896c5f122aa6b8",
+          "folderSha256": "3b69f0f74fe8c495d24bc940fb08d4bc63dc09d9d2328227c437f17cb5d8b937",
           "expectedMirrorOf": null
         },
         {
           "id": "flow-implement.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.36.0/skills/internal/flow-implement",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/flow-implement",
           "destination": ".claude/skills/flow-implement",
-          "folderSha256": "8186d2e7f19ab9eca0270478f33d2333bc5d911b3da8b258c6896c5f122aa6b8",
+          "folderSha256": "3b69f0f74fe8c495d24bc940fb08d4bc63dc09d9d2328227c437f17cb5d8b937",
           "expectedMirrorOf": "flow-implement.codex",
           "install": "symlink"
         }
@@ -1424,31 +1424,31 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.33.0/skills/internal/drive-development-flow"
+        "path": "artifacts/1.37.0/skills/internal/drive-development-flow"
       },
       "variants": [
         {
           "id": "drive-development-flow.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.33.0/skills/internal/drive-development-flow",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/drive-development-flow",
           "destination": ".codex/skills/drive-development-flow",
-          "folderSha256": "8cd99a5b06618547eaad4c2b7535930921a56a5227e196e483e54a35cbcf8eae",
+          "folderSha256": "a2fd0f8507783da95fe37876c92c337b0eae655a9ea454c13e39e168dec59079",
           "expectedMirrorOf": null
         },
         {
           "id": "drive-development-flow.agents",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.33.0/skills/internal/drive-development-flow",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/drive-development-flow",
           "destination": ".agents/skills/drive-development-flow",
-          "folderSha256": "8cd99a5b06618547eaad4c2b7535930921a56a5227e196e483e54a35cbcf8eae",
+          "folderSha256": "a2fd0f8507783da95fe37876c92c337b0eae655a9ea454c13e39e168dec59079",
           "expectedMirrorOf": "drive-development-flow.codex"
         },
         {
           "id": "drive-development-flow.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.33.0/skills/internal/drive-development-flow",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/drive-development-flow",
           "destination": ".claude/skills/drive-development-flow",
-          "folderSha256": "8cd99a5b06618547eaad4c2b7535930921a56a5227e196e483e54a35cbcf8eae",
+          "folderSha256": "a2fd0f8507783da95fe37876c92c337b0eae655a9ea454c13e39e168dec59079",
           "expectedMirrorOf": "drive-development-flow.codex",
           "install": "symlink"
         }
@@ -1463,33 +1463,33 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.35.0/skills/internal/coding-orchestration"
+        "path": "artifacts/1.37.0/skills/internal/coding-orchestration"
       },
       "variants": [
         {
           "id": "coding-orchestration.codex-adapter",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.35.0/skills/internal/coding-orchestration",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/coding-orchestration",
           "destination": ".codex/skills/coding-orchestration",
-          "folderSha256": "6fd1e38ec70e0c93487535fc94d96ac9e764d0d97e9389bc182d7d036aee80d9",
+          "folderSha256": "6e32a6ccdd374ff8e8d739178864eb3ba939eaa325bd94693fa920d655c59e7a",
           "expectedMirrorOf": null,
           "adapterContract": "authorized-initiative-orchestration-v2"
         },
         {
           "id": "coding-orchestration.agents",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.35.0/skills/internal/coding-orchestration",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/coding-orchestration",
           "destination": ".agents/skills/coding-orchestration",
-          "folderSha256": "6fd1e38ec70e0c93487535fc94d96ac9e764d0d97e9389bc182d7d036aee80d9",
+          "folderSha256": "6e32a6ccdd374ff8e8d739178864eb3ba939eaa325bd94693fa920d655c59e7a",
           "expectedMirrorOf": "coding-orchestration.codex-adapter",
           "adapterContract": "authorized-initiative-orchestration-v2"
         },
         {
           "id": "coding-orchestration.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.35.0/skills/internal/coding-orchestration",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/coding-orchestration",
           "destination": ".claude/skills/coding-orchestration",
-          "folderSha256": "6fd1e38ec70e0c93487535fc94d96ac9e764d0d97e9389bc182d7d036aee80d9",
+          "folderSha256": "6e32a6ccdd374ff8e8d739178864eb3ba939eaa325bd94693fa920d655c59e7a",
           "expectedMirrorOf": "coding-orchestration.codex-adapter",
           "install": "symlink",
           "adapterContract": "authorized-initiative-orchestration-v2"
@@ -1536,23 +1536,23 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.33.0/skills/internal/grill-with-docs"
+        "path": "artifacts/1.37.0/skills/internal/grill-with-docs"
       },
       "variants": [
         {
           "id": "grill-with-docs.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.33.0/skills/internal/grill-with-docs",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/grill-with-docs",
           "destination": ".agents/skills/grill-with-docs",
-          "folderSha256": "8bf5a519776b8cf11b43bf9b7a02418d83ba0a8b1daa1bf45ef3528426f08a54",
+          "folderSha256": "395c835f95f80577fcc7cf2280428a03af162703eba814317e529a02df248fac",
           "expectedMirrorOf": null
         },
         {
           "id": "grill-with-docs.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.33.0/skills/internal/grill-with-docs",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/grill-with-docs",
           "destination": ".claude/skills/grill-with-docs",
-          "folderSha256": "8bf5a519776b8cf11b43bf9b7a02418d83ba0a8b1daa1bf45ef3528426f08a54",
+          "folderSha256": "395c835f95f80577fcc7cf2280428a03af162703eba814317e529a02df248fac",
           "expectedMirrorOf": "grill-with-docs.codex",
           "install": "symlink"
         }
@@ -1630,15 +1630,15 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.36.0/skills/internal/working-backwards"
+        "path": "artifacts/1.37.0/skills/internal/working-backwards"
       },
       "variants": [
         {
           "id": "working-backwards.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.36.0/skills/internal/working-backwards",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/working-backwards",
           "destination": ".agents/skills/working-backwards",
-          "folderSha256": "a1210601a983aa809c730458d37ea172e12bcbcb3dadf642e5440676dd23e5ad",
+          "folderSha256": "49231ddc005287a98f2abcafe3cc194cea7e629c11d33c7888e464d9ac29d268",
           "executableFiles": [
             "scripts/t3-workflow.mjs",
             "scripts/t3-reader.mjs",
@@ -1651,9 +1651,9 @@
         {
           "id": "working-backwards.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.36.0/skills/internal/working-backwards",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/working-backwards",
           "destination": ".claude/skills/working-backwards",
-          "folderSha256": "a1210601a983aa809c730458d37ea172e12bcbcb3dadf642e5440676dd23e5ad",
+          "folderSha256": "49231ddc005287a98f2abcafe3cc194cea7e629c11d33c7888e464d9ac29d268",
           "executableFiles": [
             "scripts/t3-workflow.mjs",
             "scripts/t3-reader.mjs",
@@ -3850,7 +3850,7 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.36.0/skills/internal/orchestrate-work"
+        "path": "artifacts/1.37.0/skills/internal/orchestrate-work"
       },
       "variants": [
         {
@@ -3858,15 +3858,15 @@
           "harness": "codex",
           "destination": ".agents/skills/orchestrate-work",
           "expectedMirrorOf": null,
-          "sourceDirectory": "artifacts/1.36.0/skills/internal/orchestrate-work",
-          "folderSha256": "4b6a06b795c82618eb08853abb72fe529b7260facab57a18e8831abbd6c88241"
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/orchestrate-work",
+          "folderSha256": "7b4b7c00c999e08f06eade529e6a53b1773d8a48047573dc43f4c6ccb0b50ba0"
         },
         {
           "id": "orchestrate-work.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.36.0/skills/internal/orchestrate-work",
+          "sourceDirectory": "artifacts/1.37.0/skills/internal/orchestrate-work",
           "destination": ".claude/skills/orchestrate-work",
-          "folderSha256": "4b6a06b795c82618eb08853abb72fe529b7260facab57a18e8831abbd6c88241",
+          "folderSha256": "7b4b7c00c999e08f06eade529e6a53b1773d8a48047573dc43f4c6ccb0b50ba0",
           "expectedMirrorOf": "orchestrate-work.codex",
           "install": "symlink"
         }

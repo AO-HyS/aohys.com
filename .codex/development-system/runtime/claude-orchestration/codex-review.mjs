@@ -1,5 +1,5 @@
 // Codex review wrapper (operator-level, private).
-// Runs one independent review on Astra XHigh through `codex exec` in a read-only sandbox.
+// Runs one independent review on Sol 6.1 High through `codex exec` in a read-only sandbox.
 // The coordinator launches it with Bash run_in_background: true and is woken when it exits.
 // Usage: node codex-review.mjs [--computer-use] --packet <file> [--root <dir>] [--out <dir>] [--image <file>]...
 // A review packet needs an Objective line and a `Task-Id: <slug>` line; rounds are keyed on
@@ -221,7 +221,7 @@ function claimOutDir() {
 }
 const claimRefusal = claimOutDir();
 if (claimRefusal) refuse(claimRefusal);
-const requested = { model: REVIEW.model ?? 'gpt-6-astra', effort: REVIEW.effort ?? 'xhigh' };
+const requested = { model: REVIEW.model ?? 'gpt-6.1-sol', effort: REVIEW.effort ?? 'high' };
 const marker = path.join(pendingDir, `${runId}.json`);
 const removeMarker = () => { try { fs.rmSync(marker, { force: true }); } catch { /* best effort */ } };
 

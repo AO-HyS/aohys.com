@@ -2,7 +2,7 @@
 
 Use this shared presentation for completion reports, reviews and spec explanations.
 Load `show-me` to choose a useful visual and `pr-lens` for maps of relationships
-or code changes. Astra owns design and Computer Use. Do not create per-repo HTML.
+or code changes. Sol 6.1 owns design and Computer Use. Do not create per-repo HTML.
 
 ## Generate
 
