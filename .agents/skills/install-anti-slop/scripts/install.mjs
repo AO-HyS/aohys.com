@@ -25,21 +25,12 @@ const skillRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const source = resolve(skillRoot, "assets", "anti-slop");
 const defaultDestination = "tools/oxlint/anti-slop";
 const arguments_ = process.argv.slice(2);
-const targetArgument = arguments_.find(
-  (argument) => !argument.startsWith("--"),
-);
+const targetArgument = arguments_.find((argument) => !argument.startsWith("--"));
 const force = arguments_.includes("--force");
-const directoryFlags =
-  constants.O_RDONLY | constants.O_DIRECTORY | constants.O_NOFOLLOW;
-const fileFlags =
-  constants.O_WRONLY |
-  constants.O_CREAT |
-  constants.O_EXCL |
-  constants.O_NOFOLLOW;
-const expectedInstallTreeSha256 =
-  "c3393200b7030606188a5ceeb04cc1ef0ac35ae5db0735786edc738c59843465";
-const expectedLicenseSha256 =
-  "10ed33bf340d6d63dc0633dfc917a346b369b6aa41fe20734aefc6a3fb75ba17";
+const directoryFlags = constants.O_RDONLY | constants.O_DIRECTORY | constants.O_NOFOLLOW;
+const fileFlags = constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW;
+const expectedInstallTreeSha256 = "c3393200b7030606188a5ceeb04cc1ef0ac35ae5db0735786edc738c59843465";
+const expectedLicenseSha256 = "10ed33bf340d6d63dc0633dfc917a346b369b6aa41fe20734aefc6a3fb75ba17";
 
 class UnsafeInstall extends Error {}
 
@@ -57,24 +48,14 @@ function hasCode(error, code) {
 function validateTargetArgument(target) {
   if (target.trim().length === 0) refuse("the destination is empty");
   if (isAbsolute(target)) {
-    refuse(
-      "absolute destinations are not allowed; pass a repository-relative path",
-    );
+    refuse("absolute destinations are not allowed; pass a repository-relative path");
   }
   if (target.includes("\\")) {
-    refuse(
-      "backslash destinations are ambiguous; pass a repository-relative path with forward slashes",
-    );
+    refuse("backslash destinations are ambiguous; pass a repository-relative path with forward slashes");
   }
   const segments = target.split("/");
-  if (
-    segments.some(
-      (segment) => segment === "" || segment === "." || segment === "..",
-    )
-  ) {
-    refuse(
-      `destinations may not contain empty, dot, or parent segments: ${target}`,
-    );
+  if (segments.some((segment) => segment === "" || segment === "." || segment === "..")) {
+    refuse(`destinations may not contain empty, dot, or parent segments: ${target}`);
   }
 }
 
@@ -91,16 +72,11 @@ async function lstatIfPresent(path) {
 /** @param {string} directory @param {string} prefix */
 async function assertNoSymbolicLinks(directory, prefix = "") {
   async function walk(currentDirectory, currentPrefix) {
-    for (const entry of await readdir(currentDirectory, {
-      withFileTypes: true,
-    })) {
-      const entryPath = currentPrefix
-        ? `${currentPrefix}/${entry.name}`
-        : entry.name;
+    for (const entry of await readdir(currentDirectory, { withFileTypes: true })) {
+      const entryPath = currentPrefix ? `${currentPrefix}/${entry.name}` : entry.name;
       const entryPathOnDisk = join(currentDirectory, entry.name);
       const status = await lstat(entryPathOnDisk);
-      if (status.isSymbolicLink())
-        refuse(`existing destination contains a symbolic link: ${entryPath}`);
+      if (status.isSymbolicLink()) refuse(`existing destination contains a symbolic link: ${entryPath}`);
       if (status.isDirectory()) {
         const child = await open(entryPathOnDisk, directoryFlags);
         try {
@@ -109,9 +85,7 @@ async function assertNoSymbolicLinks(directory, prefix = "") {
           await child.close();
         }
       } else if (!status.isFile()) {
-        refuse(
-          `existing destination contains an unsupported entry: ${entryPath}`,
-        );
+        refuse(`existing destination contains an unsupported entry: ${entryPath}`);
       }
     }
   }
@@ -134,20 +108,10 @@ async function openBoundDirectory(path, label) {
   }
   try {
     const [opened, named] = await Promise.all([handle.stat(), lstat(path)]);
-    if (
-      named.isSymbolicLink() ||
-      !named.isDirectory() ||
-      !opened.isDirectory() ||
-      !sameFileIdentity(opened, named)
-    ) {
+    if (named.isSymbolicLink() || !named.isDirectory() || !opened.isDirectory() || !sameFileIdentity(opened, named)) {
       refuse(`ancestor changed while it was being bound: ${label}`);
     }
-    return {
-      path,
-      label,
-      handle,
-      identity: { dev: opened.dev, ino: opened.ino },
-    };
+    return { path, label, handle, identity: { dev: opened.dev, ino: opened.ino } };
   } catch (error) {
     await handle.close();
     throw error;
@@ -157,10 +121,7 @@ async function openBoundDirectory(path, label) {
 /** @param {Array<Awaited<ReturnType<typeof openBoundDirectory>>>} ancestors @param {string} workingReal */
 async function assertAncestorChain(ancestors, workingReal) {
   for (const ancestor of ancestors) {
-    const [opened, named] = await Promise.all([
-      ancestor.handle.stat(),
-      lstat(ancestor.path),
-    ]);
+    const [opened, named] = await Promise.all([ancestor.handle.stat(), lstat(ancestor.path)]);
     if (
       named.isSymbolicLink() ||
       !named.isDirectory() ||
@@ -172,10 +133,7 @@ async function assertAncestorChain(ancestors, workingReal) {
     }
   }
   const parentReal = await realpath(".");
-  if (
-    parentReal !== workingReal &&
-    !parentReal.startsWith(`${workingReal}${sep}`)
-  ) {
+  if (parentReal !== workingReal && !parentReal.startsWith(`${workingReal}${sep}`)) {
     refuse("the destination parent escapes the real working directory");
   }
   return parentReal;
@@ -188,10 +146,7 @@ async function assertStageIdentity(name, handle, expected) {
     refuse("the private staging directory was replaced before placement");
   }
   const handleStatus = await handle.stat();
-  if (
-    !sameFileIdentity(pathStatus, expected) ||
-    !sameFileIdentity(handleStatus, expected)
-  ) {
+  if (!sameFileIdentity(pathStatus, expected) || !sameFileIdentity(handleStatus, expected)) {
     refuse("the private staging directory identity changed before placement");
   }
   await assertNoSymbolicLinks(name);
@@ -199,15 +154,11 @@ async function assertStageIdentity(name, handle, expected) {
 
 /** @param {string} sourcePath @param {string} destinationPath @param {number} mode */
 async function copyTrustedFile(sourcePath, destinationPath, mode) {
-  const sourceHandle = await open(
-    sourcePath,
-    constants.O_RDONLY | constants.O_NOFOLLOW,
-  );
+  const sourceHandle = await open(sourcePath, constants.O_RDONLY | constants.O_NOFOLLOW);
   let destinationFile;
   try {
     const sourceStatus = await sourceHandle.stat();
-    if (!sourceStatus.isFile())
-      refuse(`source contains an unsupported entry: ${sourcePath}`);
+    if (!sourceStatus.isFile()) refuse(`source contains an unsupported entry: ${sourcePath}`);
     const sourceBytes = await sourceHandle.readFile();
     destinationFile = await open(destinationPath, fileFlags, mode);
     await destinationFile.writeFile(sourceBytes);
@@ -223,8 +174,7 @@ async function copySourceTree(sourceDirectory, destinationDirectory) {
   for (const entry of await readdir(sourceDirectory, { withFileTypes: true })) {
     const sourcePath = join(sourceDirectory, entry.name);
     const destinationPath = join(destinationDirectory, entry.name);
-    if (entry.isSymbolicLink())
-      refuse(`source contains a symbolic link: ${entry.name}`);
+    if (entry.isSymbolicLink()) refuse(`source contains a symbolic link: ${entry.name}`);
     const status = await lstat(sourcePath);
     if (status.isDirectory()) {
       await mkdir(destinationPath, { mode: status.mode & 0o777 });
@@ -236,8 +186,7 @@ async function copySourceTree(sourceDirectory, destinationDirectory) {
       }
       continue;
     }
-    if (!status.isFile())
-      refuse(`source contains an unsupported entry: ${entry.name}`);
+    if (!status.isFile()) refuse(`source contains an unsupported entry: ${entry.name}`);
     await copyTrustedFile(sourcePath, destinationPath, status.mode & 0o777);
   }
 }
@@ -250,16 +199,10 @@ async function canonicalTreeSha256(directory) {
     for (const entry of await readdir(current, { withFileTypes: true })) {
       const path = join(current, entry.name);
       const status = await lstat(path);
-      if (status.isSymbolicLink())
-        refuse(
-          `installed tree contains a symbolic link: ${relative(directory, path)}`,
-        );
+      if (status.isSymbolicLink()) refuse(`installed tree contains a symbolic link: ${relative(directory, path)}`);
       if (status.isDirectory()) await walk(path);
       else if (status.isFile()) files.push(path);
-      else
-        refuse(
-          `installed tree contains an unsupported entry: ${relative(directory, path)}`,
-        );
+      else refuse(`installed tree contains an unsupported entry: ${relative(directory, path)}`);
     }
   }
   await walk(directory);
@@ -268,15 +211,8 @@ async function canonicalTreeSha256(directory) {
     const handle = await open(path, constants.O_RDONLY | constants.O_NOFOLLOW);
     try {
       const [opened, named] = await Promise.all([handle.stat(), lstat(path)]);
-      if (
-        !opened.isFile() ||
-        named.isSymbolicLink() ||
-        !named.isFile() ||
-        !sameFileIdentity(opened, named)
-      ) {
-        refuse(
-          `installed tree file changed while hashing: ${relative(directory, path)}`,
-        );
+      if (!opened.isFile() || named.isSymbolicLink() || !named.isFile() || !sameFileIdentity(opened, named)) {
+        refuse(`installed tree file changed while hashing: ${relative(directory, path)}`);
       }
       hash.update(relative(directory, path));
       hash.update("\0");
@@ -291,26 +227,15 @@ async function canonicalTreeSha256(directory) {
 
 /** @param {string} directory */
 async function assertCanonicalInstallTree(directory) {
-  if ((await canonicalTreeSha256(directory)) !== expectedInstallTreeSha256) {
-    refuse(
-      "the complete staged install tree does not match the pinned canonical bytes",
-    );
+  if (await canonicalTreeSha256(directory) !== expectedInstallTreeSha256) {
+    refuse("the complete staged install tree does not match the pinned canonical bytes");
   }
-  const licenseHandle = await open(
-    join(directory, "LICENSE"),
-    constants.O_RDONLY | constants.O_NOFOLLOW,
-  );
+  const licenseHandle = await open(join(directory, "LICENSE"), constants.O_RDONLY | constants.O_NOFOLLOW);
   try {
     const status = await licenseHandle.stat();
-    if (!status.isFile())
-      refuse("the staged MIT LICENSE is not a regular file");
-    const hash = createHash("sha256")
-      .update(await licenseHandle.readFile())
-      .digest("hex");
-    if (hash !== expectedLicenseSha256)
-      refuse(
-        "the staged MIT LICENSE does not match the pinned upstream notice",
-      );
+    if (!status.isFile()) refuse("the staged MIT LICENSE is not a regular file");
+    const hash = createHash("sha256").update(await licenseHandle.readFile()).digest("hex");
+    if (hash !== expectedLicenseSha256) refuse("the staged MIT LICENSE does not match the pinned upstream notice");
   } finally {
     await licenseHandle.close();
   }
@@ -318,11 +243,7 @@ async function assertCanonicalInstallTree(directory) {
 
 /** @param {string} barrier */
 async function waitForInjectedRace(barrier) {
-  await writeFile(`${barrier}.ready`, "ready\n", {
-    encoding: "utf8",
-    flag: "wx",
-    mode: 0o600,
-  });
+  await writeFile(`${barrier}.ready`, "ready\n", { encoding: "utf8", flag: "wx", mode: 0o600 });
   const deadline = Date.now() + 5_000;
   while (Date.now() < deadline) {
     try {
@@ -338,10 +259,7 @@ async function waitForInjectedRace(barrier) {
 
 async function main() {
   if (targetArgument !== undefined) validateTargetArgument(targetArgument);
-  if (
-    constants.O_DIRECTORY === undefined ||
-    constants.O_NOFOLLOW === undefined
-  ) {
+  if (constants.O_DIRECTORY === undefined || constants.O_NOFOLLOW === undefined) {
     refuse("safe contained installation is unavailable on this platform");
   }
 
@@ -383,13 +301,9 @@ async function main() {
     }
     if (!status) refuse(`ancestor disappeared while opening: ${segment}`);
     if (status.isSymbolicLink()) refuse(`symbolic link ancestor: ${segment}`);
-    if (!status.isDirectory())
-      refuse(`ancestor is not a directory: ${segment}`);
+    if (!status.isDirectory()) refuse(`ancestor is not a directory: ${segment}`);
     current = resolve(current, segment);
-    const bound = await openBoundDirectory(
-      segment,
-      relative(originalWorkingDirectory, current),
-    );
+    const bound = await openBoundDirectory(segment, relative(originalWorkingDirectory, current));
     ancestorHandles.push({ ...bound, path: current });
     process.chdir(segment);
     await assertAncestorChain(ancestorHandles, workingReal);
@@ -404,20 +318,14 @@ async function main() {
   try {
     const targetStatus = await lstatIfPresent(targetName);
     if (targetStatus?.isSymbolicLink()) {
-      refuse(
-        "the destination is an existing symbolic link; --force never authorizes writing through a link",
-      );
+      refuse("the destination is an existing symbolic link; --force never authorizes writing through a link");
     }
     if (targetStatus && !targetStatus.isDirectory()) {
-      refuse(
-        `the destination is not a directory: ${relative(previousWorkingDirectory, target)}`,
-      );
+      refuse(`the destination is not a directory: ${relative(previousWorkingDirectory, target)}`);
     }
     if (targetStatus?.isDirectory()) await assertNoSymbolicLinks(targetName);
     if (targetStatus && !force) {
-      console.error(
-        `Refusing to overwrite ${target}. Re-run with --force only after reviewing the existing files.`,
-      );
+      console.error(`Refusing to overwrite ${target}. Re-run with --force only after reviewing the existing files.`);
       process.exitCode = 1;
       return;
     }
@@ -428,11 +336,7 @@ async function main() {
     const openedStageStatus = await stageHandle.stat();
     stageIdentity = { dev: openedStageStatus.dev, ino: openedStageStatus.ino };
     await copySourceTree(source, stageName);
-    await copyTrustedFile(
-      resolve(skillRoot, "LICENSE"),
-      resolve(stageName, "LICENSE"),
-      0o644,
-    );
+    await copyTrustedFile(resolve(skillRoot, "LICENSE"), resolve(stageName, "LICENSE"), 0o644);
     await assertStageIdentity(stageName, stageHandle, stageIdentity);
     await assertCanonicalInstallTree(stageName);
 
@@ -452,21 +356,15 @@ async function main() {
     await assertAncestorChain(ancestorHandles, workingReal);
     const finalTargetStatus = await lstatIfPresent(targetName);
     if (finalTargetStatus?.isSymbolicLink()) {
-      refuse(
-        "the destination is an existing symbolic link; --force never authorizes writing through a link",
-      );
+      refuse("the destination is an existing symbolic link; --force never authorizes writing through a link");
     }
     if (finalTargetStatus && !force) {
-      console.error(
-        `Refusing to overwrite ${target}. Re-run with --force only after reviewing the existing files.`,
-      );
+      console.error(`Refusing to overwrite ${target}. Re-run with --force only after reviewing the existing files.`);
       process.exitCode = 1;
       return;
     }
     if (finalTargetStatus && !finalTargetStatus.isDirectory()) {
-      refuse(
-        `the destination is not a directory: ${relative(previousWorkingDirectory, target)}`,
-      );
+      refuse(`the destination is not a directory: ${relative(previousWorkingDirectory, target)}`);
     }
 
     if (force && finalTargetStatus) {
@@ -478,9 +376,7 @@ async function main() {
       const replacedTargetStatus = await lstatIfPresent(targetName);
       if (replacedTargetStatus) {
         if (replacedTargetStatus.isSymbolicLink()) {
-          refuse(
-            "the destination is an existing symbolic link; --force never authorizes writing through a link",
-          );
+          refuse("the destination is an existing symbolic link; --force never authorizes writing through a link");
         }
         refuse("the destination appeared during atomic placement");
       }
@@ -490,21 +386,13 @@ async function main() {
     await rename(stageName, targetName);
     const placedStatus = await lstat(targetName);
     const heldStatus = await stageHandle.stat();
-    if (
-      !placedStatus.isDirectory() ||
-      !sameFileIdentity(placedStatus, stageIdentity) ||
-      !sameFileIdentity(heldStatus, stageIdentity)
-    ) {
-      refuse(
-        "the installed target does not match the held staging directory identity",
-      );
+    if (!placedStatus.isDirectory() || !sameFileIdentity(placedStatus, stageIdentity) || !sameFileIdentity(heldStatus, stageIdentity)) {
+      refuse("the installed target does not match the held staging directory identity");
     }
     await assertCanonicalInstallTree(targetName);
     stageName = null;
     if (backupName) {
-      console.log(
-        `Retained the previous destination for recovery at ${resolve(parentReal, backupName)}`,
-      );
+      console.log(`Retained the previous destination for recovery at ${resolve(parentReal, backupName)}`);
       backupName = null;
     }
     console.log(`Copied the anti-slop plugin to ${target}`);
@@ -513,26 +401,16 @@ async function main() {
     // Never recursively delete or auto-restore a path whose name may have
     // been substituted. Retain uncertain stage/backup entries for explicit
     // recovery instead of turning cleanup into a second race primitive.
-    if (stageName)
-      console.error(
-        `Retained unplaced staging entry for review at ${resolve(parentReal, stageName)}`,
-      );
-    if (backupName)
-      console.error(
-        `Retained previous destination for recovery at ${resolve(parentReal, backupName)}`,
-      );
+    if (stageName) console.error(`Retained unplaced staging entry for review at ${resolve(parentReal, stageName)}`);
+    if (backupName) console.error(`Retained previous destination for recovery at ${resolve(parentReal, backupName)}`);
     await stageHandle?.close();
-    await Promise.allSettled(
-      ancestorHandles.map((ancestor) => ancestor.handle.close()),
-    );
+    await Promise.allSettled(ancestorHandles.map((ancestor) => ancestor.handle.close()));
   }
 }
 
 try {
   await main();
 } catch (error) {
-  console.error(
-    `Refusing unsafe install target: ${error instanceof Error ? error.message : String(error)}`,
-  );
+  console.error(`Refusing unsafe install target: ${error instanceof Error ? error.message : String(error)}`);
   process.exitCode = 1;
 }

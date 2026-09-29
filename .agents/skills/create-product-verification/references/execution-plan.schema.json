@@ -17,45 +17,15 @@
   ],
   "properties": {
     "version": { "const": "1" },
-    "allowedOrigins": {
-      "type": "array",
-      "items": { "type": "string", "pattern": "^https?://[^/?#]+$" },
-      "minItems": 1,
-      "uniqueItems": true
-    },
-    "allowedPathPatterns": {
-      "type": "array",
-      "items": { "type": "string", "pattern": "^/(?!.*(?:\\.\\.|[?#])).+$" },
-      "minItems": 1,
-      "uniqueItems": true
-    },
+    "allowedOrigins": { "type": "array", "items": { "type": "string", "pattern": "^https?://[^/?#]+$" }, "minItems": 1, "uniqueItems": true },
+    "allowedPathPatterns": { "type": "array", "items": { "type": "string", "pattern": "^/(?!.*(?:\\.\\.|[?#])).+$" }, "minItems": 1, "uniqueItems": true },
     "allowedActions": {
       "type": "array",
-      "items": {
-        "enum": [
-          "navigate",
-          "click",
-          "type",
-          "select",
-          "submit-form",
-          "scroll",
-          "wait",
-          "capture-screenshot",
-          "record-video",
-          "stop-recording"
-        ]
-      },
+      "items": { "enum": ["navigate", "click", "type", "select", "submit-form", "scroll", "wait", "capture-screenshot", "record-video", "stop-recording"] },
       "minItems": 1,
       "uniqueItems": true
     },
-    "inputReferences": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "pattern": "^(fixture|host|session|vault)\\.[A-Za-z0-9][A-Za-z0-9._-]*$"
-      },
-      "uniqueItems": true
-    },
+    "inputReferences": { "type": "array", "items": { "type": "string", "pattern": "^(fixture|host|session|vault)\\.[A-Za-z0-9][A-Za-z0-9._-]*$" }, "uniqueItems": true },
     "steps": {
       "type": "array",
       "minItems": 1,
@@ -72,10 +42,7 @@
       }
     },
     "sideEffectMode": { "enum": ["none", "authorized-writes"] },
-    "evidencePath": {
-      "type": "string",
-      "pattern": "^\\$HOME/\\.development-system/private/verification/[A-Za-z0-9._-]+(?:/[A-Za-z0-9._/-]+)?$"
-    },
+    "evidencePath": { "type": "string", "pattern": "^\\$HOME/\\.development-system/private/verification/[A-Za-z0-9._-]+(?:/[A-Za-z0-9._/-]+)?$" },
     "sha256": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$",
