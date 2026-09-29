@@ -151,3 +151,26 @@
 .agents/skills/review-thread/
 .agents/skills/shadcn/
 .agents/skills/vercel-react-best-practices/
+
+# Manifest-owned artifact mirrors also preserve their exact released bytes.
+.codex/development-system/governance-runtime/adapters.mjs
+.codex/development-system/governance-runtime/cli.mjs
+.codex/development-system/governance-runtime/command-reference.mjs
+.codex/development-system/governance-runtime/core.mjs
+.codex/development-system/governance-runtime/errors.mjs
+.codex/development-system/governance-runtime/executor.mjs
+.codex/development-system/governance-runtime/hook-launcher.mjs
+.codex/development-system/governance-runtime/hook.mjs
+.codex/development-system/governance-runtime/jev.mjs
+.codex/development-system/governance-runtime/opencode.mjs
+.codex/development-system/governance-runtime/policy.mjs
+.codex/development-system/governance-runtime/schemas.mjs
+.codex/development-system/governance-runtime/store.mjs
+.codex/development-system/governance-runtime/codex.mjs
+.codex/development-system/runtime/native-browser/overrides.mjs
+.codex/development-system/runtime/headroom/claude.mjs
+.codex/development-system/runtime/claude-orchestration/roster-guard.mjs
+.codex/development-system/runtime/claude-orchestration/policy.json
+.codex/development-system/runtime/report-gate/stop-gate.mjs
+.codex/development-system/runtime/claude-orchestration/codex-review.mjs
+.codex/development-system/runtime/claude-orchestration/codex-accounts.mjs

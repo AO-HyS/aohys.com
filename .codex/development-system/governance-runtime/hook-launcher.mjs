@@ -14,20 +14,8 @@ function finish(result) {
   process.stdout.write(`${JSON.stringify(result)}\n`, () => process.exit(0));
 }
 function failed() {
-  if (eventName === "PreToolUse")
-    finish({
-      hookSpecificOutput: {
-        hookEventName: "PreToolUse",
-        permissionDecision: "deny",
-        permissionDecisionReason:
-          "Governance hook failed or exceeded its internal deadline; the action is denied.",
-      },
-    });
-  else if (eventName === "Stop")
-    finish({
-      decision: "block",
-      reason: "Governance hook failed; this run requires recovery.",
-    });
+  if (eventName === "PreToolUse") finish({ hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: "Governance hook failed or exceeded its internal deadline; the action is denied." } });
+  else if (eventName === "Stop") finish({ decision: "block", reason: "Governance hook failed; this run requires recovery." });
   else finish({}); // Interrupt cannot be prevented or restarted by a hook.
 }
 const deadline = setTimeout(failed, 7500);
@@ -35,29 +23,18 @@ process.on("uncaughtException", failed);
 process.on("unhandledRejection", failed);
 try {
   const args = process.argv.slice(2);
-  if (
-    args.length &&
-    (args.length !== 2 || args[0] !== "--home" || !isAbsolute(args[1]))
-  )
-    throw new Error("invalid arguments");
+  if (args.length && (args.length !== 2 || args[0] !== "--home" || !isAbsolute(args[1]))) throw new Error("invalid arguments");
   const home = args[1] ?? homedir();
   let input = "";
   for await (const chunk of process.stdin) {
     input += chunk.toString();
     // 24 MiB of bounded observed artifacts needs up to 32 MiB as base64,
     // plus the host envelope. Core still enforces per-block/content limits.
-    if (Buffer.byteLength(input) > 36 * 1024 * 1024)
-      throw new Error("event too large");
+    if (Buffer.byteLength(input) > 36 * 1024 * 1024) throw new Error("event too large");
   }
   const event = JSON.parse(input);
-  if (event && typeof event.hook_event_name === "string")
-    eventName = event.hook_event_name;
-  if (eventName === "Interrupt") {
-    clearTimeout(deadline);
-    setTimeout(failed, 2200);
-  }
+  if (event && typeof event.hook_event_name === "string") eventName = event.hook_event_name;
+  if (eventName === "Interrupt") { clearTimeout(deadline); setTimeout(failed, 2200); }
   const { handleHook } = await import("./hook.mjs");
   finish(await handleHook(event, { home }));
-} catch {
-  failed();
-}
+} catch { failed(); }
