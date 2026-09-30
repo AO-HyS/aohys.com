@@ -148,7 +148,7 @@ def reader_style():
     faces = ''.join(
         f'@font-face{{font-family:"{family}";src:url(data:font/woff2;base64,{base64.b64encode((READER / name).read_bytes()).decode()}) format("woff2");{style};font-display:swap}}\n'
         for family, name, style in READER_FONTS)
-    return faces + (READER / 'visual-document.css').read_text() + (ASSETS / 'questionnaire.css').read_text()
+    return faces + (READER / 'report140.css').read_text() + (ASSETS / 'questionnaire.css').read_text()
 
 
 def render(config):
@@ -159,10 +159,10 @@ def render(config):
         if q['group'] not in groups:
             nav.append(f'<a href="#q-{ident}"><span class="toc-num">{i:02}</span><span class="toc-label">{esc(q["group"])}</span></a>')
             groups.add(q['group'])
-        options = ''.join(f'<label class="option"><input type="radio" name="answer-{ident}" value="{k}"><span class="letter" aria-hidden="true">{k}</span><span>{esc(v)}</span></label>' for k, v in q['options'].items())
-        choice_field = f'<fieldset><legend>Elige una opción o escribe tu propia respuesta.</legend><div class="options">{options}</div></fieldset>' if q['options'] else ''
+        options = ''.join(f'<label class="option opt"><input type="radio" name="answer-{ident}" value="{k}"><span class="letter key" aria-hidden="true">{k}</span><span class="opt-body">{esc(v)}</span></label>' for k, v in q['options'].items())
+        choice_field = f'<fieldset><legend>Elige una opción o escribe tu propia respuesta.</legend><div class="options opts">{options}</div></fieldset>' if q['options'] else ''
         clear_choice = f'<button type="button" class="compact-action" data-clear="{ident}">Quitar elección</button>' if q['options'] else ''
-        recommendation = f'<p class="recommendation"><strong>Mi recomendación</strong>{esc(q["recommendation"])}</p>' if q['recommendation'] else ''
+        recommendation = f'<p class="recommendation rec"><strong class="rec-key">Mi recomendación · </strong>{esc(q["recommendation"])}</p>' if q['recommendation'] else ''
         references = []
         for reference in q.get('references', []):
             title = f'<strong>{esc(reference["title"])}</strong>' if reference['title'] else ''
@@ -171,16 +171,16 @@ def render(config):
             references.append(f'''<figure class="visual-reference" data-reference-id="{esc(reference['id'], quote=True)}">
 <img src="{esc(reference['dataUrl'], quote=True)}" alt="{esc(reference['alt'], quote=True)}" loading="lazy"><figcaption>{title}{caption}<p class="reference-function"><span>Qué aporta</span>{esc(reference['function'])}</p>{source}</figcaption></figure>''')
         reference_gallery = f'<div class="reference-gallery" aria-label="Referencias visuales">{"".join(references)}</div>' if references else ''
-        sections.append(f'''<section class="question brief-section" id="q-{ident}" data-question-id="{ident}" aria-labelledby="title-{ident}" tabindex="-1">
-<div class="section-heading"><p class="group-label">{esc(q['group'])} · {i} de {len(config['questions'])}</p><h2 id="title-{ident}"><span class="section-num" aria-hidden="true">{i:02}</span><span>{esc(q['title'])}</span></h2></div>
-<div class="section-content"><p class="question-context">{esc(q['context'])}</p>{reference_gallery}{choice_field}{recommendation}
-<details id="details-{ident}" {"open" if not q["options"] else ""}><summary>Mi respuesta, matiz o ejemplo</summary><label class="sr-only" for="note-{ident}">Comentario: {esc(q['title'])}</label><textarea id="note-{ident}" name="note-{ident}" rows="3" maxlength="6000" placeholder="Puedes combinar opciones, proponer algo distinto o contar un caso real."></textarea></details>
+        sections.append(f'''<section class="question q brief-section" id="q-{ident}" data-question-id="{ident}" aria-labelledby="title-{ident}" tabindex="-1">
+<div class="section-heading" data-q="question-{ident}" data-section="{esc(q['group'], quote=True)}" data-section-title="{esc(q['title'], quote=True)}"><p class="group-label">{esc(q['group'])} · {i} de {len(config['questions'])}</p><h2 class="q-title" id="title-{ident}"><span>{esc(q['title'])}</span><button type="button" class="section-ask" data-section-ask aria-label="Preguntar sobre esta pregunta"><svg width="18" height="18" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l-3 3v-11A8.5 8.5 0 0 1 9.5 3h3a8.5 8.5 0 0 1 8.5 8.5Z"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4m0 3v.1"/></svg><span>Preguntar</span></button></h2></div>
+<div class="section-content"><p class="question-context" data-q="context-{ident}" data-section="{esc(q['group'], quote=True)}">{esc(q['context'])}</p>{reference_gallery}{choice_field}{recommendation}
+<details class="cmt" id="details-{ident}" {"open" if not q["options"] else ""}><summary>Agregar comentario</summary><label class="sr-only" for="note-{ident}">Comentario: {esc(q['title'])}</label><textarea class="field" id="note-{ident}" name="note-{ident}" rows="3" maxlength="6000" placeholder="Puedes combinar opciones, proponer algo distinto o contar un caso real."></textarea></details>
 <div class="question-actions"><button type="button" class="compact-action" data-defer="{ident}" aria-pressed="false">Dejar para después</button>{clear_choice}</div><p class="answer-state" id="state-{ident}">Sin responder</p></div></section>''')
     data = json.dumps(config, ensure_ascii=False).replace('<', '\\u003c').replace('&', '\\u0026')
     values = dict(TITLE=esc(config['title']), PRODUCT=esc(config['productName']), ID=esc(config['sessionId']),
                   INTRO=esc(config['introduction']), COUNT=str(len(config['questions'])),
                   NAV=''.join(nav), QUESTIONS=''.join(sections), DATA=data, STYLE=reader_style(),
-                  SCRIPT=(ASSETS / 'client.js').read_text())
+                  SCRIPT=(READER / 'report-notebook.js').read_text() + '\n' + (ASSETS / 'client.js').read_text())
     # Single substitution pass: question text cannot introduce template directives.
     return re.sub(r'@@([A-Z]+)@@', lambda m: values[m[1]], (ASSETS / 'questionnaire.html').read_text())
 
@@ -242,6 +242,22 @@ def prepare(raw, home, source_directory=None):
     return directory, config
 
 
+def normalize_report_questions(raw):
+    if not isinstance(raw, list) or len(raw) > 200:
+        raise ValueError('Preguntas adicionales: usa hasta 200 entradas.')
+    seen, result = set(), []
+    for item in raw:
+        if not isinstance(item, dict):
+            raise ValueError('Pregunta adicional no válida.')
+        entry = {key: text(item.get(key), 'Pregunta adicional.' + key, limit, key in ('id', 'blockId', 'question'))
+                 for key, limit in [('id', 160), ('blockId', 120), ('section', 240), ('excerpt', 240), ('question', 2000), ('createdAt', 80), ('updatedAt', 80)]}
+        if entry['id'] in seen:
+            raise ValueError('Pregunta adicional duplicada.')
+        seen.add(entry['id'])
+        result.append(entry)
+    return result
+
+
 def validate_answers(data, config):
     if not isinstance(data, dict) or any(data.get(k) != config[k] for k in ['sessionId', 'version', 'questionnaireHash']):
         raise ValueError('Las respuestas corresponden a otro cuestionario.')
@@ -263,10 +279,11 @@ def validate_answers(data, config):
             raise ValueError('Estado de respuesta no válido.')
         normalized.append(dict(id=a['id'], title=q['title'], options=q['options'], choice=choice, note=note, deferred=a['deferred']))
     notes = text(data.get('generalNotes'), 'Notas generales')
-    if not any(a['choice'] or a['note'].strip() or a['deferred'] for a in normalized) and not notes.strip():
+    additional = normalize_report_questions(data.get('questions', []))
+    if not any(a['choice'] or a['note'].strip() or a['deferred'] for a in normalized) and not notes.strip() and not additional:
         raise ValueError('Todavía no hay respuestas que guardar.')
     return dict(sessionId=config['sessionId'], version=config['version'], questionnaireHash=config['questionnaireHash'],
-                answers=normalized, generalNotes=notes)
+                answers=normalized, generalNotes=notes, questions=additional)
 
 
 def make_server(directory, config, port=0):

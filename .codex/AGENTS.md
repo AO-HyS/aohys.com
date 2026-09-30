@@ -90,8 +90,9 @@ change strategy.
 
 Nontrivial delivery gets a readable HTML report from the installed
 working-backwards report helper (behavior passed/failed/not reached, elapsed
-time, evidence, material gaps), keeping its field-notebook presentation, margin
-questions, browser drafts and revisioned batch submission; Markdown is
+time, evidence, material gaps), using the approved AO HyS r5/p2 presentation
+shared with questionnaires, contextual questions, browser drafts and revisioned
+batch submission; Markdown is
 supplementary. Serve sanitized assets through the authorized temporary tunnel
 and state its actual URL and availability/expiry; secrets and private
 transcripts stay outside the served directory. A report is not acceptance

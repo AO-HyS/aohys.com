@@ -5,13 +5,7 @@ import { readFileSync } from "node:fs";
 import { renderEvidence, pendingEvidenceLine, evidenceController } from "./report-evidence.mjs";
 
 const asset = (/** @type {string} */ name) => new URL(`../assets/${name}`, import.meta.url);
-const font = (/** @type {string} */ name) => readFileSync(asset(name)).toString("base64");
-const fonts = `@font-face{font-family:"Bricolage Grotesque";src:url(data:font/woff2;base64,${font("bricolage-grotesque-latin.woff2")}) format("woff2");font-style:normal;font-weight:200 800;font-stretch:75% 100%;font-display:swap}
-@font-face{font-family:"Atkinson Hyperlegible Next";src:url(data:font/woff2;base64,${font("atkinson-hyperlegible-next-latin.woff2")}) format("woff2");font-style:normal;font-weight:200 800;font-display:swap}
-@font-face{font-family:"Monaspace Neon";src:url(data:font/woff2;base64,${font("monaspace-neon-latin-400.woff2")}) format("woff2");font-style:normal;font-weight:400;font-display:swap}
-@font-face{font-family:"Monaspace Neon";src:url(data:font/woff2;base64,${font("monaspace-neon-latin-600.woff2")}) format("woff2");font-style:normal;font-weight:600;font-display:swap}
-`;
-const css = fonts + readFileSync(asset("visual-document.css"), "utf8") + readFileSync(asset("report-evidence.css"), "utf8");
+const css = readFileSync(asset("report140.css"), "utf8") + readFileSync(asset("report-evidence.css"), "utf8");
 const notebookController = readFileSync(asset("report-notebook.js"), "utf8");
 const string = (/** @type {unknown} */ value) => typeof value === "string" ? value : "";
 const esc = (/** @type {unknown} */ value) => String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
@@ -83,7 +77,7 @@ const statusMark = {
   pending: '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>',
 };
 
-/** Shared report presentation: a field-notebook page with margin questions.
+/** Shared report presentation: the approved AO HyS page with inline questions.
  * @param {Record<string, any>} model
  * @param {{renderBlock:(block:Record<string, any>)=>string,inlineMarkdown:(text:string)=>string}} helpers
  */
@@ -137,18 +131,24 @@ export function renderVisualDocument(model, helpers) {
   // Every section offers a visible way to ask; it opens the margin-question composer.
   const askIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 5.5h15v10h-8l-4.5 3.5v-3.5h-2.5z"/><path d="M10.2 9.2a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1"/><path d="M12 13.6h.01"/></svg>';
   const askButton = (/** @type {string} */ id, /** @type {string} */ title) => `\n<button type="button" class="section-ask" data-section-ask="${esc(id)}" aria-label="${esc(es ? `Preguntar sobre «${title}»` : `Ask about “${title}”`)}">${askIcon}<span>${es ? "Preguntar" : "Ask"}</span></button>`;
+  const questionSectionId = (/** @type {string} */ id) => id.length <= 112 ? id : `long-${createHash("sha256").update(id).digest("hex").slice(0,32)}`;
   const labelOf = (/** @type {string} */ id) => string(model.outline.find((/** @type {Record<string, any>} */ entry) => entry.id === id)?.label);
   const evidenceTitle = es ? "El resultado, a la vista" : "See the result";
   const evidenceHtml = evidence ? evidence
     .replace(/(<h2 id="delivery-evidence"[^>]*>)/u, (tag) => `${tag}${numeral()}`)
     .replace(/<div class="section-heading">(<h2 id="delivery-evidence"[\s\S]*?<\/h2>)/u, (_match, h2) => `<div class="section-heading" data-q="section-delivery-evidence" data-section-title="${esc(evidenceTitle)}"><div class="section-title">${h2}${askButton("delivery-evidence", evidenceTitle)}</div>`) : "";
-  const content = sections.map((section, sectionIndex) => {
+  const renderedSections = sections.map((section, sectionIndex) => {
     const intro = section.heading && section.blocks[0]?.type === "paragraph" ? section.blocks[0] : null;
     const heading = section.heading ? render(section.heading).replace(/^(<h2[^>]*>)/u, (tag) => `${tag}${numeral()}`) : "";
     const id = section.heading ? string(section.heading.anchorId) : "";
     const title = labelOf(id) || string(section.heading?.text);
-    return `<section class="brief-section"${section.heading ? ` aria-labelledby="${esc(id)}"` : ""}>${section.heading ? `<div class="section-heading" data-q="section-${esc(id)}" data-section-title="${esc(title)}"><div class="section-title">${heading}${askButton(id, title)}</div>${intro ? `<div class="section-intro">${render(intro)}</div>` : ""}</div>` : ""}<div class="section-content">${section.blocks.filter(block => block !== intro).map(block => render(block, section.blocks.indexOf(block))).join("\n")}${sectionIndex === pendingAt ? `\n${pendingLine}` : ""}</div></section>`;
-  }).join("\n");
+    return `<section class="brief-section"${section.heading ? ` aria-labelledby="${esc(id)}"` : ""}>${section.heading ? `<div class="section-heading" data-q="section-${esc(questionSectionId(id))}"${id.length > 112 ? ` data-q-legacy="section-${esc(id)}"` : ""} data-section-title="${esc(title)}"><div class="section-title">${heading}${askButton(id, title)}</div>${intro ? `<div class="section-intro">${render(intro)}</div>` : ""}</div>` : ""}<div class="section-content">${section.blocks.filter(block => block !== intro).map(block => render(block, section.blocks.indexOf(block))).join("\n")}${sectionIndex === pendingAt ? `\n${pendingLine}` : ""}</div></section>`;
+  });
+  const nextIndex = sections.findIndex(section => /^(?:qué sigue|what(?:’s|'s)? next|next steps)/iu.test(string(section.heading?.text).trim()));
+  const nextHtml = nextIndex >= 0 ? renderedSections[nextIndex] : "";
+  const findingsIndex = !doc.findings?.length ? sections.findIndex(section => /^(?:hallazgos|findings)$/iu.test(string(section.heading?.text).trim())) : -1;
+  const packetFindings = findingsIndex >= 0 ? renderedSections[findingsIndex] : "";
+  const content = renderedSections.filter((_section,index) => index !== nextIndex && index !== findingsIndex).join("\n");
 
   const entries = [
     ...(evidence ? [{ id: "delivery-evidence", label: es ? "El resultado, a la vista" : "See the result" }] : []),
@@ -166,15 +166,16 @@ export function renderVisualDocument(model, helpers) {
   const documentId = createHash("sha256").update(`${string(doc.title)}\n${string(doc.markdown)}`).digest("hex").slice(0, 16);
 
   const controller = evidenceController + notebookController;
+  const themeBootstrap = `(()=>{let t;try{t=localStorage.getItem("ds-report-theme")}catch{}document.documentElement.dataset.theme=(t==="light"||t==="dark")?t:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")})();`;
+  const themeHash = createHash("sha256").update(themeBootstrap).digest("base64");
   const hash = createHash("sha256").update(controller).digest("base64");
   const moon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20.5 14.2A8.6 8.6 0 0 1 9.8 3.5a8.7 8.7 0 1 0 10.7 10.7Z"/></svg>';
-  const themeButton = (/** @type {string} */ extra) => `<button type="button" class="theme-control${extra}" data-theme-toggle aria-pressed="false">${moon}<span>${es ? "Libreta nocturna" : "Night notebook"}</span></button>`;
+  const themeButton = (/** @type {string} */ extra) => `<button type="button" class="theme-control${extra}" data-theme-toggle aria-pressed="false">${moon}<span>${es ? "Cambiar tema" : "Change theme"}</span></button>`;
   const readTime = `${doc.readTimeMinutes || 1} min ${es ? "de lectura" : "read"}`;
-  return `<!doctype html><html lang="${language}" data-theme="light" data-document="${documentId}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="development-system-technical-reader"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; connect-src 'self'; font-src data:; form-action 'none'; frame-src 'none'; img-src data: blob:; media-src data:; object-src 'none'; script-src 'sha256-${hash}'; style-src 'unsafe-inline'; worker-src 'none'"><title>${esc(doc.title)} · ${esc(model.productName)}</title><style>${css}</style></head><body class="reader-report"><a class="skip-link" href="#document">${es ? "Ir al documento" : "Skip to document"}</a>`
-    + `<header class="brief-topbar"><a class="document-brand" href="#document"><span class="brand-project">${esc(model.productName)}</span><span class="brand-task">${esc(doc.title)}</span></a><details class="document-nav"><summary>${es ? "Índice" : "Contents"}</summary><nav aria-label="${es ? "Contenido del documento" : "Document contents"}">${links}</nav></details>${themeButton(" is-compact")}</header>`
-    + `<div class="document-layout"><aside class="document-sidebar"><p class="notebook-label">${es ? "Contenido" : "Contents"}</p><nav aria-label="${es ? "Secciones" : "Sections"}">${links}</nav><div class="sidebar-note"><strong>${esc(doc.type)}</strong><span>${esc(model.productName)}</span><span>${readTime}</span>${themeButton("")}</div></aside>`
-    + `<main id="document" class="brief"><header class="brief-header"><p class="doc-stamp">${stamp}</p><h1>${esc(doc.title)}</h1>${verdict ? `<p class="verdict" data-q="verdict">${helpers.inlineMarkdown(verdict)}</p>` : ""}${lede ? `<p class="brief-summary" data-q="summary">${helpers.inlineMarkdown(lede)}</p>` : ""}<ul class="signals" aria-label="${es ? "Estado del informe" : "Report status"}">${signals}</ul>${findings}</header>`
-    + `<div class="document-body">${evidenceHtml}\n${content}</div><footer class="brief-footer"><details class="document-source"><summary>${es ? "Fuente de este documento" : "Document source"}</summary><pre>${esc(doc.markdown || "")}</pre></details><p>${es ? "Documento local · conserva la evidencia y el alcance de la entrega." : "Local document · preserves delivery evidence and scope."} ${esc(doc.type)} · ${esc(doc.status)}${doc.updatedAt ? ` · ${esc(doc.updatedAt)}` : ""} · ${readTime}</p><button type="button" data-print>${es ? "Imprimir / guardar PDF" : "Print / save PDF"}</button></footer></main>`
-    + `<aside class="margin-notes" aria-label="${es ? "Preguntas en el margen" : "Margin questions"}" data-margin><ol class="margin-list" data-notes></ol></aside></div>`
-    + `<script>${controller}</script></body></html>`;
+  return `<!doctype html><html lang="${language}" data-theme="light" data-document="${documentId}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="development-system-technical-reader"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; connect-src 'self'; font-src data:; form-action 'none'; frame-src 'none'; img-src data: blob:; media-src data:; object-src 'none'; script-src 'sha256-${hash}' 'sha256-${themeHash}'; style-src 'unsafe-inline'; worker-src 'none'"><title>${esc(doc.title)} · ${esc(model.productName)}</title><style>${css}</style><script>${themeBootstrap}</script></head><body class="reader-report"><a class="skip-link" href="#document">${es ? "Ir al documento" : "Skip to document"}</a>
+<main id="document" class="brief"><div class="meta"><p class="meta-text"><span>${esc(model.productName)}</span><span>${stamp}</span></p>${themeButton(" theme-btn")}</div>
+<div class="top"><header class="hero brief-header"><h1>${esc(doc.title)}</h1>${verdict ? `<p class="now" data-q="verdict"><span class="now-big">${helpers.inlineMarkdown(verdict)}</span></p>` : ""}${lede ? `<p class="lede" data-q="summary">${helpers.inlineMarkdown(lede)}</p>` : ""}<ul class="signals" aria-label="${es ? "Estado del informe" : "Report status"}">${signals}</ul></header><div class="points">${findings || packetFindings}</div></div>
+${nextHtml ? `<div class="next strip is-single"><div class="you">${nextHtml}</div></div>` : ""}
+<div class="lower"><div class="detail document-body">${evidenceHtml}\n${content}</div><aside class="rail question-rail" aria-label="${es ? "Preguntas sobre el documento" : "Questions about this document"}"><h2 class="q-title">${es ? "Tu criterio" : "Your perspective"}</h2><p class="send-help">${es ? "Pulsa Preguntar junto a una sección o selecciona un párrafo. Las preguntas quedan junto al contenido." : "Press Ask beside a section or choose a paragraph. Questions stay beside their content."}</p><div data-margin><ol data-notes hidden></ol></div><div id="report-actions"></div></aside></div>
+<footer class="brief-footer"><details class="document-source"><summary>${es ? "Fuente de este documento" : "Document source"}</summary><pre>${esc(doc.markdown || "")}</pre></details><p>${esc(doc.type)} · ${esc(doc.status)} · ${readTime}</p><button type="button" data-print>${es ? "Imprimir / guardar PDF" : "Print / save PDF"}</button></footer></main><script>${controller}</script></body></html>`;
 }
