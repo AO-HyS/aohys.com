@@ -4,7 +4,11 @@ description: Define a software feature through PRFAQ and staged documents when t
 ---
 
 For a standalone engineering report rather than a workflow artifact, read
-`report-reference.md` and use the shared report helper. Continue below for a
+`report-reference.md` and use the shared report helper with the approved AO HyS
+r5/p2 presentation, also used by questionnaires. Keep a summarized result and
+visible next steps, contextual questions, closable draft composers and a visible
+persistent light/dark switch. Enviar saves revisioned batches when served and
+also copies them; report save and clipboard outcomes separately. Continue below for a
 Working Backwards initiative.
 
 # Working Backwards in T3 Code
