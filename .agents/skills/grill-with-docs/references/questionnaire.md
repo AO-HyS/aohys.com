@@ -3,11 +3,16 @@
 One HTML template, one JSON per round. Uses Python 3 standard library on macOS or
 Linux; `cloudflared` is needed only for a public tunnel. No frontend installation.
 
-The questionnaire uses the same field-notebook frame as reports: `assets/reader/`
-holds byte copies of the working-backwards reader stylesheet, fonts and font
-licenses, and `assets/questionnaire.css` adds only the answering controls. Do not
-edit the `assets/reader/` copies here; change the reader and copy it again.
-`client.js` and the saved answer format are unchanged.
+The questionnaire uses the approved AO HyS r5/p2 presentation shared with
+reports. `assets/reader/` holds byte copies of the working-backwards
+`report140.css`, `report-notebook.js`, fonts and font licenses;
+`assets/questionnaire.css` adds only the answering controls. Change shared
+presentation assets in working-backwards and copy them here together.
+The visible theme switch persists a light/dark choice. Contextual question
+composers close without sending, retain nonempty drafts and support deletion.
+Enviar saves the revisioned answer batch and also copies it, with separate
+messages for the save and clipboard outcomes. The saved answer format and
+same-origin security boundaries remain unchanged.
 
 ## Prepare questions
 

@@ -1,4 +1,4 @@
-# Development contract 1.39.0
+# Development contract 1.40.0
 
 This profile supersedes mandatory governance as the default. Historical contracts remain immutable.
 
@@ -32,8 +32,8 @@ and do not establish cache reuse without provider evidence.
 
 For nontrivial delivery, provide a readable HTML report using the installed
 working-backwards report helper, including behavior passed/failed/not reached,
-elapsed time, evidence and material gaps. Preserve the field-notebook presentation,
-margin questions, browser drafts and revisioned batch submission. Markdown is
+elapsed time, evidence and material gaps. Use the approved AO HyS r5/p2 presentation
+shared with questionnaires, contextual questions, browser drafts and revisioned batch submission. Markdown is
 supplementary. Serve sanitized report assets through the authorized temporary
 tunnel; state its actual URL and availability/expiry. Keep secrets and private
 transcripts outside its served directory. A report is not acceptance evidence.
@@ -44,11 +44,11 @@ The manifest explicitly selects advisory-parent-execution. Setup removes only ma
 
 ## HTML report continuity
 
-The field-notebook reader and margin questions from source fb6b5dd968281cd1a5c5563b940047102982a2fa are retained, with integration corrections documented separately. Browser drafts, revisioned batch submissions, file-open copy/download, maps, charts, media, themes and offline assets remain. Opening a report grants no implementation or release authority.
+Contract 1.40.0 supersedes the field-notebook report presentation with the approved AO HyS r5/p2 shared report and questionnaire template (docs/design/report-template-brief.md). Reports lead with a summarized result and visible next steps; reports and questionnaires share warm AO HyS light/dark palettes, a visible persistent theme control and contextual questions. Composers close without sending, retain nonempty drafts and support deletion. Enviar saves a revisioned batch when served and also copies it, reporting save and clipboard outcomes separately. Existing question schemas, storage and same-origin security boundaries remain. Browser drafts, revisioned batch submissions, file-open copy/download, maps, charts, media, themes and offline assets remain. Opening a report grants no implementation or release authority.
 
 ## Repository preparation correction
 
-Initialize and normalize generate the advisory repository adapter. Product-specific lifecycle extensions survive normalization; shared lifecycle policy comes from this version. The paired skill catalog is 0.57.0.
+Initialize and normalize generate the advisory repository adapter. Product-specific lifecycle extensions survive normalization; shared lifecycle policy comes from this version. The paired skill catalog is 0.58.0.
 
 
 ## Automated tests and evidence

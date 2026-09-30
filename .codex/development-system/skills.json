@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "0.57.0",
+  "catalogVersion": "0.58.0",
   "supportedHarnesses": [
     {
       "id": "codex",
@@ -1612,23 +1612,23 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.37.0/skills/internal/grill-with-docs"
+        "path": "artifacts/1.40.0/skills/internal/grill-with-docs"
       },
       "variants": [
         {
           "id": "grill-with-docs.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.37.0/skills/internal/grill-with-docs",
+          "sourceDirectory": "artifacts/1.40.0/skills/internal/grill-with-docs",
           "destination": ".agents/skills/grill-with-docs",
-          "folderSha256": "395c835f95f80577fcc7cf2280428a03af162703eba814317e529a02df248fac",
+          "folderSha256": "c0270c32468333853e86d396dc5bdb6a06779601f43e5ecf9e1626dd47908d70",
           "expectedMirrorOf": null
         },
         {
           "id": "grill-with-docs.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.37.0/skills/internal/grill-with-docs",
+          "sourceDirectory": "artifacts/1.40.0/skills/internal/grill-with-docs",
           "destination": ".claude/skills/grill-with-docs",
-          "folderSha256": "395c835f95f80577fcc7cf2280428a03af162703eba814317e529a02df248fac",
+          "folderSha256": "c0270c32468333853e86d396dc5bdb6a06779601f43e5ecf9e1626dd47908d70",
           "expectedMirrorOf": "grill-with-docs.codex",
           "install": "symlink"
         }
@@ -1706,15 +1706,15 @@
       "source": {
         "repository": "https://github.com/AO-HyS/development-system",
         "commit": "$INSTALL_COMMIT",
-        "path": "artifacts/1.37.0/skills/internal/working-backwards"
+        "path": "artifacts/1.40.0/skills/internal/working-backwards"
       },
       "variants": [
         {
           "id": "working-backwards.codex",
           "harness": "codex",
-          "sourceDirectory": "artifacts/1.37.0/skills/internal/working-backwards",
+          "sourceDirectory": "artifacts/1.40.0/skills/internal/working-backwards",
           "destination": ".agents/skills/working-backwards",
-          "folderSha256": "49231ddc005287a98f2abcafe3cc194cea7e629c11d33c7888e464d9ac29d268",
+          "folderSha256": "45a18dbe07e43422028667193a70f301c622e11a9d73ce749bebca9c54b960ac",
           "executableFiles": [
             "scripts/t3-workflow.mjs",
             "scripts/t3-reader.mjs",
@@ -1727,9 +1727,9 @@
         {
           "id": "working-backwards.claude",
           "harness": "claude",
-          "sourceDirectory": "artifacts/1.37.0/skills/internal/working-backwards",
+          "sourceDirectory": "artifacts/1.40.0/skills/internal/working-backwards",
           "destination": ".claude/skills/working-backwards",
-          "folderSha256": "49231ddc005287a98f2abcafe3cc194cea7e629c11d33c7888e464d9ac29d268",
+          "folderSha256": "45a18dbe07e43422028667193a70f301c622e11a9d73ce749bebca9c54b960ac",
           "executableFiles": [
             "scripts/t3-workflow.mjs",
             "scripts/t3-reader.mjs",
