@@ -26,7 +26,7 @@
     "audit:posthog-env": "tsx scripts/audit-posthog-env-separation.ts",
     "observability:validate": "node scripts/observability/validate-signal-catalog.mjs && node scripts/observability/validate-alert-catalog.mjs",
     "observability:alert-drill": "node scripts/observability/run-alert-drill.mjs",
-    "lint": "pnpm -r --if-present lint && pnpm ds check-no-tests",
+    "lint": "pnpm -r --if-present lint && pnpm run check:no-tests",
     "performance:measure": "pnpm --filter @aohys/site build && node scripts/performance/measure.mjs",
     "performance:check": "node --check scripts/performance/browser-harness.js",
     "observability:audit:deploy": "node scripts/observability/audit-environment.mjs",
@@ -60,7 +60,7 @@
     "react:doctor:staged": "node scripts/run-react-doctor-staged.mjs",
     "react:doctor:changed": "node scripts/run-react-doctor-changed.mjs",
     "verify:published-content": "pnpm run build:resume-pdf && pnpm --filter @aohys/content-graph typecheck && pnpm --filter @aohys/site typecheck && pnpm --filter @aohys/site build",
-    "ds": "aohys-development-system"
+    "check:no-tests": "node scripts/quality/check-no-tests.mjs"
   },
   "devDependencies": {
     "@aohys/environment": "workspace:*",

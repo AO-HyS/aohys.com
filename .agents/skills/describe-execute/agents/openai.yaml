@@ -1,3 +1,0 @@
-display_name: Describe Execute
-short_description: Execute described initiative tasks with QA and manual testing updates.
-default_prompt: /describe-execute <initiative-slug>
