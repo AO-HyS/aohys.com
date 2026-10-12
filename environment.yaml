@@ -1,6 +1,6 @@
 # Devin Cloud environment blueprint for aohys.com.
 # Mirrors the operator's machine: pinned toolchain, development-system
-# provisioning, committed agent assets, and secret-derived CLI auth files
+# provisioning and secret-derived CLI auth files
 # (secrets are injected by Devin as env vars; never literal values here).
 initialize:
   - name: Install Node.js 24
@@ -23,18 +23,17 @@ initialize:
   - name: Install OpenAI Codex CLI
     run: npm install -g @openai/codex || true
 
+  - name: Provision shared agent tools
+    run: |
+      set -e
+      pnpm --package=https://github.com/AO-HyS/development-system/releases/download/v2.0.1/aohys-development-system-2.0.1.tgz dlx aohys-development-system setup --home "$HOME" --json
+      export PATH="$HOME/.local/bin:$PATH"
+      echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$ENVRC"
+      development-system doctor --json
+
 maintenance:
   - name: Install dependencies
     run: pnpm install --frozen-lockfile
-
-  - name: Provision Development System 1.36.1 and agent assets
-    run: |
-      set -e
-      mkdir -p "$HOME/.agents/skills" "$HOME/.codex"
-      cp -R .agents/skills/. "$HOME/.agents/skills/"
-      cp .codex/config.toml .codex/hooks.json "$HOME/.codex/"
-      cp -R .codex/development-system "$HOME/.codex/"
-      pnpm ds setup
 
   - name: Write CLI auth files from secrets
     run: |
@@ -55,7 +54,7 @@ knowledge:
       pnpm monorepo: apps/site (Astro public site), apps/dashboard (React app),
       apps/backend (Convex), functions/* (Convex functions), packages/*
       (content-graph, core, dashboard-ui, environment, release-train).
-      Node >= 24, pnpm >= 11. `pnpm ds` is the pinned Development System CLI.
+      Node >= 24, pnpm >= 11. Shared tools use the global `development-system` CLI.
   - name: lint
     contents: pnpm run lint
   - name: typecheck
@@ -72,14 +71,12 @@ knowledge:
       pnpm run deploy:production (main → production). Both need provider secrets.
   - name: agent-assets
     contents: |
-      The repository pins Development System 1.36.1 and skill catalog 0.54.0.
-      The blueprint copies the skill union, config.toml, hooks.json and the
-      development-system mirror first. `pnpm ds setup` then installs canonical
-      instructions, native agents, contract and skills from the pinned package,
-      preserving unrelated hooks and credentials. Repository config does not
-      override the host's selected model, effort or service tier. Refresh managed
-      mirrors from the package when adopting a new release; keep shared workflow
-      policy in Development System rather than duplicating it in this blueprint.
+      Shared agent tools are installed once per machine from the published
+      Development System package during initialization. Use development-system
+      doctor to inspect its source and contract. Product-local dependencies are
+      pinned CI checks only; shared updates do not regenerate repo mirrors.
+      Impeccable CI and verify-aohys are product assets. Live host loading requires
+      a fresh-task observation; successful setup is not that evidence.
   - name: secrets
     contents: |
       Org/repo secrets are injected as env vars. Provider keys needed at

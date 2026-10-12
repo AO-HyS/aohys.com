@@ -41,7 +41,7 @@ Use the source that matches the question instead of searching for a manually cur
 | How is a release, recovery, or smoke check performed?     | `docs/release-train.md` and `docs/launch-hardening.md`                                                        |
 | What exists at this commit?                               | Workspace/package manifests, imports, exports, generated artifacts, and source-derived graphs for that commit |
 
-When code moves, update its manifest, imports, public exports, and any affected contract or ADR, then rerun the static checks (`pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm ds check-no-tests`) and real verification (`pnpm verify:product`, browser, or computer use). Do not update this guide with a synchronized list of directories or modules.
+When code moves, update its manifest, imports, public exports, and any affected contract or ADR, then rerun the static checks (`pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm run check:no-tests`) and real verification (`pnpm verify:product`, browser, or computer use). Do not update this guide with a synchronized list of directories or modules.
 
 ## Illustrative, Non-Exhaustive Example
 

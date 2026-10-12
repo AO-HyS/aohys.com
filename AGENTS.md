@@ -4,20 +4,16 @@ Read this file before changing the repository.
 
 ## Coding orchestration
 
-The pinned Development System supplies the shared workflow and native agent
-profiles. Read its [contract](.codex/development-system/contract.md) and the
-[product adapter](.codex/development-system/repository.md). Use the installed
-`coding-orchestration` skill for non-trivial work and the global Codex agents
-from `${CODEX_HOME:-$HOME/.codex}/agents`.
+The active global `development-system` CLI supplies shared agent tools. Run
+`development-system doctor --json` to inspect the active package and contract.
+Read this file, README, CONTEXT.md and task-relevant docs; no repository adapter
+is required. Use the installed `coding-orchestration` skill for nontrivial work.
+Preserve the selected parent model and use T3/native host capabilities.
 
-Keep the already selected model, including Sol 6.1, as the orchestrator. Let it
-choose the approach, useful delegation and proportional checks under that
-contract. Role profiles recommend defaults; they do not replace the selected
-parent or prove runtime capabilities. Do not duplicate model routing, execution
-recipes or lifecycle gates in product documentation.
-
-Visual planning remains opt-in. Use a standalone completion/review document when requested or needed for the
-agreed evidence package; ordinary completion uses the final response.
+React changes preserve locality, accessibility, state ownership and the approved
+visual language. Convex changes retain argument and return validators,
+authorization, tenant boundaries and indexed bounded reads; follow schema and
+migration docs for the affected boundary.
 
 ## Merge gate
 
@@ -57,7 +53,11 @@ Claude reviewers run only under a declared `Codex fallback:` line.
 
 ## Devin Cloud
 
-`environment.yaml` is the cloud blueprint; it provisions `$HOME` from the committed `.codex/` mirror and the `.agents/skills/` union, then runs `pnpm ds setup`. `.devin/` holds shared agent config and MCP servers; secrets live in Devin org secrets, never in the repo. Update the blueprint when the pinned toolchain or committed agent assets change.
+`environment.yaml` provisions the shared package once per cloud machine, before
+repository dependencies. It does not copy shared tools out of this product.
+`.devin/` holds cloud-specific config; secrets remain in Devin org secrets.
+The local MCP config, local rules, Impeccable CI assets and `verify-aohys` remain
+product-owned. A blueprint change does not prove a live Devin host loaded it.
 
 ## Agent skills
 
@@ -75,12 +75,7 @@ AOHYS uses a single domain context through `CONTEXT.md` and global ADRs in `docs
 
 ## Development System package
 
-The package version in `package.json` and its lockfile are the source for the
-managed `.codex/` and `.agents/skills/` mirrors. Run `pnpm ds setup` explicitly
-after adopting a release; dependency installation never changes HOME. Prefer
-`pnpm ds` over an unrelated global CLI version.
-
-The product adapter supplies AOHYS commands and boundaries. Shared workflow
-instructions come from the installed contract and skills; preserve their
-canonical bytes rather than maintaining a second local policy. Load only the
-guidance needed for the requested work and continue to the authorized endpoint.
+The pinned dependency is used only by `pnpm run check:no-tests` in CI. Install
+repo dependencies with the lockfile; this never changes HOME. Agent tools use
+the active global installation and are updated once per machine. No product
+publication is needed to adopt a shared tool update.
