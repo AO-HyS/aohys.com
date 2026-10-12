@@ -16,7 +16,8 @@ coverage/
 !.agents/
 .agents/*
 !.agents/skills/
-.claude/
+.claude/*
+!.claude/settings.json
 .codex/
 !.codex/
 .codex/*
