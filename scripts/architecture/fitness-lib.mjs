@@ -409,9 +409,9 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
 
   const packageEdges = workspaces.flatMap((workspace) =>
     Object.keys({
-      ...(workspace.manifest.dependencies ?? {}),
-      ...(workspace.manifest.devDependencies ?? {}),
-      ...(workspace.manifest.peerDependencies ?? {}),
+      ...workspace.manifest.dependencies,
+      ...workspace.manifest.devDependencies,
+      ...workspace.manifest.peerDependencies,
     })
       .filter((dependency) =>
         workspaces.some((candidate) => candidate.name === dependency),

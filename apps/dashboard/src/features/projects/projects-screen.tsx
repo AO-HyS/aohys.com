@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { getSharedI18n } from "@aohys/content-graph";
 import {
   CircleAlertIcon,

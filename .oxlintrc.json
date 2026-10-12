@@ -1,0 +1,70 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "import", "unicorn", "oxc"],
+  "jsPlugins": ["@convex-dev/eslint-plugin"],
+  "categories": {
+    "correctness": "error"
+  },
+  "options": {
+    "typeAware": true
+  },
+  "env": {
+    "builtin": true,
+    "browser": true,
+    "es2024": true
+  },
+  "ignorePatterns": [
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/_generated/**",
+    "**/.astro/**",
+    "agent-runs/**",
+    "output/**",
+    "tmp/**",
+    "cloudflare/**",
+    ".agents/**",
+    ".codex/**",
+    "docs/**"
+  ],
+  "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+    "react/jsx-key": "error",
+    "typescript/consistent-type-imports": [
+      "error",
+      {
+        "prefer": "type-imports",
+        "fixStyle": "inline-type-imports",
+        "disallowTypeAnnotations": false
+      }
+    ],
+    "typescript/no-redundant-type-constituents": "warn",
+    "react/set-state-in-effect": "warn",
+    "react/incompatible-library": "warn"
+  },
+  "overrides": [
+    {
+      "files": ["apps/backend/convex/**/*.ts"],
+      "rules": {
+        "@convex-dev/no-old-registered-function-syntax": "error",
+        "@convex-dev/require-args-validator": "error",
+        "@convex-dev/explicit-table-ids": "warn",
+        "@convex-dev/import-wrong-runtime": "error"
+      }
+    },
+    {
+      "files": ["**/*.mjs"],
+      "rules": {
+        "typescript/require-array-sort-compare": "off",
+        "typescript/restrict-template-expressions": "off"
+      }
+    }
+  ]
+}

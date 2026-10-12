@@ -971,14 +971,12 @@ export function publicMediaItemsByContentId(
           storageKey: item.storageKey,
           ...(item.publicUrl ? { publicUrl: item.publicUrl } : {}),
         },
-        {
-          ...(process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
-            ? {
-                cloudflareImagesAccountHash:
-                  process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
-              }
-            : {}),
-        },
+        process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
+          ? {
+              cloudflareImagesAccountHash:
+                process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
+            }
+          : {},
       );
 
       if (

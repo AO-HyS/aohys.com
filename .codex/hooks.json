@@ -10,6 +10,11 @@
             "timeout": 5,
             "statusMessage": "Checking UI changes",
             "commandWindows": "if exist \".agents/skills/impeccable/scripts/impeccable.cmd\" (\".agents/skills/impeccable/scripts/impeccable.cmd\" hook & exit /b)"
+          },
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/scripts/agent/lint-feedback.mjs\"",
+            "timeout": 30
           }
         ]
       }
