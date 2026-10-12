@@ -48,7 +48,7 @@ function jsonResponse(
     headers: {
       ...corsHeaders,
       "Content-Type": "application/json",
-      ...init.headers,
+      ...(init.headers as Record<string, string> | undefined),
     },
   });
 }

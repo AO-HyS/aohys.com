@@ -1,4 +1,4 @@
-import { api as convexApi } from "@aohys/backend/convex/_generated/api";
+import { type api as convexApi } from "@aohys/backend/convex/_generated/api";
 import {
   PUBLIC_CONTENT_NODES,
   STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID,
@@ -198,11 +198,12 @@ export function buildDashboardProjectRows(
           };
         }),
         ...media.map((item) => {
-          const resolution = resolvePublicMediaUrl(item, {
-            ...(imagesAccountHash
+          const resolution = resolvePublicMediaUrl(
+            item,
+            imagesAccountHash
               ? { cloudflareImagesAccountHash: imagesAccountHash }
-              : {}),
-          });
+              : {},
+          );
           const deliveryUrl =
             resolution.status === "resolved" ? resolution.url : undefined;
 

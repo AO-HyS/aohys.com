@@ -19,12 +19,6 @@ const PAGES_DEV_SUFFIX = ".aohys-com.pages.dev";
 const PRODUCTION_ORIGINS = ["https://aohys.com", "https://www.aohys.com"];
 const ENVIRONMENTS = new Set(["local", "preview", "production"]);
 
-function option(name, fallback) {
-  const prefix = `--${name}=`;
-  const value = process.argv.find((arg) => arg.startsWith(prefix));
-  return value ? value.slice(prefix.length) : fallback;
-}
-
 export function resolveDoctorTarget(argv = process.argv.slice(2)) {
   const read = (name, fallback) => {
     const prefix = `--${name}=`;

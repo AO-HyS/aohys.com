@@ -192,9 +192,12 @@ export function useProjectsWorkflow({
         uploadFile: uploadMediaFile,
         saveMetadata: saveMediaMetadata,
       });
-      captureDashboardAction("succeeded", "projects", "upload_media", {
-        ...(payload.locale ? { locale: payload.locale } : {}),
-      });
+      captureDashboardAction(
+        "succeeded",
+        "projects",
+        "upload_media",
+        payload.locale ? { locale: payload.locale } : {},
+      );
       toast.success("Image uploaded", {
         id: toastId,
         description:

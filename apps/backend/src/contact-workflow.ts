@@ -206,9 +206,9 @@ function prepareContactLead(
     ...(phone ? { phone } : {}),
     preferredContactPath: input.preferredContactPath,
     consentToContact: true,
-    spamSignals: {
-      ...(input.formStartedAt ? { elapsedMs: now - input.formStartedAt } : {}),
-    },
+    spamSignals: input.formStartedAt
+      ? { elapsedMs: now - input.formStartedAt }
+      : {},
   };
 }
 

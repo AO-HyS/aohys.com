@@ -26,7 +26,7 @@
     "audit:posthog-env": "tsx scripts/audit-posthog-env-separation.ts",
     "observability:validate": "node scripts/observability/validate-signal-catalog.mjs && node scripts/observability/validate-alert-catalog.mjs",
     "observability:alert-drill": "node scripts/observability/run-alert-drill.mjs",
-    "lint": "pnpm -r --if-present lint && pnpm run check:no-tests",
+    "lint": "oxlint . && pnpm -r --if-present lint && pnpm run check:no-tests && node scripts/quality/check-lint-globs.mjs",
     "performance:measure": "pnpm --filter @aohys/site build && node scripts/performance/measure.mjs",
     "performance:check": "node --check scripts/performance/browser-harness.js",
     "observability:audit:deploy": "node scripts/observability/audit-environment.mjs",
@@ -63,14 +63,17 @@
     "check:no-tests": "node scripts/quality/check-no-tests.mjs"
   },
   "devDependencies": {
+    "@aohys/development-system": "https://github.com/AO-HyS/development-system/releases/download/v1.40.0/aohys-development-system-1.40.0.tgz",
     "@aohys/environment": "workspace:*",
     "@aohys/release-train": "workspace:*",
+    "@convex-dev/eslint-plugin": "^5.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.2",
+    "oxlint": "^1.87.0",
+    "oxlint-tsgolint": "^7.0.2004",
     "prettier": "^3.8.1",
     "react-doctor": "0.9.12",
     "tsx": "^4.22.4",
-    "wrangler": "^4.105.0",
-    "@aohys/development-system": "https://github.com/AO-HyS/development-system/releases/download/v1.40.0/aohys-development-system-1.40.0.tgz"
+    "wrangler": "^4.105.0"
   }
 }
