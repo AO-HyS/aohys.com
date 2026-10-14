@@ -337,6 +337,10 @@ function literalsHelperIsCanonical(statement, isValidatorObject) {
     return false;
   }
   const values = parameter.name.text;
+  // A parameter that shadows the imported Convex `v` breaks the binding.
+  const shadowsValidator = (name) =>
+    isValidatorObject(ts.factory.createIdentifier(name));
+  if (shadowsValidator(values)) return false;
   const union = unwrapExpression(body[0].expression);
   const isMember = (node, object, name) =>
     ts.isPropertyAccessExpression(node) &&
@@ -371,6 +375,7 @@ function literalsHelperIsCanonical(statement, isValidatorObject) {
     arrow.parameters.length === 1 &&
     item &&
     ts.isIdentifier(item.name) &&
+    !shadowsValidator(item.name.text) &&
     literal &&
     ts.isCallExpression(literal) &&
     isMember(literal.expression, isValidatorObject, "literal") &&
