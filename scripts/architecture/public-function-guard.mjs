@@ -5,8 +5,10 @@ import ts from "typescript";
 
 // Guards the Convex authorization contract: every public function is built
 // with adminQuery/adminMutation/adminAction from convex/lib/functions.ts, whose
-// closed form runs requireAdmin before the handler. Raw public builders, other
-// export shapes and new HTTP routes fail architecture fitness.
+// closed form runs requireAdmin before the handler. The export check is
+// semantic: the TypeScript checker classifies every export of every Convex
+// module, so aliases, re-exports, nested modules and library-made functions
+// are judged by what they are, not by how they are written.
 
 const CONVEX_DIR = "apps/backend/convex";
 const BUILDERS_FILE = `${CONVEX_DIR}/lib/functions.ts`;
@@ -26,25 +28,9 @@ const ADMIN_BUILDERS = {
   adminMutation: { custom: "customMutation", base: "mutation" },
   adminAction: { custom: "customAction", base: "action" },
 };
-const INTERNAL_BUILDERS = new Set([
-  "internalQuery",
-  "internalMutation",
-  "internalAction",
-]);
-
-// Exports that are not Convex function registrations, by file and name.
-const EXPORT_EXCEPTIONS = {
-  "auth.ts": new Set([
-    "authComponent",
-    "createAuth",
-    "requireAdmin",
-    "createBetterAuthBaseUrl",
-  ]),
-  "http.ts": new Set(["default"]),
-  "schema.ts": new Set(["default"]),
-  "convex.config.ts": new Set(["default"]),
-  "auth.config.ts": new Set(["default"]),
-};
+// Extensions Convex bundles as function modules; only .ts is allowed so every
+// deployable module goes through the checker.
+const CONVEX_SOURCE_EXTENSION = /\.(?:[cm]?[jt]sx?)$/u;
 
 // The only public HTTP routes besides the Better Auth registration.
 const HTTP_ROUTES = new Set(["POST /contact", "OPTIONS /contact"]);
@@ -59,10 +45,12 @@ function parse(filePath) {
   );
 }
 
+// Every file Convex could bundle, split into checked .ts modules and
+// rejected other source extensions.
 function convexFiles(root) {
   const directory = path.join(root, CONVEX_DIR);
-  if (!existsSync(directory)) return [];
-  const files = [];
+  const files = { sources: [], rejected: [] };
+  if (!existsSync(directory)) return files;
   const walk = (relative) => {
     for (const entry of readdirSync(path.join(root, relative), {
       withFileTypes: true,
@@ -71,13 +59,31 @@ function convexFiles(root) {
       if (entry.isDirectory()) {
         if (entry.name !== "_generated" && entry.name !== "node_modules")
           walk(child);
-      } else if (/\.tsx?$/u.test(entry.name) && !entry.name.endsWith(".d.ts")) {
-        files.push(child);
+      } else if (entry.name.endsWith(".ts") && !entry.name.endsWith(".d.ts")) {
+        files.sources.push(child);
+      } else if (CONVEX_SOURCE_EXTENSION.test(entry.name)) {
+        files.rejected.push(child);
       }
     }
   };
   walk(CONVEX_DIR);
-  return files.sort();
+  files.sources.sort();
+  files.rejected.sort();
+  return files;
+}
+
+function createConvexProgram(root, sources) {
+  const configPath = path.join(root, CONVEX_DIR, "tsconfig.json");
+  const config = ts.readConfigFile(configPath, (file) => ts.sys.readFile(file));
+  const parsed = ts.parseJsonConfigFileContent(
+    config.config ?? {},
+    ts.sys,
+    path.dirname(configPath),
+  );
+  return ts.createProgram({
+    rootNames: sources.map((relative) => path.join(root, relative)),
+    options: { ...parsed.options, noEmit: true },
+  });
 }
 
 function hasModifier(node, kind) {
@@ -257,141 +263,214 @@ function builderViolations(root) {
   return violations;
 }
 
-// Every export of a top-level convex module is a registration through an
-// admin builder or an internal builder, or a named exception.
-function exportViolations(relative, sourceFile) {
-  if (path.dirname(relative) !== CONVEX_DIR) return [];
-  const fileName = path.basename(relative);
-  const exceptions = EXPORT_EXCEPTIONS[fileName] ?? new Set();
-  const admin = namedImports(sourceFile, (specifier) =>
-    /^\.\/lib\/functions(?:\.js)?$/u.test(specifier),
-  );
-  const internal = namedImports(sourceFile, (specifier) =>
-    /^\.\/_generated\/server(?:\.js)?$/u.test(specifier),
-  );
-  const violations = [];
-  const registered = (initializer) =>
-    initializer &&
-    ts.isCallExpression(initializer) &&
-    ts.isIdentifier(initializer.expression) &&
-    (Object.hasOwn(
-      ADMIN_BUILDERS,
-      admin.get(initializer.expression.text) ?? "",
-    ) ||
-      INTERNAL_BUILDERS.has(internal.get(initializer.expression.text) ?? ""));
+function resolveAlias(checker, symbol) {
+  return symbol && symbol.flags & ts.SymbolFlags.Alias
+    ? checker.getAliasedSymbol(symbol)
+    : symbol;
+}
 
-  for (const statement of sourceFile.statements) {
-    if (ts.isExportAssignment(statement)) {
-      if (!exceptions.has("default"))
-        violations.push(`${relative}: unexpected default export`);
-      continue;
-    }
-    if (ts.isExportDeclaration(statement)) {
+// "public" for a public Convex function or HTTP action, "internal" for an
+// internal one, "opaque" when the type hides what the value is.
+function registrationKind(checker, type) {
+  let kind;
+  for (const part of type.isUnion() ? type.types : [type]) {
+    if (part.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) return "opaque";
+    const has = (name) => checker.getPropertyOfType(part, name) !== undefined;
+    if (has("isHttp")) return "public";
+    if (!has("isConvexFunction")) continue;
+    if (!has("isInternal") || has("isPublic")) return "public";
+    kind = "internal";
+  }
+  return kind;
+}
+
+// A public function must be declared as `const x = adminQuery(...)` (or
+// adminMutation/adminAction) with the builder resolved from lib/functions.ts.
+function isAdminRegistration(checker, root, declaration) {
+  if (
+    !declaration ||
+    !ts.isVariableDeclaration(declaration) ||
+    !ts.isIdentifier(declaration.name) ||
+    (declaration.parent.flags & ts.NodeFlags.Const) === 0 ||
+    !declaration.initializer ||
+    !ts.isCallExpression(declaration.initializer) ||
+    !ts.isIdentifier(declaration.initializer.expression)
+  )
+    return false;
+  const builder = resolveAlias(
+    checker,
+    checker.getSymbolAtLocation(declaration.initializer.expression),
+  );
+  const builderDeclaration = builder?.valueDeclaration;
+  return (
+    Boolean(builderDeclaration) &&
+    path.resolve(builderDeclaration.getSourceFile().fileName) ===
+      path.resolve(root, BUILDERS_FILE) &&
+    Object.hasOwn(ADMIN_BUILDERS, builder.name)
+  );
+}
+
+function exportViolations(checker, root, relative, sourceFile) {
+  const moduleSymbol = checker.getSymbolAtLocation(sourceFile);
+  if (!moduleSymbol) return [];
+  const violations = [];
+  for (const exported of checker.getExportsOfModule(moduleSymbol)) {
+    const symbol = resolveAlias(checker, exported);
+    if (!symbol || (symbol.flags & ts.SymbolFlags.Value) === 0) continue;
+    const declaration = symbol.valueDeclaration ?? symbol.declarations?.[0];
+    const kind = declaration
+      ? registrationKind(
+          checker,
+          checker.getTypeOfSymbolAtLocation(symbol, declaration),
+        )
+      : "opaque";
+    if (kind === "opaque") {
       violations.push(
-        `${relative}: re-exports are not allowed in Convex modules; export each function with a builder`,
+        `${relative}: export ${exported.name} has an opaque type; give it a concrete type so it can be classified`,
       );
-      continue;
-    }
-    if (!hasModifier(statement, ts.SyntaxKind.ExportKeyword)) continue;
-    if (ts.isVariableStatement(statement)) {
-      for (const declaration of statement.declarationList.declarations) {
-        const names = ts.isIdentifier(declaration.name)
-          ? [declaration.name.text]
-          : declaration.name.elements.map((element) =>
-              element.name.getText(sourceFile),
-            );
-        if (names.every((name) => exceptions.has(name))) continue;
-        if (
-          (statement.declarationList.flags & ts.NodeFlags.Const) === 0 ||
-          !ts.isIdentifier(declaration.name) ||
-          !registered(declaration.initializer)
-        ) {
-          violations.push(
-            `${relative}: ${names.join(", ")} must be built with adminQuery/adminMutation/adminAction or an internal builder`,
-          );
-        }
-      }
-      continue;
-    }
-    const name = statement.name?.text ?? "default";
-    if (hasModifier(statement, ts.SyntaxKind.DefaultKeyword)) {
-      if (!exceptions.has("default"))
-        violations.push(`${relative}: unexpected default export`);
-    } else if (!exceptions.has(name)) {
+    } else if (
+      kind === "public" &&
+      !isAdminRegistration(checker, root, declaration)
+    ) {
       violations.push(
-        `${relative}: exported ${name} is not a Convex registration; move helpers out of the Convex module root`,
+        `${relative}: export ${exported.name} is a public Convex function not built with adminQuery/adminMutation/adminAction`,
       );
     }
   }
   return violations;
 }
 
-// http.ts may only register the listed routes and the Better Auth routes.
-function httpViolations(relative, sourceFile) {
+// http.ts declares one router with httpRouter() and uses it only as
+// http.route({ path, method, handler }) with literals, as the argument of
+// authComponent.registerRoutesLazy and as the default export.
+function httpViolations(checker, relative, sourceFile) {
   if (relative !== `${CONVEX_DIR}/http.ts`) return [];
   const violations = [];
-  let authRoutes = 0;
   const routes = new Set();
+  let routerSymbol;
+  let routerCalls = 0;
+  let authRoutes = 0;
+  let exportedRouter = false;
+  const fail = (message) => violations.push(`${relative}: ${message}`);
+
+  for (const statement of sourceFile.statements) {
+    if (!ts.isVariableStatement(statement)) continue;
+    for (const declaration of statement.declarationList.declarations) {
+      const init = declaration.initializer;
+      if (
+        init &&
+        ts.isCallExpression(init) &&
+        ts.isIdentifier(init.expression) &&
+        init.expression.text === "httpRouter" &&
+        ts.isIdentifier(declaration.name) &&
+        (statement.declarationList.flags & ts.NodeFlags.Const) !== 0
+      )
+        routerSymbol = checker.getSymbolAtLocation(declaration.name);
+    }
+  }
+  if (!routerSymbol) {
+    fail("expected `const http = httpRouter()` at module level");
+    return violations;
+  }
+
+  const routeKey = (config) => {
+    if (!config || !ts.isObjectLiteralExpression(config)) return undefined;
+    const values = {};
+    for (const property of config.properties) {
+      if (!ts.isPropertyAssignment(property) || !ts.isIdentifier(property.name))
+        return undefined;
+      values[property.name.text] = property.initializer;
+    }
+    const names = Object.keys(values).sort().join(",");
+    const { path: routePath, method } = values;
+    return names === "handler,method,path" &&
+      ts.isStringLiteral(routePath) &&
+      ts.isStringLiteral(method)
+      ? `${method.text} ${routePath.text}`
+      : undefined;
+  };
+
   const visit = (node) => {
     if (
       ts.isCallExpression(node) &&
-      ts.isPropertyAccessExpression(node.expression)
+      ts.isIdentifier(node.expression) &&
+      node.expression.text === "httpRouter"
+    )
+      routerCalls += 1;
+    if (
+      ts.isIdentifier(node) &&
+      checker.getSymbolAtLocation(node) === routerSymbol &&
+      !(ts.isVariableDeclaration(node.parent) && node.parent.name === node)
     ) {
-      const method = node.expression.name.text;
-      if (method === "registerRoutesLazy" || method === "registerRoutes")
-        authRoutes += 1;
-      if (method === "route") {
-        const config = node.arguments[0];
-        const property = (key) =>
-          config && ts.isObjectLiteralExpression(config)
-            ? config.properties.find(
-                (item) =>
-                  ts.isPropertyAssignment(item) &&
-                  item.name.getText(sourceFile) === key,
-              )
-            : undefined;
-        const routePath = property("path")?.initializer;
-        const routeMethod = property("method")?.initializer;
+      const parent = node.parent;
+      if (
+        ts.isPropertyAccessExpression(parent) &&
+        parent.expression === node &&
+        parent.name.text === "route" &&
+        ts.isCallExpression(parent.parent) &&
+        parent.parent.expression === parent
+      ) {
         const key =
-          routePath &&
-          routeMethod &&
-          ts.isStringLiteral(routePath) &&
-          ts.isStringLiteral(routeMethod)
-            ? `${routeMethod.text} ${routePath.text}`
+          parent.parent.arguments.length === 1
+            ? routeKey(parent.parent.arguments[0])
             : undefined;
         if (!key) {
-          violations.push(
-            `${relative}: http routes must use literal path and method`,
+          fail(
+            "http.route takes one object literal with exactly literal path, literal method and handler",
           );
+        } else if (!HTTP_ROUTES.has(key)) {
+          fail(`public HTTP route ${key} is not in the authorization contract`);
         } else {
           routes.add(key);
-          if (!HTTP_ROUTES.has(key))
-            violations.push(
-              `${relative}: public HTTP route ${key} is not in the authorization contract`,
-            );
         }
+      } else if (
+        ts.isCallExpression(parent) &&
+        parent.arguments[0] === node &&
+        ts.isPropertyAccessExpression(parent.expression) &&
+        parent.expression.name.text === "registerRoutesLazy" &&
+        ts.isIdentifier(parent.expression.expression) &&
+        parent.expression.expression.text === "authComponent"
+      ) {
+        authRoutes += 1;
+      } else if (ts.isExportAssignment(parent) && !parent.isExportEquals) {
+        exportedRouter = true;
+      } else {
+        fail(
+          "the router may only be used as http.route({ path, method, handler }), passed to authComponent.registerRoutesLazy or exported as default",
+        );
       }
     }
     ts.forEachChild(node, visit);
   };
   visit(sourceFile);
+
+  if (routerCalls !== 1) fail("expected exactly one httpRouter() call");
   if (authRoutes !== 1)
-    violations.push(
-      `${relative}: expected exactly one Better Auth route registration`,
-    );
+    fail("expected exactly one Better Auth route registration");
+  if (!exportedRouter) fail("the router must be the default export");
   for (const key of HTTP_ROUTES)
-    if (!routes.has(key)) violations.push(`${relative}: missing route ${key}`);
+    if (!routes.has(key)) fail(`missing route ${key}`);
   return violations;
 }
 
 export function publicFunctionGuardViolations(root) {
-  const violations = [];
-  for (const relative of convexFiles(root)) {
-    const sourceFile = parse(path.join(root, relative));
+  const { sources, rejected } = convexFiles(root);
+  const violations = rejected.map(
+    (relative) =>
+      `${relative}: Convex modules must be .ts so the authorization guard can check them`,
+  );
+  const program = createConvexProgram(root, sources);
+  const checker = program.getTypeChecker();
+  for (const relative of sources) {
+    const sourceFile = program.getSourceFile(path.join(root, relative));
+    if (!sourceFile) {
+      violations.push(`${relative}: not part of the Convex TypeScript program`);
+      continue;
+    }
     if (relative !== BUILDERS_FILE)
       violations.push(...rawBuilderViolations(relative, sourceFile));
-    violations.push(...exportViolations(relative, sourceFile));
-    violations.push(...httpViolations(relative, sourceFile));
+    violations.push(...exportViolations(checker, root, relative, sourceFile));
+    violations.push(...httpViolations(checker, relative, sourceFile));
   }
   violations.push(...builderViolations(root));
   return violations;
