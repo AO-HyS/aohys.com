@@ -2,7 +2,10 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
-import { getEnvironmentVariableDefinitions } from "@aohys/environment";
+import {
+  getEnvironmentVariableDefinitions,
+  getVariableNamesForDestination,
+} from "@aohys/environment";
 import {
   RELEASE_ENVIRONMENTS,
   type ReleaseEnvironment,
@@ -17,8 +20,11 @@ function parseEnvironment(input: string | undefined): ReleaseEnvironment {
 }
 
 function convexRuntimeVariableNames(environment: ReleaseEnvironment): string[] {
+  const convexRuntime = new Set(
+    getVariableNamesForDestination("convex-runtime"),
+  );
   return getEnvironmentVariableDefinitions()
-    .filter((definition) => definition.destinations.includes("convex-runtime"))
+    .filter((definition) => convexRuntime.has(definition.name))
     .filter((definition) => {
       if (definition.requiredIn.includes(environment)) {
         return true;
