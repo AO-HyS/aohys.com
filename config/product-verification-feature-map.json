@@ -66,7 +66,8 @@
         "packages/release-train/tsconfig.json",
         "tsconfig.base.json",
         "pnpm-lock.yaml",
-        "pnpm-workspace.yaml"
+        "pnpm-workspace.yaml",
+        "apps/site/package.json"
       ]
     },
     {
@@ -111,7 +112,8 @@
         "packages/release-train/tsconfig.json",
         "tsconfig.base.json",
         "pnpm-lock.yaml",
-        "pnpm-workspace.yaml"
+        "pnpm-workspace.yaml",
+        "apps/site/package.json"
       ]
     },
     {
@@ -177,7 +179,8 @@
         "apps/site/src/dashboard-access-states.ts",
         "apps/backend/convex/convex.config.ts",
         "apps/backend/convex/schema.ts",
-        "apps/backend/convex/auth.config.ts"
+        "apps/backend/convex/auth.config.ts",
+        "apps/dashboard/package.json"
       ],
       "environments": ["preview"]
     },
@@ -247,7 +250,8 @@
         "apps/site/src/dashboard-access-states.ts",
         "apps/backend/convex/convex.config.ts",
         "apps/backend/convex/schema.ts",
-        "apps/backend/convex/auth.config.ts"
+        "apps/backend/convex/auth.config.ts",
+        "apps/dashboard/package.json"
       ],
       "environments": ["preview"]
     },
@@ -312,7 +316,8 @@
         "apps/site/src/dashboard-access-states.ts",
         "apps/backend/convex/convex.config.ts",
         "apps/backend/convex/schema.ts",
-        "apps/backend/convex/auth.config.ts"
+        "apps/backend/convex/auth.config.ts",
+        "apps/dashboard/package.json"
       ],
       "environments": ["preview"]
     },
@@ -343,7 +348,7 @@
       ],
       "beforeProbe": "Record resumeDrafts.updatedAt and contentJson hash for the locale.",
       "afterProbe": "Read the same draft and compare updatedAt and contentJson hash with the expected values.",
-      "cleanup": "Save the recorded original content for the locale and confirm the contentJson hash matches. Residual effect, recorded in the evidence: updatedAt (the visible 'Last saved') advances, because the save handler always stamps a new time.",
+      "cleanup": "Before cleanup, re-read every record this run wrote and require it to equal this run's last-written state; if any differs (a concurrent edit), stop for reconciliation instead of overwriting it. Save the recorded original content for the locale and confirm the contentJson hash matches. Residual effect, recorded in the evidence: updatedAt (the visible 'Last saved') advances, because the save handler always stamps a new time.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-resume-save/",
       "sideEffectMode": "authorized-writes",
       "status": "draft",
@@ -386,7 +391,8 @@
         "apps/site/src/dashboard-access-states.ts",
         "apps/backend/convex/convex.config.ts",
         "apps/backend/convex/schema.ts",
-        "apps/backend/convex/auth.config.ts"
+        "apps/backend/convex/auth.config.ts",
+        "apps/dashboard/package.json"
       ],
       "environments": ["preview"]
     },
@@ -416,7 +422,7 @@
       ],
       "beforeProbe": "Record the project draft summary and updatedAt, and the caseStudyMetadata status, evidenceStatus and updatedAt.",
       "afterProbe": "Read the same draft and metadata and compare summary, status and evidenceStatus with the recorded values; record the timestamps.",
-      "cleanup": "Save the recorded original summary and confirm it is restored. Residual effects, recorded in the evidence: the draft updatedAt and the caseStudyMetadata updatedAt advance, because the save handler always stamps a new time; status and evidenceStatus must equal the recorded values.",
+      "cleanup": "Before cleanup, re-read every record this run wrote and require it to equal this run's last-written state; if any differs (a concurrent edit), stop for reconciliation instead of overwriting it. Save the recorded original summary and confirm it is restored. Residual effects, recorded in the evidence: the draft updatedAt and the caseStudyMetadata updatedAt advance, because the save handler always stamps a new time; status and evidenceStatus must equal the recorded values.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-project-save/",
       "sideEffectMode": "authorized-writes",
       "status": "draft",
@@ -460,7 +466,8 @@
         "apps/site/src/dashboard-access-states.ts",
         "apps/backend/convex/convex.config.ts",
         "apps/backend/convex/schema.ts",
-        "apps/backend/convex/auth.config.ts"
+        "apps/backend/convex/auth.config.ts",
+        "apps/dashboard/package.json"
       ],
       "environments": ["preview"]
     },
@@ -490,7 +497,7 @@
       ],
       "beforeProbe": "Record the setting value and updatedAt; then, with the operator's Convex JWT, call content.upsertSiteSetting directly with http://example.com and record the rejection.",
       "afterProbe": "Read the setting and compare value and updatedAt with the expected values.",
-      "cleanup": "Save the recorded original value and confirm it is restored. Residual effect, recorded in the evidence: the setting updatedAt advances, because the save handler always stamps a new time.",
+      "cleanup": "Before cleanup, re-read every record this run wrote and require it to equal this run's last-written state; if any differs (a concurrent edit), stop for reconciliation instead of overwriting it. Save the recorded original value and confirm it is restored. Residual effect, recorded in the evidence: the setting updatedAt advances, because the save handler always stamps a new time.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-settings-save/",
       "sideEffectMode": "authorized-writes",
       "status": "draft",
@@ -531,7 +538,8 @@
         "apps/site/src/dashboard-access-states.ts",
         "apps/backend/convex/convex.config.ts",
         "apps/backend/convex/schema.ts",
-        "apps/backend/convex/auth.config.ts"
+        "apps/backend/convex/auth.config.ts",
+        "apps/dashboard/package.json"
       ],
       "environments": ["preview"]
     },
@@ -591,7 +599,8 @@
         "apps/site/src/dashboard-access-states.ts",
         "apps/backend/convex/convex.config.ts",
         "apps/backend/convex/schema.ts",
-        "apps/backend/convex/auth.config.ts"
+        "apps/backend/convex/auth.config.ts",
+        "apps/dashboard/package.json"
       ]
     },
     {
@@ -648,7 +657,8 @@
         "pnpm-workspace.yaml",
         "apps/backend/convex/convex.config.ts",
         "apps/backend/convex/schema.ts",
-        "apps/backend/convex/auth.config.ts"
+        "apps/backend/convex/auth.config.ts",
+        "apps/site/package.json"
       ]
     },
     {
@@ -679,7 +689,7 @@
       ],
       "beforeProbe": "Record the latest publication request key and state, to tell this run's request from earlier ones; the caseStudyMetadata status, evidenceStatus and updatedAt of the project used for the marker; and the status, selectedForPublic and updatedAt of every media row in the publication scope.",
       "afterProbe": "Read the request and attempt identified by this run's requestKey and publicationAttemptId, and their receipt; earlier requests never count as this run's result. Read the same metadata and media rows and record their values.",
-      "cleanup": "Restore the snapshotted drafts and media states and publish them again with the owner's authorization, returning preview to the pre-run deployed content; publication records are kept. Residual effects, recorded in the evidence: draft, caseStudyMetadata and media updatedAt advance (each save and publication stamps a new time); metadata status and evidenceStatus and media status and selectedForPublic must equal the recorded values.",
+      "cleanup": "Before cleanup, re-read every record this run wrote and require it to equal this run's last-written state; if any differs (a concurrent edit), stop for reconciliation instead of overwriting it. Restore the snapshotted drafts and media states and publish them again with the owner's authorization, returning preview to the pre-run deployed content; publication records are kept. Residual effects, recorded in the evidence: draft, caseStudyMetadata and media updatedAt advance (each save and publication stamps a new time); metadata status and evidenceStatus and media status and selectedForPublic must equal the recorded values.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-publish-preview/",
       "sideEffectMode": "authorized-writes",
       "status": "draft",
