@@ -55,7 +55,8 @@
         "apps/site/src/components/horizonte",
         "apps/site/src/pages/[...path].astro",
         "apps/site/public"
-      ]
+      ],
+      "sharedSourceGlobs": ["apps/site/astro.config.mjs"]
     },
     {
       "id": "site-case-study-casa-roca",
@@ -88,7 +89,8 @@
         "apps/site/src/pages/[...path].astro",
         "packages/content-graph/src/static-case-study-routes.ts",
         "apps/site/public"
-      ]
+      ],
+      "sharedSourceGlobs": ["apps/site/astro.config.mjs"]
     },
     {
       "id": "dashboard-auth-gate",
@@ -132,7 +134,9 @@
         "apps/dashboard/src/app/navigation-loaders.tsx",
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
-        "apps/dashboard/src/runtime-config.ts"
+        "apps/dashboard/src/runtime-config.ts",
+        "apps/dashboard/vite.config.ts",
+        "apps/dashboard/index.html"
       ],
       "environments": ["preview"]
     },
@@ -181,7 +185,9 @@
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
         "apps/dashboard/src/runtime-config.ts",
-        "apps/backend/convex/content.ts"
+        "apps/backend/convex/content.ts",
+        "apps/dashboard/vite.config.ts",
+        "apps/dashboard/index.html"
       ],
       "environments": ["preview"]
     },
@@ -225,7 +231,9 @@
         "apps/dashboard/src/app/navigation-loaders.tsx",
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
-        "apps/dashboard/src/runtime-config.ts"
+        "apps/dashboard/src/runtime-config.ts",
+        "apps/dashboard/vite.config.ts",
+        "apps/dashboard/index.html"
       ],
       "environments": ["preview"]
     },
@@ -278,7 +286,9 @@
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
         "apps/dashboard/src/runtime-config.ts",
-        "apps/backend/convex/content.ts"
+        "apps/backend/convex/content.ts",
+        "apps/dashboard/vite.config.ts",
+        "apps/dashboard/index.html"
       ],
       "environments": ["preview"]
     },
@@ -331,7 +341,9 @@
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
         "apps/dashboard/src/runtime-config.ts",
-        "apps/backend/convex/content.ts"
+        "apps/backend/convex/content.ts",
+        "apps/dashboard/vite.config.ts",
+        "apps/dashboard/index.html"
       ],
       "environments": ["preview"]
     },
@@ -381,7 +393,9 @@
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
         "apps/dashboard/src/runtime-config.ts",
-        "apps/backend/convex/content.ts"
+        "apps/backend/convex/content.ts",
+        "apps/dashboard/vite.config.ts",
+        "apps/dashboard/index.html"
       ],
       "environments": ["preview"]
     },
@@ -463,7 +477,8 @@
         "apps/backend/src/provider-responses.ts",
         "apps/site/src/pages/[...path].astro",
         "apps/site/public"
-      ]
+      ],
+      "sharedSourceGlobs": ["apps/site/astro.config.mjs"]
     },
     {
       "id": "dashboard-publish-preview",
@@ -491,9 +506,9 @@
         "The new request moves to release-requested and then deployed with a receipt; a failed run ends release-failed or rollback-needed and is never retried from elapsed time.",
         "The preview site shows the run-unique marker."
       ],
-      "beforeProbe": "Record the latest publication request key and state, to tell this run's request from earlier ones.",
+      "beforeProbe": "Record the latest publication request key and state, to tell this run's request from earlier ones, and the caseStudyMetadata status, evidenceStatus and updatedAt of the project used for the marker.",
       "afterProbe": "Read the request and attempt identified by this run's requestKey and publicationAttemptId, and their receipt; earlier requests never count as this run's result.",
-      "cleanup": "Restore the snapshotted drafts and media states and publish them again with the owner's authorization, returning preview to the pre-run deployed content; publication records are kept.",
+      "cleanup": "Restore the snapshotted drafts and media states and publish them again with the owner's authorization, returning preview to the pre-run deployed content; publication records are kept. Residual effects, recorded in the evidence: draft and caseStudyMetadata updatedAt advance (each save stamps a new time); metadata status and evidenceStatus must equal the recorded values.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-publish-preview/",
       "sideEffectMode": "authorized-writes",
       "status": "draft",
@@ -546,7 +561,10 @@
         "package.json",
         "apps/dashboard/package.json",
         "apps/site/package.json",
-        "packages/content-graph/package.json"
+        "packages/content-graph/package.json",
+        "apps/site/astro.config.mjs",
+        "apps/dashboard/vite.config.ts",
+        "apps/dashboard/index.html"
       ]
     }
   ]
