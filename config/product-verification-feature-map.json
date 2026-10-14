@@ -288,7 +288,8 @@
         "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
         "Runs on local or preview only; production stays read-only.",
         "The original draft for the selected project and locale is recorded before the run.",
-        "The selected project draft already has unpublished changes (publishedAt unset), because a dashboard save clears publishedAt and cleanup cannot restore a published state; otherwise the run stops."
+        "The selected project draft already has unpublished changes (publishedAt unset), because a dashboard save clears publishedAt and cleanup cannot restore a published state; otherwise the run stops.",
+        "A caseStudyMetadata row already exists for the project, because each save patches it (or inserts one when absent); otherwise the run stops."
       ],
       "steps": [
         "Open /dashboard/projects with the existing session.",
@@ -299,9 +300,9 @@
         "The save succeeds and the project draft updatedAt advances.",
         "After cleanup the summary equals the recorded original."
       ],
-      "beforeProbe": "Record the project draft summary and updatedAt.",
-      "afterProbe": "Read the same draft and compare summary and updatedAt.",
-      "cleanup": "Save the recorded original summary and confirm it is restored. Residual effect, recorded in the evidence: the draft updatedAt advances, because the save handler always stamps a new time.",
+      "beforeProbe": "Record the project draft summary and updatedAt, and the caseStudyMetadata status, evidenceStatus and updatedAt.",
+      "afterProbe": "Read the same draft and metadata and compare summary, status and evidenceStatus with the recorded values; record the timestamps.",
+      "cleanup": "Save the recorded original summary and confirm it is restored. Residual effects, recorded in the evidence: the draft updatedAt and the caseStudyMetadata updatedAt advance, because the save handler always stamps a new time; status and evidenceStatus must equal the recorded values.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-project-save/",
       "sideEffectMode": "authorized-writes",
       "status": "draft",
@@ -310,7 +311,9 @@
         "apps/backend/convex/model/content/projects.ts",
         "apps/backend/convex/lib/validators.ts",
         "apps/backend/convex/auth.ts",
-        "apps/backend/src/project-identity.ts"
+        "apps/backend/src/project-identity.ts",
+        "apps/backend/convex/model/content/media.ts",
+        "apps/backend/convex/contentActions.ts"
       ],
       "sharedSourceGlobs": [
         "apps/dashboard/src/main.tsx",

@@ -814,17 +814,33 @@ export function dependencyEdges(graph) {
   );
 }
 
-// Shared roots plus their transitive dependencies that no journey owns
-// through its own sourceGlobs.
+// Shared roots plus the files reachable from them without entering a file
+// owned by a journey's own sourceGlobs: shared UI, hooks and libraries are
+// included, while a feature and everything only it imports stay with that
+// feature's journey.
 function sharedDependencies(journey, featureMap, fileEdges) {
   const roots = journey.sharedSourceGlobs ?? [];
   const owned = (featureMap?.journeys ?? []).flatMap(
     (candidate) => candidate.sourceGlobs ?? [],
   );
-  return withTransitiveDependencies(roots, fileEdges).filter(
-    (file) =>
-      matchesSourcePrefix(file, roots) || !matchesSourcePrefix(file, owned),
+  const targetsByImporter = new Map();
+  for (const [importer, target] of fileEdges) {
+    if (!targetsByImporter.has(importer)) targetsByImporter.set(importer, []);
+    targetsByImporter.get(importer).push(target);
+  }
+  const seen = new Set(roots);
+  const queue = [...targetsByImporter.keys()].filter((file) =>
+    matchesSourcePrefix(file, roots),
   );
+  for (const file of queue) seen.add(file);
+  while (queue.length > 0) {
+    for (const target of targetsByImporter.get(queue.pop()) ?? []) {
+      if (seen.has(target) || matchesSourcePrefix(target, owned)) continue;
+      seen.add(target);
+      queue.push(target);
+    }
+  }
+  return [...seen];
 }
 
 // The mapped paths plus every file they import, directly or transitively.
