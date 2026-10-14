@@ -146,7 +146,7 @@ export function useProjectsWorkflow({
   const [deleteRequest, setDeleteRequest] =
     useState<MediaSelectionRequest | null>(null);
 
-  async function saveProject(payload: ProjectFormState) {
+  async function saveProject(payload: ProjectFormState): Promise<boolean> {
     const key = `${payload.contentId}:${payload.locale}`;
     const toastId = toast.loading("Saving project draft", {
       description: `${payload.title} ${payload.locale.toUpperCase()}`,
@@ -161,6 +161,7 @@ export function useProjectsWorkflow({
         id: toastId,
         description: "Publish when this content is ready for the Astro build.",
       });
+      return true;
     } catch (error) {
       captureDashboardAction(
         "failed",
@@ -172,6 +173,7 @@ export function useProjectsWorkflow({
         id: toastId,
         description: errorMessage(error, "Project draft could not be saved."),
       });
+      return false;
     } finally {
       setSavingKey(null);
     }

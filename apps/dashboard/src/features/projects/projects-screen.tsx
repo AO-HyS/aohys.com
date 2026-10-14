@@ -9,7 +9,6 @@ import {
   LoaderCircleIcon,
   PlusIcon,
   RocketIcon,
-  SaveIcon,
   Trash2Icon,
   UploadCloudIcon,
 } from "lucide-react";
@@ -20,6 +19,7 @@ import {
   type MediaUploadRequest,
 } from "./projects-api";
 import { Action } from "@/components/dashboard/action";
+import { AsyncSurface } from "@/components/dashboard/async-surface";
 import { ConfirmAction } from "@/components/dashboard/confirm-action";
 import { MetaBadge } from "@/components/dashboard/meta-badge";
 import { NoticeDialog } from "@/components/dashboard/notice-dialog";
@@ -33,6 +33,11 @@ import {
   LabeledTextarea,
 } from "@/components/dashboard/form-controls";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { SaveBar } from "@/components/dashboard/save-bar";
+import {
+  saveBarState,
+  type SaveResult,
+} from "@/components/dashboard/save-state";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -66,7 +71,6 @@ import {
   type NewProjectInput,
   type ProjectFormState,
 } from "./projects-workflow";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type {
@@ -103,7 +107,17 @@ const dashboardLocaleOptions = LOCALES.map((locale) => ({
 export function ProjectsScreen() {
   const content = useProjectsContent();
 
-  if (!content) return <ProjectsSkeleton />;
+  if (!content) {
+    return (
+      <section className="flex flex-col gap-5">
+        <PageHeader
+          title="Project workspace"
+          description="Preparing projects, their drafts and media."
+        />
+        <AsyncSurface state="loading" title="Loading project workspace" />
+      </section>
+    );
+  }
 
   return <ProjectsWorkspace content={content} />;
 }
@@ -480,7 +494,7 @@ function ProjectEditor({
   isPublishing: boolean;
   savingKey: string | null;
   onPublish: () => void | Promise<void>;
-  onSaveProject: (payload: ProjectFormState) => void | Promise<void>;
+  onSaveProject: (payload: ProjectFormState) => Promise<boolean>;
   onSaveMedia: (
     payload: MediaUploadRequest,
     file: File,
@@ -679,7 +693,7 @@ function ProjectLocaleForm({
   project: DashboardProject;
   localeContent: DashboardProjectLocaleContent;
   isSaving: boolean;
-  onSave: (payload: ProjectFormState) => void | Promise<void>;
+  onSave: (payload: ProjectFormState) => Promise<boolean>;
 }) {
   const initialForm = {
     contentId: project.contentId,
@@ -699,6 +713,7 @@ function ProjectLocaleForm({
       localeContent.draft?.structureNotes ?? localeContent.structureNotes,
   };
   const [form, setForm] = useState<ProjectFormState>(initialForm);
+  const [saveResult, setSaveResult] = useState<SaveResult>("clean");
 
   const hasChanges = !projectFormsEqual(form, initialForm);
 
@@ -707,6 +722,11 @@ function ProjectLocaleForm({
     value: ProjectFormState[K],
   ) {
     setForm((current) => ({ ...current, [key]: value }));
+    setSaveResult("clean");
+  }
+
+  async function save() {
+    setSaveResult((await onSave(form)) ? "saved" : "error");
   }
 
   return (
@@ -714,7 +734,7 @@ function ProjectLocaleForm({
       className={dashboardClass.editForm}
       onSubmit={(event) => {
         event.preventDefault();
-        void onSave(form);
+        void save();
       }}
     >
       <div className={projectClass.projectFormHeader}>
@@ -824,24 +844,16 @@ function ProjectLocaleForm({
         </FieldGroup>
       </FieldSet>
 
-      <div className={projectClass.formActionRow}>
-        <span aria-live="polite">
-          {isSaving
-            ? "Saving..."
-            : hasChanges
-              ? "Draft has local changes."
-              : "No unsaved changes."}
-        </span>
-        <Action
-          type="submit"
-          pending={isSaving}
-          pendingLabel="Saving…"
-          disabled={!hasChanges}
-        >
-          <SaveIcon data-icon="inline-start" />
-          Save {localeContent.locale.toUpperCase()}
-        </Action>
-      </div>
+      <SaveBar
+        state={saveBarState({ isSaving, hasChanges, result: saveResult })}
+        onSave={() => void save()}
+        saveLabel={`Save ${localeContent.locale.toUpperCase()} draft`}
+        description={
+          hasChanges
+            ? "Save keeps this draft private until you publish the project."
+            : "This locale matches its saved draft."
+        }
+      />
     </form>
   );
 }
@@ -1343,16 +1355,6 @@ function ImageUploadForm({
         </form>
       </CardContent>
     </Card>
-  );
-}
-
-function ProjectsSkeleton() {
-  return (
-    <div className="flex flex-col gap-4">
-      <Skeleton className="h-10 w-72" />
-      <Skeleton className="h-28 w-full" />
-      <Skeleton className="h-96 w-full" />
-    </div>
   );
 }
 
