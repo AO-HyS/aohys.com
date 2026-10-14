@@ -438,7 +438,7 @@
       ],
       "beforeProbe": "Host probe: record the newest lead createdAt before any request; then POST /contact on the backend site URL once with a shape-valid, run-unique payload and intent 'bogus', and record the status and body.",
       "afterProbe": "Read the newest leads and assert none was created after the baseline and none carries the run-unique marker; the recorded response must be 400 validation_error.",
-      "cleanup": "none; sideEffectMode is none",
+      "cleanup": "No write on the expected path. If the probe creates a lead (the regression under test), the run fails, that run-marked lead is set to closed in the dashboard and recorded in the evidence, because leads cannot be deleted.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/site-contact-submit/",
       "sideEffectMode": "none",
       "status": "draft",
@@ -516,7 +516,10 @@
         "scripts/seed-dashboard-preview.ts",
         "scripts/sync-cloudflare-pages-runtime.ts",
         "scripts/sync-convex-env.ts",
-        "scripts/validate-release-env.ts"
+        "scripts/validate-release-env.ts",
+        "scripts/extract-cloudflare-pages-deployment-url.ts",
+        "apps/site/scripts/build-resume-pdf.py",
+        "apps/site/scripts/requirements.txt"
       ],
       "environments": ["preview"],
       "sharedSourceGlobs": [
