@@ -2,6 +2,7 @@ import enContent from "./locales/en.json" with { type: "json" };
 import esContent from "./locales/es.json" with { type: "json" };
 import { DASHBOARD_PUBLIC_PROJECT_IDS } from "./generated/dashboard-public-projects.js";
 import { formatI18n, getSharedI18n } from "./i18n.js";
+import { LOCALES, type Locale } from "@aohys/core/domain";
 
 export {
   FORBIDDEN_PUBLIC_CLAIMS,
@@ -15,15 +16,16 @@ export {
   getLocalizedValue,
   getSharedI18n,
 } from "./i18n.js";
-export type { I18nLocale, SharedI18n } from "./i18n.js";
+export type { SharedI18n } from "./i18n.js";
 
 export const SITE_URL = "https://aohys.com";
 export const DEFAULT_LOCALE = "en";
-export const LOCALES = ["en", "es"] as const;
+// Languages spoken (schema.org knowsLanguage), not site locales.
+const SPOKEN_LANGUAGES = ["es", "en"] as const; // domain-vocabulary-ok
 export const PRIVATE_ROUTE_PREFIXES = ["/dashboard"] as const;
 
-export type Locale = (typeof LOCALES)[number];
-export type ContentStatus = "published" | "draft";
+// Page publication state, not media status.
+export type ContentStatus = "published" | "draft"; // domain-vocabulary-ok
 export type ContentType =
   | "landing"
   | "case-study-index"
@@ -1140,8 +1142,8 @@ export function getSeoMetadata(
     email: "alejandro.ortiz@aohys.com",
     address: { "@type": "PostalAddress", addressCountry: "MX" },
     areaServed: i18n.seo.areaServed,
-    availableLanguage: ["es", "en"],
-    knowsLanguage: ["es", "en"],
+    availableLanguage: [...SPOKEN_LANGUAGES],
+    knowsLanguage: [...SPOKEN_LANGUAGES],
     serviceType: i18n.seo.serviceTypes,
     sameAs: linkedProfiles,
   };
@@ -1173,7 +1175,7 @@ export function getSeoMetadata(
             description: localizedVariant.seoDescription,
             serviceType: i18n.seo.serviceTypes,
             areaServed: i18n.seo.areaServed,
-            availableLanguage: ["es", "en"],
+            availableLanguage: [...SPOKEN_LANGUAGES],
             inLanguage: locale,
             provider: organization,
           }

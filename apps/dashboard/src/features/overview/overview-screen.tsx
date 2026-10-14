@@ -17,10 +17,8 @@ import {
   type StatusTone,
 } from "@/components/dashboard/status-badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  publicationLabel,
-  type DashboardPublicationState,
-} from "@/lib/publication-state";
+import { publicationLabel } from "@/lib/publication-state";
+import { type PublicationRequestState } from "@aohys/core/domain";
 
 type DashboardOverview = NonNullable<ReturnType<typeof useDashboardOverview>>;
 type OverviewGate = DashboardOverview["gates"][number];
@@ -223,7 +221,7 @@ export function DashboardOverviewContent({
 }
 
 function publicationTone(
-  state: DashboardPublicationState | undefined,
+  state: PublicationRequestState | undefined,
 ): StatusTone {
   if (state === "deployed") return "success";
   if (state === "release-failed" || state === "rollback-needed")

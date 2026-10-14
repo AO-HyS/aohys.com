@@ -65,7 +65,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type {
-  DashboardLocale,
   DashboardResumeContent,
   DashboardResumeVersion,
   ResumeEducation,
@@ -77,6 +76,7 @@ import type {
 } from "./resume-types";
 import { useEditorListKeys } from "./use-editor-list-keys";
 import { publicationLabel } from "@/lib/publication-state";
+import { type Locale } from "@aohys/core/domain";
 
 const resumeDateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
@@ -84,7 +84,7 @@ const resumeDateFormatter = new Intl.DateTimeFormat(undefined, {
 });
 
 interface ResumeVersionForm {
-  locale: DashboardLocale;
+  locale: Locale;
   version: string;
   pdfPath: string;
   isPublished: boolean;
@@ -92,7 +92,7 @@ interface ResumeVersionForm {
 
 export function ResumeScreen() {
   const payload = useResumeContent();
-  const [selectedLocale, setSelectedLocale] = useState<DashboardLocale>("en");
+  const [selectedLocale, setSelectedLocale] = useState<Locale>("en");
 
   const baseline = useMemo(() => {
     if (!payload) {
@@ -143,8 +143,8 @@ function ResumeWorkspace({
 }: {
   payload: ResumeContent;
   baseline: DashboardResumeContent;
-  selectedLocale: DashboardLocale;
-  onSelectLocale: (locale: DashboardLocale) => void;
+  selectedLocale: Locale;
+  onSelectLocale: (locale: Locale) => void;
 }) {
   const publishResume = usePublishResume();
   const saveResumeDraft = useSaveResumeDraft();
@@ -171,9 +171,7 @@ function ResumeWorkspace({
   const [saveResult, setSaveResult] = useState<"clean" | "saved" | "error">(
     "clean",
   );
-  const [pendingLocale, setPendingLocale] = useState<DashboardLocale | null>(
-    null,
-  );
+  const [pendingLocale, setPendingLocale] = useState<Locale | null>(null);
   const [versionForm, setVersionForm] = useState<ResumeVersionForm>({
     locale: selectedLocale,
     version: "",
@@ -445,9 +443,7 @@ function ResumeArtifactsSection({
               <LabeledSelect
                 label="Locale"
                 value={form.locale}
-                onValueChange={(value) =>
-                  onChange({ locale: value as DashboardLocale })
-                }
+                onValueChange={(value) => onChange({ locale: value as Locale })}
                 options={[
                   { value: "en", label: "English" },
                   { value: "es", label: "Spanish" },
@@ -492,12 +488,12 @@ function ResumeWorkspaceStatus({
   onRequestLocale,
   onRebase,
 }: {
-  selectedLocale: DashboardLocale;
+  selectedLocale: Locale;
   activeDraft: ResumeContent["resumeDrafts"][number] | undefined;
   publication?: import("@/lib/publication-state").DashboardPublication;
   validationErrors: string[];
   hasRemoteBaseline: boolean;
-  onRequestLocale: (locale: DashboardLocale) => void;
+  onRequestLocale: (locale: Locale) => void;
   onRebase: () => void;
 }) {
   return (
@@ -508,7 +504,7 @@ function ResumeWorkspaceStatus({
         actions={
           <Tabs
             value={selectedLocale}
-            onValueChange={(value) => onRequestLocale(value as DashboardLocale)}
+            onValueChange={(value) => onRequestLocale(value as Locale)}
           >
             <TabsList className={dashboardClass.localeTabsList}>
               <TabsTrigger value="en">English</TabsTrigger>

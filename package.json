@@ -63,6 +63,7 @@
     "check:no-tests": "node scripts/quality/check-no-tests.mjs"
   },
   "devDependencies": {
+    "@aohys/core": "workspace:*",
     "@aohys/development-system": "https://github.com/AO-HyS/development-system/releases/download/v1.40.0/aohys-development-system-1.40.0.tgz",
     "@aohys/environment": "workspace:*",
     "@aohys/release-train": "workspace:*",
@@ -74,6 +75,7 @@
     "prettier": "^3.8.1",
     "react-doctor": "0.9.12",
     "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
     "wrangler": "^4.105.0"
   }
 }

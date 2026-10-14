@@ -1,11 +1,10 @@
 import { execFileSync } from "node:child_process";
+import { type ReleaseEnvironment } from "@aohys/core/domain";
 
 type GitHubVariable = { name: string; value: string };
 const REPOSITORY = process.env.GH_REPO?.trim() || "AO-HyS/aohys.com";
 
-function readVariables(
-  environment: "preview" | "production",
-): Map<string, string> {
+function readVariables(environment: ReleaseEnvironment): Map<string, string> {
   const output = execFileSync(
     "gh",
     [

@@ -1,6 +1,8 @@
-export type MediaStorageProvider = "cloudflare-images" | "cloudflare-r2" | "external";
-export type MediaUsage = "case-study" | "resume" | "architecture" | "site";
-export type MediaStatus = "draft" | "published" | "archived";
+import type {
+  MediaStatus,
+  MediaStorageProvider,
+  MediaUsage,
+} from "./domain.js";
 
 export interface CloudflareImagesCustomIdValidation {
   isValid: boolean;
@@ -16,14 +18,14 @@ export interface PublicMediaReference {
 
 export type PublicMediaResolution =
   | {
-    status: "resolved";
-    url: string;
-    source: "repository-asset" | "external-url" | "cloudflare-images";
-  }
+      status: "resolved";
+      url: string;
+      source: "repository-asset" | "external-url" | "cloudflare-images";
+    }
   | {
-    status: "invalid" | "unsupported-provider" | "provider-unavailable";
-    reason: string;
-  };
+      status: "invalid" | "unsupported-provider" | "provider-unavailable";
+      reason: string;
+    };
 
 export interface PublicationMediaItem {
   id: string;
@@ -40,8 +42,10 @@ export interface PublicationMediaSelection<T extends PublicationMediaItem> {
 }
 
 const customIdMaxLength = 1024;
-const customIdHelp = "Use a relative key like media/casa-roca-hero. Do not use URLs, dot-prefixed folders, traversal segments, encoded slashes, or query fragments.";
-const publicAssetPattern = /^(?:\/)?images\/.+\.(?:avif|gif|jpe?g|png|svg|webp)$/i;
+const customIdHelp =
+  "Use a relative key like media/casa-roca-hero. Do not use URLs, dot-prefixed folders, traversal segments, encoded slashes, or query fragments.";
+const publicAssetPattern =
+  /^(?:\/)?images\/.+\.(?:avif|gif|jpe?g|png|svg|webp)$/i;
 
 export function normalizeCloudflareImagesCustomId(value: string): string {
   return value
@@ -55,7 +59,9 @@ export function normalizeCloudflareImagesCustomId(value: string): string {
     .join("/");
 }
 
-export function validateCloudflareImagesCustomId(value: string): CloudflareImagesCustomIdValidation {
+export function validateCloudflareImagesCustomId(
+  value: string,
+): CloudflareImagesCustomIdValidation {
   const rawValue = value.trim();
   const normalizedValue = normalizeCloudflareImagesCustomId(value);
 
@@ -73,13 +79,15 @@ export function validateCloudflareImagesCustomId(value: string): CloudflareImage
 
   const segmentsAreSafe = normalizedValue.split("/").every((segment) => {
     const decoded = safelyDecode(segment);
-    return decoded !== undefined
-      && decoded === segment
-      && !decoded.startsWith(".")
-      && decoded !== ".."
-      && !decoded.includes("/")
-      && !decoded.includes("\\")
-      && /^[A-Za-z0-9._-]+$/.test(decoded);
+    return (
+      decoded !== undefined &&
+      decoded === segment &&
+      !decoded.startsWith(".") &&
+      decoded !== ".." &&
+      !decoded.includes("/") &&
+      !decoded.includes("\\") &&
+      /^[A-Za-z0-9._-]+$/.test(decoded)
+    );
   });
 
   return segmentsAreSafe
@@ -89,7 +97,10 @@ export function validateCloudflareImagesCustomId(value: string): CloudflareImage
 
 export function defaultProjectMediaStorageKey(contentId: string): string {
   const projectSlug = contentId.replace(/^case-study:/, "");
-  return validateCloudflareImagesCustomId(`media/${projectSlug}`).value || "media/project";
+  return (
+    validateCloudflareImagesCustomId(`media/${projectSlug}`).value ||
+    "media/project"
+  );
 }
 
 export function cloudflareImagesStorageKeySegment(fileName: string): string {
@@ -106,11 +117,18 @@ export function cloudflareImagesStorageKeySegment(fileName: string): string {
   return segment || "image";
 }
 
-export function cloudflareImagesStorageKeyForFile(baseKey: string, fileName: string): string {
+export function cloudflareImagesStorageKeyForFile(
+  baseKey: string,
+  fileName: string,
+): string {
   const baseValidation = validateCloudflareImagesCustomId(baseKey);
-  const normalizedBase = baseValidation.isValid ? baseValidation.value : "media/project";
+  const normalizedBase = baseValidation.isValid
+    ? baseValidation.value
+    : "media/project";
   const segment = cloudflareImagesStorageKeySegment(fileName);
-  const candidate = validateCloudflareImagesCustomId(`${normalizedBase}/${segment}`);
+  const candidate = validateCloudflareImagesCustomId(
+    `${normalizedBase}/${segment}`,
+  );
   return candidate.isValid ? candidate.value : `media/project/${segment}`;
 }
 
@@ -130,14 +148,16 @@ export function resolvePublicMediaUrl(
   if (media.storageProvider === "cloudflare-r2") {
     return {
       status: "unsupported-provider",
-      reason: "Cloudflare R2 has no public delivery adapter in the AOHYS media policy.",
+      reason:
+        "Cloudflare R2 has no public delivery adapter in the AOHYS media policy.",
     };
   }
 
   if (media.storageProvider !== "cloudflare-images") {
     return {
       status: "invalid",
-      reason: "External media must provide a safe /images asset path or an HTTPS URL.",
+      reason:
+        "External media must provide a safe /images asset path or an HTTPS URL.",
     };
   }
 
@@ -165,9 +185,11 @@ export function selectPublicationMedia<T extends PublicationMediaItem>(
   mediaItems: T[],
   stage: "publication-request" | "public-build",
 ): PublicationMediaSelection<T> {
-  const eligible = mediaItems.filter((item) => stage === "publication-request"
-    ? item.status !== "archived"
-    : item.status === "published" && isPublicBuildUsage(item.usage));
+  const eligible = mediaItems.filter((item) =>
+    stage === "publication-request"
+      ? item.status !== "archived"
+      : item.status === "published" && isPublicBuildUsage(item.usage),
+  );
   const grouped = new Map<string, T[]>();
 
   for (const item of eligible) {
@@ -175,15 +197,18 @@ export function selectPublicationMedia<T extends PublicationMediaItem>(
     grouped.set(key, [...(grouped.get(key) ?? []), item]);
   }
 
-  const selected = [...grouped.values()].map((items) =>
-    [...items].sort(comparePublicationMedia)[0]
-  ).filter((item): item is T => item !== undefined);
+  const selected = [...grouped.values()]
+    .map((items) => [...items].sort(comparePublicationMedia)[0])
+    .filter((item): item is T => item !== undefined);
   const selectedIds = new Set(selected.map((item) => item.id));
-  const selectedSlots = new Set(selected.map((item) => item.contentId ?? item.id));
-  const displaced = mediaItems.filter((item) =>
-    item.status === "published"
-    && selectedSlots.has(item.contentId ?? item.id)
-    && !selectedIds.has(item.id)
+  const selectedSlots = new Set(
+    selected.map((item) => item.contentId ?? item.id),
+  );
+  const displaced = mediaItems.filter(
+    (item) =>
+      item.status === "published" &&
+      selectedSlots.has(item.contentId ?? item.id) &&
+      !selectedIds.has(item.id),
   );
 
   return { selected, displaced };
@@ -201,7 +226,11 @@ function resolvePublicCandidate(value: string): PublicMediaResolution {
   try {
     const url = new URL(value);
     if (url.protocol === "https:" && !url.username && !url.password) {
-      return { status: "resolved", source: "external-url", url: url.toString() };
+      return {
+        status: "resolved",
+        source: "external-url",
+        url: url.toString(),
+      };
     }
   } catch {
     // The caller receives the fixed invalid result below.
@@ -209,7 +238,8 @@ function resolvePublicCandidate(value: string): PublicMediaResolution {
 
   return {
     status: "invalid",
-    reason: "Public media must use a safe /images asset path or an HTTPS URL without credentials.",
+    reason:
+      "Public media must use a safe /images asset path or an HTTPS URL without credentials.",
   };
 }
 
@@ -221,21 +251,30 @@ function isSafePublicAssetPath(value: string): boolean {
     .split("/")
     .every((segment) => {
       const decoded = safelyDecode(segment);
-      return decoded !== undefined
-        && decoded.length > 0
-        && decoded !== "."
-        && decoded !== ".."
-        && !decoded.includes("/")
-        && !decoded.includes("\\");
+      return (
+        decoded !== undefined &&
+        decoded.length > 0 &&
+        decoded !== "." &&
+        decoded !== ".." &&
+        !decoded.includes("/") &&
+        !decoded.includes("\\")
+      );
     });
 }
 
-function comparePublicationMedia(left: PublicationMediaItem, right: PublicationMediaItem): number {
-  const selectionDifference = Number(right.selectedForPublic === true) - Number(left.selectedForPublic === true);
+function comparePublicationMedia(
+  left: PublicationMediaItem,
+  right: PublicationMediaItem,
+): number {
+  const selectionDifference =
+    Number(right.selectedForPublic === true) -
+    Number(left.selectedForPublic === true);
   if (selectionDifference !== 0) return selectionDifference;
 
   const updatedDifference = right.updatedAt - left.updatedAt;
-  return updatedDifference !== 0 ? updatedDifference : left.id.localeCompare(right.id);
+  return updatedDifference !== 0
+    ? updatedDifference
+    : left.id.localeCompare(right.id);
 }
 
 function isPublicBuildUsage(usage: MediaUsage): boolean {

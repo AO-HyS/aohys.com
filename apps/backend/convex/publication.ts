@@ -2,11 +2,17 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api.js";
 import { internalMutation } from "./_generated/server.js";
 import {
-  publicationTargetValidator,
+  publicationProviderStatusValidator,
+  publicationWorkflowOutcomeValidator,
+  releaseEnvironmentValidator,
+  retryablePublicationProviderStatusValidator,
+} from "./lib/validators.js";
+import {
   publishDurablyArgs,
   publishDurablyHandler,
   publishDurablyReturns,
 } from "./model/publication.js";
+import { type ReleaseEnvironment } from "@aohys/core/domain";
 
 const DISPATCH_LEASE_MS = 5 * 60 * 1000;
 
@@ -17,7 +23,7 @@ const claimResultValidator = v.union(
     attemptId: v.id("publicationAttempts"),
     publicationAttemptId: v.string(),
     publicationRequestKey: v.string(),
-    targetEnvironment: publicationTargetValidator,
+    targetEnvironment: releaseEnvironmentValidator,
   }),
 );
 
@@ -57,7 +63,7 @@ export const claimAttempt = internalMutation({
 export const reconcileDispatchingAfterStatusCheck = internalMutation({
   args: {
     attemptId: v.id("publicationAttempts"),
-    providerStatus: v.union(v.literal("not-found"), v.literal("unknown")),
+    providerStatus: publicationProviderStatusValidator,
     statusCheckedAt: v.number(),
   },
   returns: v.object({
@@ -186,7 +192,7 @@ export const completeAttempt = internalMutation({
 export const retryScheduledAfterStatusCheck = internalMutation({
   args: {
     attemptId: v.id("publicationAttempts"),
-    providerStatus: v.literal("not-found"),
+    providerStatus: retryablePublicationProviderStatusValidator,
     statusCheckedAt: v.number(),
   },
   returns: v.id("_scheduled_functions"),
@@ -222,7 +228,7 @@ export const recordReceipt = internalMutation({
   args: {
     publicationRequestKey: v.string(),
     publicationAttemptId: v.string(),
-    targetEnvironment: publicationTargetValidator,
+    targetEnvironment: releaseEnvironmentValidator,
     gitRef: v.string(),
     runId: v.string(),
     runUrl: v.string(),
@@ -337,12 +343,12 @@ export const reconcileWorkflowOutcome = internalMutation({
   args: {
     publicationRequestKey: v.string(),
     publicationAttemptId: v.string(),
-    targetEnvironment: publicationTargetValidator,
+    targetEnvironment: releaseEnvironmentValidator,
     gitRef: v.string(),
     runId: v.string(),
     runUrl: v.string(),
     releaseSha: v.string(),
-    outcome: v.union(v.literal("failure"), v.literal("cancelled")),
+    outcome: publicationWorkflowOutcomeValidator,
   },
   returns: v.object({
     requestKey: v.string(),
@@ -471,7 +477,7 @@ export const reconcileWorkflowOutcome = internalMutation({
 });
 
 function validateTargetGitRef(
-  targetEnvironment: "preview" | "production",
+  targetEnvironment: ReleaseEnvironment,
   gitRef: string,
 ) {
   const expected =

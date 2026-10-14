@@ -27,6 +27,44 @@
       "goals": [],
       "replaces": [],
       "docs": ["docs/public-content-graph.md"]
+    },
+    {
+      "id": "domain-vocabulary",
+      "category": "data",
+      "status": "active",
+      "summary": "One as-const array per domain vocabulary (locale, environment, release environment, lead intent/status/contact path, publication scope/request/attempt state, workflow outcome and provider status, media provider/usage/status, site setting key/classification, environment variable classification, writable media providers, case-study status/evidence); types derive from the arrays and Convex validators derive through literals().",
+      "paths": [
+        "packages/core/src/domain.ts",
+        "apps/backend/convex/lib/validators.ts",
+        "scripts/architecture/domain-vocabulary.mjs"
+      ],
+      "symbols": [
+        "packages/core/src/domain.ts#LOCALES",
+        "packages/core/src/domain.ts#ENVIRONMENTS",
+        "packages/core/src/domain.ts#PUBLICATION_REQUEST_STATES",
+        "packages/core/src/domain.ts#MEDIA_USAGES",
+        "apps/backend/convex/lib/validators.ts#literals"
+      ],
+      "guarantees": [
+        {
+          "statement": "Every exported validator in convex/lib/validators.ts wraps exactly the domain array mapped to it in VALIDATOR_VOCABULARIES (literals(<that array>)), and every inventoried vocabulary field of convex/schema.ts references its validator from ./lib/validators.js (only a Convex v.optional wrapper is unwrapped).",
+          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-derivation, SCHEMA_VOCABULARY_FIELDS in scripts/architecture/domain-vocabulary.mjs); probes with v.string(), a local v.literal and a non-Convex optional wrapper rejected; probes with a validator wired to the wrong array and an unmapped validator rejected"
+        },
+        {
+          "statement": "convex/schema.ts and convex/lib/validators.ts hold no string v.literal.",
+          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-redeclared)"
+        },
+        {
+          "statement": "content.upsertSiteSetting accepts only keys in SITE_SETTING_KEYS (argument validator).",
+          "verifiedBy": "apps/backend/convex/model/content/settings.ts#upsertSiteSettingArgs uses siteSettingKeyValidator"
+        }
+      ],
+      "goals": [
+        "Literal-copy detection outside the derived Convex files is a best-effort syntactic signal (unions, string arrays, v.union/v.literal lists; stale and drifted copies; per-statement // domain-vocabulary-ok exemption), not a proof that no copy exists; a copy it misses is fixed when found and, if it recurs, the consumer joins the symbol-derivation inventory.",
+        "Narrow siteSettings.key in convex/schema.ts to siteSettingKeyValidator and add it to SCHEMA_VOCABULARY_FIELDS once preview and production siteSettings rows are read and every stored key is in SITE_SETTING_KEYS (the argument validator already enforces it on writes)."
+      ],
+      "replaces": [],
+      "docs": ["CONTEXT.md"]
     }
   ]
 }

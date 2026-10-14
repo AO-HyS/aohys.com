@@ -1,9 +1,9 @@
+import { buildCloudflarePagesDeployPlan } from "@aohys/release-train";
 import {
-  buildCloudflarePagesDeployPlan,
-  type ReleaseDeploymentEnvironment,
-} from "@aohys/release-train";
+  RELEASE_ENVIRONMENTS,
+  type ReleaseEnvironment,
+} from "@aohys/core/domain";
 
-const RELEASE_ENVIRONMENTS = ["preview", "production"] as const;
 const MAX_FETCH_ATTEMPTS = 6;
 const FETCH_RETRY_DELAY_MS = 5_000;
 const PUBLIC_ROUTE_SMOKE_CASES = [
@@ -15,11 +15,9 @@ const PUBLIC_ROUTE_SMOKE_CASES = [
   ["/es/casos/", "es"],
 ] as const;
 
-function parseEnvironment(
-  input: string | undefined,
-): ReleaseDeploymentEnvironment {
-  if (RELEASE_ENVIRONMENTS.includes(input as ReleaseDeploymentEnvironment)) {
-    return input as ReleaseDeploymentEnvironment;
+function parseEnvironment(input: string | undefined): ReleaseEnvironment {
+  if (RELEASE_ENVIRONMENTS.includes(input as ReleaseEnvironment)) {
+    return input as ReleaseEnvironment;
   }
 
   throw new Error(
@@ -182,7 +180,7 @@ function extractContactEndpoint(body: string): string {
 async function assertContactSubmission(
   baseUrl: string,
   endpoint: string,
-  environment: ReleaseDeploymentEnvironment,
+  environment: ReleaseEnvironment,
 ): Promise<void> {
   const response = await fetchWithRetries(endpoint, {
     method: "POST",
@@ -236,7 +234,7 @@ async function assertContactRejection(endpoint: string): Promise<void> {
 
 async function assertContactBoundary(
   baseUrl: string,
-  environment: ReleaseDeploymentEnvironment,
+  environment: ReleaseEnvironment,
 ): Promise<void> {
   const contact = await fetchText(urlFor(baseUrl, "/contact/"));
 
@@ -364,7 +362,7 @@ async function assertCspReportBoundary(baseUrl: string): Promise<void> {
 
 async function assertPostHogProxyBoundary(
   baseUrl: string,
-  environment: ReleaseDeploymentEnvironment,
+  environment: ReleaseEnvironment,
 ): Promise<void> {
   const response = await fetchWithRetries(
     urlFor(baseUrl, "/ingest/static/array.js"),
@@ -390,7 +388,7 @@ async function assertPostHogProxyBoundary(
 
 async function assertAnalyticsBootstrapBoundary(
   baseUrl: string,
-  environment: ReleaseDeploymentEnvironment,
+  environment: ReleaseEnvironment,
 ): Promise<void> {
   const home = await fetchText(baseUrl);
   const hasConfig = home.body.includes('"config":{');

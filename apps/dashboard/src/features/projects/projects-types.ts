@@ -1,21 +1,6 @@
-export type DashboardLocale = "en" | "es";
-export type DashboardCaseStudyStatus =
-  | "production-proof"
-  | "active-build"
-  | "private-build"
-  | "enterprise-confidential"
-  | "engineering-practice";
-export type DashboardEvidenceStatus = "missing" | "sanitized" | "published";
-export type DashboardMediaUsage =
-  | "case-study"
-  | "resume"
-  | "architecture"
-  | "site";
-export type DashboardMediaStatus = "draft" | "published" | "archived";
-
 export interface DashboardProjectDraft {
   contentId: string;
-  locale: DashboardLocale;
+  locale: Locale;
   localizedSlug?: string;
   title: string;
   summary: string;
@@ -30,7 +15,7 @@ export interface DashboardProjectDraft {
 }
 
 export interface DashboardProjectLocaleContent {
-  locale: DashboardLocale;
+  locale: Locale;
   path: string;
   title: string;
   summary: string;
@@ -58,8 +43,8 @@ export interface DashboardProjectImage {
     | "provider-unavailable";
   previewIssue?: string;
   storageKey?: string;
-  status?: DashboardMediaStatus;
-  usage?: DashboardMediaUsage;
+  status?: MediaStatus;
+  usage?: MediaUsage;
   selectedForPublic?: boolean;
   selectedForPublicAt?: number;
 }
@@ -70,8 +55,8 @@ export interface DashboardProject {
   englishPath: string;
   spanishPath: string;
   sitemapIncluded: boolean;
-  status: DashboardCaseStudyStatus;
-  evidenceStatus: DashboardEvidenceStatus;
+  status: CaseStudyStatus;
+  evidenceStatus: CaseStudyEvidenceStatus;
   projectUrl?: string;
   updatedAt: number;
   locales: DashboardProjectLocaleContent[];
@@ -80,14 +65,14 @@ export interface DashboardProject {
 
 export interface DashboardMediaMetadata {
   id: Id<"mediaMetadata">;
-  storageProvider: "cloudflare-images" | "cloudflare-r2" | "external";
+  storageProvider: MediaStorageProvider;
   storageKey: string;
   publicUrl?: string;
   altText: string;
   contentId?: string;
-  usage: DashboardMediaUsage;
-  status: DashboardMediaStatus;
-  locale?: DashboardLocale;
+  usage: MediaUsage;
+  status: MediaStatus;
+  locale?: Locale;
   selectedForPublic?: boolean;
   selectedForPublicAt?: number;
   updatedAt: number;
@@ -98,3 +83,11 @@ export interface ProjectsContent {
   publications?: import("@/lib/publication-state").DashboardPublication[];
 }
 import type { Id } from "@aohys/backend/convex/_generated/dataModel";
+import {
+  type CaseStudyEvidenceStatus,
+  type CaseStudyStatus,
+  type Locale,
+  type MediaStatus,
+  type MediaStorageProvider,
+  type MediaUsage,
+} from "@aohys/core/domain";

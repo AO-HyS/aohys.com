@@ -9,15 +9,20 @@ export {
   selectPublicationMedia,
   validateCloudflareImagesCustomId,
 } from "./media-policy.js";
-export { normalizePublicWhatsappUrl, validatePublicWhatsappUrl } from "./public-settings.js";
+export {
+  normalizePublicWhatsappUrl,
+  validatePublicWhatsappUrl,
+} from "./public-settings.js";
 export type { PublicWhatsappUrlValidation } from "./public-settings.js";
 export type {
   CloudflareImagesCustomIdValidation,
-  MediaStatus,
-  MediaStorageProvider,
-  MediaUsage,
   PublicMediaReference,
   PublicMediaResolution,
   PublicationMediaItem,
   PublicationMediaSelection,
 } from "./media-policy.js";
+export type {
+  MediaStatus,
+  MediaStorageProvider,
+  MediaUsage,
+} from "./domain.js";

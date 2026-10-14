@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { v, type Infer, type ObjectType } from "convex/values";
 import type { FunctionReference } from "convex/server";
 import { action } from "./_generated/server.js";
 import { internal } from "./_generated/api.js";
@@ -7,16 +7,17 @@ import {
   createCloudflareImagesDirectUpload,
   type PublishWorkflowResult,
 } from "../src/dashboard-providers.js";
-import { publicationSummaryValidator } from "./model/publication.js";
-
-const localeValidator = v.union(v.literal("en"), v.literal("es"));
-
-const mediaUsageValidator = v.union(
-  v.literal("case-study"),
-  v.literal("resume"),
-  v.literal("architecture"),
-  v.literal("site"),
-);
+import {
+  publicationSummaryValidator,
+  type publishDurablyArgs,
+  type publishDurablyReturns,
+} from "./model/publication.js";
+import {
+  localeValidator,
+  mediaUsageValidator,
+  publicationScopeValidator,
+} from "./lib/validators.js";
+import { type ReleaseEnvironment } from "@aohys/core/domain";
 
 const publishWorkflowValidator = v.union(
   v.object({
@@ -31,32 +32,9 @@ const publishWorkflowValidator = v.union(
   }),
 );
 
-type DurablePublishResult = {
-  publishedAt: number;
-  projectDraftsPublished: number;
-  resumeDraftsPublished: number;
-  mediaPublished: number;
-  workflowPending: boolean;
-  publication: {
-    requestKey: string;
-    publicationAttemptId?: string;
-    scope: "project" | "resume" | "all";
-    contentId?: string;
-    locale?: "en" | "es";
-    targetEnvironment: "preview" | "production";
-    state:
-      | "published-locally"
-      | "release-requested"
-      | "release-acknowledged"
-      | "release-failed"
-      | "deployed"
-      | "rollback-needed";
-    retryable: boolean;
-    updatedAt: number;
-  };
-};
+type DurablePublishResult = Infer<typeof publishDurablyReturns>;
 
-function getPublishEnvironment(): "preview" | "production" {
+function getPublishEnvironment(): ReleaseEnvironment {
   const environment = process.env.AOHYS_ENV;
 
   if (environment === "preview" || environment === "production") {
@@ -101,7 +79,7 @@ export const createMediaUploadUrl = action({
 
 export const publishContent = action({
   args: {
-    scope: v.union(v.literal("project"), v.literal("resume"), v.literal("all")),
+    scope: publicationScopeValidator,
     contentId: v.optional(v.string()),
     locale: v.optional(localeValidator),
   },
@@ -131,14 +109,7 @@ export const publishContent = action({
       .publishFromDashboard as FunctionReference<
       "mutation",
       "internal",
-      {
-        scope: "project" | "resume" | "all";
-        contentId?: string;
-        locale?: "en" | "es";
-        targetEnvironment: "preview" | "production";
-        requestedBy: string;
-        providerConfigured: boolean;
-      },
+      ObjectType<typeof publishDurablyArgs>,
       DurablePublishResult
     >;
     const result: DurablePublishResult = await ctx.runMutation(

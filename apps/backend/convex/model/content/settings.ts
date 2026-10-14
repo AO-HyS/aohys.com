@@ -1,19 +1,17 @@
 import { normalizePublicWhatsappUrl } from "@aohys/core";
 import { v, type ObjectType } from "convex/values";
 import type { MutationCtx } from "../../_generated/server.js";
-import { environmentValidator } from "./shared.js";
-
-export const settingClassificationValidator = v.union(
-  v.literal("public-build-value"),
-  v.literal("provider-output"),
-  v.literal("policy-value"),
-);
+import {
+  environmentValidator,
+  siteSettingClassificationValidator,
+  siteSettingKeyValidator,
+} from "../../lib/validators.js";
 
 export const upsertSiteSettingArgs = {
-  key: v.string(),
+  key: siteSettingKeyValidator,
   environment: environmentValidator,
   value: v.string(),
-  classification: settingClassificationValidator,
+  classification: siteSettingClassificationValidator,
 };
 
 export const upsertSiteSettingReturns = v.object({
@@ -25,12 +23,9 @@ export async function upsertSiteSettingHandler(
   ctx: MutationCtx,
   args: ObjectType<typeof upsertSiteSettingArgs>,
 ) {
-  const normalizedValue =
-    args.key === "PUBLIC_WHATSAPP_URL"
-      ? normalizePublicWhatsappUrl(args.value)
-      : undefined;
+  const normalizedValue = normalizePublicWhatsappUrl(args.value);
 
-  if (args.key !== "PUBLIC_WHATSAPP_URL" || !normalizedValue) {
+  if (!normalizedValue) {
     throw new Error(
       "Only a valid direct PUBLIC_WHATSAPP_URL setting can be saved here.",
     );

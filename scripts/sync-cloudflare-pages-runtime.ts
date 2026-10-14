@@ -1,6 +1,5 @@
 import { pathToFileURL } from "node:url";
-
-export type PagesEnvironmentName = "preview" | "production";
+import { type ReleaseEnvironment } from "@aohys/core/domain";
 
 export interface CloudflarePagesVariable {
   value?: string;
@@ -15,7 +14,7 @@ interface CloudflarePagesDeploymentConfig {
 
 export interface CloudflarePagesProject {
   deployment_configs?: Record<
-    PagesEnvironmentName,
+    ReleaseEnvironment,
     CloudflarePagesDeploymentConfig
   >;
 }
@@ -43,7 +42,7 @@ type RuntimeValues = Record<string, string | undefined>;
 
 export function parsePagesEnvironment(
   input: string | undefined,
-): PagesEnvironmentName {
+): ReleaseEnvironment {
   if (input === "preview" || input === "production") return input;
   throw new Error(
     "Usage: tsx scripts/sync-cloudflare-pages-runtime.ts <preview|production>",
@@ -61,7 +60,7 @@ function requiredValue(values: RuntimeValues, name: string): string {
 }
 
 export function collectCanonicalRuntimeValues(
-  environment: PagesEnvironmentName,
+  environment: ReleaseEnvironment,
   values: RuntimeValues = process.env,
 ): Record<string, string> {
   const runtimeValues = Object.fromEntries(
@@ -123,7 +122,7 @@ export async function readPagesProject({
 
 export function readPlainVariable(
   project: CloudflarePagesProject,
-  environment: PagesEnvironmentName,
+  environment: ReleaseEnvironment,
   name: string,
 ): string | undefined {
   const variable = project.deployment_configs?.[environment]?.env_vars?.[name];
@@ -134,7 +133,7 @@ export function readPlainVariable(
 
 function runtimeMatches(
   project: CloudflarePagesProject,
-  environment: PagesEnvironmentName,
+  environment: ReleaseEnvironment,
   values: Record<string, string>,
 ): boolean {
   return Object.entries(values).every(
@@ -160,7 +159,7 @@ export async function synchronizeCloudflarePagesRuntime({
   values,
   fetchImplementation = fetch,
 }: {
-  environment: PagesEnvironmentName;
+  environment: ReleaseEnvironment;
   accountId: string;
   apiToken: string;
   projectName: string;

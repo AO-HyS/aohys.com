@@ -10,6 +10,7 @@ import {
   type ContentId,
   type PublicRoute,
 } from "@aohys/content-graph";
+import { LEAD_INTENTS, type LeadIntent } from "@aohys/core/domain";
 import { DASHBOARD_PUBLIC_SETTINGS } from "../generated/dashboard-public-settings";
 import { getUiCopy } from "../i18n";
 import HorizonteHome from "./horizonte/HorizonteHome.astro";
@@ -25,6 +26,13 @@ const uiCopy = getUiCopy(locale);
 const hz = uiCopy.horizonte;
 const labels = uiCopy.sunlit.publicContent;
 const contactCopy = uiCopy.contactForm;
+const leadIntentLabels = {
+  project: contactCopy.intentProject,
+  hiring: contactCopy.intentHiring,
+  "architecture-review": contactCopy.intentArchitecture,
+  website: contactCopy.intentWebsite,
+  other: contactCopy.intentOther,
+} satisfies Record<LeadIntent, string>;
 const caseStudyIndexContent = getCaseStudyIndexContent(locale);
 const architectureContent = id === "architecture" ? getArchitecturePageContent(locale) : undefined;
 const practiceContent = id === "practice" ? getPracticePageContent(locale) : undefined;
@@ -449,7 +457,7 @@ const founderJob = resumeContent?.experience.find((job) => job.company === "AOHY
               <label><span>{contactCopy.phoneLabel}<small id="contact-phone-requirement" data-phone-requirement data-optional-label={contactCopy.phoneOptionalHint} data-required-label={contactCopy.phoneRequiredHint}>{contactCopy.phoneOptionalHint}</small></span><input name="phone" type="tel" autocomplete="tel" data-contact-phone aria-required="false" aria-describedby="contact-phone-requirement contact-path-help" /></label>
             </div>
             <label><span>{contactCopy.companyLabel}</span><input name="company" type="text" autocomplete="organization" /></label>
-            <label><span>{contactCopy.intentLabel}</span><select name="intent" required><option value="project">{contactCopy.intentProject}</option><option value="hiring">{contactCopy.intentHiring}</option><option value="architecture-review">{contactCopy.intentArchitecture}</option><option value="website">{contactCopy.intentWebsite}</option><option value="other">{contactCopy.intentOther}</option></select></label>
+            <label><span>{contactCopy.intentLabel}</span><select name="intent" required>{LEAD_INTENTS.map((intent) => <option value={intent}>{leadIntentLabels[intent]}</option>)}</select></label>
             <fieldset aria-describedby="contact-path-help">
               <legend>{contactCopy.preferredContactLabel}</legend>
               <div class="radios">

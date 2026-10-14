@@ -3,6 +3,7 @@ import { isIP } from "node:net";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import {
+  isOneOf,
   normalizePublicWhatsappUrl,
   resolvePublicMediaUrl,
   selectPublicationMedia,
@@ -18,8 +19,20 @@ import {
   RESUME_CONTENT_MAX_LENGTH,
 } from "../packages/content-graph/src/resume-content.js";
 import { hasConvexDeploymentAccess, runConvexFunction } from "./convex-run.js";
-
-type Locale = "en" | "es";
+import {
+  ENVIRONMENTS,
+  LOCALES,
+  MEDIA_STATUSES,
+  MEDIA_STORAGE_PROVIDERS,
+  MEDIA_USAGES,
+  SITE_SETTING_CLASSIFICATIONS,
+  type Environment,
+  type Locale,
+  type MediaStatus,
+  type MediaStorageProvider,
+  type MediaUsage,
+  type SiteSettingClassification,
+} from "@aohys/core/domain";
 
 interface DashboardProjectDraft {
   contentId: string;
@@ -46,13 +59,13 @@ interface DashboardResumeDraft {
 
 export interface DashboardMediaMetadata {
   id?: string;
-  storageProvider?: "cloudflare-images" | "cloudflare-r2" | "external";
+  storageProvider?: MediaStorageProvider;
   storageKey: string;
   publicUrl?: string;
   altText: string;
   contentId?: string;
-  usage: "case-study" | "resume" | "architecture" | "site";
-  status: "draft" | "published" | "archived";
+  usage: MediaUsage;
+  status: MediaStatus;
   locale?: Locale;
   selectedForPublic?: boolean;
   selectedForPublicAt?: number;
@@ -65,9 +78,9 @@ type PublicDashboardMediaMetadata = DashboardMediaMetadata & {
 
 interface DashboardSiteSetting {
   key: string;
-  environment: "local" | "preview" | "production";
+  environment: Environment;
   value: string;
-  classification: "public-build-value" | "provider-output" | "policy-value";
+  classification: SiteSettingClassification;
   updatedAt: number;
 }
 
@@ -249,7 +262,7 @@ function hasOptionalBoolean(
 }
 
 function isLocale(value: unknown): value is Locale {
-  return value === "en" || value === "es";
+  return isOneOf(typeof value === "string" ? value : undefined, LOCALES);
 }
 
 function isDashboardProjectDraft(
@@ -288,17 +301,13 @@ function isDashboardMediaMetadata(
 ): value is DashboardMediaMetadata {
   return (
     hasStringFields(value, ["storageKey", "altText"]) &&
-    ["case-study", "resume", "architecture", "site"].includes(
-      String(value.usage),
-    ) &&
-    ["draft", "published", "archived"].includes(String(value.status)) &&
+    isOneOf(String(value.usage), MEDIA_USAGES) &&
+    isOneOf(String(value.status), MEDIA_STATUSES) &&
     typeof value.updatedAt === "number" &&
     typeof value.id === "string" &&
     hasOptionalString(value, "contentId") &&
     hasOptionalString(value, "publicUrl") &&
-    ["cloudflare-images", "cloudflare-r2", "external"].includes(
-      String(value.storageProvider),
-    ) &&
+    isOneOf(String(value.storageProvider), MEDIA_STORAGE_PROVIDERS) &&
     (value.locale === undefined || isLocale(value.locale)) &&
     hasOptionalBoolean(value, "selectedForPublic") &&
     hasOptionalNumber(value, "selectedForPublicAt")
@@ -308,10 +317,8 @@ function isDashboardMediaMetadata(
 function isDashboardSiteSetting(value: unknown): value is DashboardSiteSetting {
   return (
     hasStringFields(value, ["key", "value"]) &&
-    ["local", "preview", "production"].includes(String(value.environment)) &&
-    ["public-build-value", "provider-output", "policy-value"].includes(
-      String(value.classification),
-    ) &&
+    isOneOf(String(value.environment), ENVIRONMENTS) &&
+    isOneOf(String(value.classification), SITE_SETTING_CLASSIFICATIONS) &&
     typeof value.updatedAt === "number"
   );
 }

@@ -1,6 +1,8 @@
+import { type Environment } from "@aohys/core/domain";
+
 export interface DashboardRuntimeConfig {
   adminEmail: string;
-  environment: "local" | "preview" | "production";
+  environment: Environment;
   convexUrl: string;
   betterAuthUrl: string;
   imagesAccountHash?: string;

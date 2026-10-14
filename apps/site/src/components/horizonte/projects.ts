@@ -1,4 +1,4 @@
-import type { Locale } from "@aohys/content-graph";
+import type { Locale } from "@aohys/core/domain";
 
 /*
   Presentation data for the Horizonte lens. Facts (titles, outcomes, roles,

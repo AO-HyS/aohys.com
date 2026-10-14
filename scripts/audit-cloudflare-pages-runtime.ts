@@ -8,8 +8,11 @@ import {
   RUNTIME_BINDING_NAMES,
   type CloudflarePagesProject,
   type CloudflarePagesVariable,
-  type PagesEnvironmentName,
 } from "./sync-cloudflare-pages-runtime.ts";
+import {
+  RELEASE_ENVIRONMENTS,
+  type ReleaseEnvironment,
+} from "@aohys/core/domain";
 
 function requiredEnv(name: string): string {
   const value = process.env[name]?.trim();
@@ -23,7 +26,7 @@ function requiredEnv(name: string): string {
 
 function bindingNames(
   project: CloudflarePagesProject,
-  environment: PagesEnvironmentName,
+  environment: ReleaseEnvironment,
 ): Set<string> {
   const config = project.deployment_configs?.[environment];
   return new Set([
@@ -34,7 +37,7 @@ function bindingNames(
 
 function readVariable(
   project: CloudflarePagesProject,
-  environment: PagesEnvironmentName,
+  environment: ReleaseEnvironment,
   name: string,
 ): CloudflarePagesVariable | string | null | undefined {
   return (
@@ -45,12 +48,12 @@ function readVariable(
 
 export function auditRuntimeBindings(
   project: CloudflarePagesProject,
-  activeEnvironment: PagesEnvironmentName,
+  activeEnvironment: ReleaseEnvironment,
   expectedActiveValues: Record<string, string>,
 ): string[] {
   const errors: string[] = [];
 
-  for (const environment of ["preview", "production"] as const) {
+  for (const environment of RELEASE_ENVIRONMENTS) {
     const names = bindingNames(project, environment);
     for (const binding of RUNTIME_BINDING_NAMES) {
       // Release identity is target-scoped and changes on every deployment.

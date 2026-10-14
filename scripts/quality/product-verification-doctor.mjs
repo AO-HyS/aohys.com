@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import process from "node:process";
+import { ENVIRONMENTS } from "@aohys/core/domain";
 
 export const DOCTOR_APPS = {
   site: {
@@ -17,7 +18,6 @@ export const DOCTOR_APPS = {
 
 const PAGES_DEV_SUFFIX = ".aohys-com.pages.dev";
 const PRODUCTION_ORIGINS = ["https://aohys.com", "https://www.aohys.com"];
-const ENVIRONMENTS = new Set(["local", "preview", "production"]);
 
 export function resolveDoctorTarget(argv = process.argv.slice(2)) {
   const read = (name, fallback) => {
@@ -30,7 +30,7 @@ export function resolveDoctorTarget(argv = process.argv.slice(2)) {
   const environment = read("env", "local");
   const config = DOCTOR_APPS[app];
   if (!config) throw new Error(`Unknown app: ${app}. Use site or dashboard.`);
-  if (!ENVIRONMENTS.has(environment))
+  if (!ENVIRONMENTS.includes(environment))
     throw new Error(`Unknown environment: ${environment}`);
 
   const baseUrl = read("url", config.localOrigins[0]);

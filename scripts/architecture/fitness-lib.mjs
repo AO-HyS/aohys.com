@@ -1,6 +1,12 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 
+import {
+  derivationViolations,
+  literalCopyViolations,
+  readDomainVocabularies,
+} from "./domain-vocabulary.mjs";
+
 const SOURCE_EXTENSIONS = [
   ".ts",
   ".tsx",
@@ -291,8 +297,22 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
   const imports = [];
   const violations = [];
 
+  const vocabularies = readDomainVocabularies(root);
+
   for (const importer of productionFiles) {
     const source = readFileSync(path.join(root, importer), "utf8");
+    for (const vocabulary of literalCopyViolations(
+      importer,
+      source,
+      vocabularies,
+    )) {
+      violations.push({
+        id: `domain-vocabulary-redeclared:${importer}:${vocabulary}`,
+        kind: "domain-vocabulary-redeclared",
+        importer,
+        message: `${importer} re-declares ${vocabulary}; import it from @aohys/core/domain (Convex: convex/lib/validators.ts)`,
+      });
+    }
     for (const specifier of extractImportSpecifiers(source)) {
       const workspace = workspaceForSpecifier(specifier, workspaces);
       const target = resolveSpecifier({
@@ -354,6 +374,14 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
         });
       }
     }
+  }
+
+  for (const message of derivationViolations(root)) {
+    violations.push({
+      id: `domain-vocabulary-derivation:${message}`,
+      kind: "domain-vocabulary-derivation",
+      message,
+    });
   }
 
   const fileEdges = imports
