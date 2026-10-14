@@ -100,11 +100,15 @@ export async function createCloudflareImagesDirectUpload(
   );
   const body = parseCloudflareImagesUploadResponse(await response.json());
 
-  if (!response.ok || !body.success || !body.imageId || !body.uploadURL) {
+  if (!response.ok || !body.success) {
     const providerMessage = body.errors.join(" ");
     throw new ConfirmedProviderFailure(
       providerMessage || "Cloudflare Images upload URL could not be created.",
     );
+  }
+  // A success without the image fields may have created the image: unknown.
+  if (!body.imageId || !body.uploadURL) {
+    throw new Error("Cloudflare Images returned an incomplete upload URL.");
   }
 
   return {

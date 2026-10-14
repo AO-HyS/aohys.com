@@ -62,12 +62,16 @@ export const adminAction = customAction(action, {
     return {
       ctx: { admin, auditCorrelationId },
       args: {},
+      // A failed audit write leaves the event attempted; it never costs the
+      // caller a result the provider already confirmed.
       onSuccess: async ({ args }) => {
-        await ctx.runMutation(internal.audit.recordOutcome, {
-          correlationId: auditCorrelationId,
-          outcome: "succeeded",
-          target: auditTarget(args),
-        });
+        await ctx
+          .runMutation(internal.audit.recordOutcome, {
+            correlationId: auditCorrelationId,
+            outcome: "succeeded",
+            target: auditTarget(args),
+          })
+          .catch(() => undefined);
       },
     };
   },
