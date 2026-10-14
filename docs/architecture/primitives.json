@@ -196,7 +196,7 @@
       "id": "audit-events",
       "category": "auth",
       "status": "active",
-      "summary": "Append-only auditEvents written only through convex/lib/audit.ts: session events from the admin builders (committed for mutations; attempted then succeeded, failed or unknown for actions), publication request and attempt transitions with the requesting session, and system events for dispatch.",
+      "summary": "Append-only auditEvents written only through convex/lib/audit.ts: session events from the admin builders (committed for mutations; attempted then succeeded, failed or unknown for actions), publication request and attempt transitions with the requesting session, and system events for dispatch, and operator events with the deployment read on the server for reconcile, retry, receipts and workflow outcomes (credential class and authorization reference when the caller declares them).",
       "paths": [
         "apps/backend/convex/lib/audit.ts",
         "apps/backend/convex/audit.ts",
@@ -206,7 +206,8 @@
         "apps/backend/convex/lib/audit.ts#insertAuditEvent",
         "apps/backend/convex/lib/audit.ts#auditTarget",
         "apps/backend/convex/lib/audit.ts#sessionActor",
-        "apps/backend/convex/audit.ts#recordOutcome"
+        "apps/backend/convex/audit.ts#recordOutcome",
+        "apps/backend/convex/lib/audit.ts#operatorActor"
       ],
       "guarantees": [
         {
@@ -219,8 +220,8 @@
         }
       ],
       "goals": [
-        "Operator events with verifiable provenance (deployment, credential class, authorizationRef) for reconcile, retry, receipts, workflow outcome and seeds, with the publication CLI.",
-        "Observe audit rows on preview after real admin saves, uploads and a publish."
+        "Observe audit rows on preview after real admin saves, uploads and a publish.",
+        "Operator events for the preview dashboard seeds."
       ],
       "replaces": [],
       "docs": ["apps/backend/README.md"]
@@ -262,6 +263,36 @@
       ],
       "replaces": [],
       "docs": ["docs/release-train.md", "packages/release-train/README.md"]
+    },
+    {
+      "id": "publication-cli",
+      "category": "workflow",
+      "status": "active",
+      "summary": "pnpm publication status|reconcile|retry wraps the internal publication mutations with a target binding checked by the CLI and again by the mutation before any write; retry needs a not-found check and an owner authorization reference; never a timed retry.",
+      "paths": [
+        "scripts/publication.ts",
+        "scripts/convex-run.ts",
+        "apps/backend/convex/publication.ts"
+      ],
+      "symbols": [
+        "apps/backend/convex/publication.ts#status",
+        "apps/backend/convex/publication.ts#reconcileDispatchingAfterStatusCheck",
+        "apps/backend/convex/publication.ts#retryScheduledAfterStatusCheck",
+        "scripts/convex-run.ts#runConvexFunction",
+        "scripts/convex-run.ts#operatorCredential",
+        "scripts/convex-run.ts#runWithOperator"
+      ],
+      "guarantees": [
+        {
+          "statement": "reconcile and retry reject without writing unless the attempt belongs to its request and the expected target, the request target and the deployment's AOHYS_ENV agree; retry also requires an authorization reference and a scheduled attempt.",
+          "verifiedBy": "apps/backend/convex/publication.ts (requireBoundTarget before any write) and the private syscall simulation recorded in the PR"
+        }
+      ],
+      "goals": [
+        "Observe status and rejected mismatches on preview with the preview deploy key."
+      ],
+      "replaces": [],
+      "docs": ["docs/architecture/publication-workflow.md"]
     }
   ]
 }

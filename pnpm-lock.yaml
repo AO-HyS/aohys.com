@@ -31,6 +31,9 @@ importers:
       convex:
         specifier: ^1.43.0
         version: 1.43.0(react@19.2.7)
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
       husky:
         specifier: ^9.1.7
         version: 9.1.7

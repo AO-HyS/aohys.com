@@ -3,7 +3,7 @@ import {
   PUBLICATION_WORKFLOW_OUTCOMES,
   RELEASE_ENVIRONMENTS,
 } from "@aohys/core/domain";
-import { runConvexFunction } from "./convex-run.js";
+import { operatorCredential, runWithOperator } from "./convex-run.js";
 
 function required(name: string): string {
   const value = process.env[name]?.trim();
@@ -25,7 +25,7 @@ if (!isOneOf(outcome, PUBLICATION_WORKFLOW_OUTCOMES)) {
   throw new Error("PUBLICATION_WORKFLOW_OUTCOME must be failure or cancelled.");
 }
 
-const result = runConvexFunction<{
+const result = runWithOperator<{
   state: "release-failed" | "deployed";
 }>(
   "publication:reconcileWorkflowOutcome",
@@ -38,6 +38,11 @@ const result = runConvexFunction<{
     runUrl: required("PUBLICATION_RUN_URL"),
     releaseSha: required("PUBLICATION_RELEASE_SHA"),
     outcome,
+  },
+  {
+    credential: operatorCredential(),
+    authorizationRef: required("PUBLICATION_RUN_URL"),
+    operatorLabel: "release-train",
   },
   (value) => {
     if (
