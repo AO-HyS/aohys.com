@@ -27,6 +27,40 @@
       "goals": [],
       "replaces": [],
       "docs": ["docs/public-content-graph.md"]
+    },
+    {
+      "id": "domain-vocabulary",
+      "category": "data",
+      "status": "active",
+      "summary": "One as-const array per domain vocabulary (locale, environment, release environment, lead intent/status/contact path, publication scope/request/attempt state, media provider/usage/status, site setting key/classification, case-study status/evidence); types derive from the arrays and Convex validators derive through literals().",
+      "paths": [
+        "packages/core/src/domain.ts",
+        "apps/backend/convex/lib/validators.ts"
+      ],
+      "symbols": [
+        "packages/core/src/domain.ts#LOCALES",
+        "packages/core/src/domain.ts#ENVIRONMENTS",
+        "packages/core/src/domain.ts#PUBLICATION_REQUEST_STATES",
+        "packages/core/src/domain.ts#MEDIA_USAGES",
+        "apps/backend/convex/lib/validators.ts#literals"
+      ],
+      "guarantees": [
+        {
+          "statement": "No production source outside packages/core/src/domain.ts declares a string union, array or v.union whose members equal a domain vocabulary.",
+          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-redeclared)"
+        },
+        {
+          "statement": "The Convex schema and function validators for these vocabularies derive from the domain arrays.",
+          "verifiedBy": "apps/backend/convex/schema.ts imports from ./lib/validators.js; pnpm typecheck"
+        },
+        {
+          "statement": "content.upsertSiteSetting accepts only keys in SITE_SETTING_KEYS (argument validator).",
+          "verifiedBy": "apps/backend/convex/model/content/settings.ts#upsertSiteSettingArgs uses siteSettingKeyValidator"
+        }
+      ],
+      "goals": [],
+      "replaces": [],
+      "docs": ["CONTEXT.md"]
     }
   ]
 }

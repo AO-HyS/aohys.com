@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { ENVIRONMENTS } from "@aohys/core/domain";
 
 export const OBSERVATION_ONLY_ACTIONS = new Set([
   "navigate",
@@ -60,8 +61,6 @@ const COVERAGE_KEYS = new Set([
   "identityRef",
   "stepId",
 ]);
-
-const ENVIRONMENTS = new Set(["local", "preview", "production"]);
 
 export const LOCAL_APP_ORIGINS = {
   site: ["http://localhost:4321"],
@@ -232,7 +231,7 @@ export function validatePlan(plan) {
 
   const environment =
     typeof plan.environment === "string" ? plan.environment.trim() : "";
-  if (!ENVIRONMENTS.has(environment))
+  if (!ENVIRONMENTS.includes(environment))
     errors.push("environment must be local, preview, or production");
 
   const candidateSha =

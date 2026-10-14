@@ -1,4 +1,3 @@
-import type { EnvironmentName } from "@aohys/environment";
 import {
   capturePostHogServerEvent,
   type PostHogServerEnvironment,
@@ -6,6 +5,7 @@ import {
 } from "./posthog-server.js";
 import { PRIVATE_NO_STORE_HEADERS } from "./security-headers.js";
 import { parseCspReportPayload } from "./runtime-boundaries.js";
+import { type Environment } from "@aohys/core/domain";
 
 export interface CspReportEnvironment extends PostHogServerEnvironment {
   AOHYS_ENV?: string;
@@ -20,7 +20,7 @@ const CSP_REPORT_HEADERS = {
   "cache-control": "no-store",
 } as const;
 
-function normalizeEnvironment(value: string | undefined): EnvironmentName {
+function normalizeEnvironment(value: string | undefined): Environment {
   return value === "production" || value === "preview" || value === "local"
     ? value
     : "preview";

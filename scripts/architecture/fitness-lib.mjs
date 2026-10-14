@@ -19,6 +19,50 @@ const IGNORED_DIRECTORIES = new Set([
 ]);
 
 const DASHBOARD_ROUTE_METADATA = "apps/dashboard/src/navigation.ts";
+const DOMAIN_VOCABULARY = "packages/core/src/domain.ts";
+const STRING_LITERAL_GROUPS = [
+  /(?:\|\s*)?"[^"\n]+"(?:\s*\|\s*"[^"\n]+")+/g,
+  /\[\s*"[^"\n]+"(?:\s*,\s*"[^"\n]+")+\s*,?\s*\]/g,
+  /v\.union\(\s*v\.literal\("[^"\n]+"\)(?:\s*,\s*v\.literal\("[^"\n]+"\))+\s*,?\s*\)/g,
+];
+
+// Domain vocabularies with two or more members, keyed by a sorted member list.
+function readDomainVocabularies(root) {
+  const filePath = path.join(root, DOMAIN_VOCABULARY);
+  if (!existsSync(filePath)) return new Map();
+  const vocabularies = new Map();
+  const source = readFileSync(filePath, "utf8");
+  for (const match of source.matchAll(
+    /export const ([A-Z_]+) = \[([^\]]*)\] as const;/g,
+  )) {
+    const members = [...match[2].matchAll(/"([^"]+)"/g)].map((item) => item[1]);
+    if (members.length > 1) {
+      vocabularies.set([...members].sort().join("|"), match[1]);
+    }
+  }
+  return vocabularies;
+}
+
+// A line ending in `// domain-vocabulary-ok` is a different concept that shares values.
+function redeclaredVocabularies(source, vocabularies) {
+  const found = new Set();
+  const checked = source
+    .split("\n")
+    .filter((line) => !line.trimEnd().endsWith("// domain-vocabulary-ok"))
+    .join("\n");
+  for (const pattern of STRING_LITERAL_GROUPS) {
+    for (const match of checked.matchAll(pattern)) {
+      const members = [...match[0].matchAll(/"([^"]+)"/g)].map(
+        (item) => item[1],
+      );
+      const vocabulary = vocabularies.get(
+        [...new Set(members)].sort().join("|"),
+      );
+      if (vocabulary) found.add(vocabulary);
+    }
+  }
+  return [...found].sort();
+}
 
 function normalize(filePath) {
   return filePath.replaceAll("\\", "/").replace(/^\.\//, "");
@@ -291,8 +335,20 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
   const imports = [];
   const violations = [];
 
+  const vocabularies = readDomainVocabularies(root);
+
   for (const importer of productionFiles) {
     const source = readFileSync(path.join(root, importer), "utf8");
+    if (importer !== DOMAIN_VOCABULARY) {
+      for (const vocabulary of redeclaredVocabularies(source, vocabularies)) {
+        violations.push({
+          id: `domain-vocabulary-redeclared:${importer}:${vocabulary}`,
+          kind: "domain-vocabulary-redeclared",
+          importer,
+          message: `${importer} re-declares ${vocabulary}; import it from @aohys/core/domain (Convex: convex/lib/validators.ts)`,
+        });
+      }
+    }
     for (const specifier of extractImportSpecifiers(source)) {
       const workspace = workspaceForSpecifier(specifier, workspaces);
       const target = resolveSpecifier({

@@ -1,13 +1,5 @@
 import { resolvePublicMediaUrl } from "@aohys/core";
-import { v } from "convex/values";
-
-export const localeValidator = v.union(v.literal("en"), v.literal("es"));
-
-export const environmentValidator = v.union(
-  v.literal("local"),
-  v.literal("preview"),
-  v.literal("production"),
-);
+import type { MediaStorageProvider } from "@aohys/core/domain";
 
 export function withinLimit<T>(rows: T[], limit: number, label: string): T[] {
   if (rows.length > limit) {
@@ -18,7 +10,7 @@ export function withinLimit<T>(rows: T[], limit: number, label: string): T[] {
 }
 
 export function publicMediaUrl(media: {
-  storageProvider: "cloudflare-images" | "cloudflare-r2" | "external";
+  storageProvider: MediaStorageProvider;
   storageKey: string;
   publicUrl?: string;
 }): string | undefined {

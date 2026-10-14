@@ -1,18 +1,18 @@
-import type { EnvironmentName } from "@aohys/environment";
+import { type Environment } from "@aohys/core/domain";
 
 const RELEASE_SHA_PATTERN = /^[0-9a-f]{40}$/;
 const CONTACT_SOURCE_PATHS = new Set(["/contact", "/es/contacto"]);
 
 export function resolveContactEnvironment(
   value: string | undefined,
-): EnvironmentName {
+): Environment {
   return value === "local" || value === "preview" || value === "production"
     ? value
     : "local";
 }
 
 export function shouldCaptureContactIntakeFailure(
-  environment: EnvironmentName,
+  environment: Environment,
   publicPostHogKey: string | undefined,
 ): boolean {
   return environment === "production" && Boolean(publicPostHogKey?.trim());

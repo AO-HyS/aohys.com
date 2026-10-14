@@ -3,11 +3,8 @@ import { api as convexApi } from "@aohys/backend/convex/_generated/api";
 import { getResumePageContent } from "@aohys/content-graph";
 import { useAction, useMutation, useQuery } from "convex/react";
 import type { FunctionArgs } from "convex/server";
-import type {
-  DashboardLocale,
-  DashboardResumeContent,
-  ResumeContent,
-} from "./resume-types";
+import type { DashboardResumeContent, ResumeContent } from "./resume-types";
+import { type Locale } from "@aohys/core/domain";
 
 export type ResumeVersionRequest = FunctionArgs<
   typeof convexApi.content.createResumeVersion
@@ -54,7 +51,7 @@ export function useSaveResumeDraft() {
 export function usePublishResume() {
   const action = useAction(convexApi.contentActions.publishContent);
   return useCallback(
-    (locale: DashboardLocale) => action({ scope: "resume" as const, locale }),
+    (locale: Locale) => action({ scope: "resume" as const, locale }),
     [action],
   );
 }

@@ -2,10 +2,7 @@ import {
   renderDashboardSignIn,
   renderDashboardState,
 } from "./dashboard-access-states.js";
-import {
-  validateEnvironmentContract,
-  type EnvironmentName,
-} from "@aohys/environment";
+import { validateEnvironmentContract } from "@aohys/environment";
 import { capturePostHogServerEvent } from "./posthog-server.js";
 import {
   PRIVATE_HTML_HEADERS,
@@ -16,12 +13,13 @@ import {
   parseBetterAuthRedirectLocation,
   parseBetterAuthSession,
 } from "./runtime-boundaries.js";
+import { type Environment } from "@aohys/core/domain";
 
 export interface DashboardAccessEnvironment extends Record<
   string,
   string | undefined
 > {
-  AOHYS_ENV: EnvironmentName;
+  AOHYS_ENV: Environment;
   PUBLIC_SITE_URL: string;
   CONVEX_URL: string;
   CONVEX_SITE_URL: string;
@@ -42,7 +40,7 @@ export interface DashboardRuntimeExceptionEvent {
   event: "dashboard_runtime_exception";
   distinctId: string;
   properties: {
-    environment: EnvironmentName;
+    environment: Environment;
     source: "cloudflare_pages_dashboard";
     path: string;
     errorType: string;
@@ -55,7 +53,7 @@ export interface DashboardRuntimeErrorReporter {
 
 export interface DashboardAppShellConfig {
   adminEmail: string;
-  environment: EnvironmentName;
+  environment: Environment;
   convexUrl: string;
   betterAuthUrl: string;
   imagesAccountHash?: string;
@@ -208,7 +206,7 @@ function normalizeDashboardEnvironment(
 function normalizeEnvironmentName(
   value: string | undefined,
   request: Request,
-): EnvironmentName {
+): Environment {
   if (value === "local" || value === "preview" || value === "production") {
     return value;
   }

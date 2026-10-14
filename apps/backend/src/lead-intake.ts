@@ -1,19 +1,10 @@
 import { assertOneOf, trimToUndefined } from "@aohys/core";
-
-export const LEAD_INTENTS = [
-  "project",
-  "hiring",
-  "architecture-review",
-  "website",
-  "other",
-] as const;
-
-export const LEAD_LOCALES = ["en", "es"] as const;
-export const LEAD_STATUSES = ["new", "reviewing", "closed"] as const;
-
-export type LeadIntent = (typeof LEAD_INTENTS)[number];
-export type LeadLocale = (typeof LEAD_LOCALES)[number];
-export type LeadStatus = (typeof LEAD_STATUSES)[number];
+import {
+  LEAD_INTENTS,
+  LOCALES,
+  type LeadIntent,
+  type Locale,
+} from "@aohys/core/domain";
 
 export interface LeadIntakeInput {
   name: string;
@@ -22,7 +13,7 @@ export interface LeadIntakeInput {
   intent: LeadIntent;
   message: string;
   sourcePath: string;
-  locale: LeadLocale;
+  locale: Locale;
   referrer?: string;
 }
 
@@ -33,7 +24,7 @@ export interface PreparedLeadIntake {
   intent: LeadIntent;
   message: string;
   sourcePath: string;
-  locale: LeadLocale;
+  locale: Locale;
   referrer?: string;
   status: "new";
   createdAt: number;
@@ -58,7 +49,7 @@ export function prepareLeadIntake(
   const referrer = trimToUndefined(input.referrer);
 
   assertOneOf(input.intent, LEAD_INTENTS, "intent");
-  assertOneOf(input.locale, LEAD_LOCALES, "locale");
+  assertOneOf(input.locale, LOCALES, "locale");
 
   if (name.length < 2 || name.length > 120) {
     throw new Error("name must be between 2 and 120 characters.");

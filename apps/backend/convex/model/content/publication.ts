@@ -1,10 +1,14 @@
 import { selectPublicationMedia } from "@aohys/core";
 import { v, type ObjectType } from "convex/values";
 import type { MutationCtx } from "../../_generated/server.js";
-import { localeValidator, withinLimit } from "./shared.js";
+import { withinLimit } from "./shared.js";
+import {
+  localeValidator,
+  publicationScopeValidator,
+} from "../../lib/validators.js";
 
 export const publishContentArgs = {
-  scope: v.union(v.literal("project"), v.literal("resume"), v.literal("all")),
+  scope: publicationScopeValidator,
   contentId: v.optional(v.string()),
   locale: v.optional(localeValidator),
 };

@@ -3,9 +3,11 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { getEnvironmentVariableDefinitions } from "@aohys/environment";
-import type { ReleaseDeploymentEnvironment } from "@aohys/release-train";
+import {
+  RELEASE_ENVIRONMENTS,
+  type ReleaseEnvironment,
+} from "@aohys/core/domain";
 
-const RELEASE_ENVIRONMENTS = ["preview", "production"] as const;
 const DEPLOY_ONLY_VARIABLES = new Set([
   "CLOUDFLARE_API_TOKEN",
   "CLOUDFLARE_PROJECT_NAME",
@@ -13,19 +15,15 @@ const DEPLOY_ONLY_VARIABLES = new Set([
   "VITE_RELEASE_SHA",
 ]);
 
-function parseEnvironment(
-  input: string | undefined,
-): ReleaseDeploymentEnvironment {
-  if (RELEASE_ENVIRONMENTS.includes(input as ReleaseDeploymentEnvironment)) {
-    return input as ReleaseDeploymentEnvironment;
+function parseEnvironment(input: string | undefined): ReleaseEnvironment {
+  if (RELEASE_ENVIRONMENTS.includes(input as ReleaseEnvironment)) {
+    return input as ReleaseEnvironment;
   }
 
   throw new Error("Usage: tsx scripts/sync-convex-env.ts <preview|production>");
 }
 
-function convexRuntimeVariableNames(
-  environment: ReleaseDeploymentEnvironment,
-): string[] {
+function convexRuntimeVariableNames(environment: ReleaseEnvironment): string[] {
   return getEnvironmentVariableDefinitions()
     .filter((definition) => !DEPLOY_ONLY_VARIABLES.has(definition.name))
     .filter((definition) => {

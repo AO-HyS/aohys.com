@@ -1,7 +1,7 @@
-import type { PublicationTarget } from "./publication-contract.js";
+import { type ReleaseEnvironment } from "@aohys/core/domain";
 
 export interface GitHubPublicationDispatch {
-  targetEnvironment: PublicationTarget;
+  targetEnvironment: ReleaseEnvironment;
   publicationRequestKey: string;
   publicationAttemptId: string;
   repository?: string;

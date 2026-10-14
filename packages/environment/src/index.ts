@@ -1,4 +1,8 @@
-export type EnvironmentName = "local" | "preview" | "production";
+import {
+  ENVIRONMENTS,
+  RELEASE_ENVIRONMENTS,
+  type Environment,
+} from "@aohys/core/domain";
 
 export type VariableClassification =
   | "public-build-value"
@@ -22,7 +26,7 @@ export interface EnvironmentVariableDefinition {
   provider: ProviderName;
   classification: VariableClassification;
   exposure: VariableExposure;
-  requiredIn: readonly EnvironmentName[];
+  requiredIn: readonly Environment[];
   requiredTargets?: readonly EnvironmentValidationTarget[];
   description: string;
 }
@@ -42,11 +46,6 @@ export interface EnvironmentValidationOptions {
   target?: EnvironmentValidationTarget;
 }
 
-const ENVIRONMENTS = [
-  "local",
-  "preview",
-  "production",
-] as const satisfies readonly EnvironmentName[];
 const DEFAULT_REQUIRED_TARGETS = [
   "runtime",
   "release",
@@ -79,7 +78,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "core",
     classification: "policy-value",
     exposure: "server-only",
-    requiredIn: ["local", "preview", "production"],
+    requiredIn: ENVIRONMENTS,
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Environment Contract name for the current runtime.",
   },
@@ -88,7 +87,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "core",
     classification: "public-build-value",
     exposure: "public-browser",
-    requiredIn: ["local", "preview", "production"],
+    requiredIn: ENVIRONMENTS,
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Canonical URL for the current public site environment.",
   },
@@ -97,7 +96,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "core",
     classification: "public-build-value",
     exposure: "public-browser",
-    requiredIn: ["local", "preview", "production"],
+    requiredIn: ENVIRONMENTS,
     description:
       "Public contact submission endpoint, backed by the Convex HTTP action.",
   },
@@ -106,7 +105,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "convex",
     classification: "provider-output",
     exposure: "public-browser",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: CONVEX_CLIENT_TARGETS,
     description:
       "Convex deployment URL consumed by server code and the dashboard SPA runtime.",
@@ -116,7 +115,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "convex",
     classification: "provider-output",
     exposure: "server-only",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     description: "Convex deployment selector for the target environment.",
   },
   {
@@ -124,7 +123,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "convex",
     classification: "provider-output",
     exposure: "server-only",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Convex HTTP actions URL generated for the target deployment.",
   },
@@ -133,7 +132,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "convex",
     classification: "server-secret",
     exposure: "server-only",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: ["release"],
     description:
       "GitHub Environment secret used by CI/release flows to deploy Convex.",
@@ -152,7 +151,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "github",
     classification: "public-build-value",
     exposure: "public-browser",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: RELEASE_CONTEXT_TARGETS,
     description:
       "Full github.sha shared by public browser, edge, and Convex telemetry.",
@@ -162,7 +161,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "github",
     classification: "public-build-value",
     exposure: "public-browser",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: ["release"],
     description:
       "Full github.sha embedded in the private dashboard browser bundle.",
@@ -172,7 +171,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "resend",
     classification: "server-secret",
     exposure: "server-only",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     description: "Server-only Resend API key for lead notifications.",
   },
   {
@@ -180,7 +179,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "resend",
     classification: "policy-value",
     exposure: "server-only",
-    requiredIn: ["local", "preview", "production"],
+    requiredIn: ENVIRONMENTS,
     description: "Verified sender identity for lead notifications.",
   },
   {
@@ -188,7 +187,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "resend",
     classification: "policy-value",
     exposure: "server-only",
-    requiredIn: ["local", "preview", "production"],
+    requiredIn: ENVIRONMENTS,
     description: "Admin inbox for lead notification delivery.",
   },
   {
@@ -196,7 +195,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "better-auth",
     classification: "server-secret",
     exposure: "server-only",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: AUTH_RUNTIME_TARGETS,
     description:
       "Better Auth secret for signed auth state, owned by the auth runtime.",
@@ -206,7 +205,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "better-auth",
     classification: "provider-output",
     exposure: "public-browser",
-    requiredIn: ["local", "preview", "production"],
+    requiredIn: ENVIRONMENTS,
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Trusted Better Auth base URL for the current environment.",
   },
@@ -215,7 +214,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "better-auth",
     classification: "policy-value",
     exposure: "server-only",
-    requiredIn: ["local", "preview", "production"],
+    requiredIn: ENVIRONMENTS,
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description:
       "Comma-separated origins accepted by Better Auth for the current environment.",
@@ -225,7 +224,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "better-auth",
     classification: "policy-value",
     exposure: "server-only",
-    requiredIn: ["local", "preview", "production"],
+    requiredIn: ENVIRONMENTS,
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Comma-separated admin allowlist email addresses.",
   },
@@ -234,7 +233,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "better-auth",
     classification: "provider-output",
     exposure: "server-only",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: AUTH_RUNTIME_TARGETS,
     description:
       "Google OAuth client identifier used by Better Auth social sign-in.",
@@ -244,7 +243,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "better-auth",
     classification: "server-secret",
     exposure: "server-only",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: AUTH_RUNTIME_TARGETS,
     description:
       "Google OAuth client secret used only by Better Auth server routes.",
@@ -254,7 +253,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "cloudflare",
     classification: "provider-output",
     exposure: "server-only",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: ["release"],
     description:
       "Cloudflare account identifier for release workflows and Images direct-upload URLs.",
@@ -264,7 +263,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "cloudflare",
     classification: "server-secret",
     exposure: "server-only",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: ["release"],
     description:
       "GitHub Environment secret used by Wrangler to deploy Cloudflare Pages.",
@@ -274,7 +273,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "cloudflare",
     classification: "provider-output",
     exposure: "server-only",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: ["release"],
     description: "Cloudflare Pages/Workers project name.",
   },
@@ -283,7 +282,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "cloudflare",
     classification: "provider-output",
     exposure: "public-browser",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: ["release", "dashboard-runtime"],
     description:
       "Cloudflare Images delivery account hash for dashboard media URLs.",
@@ -293,7 +292,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "cloudflare",
     classification: "server-secret",
     exposure: "server-only",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: ["release"],
     description:
       "Narrow Cloudflare Images token used by Convex to create direct upload URLs.",
@@ -303,7 +302,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "github",
     classification: "server-secret",
     exposure: "server-only",
-    requiredIn: ["preview", "production"],
+    requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: ["release"],
     description:
       "Token used by Convex to queue the Release Train workflow after dashboard publish.",
@@ -331,7 +330,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "core",
     classification: "public-build-value",
     exposure: "public-browser",
-    requiredIn: ["local", "preview", "production"],
+    requiredIn: ENVIRONMENTS,
     description: "Public contact email displayed in the site.",
   },
   {
@@ -339,7 +338,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "core",
     classification: "public-build-value",
     exposure: "public-browser",
-    requiredIn: ["local", "preview", "production"],
+    requiredIn: ENVIRONMENTS,
     description: "Public WhatsApp contact URL.",
   },
 ];
@@ -349,7 +348,7 @@ export function getEnvironmentVariableDefinitions(): EnvironmentVariableDefiniti
 }
 
 export function validateEnvironmentContract(
-  environment: EnvironmentName,
+  environment: Environment,
   values: Record<string, string | undefined>,
   options: EnvironmentValidationOptions = {},
 ): EnvironmentValidationResult {

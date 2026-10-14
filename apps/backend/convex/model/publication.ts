@@ -10,21 +10,18 @@ import {
   publishContentArgs,
   publishContentHandler,
 } from "./content/publication.js";
-import { localeValidator, withinLimit } from "./content/shared.js";
-
-export const publicationTargetValidator = v.union(
-  v.literal("preview"),
-  v.literal("production"),
-);
-
-export const publicationStateValidator = v.union(
-  v.literal("published-locally"),
-  v.literal("release-requested"),
-  v.literal("release-acknowledged"),
-  v.literal("release-failed"),
-  v.literal("deployed"),
-  v.literal("rollback-needed"),
-);
+import { withinLimit } from "./content/shared.js";
+import {
+  publicationRequestStateValidator,
+  releaseEnvironmentValidator,
+} from "../lib/validators.js";
+import { localeValidator } from "../lib/validators.js";
+import {
+  type Locale,
+  type PublicationRequestState,
+  type PublicationScope,
+  type ReleaseEnvironment,
+} from "@aohys/core/domain";
 
 export const publicationSummaryValidator = v.object({
   requestKey: v.string(),
@@ -32,15 +29,15 @@ export const publicationSummaryValidator = v.object({
   scope: publishContentArgs.scope,
   contentId: v.optional(v.string()),
   locale: v.optional(localeValidator),
-  targetEnvironment: publicationTargetValidator,
-  state: publicationStateValidator,
+  targetEnvironment: releaseEnvironmentValidator,
+  state: publicationRequestStateValidator,
   retryable: v.boolean(),
   updatedAt: v.number(),
 });
 
 export const publishDurablyArgs = {
   ...publishContentArgs,
-  targetEnvironment: publicationTargetValidator,
+  targetEnvironment: releaseEnvironmentValidator,
   requestedBy: v.string(),
   providerConfigured: v.boolean(),
 };
@@ -166,17 +163,11 @@ function mayScheduleAttempt(request: {
 function summarizeRequest(
   request: {
     requestKey: string;
-    scope: "project" | "resume" | "all";
+    scope: PublicationScope;
     contentId?: string;
-    locale?: "en" | "es";
-    targetEnvironment: "preview" | "production";
-    state:
-      | "published-locally"
-      | "release-requested"
-      | "release-acknowledged"
-      | "release-failed"
-      | "deployed"
-      | "rollback-needed";
+    locale?: Locale;
+    targetEnvironment: ReleaseEnvironment;
+    state: PublicationRequestState;
     retryable?: boolean;
     updatedAt: number;
   },

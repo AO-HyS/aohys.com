@@ -4,7 +4,8 @@ import {
 } from "@aohys/content-graph/resume-content";
 import { ConvexError, v, type ObjectType } from "convex/values";
 import type { MutationCtx } from "../../_generated/server.js";
-import { localeValidator, withinLimit } from "./shared.js";
+import { withinLimit } from "./shared.js";
+import { localeValidator } from "../../lib/validators.js";
 
 export const upsertResumeDraftArgs = {
   locale: localeValidator,

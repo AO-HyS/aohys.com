@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
+import { LOCALES } from "@aohys/core/domain";
 
 export default defineConfig({
   site: "https://aohys.com",
@@ -8,7 +9,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   i18n: {
-    locales: ["en", "es"],
+    locales: [...LOCALES],
     defaultLocale: "en",
     routing: {
       prefixDefaultLocale: false,

@@ -73,9 +73,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type {
-  DashboardCaseStudyStatus,
-  DashboardEvidenceStatus,
-  DashboardLocale,
   DashboardProject,
   DashboardProjectLocaleContent,
   ProjectsContent,
@@ -85,25 +82,22 @@ import {
   publicationLabel,
   type DashboardPublication,
 } from "@/lib/publication-state";
+import {
+  CASE_STUDY_EVIDENCE_STATUSES,
+  CASE_STUDY_STATUSES,
+  LOCALES,
+  type CaseStudyEvidenceStatus,
+  type CaseStudyStatus,
+  type Locale,
+} from "@aohys/core/domain";
 
-const caseStudyStatuses: DashboardCaseStudyStatus[] = [
-  "production-proof",
-  "active-build",
-  "private-build",
-  "enterprise-confidential",
-  "engineering-practice",
-];
-
-const evidenceStatuses: DashboardEvidenceStatus[] = [
-  "missing",
-  "sanitized",
-  "published",
-];
+const caseStudyStatuses = CASE_STUDY_STATUSES;
+const evidenceStatuses = CASE_STUDY_EVIDENCE_STATUSES;
 const projectDateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
   timeStyle: "short",
 });
-const dashboardLocaleOptions = (["en", "es"] as const).map((locale) => ({
+const dashboardLocaleOptions = LOCALES.map((locale) => ({
   value: locale,
   label: getSharedI18n(locale).dashboard.languageName,
 }));
@@ -483,7 +477,7 @@ function NewProjectCard({
               label="Status"
               value={form.status}
               onValueChange={(value) =>
-                update("status", value as DashboardCaseStudyStatus)
+                update("status", value as CaseStudyStatus)
               }
               options={caseStudyStatuses.map((status) => ({
                 value: status,
@@ -787,7 +781,7 @@ function ProjectLocaleForm({
               label="Status"
               value={form.status}
               onValueChange={(value) =>
-                update("status", value as DashboardCaseStudyStatus)
+                update("status", value as CaseStudyStatus)
               }
               options={caseStudyStatuses.map((status) => ({
                 value: status,
@@ -798,7 +792,7 @@ function ProjectLocaleForm({
               label="Public link state"
               value={form.evidenceStatus}
               onValueChange={(value) =>
-                update("evidenceStatus", value as DashboardEvidenceStatus)
+                update("evidenceStatus", value as CaseStudyEvidenceStatus)
               }
               options={evidenceStatuses.map((status) => ({
                 value: status,
@@ -1328,7 +1322,7 @@ function ImageUploadForm({
                 onValueChange={(value) =>
                   setForm((current) => ({
                     ...current,
-                    locale: value as DashboardLocale,
+                    locale: value as Locale,
                   }))
                 }
                 options={dashboardLocaleOptions}

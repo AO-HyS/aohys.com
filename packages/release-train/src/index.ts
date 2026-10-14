@@ -2,6 +2,7 @@ import {
   validateEnvironmentContract,
   type EnvironmentValidationResult,
 } from "@aohys/environment";
+import { type ReleaseEnvironment } from "@aohys/core/domain";
 
 export {
   ensureCloudflarePagesDomain,
@@ -13,11 +14,9 @@ export {
   type EnsureCloudflarePagesDomainResult,
 } from "./cloudflare-pages-domain.js";
 
-export type ReleaseDeploymentEnvironment = "preview" | "production";
-
 export interface CloudflarePagesDeployPlan {
-  environment: ReleaseDeploymentEnvironment;
-  githubEnvironment: ReleaseDeploymentEnvironment;
+  environment: ReleaseEnvironment;
+  githubEnvironment: ReleaseEnvironment;
   branch: "develop" | "main";
   projectName: "aohys-com";
   directory: "apps/site/dist";
@@ -39,7 +38,7 @@ const RELEASE_TARGETS = {
     siteUrl: "https://aohys.com",
   },
 } as const satisfies Record<
-  ReleaseDeploymentEnvironment,
+  ReleaseEnvironment,
   {
     branch: CloudflarePagesDeployPlan["branch"];
     siteUrl: CloudflarePagesDeployPlan["siteUrl"];
@@ -47,7 +46,7 @@ const RELEASE_TARGETS = {
 >;
 
 export function buildCloudflarePagesDeployPlan(
-  environment: ReleaseDeploymentEnvironment,
+  environment: ReleaseEnvironment,
 ): CloudflarePagesDeployPlan {
   const target = RELEASE_TARGETS[environment];
 
@@ -90,7 +89,7 @@ export function extractCloudflarePagesDeploymentUrl(
 }
 
 export function validateReleaseEnvironment(
-  environment: ReleaseDeploymentEnvironment,
+  environment: ReleaseEnvironment,
   values: Record<string, string | undefined>,
 ): EnvironmentValidationResult {
   const plan = buildCloudflarePagesDeployPlan(environment);
@@ -104,10 +103,15 @@ export function validateReleaseEnvironment(
   }
 
   if (values.PUBLIC_SITE_URL && values.PUBLIC_SITE_URL !== plan.siteUrl) {
-    errors.push(`PUBLIC_SITE_URL must be ${plan.siteUrl} for ${environment} release.`);
+    errors.push(
+      `PUBLIC_SITE_URL must be ${plan.siteUrl} for ${environment} release.`,
+    );
   }
 
-  if (values.CLOUDFLARE_PROJECT_NAME && values.CLOUDFLARE_PROJECT_NAME !== plan.projectName) {
+  if (
+    values.CLOUDFLARE_PROJECT_NAME &&
+    values.CLOUDFLARE_PROJECT_NAME !== plan.projectName
+  ) {
     errors.push(`CLOUDFLARE_PROJECT_NAME must be ${plan.projectName}.`);
   }
 

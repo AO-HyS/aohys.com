@@ -20,6 +20,7 @@ import {
   resolveContactEnvironment,
   shouldCaptureContactIntakeFailure,
 } from "../src/contact-environment.js";
+import { type Environment } from "@aohys/core/domain";
 
 const http = httpRouter();
 
@@ -85,7 +86,7 @@ function getContactEnvironmentValues(): Record<string, string | undefined> {
   };
 }
 
-function getContactEnvironment(): "local" | "preview" | "production" {
+function getContactEnvironment(): Environment {
   return resolveContactEnvironment(process.env.AOHYS_ENV);
 }
 

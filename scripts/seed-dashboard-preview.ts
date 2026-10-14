@@ -3,24 +3,22 @@ import {
   getLocalizedPath,
   getLocaleVariant,
   type ContentId,
-  type Locale,
 } from "../packages/content-graph/src/index.ts";
 import { hasConvexDeploymentAccess, runConvexFunction } from "./convex-run.js";
 import { parseDashboardContentPayload } from "./apply-dashboard-published-content.js";
-
-type DashboardCaseStudyStatus =
-  | "production-proof"
-  | "active-build"
-  | "private-build"
-  | "enterprise-confidential"
-  | "engineering-practice";
-
-type DashboardEvidenceStatus = "missing" | "sanitized" | "published";
+import {
+  LOCALES,
+  type CaseStudyEvidenceStatus,
+  type CaseStudyStatus,
+  type Environment,
+  type Locale,
+  type SiteSettingClassification,
+} from "@aohys/core/domain";
 
 interface DashboardProjectDraftPayload {
   contentId: string;
-  status: DashboardCaseStudyStatus;
-  evidenceStatus: DashboardEvidenceStatus;
+  status: CaseStudyStatus;
+  evidenceStatus: CaseStudyEvidenceStatus;
   locale: Locale;
   title: string;
   summary: string;
@@ -34,9 +32,9 @@ interface DashboardProjectDraftPayload {
 
 interface DashboardSiteSettingPayload {
   key: string;
-  environment: "local" | "preview" | "production";
+  environment: Environment;
   value: string;
-  classification: "public-build-value" | "provider-output" | "policy-value";
+  classification: SiteSettingClassification;
 }
 
 const PROJECT_IDS = [
@@ -47,7 +45,6 @@ const PROJECT_IDS = [
   "case-study:engineering-practice",
 ] as const satisfies readonly ContentId[];
 
-const LOCALES = ["en", "es"] as const satisfies readonly Locale[];
 const DEFAULT_WHATSAPP_URL = "https://wa.me/522299020825";
 const DRY_RUN_FLAG = "--dry-run";
 
@@ -68,8 +65,8 @@ interface DashboardSeedState {
 }
 
 interface ProjectSeedDefinition {
-  status: DashboardCaseStudyStatus;
-  evidenceStatus: DashboardEvidenceStatus;
+  status: CaseStudyStatus;
+  evidenceStatus: CaseStudyEvidenceStatus;
   projectUrl?: string;
 }
 

@@ -1,10 +1,11 @@
 ---
+import type { Locale } from "@aohys/core/domain";
 import { fitStyle, type LensPhoto } from "./projects";
 
 /* A living lens for interior pages: one photograph drifting under the glass, or several it cycles through. */
 interface Props {
   photos: LensPhoto[];
-  locale: "en" | "es";
+  locale: Locale;
   label?: string;
   class?: string;
 }

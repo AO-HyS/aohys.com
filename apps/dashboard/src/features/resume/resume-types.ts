@@ -1,7 +1,5 @@
 import type { ResumePageContent } from "@aohys/content-graph";
 
-export type DashboardLocale = "en" | "es";
-
 export type {
   ResumeEducation,
   ResumeExperience,
@@ -15,7 +13,7 @@ export type {
 } from "@aohys/content-graph";
 
 export interface DashboardResumeDraft {
-  locale: DashboardLocale;
+  locale: Locale;
   contentJson: string;
   updatedAt: number;
   publishedAt?: number;
@@ -23,7 +21,7 @@ export interface DashboardResumeDraft {
 
 export interface DashboardResumeVersion {
   id: Id<"resumeVersions">;
-  locale: DashboardLocale;
+  locale: Locale;
   version: string;
   pdfPath: string;
   isPublished: boolean;
@@ -32,9 +30,10 @@ export interface DashboardResumeVersion {
 }
 
 export interface ResumeContent {
-  resumeContent: Record<DashboardLocale, ResumePageContent>;
+  resumeContent: Record<Locale, ResumePageContent>;
   resumeDrafts: DashboardResumeDraft[];
   resumeVersions: DashboardResumeVersion[];
   publications?: import("@/lib/publication-state").DashboardPublication[];
 }
 import type { Id } from "@aohys/backend/convex/_generated/dataModel";
+import { type Locale } from "@aohys/core/domain";

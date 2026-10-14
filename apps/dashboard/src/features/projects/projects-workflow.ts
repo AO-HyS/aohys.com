@@ -25,11 +25,8 @@ import { toast } from "@/components/ui/toast";
 import { publicationLabel } from "@/lib/publication-state";
 import { captureDashboardAction } from "@/lib/analytics";
 import { validateCloudflareImagesCustomId } from "./media-upload";
-import type {
-  DashboardCaseStudyStatus,
-  DashboardLocale,
-  DashboardProject,
-} from "./projects-types";
+import type { DashboardProject } from "./projects-types";
+import { type CaseStudyStatus, type Locale } from "@aohys/core/domain";
 
 export type ProjectFormState = ProjectDraftRequest;
 
@@ -39,7 +36,7 @@ export interface NewProjectInput {
   contentKey: string;
   englishSlug: string;
   spanishSlug: string;
-  status: DashboardCaseStudyStatus;
+  status: CaseStudyStatus;
 }
 
 export interface MediaUploadIssue {
@@ -387,7 +384,7 @@ export function useProjectsWorkflow({
       | "select_media"
       | "archive_media"
       | "delete_media";
-    locale?: DashboardLocale;
+    locale?: Locale;
     operation: () => Promise<unknown>;
   }) {
     const toastId = toast.loading(config.loading);
@@ -441,7 +438,7 @@ export function useProjectsWorkflow({
 
 export function buildNewProjectDraft(
   input: NewProjectInput,
-  locale: DashboardLocale,
+  locale: Locale,
 ): ProjectFormState {
   const contentId = `case-study:${input.contentKey}`;
   const localizedTitle = getLocalizedValue(locale, {
@@ -501,7 +498,7 @@ function mediaUploadIssueFromError(error: unknown): MediaUploadIssue {
   };
 }
 
-function errorProperties(error: unknown, locale?: DashboardLocale) {
+function errorProperties(error: unknown, locale?: Locale) {
   return {
     error_type: error instanceof Error ? error.name : "UnknownError",
     ...(locale ? { locale } : {}),

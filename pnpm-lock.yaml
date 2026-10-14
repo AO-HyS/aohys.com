@@ -7,6 +7,9 @@ settings:
 importers:
   .:
     devDependencies:
+      "@aohys/core":
+        specifier: workspace:*
+        version: link:packages/core
       "@aohys/development-system":
         specifier: https://github.com/AO-HyS/development-system/releases/download/v1.40.0/aohys-development-system-1.40.0.tgz
         version: https://github.com/AO-HyS/development-system/releases/download/v1.40.0/aohys-development-system-1.40.0.tgz
@@ -210,6 +213,10 @@ importers:
         version: 6.0.3
 
   packages/content-graph:
+    dependencies:
+      "@aohys/core":
+        specifier: workspace:*
+        version: link:../core
     devDependencies:
       "@types/node":
         specifier: ^26.0.1
@@ -228,6 +235,10 @@ importers:
         version: 6.0.3
 
   packages/environment:
+    dependencies:
+      "@aohys/core":
+        specifier: workspace:*
+        version: link:../core
     devDependencies:
       "@types/node":
         specifier: ^26.0.1
@@ -238,6 +249,9 @@ importers:
 
   packages/release-train:
     dependencies:
+      "@aohys/core":
+        specifier: workspace:*
+        version: link:../core
       "@aohys/environment":
         specifier: workspace:*
         version: link:../environment

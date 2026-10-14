@@ -3,6 +3,11 @@ import {
   parseCloudflareImagesUploadResponse,
   parseGitHubErrorResponse,
 } from "./provider-responses.js";
+import {
+  type Environment,
+  type Locale,
+  type MediaUsage,
+} from "@aohys/core/domain";
 
 export {
   normalizeCloudflareImagesCustomId,
@@ -10,14 +15,12 @@ export {
 } from "@aohys/core";
 export type { CloudflareImagesCustomIdValidation } from "@aohys/core";
 
-export type DashboardEnvironment = "local" | "preview" | "production";
-
 export interface DashboardMediaUploadPayload {
   storageKey: string;
   altText: string;
   contentId?: string;
-  usage: "case-study" | "resume" | "architecture" | "site";
-  locale?: "en" | "es";
+  usage: MediaUsage;
+  locale?: Locale;
   selectedForPublic?: boolean;
 }
 
@@ -34,7 +37,7 @@ export interface CloudflareImagesDirectUploadResult {
 }
 
 export interface GitHubPublishWorkflowConfig {
-  environment: DashboardEnvironment;
+  environment: Environment;
   repository?: string;
   token?: string;
   workflowId?: string;

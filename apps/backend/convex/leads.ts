@@ -11,27 +11,12 @@ import {
   CONTACT_SUBMISSION_RATE_LIMIT_MESSAGE,
   CONTACT_SUBMISSION_RATE_LIMIT_WINDOW_MS,
 } from "../src/contact-abuse.js";
-
-const leadIntentValidator = v.union(
-  v.literal("project"),
-  v.literal("hiring"),
-  v.literal("architecture-review"),
-  v.literal("website"),
-  v.literal("other"),
-);
-
-const localeValidator = v.union(v.literal("en"), v.literal("es"));
-
-const preferredContactPathValidator = v.union(
-  v.literal("email"),
-  v.literal("whatsapp"),
-);
-
-const leadStatusValidator = v.union(
-  v.literal("new"),
-  v.literal("reviewing"),
-  v.literal("closed"),
-);
+import {
+  leadIntentValidator,
+  leadStatusValidator,
+  localeValidator,
+  preferredContactPathValidator,
+} from "./lib/validators.js";
 
 const dashboardLeadValidator = v.object({
   id: v.id("leads"),

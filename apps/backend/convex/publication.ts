@@ -1,12 +1,13 @@
 import { v } from "convex/values";
 import { internal } from "./_generated/api.js";
 import { internalMutation } from "./_generated/server.js";
+import { releaseEnvironmentValidator } from "./lib/validators.js";
 import {
-  publicationTargetValidator,
   publishDurablyArgs,
   publishDurablyHandler,
   publishDurablyReturns,
 } from "./model/publication.js";
+import { type ReleaseEnvironment } from "@aohys/core/domain";
 
 const DISPATCH_LEASE_MS = 5 * 60 * 1000;
 
@@ -17,7 +18,7 @@ const claimResultValidator = v.union(
     attemptId: v.id("publicationAttempts"),
     publicationAttemptId: v.string(),
     publicationRequestKey: v.string(),
-    targetEnvironment: publicationTargetValidator,
+    targetEnvironment: releaseEnvironmentValidator,
   }),
 );
 
@@ -222,7 +223,7 @@ export const recordReceipt = internalMutation({
   args: {
     publicationRequestKey: v.string(),
     publicationAttemptId: v.string(),
-    targetEnvironment: publicationTargetValidator,
+    targetEnvironment: releaseEnvironmentValidator,
     gitRef: v.string(),
     runId: v.string(),
     runUrl: v.string(),
@@ -337,7 +338,7 @@ export const reconcileWorkflowOutcome = internalMutation({
   args: {
     publicationRequestKey: v.string(),
     publicationAttemptId: v.string(),
-    targetEnvironment: publicationTargetValidator,
+    targetEnvironment: releaseEnvironmentValidator,
     gitRef: v.string(),
     runId: v.string(),
     runUrl: v.string(),
@@ -471,7 +472,7 @@ export const reconcileWorkflowOutcome = internalMutation({
 });
 
 function validateTargetGitRef(
-  targetEnvironment: "preview" | "production",
+  targetEnvironment: ReleaseEnvironment,
   gitRef: string,
 ) {
   const expected =

@@ -1,30 +1,18 @@
 import { v, type ObjectType } from "convex/values";
 import type { MutationCtx } from "../../_generated/server.js";
-import { localeValidator, withinLimit } from "./shared.js";
+import { withinLimit } from "./shared.js";
+import {
+  literals,
+  mediaStatusValidator,
+  mediaUsageValidator,
+} from "../../lib/validators.js";
+import { type MediaStorageProvider } from "@aohys/core/domain";
+import { localeValidator } from "../../lib/validators.js";
 
-export const mediaStorageProviderValidator = v.union(
-  v.literal("cloudflare-images"),
-  v.literal("cloudflare-r2"),
-  v.literal("external"),
-);
-
-const writableMediaStorageProviderValidator = v.union(
-  v.literal("cloudflare-images"),
-  v.literal("external"),
-);
-
-export const mediaUsageValidator = v.union(
-  v.literal("case-study"),
-  v.literal("resume"),
-  v.literal("architecture"),
-  v.literal("site"),
-);
-
-export const mediaStatusValidator = v.union(
-  v.literal("draft"),
-  v.literal("published"),
-  v.literal("archived"),
-);
+const writableMediaStorageProviderValidator = literals([
+  "cloudflare-images",
+  "external",
+] as const satisfies readonly MediaStorageProvider[]);
 
 export const createMediaMetadataArgs = {
   storageProvider: writableMediaStorageProviderValidator,

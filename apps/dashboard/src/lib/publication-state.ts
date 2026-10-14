@@ -1,22 +1,9 @@
-export type DashboardPublicationState =
-  | "published-locally"
-  | "release-requested"
-  | "release-acknowledged"
-  | "release-failed"
-  | "deployed"
-  | "rollback-needed";
-
-export interface DashboardPublication {
-  requestKey: string;
-  publicationAttemptId?: string;
-  scope: "project" | "resume" | "all";
-  contentId?: string;
-  locale?: "en" | "es";
-  targetEnvironment: "preview" | "production";
-  state: DashboardPublicationState;
-  retryable: boolean;
-  updatedAt: number;
-}
+import type { api } from "@aohys/backend/convex/_generated/api";
+import type { FunctionReturnType } from "convex/server";
+import { type PublicationRequestState } from "@aohys/core/domain";
+export type DashboardPublication = FunctionReturnType<
+  typeof api.contentActions.publishContent
+>["publication"];
 
 export const publicationStateCopy = {
   "published-locally": "Published locally",
@@ -25,7 +12,7 @@ export const publicationStateCopy = {
   "release-failed": "Release failed",
   deployed: "Deployed · smoke verified",
   "rollback-needed": "Rollback needed",
-} as const satisfies Record<DashboardPublicationState, string>;
+} as const satisfies Record<PublicationRequestState, string>;
 
 export function publicationLabel(publication: DashboardPublication): string {
   const label = publicationStateCopy[publication.state];

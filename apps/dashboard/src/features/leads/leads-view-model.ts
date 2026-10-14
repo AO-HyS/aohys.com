@@ -1,11 +1,11 @@
-import type { DashboardLeadStatus } from "./leads-types";
+import { type LeadStatus } from "@aohys/core/domain";
 
-export function formatLeadStatus(value: DashboardLeadStatus): string {
+export function formatLeadStatus(value: LeadStatus): string {
   return { new: "New", reviewing: "Reviewing", closed: "Closed" }[value];
 }
 
 export function leadStatusTone(
-  value: DashboardLeadStatus,
+  value: LeadStatus,
 ): "neutral" | "attention" | "success" {
   return { new: "attention", reviewing: "neutral", closed: "success" }[
     value
