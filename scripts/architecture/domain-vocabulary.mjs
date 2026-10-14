@@ -335,6 +335,8 @@ function literalsHelperIsCanonical(
     statement.parameters.length !== 1 ||
     !parameter ||
     !ts.isIdentifier(parameter.name) ||
+    parameter.dotDotDotToken ||
+    parameter.initializer ||
     body.length !== 1 ||
     !ts.isReturnStatement(body[0])
   ) {
@@ -378,6 +380,8 @@ function literalsHelperIsCanonical(
     arrow.parameters.length === 1 &&
     item &&
     ts.isIdentifier(item.name) &&
+    !item.dotDotDotToken &&
+    !item.initializer &&
     !shadowsValidator(item.name.text) &&
     literal &&
     ts.isCallExpression(literal) &&
