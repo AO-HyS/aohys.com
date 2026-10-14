@@ -137,7 +137,10 @@ styles); a change selects the journey when it touches a shared root or a
 dependency of one that no journey owns through its own `sourceGlobs` (shared
 UI, hooks, libraries). Public assets referenced by URL are mapped as
 directories (`apps/site/public`).
-`pnpm verify:product:changed` selects a journey when a changed file, or any
+`pnpm verify:product:changed` (changed files from `--changed=`, else
+`CHANGED_FILES`, else the working tree, index and branch diff against
+`QUALITY_BASE_REF`, default `origin/develop`) selects a journey when a changed
+file, or any
 file that transitively imports it, sits under its `sourceGlobs`, and a proof
 goes stale when an entry point or any transitive dependency changes after
 `proofCandidateSha`. Selection never drives the UI.

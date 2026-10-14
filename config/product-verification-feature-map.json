@@ -687,9 +687,9 @@
         "The new request moves to release-requested and then deployed with a receipt; a failed run ends release-failed or rollback-needed and is never retried from elapsed time.",
         "The preview site shows the run-unique marker."
       ],
-      "beforeProbe": "Record the latest publication request key and state, to tell this run's request from earlier ones; the caseStudyMetadata status, evidenceStatus and updatedAt of the project used for the marker; and the status, selectedForPublic and updatedAt of every media row in the publication scope.",
-      "afterProbe": "Read the request and attempt identified by this run's requestKey and publicationAttemptId, and their receipt; earlier requests never count as this run's result. Read the same metadata and media rows and record their values.",
-      "cleanup": "Before cleanup, re-read every record this run wrote and require it to equal this run's last-written state; if any differs (a concurrent edit), stop for reconciliation instead of overwriting it. Restore the snapshotted drafts and media states and publish them again with the owner's authorization, returning preview to the pre-run deployed content; publication records are kept. Residual effects, recorded in the evidence: draft, caseStudyMetadata and media updatedAt advance (each save and publication stamps a new time); metadata status and evidenceStatus and media status and selectedForPublic must equal the recorded values.",
+      "beforeProbe": "Record the latest publication request key and state, to tell this run's request from earlier ones; the caseStudyMetadata status, evidenceStatus and updatedAt of the project used for the marker; and the status, selectedForPublic and updatedAt of every media row in the publication scope. Also record each draft's publishedAt.",
+      "afterProbe": "Read the request and attempt identified by this run's requestKey and publicationAttemptId, and their receipt; earlier requests never count as this run's result. Read the same metadata and media rows and record their values. Record each draft's publishedAt after cleanup.",
+      "cleanup": "Before cleanup, re-read every record this run wrote and require it to equal this run's last-written state; if any differs (a concurrent edit), stop for reconciliation instead of overwriting it. Restore the snapshotted drafts and media states and publish them again with the owner's authorization, returning preview to the pre-run deployed content; publication records are kept. Residual effects, recorded in the evidence: draft publishedAt (the visible 'Last published') and draft, caseStudyMetadata and media updatedAt advance (each save and publication stamps a new time); metadata status and evidenceStatus and media status and selectedForPublic must equal the recorded values.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-publish-preview/",
       "sideEffectMode": "authorized-writes",
       "status": "draft",
@@ -726,7 +726,9 @@
         "apps/site/scripts/requirements.txt",
         "scripts/generate-environment-artifacts.ts",
         "scripts/copy-dashboard-assets.mjs",
-        "scripts/sync-site-static-headers.ts"
+        "scripts/sync-site-static-headers.ts",
+        "apps/site/src/pages",
+        "functions"
       ],
       "environments": ["preview"],
       "sharedSourceGlobs": [
@@ -771,9 +773,7 @@
         "apps/site/src/dashboard-access-states.ts",
         "apps/backend/convex/convex.config.ts",
         "apps/backend/convex/schema.ts",
-        "apps/backend/convex/auth.config.ts",
-        "apps/site/src/pages",
-        "functions"
+        "apps/backend/convex/auth.config.ts"
       ]
     }
   ]
