@@ -644,6 +644,8 @@ async function requireBoundTarget(
   return request;
 }
 
+const STATUS_HISTORY_LIMIT = 50;
+
 // Read-only view for the publication CLI: this deployment's environment and,
 // for one request (by key or by one of its attempts), its attempts and
 // receipts.
@@ -686,6 +688,10 @@ export const status = internalQuery({
         receivedAt: v.number(),
       }),
     ),
+    // The attempt asked for by publicationAttemptId, whatever its position.
+    requestedAttemptId: v.optional(v.id("publicationAttempts")),
+    // True when the request has more attempts or receipts than listed.
+    truncated: v.boolean(),
   }),
   handler: async (ctx, args) => {
     const deploymentEnvironment = process.env.AOHYS_ENV ?? null;
@@ -697,15 +703,17 @@ export const status = internalQuery({
           query.eq("requestKey", args.requestKey ?? ""),
         )
         .unique();
-    } else if (args.publicationAttemptId) {
-      const attempt = await ctx.db
+    }
+    let requested: Doc<"publicationAttempts"> | null = null;
+    if (!args.requestKey && args.publicationAttemptId) {
+      requested = await ctx.db
         .query("publicationAttempts")
         .withIndex("by_publication_attempt_id", (query) =>
           query.eq("publicationAttemptId", args.publicationAttemptId ?? ""),
         )
         .unique();
-      request = attempt
-        ? await ctx.db.get("publicationRequests", attempt.requestId)
+      request = requested
+        ? await ctx.db.get("publicationRequests", requested.requestId)
         : null;
     }
     if (!request)
@@ -714,18 +722,28 @@ export const status = internalQuery({
         request: null,
         attempts: [],
         receipts: [],
+        truncated: false,
       };
     const requestId = request._id;
-    const attempts = await ctx.db
+    // The latest attempts, plus the requested one wherever it sits.
+    const latest = await ctx.db
       .query("publicationAttempts")
       .withIndex("by_request_id_and_attempt_number", (query) =>
         query.eq("requestId", requestId),
       )
-      .take(50);
-    const receipts = await ctx.db
+      .order("desc")
+      .take(STATUS_HISTORY_LIMIT + 1);
+    const receiptRows = await ctx.db
       .query("publicationReceipts")
       .withIndex("by_request_id", (query) => query.eq("requestId", requestId))
-      .take(50);
+      .take(STATUS_HISTORY_LIMIT + 1);
+    const truncated =
+      latest.length > STATUS_HISTORY_LIMIT ||
+      receiptRows.length > STATUS_HISTORY_LIMIT;
+    const attempts = latest.slice(0, STATUS_HISTORY_LIMIT);
+    if (requested && !attempts.some((attempt) => attempt._id === requested._id))
+      attempts.push(requested);
+    const receipts = receiptRows.slice(0, STATUS_HISTORY_LIMIT);
     return {
       deploymentEnvironment,
       request: {
@@ -761,6 +779,8 @@ export const status = internalQuery({
         sha: receipt.sha,
         receivedAt: receipt.receivedAt,
       })),
+      ...(requested ? { requestedAttemptId: requested._id } : {}),
+      truncated,
     };
   },
 });

@@ -10,27 +10,49 @@ const BACKEND_DIRECTORY = path.resolve(
   "../apps/backend",
 );
 
-// Whether a variable is set for the Convex CLI, which reads the process
-// environment and then apps/backend/.env.local and .env. Values never leave.
-function convexCliHas(name: string): boolean {
-  if (process.env[name]?.trim()) return true;
-  return [".env.local", ".env"].some((file) => {
-    const filePath = path.join(BACKEND_DIRECTORY, file);
-    return (
-      existsSync(filePath) &&
-      new RegExp(`^\\s*${name}\\s*=\\s*\\S`, "mu").test(
-        readFileSync(filePath, "utf8"),
-      )
-    );
-  });
+// The value one dotenv file gives a variable: `NAME=value` or
+// `export NAME=value`, optionally quoted; empty values count as unset.
+function dotenvValue(filePath: string, name: string): string | undefined {
+  if (!existsSync(filePath)) return undefined;
+  let value: string | undefined;
+  for (const line of readFileSync(filePath, "utf8").split(/\r?\n/u)) {
+    const match =
+      /^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/u.exec(line);
+    if (!match || match[1] !== name) continue;
+    let raw = (match[2] ?? "").trim();
+    const quoted = /^(["'`])(.*)\1$/u.exec(raw);
+    raw = quoted ? (quoted[2] ?? "") : raw.replace(/\s+#.*$/u, "").trim();
+    value = raw;
+  }
+  return value?.trim() ? value.trim() : undefined;
 }
 
-// The credential the Convex CLI will use: a deploy key wins over a
-// deployment selected by a CLI session, wherever either is defined.
-function convexCredential(): OperatorCredential | undefined {
-  if (convexCliHas("CONVEX_DEPLOY_KEY")) return "deploy-key";
-  if (convexCliHas("CONVEX_DEPLOYMENT")) return "cli-session";
+// What the Convex CLI resolves for a variable: the process environment wins,
+// then apps/backend/.env.local, then .env (dotenv never overrides).
+function convexCliValue(name: string): string | undefined {
+  const fromProcess = process.env[name]?.trim();
+  if (fromProcess) return fromProcess;
+  return (
+    dotenvValue(path.join(BACKEND_DIRECTORY, ".env.local"), name) ??
+    dotenvValue(path.join(BACKEND_DIRECTORY, ".env"), name)
+  );
+}
+
+// The credential the Convex CLI will use; a deploy key wins over a deployment
+// selected by a CLI session. Invocation and classification both use this.
+function resolveConvexCredential():
+  | { credential: "deploy-key"; deployKey: string }
+  | { credential: "cli-session"; deployment: string }
+  | undefined {
+  const deployKey = convexCliValue("CONVEX_DEPLOY_KEY");
+  if (deployKey) return { credential: "deploy-key", deployKey };
+  const deployment = convexCliValue("CONVEX_DEPLOYMENT");
+  if (deployment) return { credential: "cli-session", deployment };
   return undefined;
+}
+
+function convexCredential(): OperatorCredential | undefined {
+  return resolveConvexCredential()?.credential;
 }
 
 export function hasConvexDeploymentAccess(): boolean {
@@ -57,18 +79,23 @@ export function runConvexFunction<T>(
     typeof functionReference === "string"
       ? functionReference
       : getFunctionName(functionReference);
-  const deployKey = process.env.CONVEX_DEPLOY_KEY?.trim();
+  const resolved = resolveConvexCredential();
 
-  if (!convexCredential()) {
+  if (!resolved) {
     throw new Error(
       `CONVEX_DEPLOY_KEY or CONVEX_DEPLOYMENT is required to run ${functionName}.`,
     );
   }
 
+  // Pass the resolved credential explicitly so the CLI uses exactly what was
+  // classified.
   const env = { ...process.env };
-
-  if (deployKey) {
+  if (resolved.credential === "deploy-key") {
+    env.CONVEX_DEPLOY_KEY = resolved.deployKey;
     delete env.CONVEX_DEPLOYMENT;
+  } else {
+    delete env.CONVEX_DEPLOY_KEY;
+    env.CONVEX_DEPLOYMENT = resolved.deployment;
   }
 
   const result = spawnSync(
@@ -136,5 +163,34 @@ export function parseConvexRunOutput(
     throw new Error(
       `convex run ${functionName} returned invalid JSON: ${error instanceof Error ? error.message : String(error)}`,
     );
+  }
+}
+
+// Release callbacks declare operator provenance. A backend that predates the
+// field rejects it in argument validation, before its handler runs, so
+// nothing was written and the same call is made once without it.
+export function runWithOperator<T>(
+  functionReference: string,
+  args: object,
+  operator: object,
+  parseResult: (value: unknown) => T,
+): T {
+  try {
+    return runConvexFunction(
+      functionReference,
+      { ...args, operator },
+      parseResult,
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (
+      !/ArgumentValidationError/u.test(message) ||
+      !/extra field `?operator`?/u.test(message)
+    )
+      throw error;
+    console.warn(
+      `[convex-run] ${functionReference} predates operator provenance; recorded without it.`,
+    );
+    return runConvexFunction(functionReference, args, parseResult);
   }
 }

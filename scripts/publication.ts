@@ -64,7 +64,7 @@ function boundStatus(publicationAttemptId: string) {
       `Target mismatch: the request targets ${status.request.targetEnvironment}. Nothing was written.`,
     );
   const attempt = status.attempts.find(
-    (item) => item.publicationAttemptId === publicationAttemptId,
+    (item) => item.attemptId === status.requestedAttemptId,
   );
   if (!attempt) fail(`Attempt ${publicationAttemptId} is not in its request.`);
   return { status, attempt };

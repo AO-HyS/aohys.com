@@ -221,8 +221,7 @@
       ],
       "goals": [
         "Observe audit rows on preview after real admin saves, uploads and a publish.",
-        "Operator events for the preview dashboard seeds.",
-        "Release Train receipt and outcome scripts declare operator (credential class, run URL as authorizationRef) once production runs a backend that accepts it."
+        "Operator events for the preview dashboard seeds."
       ],
       "replaces": [],
       "docs": ["apps/backend/README.md"]
@@ -280,7 +279,8 @@
         "apps/backend/convex/publication.ts#reconcileDispatchingAfterStatusCheck",
         "apps/backend/convex/publication.ts#retryScheduledAfterStatusCheck",
         "scripts/convex-run.ts#runConvexFunction",
-        "scripts/convex-run.ts#operatorCredential"
+        "scripts/convex-run.ts#operatorCredential",
+        "scripts/convex-run.ts#runWithOperator"
       ],
       "guarantees": [
         {
