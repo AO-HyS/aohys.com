@@ -39,11 +39,19 @@ const SCHEMA_VOCABULARY_FIELDS = {
   "publicationReceipts.targetEnvironment": "releaseEnvironmentValidator",
 };
 
+// Astro: the frontmatter plus every non-JSON <script> block.
+function astroCode(source) {
+  const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? "";
+  const scripts = [...source.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)]
+    .filter(
+      (match) => !/type=["']application\/(?:ld\+)?json["']/.test(match[1]),
+    )
+    .map((match) => match[2]);
+  return [frontmatter, ...scripts].join("\n;\n");
+}
+
 function parseSource(source, extension) {
-  const code =
-    extension === ".astro"
-      ? (source.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? "")
-      : source;
+  const code = extension === ".astro" ? astroCode(source) : source;
   return ts.createSourceFile(
     `source${extension === ".astro" ? ".ts" : extension}`,
     code,
