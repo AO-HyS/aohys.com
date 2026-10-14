@@ -117,6 +117,41 @@
         "docs/environment-contract.md",
         "docs/adr/0002-environment-contract-source-of-truth.md"
       ]
+    },
+    {
+      "id": "product-verification",
+      "category": "agent-tools",
+      "status": "active",
+      "summary": "Feature map of real, drivable journeys (read and write, allowed and denied) with launch, identity class, probes, cleanup, side-effect mode and private evidence, plus the contract checks and changed-file selection.",
+      "paths": [
+        "config/product-verification-feature-map.json",
+        "scripts/quality/product-verification-lib.mjs",
+        "scripts/quality/check-product-verification.mjs",
+        ".agents/skills/verify-aohys/SKILL.md"
+      ],
+      "symbols": [
+        "scripts/quality/product-verification-lib.mjs#validateFeatureMap",
+        "scripts/quality/product-verification-lib.mjs#selectMappedFeatures"
+      ],
+      "guarantees": [
+        {
+          "statement": "Every journey's sourceGlobs exist, write journeys declare a run-scoped cleanup, and a proven journey names its private run id, a proofRoute among its routes, an environment among its own environments (local or preview), its candidate commit and the hash of its contract; the proof goes stale when the contract, an entry point or any transitive dependency changes.",
+          "verifiedBy": "pnpm verify:product (validateFeatureMap with the architecture-fitness import graph)"
+        },
+        {
+          "statement": "verify:product:changed selects a journey when a changed file or any file that transitively imports it sits under its sourceGlobs.",
+          "verifiedBy": "scripts/quality/product-verification-changed.mjs uses analyzeArchitecture().graph.fileEdges"
+        },
+        {
+          "statement": "The dashboard write surfaces (resume, projects, settings, publication), contact rejection and the denied-session refusal each have a journey.",
+          "verifiedBy": "config/product-verification-feature-map.json"
+        }
+      ],
+      "goals": [
+        "Prove the write and denied journeys on preview once an operator session and a denied account exist."
+      ],
+      "replaces": [],
+      "docs": [".agents/skills/verify-aohys/SKILL.md"]
     }
   ]
 }

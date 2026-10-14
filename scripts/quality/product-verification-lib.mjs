@@ -1,5 +1,8 @@
+import { spawnSync } from "node:child_process";
 import crypto from "node:crypto";
-import { ENVIRONMENTS } from "@aohys/core/domain";
+import fs from "node:fs";
+import path from "node:path";
+import { ENVIRONMENTS, VERIFICATION_ENVIRONMENTS } from "@aohys/core/domain";
 
 export const OBSERVATION_ONLY_ACTIONS = new Set([
   "navigate",
@@ -394,22 +397,15 @@ export function validatePlan(plan) {
       errors.push(`invalid coverage role: ${entry.role}`);
     const identityClass =
       typeof entry.identityClass === "string" ? entry.identityClass.trim() : "";
-    if (!["anonymous", "authorized-session"].includes(identityClass))
+    if (!IDENTITY_CLASSES.includes(identityClass))
       errors.push(`invalid coverage identityClass: ${entry.identityClass}`);
     if (
       app === "dashboard" &&
-      identityClass === "anonymous" &&
+      identityClass !== "authorized-session" &&
       plan.sideEffectMode !== "none"
     )
       errors.push(
-        `anonymous dashboard coverage must be an observation-only auth gate: ${entry.identityRef}`,
-      );
-    if (
-      app === "dashboard" &&
-      !["anonymous", "authorized-session"].includes(identityClass)
-    )
-      errors.push(
-        `dashboard coverage requires an authorized session: ${entry.identityRef}`,
+        `anonymous and denied dashboard coverage must be observation-only: ${entry.identityRef}`,
       );
     const identityRef =
       typeof entry.identityRef === "string" ? entry.identityRef.trim() : "";
@@ -494,6 +490,8 @@ export function validatePlan(plan) {
 
 const FEATURE_MAP_SURFACE_IDS = ["site", "dashboard", "backend"];
 const BROWSER_SURFACE_IDS = new Set(["site", "dashboard"]);
+// denied-session: an authenticated account outside the dashboard allowlist.
+const IDENTITY_CLASSES = ["anonymous", "authorized-session", "denied-session"];
 const JOURNEY_KEYS = new Set([
   "id",
   "surface",
@@ -515,10 +513,67 @@ const JOURNEY_KEYS = new Set([
   "proofRunId",
   "proofEnvironment",
   "proofRoute",
+  "proofCandidateSha",
+  "proofJourneySha256",
+  "environments",
+  "sharedSourceGlobs",
 ]);
+const PROOF_KEYS = [
+  "proofRunId",
+  "proofEnvironment",
+  "proofRoute",
+  "proofCandidateSha",
+  "proofJourneySha256",
+];
+
+function canonicalValue(value) {
+  if (Array.isArray(value)) return value.map(canonicalValue);
+  if (value && typeof value === "object")
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((key) => [key, canonicalValue(value[key])]),
+    );
+  return value;
+}
+
+// Hash of the journey contract without its status and proof fields; a proof
+// is valid only for the contract it was collected against.
+export function computeJourneySha256(journey) {
+  const contract = Object.fromEntries(
+    Object.entries(journey).filter(
+      ([key]) => key !== "status" && !PROOF_KEYS.includes(key),
+    ),
+  );
+  return crypto
+    .createHash("sha256")
+    .update(JSON.stringify(canonicalValue(contract)))
+    .digest("hex");
+}
 const EVIDENCE_PREFIX = "$HOME/.development-system/private/verification/";
 
-export function validateFeatureMap(map) {
+// A proof holds only while the journey's mapped sources are unchanged since
+// the verified candidate commit.
+// Compares the proof commit with the working tree (staged and unstaged
+// changes) and rejects untracked files under the mapped paths.
+function sourcesUnchangedSince(root, candidateSha, sourceGlobs) {
+  const diff = spawnSync(
+    "git",
+    ["diff", "--quiet", candidateSha, "--", ...sourceGlobs],
+    { cwd: root },
+  );
+  if (diff.status !== 0) return false;
+  const untracked = spawnSync(
+    "git",
+    ["ls-files", "--others", "--exclude-standard", "--", ...sourceGlobs],
+    { cwd: root, encoding: "utf8" },
+  );
+  return untracked.status === 0 && untracked.stdout.trim() === "";
+}
+
+// The single feature-map contract. With `root`, every sourceGlobs path must
+// also exist under it.
+export function validateFeatureMap(map, { root, fileEdges = [] } = {}) {
   const errors = [];
   if (!map || typeof map !== "object" || Array.isArray(map))
     return { ok: false, errors: ["feature map must be an object"] };
@@ -549,12 +604,8 @@ export function validateFeatureMap(map) {
     }
   }
 
-  if (
-    !Array.isArray(map.journeys) ||
-    map.journeys.length < 3 ||
-    map.journeys.length > 5
-  )
-    errors.push("feature map must map between three and five journeys");
+  if (!Array.isArray(map.journeys) || map.journeys.length < 3)
+    errors.push("feature map must map at least three journeys");
 
   const journeyIds = [];
   for (const journey of map.journeys ?? []) {
@@ -582,6 +633,18 @@ export function validateFeatureMap(map) {
     for (const key of ["routes", "preconditions", "steps", "expectedResults"])
       if (!Array.isArray(journey[key]) || journey[key].length === 0)
         errors.push(`journey ${journey.id} requires a non-empty ${key}`);
+    if (
+      journey.sharedSourceGlobs !== undefined &&
+      (!Array.isArray(journey.sharedSourceGlobs) ||
+        journey.sharedSourceGlobs.some((glob) => typeof glob !== "string"))
+    )
+      errors.push(`journey ${journey.id} sharedSourceGlobs must be paths`);
+    if (root)
+      for (const glob of journey.sharedSourceGlobs ?? [])
+        if (typeof glob === "string" && !fs.existsSync(path.join(root, glob)))
+          errors.push(
+            `journey ${journey.id} maps a missing shared path: ${glob}`,
+          );
     for (const key of ["sourceGlobs"])
       if (!Array.isArray(journey[key]) || journey[key].length === 0)
         errors.push(`journey ${journey.id} requires a non-empty ${key}`);
@@ -601,43 +664,114 @@ export function validateFeatureMap(map) {
       errors.push(`journey ${journey.id} must map a browser surface`);
     if (
       journey.surface === "dashboard" &&
-      !["anonymous", "authorized-session"].includes(journey.identityClass)
+      !IDENTITY_CLASSES.includes(journey.identityClass)
     )
       errors.push(
-        `dashboard journey ${journey.id} requires an authorized or anonymous gate session`,
+        `dashboard journey ${journey.id} requires an anonymous, authorized or denied session`,
+      );
+    if (
+      journey.surface === "dashboard" &&
+      journey.identityClass !== "authorized-session" &&
+      journey.sideEffectMode !== "none"
+    )
+      errors.push(
+        `anonymous and denied dashboard journeys must stay observation-only: ${journey.id}`,
       );
     if (
       journey.surface === "dashboard" &&
       journey.identityClass === "anonymous" &&
-      (journey.sideEffectMode !== "none" || journey.status !== "draft")
+      journey.id !== "dashboard-auth-gate"
     )
       errors.push(
-        `anonymous dashboard journeys must stay observation-only drafts: ${journey.id}`,
+        `the only anonymous dashboard journey is dashboard-auth-gate: ${journey.id}`,
+      );
+    if (root)
+      for (const glob of Array.isArray(journey.sourceGlobs)
+        ? journey.sourceGlobs
+        : [])
+        if (typeof glob !== "string" || !fs.existsSync(path.join(root, glob)))
+          errors.push(
+            `journey ${journey.id} maps a missing source path: ${glob}`,
+          );
+    if (
+      journey.environments !== undefined &&
+      (!Array.isArray(journey.environments) ||
+        journey.environments.length === 0 ||
+        journey.environments.some(
+          (environment) => !VERIFICATION_ENVIRONMENTS.includes(environment),
+        ))
+    )
+      errors.push(
+        `journey ${journey.id} environments must be a non-empty subset of local and preview`,
       );
     if (!["none", "authorized-writes"].includes(journey.sideEffectMode))
       errors.push(`journey ${journey.id} has an invalid sideEffectMode`);
     if (!["draft", "proven"].includes(journey.status))
       errors.push(`journey ${journey.id} has an invalid status`);
     if (journey.status === "proven") {
-      for (const key of ["proofRunId", "proofEnvironment", "proofRoute"])
+      for (const key of PROOF_KEYS)
         if (typeof journey[key] !== "string" || !journey[key].trim())
           errors.push(`proven journey ${journey.id} requires ${key}`);
-    } else if (
-      journey.proofRunId ||
-      journey.proofEnvironment ||
-      journey.proofRoute
-    ) {
+      if (
+        typeof journey.proofRunId === "string" &&
+        !RUN_ID_PATTERN.test(journey.proofRunId)
+      )
+        errors.push(
+          `proven journey ${journey.id} needs a private evidence run id`,
+        );
+      if (
+        typeof journey.proofRoute === "string" &&
+        !(journey.routes ?? []).includes(journey.proofRoute.trim())
+      )
+        errors.push(
+          `proven journey ${journey.id} proofRoute must be one of its routes`,
+        );
+      if (
+        typeof journey.proofJourneySha256 === "string" &&
+        journey.proofJourneySha256 !== computeJourneySha256(journey)
+      )
+        errors.push(
+          `proven journey ${journey.id} is stale: its contract changed after the proof`,
+        );
+      if (
+        typeof journey.proofCandidateSha === "string" &&
+        !/^[0-9a-f]{40}$/u.test(journey.proofCandidateSha)
+      )
+        errors.push(
+          `proven journey ${journey.id} needs a full proofCandidateSha`,
+        );
+      else if (
+        root &&
+        typeof journey.proofCandidateSha === "string" &&
+        Array.isArray(journey.sourceGlobs) &&
+        !sourcesUnchangedSince(root, journey.proofCandidateSha, [
+          ...withTransitiveDependencies(journey.sourceGlobs, fileEdges),
+          ...sharedDependencies(journey, map, fileEdges),
+        ])
+      )
+        errors.push(
+          `proven journey ${journey.id} is stale: its sources changed since ${journey.proofCandidateSha.slice(0, 12)} or that commit is unknown`,
+        );
+      if (
+        !(journey.environments ?? VERIFICATION_ENVIRONMENTS).includes(
+          journey.proofEnvironment,
+        )
+      )
+        errors.push(
+          `proven journey ${journey.id} must be proven in one of its environments`,
+        );
+    } else if (PROOF_KEYS.some((key) => journey[key])) {
       errors.push(
         `draft journey ${journey.id} cannot claim a proof run before evidence exists`,
       );
     }
     if (
       journey.sideEffectMode === "authorized-writes" &&
-      journey.surface === "dashboard" &&
-      journey.status !== "proven"
+      (typeof journey.cleanup !== "string" ||
+        /^none\b/u.test(journey.cleanup.trim()))
     )
       errors.push(
-        `write journeys remain draft until an authorized run proves them: ${journey.id}`,
+        `write journey ${journey.id} must declare how its run-scoped writes are cleaned up`,
       );
   }
   if (new Set(journeyIds).size !== journeyIds.length)
@@ -668,11 +802,123 @@ function matchesSourcePrefix(filePath, globs) {
   );
 }
 
-export function selectMappedFeatures({ changedFiles, featureMap }) {
-  const files = [...new Set(changedFiles ?? [])].sort();
-  return (featureMap?.journeys ?? []).filter((journey) =>
-    files.some((filePath) =>
-      matchesSourcePrefix(filePath, journey.sourceGlobs ?? []),
-    ),
+// Code and resource import edges from an architecture-fitness graph, without
+// the outgoing edges of the generated Convex API barrel: it imports every
+// module and would connect every backend change to every dashboard feature.
+// Other generated edges (the data model to the schema) are kept.
+const GENERATED_API_BARREL = /\/convex\/_generated\/api(?:\.d)?\.(?:ts|js)$/u;
+
+export function dependencyEdges(graph) {
+  return [...(graph.fileEdges ?? []), ...(graph.resourceEdges ?? [])].filter(
+    ([importer]) => !GENERATED_API_BARREL.test(importer),
   );
+}
+
+// Shared roots plus the files reachable from them without entering a file
+// owned by a journey's own sourceGlobs: shared UI, hooks and libraries are
+// included, while a feature and everything only it imports stay with that
+// feature's journey.
+function sharedDependencies(journey, featureMap, fileEdges) {
+  const roots = journey.sharedSourceGlobs ?? [];
+  const owned = (featureMap?.journeys ?? []).flatMap(
+    (candidate) => candidate.sourceGlobs ?? [],
+  );
+  const targetsByImporter = new Map();
+  for (const [importer, target] of fileEdges) {
+    if (!targetsByImporter.has(importer)) targetsByImporter.set(importer, []);
+    targetsByImporter.get(importer).push(target);
+  }
+  const seen = new Set(roots);
+  const queue = [...targetsByImporter.keys()].filter((file) =>
+    matchesSourcePrefix(file, roots),
+  );
+  for (const file of queue) seen.add(file);
+  while (queue.length > 0) {
+    for (const target of targetsByImporter.get(queue.pop()) ?? []) {
+      if (seen.has(target) || matchesSourcePrefix(target, owned)) continue;
+      seen.add(target);
+      queue.push(target);
+    }
+  }
+  return [...seen];
+}
+
+// The mapped paths plus every file they import, directly or transitively.
+function withTransitiveDependencies(sourceGlobs, fileEdges) {
+  const targetsByImporter = new Map();
+  for (const [importer, target] of fileEdges) {
+    if (!targetsByImporter.has(importer)) targetsByImporter.set(importer, []);
+    targetsByImporter.get(importer).push(target);
+  }
+  const seen = new Set(sourceGlobs);
+  const queue = [...targetsByImporter.keys()].filter((file) =>
+    matchesSourcePrefix(file, sourceGlobs),
+  );
+  for (const file of queue) seen.add(file);
+  while (queue.length > 0) {
+    for (const target of targetsByImporter.get(queue.pop()) ?? []) {
+      if (!seen.has(target)) {
+        seen.add(target);
+        queue.push(target);
+      }
+    }
+  }
+  return [...seen];
+}
+
+// Files that import any of `files`, directly or transitively, plus the files
+// themselves. `fileEdges` are [importer, target] pairs from architecture
+// fitness.
+function withTransitiveImporters(files, fileEdges) {
+  const importersByTarget = new Map();
+  for (const [importer, target] of fileEdges) {
+    if (!importersByTarget.has(target)) importersByTarget.set(target, []);
+    importersByTarget.get(target).push(importer);
+  }
+  const seen = new Set(files);
+  const queue = [...files];
+  while (queue.length > 0) {
+    for (const importer of importersByTarget.get(queue.pop()) ?? []) {
+      if (!seen.has(importer)) {
+        seen.add(importer);
+        queue.push(importer);
+      }
+    }
+  }
+  return [...seen];
+}
+
+// A journey is selected when a changed file, or a file that imports it, sits
+// under one of its sourceGlobs, so journeys map entry points and their
+// dependencies follow from the import graph.
+// sharedSourceGlobs are bootstrap files that import every feature. A change
+// selects the journey when it touches a shared root, or a dependency of one
+// that no journey owns through its sourceGlobs (shared UI, hooks, libraries),
+// so an unrelated feature edit never selects every journey.
+export function selectMappedFeatures({
+  changedFiles,
+  featureMap,
+  fileEdges = [],
+}) {
+  const changed = [...new Set(changedFiles ?? [])].sort();
+  const files = withTransitiveImporters(changed, fileEdges);
+  return (featureMap?.journeys ?? []).filter((journey) => {
+    if (
+      files.some((filePath) =>
+        matchesSourcePrefix(filePath, journey.sourceGlobs ?? []),
+      )
+    )
+      return true;
+    if (!journey.sharedSourceGlobs?.length) return false;
+    // Direct prefix match covers new, deleted and import-free files under a
+    // shared root directory, which the import graph cannot see.
+    if (
+      changed.some((filePath) =>
+        matchesSourcePrefix(filePath, journey.sharedSourceGlobs),
+      )
+    )
+      return true;
+    const shared = new Set(sharedDependencies(journey, featureMap, fileEdges));
+    return changed.some((filePath) => shared.has(filePath));
+  });
 }

@@ -3,6 +3,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { analyzeArchitecture } from "../architecture/fitness-lib.mjs";
+import {
+  dependencyEdges,
+  validateFeatureMap,
+} from "./product-verification-lib.mjs";
 
 const ROOT = process.cwd();
 const failures = [];
@@ -85,31 +90,11 @@ if (!fs.existsSync(featureMapPath)) {
     const serialized = JSON.stringify(featureMap);
     if (/playwright|cypress|agent-browser/i.test(serialized))
       fail("feature map must never activate a browser harness");
-    for (const journey of featureMap.journeys ?? []) {
-      if (journey.surface === "dashboard") {
-        if (
-          !["authorized-session", "anonymous"].includes(journey.identityClass)
-        )
-          fail(`journey ${journey.id} must require an authorized session`);
-        if (
-          journey.identityClass === "anonymous" &&
-          (journey.id !== "dashboard-auth-gate" ||
-            journey.sideEffectMode !== "none" ||
-            journey.status !== "draft")
-        )
-          fail(
-            `journey ${journey.id} must be the observation-only auth-gate draft`,
-          );
-      }
-      if (journey.status !== "draft")
-        fail(
-          `journey ${journey.id} must stay draft until a real run proves it`,
-        );
-      if (journey.proofRunId || journey.proofEnvironment || journey.proofRoute)
-        fail(
-          `journey ${journey.id} cannot claim a proof run before evidence exists`,
-        );
-    }
+    for (const error of validateFeatureMap(featureMap, {
+      root: ROOT,
+      fileEdges: dependencyEdges(analyzeArchitecture({ root: ROOT }).graph),
+    }).errors)
+      fail(error);
   }
 }
 
