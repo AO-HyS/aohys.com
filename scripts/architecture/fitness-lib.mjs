@@ -1,7 +1,11 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 
-import ts from "typescript";
+import {
+  derivationViolations,
+  literalCopyViolations,
+  readDomainVocabularies,
+} from "./domain-vocabulary.mjs";
 
 const SOURCE_EXTENSIONS = [
   ".ts",
@@ -21,195 +25,6 @@ const IGNORED_DIRECTORIES = new Set([
 ]);
 
 const DASHBOARD_ROUTE_METADATA = "apps/dashboard/src/navigation.ts";
-const DOMAIN_VOCABULARY = "packages/core/src/domain.ts";
-
-// Files that must derive every vocabulary by symbol: no string `v.literal`.
-const DERIVED_VOCABULARY_FILES = new Set([
-  "apps/backend/convex/schema.ts",
-  "apps/backend/convex/lib/validators.ts",
-]);
-
-function parseSource(source, extension) {
-  const code =
-    extension === ".astro"
-      ? (source.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? "")
-      : source;
-  return ts.createSourceFile(
-    `source${extension === ".astro" ? ".ts" : extension}`,
-    code,
-    ts.ScriptTarget.Latest,
-    true,
-    [".tsx", ".jsx"].includes(extension)
-      ? ts.ScriptKind.TSX
-      : [".js", ".mjs", ".cjs"].includes(extension)
-        ? ts.ScriptKind.JS
-        : ts.ScriptKind.TS,
-  );
-}
-
-// Domain vocabularies declared as `export const NAME = [...] as const`.
-function readDomainVocabularies(root) {
-  const filePath = path.join(root, DOMAIN_VOCABULARY);
-  if (!existsSync(filePath)) return [];
-  const sourceFile = parseSource(readFileSync(filePath, "utf8"), ".ts");
-  const vocabularies = [];
-  for (const statement of sourceFile.statements) {
-    if (!ts.isVariableStatement(statement)) continue;
-    for (const declaration of statement.declarationList.declarations) {
-      let initializer = declaration.initializer;
-      while (
-        initializer &&
-        (ts.isAsExpression(initializer) ||
-          ts.isSatisfiesExpression(initializer))
-      ) {
-        initializer = initializer.expression;
-      }
-      if (!initializer || !ts.isArrayLiteralExpression(initializer)) continue;
-      const members = initializer.elements
-        .filter(ts.isStringLiteral)
-        .map((element) => element.text);
-      if (members.length > 0) {
-        vocabularies.push({
-          name: declaration.name.getText(sourceFile),
-          members: new Set(members),
-        });
-      }
-    }
-  }
-  return vocabularies;
-}
-
-// String literal groups from the syntax tree: union types (parentheses
-// unwrapped), array literals of strings, and `v.union(v.literal(...))` or
-// `v.literal(...)` validators, whatever local name `v` is imported as.
-// Comments, template text and element access are never groups.
-function literalGroups(source, extension) {
-  const sourceFile = parseSource(source, extension);
-  const validatorNames = new Set();
-  for (const statement of sourceFile.statements) {
-    if (
-      ts.isImportDeclaration(statement) &&
-      ts.isStringLiteral(statement.moduleSpecifier) &&
-      statement.moduleSpecifier.text === "convex/values" &&
-      statement.importClause?.namedBindings &&
-      ts.isNamedImports(statement.importClause.namedBindings)
-    ) {
-      for (const element of statement.importClause.namedBindings.elements) {
-        if ((element.propertyName ?? element.name).text === "v") {
-          validatorNames.add(element.name.text);
-        }
-      }
-    }
-  }
-  const literalArgument = (node) => {
-    if (
-      ts.isCallExpression(node) &&
-      ts.isPropertyAccessExpression(node.expression) &&
-      ts.isIdentifier(node.expression.expression) &&
-      validatorNames.has(node.expression.expression.text) &&
-      node.expression.name.text === "literal" &&
-      node.arguments.length === 1 &&
-      ts.isStringLiteral(node.arguments[0])
-    ) {
-      return node.arguments[0].text;
-    }
-    return undefined;
-  };
-  const isValidatorCall = (node, method) =>
-    ts.isCallExpression(node) &&
-    ts.isPropertyAccessExpression(node.expression) &&
-    ts.isIdentifier(node.expression.expression) &&
-    validatorNames.has(node.expression.expression.text) &&
-    node.expression.name.text === method;
-
-  const groups = [];
-  const visit = (node) => {
-    if (ts.isUnionTypeNode(node)) {
-      const members = node.types
-        .map((type) => {
-          while (ts.isParenthesizedTypeNode(type)) type = type.type;
-          return ts.isLiteralTypeNode(type) && ts.isStringLiteral(type.literal)
-            ? type.literal.text
-            : undefined;
-        })
-        .filter((member) => member !== undefined);
-      if (members.length > 0) groups.push({ members, node, validator: false });
-    } else if (
-      ts.isArrayLiteralExpression(node) &&
-      node.elements.length > 0 &&
-      node.elements.every(ts.isStringLiteral)
-    ) {
-      groups.push({
-        members: node.elements.map((item) => item.text),
-        node,
-        validator: false,
-      });
-    } else if (isValidatorCall(node, "union")) {
-      const members = node.arguments.map(literalArgument);
-      if (
-        members.length > 0 &&
-        members.every((member) => member !== undefined)
-      ) {
-        groups.push({ members, node, validator: true });
-        return;
-      }
-    } else if (literalArgument(node) !== undefined) {
-      groups.push({ members: [literalArgument(node)], node, validator: true });
-      return;
-    }
-    ts.forEachChild(node, visit);
-  };
-  visit(sourceFile);
-  return groups.map(({ members, node, validator }) => ({
-    members,
-    validator,
-    line: sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile))
-      .line,
-  }));
-}
-
-// A literal group copies a vocabulary when most of its own members belong to
-// it and it covers at least 60% of it, so stale copies (a value missing) and
-// drifted copies (a value added) fail too. For one- and two-member
-// vocabularies any group made only of their members is a copy.
-function copiedVocabulary(members, vocabulary) {
-  const shared = [...members].filter((member) =>
-    vocabulary.members.has(member),
-  ).length;
-  if (vocabulary.members.size <= 2)
-    return shared > 0 && shared === members.size;
-  return (
-    shared >= 2 &&
-    shared * 2 > members.size &&
-    shared >= Math.ceil(vocabulary.members.size * 0.6)
-  );
-}
-
-// A group on a line ending in `// domain-vocabulary-ok` is a different
-// concept that shares values.
-function vocabularyViolations(importer, source, vocabularies) {
-  const lines = source.split("\n");
-  const astroOffset = path.extname(importer) === ".astro" ? 1 : 0;
-  const found = new Set();
-  for (const group of literalGroups(source, path.extname(importer))) {
-    if (DERIVED_VOCABULARY_FILES.has(importer) && group.validator) {
-      found.add("a string v.literal (derive it in convex/lib/validators.ts)");
-      continue;
-    }
-    if (
-      lines[group.line + astroOffset]
-        ?.trimEnd()
-        .endsWith("// domain-vocabulary-ok")
-    ) {
-      continue;
-    }
-    const members = new Set(group.members);
-    for (const vocabulary of vocabularies) {
-      if (copiedVocabulary(members, vocabulary)) found.add(vocabulary.name);
-    }
-  }
-  return [...found].sort();
-}
 
 function normalize(filePath) {
   return filePath.replaceAll("\\", "/").replace(/^\.\//, "");
@@ -486,19 +301,17 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
 
   for (const importer of productionFiles) {
     const source = readFileSync(path.join(root, importer), "utf8");
-    if (importer !== DOMAIN_VOCABULARY) {
-      for (const vocabulary of vocabularyViolations(
+    for (const vocabulary of literalCopyViolations(
+      importer,
+      source,
+      vocabularies,
+    )) {
+      violations.push({
+        id: `domain-vocabulary-redeclared:${importer}:${vocabulary}`,
+        kind: "domain-vocabulary-redeclared",
         importer,
-        source,
-        vocabularies,
-      )) {
-        violations.push({
-          id: `domain-vocabulary-redeclared:${importer}:${vocabulary}`,
-          kind: "domain-vocabulary-redeclared",
-          importer,
-          message: `${importer} re-declares ${vocabulary}; import it from @aohys/core/domain (Convex: convex/lib/validators.ts)`,
-        });
-      }
+        message: `${importer} re-declares ${vocabulary}; import it from @aohys/core/domain (Convex: convex/lib/validators.ts)`,
+      });
     }
     for (const specifier of extractImportSpecifiers(source)) {
       const workspace = workspaceForSpecifier(specifier, workspaces);
@@ -561,6 +374,14 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
         });
       }
     }
+  }
+
+  for (const message of derivationViolations(root)) {
+    violations.push({
+      id: `domain-vocabulary-derivation:${message}`,
+      kind: "domain-vocabulary-derivation",
+      message,
+    });
   }
 
   const fileEdges = imports

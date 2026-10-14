@@ -35,7 +35,8 @@
       "summary": "One as-const array per domain vocabulary (locale, environment, release environment, lead intent/status/contact path, publication scope/request/attempt state, workflow outcome and provider status, media provider/usage/status, site setting key/classification, environment variable classification, writable media providers, case-study status/evidence); types derive from the arrays and Convex validators derive through literals().",
       "paths": [
         "packages/core/src/domain.ts",
-        "apps/backend/convex/lib/validators.ts"
+        "apps/backend/convex/lib/validators.ts",
+        "scripts/architecture/domain-vocabulary.mjs"
       ],
       "symbols": [
         "packages/core/src/domain.ts#LOCALES",
@@ -46,12 +47,12 @@
       ],
       "guarantees": [
         {
-          "statement": "No production source outside packages/core/src/domain.ts declares a string union, array or v.union/v.literal list that copies a domain vocabulary, including stale (a value missing) and drifted (a value added) copies; convex/schema.ts and convex/lib/validators.ts hold no string v.literal; a line ending in // domain-vocabulary-ok marks a different concept.",
-          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-redeclared, TypeScript AST); probes for identical, stale, drifted, single-quoted, parenthesized, aliased-v and singleton copies rejected"
+          "statement": "No production source outside packages/core/src/domain.ts declares a string union (nested and parenthesized unions flattened), array or v.union/v.literal list (named, aliased or namespace v) that copies a domain vocabulary, including stale and drifted copies; a trailing // domain-vocabulary-ok comment marks a different concept.",
+          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-redeclared, TypeScript AST in scripts/architecture/domain-vocabulary.mjs); probes rejected"
         },
         {
-          "statement": "The Convex schema and function validators for these vocabularies derive from the domain arrays.",
-          "verifiedBy": "apps/backend/convex/schema.ts imports from ./lib/validators.js; pnpm typecheck"
+          "statement": "Every exported validator in convex/lib/validators.ts is literals(<array imported from @aohys/core/domain>), and every inventoried vocabulary field of convex/schema.ts references its validator from ./lib/validators.js.",
+          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-derivation, SCHEMA_VOCABULARY_FIELDS inventory); probes with locale: v.string() and a local v.literal rejected"
         },
         {
           "statement": "content.upsertSiteSetting accepts only keys in SITE_SETTING_KEYS (argument validator).",
