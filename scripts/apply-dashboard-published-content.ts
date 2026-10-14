@@ -13,7 +13,10 @@ import {
   getSharedI18n,
 } from "../packages/content-graph/src/i18n.js";
 import { assertPublicClaimsSafe } from "../packages/content-graph/src/public-claim-policy.js";
-import { isResumePageContent } from "../packages/content-graph/src/resume-content.js";
+import {
+  isResumePageContent,
+  RESUME_CONTENT_MAX_LENGTH,
+} from "../packages/content-graph/src/resume-content.js";
 import { hasConvexDeploymentAccess, runConvexFunction } from "./convex-run.js";
 
 type Locale = "en" | "es";
@@ -508,6 +511,11 @@ export function parseLocaleDictionary(
 export function parseResumeContent(
   serialized: string,
 ): Record<string, unknown> {
+  if (serialized.length > RESUME_CONTENT_MAX_LENGTH) {
+    throw new Error(
+      `Published resume content exceeds ${RESUME_CONTENT_MAX_LENGTH} characters.`,
+    );
+  }
   let parsed: unknown;
   try {
     parsed = JSON.parse(serialized);

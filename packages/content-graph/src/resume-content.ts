@@ -3,7 +3,8 @@ import type { ResumePageContent } from "./index.js";
 // Single resume content contract shared by the Convex mutation (trust
 // boundary), the dashboard editor and the publication build script.
 
-// Enforced on writes only, so drafts stored before the limit still load.
+// Enforced when saving and publishing; the dashboard still loads a larger
+// draft stored before the limit so the operator can shorten it.
 export const RESUME_CONTENT_MAX_LENGTH = 64_000;
 
 const RESUME_HTTPS_HOSTS = new Set([
