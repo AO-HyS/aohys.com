@@ -1,5 +1,6 @@
 import { fileURLToPath } from "node:url";
 import { ENVIRONMENTS } from "@aohys/core/domain";
+import { CANONICAL_HOST } from "@aohys/core/release-targets";
 
 const RELEASE_SHA_PATTERN = /^[0-9a-f]{40}$/;
 
@@ -35,8 +36,8 @@ export function auditObservabilityEnvironment(values) {
     } catch {
       hostname = undefined;
     }
-    if (hostname !== "aohys.com")
-      errors.push("production host must be aohys.com");
+    if (hostname !== CANONICAL_HOST)
+      errors.push(`production host must be ${CANONICAL_HOST}`);
     if (!values.PUBLIC_POSTHOG_KEY?.trim())
       errors.push("production PostHog key is required");
   } else if (values.ANALYTICS_CAPTURE_ENABLED === "true") {
