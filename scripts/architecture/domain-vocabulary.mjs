@@ -128,11 +128,9 @@ export function readDomainVocabularies(root) {
   return vocabularies;
 }
 
-// String literal groups from the syntax tree: union types (nested unions and
-// parentheses flattened), string array literals, and `v.union(v.literal(...))`
-// or `v.literal(...)` validators whether `v` is a named, aliased or namespace
-// import. Comments, template text and element access are never groups.
-function literalGroups(sourceFile) {
+// Recognizes the Convex `v` object whether it is a named, aliased or
+// namespace import of convex/values.
+function validatorObjectMatcher(sourceFile) {
   const { named, namespaces } = importedNames(sourceFile, "convex/values");
   const validatorNames = new Set(
     [...named]
@@ -145,6 +143,15 @@ function literalGroups(sourceFile) {
       ts.isIdentifier(node.expression) &&
       namespaces.has(node.expression.text) &&
       node.name.text === "v");
+  return isValidatorObject;
+}
+
+// String literal groups from the syntax tree: union types (nested unions and
+// parentheses flattened), string array literals, and `v.union(v.literal(...))`
+// or `v.literal(...)` validators (nested validator unions flattened).
+// Comments, template text and element access are never groups.
+function literalGroups(sourceFile) {
+  const isValidatorObject = validatorObjectMatcher(sourceFile);
   const isValidatorCall = (node, method) =>
     ts.isCallExpression(node) &&
     ts.isPropertyAccessExpression(node.expression) &&
@@ -156,6 +163,20 @@ function literalGroups(sourceFile) {
     ts.isStringLiteral(node.arguments[0])
       ? node.arguments[0].text
       : undefined;
+  const validatorUnionMembers = (node) => {
+    if (literalArgument(node) !== undefined) return [literalArgument(node)];
+    if (!isValidatorCall(node, "union")) return undefined;
+    const members = node.arguments.map(validatorUnionMembers);
+    return members.every((member) => member !== undefined)
+      ? members.flat()
+      : undefined;
+  };
+  const unionConstituents = (type) => {
+    while (ts.isParenthesizedTypeNode(type)) type = type.type;
+    return ts.isUnionTypeNode(type)
+      ? type.types.flatMap(unionConstituents)
+      : [type];
+  };
   const unionMembers = (type) => {
     while (ts.isParenthesizedTypeNode(type)) type = type.type;
     if (ts.isUnionTypeNode(type)) return type.types.flatMap(unionMembers);
@@ -169,6 +190,9 @@ function literalGroups(sourceFile) {
     if (ts.isUnionTypeNode(node)) {
       const members = unionMembers(node);
       if (members.length > 0) groups.push({ members, node, validator: false });
+      for (const constituent of unionConstituents(node)) {
+        if (!ts.isLiteralTypeNode(constituent)) visit(constituent);
+      }
       return;
     }
     if (
@@ -182,11 +206,8 @@ function literalGroups(sourceFile) {
         validator: false,
       });
     } else if (isValidatorCall(node, "union")) {
-      const members = node.arguments.map(literalArgument);
-      if (
-        members.length > 0 &&
-        members.every((member) => member !== undefined)
-      ) {
+      const members = validatorUnionMembers(node);
+      if (members && members.length > 0) {
         groups.push({ members, node, validator: true });
         return;
       }
@@ -200,9 +221,9 @@ function literalGroups(sourceFile) {
   return groups;
 }
 
-// A `// domain-vocabulary-ok` comment trailing the group or one of its
-// enclosing nodes (after an optional comma or semicolon) marks a different
-// concept that shares values.
+// A `// domain-vocabulary-ok` comment trailing the group, or its enclosing
+// property or statement (after an optional comma or semicolon), marks a
+// different concept that shares values. The lookup stops at that boundary.
 function isExempt(node, sourceFile) {
   const text = sourceFile.text;
   const hasExemption = (position) =>
@@ -219,6 +240,14 @@ function isExempt(node, sourceFile) {
     while (text[end] === " " || text[end] === "\t") end += 1;
     if ((text[end] === "," || text[end] === ";") && hasExemption(end + 1)) {
       return true;
+    }
+    if (
+      ts.isStatement(current) ||
+      ts.isPropertyAssignment(current) ||
+      ts.isPropertySignature(current) ||
+      ts.isShorthandPropertyAssignment(current)
+    ) {
+      break;
     }
   }
   return false;
@@ -276,7 +305,14 @@ export function derivationViolations(root) {
   const domainImports = importedNames(validators, "@aohys/core/domain").named;
   const derived = new Set();
   for (const statement of validators.statements) {
-    if (!ts.isVariableStatement(statement)) continue;
+    if (
+      !ts.isVariableStatement(statement) ||
+      !statement.modifiers?.some(
+        (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
+      )
+    ) {
+      continue;
+    }
     for (const declaration of statement.declarationList.declarations) {
       const name = declaration.name.getText(validators);
       const initializer = unwrapExpression(declaration.initializer);
@@ -298,6 +334,7 @@ export function derivationViolations(root) {
   }
 
   const schema = parseSource(readFileSync(schemaPath, "utf8"), ".ts");
+  const isSchemaValidatorObject = validatorObjectMatcher(schema);
   const validatorImports = importedNames(schema, "./lib/validators.js").named;
   const seen = new Set();
   const visit = (node) => {
@@ -330,6 +367,7 @@ export function derivationViolations(root) {
         if (
           ts.isCallExpression(value) &&
           ts.isPropertyAccessExpression(value.expression) &&
+          isSchemaValidatorObject(value.expression.expression) &&
           value.expression.name.text === "optional" &&
           value.arguments.length === 1
         ) {

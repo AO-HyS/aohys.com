@@ -47,19 +47,21 @@
       ],
       "guarantees": [
         {
-          "statement": "No production source outside packages/core/src/domain.ts declares a string union (nested and parenthesized unions flattened), array or v.union/v.literal list (named, aliased or namespace v) that copies a domain vocabulary, including stale and drifted copies; a trailing // domain-vocabulary-ok comment marks a different concept.",
-          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-redeclared, TypeScript AST in scripts/architecture/domain-vocabulary.mjs); probes rejected"
+          "statement": "Every exported validator in convex/lib/validators.ts is literals(<array imported from @aohys/core/domain>), and every inventoried vocabulary field of convex/schema.ts references its validator from ./lib/validators.js (only a Convex v.optional wrapper is unwrapped).",
+          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-derivation, SCHEMA_VOCABULARY_FIELDS in scripts/architecture/domain-vocabulary.mjs); probes with v.string(), a local v.literal and a non-Convex optional wrapper rejected"
         },
         {
-          "statement": "Every exported validator in convex/lib/validators.ts is literals(<array imported from @aohys/core/domain>), and every inventoried vocabulary field of convex/schema.ts references its validator from ./lib/validators.js.",
-          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-derivation, SCHEMA_VOCABULARY_FIELDS inventory); probes with locale: v.string() and a local v.literal rejected"
+          "statement": "convex/schema.ts and convex/lib/validators.ts hold no string v.literal.",
+          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-redeclared)"
         },
         {
           "statement": "content.upsertSiteSetting accepts only keys in SITE_SETTING_KEYS (argument validator).",
           "verifiedBy": "apps/backend/convex/model/content/settings.ts#upsertSiteSettingArgs uses siteSettingKeyValidator"
         }
       ],
-      "goals": [],
+      "goals": [
+        "Literal-copy detection outside the derived Convex files is a best-effort syntactic signal (unions, string arrays, v.union/v.literal lists; stale and drifted copies; per-statement // domain-vocabulary-ok exemption), not a proof that no copy exists; a copy it misses is fixed when found and, if it recurs, the consumer joins the symbol-derivation inventory."
+      ],
       "replaces": [],
       "docs": ["CONTEXT.md"]
     }
