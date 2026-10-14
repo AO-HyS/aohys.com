@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 
 import {
@@ -131,7 +131,10 @@ function trySourcePath(root, candidate) {
     }
   }
 
-  return candidates.find((filePath) => existsSync(path.join(root, filePath)));
+  return candidates.find((filePath) => {
+    const absolute = path.join(root, filePath);
+    return existsSync(absolute) && statSync(absolute).isFile();
+  });
 }
 
 function workspaceForSpecifier(specifier, workspaces) {

@@ -123,7 +123,13 @@
       "sharedSourceGlobs": [
         "apps/dashboard/src/main.tsx",
         "apps/dashboard/src/lib/auth-client.ts",
-        "apps/dashboard/src/styles.css"
+        "apps/dashboard/src/styles.css",
+        "apps/dashboard/src/app/router.tsx",
+        "apps/dashboard/src/app/dashboard-shell.tsx",
+        "apps/dashboard/src/app/navigation-loaders.tsx",
+        "apps/dashboard/src/app/route-states.tsx",
+        "apps/dashboard/src/navigation.ts",
+        "apps/dashboard/src/runtime-config.ts"
       ]
     },
     {
@@ -161,7 +167,13 @@
       "sharedSourceGlobs": [
         "apps/dashboard/src/main.tsx",
         "apps/dashboard/src/lib/auth-client.ts",
-        "apps/dashboard/src/styles.css"
+        "apps/dashboard/src/styles.css",
+        "apps/dashboard/src/app/router.tsx",
+        "apps/dashboard/src/app/dashboard-shell.tsx",
+        "apps/dashboard/src/app/navigation-loaders.tsx",
+        "apps/dashboard/src/app/route-states.tsx",
+        "apps/dashboard/src/navigation.ts",
+        "apps/dashboard/src/runtime-config.ts"
       ]
     },
     {
@@ -195,7 +207,13 @@
       "sharedSourceGlobs": [
         "apps/dashboard/src/main.tsx",
         "apps/dashboard/src/lib/auth-client.ts",
-        "apps/dashboard/src/styles.css"
+        "apps/dashboard/src/styles.css",
+        "apps/dashboard/src/app/router.tsx",
+        "apps/dashboard/src/app/dashboard-shell.tsx",
+        "apps/dashboard/src/app/navigation-loaders.tsx",
+        "apps/dashboard/src/app/route-states.tsx",
+        "apps/dashboard/src/navigation.ts",
+        "apps/dashboard/src/runtime-config.ts"
       ]
     },
     {
@@ -241,7 +259,13 @@
       "sharedSourceGlobs": [
         "apps/dashboard/src/main.tsx",
         "apps/dashboard/src/lib/auth-client.ts",
-        "apps/dashboard/src/styles.css"
+        "apps/dashboard/src/styles.css",
+        "apps/dashboard/src/app/router.tsx",
+        "apps/dashboard/src/app/dashboard-shell.tsx",
+        "apps/dashboard/src/app/navigation-loaders.tsx",
+        "apps/dashboard/src/app/route-states.tsx",
+        "apps/dashboard/src/navigation.ts",
+        "apps/dashboard/src/runtime-config.ts"
       ]
     },
     {
@@ -284,7 +308,13 @@
       "sharedSourceGlobs": [
         "apps/dashboard/src/main.tsx",
         "apps/dashboard/src/lib/auth-client.ts",
-        "apps/dashboard/src/styles.css"
+        "apps/dashboard/src/styles.css",
+        "apps/dashboard/src/app/router.tsx",
+        "apps/dashboard/src/app/dashboard-shell.tsx",
+        "apps/dashboard/src/app/navigation-loaders.tsx",
+        "apps/dashboard/src/app/route-states.tsx",
+        "apps/dashboard/src/navigation.ts",
+        "apps/dashboard/src/runtime-config.ts"
       ]
     },
     {
@@ -327,7 +357,13 @@
       "sharedSourceGlobs": [
         "apps/dashboard/src/main.tsx",
         "apps/dashboard/src/lib/auth-client.ts",
-        "apps/dashboard/src/styles.css"
+        "apps/dashboard/src/styles.css",
+        "apps/dashboard/src/app/router.tsx",
+        "apps/dashboard/src/app/dashboard-shell.tsx",
+        "apps/dashboard/src/app/navigation-loaders.tsx",
+        "apps/dashboard/src/app/route-states.tsx",
+        "apps/dashboard/src/navigation.ts",
+        "apps/dashboard/src/runtime-config.ts"
       ]
     },
     {
@@ -467,7 +503,13 @@
       "sharedSourceGlobs": [
         "apps/dashboard/src/main.tsx",
         "apps/dashboard/src/lib/auth-client.ts",
-        "apps/dashboard/src/styles.css"
+        "apps/dashboard/src/styles.css",
+        "apps/dashboard/src/app/router.tsx",
+        "apps/dashboard/src/app/dashboard-shell.tsx",
+        "apps/dashboard/src/app/navigation-loaders.tsx",
+        "apps/dashboard/src/app/route-states.tsx",
+        "apps/dashboard/src/navigation.ts",
+        "apps/dashboard/src/runtime-config.ts"
       ]
     }
   ]
