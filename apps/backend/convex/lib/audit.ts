@@ -56,6 +56,7 @@ export function systemActor(causedBy: string): AuditActor {
 const TARGET_ARGUMENTS = [
   "contentId",
   "contentKey",
+  "environment",
   "key",
   "leadId",
   "locale",
