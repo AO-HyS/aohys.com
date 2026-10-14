@@ -5,6 +5,7 @@ import { ENVIRONMENTS } from "@aohys/core/domain";
 import {
   CLOUDFLARE_PROJECT_NAME,
   PAGES_DEV_SUFFIX,
+  PRODUCTION_ORIGINS,
 } from "@aohys/core/release-targets";
 
 export const DOCTOR_APPS = {
@@ -19,8 +20,6 @@ export const DOCTOR_APPS = {
     path: "/dashboard",
   },
 };
-
-const PRODUCTION_ORIGINS = ["https://aohys.com", "https://www.aohys.com"];
 
 export function resolveDoctorTarget(argv = process.argv.slice(2)) {
   const read = (name, fallback) => {

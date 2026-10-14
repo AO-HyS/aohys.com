@@ -1,5 +1,6 @@
 import { type ReleaseEnvironment } from "@aohys/core/domain";
 import {
+  CANONICAL_ORIGIN,
   CLOUDFLARE_PROJECT_NAME,
   RELEASE_TARGETS,
 } from "@aohys/core/release-targets";
@@ -13,8 +14,8 @@ export interface CloudflarePagesDeployPlan {
   projectName: typeof CLOUDFLARE_PROJECT_NAME;
   directory: "apps/site/dist";
   command: readonly string[];
-  siteUrl: "https://preview.aohys.com" | "https://aohys.com";
-  canonicalUrl: "https://aohys.com";
+  siteUrl: string;
+  canonicalUrl: string;
 }
 
 const SITE_DIST_DIRECTORY = "apps/site/dist" as const;
@@ -41,6 +42,6 @@ export function buildCloudflarePagesDeployPlan(
       target.branch,
     ],
     siteUrl: target.siteUrl,
-    canonicalUrl: "https://aohys.com",
+    canonicalUrl: CANONICAL_ORIGIN,
   };
 }

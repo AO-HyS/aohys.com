@@ -1,4 +1,8 @@
-import { CLOUDFLARE_PROJECT_NAME } from "@aohys/core/release-targets";
+import {
+  CANONICAL_HOST,
+  CANONICAL_ORIGIN,
+  CLOUDFLARE_PROJECT_NAME,
+} from "@aohys/core/release-targets";
 import { isRecord } from "@aohys/core/unknown-guards";
 
 export type CloudflarePagesDomainStatus =
@@ -265,7 +269,7 @@ export interface CloudflareProductionDomainConfig {
   accountId: string;
   apiToken: string;
   projectName: typeof CLOUDFLARE_PROJECT_NAME;
-  domainName: "aohys.com";
+  domainName: typeof CANONICAL_HOST;
 }
 
 export function parseCloudflareProductionDomainEnvironment(
@@ -288,9 +292,9 @@ export function parseCloudflareProductionDomainEnvironment(
   };
   const publicSiteUrl = required("PUBLIC_SITE_URL");
 
-  if (publicSiteUrl !== "https://aohys.com") {
+  if (publicSiteUrl !== CANONICAL_ORIGIN) {
     throw new Error(
-      "Production Pages domain reconciliation requires PUBLIC_SITE_URL=https://aohys.com.",
+      `Production Pages domain reconciliation requires PUBLIC_SITE_URL=${CANONICAL_ORIGIN}.`,
     );
   }
   if (required("CLOUDFLARE_PROJECT_NAME") !== CLOUDFLARE_PROJECT_NAME) {
@@ -303,7 +307,7 @@ export function parseCloudflareProductionDomainEnvironment(
     accountId: required("CLOUDFLARE_ACCOUNT_ID"),
     apiToken: required("CLOUDFLARE_API_TOKEN"),
     projectName: CLOUDFLARE_PROJECT_NAME,
-    domainName: "aohys.com",
+    domainName: CANONICAL_HOST,
   };
 }
 

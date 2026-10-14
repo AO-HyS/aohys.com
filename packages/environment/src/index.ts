@@ -1,4 +1,7 @@
-import { CLOUDFLARE_PROJECT_NAME } from "@aohys/core/release-targets";
+import {
+  CANONICAL_ORIGIN,
+  CLOUDFLARE_PROJECT_NAME,
+} from "@aohys/core/release-targets";
 import {
   ENVIRONMENTS,
   RELEASE_ENVIRONMENTS,
@@ -571,10 +574,10 @@ export function validateEnvironmentContract(
   if (
     environment === "production" &&
     publicSiteUrl &&
-    !hasExactOrigin(publicSiteUrl, "https://aohys.com")
+    !hasExactOrigin(publicSiteUrl, CANONICAL_ORIGIN)
   ) {
     errors.push(
-      "PUBLIC_SITE_URL must point to https://aohys.com in production.",
+      `PUBLIC_SITE_URL must point to ${CANONICAL_ORIGIN} in production.`,
     );
   }
 

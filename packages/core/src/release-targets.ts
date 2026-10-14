@@ -4,6 +4,14 @@
 
 export const CLOUDFLARE_PROJECT_NAME = "aohys-com";
 
+// The public production domain and the origins that serve it.
+export const CANONICAL_HOST = "aohys.com";
+export const CANONICAL_ORIGIN = `https://${CANONICAL_HOST}`;
+export const PRODUCTION_ORIGINS = [
+  CANONICAL_ORIGIN,
+  `https://www.${CANONICAL_HOST}`,
+] as const;
+
 // Hostname suffix of every Cloudflare Pages deployment of the project.
 export const PAGES_DEV_SUFFIX = `.${CLOUDFLARE_PROJECT_NAME}.pages.dev`;
 
@@ -14,8 +22,8 @@ export const PUBLISH_TARGET = {
 } as const;
 
 export const RELEASE_TARGETS = {
-  preview: { branch: "develop", siteUrl: "https://preview.aohys.com" },
-  production: { branch: "main", siteUrl: "https://aohys.com" },
+  preview: { branch: "develop", siteUrl: `https://preview.${CANONICAL_HOST}` },
+  production: { branch: "main", siteUrl: CANONICAL_ORIGIN },
 } as const;
 
 // PostHog ingest is proxied by the public site of the environment.
