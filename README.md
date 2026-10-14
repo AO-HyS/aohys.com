@@ -34,11 +34,11 @@ Run the repo locally from the root:
 ```sh
 pnpm install
 cp .env.example .env.local
-pnpm verify
+pnpm quality:certify
 pnpm --filter @aohys/site dev
 ```
 
-`pnpm verify` is the main local quality gate. It runs foundation validation, linting, type checks, architecture and observability validation, and builds across the monorepo. The repository intentionally has no automated tests.
+`pnpm quality:certify` is the main local quality gate for an integrated candidate. It runs `verify:ci` (foundation validation, linting, type checks, architecture and observability validation, builds across the monorepo), React Doctor on the changed files and the product verification contract; `pnpm quality:changed` gives the same feedback for the files you changed. The repository intentionally has no automated tests.
 
 To evaluate the Cloudflare Pages shape locally:
 
@@ -56,7 +56,7 @@ The repo uses visible local and remote gates because this site is also a public 
 | ----------------- | ------------------------------------- | ----------------------------------------------------------------------------- |
 | Pre-commit        | `pnpm run verify:precommit`           | staged formatting, foundation validation, React Doctor                        |
 | Pre-push          | `pnpm run quality:push`               | lint, typecheck, build, React Doctor                                          |
-| Local full verify | `pnpm verify`                         | foundation validation, lint, typecheck, build                                 |
+| Local full verify | `pnpm quality:certify`                | foundation validation, lint, typecheck, build                                 |
 | Pull request CI   | `.github/workflows/quality-gates.yml` | install with frozen lockfile, foundation validation, lint, typecheck, build   |
 | Release Train     | `.github/workflows/release-train.yml` | verify, then Cloudflare preview/production deploys on protected branch pushes |
 
@@ -140,10 +140,11 @@ pnpm run audit:posthog-env
 Deploy commands:
 
 ```sh
-pnpm run deploy:preview
+pnpm release preview --plan   # print the steps
+pnpm release preview
 pnpm run smoke:preview
 
-pnpm run deploy:production
+pnpm release production
 pnpm run smoke:production
 ```
 

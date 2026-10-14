@@ -130,7 +130,6 @@ export const requiredBoundaryMarkers = [
     "apps/backend/src/dashboard-providers.ts",
     "parseCloudflareImagesUploadResponse",
   ],
-  ["apps/backend/src/dashboard-providers.ts", "parseGitHubErrorResponse"],
   ["apps/site/src/posthog-client.ts", "parseAnalyticsBootstrapPayload"],
   ["apps/site/src/posthog-client.ts", "parseAnalyticsEventDetail"],
   ["apps/site/src/csp-reporting.ts", "parseCspReportPayload"],

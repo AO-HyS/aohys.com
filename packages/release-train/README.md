@@ -11,10 +11,10 @@ This package owns the small public interface for deployment planning and release
 
 ## Release Targets
 
-| Environment | Branch | Site URL | Cloudflare project |
-| --- | --- | --- | --- |
-| `preview` | `develop` | `https://preview.aohys.com` | `aohys-com` |
-| `production` | `main` | `https://aohys.com` | `aohys-com` |
+| Environment  | Branch    | Site URL                    | Cloudflare project |
+| ------------ | --------- | --------------------------- | ------------------ |
+| `preview`    | `develop` | `https://preview.aohys.com` | `aohys-com`        |
+| `production` | `main`    | `https://aohys.com`         | `aohys-com`        |
 
 Both environments use `https://aohys.com` as the rendered canonical URL for public SEO pages.
 Preview smoke checks run against the unique Cloudflare Pages deployment URL emitted by Wrangler, such as `https://ff7ed5fa.aohys-com.pages.dev`, because branch deployments are available immediately even when a custom preview subdomain is not.
@@ -23,13 +23,13 @@ Root commands:
 
 ```sh
 pnpm run release:env:preview
-pnpm run deploy:preview
+pnpm release preview
 pnpm run smoke:preview
 pnpm run release:env:production
-pnpm run deploy:production
+pnpm release production
 pnpm run smoke:production
 ```
 
-`deploy:preview` and `deploy:production` validate the Environment Contract, audit the production-only PostHog boundary, deploy Convex with the matching `CONVEX_DEPLOY_KEY`, build `apps/site`, and then deploy Cloudflare Pages with Wrangler.
+`pnpm release <preview|production>` (`scripts/release.ts`) runs the steps of `buildReleasePlan(environment)` in order and stops at the first failure: validate the Environment Contract, audit the production-only PostHog boundary, sync the runtimes, deploy Convex with the matching `CONVEX_DEPLOY_KEY`, apply published content, build `apps/site`, and deploy Cloudflare Pages with Wrangler (production also reconciles the canonical domain). `--plan` prints the steps without running them.
 
 Domain-level redirects are represented in `cloudflare/redirect-rules.json`, not Cloudflare Pages `_redirects`.

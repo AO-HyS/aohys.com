@@ -174,11 +174,11 @@
       "guarantees": [
         {
           "statement": "Every Convex module is .ts and none imports or re-exports a public builder (query, mutation, action, their Generic forms, or httpAction outside http.ts) except lib/functions.ts, whose builders keep the closed requireAdmin form. The TypeScript checker classifies every export of every module (nested, aliased, re-exported) and a public function or HTTP action must be a const declared by an adminQuery/adminMutation/adminAction call; any or unknown exports are rejected. Evaluated once per AOHYS_ENV as a Convex push would, every export that is public at runtime must be one of those admin registrations, and a call through its Convex entry point, anonymous or signed in outside ADMIN_EMAIL, must be refused by requireAdmin with the matching error before any other syscall or network call; the evaluation gets no provider credentials and \"use node\" modules export only internal functions. Scope: mistakes and copied patterns; code written to defeat the guard is left to review.",
-          "verifiedBy": "pnpm architecture:fitness (scripts/architecture/public-function-guard.mjs), run by the pre-push hook whenever apps/, functions/, packages/ or scripts/ change and by pnpm verify"
+          "verifiedBy": "pnpm architecture:fitness (scripts/architecture/public-function-guard.mjs), run by the pre-push hook whenever apps/, functions/, packages/ or scripts/ change and by pnpm run verify:ci"
         },
         {
           "statement": "The public HTTP surface is exactly POST and OPTIONS /contact plus one Better Auth route registration: the single router comes from convex/server's httpRouter, is used only through http.route with a literal path and method, registerRoutesLazy and the default export, and the evaluated router serves exactly the pinned route set.",
-          "verifiedBy": "pnpm architecture:fitness (scripts/architecture/public-function-guard.mjs), run by the pre-push hook whenever apps/, functions/, packages/ or scripts/ change and by pnpm verify"
+          "verifiedBy": "pnpm architecture:fitness (scripts/architecture/public-function-guard.mjs), run by the pre-push hook whenever apps/, functions/, packages/ or scripts/ change and by pnpm run verify:ci"
         },
         {
           "statement": "ADMIN_EMAIL is parsed only by parseAdminAllowlist, used by the contract validator, the Pages dashboard gate and requireAdmin.",
@@ -224,6 +224,33 @@
       ],
       "replaces": [],
       "docs": ["apps/backend/README.md"]
+    },
+    {
+      "id": "release-cli",
+      "category": "infra",
+      "status": "active",
+      "summary": "pnpm release <preview|production> [--plan] runs the typed release plan (buildReleasePlan) step by step and stops at the first failure; the release workflow calls it and --plan prints the steps.",
+      "paths": [
+        "scripts/release.ts",
+        "packages/release-train/src/release-plan.ts",
+        "packages/release-train/src/deploy-plan.ts"
+      ],
+      "symbols": [
+        "packages/release-train/src/release-plan.ts#buildReleasePlan",
+        "packages/release-train/src/release-plan.ts#formatReleaseStep",
+        "packages/release-train/src/deploy-plan.ts#buildCloudflarePagesDeployPlan"
+      ],
+      "guarantees": [
+        {
+          "statement": "The release workflow deploys preview and production only through pnpm release <environment>; the hand-written deploy:* chains no longer exist.",
+          "verifiedBy": ".github/workflows/release-train.yml and package.json scripts (rg finds no deploy:preview or deploy:production)"
+        }
+      ],
+      "goals": [
+        "Read the Cloudflare project, repository, workflow and ingest host from one release target source (item 5b)."
+      ],
+      "replaces": [],
+      "docs": ["docs/release-train.md", "packages/release-train/README.md"]
     }
   ]
 }

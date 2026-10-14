@@ -67,8 +67,9 @@ knowledge:
     contents: pnpm run cloudflare:local — builds apps/site and serves dist through wrangler pages dev
   - name: deploy
     contents: |
-      pnpm run deploy:preview (develop → Convex preview + Cloudflare Pages preview).
-      pnpm run deploy:production (main → production). Both need provider secrets.
+      pnpm release preview (develop → Convex preview + Cloudflare Pages preview).
+      pnpm release production (main → production). Both need provider secrets;
+      add --plan to print the steps.
   - name: agent-assets
     contents: |
       Shared agent tools are installed once per machine from the published

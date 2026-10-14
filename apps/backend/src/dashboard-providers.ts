@@ -1,13 +1,6 @@
 import { validateCloudflareImagesCustomId } from "@aohys/core";
-import {
-  parseCloudflareImagesUploadResponse,
-  parseGitHubErrorResponse,
-} from "./provider-responses.js";
-import {
-  type Environment,
-  type Locale,
-  type MediaUsage,
-} from "@aohys/core/domain";
+import { parseCloudflareImagesUploadResponse } from "./provider-responses.js";
+import { type Locale, type MediaUsage } from "@aohys/core/domain";
 
 export {
   normalizeCloudflareImagesCustomId,
@@ -34,13 +27,6 @@ export interface CloudflareImagesDirectUploadResult {
   imageId: string;
   publicUrl: string;
   uploadURL: string;
-}
-
-export interface GitHubPublishWorkflowConfig {
-  environment: Environment;
-  repository?: string;
-  token?: string;
-  workflowId?: string;
 }
 
 export type PublishWorkflowResult =
@@ -115,62 +101,5 @@ export async function createCloudflareImagesDirectUpload(
     imageId: body.imageId,
     publicUrl: `https://imagedelivery.net/${accountHash}/${body.imageId}/public`,
     uploadURL: body.uploadURL,
-  };
-}
-
-export async function triggerGitHubPublishWorkflow(
-  config: GitHubPublishWorkflowConfig,
-  providerFetch: typeof fetch = fetch,
-): Promise<PublishWorkflowResult> {
-  const token = config.token?.trim();
-  const repository = config.repository?.trim() || "AO-HyS/aohys.com";
-  const workflowId = config.workflowId?.trim() || "release-train.yml";
-  const ref = config.environment === "production" ? "main" : "develop";
-
-  if (!token) {
-    return {
-      status: "not-configured",
-      reason: "PUBLISH_GITHUB_TOKEN is missing.",
-    };
-  }
-
-  const response = await providerFetch(
-    `https://api.github.com/repos/${repository}/actions/workflows/${workflowId}/dispatches`,
-    {
-      method: "POST",
-      headers: {
-        accept: "application/vnd.github+json",
-        authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-        "x-github-api-version": "2022-11-28",
-      },
-      body: JSON.stringify({
-        ref,
-        inputs: {
-          target_environment:
-            config.environment === "production" ? "production" : "preview",
-        },
-      }),
-    },
-  );
-
-  if (response.status !== 204) {
-    let message = "GitHub publish workflow could not be queued.";
-
-    try {
-      const body = parseGitHubErrorResponse(await response.json());
-      message = body.message ?? message;
-    } catch {
-      // Keep the generic provider message.
-    }
-
-    throw new Error(message);
-  }
-
-  return {
-    status: "queued",
-    repository,
-    workflowId,
-    ref,
   };
 }
