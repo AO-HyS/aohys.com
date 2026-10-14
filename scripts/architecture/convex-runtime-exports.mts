@@ -1,5 +1,7 @@
+import { realpathSync } from "node:fs";
+import { registerHooks } from "node:module";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 // Evaluates Convex modules the way a Convex push does and prints, per module,
 // each export that is a public function at runtime with what happens when an
@@ -85,6 +87,33 @@ Object.assign(globalThis, {
   },
   EventSource: function EventSource() {
     refuse("EventSource");
+  },
+});
+
+// Node network built-ins and "use node" modules (absolute paths from the
+// guard) are refused at import resolution, transitive imports included, so
+// their module bodies never run here.
+const NODE_NETWORK =
+  /^(?:node:)?(?:http|https|http2|net|tls|dgram|child_process|worker_threads)(?:\/.*)?$/u;
+const nodeModules = new Set(
+  (JSON.parse(process.env.GUARD_NODE_MODULES ?? "[]") as string[]).map((file) =>
+    realpathSync(file),
+  ),
+);
+const realFile = (url: string) => {
+  try {
+    return url.startsWith("file:") ? realpathSync(fileURLToPath(url)) : url;
+  } catch {
+    return url;
+  }
+};
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (NODE_NETWORK.test(specifier)) refuse(`import ${specifier}`);
+    const resolved = nextResolve(specifier, context);
+    if (nodeModules.has(realFile(resolved.url)))
+      refuse(`import of "use node" module ${resolved.url}`);
+    return resolved;
   },
 });
 

@@ -584,7 +584,7 @@ function nodeModuleViolations(checker, relative, sourceFile) {
 
 // Evaluates the modules once per deployment environment (AOHYS_ENV), since
 // a module can choose its exports from deployment configuration.
-function runtimeViolations(root, sources, adminExports) {
+function runtimeViolations(root, sources, adminExports, nodeModules) {
   const environments = [
     ...(readDomainVocabularies(root).find(({ name }) => name === "ENVIRONMENTS")
       ?.members ?? []),
@@ -597,13 +597,20 @@ function runtimeViolations(root, sources, adminExports) {
       root,
       sources,
       adminExports,
+      nodeModules,
       environment,
     ))
       violations.add(`${violation} (AOHYS_ENV=${environment})`);
   return [...violations];
 }
 
-function evaluatedViolations(root, sources, adminExports, environment) {
+function evaluatedViolations(
+  root,
+  sources,
+  adminExports,
+  nodeModules,
+  environment,
+) {
   const result = spawnSync(
     process.execPath,
     ["--import", "tsx", RUNTIME_EXPORTS_SCRIPT, root, ...sources],
@@ -611,6 +618,9 @@ function evaluatedViolations(root, sources, adminExports, environment) {
       cwd: root,
       encoding: "utf8",
       env: {
+        GUARD_NODE_MODULES: JSON.stringify(
+          nodeModules.map((relative) => path.join(root, relative)),
+        ),
         PATH: process.env.PATH ?? "",
         HOME: process.env.HOME ?? "",
         TMPDIR: process.env.TMPDIR ?? "",
@@ -622,11 +632,12 @@ function evaluatedViolations(root, sources, adminExports, environment) {
     },
   );
   if (result.status !== 0) {
-    const reason = (result.stderr || result.error?.message || "")
+    const lines = (result.stderr || result.error?.message || "")
       .trim()
-      .split("\n")
-      .slice(0, 3)
-      .join(" ");
+      .split("\n");
+    const reason =
+      lines.find((line) => /\bguard: /u.test(line) && !/throw /u.test(line)) ??
+      lines.slice(0, 3).join(" ");
     return [
       `${CONVEX_DIR}: could not evaluate Convex modules to read runtime exports: ${reason}`,
     ];
@@ -700,6 +711,7 @@ export function publicFunctionGuardViolations(root) {
           relative !== APP_DEFINITION && !nodeModules.includes(relative),
       ),
       adminExports,
+      nodeModules,
     ),
   );
   return violations;
