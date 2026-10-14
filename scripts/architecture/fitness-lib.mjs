@@ -1,6 +1,8 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 
+import ts from "typescript";
+
 const SOURCE_EXTENSIONS = [
   ".ts",
   ".tsx",
@@ -20,36 +22,109 @@ const IGNORED_DIRECTORIES = new Set([
 
 const DASHBOARD_ROUTE_METADATA = "apps/dashboard/src/navigation.ts";
 const DOMAIN_VOCABULARY = "packages/core/src/domain.ts";
-const STRING_LITERAL_GROUPS = [
-  /(?:\|\s*)?"[^"\n]+"(?:\s*\|\s*"[^"\n]+")+/g,
-  /\[\s*"[^"\n]+"(?:\s*,\s*"[^"\n]+")+\s*,?\s*\]/g,
-  /v\.union\(\s*v\.literal\("[^"\n]+"\)(?:\s*,\s*v\.literal\("[^"\n]+"\))+\s*,?\s*\)/g,
-];
 
-// Domain vocabularies with two or more members.
+// Domain vocabularies declared as `export const NAME = [...] as const;`.
 function readDomainVocabularies(root) {
   const filePath = path.join(root, DOMAIN_VOCABULARY);
   if (!existsSync(filePath)) return [];
+  const groups = literalGroups(readFileSync(filePath, "utf8"), ".ts");
   const source = readFileSync(filePath, "utf8");
-  return [
-    ...source.matchAll(/export const ([A-Z_]+) = \[([^\]]*)\] as const;/g),
-  ]
-    .map((match) => ({
-      name: match[1],
-      members: new Set(
-        [...match[2].matchAll(/"([^"]+)"/g)].map((item) => item[1]),
-      ),
-    }))
-    .filter((vocabulary) => vocabulary.members.size > 1);
+  return [...source.matchAll(/export const ([A-Z_]+) = \[/g)]
+    .map((match) => {
+      const group = groups.find((item) => item.start > match.index);
+      return { name: match[1], members: new Set(group?.members ?? []) };
+    })
+    .filter((vocabulary) => vocabulary.members.size > 0);
 }
 
-// A literal group is a copy when it shares at least two members and most of
-// its own members with a vocabulary, and covers at least 60% of it. This also
-// catches stale copies (a value missing) and drifted copies (a value added).
+// String literal groups found by the TypeScript scanner, so comments, template
+// text and quote style do not matter: `"a" | "b"` unions, `["a", "b"]` arrays
+// and `v.literal("a"), v.literal("b")` validator lists.
+function literalGroups(source, extension) {
+  const scanner = ts.createScanner(
+    ts.ScriptTarget.Latest,
+    true,
+    [".tsx", ".jsx", ".astro"].includes(extension)
+      ? ts.LanguageVariant.JSX
+      : ts.LanguageVariant.Standard,
+    source,
+  );
+  const tokens = [];
+  for (
+    let kind = scanner.scan();
+    kind !== ts.SyntaxKind.EndOfFileToken;
+    kind = scanner.scan()
+  ) {
+    tokens.push({
+      kind,
+      text: scanner.getTokenValue(),
+      start: scanner.getTokenStart(),
+    });
+  }
+
+  const groups = [];
+  const isString = (index) =>
+    tokens[index]?.kind === ts.SyntaxKind.StringLiteral;
+  const literalCall = (index) =>
+    tokens[index]?.text === "v" &&
+    tokens[index + 1]?.kind === ts.SyntaxKind.DotToken &&
+    tokens[index + 2]?.text === "literal" &&
+    tokens[index + 3]?.kind === ts.SyntaxKind.OpenParenToken &&
+    isString(index + 4) &&
+    tokens[index + 5]?.kind === ts.SyntaxKind.CloseParenToken;
+
+  for (let index = 0; index < tokens.length; index += 1) {
+    if (isString(index) && tokens[index + 1]?.kind === ts.SyntaxKind.BarToken) {
+      const members = [tokens[index].text];
+      let next = index + 1;
+      while (
+        tokens[next]?.kind === ts.SyntaxKind.BarToken &&
+        isString(next + 1)
+      ) {
+        members.push(tokens[next + 1].text);
+        next += 2;
+      }
+      groups.push({ members, start: tokens[index].start });
+      index = next - 1;
+    } else if (tokens[index].kind === ts.SyntaxKind.OpenBracketToken) {
+      const members = [];
+      let next = index + 1;
+      while (isString(next)) {
+        members.push(tokens[next].text);
+        next += tokens[next + 1]?.kind === ts.SyntaxKind.CommaToken ? 2 : 1;
+      }
+      if (
+        members.length > 0 &&
+        tokens[next]?.kind === ts.SyntaxKind.CloseBracketToken
+      ) {
+        groups.push({ members, start: tokens[index].start });
+      }
+    } else if (literalCall(index)) {
+      const members = [tokens[index + 4].text];
+      let next = index + 6;
+      while (
+        tokens[next]?.kind === ts.SyntaxKind.CommaToken &&
+        literalCall(next + 1)
+      ) {
+        members.push(tokens[next + 5].text);
+        next += 7;
+      }
+      groups.push({ members, start: tokens[index].start });
+      index = next - 1;
+    }
+  }
+  return groups;
+}
+
+// A literal group copies a vocabulary when it shares most of its own members
+// with it and covers at least 60% of it, so stale copies (a value missing) and
+// drifted copies (a value added) fail too. Single-member vocabularies match an
+// exact single-member group.
 function copiedVocabulary(members, vocabulary) {
   const shared = [...members].filter((member) =>
     vocabulary.members.has(member),
   ).length;
+  if (vocabulary.members.size === 1) return members.size === 1 && shared === 1;
   return (
     shared >= 2 &&
     shared * 2 >= members.size &&
@@ -57,21 +132,24 @@ function copiedVocabulary(members, vocabulary) {
   );
 }
 
-// A line ending in `// domain-vocabulary-ok` is a different concept that shares values.
-function redeclaredVocabularies(source, vocabularies) {
+// A group on a line ending in `// domain-vocabulary-ok` is a different
+// concept that shares values.
+function redeclaredVocabularies(source, extension, vocabularies) {
+  const exemptLines = new Set(
+    source
+      .split("\n")
+      .map((line, index) =>
+        line.trimEnd().endsWith("// domain-vocabulary-ok") ? index : -1,
+      )
+      .filter((index) => index >= 0),
+  );
+  const lineOf = (offset) => source.slice(0, offset).split("\n").length - 1;
   const found = new Set();
-  const checked = source
-    .split("\n")
-    .filter((line) => !line.trimEnd().endsWith("// domain-vocabulary-ok"))
-    .join("\n");
-  for (const pattern of STRING_LITERAL_GROUPS) {
-    for (const match of checked.matchAll(pattern)) {
-      const members = new Set(
-        [...match[0].matchAll(/"([^"]+)"/g)].map((item) => item[1]),
-      );
-      for (const vocabulary of vocabularies) {
-        if (copiedVocabulary(members, vocabulary)) found.add(vocabulary.name);
-      }
+  for (const group of literalGroups(source, extension)) {
+    if (exemptLines.has(lineOf(group.start))) continue;
+    const members = new Set(group.members);
+    for (const vocabulary of vocabularies) {
+      if (copiedVocabulary(members, vocabulary)) found.add(vocabulary.name);
     }
   }
   return [...found].sort();
@@ -353,7 +431,11 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
   for (const importer of productionFiles) {
     const source = readFileSync(path.join(root, importer), "utf8");
     if (importer !== DOMAIN_VOCABULARY) {
-      for (const vocabulary of redeclaredVocabularies(source, vocabularies)) {
+      for (const vocabulary of redeclaredVocabularies(
+        source,
+        path.extname(importer),
+        vocabularies,
+      )) {
         violations.push({
           id: `domain-vocabulary-redeclared:${importer}:${vocabulary}`,
           kind: "domain-vocabulary-redeclared",
