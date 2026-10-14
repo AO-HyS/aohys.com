@@ -19,18 +19,14 @@ import {
   type MediaSelectionRequest,
   type MediaUploadRequest,
 } from "./projects-api";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Action } from "@/components/dashboard/action";
+import { ConfirmAction } from "@/components/dashboard/confirm-action";
+import { MetaBadge } from "@/components/dashboard/meta-badge";
+import { NoticeDialog } from "@/components/dashboard/notice-dialog";
+import {
+  StatusBadge,
+  type StatusTone,
+} from "@/components/dashboard/status-badge";
 import {
   LabeledInput,
   LabeledSelect,
@@ -57,6 +53,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn, dashboardClass } from "@/lib/dashboard-classes";
+import { projectClass } from "./project-classes";
 import {
   cloudflareImagesStorageKeyForFile,
   defaultProjectMediaStorageKey,
@@ -89,6 +86,7 @@ import {
   type CaseStudyEvidenceStatus,
   type CaseStudyStatus,
   type Locale,
+  type MediaStatus,
 } from "@aohys/core/domain";
 
 const caseStudyStatuses = CASE_STUDY_STATUSES;
@@ -148,7 +146,7 @@ function ProjectsWorkspace({ content }: { content: ProjectsContent }) {
     : null;
 
   return (
-    <div className={dashboardClass.workspace}>
+    <div className={projectClass.workspace}>
       <PageHeader
         title="Project workspace"
         description="Edit stories, outcomes, structure, images, CTA, URL, and SEO metadata. Save keeps work private; Publish sends reviewed content through the release train."
@@ -180,7 +178,7 @@ function ProjectsWorkspace({ content }: { content: ProjectsContent }) {
         {...(selectedProjectId ? { value: selectedProjectId } : {})}
         onValueChange={setRequestedProjectId}
         orientation="vertical"
-        className={dashboardClass.projectShell}
+        className={projectClass.projectShell}
       >
         <ProjectTabs projects={content.projects} />
         <div className="min-w-0">
@@ -245,31 +243,17 @@ function MediaUploadIssueDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   return (
-    <AlertDialog open={Boolean(issue)} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="sm:max-w-md">
-        <AlertDialogHeader>
-          <div className="mb-1 flex size-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-            <CircleAlertIcon aria-hidden="true" />
-          </div>
-          <AlertDialogTitle>
-            {issue?.title ?? "Image upload failed"}
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            {issue?.description ?? "The selected image could not be uploaded."}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        {issue?.detail ? (
-          <div className="break-words rounded-lg border bg-muted/40 px-3 py-2 text-left text-sm leading-6 text-muted-foreground">
-            {issue.detail}
-          </div>
-        ) : null}
-        <AlertDialogFooter>
-          <AlertDialogAction>
-            {issue?.actionLabel ?? "Got it"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <NoticeDialog
+      open={Boolean(issue)}
+      onOpenChange={onOpenChange}
+      icon={CircleAlertIcon}
+      title={issue?.title ?? "Image upload failed"}
+      description={
+        issue?.description ?? "The selected image could not be uploaded."
+      }
+      {...(issue?.detail ? { detail: issue.detail } : {})}
+      {...(issue?.actionLabel ? { actionLabel: issue.actionLabel } : {})}
+    />
   );
 }
 
@@ -285,63 +269,39 @@ function DeleteMediaDialog({
   onConfirm: () => void | Promise<void>;
 }) {
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <div className="mb-1 flex size-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-            <Trash2Icon aria-hidden="true" />
-          </div>
-          <AlertDialogTitle>Delete dashboard media?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This removes the media record from the dashboard. Publish afterwards
-            if the public Astro image should change.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            className="bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20"
-            disabled={isDeleting}
-            onClick={(event) => {
-              event.preventDefault();
-              void onConfirm();
-            }}
-          >
-            {isDeleting ? (
-              <LoaderCircleIcon
-                data-icon="inline-start"
-                className="animate-spin"
-              />
-            ) : (
-              <Trash2Icon data-icon="inline-start" />
-            )}
-            Delete image
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <ConfirmAction
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={Trash2Icon}
+      title="Delete dashboard media?"
+      description="This removes the media record from the dashboard. Publish afterwards if the public Astro image should change."
+      confirmLabel="Delete image"
+      pending={isDeleting}
+      pendingLabel="Deleting…"
+      onConfirm={() => void onConfirm()}
+    />
   );
 }
 
 function ProjectTabs({ projects }: { projects: DashboardProject[] }) {
   return (
-    <aside className={dashboardClass.projectNavPanel}>
-      <div className={dashboardClass.projectNavHeader}>
-        <div className={dashboardClass.projectNavLabel}>Projects</div>
-        <Badge variant="outline">{projects.length}</Badge>
+    <aside className={projectClass.projectNavPanel}>
+      <div className={projectClass.projectNavHeader}>
+        <div className={projectClass.projectNavLabel}>Projects</div>
+        <MetaBadge>{projects.length}</MetaBadge>
       </div>
-      <TabsList className={dashboardClass.projectTabsList}>
+      <TabsList className={projectClass.projectTabsList}>
         {projects.map((project) => (
           <TabsTrigger
             key={project.contentId}
             value={project.contentId}
-            className={dashboardClass.projectTabTrigger}
+            className={projectClass.projectTabTrigger}
           >
-            <span className={dashboardClass.projectTabCopy}>
-              <span className={dashboardClass.projectTabTitle}>
+            <span className={projectClass.projectTabCopy}>
+              <span className={projectClass.projectTabTitle}>
                 {project.title}
               </span>
-              <small className={dashboardClass.projectTabMeta}>
+              <small className={projectClass.projectTabMeta}>
                 {formatProjectStatus(project.status)}
               </small>
             </span>
@@ -403,8 +363,8 @@ function NewProjectCard({
   );
 
   return (
-    <Card className={dashboardClass.cardShadow}>
-      <CardHeader className={dashboardClass.cardHeaderRule}>
+    <Card className={projectClass.cardShadow}>
+      <CardHeader className={projectClass.cardHeaderRule}>
         <div>
           <CardTitle>Create project</CardTitle>
           <CardDescription>
@@ -430,7 +390,7 @@ function NewProjectCard({
             });
           }}
         >
-          <FieldGroup className={dashboardClass.newProjectForm}>
+          <FieldGroup className={projectClass.newProjectForm}>
             <LabeledInput
               label="English title"
               value={form.title}
@@ -531,17 +491,17 @@ function ProjectEditor({
   onDeleteMedia: (payload: MediaSelectionRequest) => void | Promise<void>;
 }) {
   return (
-    <div className={dashboardClass.projectEditorGrid}>
-      <div className={dashboardClass.projectColumn}>
+    <div className={projectClass.projectEditorGrid}>
+      <div className={projectClass.projectColumn}>
         <ProjectSummaryCard
           project={project}
           {...(publication ? { publication } : {})}
           isPublishing={isPublishing}
           onPublish={onPublish}
         />
-        <Card className={dashboardClass.localeEditor}>
-          <Tabs defaultValue="en" className={dashboardClass.localeEditor}>
-            <CardHeader className={dashboardClass.localeHeader}>
+        <Card className={projectClass.localeEditor}>
+          <Tabs defaultValue="en" className={projectClass.localeEditor}>
+            <CardHeader className={projectClass.localeHeader}>
               <div>
                 <CardTitle>Localized content</CardTitle>
                 <CardDescription>
@@ -589,7 +549,7 @@ function ProjectEditor({
           </Tabs>
         </Card>
       </div>
-      <aside className={dashboardClass.projectColumn}>
+      <aside className={projectClass.projectColumn}>
         <ProjectImagesCard
           project={project}
           savingKey={savingKey}
@@ -634,36 +594,36 @@ function ProjectSummaryCard({
     .sort((a, b) => b - a)[0];
 
   return (
-    <Card className={dashboardClass.projectSummaryCard}>
-      <CardHeader className={dashboardClass.projectSummaryHeader}>
+    <Card className={projectClass.projectSummaryCard}>
+      <CardHeader className={projectClass.projectSummaryHeader}>
         <div className="min-w-0">
-          <CardTitle className={dashboardClass.projectSummaryTitle}>
+          <CardTitle className={projectClass.projectSummaryTitle}>
             {project.title}
           </CardTitle>
-          <CardDescription className={dashboardClass.projectSummaryPaths}>
+          <CardDescription className={projectClass.projectSummaryPaths}>
             {project.englishPath} · {project.spanishPath}
           </CardDescription>
         </div>
-        <CardAction className={dashboardClass.projectSummaryBadges}>
-          <Badge variant="secondary">
+        <CardAction className={projectClass.projectSummaryBadges}>
+          <MetaBadge emphasis="filled">
             {formatProjectStatus(project.status)}
-          </Badge>
-          <Badge
-            variant={
-              project.evidenceStatus === "published" ? "default" : "outline"
+          </MetaBadge>
+          <StatusBadge
+            tone={
+              project.evidenceStatus === "published" ? "success" : "neutral"
             }
           >
             {formatReferenceState(project.evidenceStatus)}
-          </Badge>
-          <Badge variant="outline">
+          </StatusBadge>
+          <StatusBadge tone={project.sitemapIncluded ? "success" : "neutral"}>
             {project.sitemapIncluded ? "In sitemap" : "Noindex"}
-          </Badge>
+          </StatusBadge>
         </CardAction>
       </CardHeader>
-      <CardContent className={dashboardClass.projectSummaryContent}>
+      <CardContent className={projectClass.projectSummaryContent}>
         {project.projectUrl ? (
           <a
-            className={dashboardClass.projectSummaryUrl}
+            className={projectClass.projectSummaryUrl}
             href={project.projectUrl}
             target="_blank"
             rel="noreferrer"
@@ -674,15 +634,15 @@ function ProjectSummaryCard({
         ) : (
           <span
             className={cn(
-              dashboardClass.projectSummaryUrl,
-              dashboardClass.projectSummaryUrlEmpty,
+              projectClass.projectSummaryUrl,
+              projectClass.projectSummaryUrlEmpty,
             )}
           >
             No public URL yet
           </span>
         )}
-        <div className={dashboardClass.publishBar}>
-          <div className={dashboardClass.publishMeta}>
+        <div className={projectClass.publishBar}>
+          <div className={projectClass.publishMeta}>
             <span>
               Saved {latestDraft ? formatDate(latestDraft.updatedAt) : "never"}
             </span>
@@ -757,7 +717,7 @@ function ProjectLocaleForm({
         void onSave(form);
       }}
     >
-      <div className={dashboardClass.projectFormHeader}>
+      <div className={projectClass.projectFormHeader}>
         <div>
           <h2>
             {getSharedI18n(localeContent.locale).dashboard.contentHeading}
@@ -769,9 +729,9 @@ function ProjectLocaleForm({
               : "public content graph"}
           </p>
         </div>
-        <Badge variant={hasChanges ? "secondary" : "outline"}>
+        <StatusBadge tone={hasChanges ? "attention" : "success"}>
           {hasChanges ? "Unsaved changes" : "Up to date"}
-        </Badge>
+        </StatusBadge>
       </div>
       <FieldSet>
         <FieldLegend>Identity</FieldLegend>
@@ -864,7 +824,7 @@ function ProjectLocaleForm({
         </FieldGroup>
       </FieldSet>
 
-      <div className={dashboardClass.formActionRow}>
+      <div className={projectClass.formActionRow}>
         <span aria-live="polite">
           {isSaving
             ? "Saving..."
@@ -907,20 +867,20 @@ function ProjectImagesCard({
     selectedImagePreviewStatus !== "ready";
 
   return (
-    <Card className={dashboardClass.cardShadow}>
-      <CardHeader className={dashboardClass.mediaCardHeader}>
+    <Card className={projectClass.cardShadow}>
+      <CardHeader className={projectClass.mediaCardHeader}>
         <CardTitle>Project media</CardTitle>
         <CardDescription>
           Choose the exact image that the Astro landing and case-study pages
           should use.
         </CardDescription>
       </CardHeader>
-      <CardContent className={dashboardClass.mediaList}>
-        <div className={dashboardClass.mediaSelectedPreview}>
+      <CardContent className={projectClass.mediaList}>
+        <div className={projectClass.mediaSelectedPreview}>
           <MediaImage
             {...(previewImage?.src ? { src: previewImage.src } : {})}
             alt={previewImage?.altText ?? "No project image"}
-            className={dashboardClass.mediaPreviewFrame}
+            className={projectClass.mediaPreviewFrame}
             {...(selectedImageHasPreviewIssue
               ? {
                   missingLabel: mediaPreviewIssueLabel(
@@ -929,10 +889,10 @@ function ProjectImagesCard({
                 }
               : {})}
           />
-          <div className={dashboardClass.mediaPreviewCopy}>
+          <div className={projectClass.mediaPreviewCopy}>
             <span
               className={
-                selectedImage ? dashboardClass.mediaSelectedLabel : undefined
+                selectedImage ? projectClass.mediaSelectedLabel : undefined
               }
             >
               {selectedImage
@@ -960,47 +920,47 @@ function ProjectImagesCard({
             <div
               key={`${image.source}:${image.label}:${image.storageKey ?? image.href ?? image.src ?? ""}`}
               className={cn(
-                dashboardClass.mediaRow,
-                image.selectedForPublic && dashboardClass.mediaRowSelected,
+                projectClass.mediaRow,
+                image.selectedForPublic && projectClass.mediaRowSelected,
               )}
             >
               <MediaImage
                 {...(image.src ? { src: image.src } : {})}
                 alt={image.altText}
-                className={dashboardClass.mediaThumb}
+                className={projectClass.mediaThumb}
                 {...(image.previewStatus && image.previewStatus !== "ready"
                   ? {
                       missingLabel: mediaPreviewIssueLabel(image.previewStatus),
                     }
                   : {})}
               />
-              <div className={dashboardClass.mediaRowBody}>
-                <div className={dashboardClass.mediaRowTitle}>
-                  {image.label}
-                </div>
-                <p className={dashboardClass.mediaRowText}>{image.altText}</p>
-                <div className={dashboardClass.mediaRowTags}>
-                  <Badge variant="secondary">
+              <div className={projectClass.mediaRowBody}>
+                <div className={projectClass.mediaRowTitle}>{image.label}</div>
+                <p className={projectClass.mediaRowText}>{image.altText}</p>
+                <div className={projectClass.mediaRowTags}>
+                  <MetaBadge emphasis="filled">
                     {image.source === "media-metadata"
                       ? "Dashboard media"
                       : "Content graph"}
-                  </Badge>
+                  </MetaBadge>
                   {image.status ? (
-                    <Badge variant="outline">{image.status}</Badge>
+                    <StatusBadge tone={mediaStatusTone[image.status]}>
+                      {image.status}
+                    </StatusBadge>
                   ) : null}
                   {image.previewStatus && image.previewStatus !== "ready" ? (
-                    <Badge variant="outline">
+                    <StatusBadge tone="attention">
                       {mediaPreviewIssueLabel(image.previewStatus)}
-                    </Badge>
+                    </StatusBadge>
                   ) : null}
                   {image.selectedForPublicAt ? (
-                    <Badge>Astro image</Badge>
+                    <StatusBadge tone="success">Astro image</StatusBadge>
                   ) : null}
                   {image.selectedForPublic && !image.selectedForPublicAt ? (
-                    <Badge variant="outline">Review required</Badge>
+                    <StatusBadge tone="attention">Review required</StatusBadge>
                   ) : null}
                 </div>
-                <div className={dashboardClass.mediaRowActions}>
+                <div className={projectClass.mediaRowActions}>
                   {image.id && image.status !== "archived" ? (
                     <Button
                       type="button"
@@ -1101,7 +1061,7 @@ function ProjectImagesCard({
             </div>
           ))
         ) : (
-          <p className={dashboardClass.mediaEmptyNote}>
+          <p className={projectClass.mediaEmptyNote}>
             No project media has been attached yet. Add an image below to give
             this case study a public visual.
           </p>
@@ -1110,6 +1070,12 @@ function ProjectImagesCard({
     </Card>
   );
 }
+
+const mediaStatusTone = {
+  draft: "pending",
+  published: "success",
+  archived: "neutral",
+} as const satisfies Record<MediaStatus, StatusTone>;
 
 function mediaPreviewIssueLabel(
   status: NonNullable<DashboardProject["images"][number]["previewStatus"]>,
@@ -1144,7 +1110,7 @@ function MediaImage({
   if (!src || failedSrc === src) {
     return (
       <div
-        className={cn(dashboardClass.mediaImageEmpty, className)}
+        className={cn(projectClass.mediaImageEmpty, className)}
         role="img"
         aria-label={alt}
       >
@@ -1206,8 +1172,8 @@ function ImageUploadForm({
     !trimmedPublicUrl && !storageKeyValidation.isValid;
 
   return (
-    <Card className={dashboardClass.cardShadow}>
-      <CardHeader className={dashboardClass.mediaCardHeader}>
+    <Card className={projectClass.cardShadow}>
+      <CardHeader className={projectClass.mediaCardHeader}>
         <CardTitle>Add image</CardTitle>
         <CardDescription>
           Preview the selected file, or register an image that is already hosted
@@ -1275,7 +1241,7 @@ function ImageUploadForm({
               />
             </Field>
             {previewUrl ? (
-              <figure className={dashboardClass.uploadPreview}>
+              <figure className={projectClass.uploadPreview}>
                 <img
                   src={previewUrl}
                   alt={form.altText || "Selected image preview"}

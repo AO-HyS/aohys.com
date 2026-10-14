@@ -12,11 +12,11 @@ import { useDashboardLeads, useSaveLeadStatus } from "./leads-api";
 import {
   Action,
   AsyncSurface,
+  MetaBadge,
   PageHeader,
   SectionPanel,
   StatusBadge,
 } from "@/components/dashboard";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -293,9 +293,9 @@ function LeadTable({
         accessorKey: "intent",
         header: "Intent",
         cell: ({ row }) => (
-          <Badge variant="secondary">
+          <MetaBadge emphasis="filled">
             {formatLeadIntent(row.original.intent)}
-          </Badge>
+          </MetaBadge>
         ),
       },
       {

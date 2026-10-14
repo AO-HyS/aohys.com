@@ -26,6 +26,16 @@ const IGNORED_DIRECTORIES = new Set([
 ]);
 
 const DASHBOARD_ROUTE_METADATA = "apps/dashboard/src/navigation.ts";
+// Raw shadcn pieces a dashboard feature reaches through the kit instead:
+// ConfirmAction or NoticeDialog for alert dialogs, StatusBadge or MetaBadge for
+// badges. Matched on the resolved file, so an alias or relative path is caught.
+const DASHBOARD_KIT_ONLY = new Map([
+  [
+    "apps/dashboard/src/components/ui/alert-dialog.tsx",
+    "ConfirmAction or NoticeDialog",
+  ],
+  ["apps/dashboard/src/components/ui/badge.tsx", "StatusBadge or MetaBadge"],
+]);
 
 function normalize(filePath) {
   return filePath.replaceAll("\\", "/").replace(/^\.\//, "");
@@ -360,6 +370,19 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
           importer,
           target,
           message: `${importer} imports dashboard composition ${target}`,
+        });
+      }
+
+      if (
+        DASHBOARD_KIT_ONLY.has(target) &&
+        importer.startsWith("apps/dashboard/src/features/")
+      ) {
+        violations.push({
+          id: `dashboard-kit-bypass:${importer}:${target}`,
+          kind: "dashboard-kit-bypass",
+          importer,
+          target,
+          message: `${importer} imports ${target}; use ${DASHBOARD_KIT_ONLY.get(target)} from @/components/dashboard`,
         });
       }
 

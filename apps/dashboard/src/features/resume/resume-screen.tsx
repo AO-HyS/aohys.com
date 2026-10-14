@@ -25,17 +25,7 @@ import {
 } from "@/components/dashboard/form-controls";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { SaveBar } from "@/components/dashboard/save-bar";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/dashboard/status-badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -49,6 +39,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toast";
 import { captureDashboardAction } from "@/lib/analytics";
 import { dashboardClass } from "@/lib/dashboard-classes";
+import { resumeClass } from "./resume-classes";
 import {
   createResumeEditableState,
   reduceResumeEditableState,
@@ -385,31 +376,18 @@ function ResumeWorkspace({
         onSubmit={handleVersionSubmit}
       />
 
-      <AlertDialog
+      <ConfirmAction
         open={pendingLocale !== null}
         onOpenChange={(open) => !open && setPendingLocale(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Discard unsaved locale changes?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Switching locale resets this editor to the other locale's saved
-              Convex baseline.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Keep editing</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (pendingLocale) onSelectLocale(pendingLocale);
-                setPendingLocale(null);
-              }}
-            >
-              Discard and switch
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        title="Discard unsaved locale changes?"
+        description="Switching locale resets this editor to the other locale's saved Convex baseline."
+        cancelLabel="Keep editing"
+        confirmLabel="Discard and switch"
+        onConfirm={() => {
+          if (pendingLocale) onSelectLocale(pendingLocale);
+          setPendingLocale(null);
+        }}
+      />
     </div>
   );
 }
@@ -875,7 +853,7 @@ function TextArrayEditor({
           onValueChange={onTitleChange}
         />
         {values.map((value, index) => (
-          <div key={itemKeys.at(index)} className={dashboardClass.arrayRow}>
+          <div key={itemKeys.at(index)} className={resumeClass.arrayRow}>
             <LabeledTextarea
               label={`Item ${index + 1}`}
               value={value}
@@ -935,10 +913,7 @@ function HighlightsEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div
-            key={itemKeys.at(index)}
-            className={dashboardClass.nestedEditorRow}
-          >
+          <div key={itemKeys.at(index)} className={resumeClass.nestedEditorRow}>
             <div className={dashboardClass.formGrid2}>
               <LabeledInput
                 label={`Highlight ${index + 1} label`}
@@ -1006,10 +981,7 @@ function ProjectsEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div
-            key={itemKeys.at(index)}
-            className={dashboardClass.nestedEditorRow}
-          >
+          <div key={itemKeys.at(index)} className={resumeClass.nestedEditorRow}>
             <LabeledInput
               label={`Project ${index + 1} title`}
               value={item.title}
@@ -1092,10 +1064,7 @@ function ExperienceEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div
-            key={itemKeys.at(index)}
-            className={dashboardClass.nestedEditorRow}
-          >
+          <div key={itemKeys.at(index)} className={resumeClass.nestedEditorRow}>
             <div className={dashboardClass.formGrid3}>
               <LabeledInput
                 label={`Experience ${index + 1} role`}
@@ -1189,10 +1158,7 @@ function SkillsEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div
-            key={itemKeys.at(index)}
-            className={dashboardClass.nestedEditorRow}
-          >
+          <div key={itemKeys.at(index)} className={resumeClass.nestedEditorRow}>
             <LabeledInput
               label={`Skill group ${index + 1} label`}
               value={item.label}
@@ -1265,10 +1231,7 @@ function EducationEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div
-            key={itemKeys.at(index)}
-            className={dashboardClass.nestedEditorRow}
-          >
+          <div key={itemKeys.at(index)} className={resumeClass.nestedEditorRow}>
             <div className={dashboardClass.formGrid3}>
               <LabeledInput
                 label={`Education ${index + 1} degree`}
@@ -1358,11 +1321,11 @@ function ResumeVersionsCard({
                     {version.pdfPath}
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant={version.isPublished ? "default" : "secondary"}
+                    <StatusBadge
+                      tone={version.isPublished ? "success" : "neutral"}
                     >
                       {version.isPublished ? "Published" : "Draft"}
-                    </Badge>
+                    </StatusBadge>
                   </TableCell>
                 </TableRow>
               ))}
