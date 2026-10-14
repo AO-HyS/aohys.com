@@ -1,3 +1,8 @@
+import { isOneOf } from "@aohys/core";
+import {
+  PUBLICATION_WORKFLOW_OUTCOMES,
+  RELEASE_ENVIRONMENTS,
+} from "@aohys/core/domain";
 import { runConvexFunction } from "./convex-run.js";
 
 function required(name: string): string {
@@ -9,14 +14,14 @@ function required(name: string): string {
 }
 
 const targetEnvironment = required("PUBLICATION_TARGET_ENVIRONMENT");
-if (targetEnvironment !== "preview" && targetEnvironment !== "production") {
+if (!isOneOf(targetEnvironment, RELEASE_ENVIRONMENTS)) {
   throw new Error(
     "PUBLICATION_TARGET_ENVIRONMENT must be preview or production.",
   );
 }
 
 const outcome = required("PUBLICATION_WORKFLOW_OUTCOME");
-if (outcome !== "failure" && outcome !== "cancelled") {
+if (!isOneOf(outcome, PUBLICATION_WORKFLOW_OUTCOMES)) {
   throw new Error("PUBLICATION_WORKFLOW_OUTCOME must be failure or cancelled.");
 }
 

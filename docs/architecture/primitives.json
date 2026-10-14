@@ -32,7 +32,7 @@
       "id": "domain-vocabulary",
       "category": "data",
       "status": "active",
-      "summary": "One as-const array per domain vocabulary (locale, environment, release environment, lead intent/status/contact path, publication scope/request/attempt state, media provider/usage/status, site setting key/classification, environment variable classification, writable media providers, case-study status/evidence); types derive from the arrays and Convex validators derive through literals().",
+      "summary": "One as-const array per domain vocabulary (locale, environment, release environment, lead intent/status/contact path, publication scope/request/attempt state, workflow outcome and provider status, media provider/usage/status, site setting key/classification, environment variable classification, writable media providers, case-study status/evidence); types derive from the arrays and Convex validators derive through literals().",
       "paths": [
         "packages/core/src/domain.ts",
         "apps/backend/convex/lib/validators.ts"
@@ -46,8 +46,8 @@
       ],
       "guarantees": [
         {
-          "statement": "No production source outside packages/core/src/domain.ts declares a string union, array or v.union that copies a domain vocabulary, including stale copies (a value missing) and drifted copies (a value added); a line ending in // domain-vocabulary-ok marks a different concept.",
-          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-redeclared); probes for identical, stale and drifted copies rejected"
+          "statement": "No production source outside packages/core/src/domain.ts declares a string union, array or v.union/v.literal list that copies a domain vocabulary, including stale (a value missing) and drifted (a value added) copies; convex/schema.ts and convex/lib/validators.ts hold no string v.literal; a line ending in // domain-vocabulary-ok marks a different concept.",
+          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-redeclared, TypeScript AST); probes for identical, stale, drifted, single-quoted, parenthesized, aliased-v and singleton copies rejected"
         },
         {
           "statement": "The Convex schema and function validators for these vocabularies derive from the domain arrays.",

@@ -10,9 +10,12 @@ import {
   MEDIA_USAGES,
   PREFERRED_CONTACT_PATHS,
   PUBLICATION_ATTEMPT_STATES,
+  PUBLICATION_PROVIDER_STATUSES,
   PUBLICATION_REQUEST_STATES,
   PUBLICATION_SCOPES,
+  PUBLICATION_WORKFLOW_OUTCOMES,
   RELEASE_ENVIRONMENTS,
+  RETRYABLE_PUBLICATION_PROVIDER_STATUSES,
   SITE_SETTING_CLASSIFICATIONS,
   SITE_SETTING_KEYS,
   WRITABLE_MEDIA_STORAGE_PROVIDERS,
@@ -42,6 +45,15 @@ export const publicationRequestStateValidator = literals(
 );
 export const publicationAttemptStateValidator = literals(
   PUBLICATION_ATTEMPT_STATES,
+);
+export const publicationWorkflowOutcomeValidator = literals(
+  PUBLICATION_WORKFLOW_OUTCOMES,
+);
+export const publicationProviderStatusValidator = literals(
+  PUBLICATION_PROVIDER_STATUSES,
+);
+export const retryablePublicationProviderStatusValidator = literals(
+  RETRYABLE_PUBLICATION_PROVIDER_STATUSES,
 );
 export const mediaStorageProviderValidator = literals(MEDIA_STORAGE_PROVIDERS);
 export const writableMediaStorageProviderValidator = literals(

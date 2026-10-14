@@ -50,6 +50,20 @@ export const PUBLICATION_ATTEMPT_STATES = [
 export type PublicationAttemptState =
   (typeof PUBLICATION_ATTEMPT_STATES)[number];
 
+export const PUBLICATION_WORKFLOW_OUTCOMES = ["failure", "cancelled"] as const;
+export type PublicationWorkflowOutcome =
+  (typeof PUBLICATION_WORKFLOW_OUTCOMES)[number];
+
+// Results of an explicit provider status check; never inferred from time.
+export const PUBLICATION_PROVIDER_STATUSES = ["not-found", "unknown"] as const;
+export type PublicationProviderStatus =
+  (typeof PUBLICATION_PROVIDER_STATUSES)[number];
+
+// Only a confirmed missing dispatch may be rescheduled.
+export const RETRYABLE_PUBLICATION_PROVIDER_STATUSES = [
+  "not-found",
+] as const satisfies readonly PublicationProviderStatus[];
+
 export const MEDIA_STORAGE_PROVIDERS = [
   "cloudflare-images",
   "cloudflare-r2",

@@ -137,7 +137,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     provider: "posthog",
     classification: "public-build-value",
     exposure: "public-browser",
-    requiredIn: ["production"],
+    requiredIn: ["production"], // domain-vocabulary-ok
     description:
       "Production-only PostHog public key; browser traffic uses the first-party /ingest proxy.",
   },

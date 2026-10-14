@@ -14,6 +14,7 @@ import {
   publicationAttemptStateValidator,
   publicationRequestStateValidator,
   publicationScopeValidator,
+  publicationWorkflowOutcomeValidator,
   releaseEnvironmentValidator,
   siteSettingClassificationValidator,
 } from "./lib/validators.js";
@@ -157,9 +158,7 @@ export default defineSchema({
     providerRunUrl: v.optional(v.string()),
     providerGitRef: v.optional(v.string()),
     providerReleaseSha: v.optional(v.string()),
-    workflowOutcome: v.optional(
-      v.union(v.literal("failure"), v.literal("cancelled")),
-    ),
+    workflowOutcome: v.optional(publicationWorkflowOutcomeValidator),
     workflowOutcomeAt: v.optional(v.number()),
     failureCode: v.optional(v.string()),
     failureMessage: v.optional(v.string()),
