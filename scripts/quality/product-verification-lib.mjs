@@ -519,13 +519,21 @@ const EVIDENCE_PREFIX = "$HOME/.development-system/private/verification/";
 
 // A proof holds only while the journey's mapped sources are unchanged since
 // the verified candidate commit.
+// Compares the proof commit with the working tree (staged and unstaged
+// changes) and rejects untracked files under the mapped paths.
 function sourcesUnchangedSince(root, candidateSha, sourceGlobs) {
-  const result = spawnSync(
+  const diff = spawnSync(
     "git",
-    ["diff", "--quiet", candidateSha, "HEAD", "--", ...sourceGlobs],
+    ["diff", "--quiet", candidateSha, "--", ...sourceGlobs],
     { cwd: root },
   );
-  return result.status === 0;
+  if (diff.status !== 0) return false;
+  const untracked = spawnSync(
+    "git",
+    ["ls-files", "--others", "--exclude-standard", "--", ...sourceGlobs],
+    { cwd: root, encoding: "utf8" },
+  );
+  return untracked.status === 0 && untracked.stdout.trim() === "";
 }
 
 // The single feature-map contract. With `root`, every sourceGlobs path must

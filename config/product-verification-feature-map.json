@@ -307,7 +307,7 @@
         "The host Convex probe rejects with 'This account is not allowed to use the dashboard.'",
         "Nothing is written."
       ],
-      "beforeProbe": "Host probe: call the read-only Convex query content:listForDashboard over HTTP with the denied identity's session token and record the error; record the /dashboard response status.",
+      "beforeProbe": "Host probe: with the denied session, request a Convex JWT from /api/auth/convex/token, call the read-only Convex query content:listForDashboard with that JWT and record the error (credential values stay private); record the /dashboard response status.",
       "afterProbe": "Repeat the same Convex call and /dashboard request and assert both are unchanged (rejection and 403).",
       "cleanup": "none; sideEffectMode is none",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-denied-session/",
