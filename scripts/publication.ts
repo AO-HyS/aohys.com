@@ -15,7 +15,7 @@ import { operatorCredential, runConvexFunction } from "./convex-run.js";
 
 const USAGE = `Usage:
   pnpm publication status --target <env> (--request-key <key> | --attempt <publicationAttemptId>)
-  pnpm publication reconcile --target <env> --attempt <id> --provider-status <not-found|unknown> --checked-at <ISO time> [--operator-label <label>]
+  pnpm publication reconcile --target <env> --attempt <id> --provider-status <not-found|unknown> --checked-at <ISO time> --authorization-ref <owner authorization> [--operator-label <label>]
   pnpm publication retry --target <env> --attempt <id> --provider-status not-found --checked-at <ISO time> --authorization-ref <owner authorization> [--operator-label <label>]`;
 
 type Status = FunctionReturnType<typeof internal.publication.status>;
@@ -110,6 +110,7 @@ switch (command) {
     const providerStatus = requiredOption("provider-status");
     if (providerStatus !== "not-found" && providerStatus !== "unknown")
       fail("--provider-status must be not-found or unknown.");
+    requiredOption("authorization-ref");
     const statusCheckedAt = checkedAt();
     const { attempt } = boundStatus(requiredOption("attempt"));
     const result = runConvexFunction(

@@ -3,7 +3,7 @@ import {
   PUBLICATION_WORKFLOW_OUTCOMES,
   RELEASE_ENVIRONMENTS,
 } from "@aohys/core/domain";
-import { operatorCredential, runConvexFunction } from "./convex-run.js";
+import { runConvexFunction } from "./convex-run.js";
 
 function required(name: string): string {
   const value = process.env[name]?.trim();
@@ -38,11 +38,6 @@ const result = runConvexFunction<{
     runUrl: required("PUBLICATION_RUN_URL"),
     releaseSha: required("PUBLICATION_RELEASE_SHA"),
     outcome,
-    operator: {
-      credential: operatorCredential(),
-      authorizationRef: required("PUBLICATION_RUN_URL"),
-      operatorLabel: "release-train",
-    },
   },
   (value) => {
     if (

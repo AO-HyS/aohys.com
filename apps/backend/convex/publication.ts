@@ -103,6 +103,13 @@ export const reconcileDispatchingAfterStatusCheck = internalMutation({
     if (attempt.state !== "dispatching" || !attempt.claimedAt) {
       throw new Error("Only a claimed dispatching attempt can be reconciled.");
     }
+    // A reconciliation changes publication state: it needs the owner's
+    // authorization for this operation.
+    if (!args.operator.authorizationRef?.trim()) {
+      throw new Error(
+        "Reconciling an attempt requires an authorization reference.",
+      );
+    }
     const now = Date.now();
     if (
       args.statusCheckedAt > now ||
@@ -304,7 +311,8 @@ export const recordReceipt = internalMutation({
     runUrl: v.string(),
     sha: v.string(),
     smokePassed: v.literal(true),
-    operator: operatorInputValidator,
+    // Optional while deployed workflow runs predate it; see the runbook.
+    operator: v.optional(operatorInputValidator),
   },
   returns: v.object({
     requestKey: v.string(),
@@ -385,16 +393,17 @@ export const recordReceipt = internalMutation({
       smokePassed: true,
       receivedAt: now,
     });
-    await insertAuditEvent(ctx, {
-      actor: await operatorActor(ctx, args.operator),
-      verb: "publication:recordReceipt",
-      target: {
-        requestKey: args.publicationRequestKey,
-        publicationAttemptId: args.publicationAttemptId,
-        runId: args.runId,
-      },
-      outcome: "committed",
-    });
+    if (args.operator)
+      await insertAuditEvent(ctx, {
+        actor: await operatorActor(ctx, args.operator),
+        verb: "publication:recordReceipt",
+        target: {
+          requestKey: args.publicationRequestKey,
+          publicationAttemptId: args.publicationAttemptId,
+          runId: args.runId,
+        },
+        outcome: "committed",
+      });
     await Promise.all([
       ctx.db.patch("publicationRequests", request._id, {
         state: "deployed",
@@ -430,7 +439,8 @@ export const reconcileWorkflowOutcome = internalMutation({
     runUrl: v.string(),
     releaseSha: v.string(),
     outcome: publicationWorkflowOutcomeValidator,
-    operator: operatorInputValidator,
+    // Optional while deployed workflow runs predate it; see the runbook.
+    operator: v.optional(operatorInputValidator),
   },
   returns: v.object({
     requestKey: v.string(),
@@ -550,17 +560,18 @@ export const reconcileWorkflowOutcome = internalMutation({
         updatedAt: now,
       }),
     ]);
-    await insertAuditEvent(ctx, {
-      actor: await operatorActor(ctx, args.operator),
-      verb: "publication:reconcileWorkflowOutcome",
-      target: {
-        requestKey: request.requestKey,
-        publicationAttemptId: attempt.publicationAttemptId,
-        runId: args.runId,
-        result: args.outcome,
-      },
-      outcome: "committed",
-    });
+    if (args.operator)
+      await insertAuditEvent(ctx, {
+        actor: await operatorActor(ctx, args.operator),
+        verb: "publication:reconcileWorkflowOutcome",
+        target: {
+          requestKey: request.requestKey,
+          publicationAttemptId: attempt.publicationAttemptId,
+          runId: args.runId,
+          result: args.outcome,
+        },
+        outcome: "committed",
+      });
     return {
       requestKey: request.requestKey,
       state: "release-failed" as const,

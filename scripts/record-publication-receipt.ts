@@ -1,4 +1,4 @@
-import { operatorCredential, runConvexFunction } from "./convex-run.js";
+import { runConvexFunction } from "./convex-run.js";
 
 function required(name: string): string {
   const value = process.env[name]?.trim();
@@ -25,11 +25,6 @@ const receipt = runConvexFunction<{ state: "deployed" }>(
     runUrl: required("PUBLICATION_RUN_URL"),
     sha: required("PUBLICATION_RELEASE_SHA"),
     smokePassed: true,
-    operator: {
-      credential: operatorCredential(),
-      authorizationRef: required("PUBLICATION_RUN_URL"),
-      operatorLabel: "release-train",
-    },
   },
   (value) => {
     if (

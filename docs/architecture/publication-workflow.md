@@ -23,11 +23,11 @@ Operators recover with the publication CLI, never by assembling `convex run` arg
 
 ```sh
 pnpm publication status --target preview --attempt <publicationAttemptId>
-pnpm publication reconcile --target preview --attempt <id> --provider-status not-found|unknown --checked-at <ISO time>
+pnpm publication reconcile --target preview --attempt <id> --provider-status not-found|unknown --checked-at <ISO time> --authorization-ref <owner authorization>
 pnpm publication retry --target preview --attempt <id> --provider-status not-found --checked-at <ISO time> --authorization-ref <owner authorization>
 ```
 
-`reconcile` applies the stale-claim transition below; `retry` reschedules only a `scheduled` attempt with a `not-found` check and an owner authorization reference, because it dispatches to GitHub again. Each write records an `operator` audit event with the deployment read on the server, the credential class (`deploy-key` or `cli-session`) and the authorization reference; the Release Train's receipt and outcome scripts record theirs with the run URL as reference.
+`reconcile` applies the stale-claim transition below and `retry` reschedules only a `scheduled` attempt with a `not-found` check, dispatching to GitHub again; both change publication state, so both require an owner authorization reference, checked by the CLI and the mutation. Each CLI write records an `operator` audit event with the deployment read on the server, the credential class (`deploy-key` or `cli-session`) and the authorization reference. `recordReceipt` and `reconcileWorkflowOutcome` accept the same optional `operator` and record the event when it is present; the Release Train scripts start sending it (with the run URL as reference) only after production runs a backend that accepts it, because a failure callback can reach a deployment that predates the field.
 
 - `release-failed` with `retryable: true`: an explicit dashboard publish retry may create one new attempt for the existing request.
 - `rollback-needed`: inspect GitHub by attempt correlation before any retry. If the provider accepted the request, reconcile or roll back that run; do not dispatch blindly.

@@ -87,6 +87,13 @@ export function parseConvexRunOutput(
     return null;
   }
 
+  // Scalars (a scheduled function id, a number) are whole JSON values.
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    // Fall back to the first object or array after any CLI preamble.
+  }
+
   const start = trimmed.search(/[[{]/);
 
   if (start === -1) {
