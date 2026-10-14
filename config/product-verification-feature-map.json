@@ -139,14 +139,14 @@
     {
       "id": "dashboard-overview",
       "surface": "dashboard",
-      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard/",
+      "launch": "DASHBOARD_URL on a versioned *.aohys-com.pages.dev preview origin, path /dashboard/",
       "identity": "host.dashboard-operator-session",
       "identityClass": "authorized-session",
       "behavior": "An authorized dashboard operator opens Overview and observes the operational readiness checklist without mutating anything.",
       "routes": ["/dashboard/"],
       "preconditions": [
         "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
-        "Production remains read-only."
+        "Preview only: the local dashboard dev server serves /dashboard-app/ while the router expects /dashboard, so there is no working local launch."
       ],
       "steps": [
         "Navigate to /dashboard/ with the existing authorized session only.",
@@ -182,19 +182,20 @@
         "apps/dashboard/src/navigation.ts",
         "apps/dashboard/src/runtime-config.ts",
         "apps/backend/convex/content.ts"
-      ]
+      ],
+      "environments": ["preview"]
     },
     {
       "id": "dashboard-leads",
       "surface": "dashboard",
-      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard/leads",
+      "launch": "DASHBOARD_URL on a versioned *.aohys-com.pages.dev preview origin, path /dashboard/leads",
       "identity": "host.dashboard-operator-session",
       "identityClass": "authorized-session",
       "behavior": "An authorized operator opens Leads and observes contact requests and their statuses without mutating anything.",
       "routes": ["/dashboard/leads"],
       "preconditions": [
         "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
-        "Production remains read-only."
+        "Preview only: the local dashboard dev server serves /dashboard-app/ while the router expects /dashboard, so there is no working local launch."
       ],
       "steps": [
         "Navigate to /dashboard/leads with the existing authorized session only.",
@@ -225,19 +226,20 @@
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
         "apps/dashboard/src/runtime-config.ts"
-      ]
+      ],
+      "environments": ["preview"]
     },
     {
       "id": "dashboard-resume-save",
       "surface": "dashboard",
-      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard/resume",
+      "launch": "DASHBOARD_URL on a versioned *.aohys-com.pages.dev preview origin, path /dashboard/resume",
       "identity": "host.dashboard-operator-session",
       "identityClass": "authorized-session",
       "behavior": "An authorized operator saves a resume edit, and the server rejects content that breaks the resume contract before writing.",
       "routes": ["/dashboard/resume"],
       "preconditions": [
         "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
-        "Runs on local or preview only; production stays read-only.",
+        "Preview only: the local dashboard dev server serves /dashboard-app/ while the router expects /dashboard, so there is no working local launch.",
         "The original resume draft for the selected locale is recorded before the run.",
         "The selected resume draft for the selected locale already has unpublished changes (publishedAt unset), because a dashboard save clears publishedAt and cleanup cannot restore a published state; otherwise the run stops."
       ],
@@ -277,19 +279,20 @@
         "apps/dashboard/src/navigation.ts",
         "apps/dashboard/src/runtime-config.ts",
         "apps/backend/convex/content.ts"
-      ]
+      ],
+      "environments": ["preview"]
     },
     {
       "id": "dashboard-project-save",
       "surface": "dashboard",
-      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard/projects",
+      "launch": "DASHBOARD_URL on a versioned *.aohys-com.pages.dev preview origin, path /dashboard/projects",
       "identity": "host.dashboard-operator-session",
       "identityClass": "authorized-session",
       "behavior": "An authorized operator edits and saves a project draft and sees the saved state.",
       "routes": ["/dashboard/projects"],
       "preconditions": [
         "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
-        "Runs on local or preview only; production stays read-only.",
+        "Preview only: the local dashboard dev server serves /dashboard-app/ while the router expects /dashboard, so there is no working local launch.",
         "The original draft for the selected project and locale is recorded before the run.",
         "The selected project draft already has unpublished changes (publishedAt unset), because a dashboard save clears publishedAt and cleanup cannot restore a published state; otherwise the run stops.",
         "A caseStudyMetadata row already exists for the project, because each save patches it (or inserts one when absent); otherwise the run stops."
@@ -329,19 +332,20 @@
         "apps/dashboard/src/navigation.ts",
         "apps/dashboard/src/runtime-config.ts",
         "apps/backend/convex/content.ts"
-      ]
+      ],
+      "environments": ["preview"]
     },
     {
       "id": "dashboard-settings-save",
       "surface": "dashboard",
-      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard/settings",
+      "launch": "DASHBOARD_URL on a versioned *.aohys-com.pages.dev preview origin, path /dashboard/settings",
       "identity": "host.dashboard-operator-session",
       "identityClass": "authorized-session",
       "behavior": "An authorized operator saves the public WhatsApp URL; the screen blocks an invalid URL and the server rejects one sent directly, without writing.",
       "routes": ["/dashboard/settings"],
       "preconditions": [
         "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
-        "Runs on local or preview only; production stays read-only.",
+        "Preview only: the local dashboard dev server serves /dashboard-app/ while the router expects /dashboard, so there is no working local launch.",
         "A PUBLIC_WHATSAPP_URL setting already exists for the environment (the preview seed creates it) and its value is recorded before the run; without one the run stops, because settings cannot be deleted from the dashboard."
       ],
       "steps": [
@@ -378,7 +382,8 @@
         "apps/dashboard/src/navigation.ts",
         "apps/dashboard/src/runtime-config.ts",
         "apps/backend/convex/content.ts"
-      ]
+      ],
+      "environments": ["preview"]
     },
     {
       "id": "dashboard-denied-session",
@@ -463,7 +468,7 @@
     {
       "id": "dashboard-publish-preview",
       "surface": "dashboard",
-      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard/projects",
+      "launch": "DASHBOARD_URL on a versioned *.aohys-com.pages.dev preview origin, path /dashboard/projects",
       "identity": "host.dashboard-operator-session",
       "identityClass": "authorized-session",
       "behavior": "An authorized operator publishes saved drafts to preview and follows the durable publication request to a deployed receipt.",

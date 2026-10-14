@@ -17,8 +17,9 @@ The product is split by ownership and each run launches only the app it maps:
 - `apps/site`: public Astro marketing site, case studies, and calls to action;
   local origin `http://localhost:4321`.
 - `apps/dashboard`: private operations workspace (TanStack Router + Vite)
-  behind Better Auth; local origin `http://127.0.0.1:5180` with the
-  `/dashboard` base path.
+  behind Better Auth; local dev origin `http://127.0.0.1:5180` serves
+  `/dashboard-app/` while the router expects `/dashboard`, so dashboard
+  journeys run on a versioned preview origin.
 - `apps/backend`: Convex data and functions; the data authority with no
   browser surface.
 
