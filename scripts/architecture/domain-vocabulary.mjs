@@ -330,30 +330,28 @@ export function derivationViolations(root) {
   const domainImports = importedNames(validators, "@aohys/core/domain").named;
   const derived = new Set();
   for (const statement of validators.statements) {
-    if (
+    const hasModifier = (kind) =>
+      ts.canHaveModifiers(statement) &&
+      (ts.getModifiers(statement) ?? []).some(
+        (modifier) => modifier.kind === kind,
+      );
+    const exported =
       ts.isExportDeclaration(statement) ||
       ts.isExportAssignment(statement) ||
-      (ts.isFunctionDeclaration(statement) &&
-        statement.name?.text !== "literals" &&
-        statement.modifiers?.some(
-          (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
-        )) ||
-      (ts.isClassDeclaration(statement) &&
-        statement.modifiers?.some(
-          (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
-        ))
+      hasModifier(ts.SyntaxKind.ExportKeyword);
+    if (!exported) continue;
+    const literalsHelper =
+      ts.isFunctionDeclaration(statement) &&
+      statement.name?.text === "literals" &&
+      !hasModifier(ts.SyntaxKind.DefaultKeyword);
+    if (literalsHelper) continue;
+    if (
+      !ts.isVariableStatement(statement) ||
+      (statement.declarationList.flags & ts.NodeFlags.Const) === 0
     ) {
       violations.push(
         `${CONVEX_VALIDATORS}: export validators only as \`export const name = literals(<domain array>)\``,
       );
-      continue;
-    }
-    if (
-      !ts.isVariableStatement(statement) ||
-      !statement.modifiers?.some(
-        (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
-      )
-    ) {
       continue;
     }
     for (const declaration of statement.declarationList.declarations) {
@@ -414,7 +412,12 @@ export function derivationViolations(root) {
           );
           continue;
         }
-        const fieldName = property.name.getText(schema);
+        const fieldName =
+          ts.isIdentifier(property.name) ||
+          ts.isStringLiteral(property.name) ||
+          ts.isNumericLiteral(property.name)
+            ? property.name.text
+            : property.name.getText(schema);
         if (fieldNames.has(fieldName)) {
           violations.push(
             `${CONVEX_SCHEMA}: ${table}.${fieldName} is declared twice`,
