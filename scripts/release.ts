@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { constants } from "node:os";
 import process from "node:process";
 import {
   RELEASE_ENVIRONMENTS,
@@ -37,9 +38,14 @@ for (const [index, step] of steps.entries()) {
   const [command, ...rest] = step.command;
   const result = spawnSync(command ?? "", rest, { stdio: "inherit", env });
   if (result.status !== 0) {
+    // A signal ends the chain the way a shell would: 128 + signal number.
+    const signalNumber = result.signal
+      ? constants.signals[result.signal]
+      : undefined;
+    const exitCode = result.status ?? (signalNumber ? 128 + signalNumber : 1);
     console.error(
-      `[release] ${step.name} failed${result.error ? `: ${result.error.message}` : ` with exit code ${result.status ?? "unknown"}`}.`,
+      `[release] ${step.name} failed${result.error ? `: ${result.error.message}` : result.signal ? ` on ${result.signal}` : ` with exit code ${result.status}`}.`,
     );
-    process.exit(result.status || 1);
+    process.exit(exitCode || 1);
   }
 }
