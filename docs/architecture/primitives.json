@@ -32,7 +32,7 @@
       "id": "domain-vocabulary",
       "category": "data",
       "status": "active",
-      "summary": "One as-const array per domain vocabulary (locale, environment, release environment, lead intent/status/contact path, publication scope/request/attempt state, media provider/usage/status, site setting key/classification, case-study status/evidence); types derive from the arrays and Convex validators derive through literals().",
+      "summary": "One as-const array per domain vocabulary (locale, environment, release environment, lead intent/status/contact path, publication scope/request/attempt state, media provider/usage/status, site setting key/classification, environment variable classification, writable media providers, case-study status/evidence); types derive from the arrays and Convex validators derive through literals().",
       "paths": [
         "packages/core/src/domain.ts",
         "apps/backend/convex/lib/validators.ts"
@@ -46,8 +46,8 @@
       ],
       "guarantees": [
         {
-          "statement": "No production source outside packages/core/src/domain.ts declares a string union, array or v.union whose members equal a domain vocabulary.",
-          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-redeclared)"
+          "statement": "No production source outside packages/core/src/domain.ts declares a string union, array or v.union that copies a domain vocabulary, including stale copies (a value missing) and drifted copies (a value added); a line ending in // domain-vocabulary-ok marks a different concept.",
+          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-redeclared); probes for identical, stale and drifted copies rejected"
         },
         {
           "statement": "The Convex schema and function validators for these vocabularies derive from the domain arrays.",

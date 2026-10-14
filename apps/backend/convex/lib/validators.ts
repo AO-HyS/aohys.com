@@ -15,6 +15,7 @@ import {
   RELEASE_ENVIRONMENTS,
   SITE_SETTING_CLASSIFICATIONS,
   SITE_SETTING_KEYS,
+  WRITABLE_MEDIA_STORAGE_PROVIDERS,
 } from "@aohys/core/domain";
 import { v, type VLiteral, type VUnion } from "convex/values";
 
@@ -43,6 +44,9 @@ export const publicationAttemptStateValidator = literals(
   PUBLICATION_ATTEMPT_STATES,
 );
 export const mediaStorageProviderValidator = literals(MEDIA_STORAGE_PROVIDERS);
+export const writableMediaStorageProviderValidator = literals(
+  WRITABLE_MEDIA_STORAGE_PROVIDERS,
+);
 export const mediaUsageValidator = literals(MEDIA_USAGES);
 export const mediaStatusValidator = literals(MEDIA_STATUSES);
 export const siteSettingKeyValidator = literals(SITE_SETTING_KEYS);

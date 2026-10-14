@@ -26,21 +26,35 @@ const STRING_LITERAL_GROUPS = [
   /v\.union\(\s*v\.literal\("[^"\n]+"\)(?:\s*,\s*v\.literal\("[^"\n]+"\))+\s*,?\s*\)/g,
 ];
 
-// Domain vocabularies with two or more members, keyed by a sorted member list.
+// Domain vocabularies with two or more members.
 function readDomainVocabularies(root) {
   const filePath = path.join(root, DOMAIN_VOCABULARY);
-  if (!existsSync(filePath)) return new Map();
-  const vocabularies = new Map();
+  if (!existsSync(filePath)) return [];
   const source = readFileSync(filePath, "utf8");
-  for (const match of source.matchAll(
-    /export const ([A-Z_]+) = \[([^\]]*)\] as const;/g,
-  )) {
-    const members = [...match[2].matchAll(/"([^"]+)"/g)].map((item) => item[1]);
-    if (members.length > 1) {
-      vocabularies.set([...members].sort().join("|"), match[1]);
-    }
-  }
-  return vocabularies;
+  return [
+    ...source.matchAll(/export const ([A-Z_]+) = \[([^\]]*)\] as const;/g),
+  ]
+    .map((match) => ({
+      name: match[1],
+      members: new Set(
+        [...match[2].matchAll(/"([^"]+)"/g)].map((item) => item[1]),
+      ),
+    }))
+    .filter((vocabulary) => vocabulary.members.size > 1);
+}
+
+// A literal group is a copy when it shares at least two members and most of
+// its own members with a vocabulary, and covers at least 60% of it. This also
+// catches stale copies (a value missing) and drifted copies (a value added).
+function copiedVocabulary(members, vocabulary) {
+  const shared = [...members].filter((member) =>
+    vocabulary.members.has(member),
+  ).length;
+  return (
+    shared >= 2 &&
+    shared * 2 >= members.size &&
+    shared >= Math.ceil(vocabulary.members.size * 0.6)
+  );
 }
 
 // A line ending in `// domain-vocabulary-ok` is a different concept that shares values.
@@ -52,13 +66,12 @@ function redeclaredVocabularies(source, vocabularies) {
     .join("\n");
   for (const pattern of STRING_LITERAL_GROUPS) {
     for (const match of checked.matchAll(pattern)) {
-      const members = [...match[0].matchAll(/"([^"]+)"/g)].map(
-        (item) => item[1],
+      const members = new Set(
+        [...match[0].matchAll(/"([^"]+)"/g)].map((item) => item[1]),
       );
-      const vocabulary = vocabularies.get(
-        [...new Set(members)].sort().join("|"),
-      );
-      if (vocabulary) found.add(vocabulary);
+      for (const vocabulary of vocabularies) {
+        if (copiedVocabulary(members, vocabulary)) found.add(vocabulary.name);
+      }
     }
   }
   return [...found].sort();

@@ -24,7 +24,8 @@ export const DEFAULT_LOCALE = "en";
 const SPOKEN_LANGUAGES = ["es", "en"] as const; // domain-vocabulary-ok
 export const PRIVATE_ROUTE_PREFIXES = ["/dashboard"] as const;
 
-export type ContentStatus = "published" | "draft";
+// Page publication state, not media status.
+export type ContentStatus = "published" | "draft"; // domain-vocabulary-ok
 export type ContentType =
   | "landing"
   | "case-study-index"

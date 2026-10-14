@@ -57,6 +57,12 @@ export const MEDIA_STORAGE_PROVIDERS = [
 ] as const;
 export type MediaStorageProvider = (typeof MEDIA_STORAGE_PROVIDERS)[number];
 
+// Direct uploads never target R2.
+export const WRITABLE_MEDIA_STORAGE_PROVIDERS = [
+  "cloudflare-images",
+  "external",
+] as const satisfies readonly MediaStorageProvider[];
+
 export const MEDIA_USAGES = [
   "case-study",
   "resume",
@@ -71,6 +77,15 @@ export type MediaStatus = (typeof MEDIA_STATUSES)[number];
 export const SITE_SETTING_KEYS = ["PUBLIC_WHATSAPP_URL"] as const;
 export type SiteSettingKey = (typeof SITE_SETTING_KEYS)[number];
 
+export const VARIABLE_CLASSIFICATIONS = [
+  "public-build-value",
+  "server-secret",
+  "provider-output",
+  "policy-value",
+] as const;
+export type VariableClassification = (typeof VARIABLE_CLASSIFICATIONS)[number];
+
+// Site settings are never secrets.
 export const SITE_SETTING_CLASSIFICATIONS = [
   "public-build-value",
   "provider-output",

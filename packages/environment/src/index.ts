@@ -2,13 +2,8 @@ import {
   ENVIRONMENTS,
   RELEASE_ENVIRONMENTS,
   type Environment,
+  type VariableClassification,
 } from "@aohys/core/domain";
-
-export type VariableClassification =
-  | "public-build-value"
-  | "server-secret"
-  | "provider-output"
-  | "policy-value";
 
 export type VariableExposure = "public-browser" | "server-only";
 

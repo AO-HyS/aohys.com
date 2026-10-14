@@ -2,17 +2,11 @@ import { v, type ObjectType } from "convex/values";
 import type { MutationCtx } from "../../_generated/server.js";
 import { withinLimit } from "./shared.js";
 import {
-  literals,
   mediaStatusValidator,
+  writableMediaStorageProviderValidator,
   mediaUsageValidator,
 } from "../../lib/validators.js";
-import { type MediaStorageProvider } from "@aohys/core/domain";
 import { localeValidator } from "../../lib/validators.js";
-
-const writableMediaStorageProviderValidator = literals([
-  "cloudflare-images",
-  "external",
-] as const satisfies readonly MediaStorageProvider[]);
 
 export const createMediaMetadataArgs = {
   storageProvider: writableMediaStorageProviderValidator,
