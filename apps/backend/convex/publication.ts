@@ -1,7 +1,17 @@
 import { v } from "convex/values";
 import { internal } from "./_generated/api.js";
-import { internalMutation } from "./_generated/server.js";
-import { insertAuditEvent, systemActor } from "./lib/audit.js";
+import {
+  internalMutation,
+  internalQuery,
+  type MutationCtx,
+} from "./_generated/server.js";
+import type { Doc } from "./_generated/dataModel.js";
+import {
+  insertAuditEvent,
+  operatorActor,
+  operatorInputValidator,
+  systemActor,
+} from "./lib/audit.js";
 import {
   publicationProviderStatusValidator,
   publicationWorkflowOutcomeValidator,
@@ -75,6 +85,8 @@ export const reconcileDispatchingAfterStatusCheck = internalMutation({
     attemptId: v.id("publicationAttempts"),
     providerStatus: publicationProviderStatusValidator,
     statusCheckedAt: v.number(),
+    expectedTarget: releaseEnvironmentValidator,
+    operator: operatorInputValidator,
   },
   returns: v.object({
     state: v.union(v.literal("release-failed"), v.literal("rollback-needed")),
@@ -82,7 +94,13 @@ export const reconcileDispatchingAfterStatusCheck = internalMutation({
   }),
   handler: async (ctx, args) => {
     const attempt = await ctx.db.get("publicationAttempts", args.attemptId);
-    if (!attempt || attempt.state !== "dispatching" || !attempt.claimedAt) {
+    if (!attempt) throw new Error("Publication attempt not found.");
+    const boundRequest = await requireBoundTarget(
+      ctx,
+      attempt,
+      args.expectedTarget,
+    );
+    if (attempt.state !== "dispatching" || !attempt.claimedAt) {
       throw new Error("Only a claimed dispatching attempt can be reconciled.");
     }
     const now = Date.now();
@@ -95,8 +113,8 @@ export const reconcileDispatchingAfterStatusCheck = internalMutation({
         "Provider status check is outside the stale claim window.",
       );
     }
-    const request = await ctx.db.get("publicationRequests", attempt.requestId);
-    if (!request || request.state !== "release-requested") {
+    const request = boundRequest;
+    if (request.state !== "release-requested") {
       throw new Error("Publication request is not awaiting dispatch evidence.");
     }
     const retryable = args.providerStatus === "not-found";
@@ -121,6 +139,17 @@ export const reconcileDispatchingAfterStatusCheck = internalMutation({
         updatedAt: now,
       }),
     ]);
+    await insertAuditEvent(ctx, {
+      actor: await operatorActor(ctx, args.operator),
+      verb: "publication:reconcileDispatchingAfterStatusCheck",
+      target: {
+        requestKey: request.requestKey,
+        publicationAttemptId: attempt.publicationAttemptId,
+        providerStatus: args.providerStatus,
+        result: requestState,
+      },
+      outcome: "committed",
+    });
     return { state: requestState, retryable };
   },
 });
@@ -214,6 +243,8 @@ export const retryScheduledAfterStatusCheck = internalMutation({
     attemptId: v.id("publicationAttempts"),
     providerStatus: retryablePublicationProviderStatusValidator,
     statusCheckedAt: v.number(),
+    expectedTarget: releaseEnvironmentValidator,
+    operator: operatorInputValidator,
   },
   returns: v.id("_scheduled_functions"),
   handler: async (
@@ -223,8 +254,17 @@ export const retryScheduledAfterStatusCheck = internalMutation({
     import("./_generated/dataModel.js").Id<"_scheduled_functions">
   > => {
     const attempt = await ctx.db.get("publicationAttempts", args.attemptId);
-    if (!attempt || attempt.state !== "scheduled") {
+    if (!attempt) throw new Error("Publication attempt not found.");
+    const request = await requireBoundTarget(ctx, attempt, args.expectedTarget);
+    if (attempt.state !== "scheduled") {
       throw new Error("Only an unclaimed scheduled attempt can be recovered.");
+    }
+    // Rescheduling dispatches to GitHub again: it needs the owner's
+    // authorization for this operation.
+    if (!args.operator.authorizationRef?.trim()) {
+      throw new Error(
+        "Retrying a dispatch requires an authorization reference.",
+      );
     }
     if (
       args.statusCheckedAt > Date.now() ||
@@ -240,6 +280,16 @@ export const retryScheduledAfterStatusCheck = internalMutation({
       schedulerJobId: jobId,
       updatedAt: Date.now(),
     });
+    await insertAuditEvent(ctx, {
+      actor: await operatorActor(ctx, args.operator),
+      verb: "publication:retryScheduledAfterStatusCheck",
+      target: {
+        requestKey: request.requestKey,
+        publicationAttemptId: attempt.publicationAttemptId,
+        providerStatus: args.providerStatus,
+      },
+      outcome: "committed",
+    });
     return jobId;
   },
 });
@@ -254,6 +304,7 @@ export const recordReceipt = internalMutation({
     runUrl: v.string(),
     sha: v.string(),
     smokePassed: v.literal(true),
+    operator: operatorInputValidator,
   },
   returns: v.object({
     requestKey: v.string(),
@@ -334,6 +385,16 @@ export const recordReceipt = internalMutation({
       smokePassed: true,
       receivedAt: now,
     });
+    await insertAuditEvent(ctx, {
+      actor: await operatorActor(ctx, args.operator),
+      verb: "publication:recordReceipt",
+      target: {
+        requestKey: args.publicationRequestKey,
+        publicationAttemptId: args.publicationAttemptId,
+        runId: args.runId,
+      },
+      outcome: "committed",
+    });
     await Promise.all([
       ctx.db.patch("publicationRequests", request._id, {
         state: "deployed",
@@ -369,6 +430,7 @@ export const reconcileWorkflowOutcome = internalMutation({
     runUrl: v.string(),
     releaseSha: v.string(),
     outcome: publicationWorkflowOutcomeValidator,
+    operator: operatorInputValidator,
   },
   returns: v.object({
     requestKey: v.string(),
@@ -488,6 +550,17 @@ export const reconcileWorkflowOutcome = internalMutation({
         updatedAt: now,
       }),
     ]);
+    await insertAuditEvent(ctx, {
+      actor: await operatorActor(ctx, args.operator),
+      verb: "publication:reconcileWorkflowOutcome",
+      target: {
+        requestKey: request.requestKey,
+        publicationAttemptId: attempt.publicationAttemptId,
+        runId: args.runId,
+        result: args.outcome,
+      },
+      outcome: "committed",
+    });
     return {
       requestKey: request.requestKey,
       state: "release-failed" as const,
@@ -536,3 +609,147 @@ function validateReceiptStrings(args: {
     throw new Error("Publication release SHA is invalid.");
   }
 }
+
+// Binds an operator transition to its target before any write: the attempt
+// belongs to its request, and the operator's expected target, the request's
+// target and this deployment's AOHYS_ENV all agree.
+async function requireBoundTarget(
+  ctx: MutationCtx,
+  attempt: Doc<"publicationAttempts">,
+  expectedTarget: ReleaseEnvironment,
+) {
+  const request = await ctx.db.get("publicationRequests", attempt.requestId);
+  if (!request || request._id !== attempt.requestId) {
+    throw new Error("Publication attempt does not belong to a request.");
+  }
+  if (
+    request.targetEnvironment !== expectedTarget ||
+    process.env.AOHYS_ENV !== expectedTarget
+  ) {
+    throw new Error(
+      `Target mismatch: expected ${expectedTarget}, request targets ${request.targetEnvironment}, deployment is ${process.env.AOHYS_ENV ?? "unset"}.`,
+    );
+  }
+  return request;
+}
+
+// Read-only view for the publication CLI: this deployment's environment and,
+// for one request (by key or by one of its attempts), its attempts and
+// receipts.
+export const status = internalQuery({
+  args: {
+    requestKey: v.optional(v.string()),
+    publicationAttemptId: v.optional(v.string()),
+  },
+  returns: v.object({
+    deploymentEnvironment: v.union(v.string(), v.null()),
+    request: v.union(
+      v.null(),
+      v.object({
+        requestKey: v.string(),
+        targetEnvironment: releaseEnvironmentValidator,
+        state: v.string(),
+        retryable: v.optional(v.boolean()),
+        requestedBy: v.string(),
+        updatedAt: v.number(),
+      }),
+    ),
+    attempts: v.array(
+      v.object({
+        attemptId: v.id("publicationAttempts"),
+        publicationAttemptId: v.string(),
+        attemptNumber: v.number(),
+        state: v.string(),
+        retryable: v.optional(v.boolean()),
+        claimedAt: v.optional(v.number()),
+        failureCode: v.optional(v.string()),
+        providerRunUrl: v.optional(v.string()),
+        updatedAt: v.number(),
+      }),
+    ),
+    receipts: v.array(
+      v.object({
+        publicationAttemptId: v.string(),
+        runUrl: v.string(),
+        sha: v.string(),
+        receivedAt: v.number(),
+      }),
+    ),
+  }),
+  handler: async (ctx, args) => {
+    const deploymentEnvironment = process.env.AOHYS_ENV ?? null;
+    let request: Doc<"publicationRequests"> | null = null;
+    if (args.requestKey) {
+      request = await ctx.db
+        .query("publicationRequests")
+        .withIndex("by_request_key", (query) =>
+          query.eq("requestKey", args.requestKey ?? ""),
+        )
+        .unique();
+    } else if (args.publicationAttemptId) {
+      const attempt = await ctx.db
+        .query("publicationAttempts")
+        .withIndex("by_publication_attempt_id", (query) =>
+          query.eq("publicationAttemptId", args.publicationAttemptId ?? ""),
+        )
+        .unique();
+      request = attempt
+        ? await ctx.db.get("publicationRequests", attempt.requestId)
+        : null;
+    }
+    if (!request)
+      return {
+        deploymentEnvironment,
+        request: null,
+        attempts: [],
+        receipts: [],
+      };
+    const requestId = request._id;
+    const attempts = await ctx.db
+      .query("publicationAttempts")
+      .withIndex("by_request_id_and_attempt_number", (query) =>
+        query.eq("requestId", requestId),
+      )
+      .take(50);
+    const receipts = await ctx.db
+      .query("publicationReceipts")
+      .withIndex("by_request_id", (query) => query.eq("requestId", requestId))
+      .take(50);
+    return {
+      deploymentEnvironment,
+      request: {
+        requestKey: request.requestKey,
+        targetEnvironment: request.targetEnvironment,
+        state: request.state,
+        ...(request.retryable === undefined
+          ? {}
+          : { retryable: request.retryable }),
+        requestedBy: request.requestedBy,
+        updatedAt: request.updatedAt,
+      },
+      attempts: attempts.map((attempt) => ({
+        attemptId: attempt._id,
+        publicationAttemptId: attempt.publicationAttemptId,
+        attemptNumber: attempt.attemptNumber,
+        state: attempt.state,
+        ...(attempt.retryable === undefined
+          ? {}
+          : { retryable: attempt.retryable }),
+        ...(attempt.claimedAt === undefined
+          ? {}
+          : { claimedAt: attempt.claimedAt }),
+        ...(attempt.failureCode ? { failureCode: attempt.failureCode } : {}),
+        ...(attempt.providerRunUrl
+          ? { providerRunUrl: attempt.providerRunUrl }
+          : {}),
+        updatedAt: attempt.updatedAt,
+      })),
+      receipts: receipts.map((receipt) => ({
+        publicationAttemptId: receipt.publicationAttemptId,
+        runUrl: receipt.runUrl,
+        sha: receipt.sha,
+        receivedAt: receipt.receivedAt,
+      })),
+    };
+  },
+});

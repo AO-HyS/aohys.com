@@ -19,6 +19,16 @@ Manual publication dispatches are target-bound: preview must run from `refs/head
 
 ## Recovery and rollback
 
+Operators recover with the publication CLI, never by assembling `convex run` arguments by hand. Every command takes `--target preview|production`; the CLI reads the reached deployment's `AOHYS_ENV` and the request target first, and the mutation checks again before any write that the attempt belongs to its request and that the expected target, the request target and the deployment's `AOHYS_ENV` agree. A mismatch writes nothing.
+
+```sh
+pnpm publication status --target preview --attempt <publicationAttemptId>
+pnpm publication reconcile --target preview --attempt <id> --provider-status not-found|unknown --checked-at <ISO time>
+pnpm publication retry --target preview --attempt <id> --provider-status not-found --checked-at <ISO time> --authorization-ref <owner authorization>
+```
+
+`reconcile` applies the stale-claim transition below; `retry` reschedules only a `scheduled` attempt with a `not-found` check and an owner authorization reference, because it dispatches to GitHub again. Each write records an `operator` audit event with the deployment read on the server, the credential class (`deploy-key` or `cli-session`) and the authorization reference; the Release Train's receipt and outcome scripts record theirs with the run URL as reference.
+
 - `release-failed` with `retryable: true`: an explicit dashboard publish retry may create one new attempt for the existing request.
 - `rollback-needed`: inspect GitHub by attempt correlation before any retry. If the provider accepted the request, reconcile or roll back that run; do not dispatch blindly.
 - A scheduled action that failed before claim stays `scheduled`. Only `publication:retryScheduledAfterStatusCheck` may reschedule it, after an explicit provider `not-found` status check and timestamp.

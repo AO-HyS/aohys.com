@@ -46,6 +46,32 @@ export function sessionActor(admin: {
   };
 }
 
+// What an operator CLI declares: the credential class it used (never its
+// value), the owner's authorization for effectful paths, and an informative
+// label. The deployment is read on the server, not declared.
+export const operatorInputValidator = v.object({
+  credential: operatorCredentialValidator,
+  authorizationRef: v.optional(v.string()),
+  operatorLabel: v.optional(v.string()),
+});
+export type OperatorInput = Infer<typeof operatorInputValidator>;
+
+export async function operatorActor(
+  ctx: MutationCtx,
+  input: OperatorInput,
+): Promise<AuditActor> {
+  const { name } = await ctx.meta.getDeploymentMetadata();
+  return {
+    actorKind: "operator",
+    deployment: name,
+    credential: input.credential,
+    ...(input.authorizationRef
+      ? { authorizationRef: input.authorizationRef }
+      : {}),
+    ...(input.operatorLabel ? { operatorLabel: input.operatorLabel } : {}),
+  };
+}
+
 // The scheduler acting on behalf of the record that scheduled it.
 export function systemActor(causedBy: string): AuditActor {
   return { actorKind: "system", causedBy };

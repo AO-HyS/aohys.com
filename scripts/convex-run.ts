@@ -1,4 +1,6 @@
 import { spawnSync } from "node:child_process";
+import { getFunctionName, type FunctionReference } from "convex/server";
+import { type OperatorCredential } from "@aohys/core/domain";
 
 export function hasConvexDeploymentAccess(): boolean {
   return Boolean(
@@ -7,11 +9,25 @@ export function hasConvexDeploymentAccess(): boolean {
   );
 }
 
+// The credential class an operator call uses; the deploy key wins over a CLI
+// session, as in runConvexFunction. Recorded in audit events, never the value.
+export function operatorCredential(): OperatorCredential {
+  if (process.env.CONVEX_DEPLOY_KEY?.trim()) return "deploy-key";
+  if (process.env.CONVEX_DEPLOYMENT?.trim()) return "cli-session";
+  throw new Error("CONVEX_DEPLOY_KEY or CONVEX_DEPLOYMENT is required.");
+}
+
 export function runConvexFunction<T>(
-  functionName: string,
+  functionReference:
+    | string
+    | FunctionReference<"query" | "mutation" | "action", "public" | "internal">,
   args: object,
   parseResult: (value: unknown) => T,
 ): T {
+  const functionName =
+    typeof functionReference === "string"
+      ? functionReference
+      : getFunctionName(functionReference);
   const deployKey = process.env.CONVEX_DEPLOY_KEY?.trim();
   const deployment = process.env.CONVEX_DEPLOYMENT?.trim();
 

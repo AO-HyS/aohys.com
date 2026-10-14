@@ -14,6 +14,7 @@
     "build": "pnpm -r --if-present build",
     "cloudflare:local": "pnpm --filter @aohys/site build && pnpm exec wrangler pages dev apps/site/dist --compatibility-date=2026-06-29",
     "release": "tsx scripts/release.ts",
+    "publication": "tsx scripts/publication.ts",
     "doctor": "react-doctor",
     "quality:scorecard": "node scripts/quality/run-quality-scorecard.mjs",
     "quality:impeccable": ".agents/skills/impeccable/scripts/impeccable detect --quiet --no-advisory apps/dashboard/src apps/site/src",
