@@ -1,4 +1,6 @@
 import {
+  AUDIT_ACTOR_KINDS,
+  AUDIT_OUTCOMES,
   CASE_STUDY_EVIDENCE_STATUSES,
   CASE_STUDY_STATUSES,
   ENVIRONMENTS,
@@ -8,6 +10,7 @@ import {
   MEDIA_STATUSES,
   MEDIA_STORAGE_PROVIDERS,
   MEDIA_USAGES,
+  OPERATOR_CREDENTIALS,
   PREFERRED_CONTACT_PATHS,
   PUBLICATION_ATTEMPT_STATES,
   PUBLICATION_PROVIDER_STATUSES,
@@ -60,6 +63,9 @@ export const writableMediaStorageProviderValidator = literals(
   WRITABLE_MEDIA_STORAGE_PROVIDERS,
 );
 export const mediaUsageValidator = literals(MEDIA_USAGES);
+export const auditActorKindValidator = literals(AUDIT_ACTOR_KINDS);
+export const auditOutcomeValidator = literals(AUDIT_OUTCOMES);
+export const operatorCredentialValidator = literals(OPERATOR_CREDENTIALS);
 export const mediaStatusValidator = literals(MEDIA_STATUSES);
 export const siteSettingKeyValidator = literals(SITE_SETTING_KEYS);
 export const siteSettingClassificationValidator = literals(

@@ -191,6 +191,39 @@
       ],
       "replaces": [],
       "docs": ["docs/environment-contract.md"]
+    },
+    {
+      "id": "audit-events",
+      "category": "auth",
+      "status": "active",
+      "summary": "Append-only auditEvents written only through convex/lib/audit.ts: session events from the admin builders (committed for mutations; attempted then succeeded, failed or unknown for actions), publication request and attempt transitions with the requesting session, and system events for dispatch.",
+      "paths": [
+        "apps/backend/convex/lib/audit.ts",
+        "apps/backend/convex/audit.ts",
+        "apps/backend/convex/lib/functions.ts"
+      ],
+      "symbols": [
+        "apps/backend/convex/lib/audit.ts#insertAuditEvent",
+        "apps/backend/convex/lib/audit.ts#auditTarget",
+        "apps/backend/convex/lib/audit.ts#sessionActor",
+        "apps/backend/convex/audit.ts#recordOutcome"
+      ],
+      "guarantees": [
+        {
+          "statement": "Every public mutation and action is built with adminMutation or adminAction, and those builders append the session event after requireAdmin: committed in the mutation's transaction, attempted before an action's handler and succeeded after it.",
+          "verifiedBy": "pnpm architecture:fitness (public-function-guard: admin builders only, requireAdmin first) and apps/backend/convex/lib/functions.ts"
+        },
+        {
+          "statement": "The audit actor is resolved on the server (requireAdmin, the scheduled attempt) and the target holds only identifying arguments, never free text or content.",
+          "verifiedBy": "apps/backend/convex/lib/audit.ts (sessionActor, systemActor, auditTarget with a fixed argument list)"
+        }
+      ],
+      "goals": [
+        "Operator events with verifiable provenance (deployment, credential class, authorizationRef) for reconcile, retry, receipts, workflow outcome and seeds, with the publication CLI.",
+        "Observe audit rows on preview after real admin saves, uploads and a publish."
+      ],
+      "replaces": [],
+      "docs": ["apps/backend/README.md"]
     }
   ]
 }

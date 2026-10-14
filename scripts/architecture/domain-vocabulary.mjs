@@ -31,6 +31,9 @@ const VALIDATOR_VOCABULARIES = {
   writableMediaStorageProviderValidator: "WRITABLE_MEDIA_STORAGE_PROVIDERS",
   mediaUsageValidator: "MEDIA_USAGES",
   mediaStatusValidator: "MEDIA_STATUSES",
+  auditActorKindValidator: "AUDIT_ACTOR_KINDS",
+  auditOutcomeValidator: "AUDIT_OUTCOMES",
+  operatorCredentialValidator: "OPERATOR_CREDENTIALS",
   siteSettingKeyValidator: "SITE_SETTING_KEYS",
   siteSettingClassificationValidator: "SITE_SETTING_CLASSIFICATIONS",
   caseStudyStatusValidator: "CASE_STUDY_STATUSES",
@@ -62,6 +65,9 @@ const SCHEMA_VOCABULARY_FIELDS = {
   "publicationAttempts.state": "publicationAttemptStateValidator",
   "publicationAttempts.workflowOutcome": "publicationWorkflowOutcomeValidator",
   "publicationReceipts.targetEnvironment": "releaseEnvironmentValidator",
+  "auditEvents.actorKind": "auditActorKindValidator",
+  "auditEvents.credential": "operatorCredentialValidator",
+  "auditEvents.outcome": "auditOutcomeValidator",
 };
 
 // Astro: the frontmatter plus every non-JSON <script> block.

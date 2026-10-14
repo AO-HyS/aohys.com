@@ -3,9 +3,11 @@ import { v, type Infer, type ObjectType } from "convex/values";
 import type { FunctionReference } from "convex/server";
 import { internal } from "./_generated/api.js";
 import {
+  ConfirmedProviderFailure,
   createCloudflareImagesDirectUpload,
   type PublishWorkflowResult,
 } from "../src/dashboard-providers.js";
+import { auditTarget, sessionActor } from "./lib/audit.js";
 import {
   publicationSummaryValidator,
   type publishDurablyArgs,
@@ -60,17 +62,31 @@ export const createMediaUploadUrl = adminAction({
     uploadURL: v.string(),
   }),
   handler: async (ctx, args) => {
-    return createCloudflareImagesDirectUpload(args, {
-      ...(process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
-        ? { accountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH }
-        : {}),
-      ...(process.env.CLOUDFLARE_ACCOUNT_ID
-        ? { accountId: process.env.CLOUDFLARE_ACCOUNT_ID }
-        : {}),
-      ...(process.env.CLOUDFLARE_IMAGES_API_TOKEN
-        ? { apiToken: process.env.CLOUDFLARE_IMAGES_API_TOKEN }
-        : {}),
-    });
+    try {
+      return await createCloudflareImagesDirectUpload(args, {
+        ...(process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
+          ? { accountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH }
+          : {}),
+        ...(process.env.CLOUDFLARE_ACCOUNT_ID
+          ? { accountId: process.env.CLOUDFLARE_ACCOUNT_ID }
+          : {}),
+        ...(process.env.CLOUDFLARE_IMAGES_API_TOKEN
+          ? { apiToken: process.env.CLOUDFLARE_IMAGES_API_TOKEN }
+          : {}),
+      });
+    } catch (error) {
+      // The upload is never retried to repair the audit trail; if this write
+      // fails, the event stays attempted.
+      await ctx
+        .runMutation(internal.audit.recordOutcome, {
+          correlationId: ctx.auditCorrelationId,
+          outcome:
+            error instanceof ConfirmedProviderFailure ? "failed" : "unknown",
+          target: auditTarget(args),
+        })
+        .catch(() => undefined);
+      throw error;
+    }
   },
 });
 
@@ -114,6 +130,7 @@ export const publishContent = adminAction({
         ...args,
         targetEnvironment: environment,
         requestedBy: String(ctx.admin._id),
+        actor: sessionActor(ctx.admin),
         providerConfigured,
       },
     );
