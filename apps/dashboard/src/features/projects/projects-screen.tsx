@@ -846,7 +846,7 @@ function ProjectLocaleForm({
 
       <SaveBar
         state={saveBarState({ isSaving, hasChanges, result: saveResult })}
-        onSave={() => void save()}
+        submit
         saveLabel={`Save ${localeContent.locale.toUpperCase()} draft`}
         description={
           hasChanges

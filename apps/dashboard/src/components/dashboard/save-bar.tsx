@@ -17,9 +17,13 @@ const saveStateCopy: Record<SaveBarState, { label: string; tone: StatusTone }> =
     error: { label: "Save failed", tone: "danger" },
   };
 
-export interface SaveBarProps {
+// Inside a form, `submit` makes the button the form's submit control, so Enter
+// in any field saves through onSubmit. Outside a form, onSave handles the click.
+export type SaveBarProps = SaveBarContent &
+  ({ submit: true; onSave?: never } | { submit?: never; onSave: () => void });
+
+interface SaveBarContent {
   state: SaveBarState;
-  onSave: () => void;
   description?: string;
   saveLabel?: string;
   secondaryAction?: ReactNode;
@@ -28,6 +32,7 @@ export interface SaveBarProps {
 
 export function SaveBar({
   state,
+  submit,
   onSave,
   description,
   saveLabel = "Save changes",
@@ -53,7 +58,7 @@ export function SaveBar({
       <div className="flex flex-wrap items-center justify-end gap-2">
         {secondaryAction}
         <Action
-          type="button"
+          type={submit ? "submit" : "button"}
           pending={isSaving}
           pendingLabel="Saving…"
           disabled={disabled || state === "clean" || state === "saved"}
