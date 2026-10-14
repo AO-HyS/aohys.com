@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -11,39 +10,67 @@ import { pathToFileURL } from "node:url";
 // behavior cannot.
 
 const [root, ...modules] = process.argv.slice(2);
+// Modules whose directive prologue holds "use node", parsed by the guard.
+const nodeModules = new Set(
+  JSON.parse(process.env.GUARD_NODE_MODULES ?? "[]") as string[],
+);
 
-// The two reads safeGetAuthUser makes for a signed-in caller. Everything else
-// (other syscalls, network) is refused and recorded, so work done before the
-// caller is rejected is visible.
+// The two reads safeGetAuthUser makes for a signed-in caller, each answered
+// once per invocation. Everything else (other syscalls, network) is refused and
+// recorded, so work done before the caller is rejected is visible; refusals
+// while importing are kept for the whole run.
 const OUTSIDER = {
   identity: { subject: "guard-user", sessionId: "guard-session" },
   session: { _id: "guard-session", userId: "guard-user" },
   user: { _id: "guard-user", email: "outsider@guard.invalid" },
 };
 type Caller = "anonymous" | "outsider";
+const AUTH_LOOKUP = "_reference/childComponent/betterAuth/adapter/findOne";
 let caller: Caller = "anonymous";
+let answered = new Set<string>();
 const touched: string[] = [];
+const importRefusals: string[] = [];
+let importing = true;
 const refuse = (operation: string): never => {
-  touched.push(operation);
+  (importing ? importRefusals : touched).push(operation);
   throw new Error(`guard: ${operation} before authorization`);
 };
 
-function authLookup(argsJson: string): string | undefined {
-  const parsed = JSON.parse(argsJson) as { args?: { model?: unknown } };
-  const model = parsed.args?.model;
-  if (model === "session") return JSON.stringify(OUTSIDER.session);
-  if (model === "user") return JSON.stringify(OUTSIDER.user);
+type LookupCall = {
+  udfType?: unknown;
+  reference?: unknown;
+  args?: {
+    model?: unknown;
+    where?: Array<{ field?: unknown; value?: unknown }>;
+  };
+};
+
+function authLookup(operation: string, argsJson: string): string | undefined {
+  const call = JSON.parse(argsJson) as LookupCall;
+  const isQuery =
+    (operation === "1.0/runUdf" && call.udfType === "query") ||
+    operation === "1.0/actions/query";
+  if (!isQuery || call.reference !== AUTH_LOOKUP) return undefined;
+  const model = call.args?.model;
+  const key = call.args?.where?.[0];
+  if (typeof model !== "string" || answered.has(model) || key?.field !== "_id")
+    return undefined;
+  if (model === "session" && key.value === OUTSIDER.identity.sessionId) {
+    answered.add(model);
+    return JSON.stringify(OUTSIDER.session);
+  }
+  if (model === "user" && key.value === OUTSIDER.identity.subject) {
+    answered.add(model);
+    return JSON.stringify(OUTSIDER.user);
+  }
   return undefined;
 }
 
 async function asyncSyscall(operation: string, argsJson: string) {
-  if (operation === "1.0/getUserIdentity")
+  if (!importing && operation === "1.0/getUserIdentity")
     return caller === "anonymous" ? "null" : JSON.stringify(OUTSIDER.identity);
-  if (
-    caller === "outsider" &&
-    (operation === "1.0/runUdf" || operation === "1.0/actions/query")
-  ) {
-    const result = authLookup(argsJson);
+  if (!importing && caller === "outsider") {
+    const result = authLookup(operation, argsJson);
     if (result !== undefined) return result;
   }
   return refuse(operation);
@@ -93,6 +120,7 @@ function invoke(flags: Flags) {
 
 async function outcome(flags: Flags, as: Caller) {
   caller = as;
+  answered = new Set();
   touched.length = 0;
   let rejection: string | null = null;
   try {
@@ -110,19 +138,24 @@ type Entry = {
   outsider?: Awaited<ReturnType<typeof outcome>>;
 };
 
+const loadedModules = new Map<string, Record<string, unknown>>();
+for (const relative of modules)
+  loadedModules.set(
+    relative,
+    (await import(
+      pathToFileURL(path.join(root ?? ".", relative)).href
+    )) as Record<string, unknown>,
+  );
+// Let pending import-time work settle before invocations start.
+await new Promise((resolve) => setTimeout(resolve, 0));
+importing = false;
+
 const publicExports: Record<string, Entry[]> = {};
 let httpRoutes: string[] | undefined;
-for (const relative of modules) {
-  const filePath = path.join(root ?? ".", relative);
+for (const [relative, loaded] of loadedModules) {
   // Node actions are never invoked here; the guard rejects public exports in
   // them instead.
-  const nodeRuntime = /^\s*["']use node["']/u.test(
-    readFileSync(filePath, "utf8"),
-  );
-  const loaded = (await import(pathToFileURL(filePath).href)) as Record<
-    string,
-    unknown
-  >;
+  const nodeRuntime = nodeModules.has(relative);
   publicExports[relative] = [];
   for (const [name, value] of Object.entries(loaded)) {
     if (!isPublicRegistration(value)) continue;
@@ -149,4 +182,4 @@ for (const relative of modules) {
       .getRoutes()
       .map(([routePath, method]) => `${method} ${routePath}`);
 }
-console.log(JSON.stringify({ publicExports, httpRoutes }));
+console.log(JSON.stringify({ publicExports, httpRoutes, importRefusals }));

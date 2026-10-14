@@ -528,9 +528,18 @@ const RUNTIME_EXPORTS_SCRIPT = fileURLToPath(
   new URL("./convex-runtime-exports.mts", import.meta.url),
 );
 
+// True when the directive prologue (comments allowed) holds "use node".
+function usesNodeRuntime(sourceFile) {
+  for (const statement of sourceFile.statements) {
+    if (!ts.isPrologueDirective(statement)) return false;
+    if (statement.expression.text === "use node") return true;
+  }
+  return false;
+}
+
 // Evaluates the modules once per deployment environment (AOHYS_ENV), since
 // a module can choose its exports from deployment configuration.
-function runtimeViolations(root, sources, adminExports) {
+function runtimeViolations(root, sources, adminExports, nodeModules) {
   const environments = [
     ...(readDomainVocabularies(root).find(({ name }) => name === "ENVIRONMENTS")
       ?.members ?? []),
@@ -543,13 +552,20 @@ function runtimeViolations(root, sources, adminExports) {
       root,
       sources,
       adminExports,
+      nodeModules,
       environment,
     ))
       violations.add(`${violation} (AOHYS_ENV=${environment})`);
   return [...violations];
 }
 
-function evaluatedViolations(root, sources, adminExports, environment) {
+function evaluatedViolations(
+  root,
+  sources,
+  adminExports,
+  nodeModules,
+  environment,
+) {
   const result = spawnSync(
     process.execPath,
     ["--import", "tsx", RUNTIME_EXPORTS_SCRIPT, root, ...sources],
@@ -557,6 +573,7 @@ function evaluatedViolations(root, sources, adminExports, environment) {
       cwd: root,
       encoding: "utf8",
       env: {
+        GUARD_NODE_MODULES: JSON.stringify(nodeModules),
         PATH: process.env.PATH ?? "",
         HOME: process.env.HOME ?? "",
         TMPDIR: process.env.TMPDIR ?? "",
@@ -577,9 +594,13 @@ function evaluatedViolations(root, sources, adminExports, environment) {
     ];
   }
   const violations = [];
-  const { publicExports, httpRoutes } = JSON.parse(
+  const { publicExports, httpRoutes, importRefusals } = JSON.parse(
     result.stdout.trim().split("\n").at(-1),
   );
+  if (importRefusals?.length)
+    violations.push(
+      `${CONVEX_DIR}: importing the Convex modules attempted ${[...new Set(importRefusals)].join(", ")}; module scope must not perform syscalls or network calls`,
+    );
   const served = (httpRoutes ?? []).slice().sort();
   if (served.join("\n") !== RUNTIME_HTTP_ROUTES.join("\n"))
     violations.push(
@@ -620,6 +641,7 @@ export function publicFunctionGuardViolations(root) {
   const program = createConvexProgram(root, sources);
   const checker = program.getTypeChecker();
   const adminExports = new Set();
+  const nodeModules = [];
   for (const relative of sources) {
     const sourceFile = program.getSourceFile(path.join(root, relative));
     if (!sourceFile) {
@@ -628,6 +650,7 @@ export function publicFunctionGuardViolations(root) {
     }
     if (relative !== BUILDERS_FILE)
       violations.push(...rawBuilderViolations(relative, sourceFile));
+    if (usesNodeRuntime(sourceFile)) nodeModules.push(relative);
     violations.push(
       ...exportViolations(checker, root, relative, sourceFile, adminExports),
     );
@@ -639,6 +662,7 @@ export function publicFunctionGuardViolations(root) {
       root,
       sources.filter((relative) => relative !== APP_DEFINITION),
       adminExports,
+      nodeModules,
     ),
   );
   return violations;
