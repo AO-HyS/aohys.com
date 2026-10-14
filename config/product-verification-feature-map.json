@@ -161,7 +161,8 @@
         "packages/core/tsconfig.json",
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
-        "tsconfig.base.json"
+        "tsconfig.base.json",
+        "apps/backend/convex/tsconfig.json"
       ],
       "environments": ["preview"]
     },
@@ -219,7 +220,8 @@
         "packages/core/tsconfig.json",
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
-        "tsconfig.base.json"
+        "tsconfig.base.json",
+        "apps/backend/convex/tsconfig.json"
       ],
       "environments": ["preview"]
     },
@@ -272,7 +274,8 @@
         "packages/core/tsconfig.json",
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
-        "tsconfig.base.json"
+        "tsconfig.base.json",
+        "apps/backend/convex/tsconfig.json"
       ],
       "environments": ["preview"]
     },
@@ -334,7 +337,8 @@
         "packages/core/tsconfig.json",
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
-        "tsconfig.base.json"
+        "tsconfig.base.json",
+        "apps/backend/convex/tsconfig.json"
       ],
       "environments": ["preview"]
     },
@@ -396,7 +400,8 @@
         "packages/core/tsconfig.json",
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
-        "tsconfig.base.json"
+        "tsconfig.base.json",
+        "apps/backend/convex/tsconfig.json"
       ],
       "environments": ["preview"]
     },
@@ -455,7 +460,8 @@
         "packages/core/tsconfig.json",
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
-        "tsconfig.base.json"
+        "tsconfig.base.json",
+        "apps/backend/convex/tsconfig.json"
       ],
       "environments": ["preview"]
     },
@@ -503,7 +509,8 @@
         "packages/core/tsconfig.json",
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
-        "tsconfig.base.json"
+        "tsconfig.base.json",
+        "apps/backend/convex/tsconfig.json"
       ]
     },
     {
@@ -651,7 +658,9 @@
         "packages/core/tsconfig.json",
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
-        "tsconfig.base.json"
+        "tsconfig.base.json",
+        "apps/backend/convex/tsconfig.json",
+        "scripts/tsconfig.json"
       ]
     }
   ]
