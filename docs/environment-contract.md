@@ -14,6 +14,8 @@ Its implementation hides GitHub Environments, Cloudflare variables, Convex deplo
 
 The seam is environment validation. App code, dashboard code, Convex functions, and release workflows should cross that seam instead of reading ad hoc provider variables directly.
 
+Each definition also declares its `destinations` (`convex-runtime`, `pages-runtime`, `release-job`), how release jobs receive it (`github.source`: environment name, release SHA, GitHub variable or secret, and optionally which environments), and its `localExample`. The Convex env sync, the Cloudflare Pages runtime bindings and the Convex contact runtime read their variable lists from `getVariableNamesForDestination`. `pnpm env:generate` writes the release workflow `env:` blocks (between the `environment-contract` markers) and `.env.example`; `pnpm env:check`, part of `pnpm lint`, fails when either drifts. A new variable is added once, in `packages/environment/src/index.ts`, then `pnpm env:generate`.
+
 ## Environment Names
 
 | Environment  | Purpose                                  | Source of truth                                | Deployment meaning                                     |

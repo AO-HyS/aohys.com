@@ -1,5 +1,6 @@
 import { pathToFileURL } from "node:url";
 import { type ReleaseEnvironment } from "@aohys/core/domain";
+import { getVariableNamesForDestination } from "@aohys/environment";
 
 export interface CloudflarePagesVariable {
   value?: string;
@@ -25,19 +26,19 @@ interface CloudflareApiResponse<T> {
   errors?: Array<{ message?: string }>;
 }
 
-export const RUNTIME_BINDING_NAMES = [
-  "ADMIN_EMAIL",
-  "AOHYS_ENV",
-  "BETTER_AUTH_TRUSTED_ORIGINS",
-  "BETTER_AUTH_URL",
-  "CONVEX_SITE_URL",
-  "CONVEX_URL",
-  "CLOUDFLARE_IMAGES_ACCOUNT_HASH",
-  "PUBLIC_RELEASE_SHA",
-  "PUBLIC_SITE_URL",
-] as const;
+// Bindings every release environment must carry; production adds the rest
+// of its Pages runtime variables (PUBLIC_POSTHOG_KEY).
+export const RUNTIME_BINDING_NAMES = getVariableNamesForDestination(
+  "pages-runtime",
+  "preview",
+)
+  .filter((name) =>
+    getVariableNamesForDestination("pages-runtime", "production").includes(
+      name,
+    ),
+  )
+  .sort();
 
-type RuntimeBindingName = (typeof RUNTIME_BINDING_NAMES)[number];
 type RuntimeValues = Record<string, string | undefined>;
 
 export function parsePagesEnvironment(
@@ -63,9 +64,12 @@ export function collectCanonicalRuntimeValues(
   environment: ReleaseEnvironment,
   values: RuntimeValues = process.env,
 ): Record<string, string> {
-  const runtimeValues = Object.fromEntries(
-    RUNTIME_BINDING_NAMES.map((name) => [name, requiredValue(values, name)]),
-  ) as Record<RuntimeBindingName, string>;
+  const runtimeValues: Record<string, string> = Object.fromEntries(
+    getVariableNamesForDestination("pages-runtime", environment).map((name) => [
+      name,
+      requiredValue(values, name),
+    ]),
+  );
 
   if (runtimeValues.AOHYS_ENV !== environment) {
     throw new Error(
@@ -73,12 +77,7 @@ export function collectCanonicalRuntimeValues(
     );
   }
 
-  return environment === "production"
-    ? {
-        ...runtimeValues,
-        PUBLIC_POSTHOG_KEY: requiredValue(values, "PUBLIC_POSTHOG_KEY"),
-      }
-    : runtimeValues;
+  return runtimeValues;
 }
 
 function apiUrl(accountId: string, projectName: string): string {

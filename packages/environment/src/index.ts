@@ -1,7 +1,11 @@
 import {
   ENVIRONMENTS,
   RELEASE_ENVIRONMENTS,
+  VARIABLE_DESTINATIONS,
   type Environment,
+  type GithubValueSource,
+  type ReleaseEnvironment,
+  type VariableDestination,
   type VariableClassification,
 } from "@aohys/core/domain";
 
@@ -24,6 +28,16 @@ export interface EnvironmentVariableDefinition {
   requiredIn: readonly Environment[];
   requiredTargets?: readonly EnvironmentValidationTarget[];
   description: string;
+  // Delivery targets; sync scripts, the Convex runtime and the release
+  // workflow derive their variable lists from this field.
+  destinations: readonly VariableDestination[];
+  // How release jobs receive the value; environments default to both.
+  github?: {
+    source: GithubValueSource;
+    environments?: readonly ReleaseEnvironment[];
+  };
+  // Value written to .env.example; omitted variables are CI-only.
+  localExample?: string;
 }
 
 export interface EnvironmentValidationResult {
@@ -67,6 +81,12 @@ const RELEASE_CONTEXT_TARGETS = [
   "dashboard-runtime",
 ] as const satisfies readonly EnvironmentValidationTarget[];
 
+// Every destination except the Pages runtime bindings.
+const CONVEX_RUNTIME_AND_RELEASE = [
+  "convex-runtime",
+  "release-job",
+] as const satisfies readonly VariableDestination[]; // domain-vocabulary-ok
+
 const DEFINITIONS: EnvironmentVariableDefinition[] = [
   {
     name: "AOHYS_ENV",
@@ -76,6 +96,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredIn: ENVIRONMENTS,
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Environment Contract name for the current runtime.",
+    destinations: VARIABLE_DESTINATIONS,
+    github: {
+      source: "environment-name",
+    },
+    localExample: "local",
   },
   {
     name: "PUBLIC_SITE_URL",
@@ -85,6 +110,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredIn: ENVIRONMENTS,
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Canonical URL for the current public site environment.",
+    destinations: VARIABLE_DESTINATIONS,
+    github: {
+      source: "variable",
+    },
+    localExample: "http://localhost:4321",
   },
   {
     name: "PUBLIC_CONTACT_ENDPOINT",
@@ -94,6 +124,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredIn: ENVIRONMENTS,
     description:
       "Public contact submission endpoint, backed by the Convex HTTP action.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "variable",
+    },
+    localExample: "",
   },
   {
     name: "CONVEX_URL",
@@ -104,6 +139,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredTargets: CONVEX_CLIENT_TARGETS,
     description:
       "Convex deployment URL consumed by server code and the dashboard SPA runtime.",
+    destinations: VARIABLE_DESTINATIONS,
+    github: {
+      source: "variable",
+    },
+    localExample: "",
   },
   {
     name: "CONVEX_DEPLOYMENT",
@@ -112,6 +152,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "server-only",
     requiredIn: RELEASE_ENVIRONMENTS,
     description: "Convex deployment selector for the target environment.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "variable",
+    },
+    localExample: "",
   },
   {
     name: "CONVEX_SITE_URL",
@@ -121,6 +166,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Convex HTTP actions URL generated for the target deployment.",
+    destinations: VARIABLE_DESTINATIONS,
+    github: {
+      source: "variable",
+    },
+    localExample: "",
   },
   {
     name: "CONVEX_DEPLOY_KEY",
@@ -131,6 +181,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredTargets: ["release"],
     description:
       "GitHub Environment secret used by CI/release flows to deploy Convex.",
+    destinations: ["release-job"],
+    github: {
+      source: "secret",
+    },
+    localExample: "",
   },
   {
     name: "PUBLIC_POSTHOG_KEY",
@@ -140,6 +195,12 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredIn: ["production"], // domain-vocabulary-ok
     description:
       "Production-only PostHog public key; browser traffic uses the first-party /ingest proxy.",
+    destinations: VARIABLE_DESTINATIONS,
+    github: {
+      source: "variable",
+      environments: ["production"], // domain-vocabulary-ok
+    },
+    localExample: "",
   },
   {
     name: "PUBLIC_RELEASE_SHA",
@@ -150,6 +211,10 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredTargets: RELEASE_CONTEXT_TARGETS,
     description:
       "Full github.sha shared by public browser, edge, and Convex telemetry.",
+    destinations: VARIABLE_DESTINATIONS,
+    github: {
+      source: "release-sha",
+    },
   },
   {
     name: "VITE_RELEASE_SHA",
@@ -160,6 +225,10 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredTargets: ["release"],
     description:
       "Full github.sha embedded in the private dashboard browser bundle.",
+    destinations: ["release-job"],
+    github: {
+      source: "release-sha",
+    },
   },
   {
     name: "RESEND_API_KEY",
@@ -168,6 +237,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "server-only",
     requiredIn: RELEASE_ENVIRONMENTS,
     description: "Server-only Resend API key for lead notifications.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "secret",
+    },
+    localExample: "",
   },
   {
     name: "RESEND_FROM",
@@ -176,6 +250,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "server-only",
     requiredIn: ENVIRONMENTS,
     description: "Verified sender identity for lead notifications.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "variable",
+    },
+    localExample: "Alejandro Ortiz <contact@aohys.com>",
   },
   {
     name: "LEAD_NOTIFICATION_EMAIL",
@@ -184,6 +263,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "server-only",
     requiredIn: ENVIRONMENTS,
     description: "Admin inbox for lead notification delivery.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "variable",
+    },
+    localExample: "alejandro.ortiz@aohys.com",
   },
   {
     name: "BETTER_AUTH_SECRET",
@@ -194,6 +278,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredTargets: AUTH_RUNTIME_TARGETS,
     description:
       "Better Auth secret for signed auth state, owned by the auth runtime.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "secret",
+    },
+    localExample: "",
   },
   {
     name: "BETTER_AUTH_URL",
@@ -203,6 +292,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredIn: ENVIRONMENTS,
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Trusted Better Auth base URL for the current environment.",
+    destinations: VARIABLE_DESTINATIONS,
+    github: {
+      source: "variable",
+    },
+    localExample: "http://localhost:4321",
   },
   {
     name: "BETTER_AUTH_TRUSTED_ORIGINS",
@@ -213,6 +307,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description:
       "Comma-separated origins accepted by Better Auth for the current environment.",
+    destinations: VARIABLE_DESTINATIONS,
+    github: {
+      source: "variable",
+    },
+    localExample: "http://localhost:4321",
   },
   {
     name: "ADMIN_EMAIL",
@@ -222,6 +321,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredIn: ENVIRONMENTS,
     requiredTargets: DASHBOARD_RUNTIME_TARGETS,
     description: "Comma-separated admin allowlist email addresses.",
+    destinations: VARIABLE_DESTINATIONS,
+    github: {
+      source: "variable",
+    },
+    localExample: "alejandro.ortiz@aohys.com",
   },
   {
     name: "GOOGLE_CLIENT_ID",
@@ -232,6 +336,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredTargets: AUTH_RUNTIME_TARGETS,
     description:
       "Google OAuth client identifier used by Better Auth social sign-in.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "variable",
+    },
+    localExample: "",
   },
   {
     name: "GOOGLE_CLIENT_SECRET",
@@ -242,6 +351,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredTargets: AUTH_RUNTIME_TARGETS,
     description:
       "Google OAuth client secret used only by Better Auth server routes.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "secret",
+    },
+    localExample: "",
   },
   {
     name: "CLOUDFLARE_ACCOUNT_ID",
@@ -252,6 +366,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredTargets: ["release"],
     description:
       "Cloudflare account identifier for release workflows and Images direct-upload URLs.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "secret",
+    },
+    localExample: "",
   },
   {
     name: "CLOUDFLARE_API_TOKEN",
@@ -262,6 +381,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredTargets: ["release"],
     description:
       "GitHub Environment secret used by Wrangler to deploy Cloudflare Pages.",
+    destinations: ["release-job"],
+    github: {
+      source: "secret",
+    },
+    localExample: "",
   },
   {
     name: "CLOUDFLARE_PROJECT_NAME",
@@ -271,6 +395,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredIn: RELEASE_ENVIRONMENTS,
     requiredTargets: ["release"],
     description: "Cloudflare Pages/Workers project name.",
+    destinations: ["release-job"],
+    github: {
+      source: "variable",
+    },
+    localExample: "aohys-com",
   },
   {
     name: "CLOUDFLARE_IMAGES_ACCOUNT_HASH",
@@ -281,6 +410,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredTargets: ["release", "dashboard-runtime"],
     description:
       "Cloudflare Images delivery account hash for dashboard media URLs.",
+    destinations: VARIABLE_DESTINATIONS,
+    github: {
+      source: "variable",
+    },
+    localExample: "",
   },
   {
     name: "CLOUDFLARE_IMAGES_API_TOKEN",
@@ -291,6 +425,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredTargets: ["release"],
     description:
       "Narrow Cloudflare Images token used by Convex to create direct upload URLs.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "secret",
+    },
+    localExample: "",
   },
   {
     name: "PUBLISH_GITHUB_TOKEN",
@@ -301,6 +440,10 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredTargets: ["release"],
     description:
       "Token used by Convex to queue the Release Train workflow after dashboard publish.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "secret",
+    },
   },
   {
     name: "PUBLISH_GITHUB_REPOSITORY",
@@ -310,6 +453,10 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredIn: [],
     description:
       "Optional owner/repo override for dashboard-triggered publish workflow dispatch.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "variable",
+    },
   },
   {
     name: "PUBLISH_GITHUB_WORKFLOW_ID",
@@ -319,6 +466,10 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     requiredIn: [],
     description:
       "Optional workflow file override for dashboard-triggered publish workflow dispatch.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "variable",
+    },
   },
   {
     name: "PUBLIC_CONTACT_EMAIL",
@@ -327,6 +478,11 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "public-browser",
     requiredIn: ENVIRONMENTS,
     description: "Public contact email displayed in the site.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "variable",
+    },
+    localExample: "alejandro.ortiz@aohys.com",
   },
   {
     name: "PUBLIC_WHATSAPP_URL",
@@ -335,11 +491,44 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     exposure: "public-browser",
     requiredIn: ENVIRONMENTS,
     description: "Public WhatsApp contact URL.",
+    destinations: CONVEX_RUNTIME_AND_RELEASE,
+    github: {
+      source: "variable",
+    },
+    localExample: "",
+  },
+  {
+    name: "SMOKE_CONTACT_SUBMIT",
+    provider: "core",
+    classification: "policy-value",
+    exposure: "server-only",
+    requiredIn: [],
+    description:
+      "Opt-in flag for the preview release smoke to submit a real contact lead.",
+    destinations: ["release-job"],
+    github: {
+      source: "variable",
+      environments: ["preview"], // domain-vocabulary-ok
+    },
   },
 ];
 
 export function getEnvironmentVariableDefinitions(): EnvironmentVariableDefinition[] {
   return [...DEFINITIONS];
+}
+
+// Variables delivered to a destination, optionally only those required in
+// one environment.
+export function getVariableNamesForDestination(
+  destination: VariableDestination,
+  environment?: Environment,
+): string[] {
+  return DEFINITIONS.filter(
+    (definition) =>
+      definition.destinations.includes(destination) &&
+      (environment === undefined ||
+        definition.requiredIn.includes(environment)),
+  ).map((definition) => definition.name);
 }
 
 export function validateEnvironmentContract(

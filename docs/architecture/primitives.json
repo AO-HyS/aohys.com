@@ -86,6 +86,37 @@
       "goals": [],
       "replaces": [],
       "docs": []
+    },
+    {
+      "id": "environment-contract",
+      "category": "infra",
+      "status": "active",
+      "summary": "Registry of every environment variable with provider, classification, exposure, required environments and targets, delivery destinations (convex-runtime, pages-runtime, release-job), GitHub value source and local example; validates environments and generates release artifacts.",
+      "paths": [
+        "packages/environment/src/index.ts",
+        "scripts/generate-environment-artifacts.ts"
+      ],
+      "symbols": [
+        "packages/environment/src/index.ts#getEnvironmentVariableDefinitions",
+        "packages/environment/src/index.ts#getVariableNamesForDestination",
+        "packages/environment/src/index.ts#validateEnvironmentContract"
+      ],
+      "guarantees": [
+        {
+          "statement": "The release workflow env blocks for preview and production and .env.example are generated from the contract; lint fails when either drifts.",
+          "verifiedBy": "pnpm env:check (part of pnpm lint)"
+        },
+        {
+          "statement": "The Convex env sync, the Cloudflare Pages runtime bindings and the Convex contact runtime values derive their variable lists from destinations.",
+          "verifiedBy": "scripts/sync-convex-env.ts, scripts/sync-cloudflare-pages-runtime.ts and apps/backend/convex/http.ts call the contract; rg finds no hand-written variable list in them"
+        }
+      ],
+      "goals": ["Generate the README environment tables from the contract."],
+      "replaces": [],
+      "docs": [
+        "docs/environment-contract.md",
+        "docs/adr/0002-environment-contract-source-of-truth.md"
+      ]
     }
   ]
 }
