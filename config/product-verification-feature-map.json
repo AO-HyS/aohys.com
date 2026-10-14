@@ -761,7 +761,9 @@
         "apps/site/src/dashboard-access-states.ts",
         "apps/backend/convex/convex.config.ts",
         "apps/backend/convex/schema.ts",
-        "apps/backend/convex/auth.config.ts"
+        "apps/backend/convex/auth.config.ts",
+        "apps/site/src/pages",
+        "functions"
       ]
     }
   ]
