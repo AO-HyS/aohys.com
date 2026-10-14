@@ -311,7 +311,8 @@ export const recordReceipt = internalMutation({
     runUrl: v.string(),
     sha: v.string(),
     smokePassed: v.literal(true),
-    // Optional while deployed workflow runs predate it; see the runbook.
+    // Optional while deployed workflow runs predate it; the event is always
+    // recorded with the deployment read on the server.
     operator: v.optional(operatorInputValidator),
   },
   returns: v.object({
@@ -393,17 +394,16 @@ export const recordReceipt = internalMutation({
       smokePassed: true,
       receivedAt: now,
     });
-    if (args.operator)
-      await insertAuditEvent(ctx, {
-        actor: await operatorActor(ctx, args.operator),
-        verb: "publication:recordReceipt",
-        target: {
-          requestKey: args.publicationRequestKey,
-          publicationAttemptId: args.publicationAttemptId,
-          runId: args.runId,
-        },
-        outcome: "committed",
-      });
+    await insertAuditEvent(ctx, {
+      actor: await operatorActor(ctx, args.operator),
+      verb: "publication:recordReceipt",
+      target: {
+        requestKey: args.publicationRequestKey,
+        publicationAttemptId: args.publicationAttemptId,
+        runId: args.runId,
+      },
+      outcome: "committed",
+    });
     await Promise.all([
       ctx.db.patch("publicationRequests", request._id, {
         state: "deployed",
@@ -439,7 +439,8 @@ export const reconcileWorkflowOutcome = internalMutation({
     runUrl: v.string(),
     releaseSha: v.string(),
     outcome: publicationWorkflowOutcomeValidator,
-    // Optional while deployed workflow runs predate it; see the runbook.
+    // Optional while deployed workflow runs predate it; the event is always
+    // recorded with the deployment read on the server.
     operator: v.optional(operatorInputValidator),
   },
   returns: v.object({
@@ -560,18 +561,17 @@ export const reconcileWorkflowOutcome = internalMutation({
         updatedAt: now,
       }),
     ]);
-    if (args.operator)
-      await insertAuditEvent(ctx, {
-        actor: await operatorActor(ctx, args.operator),
-        verb: "publication:reconcileWorkflowOutcome",
-        target: {
-          requestKey: request.requestKey,
-          publicationAttemptId: attempt.publicationAttemptId,
-          runId: args.runId,
-          result: args.outcome,
-        },
-        outcome: "committed",
-      });
+    await insertAuditEvent(ctx, {
+      actor: await operatorActor(ctx, args.operator),
+      verb: "publication:reconcileWorkflowOutcome",
+      target: {
+        requestKey: request.requestKey,
+        publicationAttemptId: attempt.publicationAttemptId,
+        runId: args.runId,
+        result: args.outcome,
+      },
+      outcome: "committed",
+    });
     return {
       requestKey: request.requestKey,
       state: "release-failed" as const,

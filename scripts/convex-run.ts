@@ -1,20 +1,49 @@
 import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { getFunctionName, type FunctionReference } from "convex/server";
 import { type OperatorCredential } from "@aohys/core/domain";
 
+const BACKEND_DIRECTORY = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../apps/backend",
+);
+
+// Whether a variable is set for the Convex CLI, which reads the process
+// environment and then apps/backend/.env.local and .env. Values never leave.
+function convexCliHas(name: string): boolean {
+  if (process.env[name]?.trim()) return true;
+  return [".env.local", ".env"].some((file) => {
+    const filePath = path.join(BACKEND_DIRECTORY, file);
+    return (
+      existsSync(filePath) &&
+      new RegExp(`^\\s*${name}\\s*=\\s*\\S`, "mu").test(
+        readFileSync(filePath, "utf8"),
+      )
+    );
+  });
+}
+
+// The credential the Convex CLI will use: a deploy key wins over a
+// deployment selected by a CLI session, wherever either is defined.
+function convexCredential(): OperatorCredential | undefined {
+  if (convexCliHas("CONVEX_DEPLOY_KEY")) return "deploy-key";
+  if (convexCliHas("CONVEX_DEPLOYMENT")) return "cli-session";
+  return undefined;
+}
+
 export function hasConvexDeploymentAccess(): boolean {
-  return Boolean(
-    process.env.CONVEX_DEPLOY_KEY?.trim() ||
-    process.env.CONVEX_DEPLOYMENT?.trim(),
-  );
+  return convexCredential() !== undefined;
 }
 
 // The credential class an operator call uses; the deploy key wins over a CLI
 // session, as in runConvexFunction. Recorded in audit events, never the value.
 export function operatorCredential(): OperatorCredential {
-  if (process.env.CONVEX_DEPLOY_KEY?.trim()) return "deploy-key";
-  if (process.env.CONVEX_DEPLOYMENT?.trim()) return "cli-session";
-  throw new Error("CONVEX_DEPLOY_KEY or CONVEX_DEPLOYMENT is required.");
+  const credential = convexCredential();
+  if (!credential)
+    throw new Error("CONVEX_DEPLOY_KEY or CONVEX_DEPLOYMENT is required.");
+  return credential;
 }
 
 export function runConvexFunction<T>(
@@ -29,9 +58,8 @@ export function runConvexFunction<T>(
       ? functionReference
       : getFunctionName(functionReference);
   const deployKey = process.env.CONVEX_DEPLOY_KEY?.trim();
-  const deployment = process.env.CONVEX_DEPLOYMENT?.trim();
 
-  if (!deployKey && !deployment) {
+  if (!convexCredential()) {
     throw new Error(
       `CONVEX_DEPLOY_KEY or CONVEX_DEPLOYMENT is required to run ${functionName}.`,
     );

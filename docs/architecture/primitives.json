@@ -196,7 +196,7 @@
       "id": "audit-events",
       "category": "auth",
       "status": "active",
-      "summary": "Append-only auditEvents written only through convex/lib/audit.ts: session events from the admin builders (committed for mutations; attempted then succeeded, failed or unknown for actions), publication request and attempt transitions with the requesting session, and system events for dispatch, and operator events with the deployment read on the server for CLI reconcile and retry (and receipts and workflow outcomes when the caller passes operator).",
+      "summary": "Append-only auditEvents written only through convex/lib/audit.ts: session events from the admin builders (committed for mutations; attempted then succeeded, failed or unknown for actions), publication request and attempt transitions with the requesting session, and system events for dispatch, and operator events with the deployment read on the server for reconcile, retry, receipts and workflow outcomes (credential class and authorization reference when the caller declares them).",
       "paths": [
         "apps/backend/convex/lib/audit.ts",
         "apps/backend/convex/audit.ts",
@@ -222,7 +222,7 @@
       "goals": [
         "Observe audit rows on preview after real admin saves, uploads and a publish.",
         "Operator events for the preview dashboard seeds.",
-        "Release Train receipt and outcome scripts pass operator (run URL as authorizationRef) once production runs a backend that accepts it."
+        "Release Train receipt and outcome scripts declare operator (credential class, run URL as authorizationRef) once production runs a backend that accepts it."
       ],
       "replaces": [],
       "docs": ["apps/backend/README.md"]

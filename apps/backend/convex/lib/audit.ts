@@ -19,7 +19,8 @@ export const sessionActorValidator = v.object({
 export const operatorActorValidator = v.object({
   actorKind: v.literal("operator"),
   deployment: v.string(),
-  credential: operatorCredentialValidator,
+  // Declared by the caller; absent when a caller does not declare it yet.
+  credential: v.optional(operatorCredentialValidator),
   authorizationRef: v.optional(v.string()),
   operatorLabel: v.optional(v.string()),
 });
@@ -56,11 +57,14 @@ export const operatorInputValidator = v.object({
 });
 export type OperatorInput = Infer<typeof operatorInputValidator>;
 
+// The deployment always comes from the server; what the caller declares is
+// recorded when present.
 export async function operatorActor(
   ctx: MutationCtx,
-  input: OperatorInput,
+  input: OperatorInput | undefined,
 ): Promise<AuditActor> {
   const { name } = await ctx.meta.getDeploymentMetadata();
+  if (!input) return { actorKind: "operator", deployment: name };
   return {
     actorKind: "operator",
     deployment: name,
@@ -129,11 +133,11 @@ export function actorOf(event: Doc<"auditEvents">): AuditActor {
         actorEmail: event.actorEmail,
       };
     case "operator":
-      if (!event.deployment || !event.credential) throw missing("provenance");
+      if (!event.deployment) throw missing("its deployment");
       return {
         actorKind: "operator",
         deployment: event.deployment,
-        credential: event.credential,
+        ...(event.credential ? { credential: event.credential } : {}),
         ...(event.authorizationRef
           ? { authorizationRef: event.authorizationRef }
           : {}),
