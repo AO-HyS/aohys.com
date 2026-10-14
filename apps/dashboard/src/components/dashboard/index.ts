@@ -3,6 +3,8 @@ export * from "./async-surface";
 export * from "./confirm-action";
 export * from "./form-field";
 export * from "./form-controls";
+export * from "./meta-badge";
+export * from "./notice-dialog";
 export * from "./page-header";
 export * from "./save-bar";
 export * from "./section-panel";

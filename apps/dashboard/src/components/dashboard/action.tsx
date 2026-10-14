@@ -52,6 +52,8 @@ export function Action({
     disabled: disabled || pending,
     className: cn(
       "min-h-11 transition-[background-color,color,border-color,box-shadow,transform] duration-200 ease-out sm:min-h-8",
+      // The pending label is the only progress signal; keep it readable.
+      "aria-busy:disabled:opacity-100",
       actionClassByVariant[variant],
       className,
     ),
