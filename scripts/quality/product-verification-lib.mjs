@@ -516,6 +516,7 @@ const JOURNEY_KEYS = new Set([
   "proofCandidateSha",
   "proofJourneySha256",
   "environments",
+  "sharedSourceGlobs",
 ]);
 const PROOF_KEYS = [
   "proofRunId",
@@ -632,6 +633,18 @@ export function validateFeatureMap(map, { root, fileEdges = [] } = {}) {
     for (const key of ["routes", "preconditions", "steps", "expectedResults"])
       if (!Array.isArray(journey[key]) || journey[key].length === 0)
         errors.push(`journey ${journey.id} requires a non-empty ${key}`);
+    if (
+      journey.sharedSourceGlobs !== undefined &&
+      (!Array.isArray(journey.sharedSourceGlobs) ||
+        journey.sharedSourceGlobs.some((glob) => typeof glob !== "string"))
+    )
+      errors.push(`journey ${journey.id} sharedSourceGlobs must be paths`);
+    if (root)
+      for (const glob of journey.sharedSourceGlobs ?? [])
+        if (typeof glob === "string" && !fs.existsSync(path.join(root, glob)))
+          errors.push(
+            `journey ${journey.id} maps a missing shared path: ${glob}`,
+          );
     for (const key of ["sourceGlobs"])
       if (!Array.isArray(journey[key]) || journey[key].length === 0)
         errors.push(`journey ${journey.id} requires a non-empty ${key}`);
@@ -731,11 +744,10 @@ export function validateFeatureMap(map, { root, fileEdges = [] } = {}) {
         root &&
         typeof journey.proofCandidateSha === "string" &&
         Array.isArray(journey.sourceGlobs) &&
-        !sourcesUnchangedSince(
-          root,
-          journey.proofCandidateSha,
-          withTransitiveDependencies(journey.sourceGlobs, fileEdges),
-        )
+        !sourcesUnchangedSince(root, journey.proofCandidateSha, [
+          ...withTransitiveDependencies(journey.sourceGlobs, fileEdges),
+          ...(journey.sharedSourceGlobs ?? []),
+        ])
       )
         errors.push(
           `proven journey ${journey.id} is stale: its sources changed since ${journey.proofCandidateSha.slice(0, 12)} or that commit is unknown`,
@@ -790,6 +802,11 @@ function matchesSourcePrefix(filePath, globs) {
   );
 }
 
+// Code and resource import edges from an architecture-fitness graph.
+export function dependencyEdges(graph) {
+  return [...(graph.fileEdges ?? []), ...(graph.resourceEdges ?? [])];
+}
+
 // The mapped paths plus every file they import, directly or transitively.
 function withTransitiveDependencies(sourceGlobs, fileEdges) {
   const targetsByImporter = new Map();
@@ -838,18 +855,22 @@ function withTransitiveImporters(files, fileEdges) {
 // A journey is selected when a changed file, or a file that imports it, sits
 // under one of its sourceGlobs, so journeys map entry points and their
 // dependencies follow from the import graph.
+// sharedSourceGlobs (bootstrap files that import every feature) match only a
+// direct change, so an unrelated feature edit never selects every journey.
 export function selectMappedFeatures({
   changedFiles,
   featureMap,
   fileEdges = [],
 }) {
-  const files = withTransitiveImporters(
-    [...new Set(changedFiles ?? [])].sort(),
-    fileEdges,
-  );
-  return (featureMap?.journeys ?? []).filter((journey) =>
-    files.some((filePath) =>
-      matchesSourcePrefix(filePath, journey.sourceGlobs ?? []),
-    ),
+  const changed = [...new Set(changedFiles ?? [])].sort();
+  const files = withTransitiveImporters(changed, fileEdges);
+  return (featureMap?.journeys ?? []).filter(
+    (journey) =>
+      files.some((filePath) =>
+        matchesSourcePrefix(filePath, journey.sourceGlobs ?? []),
+      ) ||
+      changed.some((filePath) =>
+        matchesSourcePrefix(filePath, journey.sharedSourceGlobs ?? []),
+      ),
   );
 }

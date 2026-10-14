@@ -4,7 +4,10 @@ import fs from "node:fs";
 import process from "node:process";
 
 import { analyzeArchitecture } from "../architecture/fitness-lib.mjs";
-import { selectMappedFeatures } from "./product-verification-lib.mjs";
+import {
+  dependencyEdges,
+  selectMappedFeatures,
+} from "./product-verification-lib.mjs";
 
 function csvOption(name) {
   const arg = process.argv.find((candidate) =>
@@ -42,7 +45,7 @@ console.log(
       selected: selectMappedFeatures({
         changedFiles,
         featureMap,
-        fileEdges: analyzeArchitecture().graph.fileEdges,
+        fileEdges: dependencyEdges(analyzeArchitecture().graph),
       }),
     },
     null,

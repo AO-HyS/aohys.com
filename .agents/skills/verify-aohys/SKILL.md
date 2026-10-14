@@ -129,7 +129,10 @@ proven entry names its private run id, an environment among its own
 `pnpm verify:product` marks it stale as soon as a mapped source or the journey
 contract changes after the proof.
 Every `sourceGlobs` path must exist. `sourceGlobs` name a journey's entry
-points; its dependencies follow from the architecture-fitness import graph.
+points; its dependencies follow from the architecture-fitness import graph,
+including imported JSON and CSS. `sharedSourceGlobs` list bootstrap files that
+import every feature (dashboard `main.tsx`, auth client, styles); they select
+the journey only when changed directly.
 `pnpm verify:product:changed` selects a journey when a changed file, or any
 file that transitively imports it, sits under its `sourceGlobs`, and a proof
 goes stale when an entry point or any transitive dependency changes after

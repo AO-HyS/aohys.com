@@ -390,6 +390,18 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
         sourceSet.has(importer) && sourceSet.has(target),
     )
     .map(({ importer, target }) => [importer, target]);
+  // Imports of existing non-code resources (JSON, CSS); not part of cycle or
+  // boundary checks, but needed to know what a change can affect.
+  const resourceEdges = imports
+    .filter(
+      ({ importer, target }) =>
+        sourceSet.has(importer) &&
+        target &&
+        !sourceSet.has(target) &&
+        !SOURCE_EXTENSIONS.includes(path.extname(target)),
+    )
+    .map(({ importer, target }) => [importer, target])
+    .sort((left, right) => edgeId(...left).localeCompare(edgeId(...right)));
   const fileCycles = stronglyConnectedComponents(productionFiles, fileEdges);
   for (const component of fileCycles) {
     violations.push({
@@ -473,6 +485,7 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
       fileEdges: fileEdges.sort((left, right) =>
         edgeId(...left).localeCompare(edgeId(...right)),
       ),
+      resourceEdges,
       packages: workspaces.map((workspace) => workspace.name),
       packageEdges,
     },
