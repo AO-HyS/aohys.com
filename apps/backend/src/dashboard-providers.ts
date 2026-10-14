@@ -47,6 +47,11 @@ export type PublishWorkflowResult =
   | { status: "queued"; repository: string; workflowId: string; ref: string }
   | { status: "not-configured"; reason: string };
 
+// A failure known to have produced no upload URL: rejected before the request
+// or by Cloudflare's parsed error response. Any other error after the request
+// leaves the outcome unknown.
+export class ConfirmedProviderFailure extends Error {}
+
 export async function createCloudflareImagesDirectUpload(
   payload: DashboardMediaUploadPayload,
   config: CloudflareImagesDirectUploadConfig,
@@ -57,13 +62,15 @@ export async function createCloudflareImagesDirectUpload(
   const accountHash = config.accountHash?.trim();
 
   if (!accountId || !apiToken || !accountHash) {
-    throw new Error("Cloudflare Images upload is not configured.");
+    throw new ConfirmedProviderFailure(
+      "Cloudflare Images upload is not configured.",
+    );
   }
 
   const customId = validateCloudflareImagesCustomId(payload.storageKey);
 
   if (!customId.isValid) {
-    throw new Error(
+    throw new ConfirmedProviderFailure(
       `Cloudflare Images custom ID is invalid. ${customId.message}`,
     );
   }
@@ -93,11 +100,15 @@ export async function createCloudflareImagesDirectUpload(
   );
   const body = parseCloudflareImagesUploadResponse(await response.json());
 
-  if (!response.ok || !body.success || !body.imageId || !body.uploadURL) {
+  if (!response.ok || !body.success) {
     const providerMessage = body.errors.join(" ");
-    throw new Error(
+    throw new ConfirmedProviderFailure(
       providerMessage || "Cloudflare Images upload URL could not be created.",
     );
+  }
+  // A success without the image fields may have created the image: unknown.
+  if (!body.imageId || !body.uploadURL) {
+    throw new Error("Cloudflare Images returned an incomplete upload URL.");
   }
 
   return {

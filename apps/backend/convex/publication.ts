@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { internal } from "./_generated/api.js";
 import { internalMutation } from "./_generated/server.js";
+import { insertAuditEvent, systemActor } from "./lib/audit.js";
 import {
   publicationProviderStatusValidator,
   publicationWorkflowOutcomeValidator,
@@ -49,6 +50,15 @@ export const claimAttempt = internalMutation({
       state: "dispatching",
       claimedAt: now,
       updatedAt: now,
+    });
+    await insertAuditEvent(ctx, {
+      actor: systemActor(attempt.publicationAttemptId),
+      verb: "publication:claimAttempt",
+      target: {
+        requestKey: request.requestKey,
+        publicationAttemptId: attempt.publicationAttemptId,
+      },
+      outcome: "committed",
     });
     return {
       status: "claimed" as const,
@@ -153,6 +163,16 @@ export const completeAttempt = internalMutation({
       .unique();
     if (receipt) return null;
     const now = Date.now();
+    await insertAuditEvent(ctx, {
+      actor: systemActor(attempt.publicationAttemptId),
+      verb: "publication:completeAttempt",
+      target: {
+        requestKey: request.requestKey,
+        publicationAttemptId: attempt.publicationAttemptId,
+        result: args.result.status,
+      },
+      outcome: "committed",
+    });
     if (args.result.status === "acknowledged") {
       await Promise.all([
         ctx.db.patch("publicationAttempts", attempt._id, {

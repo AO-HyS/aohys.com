@@ -140,6 +140,27 @@ export const CASE_STUDY_STATUSES = [
 ] as const;
 export type CaseStudyStatus = (typeof CASE_STUDY_STATUSES)[number];
 
+// Who wrote an audit event: the dashboard session resolved by requireAdmin,
+// an operator CLI without a session, or the scheduler. A client-supplied name
+// is never an actor.
+export const AUDIT_ACTOR_KINDS = ["session", "operator", "system"] as const;
+export type AuditActorKind = (typeof AUDIT_ACTOR_KINDS)[number];
+
+// committed: a mutation's write. attempted, then succeeded, failed (confirmed
+// by the provider) or unknown (response lost): an external effect.
+export const AUDIT_OUTCOMES = [
+  "committed",
+  "attempted",
+  "succeeded",
+  "failed",
+  "unknown",
+] as const;
+export type AuditOutcome = (typeof AUDIT_OUTCOMES)[number];
+
+// The class of credential an operator used, never its value.
+export const OPERATOR_CREDENTIALS = ["deploy-key", "cli-session"] as const;
+export type OperatorCredential = (typeof OPERATOR_CREDENTIALS)[number];
+
 export const CASE_STUDY_EVIDENCE_STATUSES = [
   "missing",
   "sanitized",

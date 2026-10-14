@@ -187,8 +187,12 @@ function rawBuilderViolations(relative, sourceFile) {
   return violations;
 }
 
-// Each builder must be exactly
-// customX(x, customCtx(async (ctx) => { const admin = await requireAdmin(ctx); return { admin }; }))
+// Each builder is customX(x, customization) where the customization is
+// customCtx(fn) or { args: {}, input: fn }, fn's first statement is
+// `const admin = await requireAdmin(ctx);` and its final return hands admin to
+// the handler (`{ admin, ... }`, or `{ ctx: { admin, ... }, ... }` for input).
+// What follows requireAdmin (the audit trail) is free; the evaluated refusals
+// in runtimeViolations are the behavioral check.
 function builderViolations(root) {
   const filePath = path.join(root, BUILDERS_FILE);
   if (!existsSync(filePath)) return [`${BUILDERS_FILE} is missing`];
@@ -205,8 +209,48 @@ function builderViolations(root) {
   );
   const isImported = (map, node, name) =>
     ts.isIdentifier(node) && map.get(node.text) === name;
+  const property = (object, name) =>
+    object.properties.find(
+      (item) =>
+        (ts.isPropertyAssignment(item) ||
+          ts.isShorthandPropertyAssignment(item)) &&
+        ts.isIdentifier(item.name) &&
+        item.name.text === name,
+    );
+  const passesAdmin = (object) => {
+    const admin = object && property(object, "admin");
+    return Boolean(admin && ts.isShorthandPropertyAssignment(admin));
+  };
   const violations = [];
   const seen = new Set();
+
+  // The guarded function of a customization, and whether its return shape is
+  // the customCtx one or the input one.
+  const guardedFunction = (customization) => {
+    if (
+      ts.isCallExpression(customization) &&
+      isImported(helpers, customization.expression, "customCtx") &&
+      customization.arguments.length === 1
+    )
+      return { fn: customization.arguments[0], shape: "context" };
+    if (
+      ts.isObjectLiteralExpression(customization) &&
+      customization.properties.length === 2
+    ) {
+      const args = property(customization, "args");
+      const input = property(customization, "input");
+      if (
+        args &&
+        ts.isPropertyAssignment(args) &&
+        ts.isObjectLiteralExpression(args.initializer) &&
+        args.initializer.properties.length === 0 &&
+        input &&
+        ts.isPropertyAssignment(input)
+      )
+        return { fn: input.initializer, shape: "input" };
+    }
+    return undefined;
+  };
 
   for (const statement of sourceFile.statements) {
     if (ts.isImportDeclaration(statement)) continue;
@@ -231,12 +275,17 @@ function builderViolations(root) {
       }
       seen.add(name);
       const call = declaration.initializer;
-      const contextCall = call?.arguments?.[1];
-      const arrow = contextCall?.arguments?.[0];
-      const parameter = arrow?.parameters?.[0];
-      const body = arrow?.body;
-      const first = body && ts.isBlock(body) ? body.statements[0] : undefined;
-      const second = body && ts.isBlock(body) ? body.statements[1] : undefined;
+      const guarded =
+        call && ts.isCallExpression(call) && call.arguments.length === 2
+          ? guardedFunction(call.arguments[1])
+          : undefined;
+      const fn = guarded?.fn;
+      const parameter =
+        fn && ts.isArrowFunction(fn) ? fn.parameters[0] : undefined;
+      const body = fn && ts.isArrowFunction(fn) ? fn.body : undefined;
+      const statements = body && ts.isBlock(body) ? body.statements : [];
+      const first = statements[0];
+      const last = statements.at(-1);
       const guardDeclaration =
         first && ts.isVariableStatement(first)
           ? first.declarationList.declarations[0]
@@ -247,28 +296,34 @@ function builderViolations(root) {
           ? awaited.expression
           : undefined;
       const returned =
-        second && ts.isReturnStatement(second) ? second.expression : undefined;
+        last && ts.isReturnStatement(last) ? last.expression : undefined;
+      const handedOver =
+        returned && ts.isObjectLiteralExpression(returned)
+          ? guarded.shape === "context"
+            ? passesAdmin(returned)
+            : (() => {
+                const context = property(returned, "ctx");
+                return Boolean(
+                  context &&
+                  ts.isPropertyAssignment(context) &&
+                  ts.isObjectLiteralExpression(context.initializer) &&
+                  passesAdmin(context.initializer),
+                );
+              })()
+          : false;
       const ok =
         call &&
         ts.isCallExpression(call) &&
         isImported(helpers, call.expression, spec.custom) &&
-        call.arguments.length === 2 &&
         isImported(server, call.arguments[0], spec.base) &&
-        contextCall &&
-        ts.isCallExpression(contextCall) &&
-        isImported(helpers, contextCall.expression, "customCtx") &&
-        contextCall.arguments.length === 1 &&
-        arrow &&
-        ts.isArrowFunction(arrow) &&
-        hasModifier(arrow, ts.SyntaxKind.AsyncKeyword) &&
-        arrow.parameters.length === 1 &&
+        fn &&
+        ts.isArrowFunction(fn) &&
+        hasModifier(fn, ts.SyntaxKind.AsyncKeyword) &&
+        fn.parameters.length >= 1 &&
         parameter &&
         ts.isIdentifier(parameter.name) &&
         !parameter.dotDotDotToken &&
         !parameter.initializer &&
-        body &&
-        ts.isBlock(body) &&
-        body.statements.length === 2 &&
         first &&
         ts.isVariableStatement(first) &&
         (first.declarationList.flags & ts.NodeFlags.Const) !== 0 &&
@@ -282,17 +337,13 @@ function builderViolations(root) {
         guardCall.arguments.length === 1 &&
         ts.isIdentifier(guardCall.arguments[0]) &&
         guardCall.arguments[0].text === parameter.name.text &&
-        returned &&
-        ts.isObjectLiteralExpression(returned) &&
-        returned.properties.length === 1 &&
-        ts.isShorthandPropertyAssignment(returned.properties[0]) &&
-        returned.properties[0].name.text === "admin" &&
+        handedOver &&
         !server.has(parameter.name.text) &&
         !auth.has(parameter.name.text) &&
         !helpers.has(parameter.name.text);
       if (!ok) {
         violations.push(
-          `${BUILDERS_FILE}: ${name} must be ${spec.custom}(${spec.base}, customCtx(async (ctx) => { const admin = await requireAdmin(ctx); return { admin }; }))`,
+          `${BUILDERS_FILE}: ${name} must be ${spec.custom}(${spec.base}, customCtx(fn) or { args: {}, input: fn }) where fn starts with \`const admin = await requireAdmin(ctx);\` and returns admin to the handler`,
         );
       }
     }

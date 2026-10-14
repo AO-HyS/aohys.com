@@ -1,4 +1,5 @@
 import { v, type ObjectType } from "convex/values";
+import { insertAuditEvent, sessionActorValidator } from "../lib/audit.js";
 import type { MutationCtx } from "../_generated/server.js";
 import { internal } from "../_generated/api.js";
 import {
@@ -39,6 +40,9 @@ export const publishDurablyArgs = {
   ...publishContentArgs,
   targetEnvironment: releaseEnvironmentValidator,
   requestedBy: v.string(),
+  // Resolved by requireAdmin in the calling action; recorded on every
+  // transition this mutation writes. requestedBy stays the original author.
+  actor: sessionActorValidator,
   providerConfigured: v.boolean(),
 };
 
@@ -88,6 +92,12 @@ export async function publishDurablyHandler(
     });
     request = await ctx.db.get("publicationRequests", requestId);
     if (!request) throw new Error("Publication request could not be created.");
+    await insertAuditEvent(ctx, {
+      actor: args.actor,
+      verb: "publication:createRequest",
+      target: { requestKey: request.requestKey, scope: args.scope },
+      outcome: "committed",
+    });
   }
   if (!request) throw new Error("Publication request is missing.");
 
@@ -110,6 +120,12 @@ export async function publishDurablyHandler(
       internal.publicationActions.dispatch,
       { attemptId },
     );
+    await insertAuditEvent(ctx, {
+      actor: args.actor,
+      verb: "publication:scheduleAttempt",
+      target: { requestKey: request.requestKey, publicationAttemptId },
+      outcome: "committed",
+    });
     await Promise.all([
       ctx.db.patch("publicationAttempts", attemptId, { schedulerJobId }),
       ctx.db.patch("publicationRequests", request._id, {

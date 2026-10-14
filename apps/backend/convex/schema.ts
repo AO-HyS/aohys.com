@@ -17,6 +17,9 @@ import {
   publicationWorkflowOutcomeValidator,
   releaseEnvironmentValidator,
   siteSettingClassificationValidator,
+  auditActorKindValidator,
+  auditOutcomeValidator,
+  operatorCredentialValidator,
 } from "./lib/validators.js";
 
 export default defineSchema({
@@ -185,4 +188,27 @@ export default defineSchema({
     .index("by_publication_attempt_id", ["publicationAttemptId"])
     .index("by_request_id", ["requestId"])
     .index("by_request_key", ["requestKey"]),
+
+  // Append-only: rows are never patched or deleted. Written only through
+  // convex/lib/audit.ts. The actor fields present depend on actorKind:
+  // session (actorId, actorEmail), operator (deployment, credential,
+  // authorizationRef, operatorLabel as a non-authoritative label) or system
+  // (causedBy).
+  auditEvents: defineTable({
+    actorKind: auditActorKindValidator,
+    actorId: v.optional(v.string()),
+    actorEmail: v.optional(v.string()),
+    deployment: v.optional(v.string()),
+    credential: v.optional(operatorCredentialValidator),
+    authorizationRef: v.optional(v.string()),
+    operatorLabel: v.optional(v.string()),
+    causedBy: v.optional(v.string()),
+    verb: v.string(),
+    target: v.record(v.string(), v.string()),
+    outcome: auditOutcomeValidator,
+    correlationId: v.optional(v.string()),
+    at: v.number(),
+  })
+    .index("by_at", ["at"])
+    .index("by_correlation_id", ["correlationId"]),
 });
