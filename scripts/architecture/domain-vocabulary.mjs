@@ -331,6 +331,24 @@ export function derivationViolations(root) {
   const derived = new Set();
   for (const statement of validators.statements) {
     if (
+      ts.isExportDeclaration(statement) ||
+      ts.isExportAssignment(statement) ||
+      (ts.isFunctionDeclaration(statement) &&
+        statement.name?.text !== "literals" &&
+        statement.modifiers?.some(
+          (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
+        )) ||
+      (ts.isClassDeclaration(statement) &&
+        statement.modifiers?.some(
+          (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
+        ))
+    ) {
+      violations.push(
+        `${CONVEX_VALIDATORS}: export validators only as \`export const name = literals(<domain array>)\``,
+      );
+      continue;
+    }
+    if (
       !ts.isVariableStatement(statement) ||
       !statement.modifiers?.some(
         (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
@@ -348,6 +366,8 @@ export function derivationViolations(root) {
         initializer.expression.text === "literals" &&
         initializer.arguments.length === 1 &&
         ts.isIdentifier(initializer.arguments[0]) &&
+        VALIDATOR_VOCABULARIES[name] !== undefined &&
+        domainImports.has(initializer.arguments[0].text) &&
         domainImports.get(initializer.arguments[0].text) ===
           VALIDATOR_VOCABULARIES[name];
       if (ok) derived.add(name);
@@ -383,9 +403,25 @@ export function derivationViolations(root) {
         return;
       }
       const table = owner.name.getText(schema);
+      const fieldNames = new Set();
       for (const property of node.arguments[0].properties) {
-        if (!ts.isPropertyAssignment(property)) continue;
-        const field = `${table}.${property.name.getText(schema)}`;
+        if (
+          !ts.isPropertyAssignment(property) ||
+          ts.isComputedPropertyName(property.name)
+        ) {
+          violations.push(
+            `${CONVEX_SCHEMA}: ${table} must declare fields as plain \`name: validator\` properties (no spreads, shorthand or computed keys)`,
+          );
+          continue;
+        }
+        const fieldName = property.name.getText(schema);
+        if (fieldNames.has(fieldName)) {
+          violations.push(
+            `${CONVEX_SCHEMA}: ${table}.${fieldName} is declared twice`,
+          );
+        }
+        fieldNames.add(fieldName);
+        const field = `${table}.${fieldName}`;
         const expected = SCHEMA_VOCABULARY_FIELDS[field];
         if (!expected) continue;
         seen.add(field);
