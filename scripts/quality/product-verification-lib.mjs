@@ -1,5 +1,7 @@
 import crypto from "node:crypto";
-import { ENVIRONMENTS } from "@aohys/core/domain";
+import fs from "node:fs";
+import path from "node:path";
+import { ENVIRONMENTS, VERIFICATION_ENVIRONMENTS } from "@aohys/core/domain";
 
 export const OBSERVATION_ONLY_ACTIONS = new Set([
   "navigate",
@@ -398,18 +400,11 @@ export function validatePlan(plan) {
       errors.push(`invalid coverage identityClass: ${entry.identityClass}`);
     if (
       app === "dashboard" &&
-      identityClass === "anonymous" &&
+      identityClass !== "authorized-session" &&
       plan.sideEffectMode !== "none"
     )
       errors.push(
-        `anonymous dashboard coverage must be an observation-only auth gate: ${entry.identityRef}`,
-      );
-    if (
-      app === "dashboard" &&
-      !["anonymous", "authorized-session"].includes(identityClass)
-    )
-      errors.push(
-        `dashboard coverage requires an authorized session: ${entry.identityRef}`,
+        `anonymous and denied dashboard coverage must be observation-only: ${entry.identityRef}`,
       );
     const identityRef =
       typeof entry.identityRef === "string" ? entry.identityRef.trim() : "";
@@ -520,7 +515,9 @@ const JOURNEY_KEYS = new Set([
 ]);
 const EVIDENCE_PREFIX = "$HOME/.development-system/private/verification/";
 
-export function validateFeatureMap(map) {
+// The single feature-map contract. With `root`, every sourceGlobs path must
+// also exist under it.
+export function validateFeatureMap(map, { root } = {}) {
   const errors = [];
   if (!map || typeof map !== "object" || Array.isArray(map))
     return { ok: false, errors: ["feature map must be an object"] };
@@ -612,6 +609,22 @@ export function validateFeatureMap(map) {
       errors.push(
         `anonymous and denied dashboard journeys must stay observation-only: ${journey.id}`,
       );
+    if (
+      journey.surface === "dashboard" &&
+      journey.identityClass === "anonymous" &&
+      journey.id !== "dashboard-auth-gate"
+    )
+      errors.push(
+        `the only anonymous dashboard journey is dashboard-auth-gate: ${journey.id}`,
+      );
+    if (root)
+      for (const glob of Array.isArray(journey.sourceGlobs)
+        ? journey.sourceGlobs
+        : [])
+        if (typeof glob !== "string" || !fs.existsSync(path.join(root, glob)))
+          errors.push(
+            `journey ${journey.id} maps a missing source path: ${glob}`,
+          );
     if (!["none", "authorized-writes"].includes(journey.sideEffectMode))
       errors.push(`journey ${journey.id} has an invalid sideEffectMode`);
     if (!["draft", "proven"].includes(journey.status))
@@ -620,6 +633,17 @@ export function validateFeatureMap(map) {
       for (const key of ["proofRunId", "proofEnvironment", "proofRoute"])
         if (typeof journey[key] !== "string" || !journey[key].trim())
           errors.push(`proven journey ${journey.id} requires ${key}`);
+      if (
+        typeof journey.proofRunId === "string" &&
+        !/^[a-z0-9][a-z0-9._-]{2,79}$/u.test(journey.proofRunId)
+      )
+        errors.push(
+          `proven journey ${journey.id} needs a private evidence run id`,
+        );
+      if (!VERIFICATION_ENVIRONMENTS.includes(journey.proofEnvironment))
+        errors.push(
+          `proven journey ${journey.id} must be proven on local or preview`,
+        );
     } else if (
       journey.proofRunId ||
       journey.proofEnvironment ||

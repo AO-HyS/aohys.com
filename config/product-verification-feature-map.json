@@ -197,7 +197,7 @@
       "steps": [
         "Open /dashboard/resume with the existing session.",
         "Change one summary line to a run-scoped marker and save.",
-        "Replace one contact link with javascript:alert(1) and save.",
+        "Set the PDF href field to javascript:alert(1) and save.",
         "Restore the original content and save."
       ],
       "expectedResults": [
@@ -261,7 +261,7 @@
       "preconditions": [
         "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
         "Runs on local or preview only; production stays read-only.",
-        "The current PUBLIC_WHATSAPP_URL setting for the environment is recorded before the run."
+        "A PUBLIC_WHATSAPP_URL setting already exists for the environment (the preview seed creates it) and its value is recorded before the run; without one the run stops, because settings cannot be deleted from the dashboard."
       ],
       "steps": [
         "Open /dashboard/settings with the existing session.",
@@ -298,13 +298,14 @@
         "Runs on local or preview only; production stays read-only."
       ],
       "steps": [
-        "Open /dashboard with the denied session.",
+        "Open /dashboard with the denied session and record the HTTP status and page.",
         "Open /dashboard/resume with the same session.",
-        "Capture the response, screenshots, console and network observations."
+        "Call the read-only Convex query content:listForDashboard with the denied identity's auth token (separately from the Pages observation, which returns 403 before the dashboard shell loads).",
+        "Capture screenshots, console and network observations."
       ],
       "expectedResults": [
-        "The dashboard shows the not-allowed state and no dashboard data loads.",
-        "Convex dashboard queries reject with 'This account is not allowed to use the dashboard.'",
+        "The Pages guard returns 403 with the not-allowed page and no dashboard shell or data loads.",
+        "The Convex query rejects with 'This account is not allowed to use the dashboard.'",
         "Nothing is written."
       ],
       "beforeProbe": "Record the response status and the visible access state.",
@@ -364,16 +365,16 @@
         "Preview only. Publishing dispatches the release workflow and deploys Cloudflare Pages, so every run needs the owner's explicit authorization for that operation."
       ],
       "steps": [
-        "Publish from the dashboard with the existing session.",
-        "Follow the publication request state until the release receipt is recorded.",
+        "Publish from the dashboard with the existing session and record the requestKey and publicationAttemptId returned by this publish operation.",
+        "Follow that requestKey and attempt until the release receipt is recorded.",
         "Open the preview site and confirm the published change."
       ],
       "expectedResults": [
         "The request moves to release-requested and then deployed with a receipt; a failed run ends release-failed or rollback-needed and is never retried from elapsed time.",
         "The preview site shows the published content."
       ],
-      "beforeProbe": "Record the latest publication request key and state.",
-      "afterProbe": "Read the same request and its attempts and receipt.",
+      "beforeProbe": "Record the latest publication request key and state, to tell this run's request from earlier ones.",
+      "afterProbe": "Read the request and attempt identified by this run's requestKey and publicationAttemptId, and their receipt; earlier requests never count as this run's result.",
       "cleanup": "Republish the previous drafts if the run changed public preview content; publication records are kept.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-publish-preview/",
       "sideEffectMode": "authorized-writes",
