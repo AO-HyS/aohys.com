@@ -910,6 +910,14 @@ export function selectMappedFeatures({
     )
       return true;
     if (!journey.sharedSourceGlobs?.length) return false;
+    // Direct prefix match covers new, deleted and import-free files under a
+    // shared root directory, which the import graph cannot see.
+    if (
+      changed.some((filePath) =>
+        matchesSourcePrefix(filePath, journey.sharedSourceGlobs),
+      )
+    )
+      return true;
     const shared = new Set(sharedDependencies(journey, featureMap, fileEdges));
     return changed.some((filePath) => shared.has(filePath));
   });
