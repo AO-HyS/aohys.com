@@ -192,7 +192,8 @@
       "preconditions": [
         "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
         "Runs on local or preview only; production stays read-only.",
-        "The original resume draft for the selected locale is recorded before the run."
+        "The original resume draft for the selected locale is recorded before the run.",
+        "The selected resume draft for the selected locale already has unpublished changes (publishedAt unset), because a dashboard save clears publishedAt and cleanup cannot restore a published state; otherwise the run stops."
       ],
       "steps": [
         "Open /dashboard/resume with the existing session.",
@@ -215,7 +216,10 @@
         "apps/dashboard/src/features/resume",
         "apps/backend/convex/model/content/resume.ts",
         "packages/content-graph/src/resume-content.ts",
-        "apps/backend/convex/content.ts"
+        "apps/backend/convex/content.ts",
+        "apps/backend/convex/lib/validators.ts",
+        "apps/backend/convex/auth.ts",
+        "apps/backend/convex/model/content/shared.ts"
       ]
     },
     {
@@ -229,7 +233,8 @@
       "preconditions": [
         "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
         "Runs on local or preview only; production stays read-only.",
-        "The original draft for the selected project and locale is recorded before the run."
+        "The original draft for the selected project and locale is recorded before the run.",
+        "The selected project draft already has unpublished changes (publishedAt unset), because a dashboard save clears publishedAt and cleanup cannot restore a published state; otherwise the run stops."
       ],
       "steps": [
         "Open /dashboard/projects with the existing session.",
@@ -249,7 +254,10 @@
       "sourceGlobs": [
         "apps/dashboard/src/features/projects",
         "apps/backend/convex/model/content/projects.ts",
-        "apps/backend/convex/content.ts"
+        "apps/backend/convex/content.ts",
+        "apps/backend/convex/lib/validators.ts",
+        "apps/backend/convex/auth.ts",
+        "apps/backend/src/project-identity.ts"
       ]
     },
     {
@@ -285,7 +293,9 @@
       "sourceGlobs": [
         "apps/dashboard/src/features/settings",
         "apps/backend/convex/model/content/settings.ts",
-        "apps/backend/convex/content.ts"
+        "apps/backend/convex/content.ts",
+        "apps/backend/convex/lib/validators.ts",
+        "apps/backend/convex/auth.ts"
       ]
     },
     {
@@ -353,7 +363,14 @@
       "sourceGlobs": [
         "apps/site/src/components/PublicContentPage.astro",
         "apps/backend/src/contact-workflow.ts",
-        "apps/backend/convex/http.ts"
+        "apps/backend/convex/http.ts",
+        "apps/backend/src/contact-http.ts",
+        "apps/backend/src/contact-environment.ts",
+        "apps/backend/src/contact-providers.ts",
+        "apps/backend/src/contact-abuse.ts",
+        "apps/backend/src/lead-intake.ts",
+        "apps/backend/convex/leads.ts",
+        "apps/backend/src/provider-responses.ts"
       ]
     },
     {
@@ -398,7 +415,10 @@
         "apps/dashboard/src/features/projects/projects-api.ts",
         "apps/dashboard/src/features/resume/resume-api.ts",
         "apps/dashboard/src/lib/publication-state.ts",
-        "apps/backend/src/publication-provider.ts"
+        "apps/backend/src/publication-provider.ts",
+        "apps/backend/convex/model/content/publication.ts",
+        "apps/backend/convex/model/content/shared.ts",
+        "apps/backend/src/publication-contract.ts"
       ]
     }
   ]
