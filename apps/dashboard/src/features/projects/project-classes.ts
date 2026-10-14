@@ -48,8 +48,6 @@ export const projectClass = {
   localeHeader: "gap-4 border-b bg-card pb-4",
   projectFormHeader:
     "flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-start sm:justify-between [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-foreground [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground",
-  formActionRow:
-    "flex flex-col gap-3 border-t bg-muted/30 px-4 py-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between",
   mediaList: "flex flex-col gap-3",
   mediaCardHeader: "border-b pb-4",
   mediaRow:

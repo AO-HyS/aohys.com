@@ -7,5 +7,6 @@ export * from "./meta-badge";
 export * from "./notice-dialog";
 export * from "./page-header";
 export * from "./save-bar";
+export * from "./save-state";
 export * from "./section-panel";
 export * from "./status-badge";

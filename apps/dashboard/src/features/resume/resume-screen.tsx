@@ -25,6 +25,10 @@ import {
 } from "@/components/dashboard/form-controls";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { SaveBar } from "@/components/dashboard/save-bar";
+import {
+  saveBarState,
+  type SaveResult,
+} from "@/components/dashboard/save-state";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -159,9 +163,7 @@ function ResumeWorkspace({
   const [isSaving, setIsSaving] = useState(false);
   const [isSavingVersion, setIsSavingVersion] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
-  const [saveResult, setSaveResult] = useState<"clean" | "saved" | "error">(
-    "clean",
-  );
+  const [saveResult, setSaveResult] = useState<SaveResult>("clean");
   const [pendingLocale, setPendingLocale] = useState<Locale | null>(null);
   const [versionForm, setVersionForm] = useState<ResumeVersionForm>({
     locale: selectedLocale,
@@ -342,7 +344,7 @@ function ResumeWorkspace({
       />
 
       <SaveBar
-        state={isSaving ? "saving" : hasChanges ? "dirty" : saveResult}
+        state={saveBarState({ isSaving, hasChanges, result: saveResult })}
         onSave={() => void handleSave()}
         disabled={!hasChanges || validationErrors.length > 0 || isPublishing}
         description={

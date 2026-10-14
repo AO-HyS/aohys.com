@@ -298,7 +298,7 @@
       "id": "dashboard-kit",
       "category": "ui",
       "status": "active",
-      "summary": "Dashboard features compose @/components/dashboard (Action, AsyncSurface, ConfirmAction, NoticeDialog, StatusBadge, MetaBadge, SaveBar, PageHeader, SectionPanel, form controls) over the shadcn adapter in components/ui; lib/dashboard-classes.ts holds only theme variables and layout classes shared by two or more screens.",
+      "summary": "Dashboard features compose @/components/dashboard (Action, AsyncSurface, ConfirmAction, NoticeDialog, StatusBadge, MetaBadge, SaveBar, PageHeader, SectionPanel, form controls) over the shadcn adapter in components/ui. Editors report saving through SaveBar with the state from saveBarState, and loading through AsyncSurface. lib/dashboard-classes.ts holds only theme variables and layout classes shared by two or more screens.",
       "paths": [
         "apps/dashboard/src/components/dashboard/index.ts",
         "apps/dashboard/src/components/dashboard/confirm-action.tsx",
@@ -306,14 +306,16 @@
         "apps/dashboard/src/components/dashboard/status-badge.tsx",
         "apps/dashboard/src/components/dashboard/meta-badge.tsx",
         "apps/dashboard/src/lib/dashboard-classes.ts",
-        "scripts/architecture/fitness-lib.mjs"
+        "scripts/architecture/fitness-lib.mjs",
+        "apps/dashboard/src/components/dashboard/save-state.ts"
       ],
       "symbols": [
         "apps/dashboard/src/components/dashboard/confirm-action.tsx#ConfirmAction",
         "apps/dashboard/src/components/dashboard/notice-dialog.tsx#NoticeDialog",
         "apps/dashboard/src/components/dashboard/status-badge.tsx#StatusBadge",
         "apps/dashboard/src/components/dashboard/meta-badge.tsx#MetaBadge",
-        "apps/dashboard/src/lib/dashboard-classes.ts#dashboardClass"
+        "apps/dashboard/src/lib/dashboard-classes.ts#dashboardClass",
+        "apps/dashboard/src/components/dashboard/save-state.ts#saveBarState"
       ],
       "guarantees": [
         {
@@ -322,7 +324,6 @@
         }
       ],
       "goals": [
-        "projects-screen.tsx reports save feedback through SaveBar and AsyncSurface, like resume-screen.tsx, instead of its own aria-live span.",
         "One brand-tokens source generates dashboardThemeVars and the site theme."
       ],
       "replaces": [],
