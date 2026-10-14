@@ -541,8 +541,9 @@ function usesNodeRuntime(sourceFile) {
 }
 
 // A "use node" module may only export consts declared by a direct
-// internalAction(...) call imported from ./_generated/server.
-function nodeModuleViolations(checker, relative, sourceFile) {
+// internalAction(...) call imported from the root _generated/server.
+function nodeModuleViolations(checker, root, relative, sourceFile) {
+  const generatedServer = path.resolve(root, CONVEX_DIR, "_generated/server");
   const moduleSymbol = checker.getSymbolAtLocation(sourceFile);
   if (!moduleSymbol) return [];
   const violations = [];
@@ -571,9 +572,12 @@ function nodeModuleViolations(checker, relative, sourceFile) {
       importDeclaration !== undefined &&
       ts.isImportDeclaration(importDeclaration) &&
       ts.isStringLiteral(importDeclaration.moduleSpecifier) &&
-      /^\.\/(?:.*\/)?_generated\/server(?:\.js)?$/u.test(
-        importDeclaration.moduleSpecifier.text,
-      );
+      path
+        .resolve(
+          path.dirname(sourceFile.fileName),
+          importDeclaration.moduleSpecifier.text,
+        )
+        .replace(/\.js$/u, "") === generatedServer;
     if (!ok)
       violations.push(
         `${relative}: "use node" modules may only export consts built with internalAction from _generated/server; ${exported.name} is not`,
@@ -695,7 +699,9 @@ export function publicFunctionGuardViolations(root) {
       violations.push(...rawBuilderViolations(relative, sourceFile));
     if (usesNodeRuntime(sourceFile)) {
       nodeModules.push(relative);
-      violations.push(...nodeModuleViolations(checker, relative, sourceFile));
+      violations.push(
+        ...nodeModuleViolations(checker, root, relative, sourceFile),
+      );
     }
     violations.push(
       ...exportViolations(checker, root, relative, sourceFile, adminExports),

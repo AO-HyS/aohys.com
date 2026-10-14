@@ -94,7 +94,7 @@ Object.assign(globalThis, {
 // guard) are refused at import resolution, transitive imports included, so
 // their module bodies never run here.
 const NODE_NETWORK =
-  /^(?:node:)?(?:http|https|http2|net|tls|dgram|child_process|worker_threads)(?:\/.*)?$/u;
+  /^(?:node:)?(?:http|https|http2|net|tls|dgram|dns|child_process|worker_threads)(?:\/.*)?$/u;
 const nodeModules = new Set(
   (JSON.parse(process.env.GUARD_NODE_MODULES ?? "[]") as string[]).map((file) =>
     realpathSync(file),
