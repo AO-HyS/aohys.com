@@ -93,14 +93,15 @@
     {
       "id": "dashboard-auth-gate",
       "surface": "dashboard",
-      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard",
+      "launch": "DASHBOARD_URL on a versioned *.aohys-com.pages.dev preview origin (the Pages guard does not run on the local Vite server)",
       "identity": "anonymous",
       "identityClass": "anonymous",
       "behavior": "Unauthenticated navigation to the protected dashboard does not render operations content; the observed redirect target is recorded verbatim at run time.",
       "routes": ["/dashboard"],
       "preconditions": [
         "No session exists; this journey never automates login or creates a browser profile.",
-        "Production remains read-only."
+        "Production remains read-only.",
+        "Preview only: the anonymous redirect comes from the Cloudflare Pages guard, which the local Vite server does not run."
       ],
       "steps": [
         "Navigate to /dashboard without a session using Computer Use.",
@@ -132,7 +133,8 @@
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
         "apps/dashboard/src/runtime-config.ts"
-      ]
+      ],
+      "environments": ["preview"]
     },
     {
       "id": "dashboard-overview",
@@ -166,7 +168,8 @@
         "apps/dashboard/src/app/dashboard-shell.tsx",
         "apps/dashboard/src/navigation.ts",
         "apps/backend/convex/model/content/overview.ts",
-        "apps/backend/convex/auth.ts"
+        "apps/backend/convex/auth.ts",
+        "apps/dashboard/src/features/overview"
       ],
       "sharedSourceGlobs": [
         "apps/dashboard/src/main.tsx",
