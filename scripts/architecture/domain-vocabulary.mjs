@@ -281,13 +281,17 @@ function isExempt(node, sourceFile) {
 // A literal group copies a vocabulary when most of its own members belong to
 // it and it covers at least 60% of it, so stale copies (a value missing) and
 // drifted copies (a value added) fail too. For one- and two-member
-// vocabularies any group made only of their members is a copy.
+// vocabularies a group holding all of their members, or made only of their
+// members, is a copy.
 function copiedVocabulary(members, vocabulary) {
   const shared = [...members].filter((member) =>
     vocabulary.members.has(member),
   ).length;
   if (vocabulary.members.size <= 2) {
-    return shared > 0 && shared === members.size;
+    return (
+      shared === vocabulary.members.size ||
+      (shared > 0 && shared === members.size)
+    );
   }
   return (
     shared >= 2 &&
@@ -317,6 +321,65 @@ export function literalCopyViolations(importer, source, vocabularies) {
   return [...found].sort();
 }
 
+// The literals helper must be exactly
+// `return v.union(...values.map((value) => v.literal(value))) as …;`
+// over its single parameter, so a derived validator keeps every member.
+function literalsHelperIsCanonical(statement, isValidatorObject) {
+  const parameter = statement.parameters[0];
+  const body = statement.body?.statements ?? [];
+  if (
+    statement.parameters.length !== 1 ||
+    !parameter ||
+    !ts.isIdentifier(parameter.name) ||
+    body.length !== 1 ||
+    !ts.isReturnStatement(body[0])
+  ) {
+    return false;
+  }
+  const values = parameter.name.text;
+  const union = unwrapExpression(body[0].expression);
+  const isMember = (node, object, name) =>
+    ts.isPropertyAccessExpression(node) &&
+    object(node.expression) &&
+    node.name.text === name;
+  if (
+    !union ||
+    !ts.isCallExpression(union) ||
+    !isMember(union.expression, isValidatorObject, "union") ||
+    union.arguments.length !== 1 ||
+    !ts.isSpreadElement(union.arguments[0])
+  ) {
+    return false;
+  }
+  const map = union.arguments[0].expression;
+  if (
+    !ts.isCallExpression(map) ||
+    !isMember(
+      map.expression,
+      (node) => ts.isIdentifier(node) && node.text === values,
+      "map",
+    ) ||
+    map.arguments.length !== 1 ||
+    !ts.isArrowFunction(map.arguments[0])
+  ) {
+    return false;
+  }
+  const arrow = map.arguments[0];
+  const item = arrow.parameters[0];
+  const literal = unwrapExpression(arrow.body);
+  return (
+    arrow.parameters.length === 1 &&
+    item &&
+    ts.isIdentifier(item.name) &&
+    literal &&
+    ts.isCallExpression(literal) &&
+    isMember(literal.expression, isValidatorObject, "literal") &&
+    literal.arguments.length === 1 &&
+    ts.isIdentifier(literal.arguments[0]) &&
+    literal.arguments[0].text === item.name.text
+  );
+}
+
 // Symbol derivation: every exported validator in convex/lib/validators.ts is
 // `literals(<domain array>)`, and every inventoried schema field references
 // its validator imported from ./lib/validators.js (optionally in v.optional).
@@ -329,6 +392,8 @@ export function derivationViolations(root) {
   const validators = parseSource(readFileSync(validatorsPath, "utf8"), ".ts");
   const domainImports = importedNames(validators, "@aohys/core/domain").named;
   const derived = new Set();
+  const isValidatorsValidatorObject = validatorObjectMatcher(validators);
+  let literalsVerified = false;
   for (const statement of validators.statements) {
     const hasModifier = (kind) =>
       ts.canHaveModifiers(statement) &&
@@ -344,7 +409,16 @@ export function derivationViolations(root) {
       ts.isFunctionDeclaration(statement) &&
       statement.name?.text === "literals" &&
       !hasModifier(ts.SyntaxKind.DefaultKeyword);
-    if (literalsHelper) continue;
+    if (literalsHelper) {
+      if (literalsHelperIsCanonical(statement, isValidatorsValidatorObject)) {
+        literalsVerified = true;
+      } else {
+        violations.push(
+          `${CONVEX_VALIDATORS}: literals must be \`return v.union(...values.map((value) => v.literal(value))) as …\``,
+        );
+      }
+      continue;
+    }
     if (
       !ts.isVariableStatement(statement) ||
       (statement.declarationList.flags & ts.NodeFlags.Const) === 0
@@ -375,6 +449,13 @@ export function derivationViolations(root) {
         );
       }
     }
+  }
+
+  if (!literalsVerified) {
+    violations.push(
+      `${CONVEX_VALIDATORS}: the exported literals helper is missing or not canonical`,
+    );
+    derived.clear();
   }
 
   const schema = parseSource(readFileSync(schemaPath, "utf8"), ".ts");
