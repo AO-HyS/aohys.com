@@ -64,7 +64,9 @@
         "packages/core/tsconfig.json",
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
-        "tsconfig.base.json"
+        "tsconfig.base.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml"
       ]
     },
     {
@@ -107,7 +109,9 @@
         "packages/core/tsconfig.json",
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
-        "tsconfig.base.json"
+        "tsconfig.base.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml"
       ]
     },
     {
@@ -162,7 +166,9 @@
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
         "tsconfig.base.json",
-        "apps/backend/convex/tsconfig.json"
+        "apps/backend/convex/tsconfig.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml"
       ],
       "environments": ["preview"]
     },
@@ -221,7 +227,9 @@
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
         "tsconfig.base.json",
-        "apps/backend/convex/tsconfig.json"
+        "apps/backend/convex/tsconfig.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml"
       ],
       "environments": ["preview"]
     },
@@ -275,7 +283,9 @@
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
         "tsconfig.base.json",
-        "apps/backend/convex/tsconfig.json"
+        "apps/backend/convex/tsconfig.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml"
       ],
       "environments": ["preview"]
     },
@@ -338,7 +348,9 @@
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
         "tsconfig.base.json",
-        "apps/backend/convex/tsconfig.json"
+        "apps/backend/convex/tsconfig.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml"
       ],
       "environments": ["preview"]
     },
@@ -401,7 +413,9 @@
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
         "tsconfig.base.json",
-        "apps/backend/convex/tsconfig.json"
+        "apps/backend/convex/tsconfig.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml"
       ],
       "environments": ["preview"]
     },
@@ -461,7 +475,9 @@
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
         "tsconfig.base.json",
-        "apps/backend/convex/tsconfig.json"
+        "apps/backend/convex/tsconfig.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml"
       ],
       "environments": ["preview"]
     },
@@ -510,7 +526,9 @@
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
         "tsconfig.base.json",
-        "apps/backend/convex/tsconfig.json"
+        "apps/backend/convex/tsconfig.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml"
       ]
     },
     {
@@ -562,7 +580,9 @@
         "packages/core/tsconfig.json",
         "packages/environment/tsconfig.json",
         "packages/release-train/tsconfig.json",
-        "tsconfig.base.json"
+        "tsconfig.base.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml"
       ]
     },
     {
@@ -660,7 +680,13 @@
         "packages/release-train/tsconfig.json",
         "tsconfig.base.json",
         "apps/backend/convex/tsconfig.json",
-        "scripts/tsconfig.json"
+        "scripts/tsconfig.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "apps/backend/package.json",
+        "packages/core/package.json",
+        "packages/environment/package.json",
+        "packages/release-train/package.json"
       ]
     }
   ]
