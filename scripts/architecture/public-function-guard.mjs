@@ -16,8 +16,9 @@ import { readDomainVocabularies } from "./domain-vocabulary.mjs";
 // be widened and registrations replaced, the modules are also evaluated as a
 // Convex push would: every export that is public at runtime must be one of
 // those admin registrations, and invoking it anonymously through the Convex
-// entry point must be refused by requireAdmin before any other syscall. The
-// evaluation runs once per AOHYS_ENV value.
+// entry point, anonymously and as a signed-in caller outside the allowlist,
+// must be refused by requireAdmin before any other syscall or network call.
+// The evaluation runs once per AOHYS_ENV value without provider credentials.
 //
 // Threat model: this catches the bypasses a contributor or agent writes by
 // copying a pattern or by mistake. Code written to defeat the guard, such as
@@ -514,8 +515,15 @@ function httpViolations(checker, relative, sourceFile) {
 // The app definition is bundled apart from function modules and only
 // evaluates inside the Convex runtime; the static checks still cover it.
 const APP_DEFINITION = `${CONVEX_DIR}/convex.config.ts`;
-// requireAdmin's refusal for a caller without a session (convex/auth.ts).
-const ANONYMOUS_REJECTION = "Authentication is required for dashboard access.";
+// requireAdmin's refusals (convex/auth.ts) for a caller without a session and
+// for a signed-in caller outside ADMIN_EMAIL.
+const EXPECTED_REJECTIONS = {
+  anonymous: "Authentication is required for dashboard access.",
+  outsider: "This account is not allowed to use the dashboard.",
+};
+// The evaluation never sees provider credentials; ADMIN_EMAIL holds an
+// address no caller in the evaluation uses.
+const EVALUATION_ADMIN_EMAIL = "admin@guard.invalid";
 const RUNTIME_EXPORTS_SCRIPT = fileURLToPath(
   new URL("./convex-runtime-exports.mts", import.meta.url),
 );
@@ -548,7 +556,13 @@ function evaluatedViolations(root, sources, adminExports, environment) {
     {
       cwd: root,
       encoding: "utf8",
-      env: { ...process.env, AOHYS_ENV: environment },
+      env: {
+        PATH: process.env.PATH ?? "",
+        HOME: process.env.HOME ?? "",
+        TMPDIR: process.env.TMPDIR ?? "",
+        AOHYS_ENV: environment,
+        ADMIN_EMAIL: EVALUATION_ADMIN_EMAIL,
+      },
       maxBuffer: 16 * 1024 * 1024,
     },
   );
@@ -572,15 +586,27 @@ function evaluatedViolations(root, sources, adminExports, environment) {
       `${CONVEX_DIR}/http.ts: the evaluated router serves [${served.join(", ")}], expected exactly [${RUNTIME_HTTP_ROUTES.join(", ")}]`,
     );
   for (const [relative, entries] of Object.entries(publicExports))
-    for (const { name, rejection, touched } of entries) {
-      if (!adminExports.has(`${relative}#${name}`))
+    for (const entry of entries) {
+      const { name } = entry;
+      if (!adminExports.has(`${relative}#${name}`)) {
         violations.push(
           `${relative}: export ${name} is a public Convex function at runtime but not a direct adminQuery/adminMutation/adminAction call`,
         );
-      else if (rejection !== ANONYMOUS_REJECTION || touched.length > 0)
+        continue;
+      }
+      if (entry.nodeRuntime) {
         violations.push(
-          `${relative}: export ${name} invoked anonymously must be refused by requireAdmin before any syscall; got ${rejection === null ? "a result" : JSON.stringify(rejection)}${touched.length ? ` after ${touched.join(", ")}` : ""}`,
+          `${relative}: "use node" modules may only export internal functions; move ${name} to a Convex runtime module`,
         );
+        continue;
+      }
+      for (const [caller, expected] of Object.entries(EXPECTED_REJECTIONS)) {
+        const { rejection, touched } = entry[caller] ?? {};
+        if (rejection !== expected || touched?.length)
+          violations.push(
+            `${relative}: export ${name} invoked by an ${caller} caller must be refused by requireAdmin with ${JSON.stringify(expected)} before any other syscall or network call; got ${rejection === null || rejection === undefined ? "a result" : JSON.stringify(rejection)}${touched?.length ? ` after ${touched.join(", ")}` : ""}`,
+          );
+      }
     }
   return violations;
 }
