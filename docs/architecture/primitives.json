@@ -173,11 +173,11 @@
       ],
       "guarantees": [
         {
-          "statement": "Every Convex module is .ts; none imports a public builder (query, mutation, action, their Generic forms, or httpAction outside http.ts) except lib/functions.ts, whose builders keep the closed requireAdmin form; the TypeScript checker classifies every export of every module, nested and re-exported ones included, and each public function or HTTP action must be a const declared by an adminQuery/adminMutation/adminAction call, with any or unknown exports rejected.",
+          "statement": "Every Convex module is .ts; none imports a public builder (query, mutation, action, their Generic forms, or httpAction outside http.ts) except lib/functions.ts, whose builders keep the closed requireAdmin form; the TypeScript checker classifies every export of every module, nested and re-exported ones included, and each public function or HTTP action must be a const declared by an adminQuery/adminMutation/adminAction call, with any or unknown exports rejected; the modules are also evaluated as a Convex push would, and every export that is public at runtime must be one of those admin registrations.",
           "verifiedBy": "pnpm architecture:fitness (scripts/architecture/public-function-guard.mjs)"
         },
         {
-          "statement": "The public HTTP surface is exactly POST and OPTIONS /contact plus one Better Auth route registration; the single router is used only through http.route with a literal path and method, registerRoutesLazy and the default export.",
+          "statement": "The public HTTP surface is exactly POST and OPTIONS /contact plus one Better Auth route registration; the single router comes from convex/server's httpRouter and is used only through http.route with a literal path and method, registerRoutesLazy and the default export, and the evaluated router serves exactly the pinned route set.",
           "verifiedBy": "pnpm architecture:fitness (scripts/architecture/public-function-guard.mjs)"
         },
         {

@@ -1,5 +1,7 @@
+import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import ts from "typescript";
 
@@ -8,7 +10,9 @@ import ts from "typescript";
 // closed form runs requireAdmin before the handler. The export check is
 // semantic: the TypeScript checker classifies every export of every Convex
 // module, so aliases, re-exports, nested modules and library-made functions
-// are judged by what they are, not by how they are written.
+// are judged by what they are, not by how they are written. Because a type can
+// be widened, the modules are also evaluated as a Convex push would, and every
+// export that is public at runtime must be one of those admin registrations.
 
 const CONVEX_DIR = "apps/backend/convex";
 const BUILDERS_FILE = `${CONVEX_DIR}/lib/functions.ts`;
@@ -34,6 +38,17 @@ const CONVEX_SOURCE_EXTENSION = /\.(?:[cm]?[jt]sx?)$/u;
 
 // The only public HTTP routes besides the Better Auth registration.
 const HTTP_ROUTES = new Set(["POST /contact", "OPTIONS /contact"]);
+// Every route the evaluated router serves: the contact routes plus what
+// authComponent.registerRoutesLazy adds. A Better Auth upgrade that changes
+// this set needs a reviewed edit here.
+const RUNTIME_HTTP_ROUTES = [
+  "GET /.well-known/openid-configuration",
+  "GET /api/auth/*",
+  "OPTIONS /api/auth/*",
+  "OPTIONS /contact",
+  "POST /api/auth/*",
+  "POST /contact",
+];
 
 function parse(filePath) {
   return ts.createSourceFile(
@@ -120,6 +135,17 @@ function rawBuilderViolations(relative, sourceFile) {
   const violations = [];
   const isHttp = relative === `${CONVEX_DIR}/http.ts`;
   for (const statement of sourceFile.statements) {
+    if (
+      ts.isExportDeclaration(statement) &&
+      statement.moduleSpecifier &&
+      ts.isStringLiteral(statement.moduleSpecifier) &&
+      SERVER_MODULE.test(statement.moduleSpecifier.text)
+    ) {
+      violations.push(
+        `${relative}: re-exports from ${statement.moduleSpecifier.text} would hand out public builders; import what you need instead`,
+      );
+      continue;
+    }
     if (
       !ts.isImportDeclaration(statement) ||
       !ts.isStringLiteral(statement.moduleSpecifier) ||
@@ -310,7 +336,7 @@ function isAdminRegistration(checker, root, declaration) {
   );
 }
 
-function exportViolations(checker, root, relative, sourceFile) {
+function exportViolations(checker, root, relative, sourceFile, adminExports) {
   const moduleSymbol = checker.getSymbolAtLocation(sourceFile);
   if (!moduleSymbol) return [];
   const violations = [];
@@ -318,6 +344,8 @@ function exportViolations(checker, root, relative, sourceFile) {
     const symbol = resolveAlias(checker, exported);
     if (!symbol || (symbol.flags & ts.SymbolFlags.Value) === 0) continue;
     const declaration = symbol.valueDeclaration ?? symbol.declarations?.[0];
+    if (isAdminRegistration(checker, root, declaration))
+      adminExports.add(`${relative}#${exported.name}`);
     const kind = declaration
       ? registrationKind(
           checker,
@@ -338,6 +366,21 @@ function exportViolations(checker, root, relative, sourceFile) {
     }
   }
   return violations;
+}
+
+// True when the identifier is httpRouter imported from convex/server.
+function isConvexHttpRouter(checker, identifier) {
+  const specifier = checker.getSymbolAtLocation(identifier)?.declarations?.[0];
+  const importDeclaration = specifier?.parent?.parent?.parent;
+  return (
+    specifier !== undefined &&
+    ts.isImportSpecifier(specifier) &&
+    (specifier.propertyName ?? specifier.name).text === "httpRouter" &&
+    importDeclaration !== undefined &&
+    ts.isImportDeclaration(importDeclaration) &&
+    ts.isStringLiteral(importDeclaration.moduleSpecifier) &&
+    importDeclaration.moduleSpecifier.text === "convex/server"
+  );
 }
 
 // http.ts declares one router with httpRouter() and uses it only as
@@ -361,7 +404,7 @@ function httpViolations(checker, relative, sourceFile) {
         init &&
         ts.isCallExpression(init) &&
         ts.isIdentifier(init.expression) &&
-        init.expression.text === "httpRouter" &&
+        isConvexHttpRouter(checker, init.expression) &&
         ts.isIdentifier(declaration.name) &&
         (statement.declarationList.flags & ts.NodeFlags.Const) !== 0
       )
@@ -369,7 +412,9 @@ function httpViolations(checker, relative, sourceFile) {
     }
   }
   if (!routerSymbol) {
-    fail("expected `const http = httpRouter()` at module level");
+    fail(
+      "expected `const http = httpRouter()` at module level, with httpRouter imported from convex/server",
+    );
     return violations;
   }
 
@@ -453,6 +498,48 @@ function httpViolations(checker, relative, sourceFile) {
   return violations;
 }
 
+// The app definition is bundled apart from function modules and only
+// evaluates inside the Convex runtime; the static checks still cover it.
+const APP_DEFINITION = `${CONVEX_DIR}/convex.config.ts`;
+const RUNTIME_EXPORTS_SCRIPT = fileURLToPath(
+  new URL("./convex-runtime-exports.mts", import.meta.url),
+);
+
+// Exports that are public functions when the modules are evaluated, by module.
+function runtimeViolations(root, sources, adminExports) {
+  const result = spawnSync(
+    process.execPath,
+    ["--import", "tsx", RUNTIME_EXPORTS_SCRIPT, root, ...sources],
+    { cwd: root, encoding: "utf8", maxBuffer: 16 * 1024 * 1024 },
+  );
+  if (result.status !== 0) {
+    const reason = (result.stderr || result.error?.message || "")
+      .trim()
+      .split("\n")
+      .slice(0, 3)
+      .join(" ");
+    return [
+      `${CONVEX_DIR}: could not evaluate Convex modules to read runtime exports: ${reason}`,
+    ];
+  }
+  const violations = [];
+  const { publicExports, httpRoutes } = JSON.parse(
+    result.stdout.trim().split("\n").at(-1),
+  );
+  const served = (httpRoutes ?? []).slice().sort();
+  if (served.join("\n") !== RUNTIME_HTTP_ROUTES.join("\n"))
+    violations.push(
+      `${CONVEX_DIR}/http.ts: the evaluated router serves [${served.join(", ")}], expected exactly [${RUNTIME_HTTP_ROUTES.join(", ")}]`,
+    );
+  for (const [relative, names] of Object.entries(publicExports))
+    for (const name of names)
+      if (!adminExports.has(`${relative}#${name}`))
+        violations.push(
+          `${relative}: export ${name} is a public Convex function at runtime but not a direct adminQuery/adminMutation/adminAction call`,
+        );
+  return violations;
+}
+
 export function publicFunctionGuardViolations(root) {
   const { sources, rejected } = convexFiles(root);
   const violations = rejected.map(
@@ -461,6 +548,7 @@ export function publicFunctionGuardViolations(root) {
   );
   const program = createConvexProgram(root, sources);
   const checker = program.getTypeChecker();
+  const adminExports = new Set();
   for (const relative of sources) {
     const sourceFile = program.getSourceFile(path.join(root, relative));
     if (!sourceFile) {
@@ -469,9 +557,18 @@ export function publicFunctionGuardViolations(root) {
     }
     if (relative !== BUILDERS_FILE)
       violations.push(...rawBuilderViolations(relative, sourceFile));
-    violations.push(...exportViolations(checker, root, relative, sourceFile));
+    violations.push(
+      ...exportViolations(checker, root, relative, sourceFile, adminExports),
+    );
     violations.push(...httpViolations(checker, relative, sourceFile));
   }
   violations.push(...builderViolations(root));
+  violations.push(
+    ...runtimeViolations(
+      root,
+      sources.filter((relative) => relative !== APP_DEFINITION),
+      adminExports,
+    ),
+  );
   return violations;
 }
