@@ -36,7 +36,10 @@ function resolveConvexCredential():
   | { credential: "deploy-key"; deployKey: string }
   | { credential: "cli-session"; deployment: string }
   | undefined {
-  const deployKey = convexCliValue("CONVEX_DEPLOY_KEY");
+  // The Convex CLI reads CONVEX_DEPLOYMENT_TOKEN as a deploy key too.
+  const deployKey =
+    convexCliValue("CONVEX_DEPLOY_KEY") ??
+    convexCliValue("CONVEX_DEPLOYMENT_TOKEN");
   if (deployKey) return { credential: "deploy-key", deployKey };
   const deployment = convexCliValue("CONVEX_DEPLOYMENT");
   if (deployment) return { credential: "cli-session", deployment };
@@ -80,13 +83,18 @@ export function runConvexFunction<T>(
   }
 
   // Pass the resolved credential explicitly so the CLI uses exactly what was
-  // classified.
-  const env = { ...process.env };
+  // classified. The others are set empty, not deleted: the CLI loads .env
+  // files without overriding, so a missing key could be refilled from a file,
+  // and it treats an empty key as unset.
+  const env: NodeJS.ProcessEnv = {
+    ...process.env,
+    CONVEX_DEPLOYMENT_TOKEN: "",
+  };
   if (resolved.credential === "deploy-key") {
     env.CONVEX_DEPLOY_KEY = resolved.deployKey;
-    delete env.CONVEX_DEPLOYMENT;
+    env.CONVEX_DEPLOYMENT = "";
   } else {
-    delete env.CONVEX_DEPLOY_KEY;
+    env.CONVEX_DEPLOY_KEY = "";
     env.CONVEX_DEPLOYMENT = resolved.deployment;
   }
 
