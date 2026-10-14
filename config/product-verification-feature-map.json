@@ -174,7 +174,10 @@
         "functions/api/auth/[[path]].ts",
         "functions/dashboard/[[path]].ts",
         "apps/site/src/dashboard-access.ts",
-        "apps/site/src/dashboard-access-states.ts"
+        "apps/site/src/dashboard-access-states.ts",
+        "apps/backend/convex/convex.config.ts",
+        "apps/backend/convex/schema.ts",
+        "apps/backend/convex/auth.config.ts"
       ],
       "environments": ["preview"]
     },
@@ -241,7 +244,10 @@
         "functions/api/auth/[[path]].ts",
         "functions/dashboard/[[path]].ts",
         "apps/site/src/dashboard-access.ts",
-        "apps/site/src/dashboard-access-states.ts"
+        "apps/site/src/dashboard-access-states.ts",
+        "apps/backend/convex/convex.config.ts",
+        "apps/backend/convex/schema.ts",
+        "apps/backend/convex/auth.config.ts"
       ],
       "environments": ["preview"]
     },
@@ -303,7 +309,10 @@
         "functions/api/auth/[[path]].ts",
         "functions/dashboard/[[path]].ts",
         "apps/site/src/dashboard-access.ts",
-        "apps/site/src/dashboard-access-states.ts"
+        "apps/site/src/dashboard-access-states.ts",
+        "apps/backend/convex/convex.config.ts",
+        "apps/backend/convex/schema.ts",
+        "apps/backend/convex/auth.config.ts"
       ],
       "environments": ["preview"]
     },
@@ -374,7 +383,10 @@
         "functions/api/auth/[[path]].ts",
         "functions/dashboard/[[path]].ts",
         "apps/site/src/dashboard-access.ts",
-        "apps/site/src/dashboard-access-states.ts"
+        "apps/site/src/dashboard-access-states.ts",
+        "apps/backend/convex/convex.config.ts",
+        "apps/backend/convex/schema.ts",
+        "apps/backend/convex/auth.config.ts"
       ],
       "environments": ["preview"]
     },
@@ -445,7 +457,10 @@
         "functions/api/auth/[[path]].ts",
         "functions/dashboard/[[path]].ts",
         "apps/site/src/dashboard-access.ts",
-        "apps/site/src/dashboard-access-states.ts"
+        "apps/site/src/dashboard-access-states.ts",
+        "apps/backend/convex/convex.config.ts",
+        "apps/backend/convex/schema.ts",
+        "apps/backend/convex/auth.config.ts"
       ],
       "environments": ["preview"]
     },
@@ -513,7 +528,10 @@
         "functions/api/auth/[[path]].ts",
         "functions/dashboard/[[path]].ts",
         "apps/site/src/dashboard-access.ts",
-        "apps/site/src/dashboard-access-states.ts"
+        "apps/site/src/dashboard-access-states.ts",
+        "apps/backend/convex/convex.config.ts",
+        "apps/backend/convex/schema.ts",
+        "apps/backend/convex/auth.config.ts"
       ],
       "environments": ["preview"]
     },
@@ -570,7 +588,10 @@
         "functions/api/auth/[[path]].ts",
         "functions/dashboard/[[path]].ts",
         "apps/site/src/dashboard-access.ts",
-        "apps/site/src/dashboard-access-states.ts"
+        "apps/site/src/dashboard-access-states.ts",
+        "apps/backend/convex/convex.config.ts",
+        "apps/backend/convex/schema.ts",
+        "apps/backend/convex/auth.config.ts"
       ]
     },
     {
@@ -624,7 +645,10 @@
         "packages/release-train/tsconfig.json",
         "tsconfig.base.json",
         "pnpm-lock.yaml",
-        "pnpm-workspace.yaml"
+        "pnpm-workspace.yaml",
+        "apps/backend/convex/convex.config.ts",
+        "apps/backend/convex/schema.ts",
+        "apps/backend/convex/auth.config.ts"
       ]
     },
     {
@@ -734,7 +758,10 @@
         "functions/api/auth/[[path]].ts",
         "functions/dashboard/[[path]].ts",
         "apps/site/src/dashboard-access.ts",
-        "apps/site/src/dashboard-access-states.ts"
+        "apps/site/src/dashboard-access-states.ts",
+        "apps/backend/convex/convex.config.ts",
+        "apps/backend/convex/schema.ts",
+        "apps/backend/convex/auth.config.ts"
       ]
     }
   ]
