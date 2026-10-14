@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import process from "node:process";
 
+import { analyzeArchitecture } from "../architecture/fitness-lib.mjs";
 import { selectMappedFeatures } from "./product-verification-lib.mjs";
 
 function csvOption(name) {
@@ -38,7 +39,11 @@ console.log(
   JSON.stringify(
     {
       changedFiles,
-      selected: selectMappedFeatures({ changedFiles, featureMap }),
+      selected: selectMappedFeatures({
+        changedFiles,
+        featureMap,
+        fileEdges: analyzeArchitecture().graph.fileEdges,
+      }),
     },
     null,
     2,

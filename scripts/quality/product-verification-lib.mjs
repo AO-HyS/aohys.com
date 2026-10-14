@@ -515,6 +515,7 @@ const JOURNEY_KEYS = new Set([
   "proofRoute",
   "proofCandidateSha",
   "proofJourneySha256",
+  "environments",
 ]);
 const PROOF_KEYS = [
   "proofRunId",
@@ -571,7 +572,7 @@ function sourcesUnchangedSince(root, candidateSha, sourceGlobs) {
 
 // The single feature-map contract. With `root`, every sourceGlobs path must
 // also exist under it.
-export function validateFeatureMap(map, { root } = {}) {
+export function validateFeatureMap(map, { root, fileEdges = [] } = {}) {
   const errors = [];
   if (!map || typeof map !== "object" || Array.isArray(map))
     return { ok: false, errors: ["feature map must be an object"] };
@@ -679,6 +680,17 @@ export function validateFeatureMap(map, { root } = {}) {
           errors.push(
             `journey ${journey.id} maps a missing source path: ${glob}`,
           );
+    if (
+      journey.environments !== undefined &&
+      (!Array.isArray(journey.environments) ||
+        journey.environments.length === 0 ||
+        journey.environments.some(
+          (environment) => !VERIFICATION_ENVIRONMENTS.includes(environment),
+        ))
+    )
+      errors.push(
+        `journey ${journey.id} environments must be a non-empty subset of local and preview`,
+      );
     if (!["none", "authorized-writes"].includes(journey.sideEffectMode))
       errors.push(`journey ${journey.id} has an invalid sideEffectMode`);
     if (!["draft", "proven"].includes(journey.status))
@@ -722,15 +734,19 @@ export function validateFeatureMap(map, { root } = {}) {
         !sourcesUnchangedSince(
           root,
           journey.proofCandidateSha,
-          journey.sourceGlobs,
+          withTransitiveDependencies(journey.sourceGlobs, fileEdges),
         )
       )
         errors.push(
           `proven journey ${journey.id} is stale: its sources changed since ${journey.proofCandidateSha.slice(0, 12)} or that commit is unknown`,
         );
-      if (!VERIFICATION_ENVIRONMENTS.includes(journey.proofEnvironment))
+      if (
+        !(journey.environments ?? VERIFICATION_ENVIRONMENTS).includes(
+          journey.proofEnvironment,
+        )
+      )
         errors.push(
-          `proven journey ${journey.id} must be proven on local or preview`,
+          `proven journey ${journey.id} must be proven in one of its environments`,
         );
     } else if (PROOF_KEYS.some((key) => journey[key])) {
       errors.push(
@@ -774,8 +790,63 @@ function matchesSourcePrefix(filePath, globs) {
   );
 }
 
-export function selectMappedFeatures({ changedFiles, featureMap }) {
-  const files = [...new Set(changedFiles ?? [])].sort();
+// The mapped paths plus every file they import, directly or transitively.
+function withTransitiveDependencies(sourceGlobs, fileEdges) {
+  const targetsByImporter = new Map();
+  for (const [importer, target] of fileEdges) {
+    if (!targetsByImporter.has(importer)) targetsByImporter.set(importer, []);
+    targetsByImporter.get(importer).push(target);
+  }
+  const seen = new Set(sourceGlobs);
+  const queue = [...targetsByImporter.keys()].filter((file) =>
+    matchesSourcePrefix(file, sourceGlobs),
+  );
+  for (const file of queue) seen.add(file);
+  while (queue.length > 0) {
+    for (const target of targetsByImporter.get(queue.pop()) ?? []) {
+      if (!seen.has(target)) {
+        seen.add(target);
+        queue.push(target);
+      }
+    }
+  }
+  return [...seen];
+}
+
+// Files that import any of `files`, directly or transitively, plus the files
+// themselves. `fileEdges` are [importer, target] pairs from architecture
+// fitness.
+function withTransitiveImporters(files, fileEdges) {
+  const importersByTarget = new Map();
+  for (const [importer, target] of fileEdges) {
+    if (!importersByTarget.has(target)) importersByTarget.set(target, []);
+    importersByTarget.get(target).push(importer);
+  }
+  const seen = new Set(files);
+  const queue = [...files];
+  while (queue.length > 0) {
+    for (const importer of importersByTarget.get(queue.pop()) ?? []) {
+      if (!seen.has(importer)) {
+        seen.add(importer);
+        queue.push(importer);
+      }
+    }
+  }
+  return [...seen];
+}
+
+// A journey is selected when a changed file, or a file that imports it, sits
+// under one of its sourceGlobs, so journeys map entry points and their
+// dependencies follow from the import graph.
+export function selectMappedFeatures({
+  changedFiles,
+  featureMap,
+  fileEdges = [],
+}) {
+  const files = withTransitiveImporters(
+    [...new Set(changedFiles ?? [])].sort(),
+    fileEdges,
+  );
   return (featureMap?.journeys ?? []).filter((journey) =>
     files.some((filePath) =>
       matchesSourcePrefix(filePath, journey.sourceGlobs ?? []),

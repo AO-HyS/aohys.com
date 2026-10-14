@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { analyzeArchitecture } from "../architecture/fitness-lib.mjs";
 import { validateFeatureMap } from "./product-verification-lib.mjs";
 
 const ROOT = process.cwd();
@@ -86,7 +87,10 @@ if (!fs.existsSync(featureMapPath)) {
     const serialized = JSON.stringify(featureMap);
     if (/playwright|cypress|agent-browser/i.test(serialized))
       fail("feature map must never activate a browser harness");
-    for (const error of validateFeatureMap(featureMap, { root: ROOT }).errors)
+    for (const error of validateFeatureMap(featureMap, {
+      root: ROOT,
+      fileEdges: analyzeArchitecture({ root: ROOT }).graph.fileEdges,
+    }).errors)
       fail(error);
   }
 }

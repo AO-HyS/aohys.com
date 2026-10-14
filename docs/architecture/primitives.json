@@ -135,11 +135,15 @@
       ],
       "guarantees": [
         {
-          "statement": "Every journey's sourceGlobs exist, write journeys declare a run-scoped cleanup, and a proven journey names its private run id, a local or preview environment and its candidate commit, and stays valid only while its mapped sources are unchanged since that commit.",
-          "verifiedBy": "pnpm verify:product (check-product-verification.mjs and validateFeatureMap)"
+          "statement": "Every journey's sourceGlobs exist, write journeys declare a run-scoped cleanup, and a proven journey names its private run id, a proofRoute among its routes, an environment among its own environments (local or preview), its candidate commit and the hash of its contract; the proof goes stale when the contract, an entry point or any transitive dependency changes.",
+          "verifiedBy": "pnpm verify:product (validateFeatureMap with the architecture-fitness import graph)"
         },
         {
-          "statement": "The dashboard write surfaces (resume, projects, settings, publication), contact submission and the denied-session refusal each have a journey.",
+          "statement": "verify:product:changed selects a journey when a changed file or any file that transitively imports it sits under its sourceGlobs.",
+          "verifiedBy": "scripts/quality/product-verification-changed.mjs uses analyzeArchitecture().graph.fileEdges"
+        },
+        {
+          "statement": "The dashboard write surfaces (resume, projects, settings, publication), contact rejection and the denied-session refusal each have a journey.",
           "verifiedBy": "config/product-verification-feature-map.json"
         }
       ],

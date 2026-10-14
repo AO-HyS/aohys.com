@@ -330,8 +330,10 @@
         "apps/site/src/dashboard-access.ts",
         "apps/site/src/dashboard-access-states.ts",
         "apps/backend/convex/auth.ts",
-        "apps/backend/convex/content.ts"
-      ]
+        "apps/backend/convex/content.ts",
+        "functions/dashboard/[[path]].ts"
+      ],
+      "environments": ["preview"]
     },
     {
       "id": "site-contact-submit",
@@ -418,8 +420,11 @@
         "apps/backend/src/publication-provider.ts",
         "apps/backend/convex/model/content/publication.ts",
         "apps/backend/convex/model/content/shared.ts",
-        "apps/backend/src/publication-contract.ts"
-      ]
+        "apps/backend/src/publication-contract.ts",
+        "apps/dashboard/src/features/projects/projects-workflow.ts",
+        "apps/dashboard/src/features/resume/resume-screen.tsx"
+      ],
+      "environments": ["preview"]
     }
   ]
 }
