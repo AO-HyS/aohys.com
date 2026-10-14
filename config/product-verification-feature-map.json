@@ -166,7 +166,7 @@
         "apps/dashboard/src/app/dashboard-shell.tsx",
         "apps/dashboard/src/navigation.ts",
         "apps/backend/convex/model/content/overview.ts",
-        "apps/backend/convex/content.ts"
+        "apps/backend/convex/auth.ts"
       ],
       "sharedSourceGlobs": [
         "apps/dashboard/src/main.tsx",
@@ -177,7 +177,8 @@
         "apps/dashboard/src/app/navigation-loaders.tsx",
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
-        "apps/dashboard/src/runtime-config.ts"
+        "apps/dashboard/src/runtime-config.ts",
+        "apps/backend/convex/content.ts"
       ]
     },
     {
@@ -258,7 +259,6 @@
         "apps/dashboard/src/features/resume",
         "apps/backend/convex/model/content/resume.ts",
         "packages/content-graph/src/resume-content.ts",
-        "apps/backend/convex/content.ts",
         "apps/backend/convex/lib/validators.ts",
         "apps/backend/convex/auth.ts",
         "apps/backend/convex/model/content/shared.ts"
@@ -272,7 +272,8 @@
         "apps/dashboard/src/app/navigation-loaders.tsx",
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
-        "apps/dashboard/src/runtime-config.ts"
+        "apps/dashboard/src/runtime-config.ts",
+        "apps/backend/convex/content.ts"
       ]
     },
     {
@@ -307,7 +308,6 @@
       "sourceGlobs": [
         "apps/dashboard/src/features/projects",
         "apps/backend/convex/model/content/projects.ts",
-        "apps/backend/convex/content.ts",
         "apps/backend/convex/lib/validators.ts",
         "apps/backend/convex/auth.ts",
         "apps/backend/src/project-identity.ts"
@@ -321,7 +321,8 @@
         "apps/dashboard/src/app/navigation-loaders.tsx",
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
-        "apps/dashboard/src/runtime-config.ts"
+        "apps/dashboard/src/runtime-config.ts",
+        "apps/backend/convex/content.ts"
       ]
     },
     {
@@ -357,7 +358,6 @@
       "sourceGlobs": [
         "apps/dashboard/src/features/settings",
         "apps/backend/convex/model/content/settings.ts",
-        "apps/backend/convex/content.ts",
         "apps/backend/convex/lib/validators.ts",
         "apps/backend/convex/auth.ts"
       ],
@@ -370,7 +370,8 @@
         "apps/dashboard/src/app/navigation-loaders.tsx",
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
-        "apps/dashboard/src/runtime-config.ts"
+        "apps/dashboard/src/runtime-config.ts",
+        "apps/backend/convex/content.ts"
       ]
     },
     {
@@ -405,11 +406,11 @@
         "apps/site/src/dashboard-access.ts",
         "apps/site/src/dashboard-access-states.ts",
         "apps/backend/convex/auth.ts",
-        "apps/backend/convex/content.ts",
         "functions/dashboard/[[path]].ts",
         "functions/api/auth/[[path]].ts"
       ],
-      "environments": ["preview"]
+      "environments": ["preview"],
+      "sharedSourceGlobs": ["apps/backend/convex/content.ts"]
     },
     {
       "id": "site-contact-submit",
@@ -505,7 +506,14 @@
         "scripts/apply-dashboard-published-content.ts",
         "scripts/smoke-release-url.ts",
         "scripts/record-publication-outcome.ts",
-        "scripts/quality/release-plan.mjs"
+        "scripts/quality/release-plan.mjs",
+        "scripts/audit-cloudflare-pages-runtime.ts",
+        "scripts/audit-posthog-env-separation.ts",
+        "scripts/observability/audit-environment.mjs",
+        "scripts/seed-dashboard-preview.ts",
+        "scripts/sync-cloudflare-pages-runtime.ts",
+        "scripts/sync-convex-env.ts",
+        "scripts/validate-release-env.ts"
       ],
       "environments": ["preview"],
       "sharedSourceGlobs": [
@@ -517,7 +525,8 @@
         "apps/dashboard/src/app/navigation-loaders.tsx",
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
-        "apps/dashboard/src/runtime-config.ts"
+        "apps/dashboard/src/runtime-config.ts",
+        "package.json"
       ]
     }
   ]
