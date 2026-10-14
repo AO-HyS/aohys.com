@@ -3,6 +3,7 @@ import type { ResumePageContent } from "./index.js";
 // Single resume content contract shared by the Convex mutation (trust
 // boundary), the dashboard editor and the publication build script.
 
+// Enforced on writes only, so drafts stored before the limit still load.
 export const RESUME_CONTENT_MAX_LENGTH = 64_000;
 
 const RESUME_HTTPS_HOSTS = new Set([
@@ -88,8 +89,17 @@ function hasSafeDecodedPath(pathname: string): boolean {
   );
 }
 
+function hasControlCharacters(value: string): boolean {
+  for (let index = 0; index < value.length; index += 1) {
+    const code = value.charCodeAt(index);
+    if (code < 0x20 || code === 0x7f) return true;
+  }
+  return false;
+}
+
 function isSafeInternalHref(href: string): boolean {
   if (
+    hasControlCharacters(href) ||
     !href.startsWith("/") ||
     href.startsWith("//") ||
     href.includes("\\") ||
@@ -111,6 +121,7 @@ function isSafeInternalHref(href: string): boolean {
 
 export function isSafeResumeLinkHref(href: string): boolean {
   if (RESUME_EXPLICIT_LINKS.has(href) || isSafeInternalHref(href)) return true;
+  if (hasControlCharacters(href)) return false;
   try {
     const parsed = new URL(href);
     return (
@@ -128,10 +139,12 @@ export function isSafeResumeLinkHref(href: string): boolean {
 }
 
 export function isSafeResumePdfHref(href: string): boolean {
+  if (!isSafeInternalHref(href)) return false;
+  const { pathname } = new URL(href, "https://aohys.com");
   return (
-    isSafeInternalHref(href) &&
-    href.startsWith("/downloads/") &&
-    href.endsWith(".pdf")
+    href === pathname &&
+    pathname.startsWith("/downloads/") &&
+    pathname.endsWith(".pdf")
   );
 }
 
@@ -181,7 +194,6 @@ export function isResumePageContent(
 export function parseResumePageContent(
   serialized: string,
 ): ResumePageContent | undefined {
-  if (serialized.length > RESUME_CONTENT_MAX_LENGTH) return undefined;
   let value: unknown;
   try {
     value = JSON.parse(serialized);
