@@ -48,7 +48,10 @@ export function SaveBar({
       className="sticky bottom-3 z-10 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-lg border bg-background p-2 shadow-[0_4px_0_color-mix(in_oklch,var(--foreground)_18%,transparent)] sm:p-3"
     >
       <div className="flex min-w-0 flex-col gap-1">
-        <StatusBadge tone={status.tone}>{status.label}</StatusBadge>
+        {/* A live region so every state change is announced, not only shown. */}
+        <div role="status" className="w-fit">
+          <StatusBadge tone={status.tone}>{status.label}</StatusBadge>
+        </div>
         {description ? (
           <p className="hidden font-body text-sm text-muted-foreground sm:block">
             {description}
