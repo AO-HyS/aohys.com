@@ -56,7 +56,16 @@
         "apps/site/src/pages/[...path].astro",
         "apps/site/public"
       ],
-      "sharedSourceGlobs": ["apps/site/astro.config.mjs"]
+      "sharedSourceGlobs": [
+        "apps/site/astro.config.mjs",
+        "apps/site/tsconfig.functions.json",
+        "apps/site/tsconfig.json",
+        "packages/content-graph/tsconfig.json",
+        "packages/core/tsconfig.json",
+        "packages/environment/tsconfig.json",
+        "packages/release-train/tsconfig.json",
+        "tsconfig.base.json"
+      ]
     },
     {
       "id": "site-case-study-casa-roca",
@@ -90,7 +99,16 @@
         "packages/content-graph/src/static-case-study-routes.ts",
         "apps/site/public"
       ],
-      "sharedSourceGlobs": ["apps/site/astro.config.mjs"]
+      "sharedSourceGlobs": [
+        "apps/site/astro.config.mjs",
+        "apps/site/tsconfig.functions.json",
+        "apps/site/tsconfig.json",
+        "packages/content-graph/tsconfig.json",
+        "packages/core/tsconfig.json",
+        "packages/environment/tsconfig.json",
+        "packages/release-train/tsconfig.json",
+        "tsconfig.base.json"
+      ]
     },
     {
       "id": "dashboard-auth-gate",
@@ -136,7 +154,14 @@
         "apps/dashboard/src/navigation.ts",
         "apps/dashboard/src/runtime-config.ts",
         "apps/dashboard/vite.config.ts",
-        "apps/dashboard/index.html"
+        "apps/dashboard/index.html",
+        "apps/backend/tsconfig.json",
+        "apps/dashboard/tsconfig.json",
+        "packages/content-graph/tsconfig.json",
+        "packages/core/tsconfig.json",
+        "packages/environment/tsconfig.json",
+        "packages/release-train/tsconfig.json",
+        "tsconfig.base.json"
       ],
       "environments": ["preview"]
     },
@@ -187,7 +212,14 @@
         "apps/dashboard/src/runtime-config.ts",
         "apps/backend/convex/content.ts",
         "apps/dashboard/vite.config.ts",
-        "apps/dashboard/index.html"
+        "apps/dashboard/index.html",
+        "apps/backend/tsconfig.json",
+        "apps/dashboard/tsconfig.json",
+        "packages/content-graph/tsconfig.json",
+        "packages/core/tsconfig.json",
+        "packages/environment/tsconfig.json",
+        "packages/release-train/tsconfig.json",
+        "tsconfig.base.json"
       ],
       "environments": ["preview"]
     },
@@ -233,7 +265,14 @@
         "apps/dashboard/src/navigation.ts",
         "apps/dashboard/src/runtime-config.ts",
         "apps/dashboard/vite.config.ts",
-        "apps/dashboard/index.html"
+        "apps/dashboard/index.html",
+        "apps/backend/tsconfig.json",
+        "apps/dashboard/tsconfig.json",
+        "packages/content-graph/tsconfig.json",
+        "packages/core/tsconfig.json",
+        "packages/environment/tsconfig.json",
+        "packages/release-train/tsconfig.json",
+        "tsconfig.base.json"
       ],
       "environments": ["preview"]
     },
@@ -288,7 +327,14 @@
         "apps/dashboard/src/runtime-config.ts",
         "apps/backend/convex/content.ts",
         "apps/dashboard/vite.config.ts",
-        "apps/dashboard/index.html"
+        "apps/dashboard/index.html",
+        "apps/backend/tsconfig.json",
+        "apps/dashboard/tsconfig.json",
+        "packages/content-graph/tsconfig.json",
+        "packages/core/tsconfig.json",
+        "packages/environment/tsconfig.json",
+        "packages/release-train/tsconfig.json",
+        "tsconfig.base.json"
       ],
       "environments": ["preview"]
     },
@@ -343,7 +389,14 @@
         "apps/dashboard/src/runtime-config.ts",
         "apps/backend/convex/content.ts",
         "apps/dashboard/vite.config.ts",
-        "apps/dashboard/index.html"
+        "apps/dashboard/index.html",
+        "apps/backend/tsconfig.json",
+        "apps/dashboard/tsconfig.json",
+        "packages/content-graph/tsconfig.json",
+        "packages/core/tsconfig.json",
+        "packages/environment/tsconfig.json",
+        "packages/release-train/tsconfig.json",
+        "tsconfig.base.json"
       ],
       "environments": ["preview"]
     },
@@ -395,7 +448,14 @@
         "apps/dashboard/src/runtime-config.ts",
         "apps/backend/convex/content.ts",
         "apps/dashboard/vite.config.ts",
-        "apps/dashboard/index.html"
+        "apps/dashboard/index.html",
+        "apps/backend/tsconfig.json",
+        "apps/dashboard/tsconfig.json",
+        "packages/content-graph/tsconfig.json",
+        "packages/core/tsconfig.json",
+        "packages/environment/tsconfig.json",
+        "packages/release-train/tsconfig.json",
+        "tsconfig.base.json"
       ],
       "environments": ["preview"]
     },
@@ -435,7 +495,16 @@
         "functions/api/auth/[[path]].ts"
       ],
       "environments": ["preview"],
-      "sharedSourceGlobs": ["apps/backend/convex/content.ts"]
+      "sharedSourceGlobs": [
+        "apps/backend/convex/content.ts",
+        "apps/backend/tsconfig.json",
+        "apps/dashboard/tsconfig.json",
+        "packages/content-graph/tsconfig.json",
+        "packages/core/tsconfig.json",
+        "packages/environment/tsconfig.json",
+        "packages/release-train/tsconfig.json",
+        "tsconfig.base.json"
+      ]
     },
     {
       "id": "site-contact-submit",
@@ -478,7 +547,16 @@
         "apps/site/src/pages/[...path].astro",
         "apps/site/public"
       ],
-      "sharedSourceGlobs": ["apps/site/astro.config.mjs"]
+      "sharedSourceGlobs": [
+        "apps/site/astro.config.mjs",
+        "apps/site/tsconfig.functions.json",
+        "apps/site/tsconfig.json",
+        "packages/content-graph/tsconfig.json",
+        "packages/core/tsconfig.json",
+        "packages/environment/tsconfig.json",
+        "packages/release-train/tsconfig.json",
+        "tsconfig.base.json"
+      ]
     },
     {
       "id": "dashboard-publish-preview",
@@ -564,7 +642,16 @@
         "packages/content-graph/package.json",
         "apps/site/astro.config.mjs",
         "apps/dashboard/vite.config.ts",
-        "apps/dashboard/index.html"
+        "apps/dashboard/index.html",
+        "apps/backend/tsconfig.json",
+        "apps/dashboard/tsconfig.json",
+        "apps/site/tsconfig.functions.json",
+        "apps/site/tsconfig.json",
+        "packages/content-graph/tsconfig.json",
+        "packages/core/tsconfig.json",
+        "packages/environment/tsconfig.json",
+        "packages/release-train/tsconfig.json",
+        "tsconfig.base.json"
       ]
     }
   ]
