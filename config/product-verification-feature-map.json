@@ -334,7 +334,7 @@
       "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard/settings",
       "identity": "host.dashboard-operator-session",
       "identityClass": "authorized-session",
-      "behavior": "An authorized operator saves the public WhatsApp URL; an invalid URL is rejected without writing.",
+      "behavior": "An authorized operator saves the public WhatsApp URL; the screen blocks an invalid URL and the server rejects one sent directly, without writing.",
       "routes": ["/dashboard/settings"],
       "preconditions": [
         "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
@@ -343,17 +343,17 @@
       ],
       "steps": [
         "Open /dashboard/settings with the existing session.",
-        "Save an invalid URL such as http://example.com.",
+        "Type an invalid URL such as http://example.com and observe that saving is blocked.",
         "Save a valid direct wa.me URL.",
         "Restore the recorded value."
       ],
       "expectedResults": [
-        "The invalid value is rejected and the setting updatedAt does not change.",
+        "The screen blocks the invalid value and the host probe's direct invalid mutation is rejected; the setting updatedAt does not change.",
         "The valid value saves and updatedAt advances.",
         "After cleanup the value equals the recorded original."
       ],
-      "beforeProbe": "Record the setting value and updatedAt.",
-      "afterProbe": "Read the setting and compare value and updatedAt.",
+      "beforeProbe": "Record the setting value and updatedAt; then, with the operator's Convex JWT, call content.upsertSiteSetting directly with http://example.com and record the rejection.",
+      "afterProbe": "Read the setting and compare value and updatedAt with the expected values.",
       "cleanup": "Save the recorded original value and confirm it is restored. Residual effect, recorded in the evidence: the setting updatedAt advances, because the save handler always stamps a new time.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-settings-save/",
       "sideEffectMode": "authorized-writes",
