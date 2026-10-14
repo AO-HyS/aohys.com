@@ -46,7 +46,7 @@
     "smoke:preview": "tsx scripts/smoke-release-url.ts preview",
     "smoke:production": "tsx scripts/smoke-release-url.ts production",
     "strict:boundaries": "node scripts/quality/strict-boundaries.mjs",
-    "typecheck": "pnpm -r --if-present typecheck",
+    "typecheck": "pnpm -r --if-present typecheck && tsc -p scripts/tsconfig.json",
     "verify": "pnpm run verify:ci",
     "verify:changed": "node scripts/quality/run-changed-validation.mjs",
     "verify:ci": "pnpm run verify:foundation && pnpm run lint && pnpm run typecheck && pnpm run architecture:fitness && pnpm run observability:check && pnpm run build && pnpm run quality:impeccable",
@@ -63,11 +63,14 @@
     "check:no-tests": "node scripts/quality/check-no-tests.mjs"
   },
   "devDependencies": {
+    "@aohys/backend": "workspace:*",
     "@aohys/core": "workspace:*",
     "@aohys/development-system": "https://github.com/AO-HyS/development-system/releases/download/v1.40.0/aohys-development-system-1.40.0.tgz",
     "@aohys/environment": "workspace:*",
     "@aohys/release-train": "workspace:*",
     "@convex-dev/eslint-plugin": "^5.0.0",
+    "@types/node": "^26.0.1",
+    "convex": "^1.43.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.2",
     "oxlint": "^1.87.0",

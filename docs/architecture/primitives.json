@@ -57,6 +57,10 @@
         {
           "statement": "content.upsertSiteSetting accepts only keys in SITE_SETTING_KEYS (argument validator).",
           "verifiedBy": "apps/backend/convex/model/content/settings.ts#upsertSiteSettingArgs uses siteSettingKeyValidator"
+        },
+        {
+          "statement": "The publication build and preview seed scripts type their Convex payloads from the generated API (FunctionReturnType/FunctionArgs) instead of hand-written mirrors, and scripts/*.ts are typechecked by pnpm typecheck.",
+          "verifiedBy": "scripts/tsconfig.json in pnpm typecheck; a seeded type error in scripts/ is rejected"
         }
       ],
       "goals": [
@@ -65,6 +69,23 @@
       ],
       "replaces": [],
       "docs": ["CONTEXT.md"]
+    },
+    {
+      "id": "unknown-guards",
+      "category": "auth",
+      "status": "active",
+      "summary": "Single isRecord guard for untrusted values at runtime edges (provider responses, publication provider, site boundaries, release train, resume contract, build and observability scripts).",
+      "paths": ["packages/core/src/unknown-guards.ts"],
+      "symbols": ["packages/core/src/unknown-guards.ts#isRecord"],
+      "guarantees": [
+        {
+          "statement": "There is one isRecord definition; the eight former copies import @aohys/core/unknown-guards, and the module has no imports so plain Node .mjs scripts load it.",
+          "verifiedBy": "rg 'function (isRecord|isJsonRecord)'; pnpm observability:validate"
+        }
+      ],
+      "goals": [],
+      "replaces": [],
+      "docs": []
     }
   ]
 }
