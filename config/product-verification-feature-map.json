@@ -52,7 +52,7 @@
       "status": "draft",
       "sourceGlobs": [
         "apps/site/src/pages/index.astro",
-        "apps/site/src/components/horizonte/HorizonteHome.astro"
+        "apps/site/src/components/horizonte"
       ]
     },
     {
@@ -367,7 +367,8 @@
       "preconditions": [
         "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
         "Preview only. Publishing dispatches the release workflow and deploys Cloudflare Pages, so every run needs the owner's explicit authorization for that operation.",
-        "The original draft to be changed is snapshotted before the run."
+        "Before the run, every draft in the publication scope is already published (publishedAt set, no pending edits) and matches the deployed preview; otherwise the run stops, so cleanup never exposes unrelated pending edits.",
+        "The drafts and media states in the publication scope are snapshotted before the run."
       ],
       "steps": [
         "Save a run-unique marker in one project or resume draft so the publication content differs from every earlier request.",
@@ -383,7 +384,7 @@
       ],
       "beforeProbe": "Record the latest publication request key and state, to tell this run's request from earlier ones.",
       "afterProbe": "Read the request and attempt identified by this run's requestKey and publicationAttemptId, and their receipt; earlier requests never count as this run's result.",
-      "cleanup": "Restore the snapshotted draft and publish it again with the owner's authorization; publication records are kept.",
+      "cleanup": "Restore the snapshotted drafts and media states and publish them again with the owner's authorization, returning preview to the pre-run deployed content; publication records are kept.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-publish-preview/",
       "sideEffectMode": "authorized-writes",
       "status": "draft",
@@ -396,7 +397,8 @@
         "apps/backend/convex/model/publication.ts",
         "apps/dashboard/src/features/projects/projects-api.ts",
         "apps/dashboard/src/features/resume/resume-api.ts",
-        "apps/dashboard/src/lib/publication-state.ts"
+        "apps/dashboard/src/lib/publication-state.ts",
+        "apps/backend/src/publication-provider.ts"
       ]
     }
   ]
