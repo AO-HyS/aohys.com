@@ -21,7 +21,10 @@ import {
   shouldCaptureContactIntakeFailure,
 } from "../src/contact-environment.js";
 import { type Environment } from "@aohys/core/domain";
-import { getVariableNamesForDestination } from "@aohys/environment";
+import {
+  getVariableNamesForDestination,
+  parseTrustedOrigins,
+} from "@aohys/environment";
 
 const http = httpRouter();
 
@@ -29,10 +32,7 @@ authComponent.registerRoutesLazy(http, createAuth, {
   basePath: "/api/auth",
   cors: true,
   trustedOrigins: () =>
-    (process.env.BETTER_AUTH_TRUSTED_ORIGINS ?? "")
-      .split(",")
-      .map((origin) => origin.trim())
-      .filter(Boolean),
+    parseTrustedOrigins(process.env.BETTER_AUTH_TRUSTED_ORIGINS),
 });
 
 const corsHeaders = {

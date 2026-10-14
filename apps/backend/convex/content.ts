@@ -1,10 +1,5 @@
-import {
-  internalMutation,
-  internalQuery,
-  mutation,
-  query,
-} from "./_generated/server.js";
-import { requireAdmin } from "./auth.js";
+import { adminMutation, adminQuery } from "./lib/functions.js";
+import { internalMutation, internalQuery } from "./_generated/server.js";
 import {
   archiveMediaHandler,
   createMediaMetadataArgs,
@@ -50,20 +45,18 @@ import {
   upsertSiteSettingReturns,
 } from "./model/content/settings.js";
 
-export const getDashboardOverview = query({
+export const getDashboardOverview = adminQuery({
   args: dashboardOverviewArgs,
   returns: dashboardOverviewReturns,
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
     return getDashboardOverviewHandler(ctx, args);
   },
 });
 
-export const listForDashboard = query({
+export const listForDashboard = adminQuery({
   args: {},
   returns: listForDashboardReturns,
   handler: async (ctx) => {
-    await requireAdmin(ctx);
     return listForDashboardHandler(ctx);
   },
 });
@@ -74,20 +67,18 @@ export const listForDashboardInternal = internalQuery({
   handler: listForDashboardHandler,
 });
 
-export const upsertProjectDraft = mutation({
+export const upsertProjectDraft = adminMutation({
   args: upsertProjectDraftArgs,
   returns: upsertProjectDraftReturns,
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
     return upsertProjectDraftHandler(ctx, args);
   },
 });
 
-export const createProject = mutation({
+export const createProject = adminMutation({
   args: createProjectArgs,
   returns: createProjectReturns,
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
     return createProjectHandler(ctx, args);
   },
 });
@@ -98,11 +89,10 @@ export const upsertProjectDraftFromDashboard = internalMutation({
   handler: upsertProjectDraftHandler,
 });
 
-export const upsertResumeDraft = mutation({
+export const upsertResumeDraft = adminMutation({
   args: upsertResumeDraftArgs,
   returns: upsertResumeDraftReturns,
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
     return upsertResumeDraftHandler(ctx, args);
   },
 });
@@ -113,47 +103,42 @@ export const publishContentFromDashboard = internalMutation({
   handler: publishContentHandler,
 });
 
-export const createMediaMetadata = mutation({
+export const createMediaMetadata = adminMutation({
   args: createMediaMetadataArgs,
   returns: createMediaMetadataReturns,
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
     return createMediaMetadataHandler(ctx, args);
   },
 });
 
-export const selectMediaForPublic = mutation({
+export const selectMediaForPublic = adminMutation({
   args: projectMediaArgs,
   returns: updateMediaReturns,
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
     return selectMediaForPublicHandler(ctx, args);
   },
 });
 
-export const archiveMedia = mutation({
+export const archiveMedia = adminMutation({
   args: projectMediaArgs,
   returns: updateMediaReturns,
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
     return archiveMediaHandler(ctx, args);
   },
 });
 
-export const deleteMedia = mutation({
+export const deleteMedia = adminMutation({
   args: projectMediaArgs,
   returns: deleteMediaReturns,
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
     return deleteMediaHandler(ctx, args);
   },
 });
 
-export const upsertSiteSetting = mutation({
+export const upsertSiteSetting = adminMutation({
   args: upsertSiteSettingArgs,
   returns: upsertSiteSettingReturns,
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
     return upsertSiteSettingHandler(ctx, args);
   },
 });
@@ -164,11 +149,10 @@ export const upsertSiteSettingFromDashboard = internalMutation({
   handler: upsertSiteSettingHandler,
 });
 
-export const createResumeVersion = mutation({
+export const createResumeVersion = adminMutation({
   args: createResumeVersionArgs,
   returns: createResumeVersionReturns,
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
     return createResumeVersionHandler(ctx, args);
   },
 });

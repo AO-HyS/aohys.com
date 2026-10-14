@@ -58,7 +58,7 @@ The public contact endpoint is the only anonymous lead-intake boundary. It is im
 
 After persistence, the workflow sends a Resend notification through an injected provider adapter and captures a PostHog conversion event with metadata only. Provider drift is reported through sanitized operational events instead of rejecting the visitor request. Public failures return safe codes such as `validation_error`, `rate_limited`, and `backend_unavailable`; private provider messages and contact fields are not reflected back to the browser. Expected malformed, invalid, abusive, and rate-limited traffic is tracked as `lead_intake_rejected`; `lead_intake_failed` is reserved for a real backend failure that prevents intake.
 
-Private dashboard workflows are exposed as public Convex functions guarded by `requireAdmin(ctx)`, which validates the Better Auth session and `ADMIN_EMAIL` allowlist:
+Private dashboard workflows are public Convex functions built with `adminQuery`, `adminMutation` or `adminAction` from `convex/lib/functions.ts`. These builders run `requireAdmin(ctx)` (Better Auth session plus the `ADMIN_EMAIL` allowlist) before the handler and pass the operator as `ctx.admin`. Raw public builders are rejected by `pnpm architecture:fitness`; every other function is `internal*`:
 
 - `leads.listForDashboard` and `leads.updateStatus` power lead review.
 - `content.listForDashboard` returns project drafts, case-study status metadata, media metadata, site settings, resume drafts, and resume versions.

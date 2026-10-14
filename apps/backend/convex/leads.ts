@@ -1,11 +1,11 @@
+import { adminMutation, adminQuery } from "./lib/functions.js";
 import { v } from "convex/values";
 import {
   paginationOptsValidator,
   paginationResultValidator,
 } from "convex/server";
-import { internalMutation, mutation, query } from "./_generated/server.js";
+import { internalMutation } from "./_generated/server.js";
 import type { Doc } from "./_generated/dataModel.js";
-import { requireAdmin } from "./auth.js";
 import {
   CONTACT_SUBMISSION_MAX_PER_WINDOW,
   CONTACT_SUBMISSION_RATE_LIMIT_MESSAGE,
@@ -82,12 +82,10 @@ export const createFromContact = internalMutation({
   },
 });
 
-export const listForDashboard = query({
+export const listForDashboard = adminQuery({
   args: { paginationOpts: paginationOptsValidator },
   returns: paginationResultValidator(dashboardLeadValidator),
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
-
     const result = await ctx.db
       .query("leads")
       .withIndex("by_created_at")
@@ -135,7 +133,7 @@ function toDashboardLead(lead: Doc<"leads">) {
   };
 }
 
-export const updateStatus = mutation({
+export const updateStatus = adminMutation({
   args: {
     leadId: v.id("leads"),
     status: leadStatusValidator,
@@ -146,8 +144,6 @@ export const updateStatus = mutation({
     updatedAt: v.number(),
   }),
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
-
     const existingLead = await ctx.db.get(args.leadId);
 
     if (!existingLead) {

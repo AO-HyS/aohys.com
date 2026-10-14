@@ -152,6 +152,45 @@
       ],
       "replaces": [],
       "docs": [".agents/skills/verify-aohys/SKILL.md"]
+    },
+    {
+      "id": "admin-functions",
+      "category": "auth",
+      "status": "active",
+      "summary": "The only public Convex builders: adminQuery, adminMutation and adminAction run requireAdmin against the Better Auth session and the single ADMIN_EMAIL allowlist before the handler, and expose the operator as ctx.admin.",
+      "paths": [
+        "apps/backend/convex/lib/functions.ts",
+        "apps/backend/convex/auth.ts",
+        "packages/environment/src/index.ts",
+        "scripts/architecture/public-function-guard.mjs"
+      ],
+      "symbols": [
+        "apps/backend/convex/lib/functions.ts#adminQuery",
+        "apps/backend/convex/lib/functions.ts#adminMutation",
+        "apps/backend/convex/lib/functions.ts#adminAction",
+        "apps/backend/convex/auth.ts#requireAdmin",
+        "packages/environment/src/index.ts#parseAdminAllowlist"
+      ],
+      "guarantees": [
+        {
+          "statement": "Every Convex module is .ts and none imports or re-exports a public builder (query, mutation, action, their Generic forms, or httpAction outside http.ts) except lib/functions.ts, whose builders keep the closed requireAdmin form. The TypeScript checker classifies every export of every module (nested, aliased, re-exported) and a public function or HTTP action must be a const declared by an adminQuery/adminMutation/adminAction call; any or unknown exports are rejected. Evaluated once per AOHYS_ENV as a Convex push would, every export that is public at runtime must be one of those admin registrations, and a call through its Convex entry point, anonymous or signed in outside ADMIN_EMAIL, must be refused by requireAdmin with the matching error before any other syscall or network call; the evaluation gets no provider credentials and \"use node\" modules export only internal functions. Scope: mistakes and copied patterns; code written to defeat the guard is left to review.",
+          "verifiedBy": "pnpm architecture:fitness (scripts/architecture/public-function-guard.mjs), run by the pre-push hook whenever apps/, functions/, packages/ or scripts/ change and by pnpm verify"
+        },
+        {
+          "statement": "The public HTTP surface is exactly POST and OPTIONS /contact plus one Better Auth route registration: the single router comes from convex/server's httpRouter, is used only through http.route with a literal path and method, registerRoutesLazy and the default export, and the evaluated router serves exactly the pinned route set.",
+          "verifiedBy": "pnpm architecture:fitness (scripts/architecture/public-function-guard.mjs), run by the pre-push hook whenever apps/, functions/, packages/ or scripts/ change and by pnpm verify"
+        },
+        {
+          "statement": "ADMIN_EMAIL is parsed only by parseAdminAllowlist, used by the contract validator, the Pages dashboard gate and requireAdmin.",
+          "verifiedBy": "rg finds no other ADMIN_EMAIL parser in apps or packages"
+        }
+      ],
+      "goals": [
+        "Record admin, operator and system writes in auditEvents with the actor resolved by the builders.",
+        "After each release deploy, compare the deployed function spec (public functions and HTTP routes) with the admin registrations and the pinned routes."
+      ],
+      "replaces": [],
+      "docs": ["docs/environment-contract.md"]
     }
   ]
 }

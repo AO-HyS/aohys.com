@@ -6,6 +6,7 @@ import {
   literalCopyViolations,
   readDomainVocabularies,
 } from "./domain-vocabulary.mjs";
+import { publicFunctionGuardViolations } from "./public-function-guard.mjs";
 
 const SOURCE_EXTENSIONS = [
   ".ts",
@@ -383,6 +384,14 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
     violations.push({
       id: `domain-vocabulary-derivation:${message}`,
       kind: "domain-vocabulary-derivation",
+      message,
+    });
+  }
+
+  for (const message of publicFunctionGuardViolations(root)) {
+    violations.push({
+      id: `public-function-guard:${message}`,
+      kind: "public-function-guard",
       message,
     });
   }
