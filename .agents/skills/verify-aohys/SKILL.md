@@ -115,13 +115,16 @@ the real, drivable journeys: the public home, the mapped published case
 study, the dashboard auth gate, the authorized Overview readiness checklist,
 the authorized Leads observation, the denied-session refusal (an account
 outside the allowlist), and the write journeys: resume save with server
-rejection, project save, settings save, contact submission and publication to
-preview. Write journeys declare a run-scoped cleanup; contact submission and
-publication have provider effects and run only with the owner's authorization
-for that run. Every entry starts `draft` and becomes `proven` for a specific
+rejection, project save, settings save, contact rejection and publication to
+preview. Write journeys declare a run-scoped cleanup; publication has provider
+effects and runs only with the owner's authorization for that run. Checks that
+a browser cannot drive (a denied Convex query, an invalid contact payload) are
+host probes in `beforeProbe` and `afterProbe`. Every entry starts `draft` and becomes `proven` for a specific
 candidate only after launch, doctor, Computer Use, before/after probes, private
 evidence, a verification verdict, and cleanup all exist for the same run; a
-proven entry names its private run id and a local or preview environment.
+proven entry names its private run id, a local or preview environment and its
+`proofCandidateSha`, and `pnpm verify:product` marks it stale as soon as a mapped
+source changes after that commit.
 Every `sourceGlobs` path must exist. Use `pnpm verify:product:changed` to
 select mapped journeys whose `sourceGlobs` intersect the candidate diff
 without driving the UI.

@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -512,8 +513,20 @@ const JOURNEY_KEYS = new Set([
   "proofRunId",
   "proofEnvironment",
   "proofRoute",
+  "proofCandidateSha",
 ]);
 const EVIDENCE_PREFIX = "$HOME/.development-system/private/verification/";
+
+// A proof holds only while the journey's mapped sources are unchanged since
+// the verified candidate commit.
+function sourcesUnchangedSince(root, candidateSha, sourceGlobs) {
+  const result = spawnSync(
+    "git",
+    ["diff", "--quiet", candidateSha, "HEAD", "--", ...sourceGlobs],
+    { cwd: root },
+  );
+  return result.status === 0;
+}
 
 // The single feature-map contract. With `root`, every sourceGlobs path must
 // also exist under it.
@@ -630,7 +643,12 @@ export function validateFeatureMap(map, { root } = {}) {
     if (!["draft", "proven"].includes(journey.status))
       errors.push(`journey ${journey.id} has an invalid status`);
     if (journey.status === "proven") {
-      for (const key of ["proofRunId", "proofEnvironment", "proofRoute"])
+      for (const key of [
+        "proofRunId",
+        "proofEnvironment",
+        "proofRoute",
+        "proofCandidateSha",
+      ])
         if (typeof journey[key] !== "string" || !journey[key].trim())
           errors.push(`proven journey ${journey.id} requires ${key}`);
       if (
@@ -640,6 +658,26 @@ export function validateFeatureMap(map, { root } = {}) {
         errors.push(
           `proven journey ${journey.id} needs a private evidence run id`,
         );
+      if (
+        typeof journey.proofCandidateSha === "string" &&
+        !/^[0-9a-f]{40}$/u.test(journey.proofCandidateSha)
+      )
+        errors.push(
+          `proven journey ${journey.id} needs a full proofCandidateSha`,
+        );
+      else if (
+        root &&
+        typeof journey.proofCandidateSha === "string" &&
+        Array.isArray(journey.sourceGlobs) &&
+        !sourcesUnchangedSince(
+          root,
+          journey.proofCandidateSha,
+          journey.sourceGlobs,
+        )
+      )
+        errors.push(
+          `proven journey ${journey.id} is stale: its sources changed since ${journey.proofCandidateSha.slice(0, 12)} or that commit is unknown`,
+        );
       if (!VERIFICATION_ENVIRONMENTS.includes(journey.proofEnvironment))
         errors.push(
           `proven journey ${journey.id} must be proven on local or preview`,
@@ -647,7 +685,8 @@ export function validateFeatureMap(map, { root } = {}) {
     } else if (
       journey.proofRunId ||
       journey.proofEnvironment ||
-      journey.proofRoute
+      journey.proofRoute ||
+      journey.proofCandidateSha
     ) {
       errors.push(
         `draft journey ${journey.id} cannot claim a proof run before evidence exists`,

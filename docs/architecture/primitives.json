@@ -135,7 +135,7 @@
       ],
       "guarantees": [
         {
-          "statement": "Every journey's sourceGlobs exist, write journeys declare a run-scoped cleanup, and a proven journey names its private run id and a local or preview environment.",
+          "statement": "Every journey's sourceGlobs exist, write journeys declare a run-scoped cleanup, and a proven journey names its private run id, a local or preview environment and its candidate commit, and stays valid only while its mapped sources are unchanged since that commit.",
           "verifiedBy": "pnpm verify:product (check-product-verification.mjs and validateFeatureMap)"
         },
         {

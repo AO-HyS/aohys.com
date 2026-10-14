@@ -300,22 +300,22 @@
       "steps": [
         "Open /dashboard with the denied session and record the HTTP status and page.",
         "Open /dashboard/resume with the same session.",
-        "Call the read-only Convex query content:listForDashboard with the denied identity's auth token (separately from the Pages observation, which returns 403 before the dashboard shell loads).",
         "Capture screenshots, console and network observations."
       ],
       "expectedResults": [
         "The Pages guard returns 403 with the not-allowed page and no dashboard shell or data loads.",
-        "The Convex query rejects with 'This account is not allowed to use the dashboard.'",
+        "The host Convex probe rejects with 'This account is not allowed to use the dashboard.'",
         "Nothing is written."
       ],
-      "beforeProbe": "Record the response status and the visible access state.",
-      "afterProbe": "Repeat the same observation and assert it is unchanged.",
+      "beforeProbe": "Host probe: call the read-only Convex query content:listForDashboard over HTTP with the denied identity's session token and record the error; record the /dashboard response status.",
+      "afterProbe": "Repeat the same Convex call and /dashboard request and assert both are unchanged (rejection and 403).",
       "cleanup": "none; sideEffectMode is none",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-denied-session/",
       "sideEffectMode": "none",
       "status": "draft",
       "sourceGlobs": [
         "apps/site/src/dashboard-access.ts",
+        "apps/site/src/dashboard-access-states.ts",
         "apps/backend/convex/auth.ts"
       ]
     },
@@ -325,26 +325,26 @@
       "launch": "SITE_URL or http://localhost:4321/contact/",
       "identity": "anonymous",
       "identityClass": "anonymous",
-      "behavior": "A visitor submits the contact form; an invalid submission is rejected before any write, and a valid one stores a lead and notifies the owner.",
+      "behavior": "A visitor sees the contact form, and an invalid submission is rejected by the server before any write.",
       "routes": ["/contact/", "/es/contacto/"],
       "preconditions": [
         "Runs on local or preview only; production stays read-only.",
-        "The valid submission creates a lead and sends a notification email, so it runs only with the owner's authorization for that run; the invalid submission has no side effect."
+        "A valid submission (stored lead and notification email) is not part of this journey because a lead cannot be removed afterwards; the release smoke covers it when SMOKE_CONTACT_SUBMIT is enabled."
       ],
       "steps": [
-        "Submit a shape-valid payload with an unsupported intent.",
-        "With authorization, submit a valid run-scoped lead from /contact/.",
-        "Mark the run-scoped lead closed in the dashboard."
+        "Open /contact/ and /es/contacto/ as an anonymous visitor.",
+        "Observe the form fields and the intent options.",
+        "Capture screenshots, console and network observations."
       ],
       "expectedResults": [
-        "The invalid submission returns 400 validation_error and no lead is created.",
-        "The valid submission returns ok and the lead appears in Leads with the run-scoped marker."
+        "Both forms render with the five intent options.",
+        "The host probe receives 400 validation_error and no lead is created."
       ],
-      "beforeProbe": "Record the newest lead createdAt.",
-      "afterProbe": "Read the newest leads and confirm only the run-scoped lead was added.",
-      "cleanup": "Set the run-scoped lead status to closed in the dashboard.",
+      "beforeProbe": "Host probe: POST /contact on the backend site URL with a shape-valid payload and intent 'bogus'; record the status and body, and the newest lead createdAt.",
+      "afterProbe": "Repeat the POST and assert 400 validation_error again and that the newest lead createdAt is unchanged.",
+      "cleanup": "none; sideEffectMode is none",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/site-contact-submit/",
-      "sideEffectMode": "authorized-writes",
+      "sideEffectMode": "none",
       "status": "draft",
       "sourceGlobs": [
         "apps/site/src/components/PublicContentPage.astro",
@@ -385,7 +385,10 @@
       "status": "draft",
       "sourceGlobs": [
         "apps/backend/convex/contentActions.ts",
-        "apps/backend/convex/publication.ts"
+        "apps/backend/convex/publication.ts",
+        "apps/backend/convex/publicationActions.ts",
+        "scripts/record-publication-receipt.ts",
+        ".github/workflows/release-train.yml"
       ]
     }
   ]
