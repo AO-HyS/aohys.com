@@ -19,6 +19,11 @@
       "types": "./src/unknown-guards.ts",
       "import": "./src/unknown-guards.ts",
       "default": "./src/unknown-guards.ts"
+    },
+    "./release-targets": {
+      "types": "./src/release-targets.ts",
+      "import": "./src/release-targets.ts",
+      "default": "./src/release-targets.ts"
     }
   },
   "scripts": {

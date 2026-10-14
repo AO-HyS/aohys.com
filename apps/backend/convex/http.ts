@@ -1,3 +1,4 @@
+import { postHogIngestHost } from "@aohys/core/release-targets";
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server.js";
 import { internal } from "./_generated/api.js";
@@ -93,7 +94,7 @@ async function captureContactIntakeFailure(
       }),
       {
         apiKey,
-        host: "https://aohys.com/ingest",
+        host: postHogIngestHost(requiredSiteUrl()),
       },
     );
   } catch {
@@ -138,7 +139,7 @@ http.route({
           captureAnalyticsEvent: async (event) =>
             captureLeadAnalyticsWithPostHog(event, {
               apiKey: process.env.PUBLIC_POSTHOG_KEY ?? "",
-              host: "https://aohys.com/ingest",
+              host: postHogIngestHost(requiredSiteUrl()),
             }),
         },
       });
@@ -152,5 +153,12 @@ http.route({
     }
   }),
 });
+
+// PostHog ingest goes through the public site of this deployment.
+function requiredSiteUrl(): string {
+  const siteUrl = process.env.PUBLIC_SITE_URL?.trim();
+  if (!siteUrl) throw new Error("PUBLIC_SITE_URL is required for analytics.");
+  return siteUrl;
+}
 
 export default http;

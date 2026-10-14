@@ -1,3 +1,4 @@
+import { CLOUDFLARE_PROJECT_NAME } from "@aohys/core/release-targets";
 import {
   ENVIRONMENTS,
   RELEASE_ENVIRONMENTS,
@@ -399,7 +400,7 @@ const DEFINITIONS: EnvironmentVariableDefinition[] = [
     github: {
       source: "variable",
     },
-    localExample: "aohys-com",
+    localExample: CLOUDFLARE_PROJECT_NAME,
   },
   {
     name: "CLOUDFLARE_IMAGES_ACCOUNT_HASH",

@@ -1,3 +1,4 @@
+import { CLOUDFLARE_PROJECT_NAME } from "@aohys/core/release-targets";
 import { pathToFileURL } from "node:url";
 
 import {
@@ -120,7 +121,7 @@ async function main(): Promise<void> {
   const accountId = requiredEnv("CLOUDFLARE_ACCOUNT_ID");
   const apiToken = requiredEnv("CLOUDFLARE_API_TOKEN");
   const projectName =
-    process.env.CLOUDFLARE_PROJECT_NAME?.trim() || "aohys-com";
+    process.env.CLOUDFLARE_PROJECT_NAME?.trim() || CLOUDFLARE_PROJECT_NAME;
   const project = await readPagesProject({ accountId, apiToken, projectName });
   const expectedActiveValues = collectCanonicalRuntimeValues(activeEnvironment);
   const errors = auditRuntimeBindings(
