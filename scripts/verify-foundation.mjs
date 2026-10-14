@@ -21,12 +21,13 @@ const requiredRootScripts = [
   "build",
   "lint",
   "prepare",
+  "quality:certify",
   "quality:commit",
   "quality:push",
   "react:doctor:changed",
   "react:doctor:staged",
+  "release",
   "typecheck",
-  "verify",
   "verify:ci",
   "verify:foundation",
   "verify:precommit",
@@ -155,7 +156,7 @@ includesAll(".github/workflows/quality-gates.yml", [
   "actions/github-script@v8",
   "pullRequest.head.ref !== 'develop'",
   "Git owns commit ancestry",
-  "pnpm verify",
+  "pnpm run verify:ci",
 ]);
 
 excludesAll(".github/workflows/quality-gates.yml", [
@@ -235,7 +236,7 @@ includesAll("README.md", [
   "docs/aohys-issue-breakdown.md",
   "docs/aohys-verification-plan.md",
   "pnpm install",
-  "pnpm verify",
+  "pnpm quality:certify",
   "pnpm run verify:precommit",
   ".husky/pre-push",
   "docs/workspace.md",

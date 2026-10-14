@@ -42,8 +42,3 @@ export function parseCloudflareImagesUploadResponse(
     errors,
   };
 }
-
-export function parseGitHubErrorResponse(value: unknown): { message?: string } {
-  if (!isRecord(value)) return {};
-  return typeof value.message === "string" ? { message: value.message } : {};
-}

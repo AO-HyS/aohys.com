@@ -57,7 +57,7 @@ Use pnpm from the repository root:
 
 ```sh
 pnpm install
-pnpm verify
+pnpm quality:certify
 ```
 
 Local values belong in `.env.local`; deploy-time values follow the Environment Contract. Promotion, provider reconciliation, smoke checks, and Cloudflare operations follow the Release Train and Launch Hardening runbooks. Do not infer live provider state from this document.

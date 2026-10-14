@@ -27,11 +27,6 @@ import {
   upsertProjectDraftReturns,
 } from "./model/content/projects.js";
 import {
-  publishContentArgs,
-  publishContentHandler,
-  publishContentReturns,
-} from "./model/content/publication.js";
-import {
   createResumeVersionArgs,
   createResumeVersionHandler,
   createResumeVersionReturns,
@@ -95,12 +90,6 @@ export const upsertResumeDraft = adminMutation({
   handler: async (ctx, args) => {
     return upsertResumeDraftHandler(ctx, args);
   },
-});
-
-export const publishContentFromDashboard = internalMutation({
-  args: publishContentArgs,
-  returns: publishContentReturns,
-  handler: publishContentHandler,
 });
 
 export const createMediaMetadata = adminMutation({
