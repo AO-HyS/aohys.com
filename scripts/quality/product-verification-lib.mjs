@@ -714,7 +714,7 @@ export function validateFeatureMap(map, { root, fileEdges = [] } = {}) {
           errors.push(`proven journey ${journey.id} requires ${key}`);
       if (
         typeof journey.proofRunId === "string" &&
-        !/^[a-z0-9][a-z0-9._-]{2,79}$/u.test(journey.proofRunId)
+        !RUN_ID_PATTERN.test(journey.proofRunId)
       )
         errors.push(
           `proven journey ${journey.id} needs a private evidence run id`,
@@ -802,9 +802,14 @@ function matchesSourcePrefix(filePath, globs) {
   );
 }
 
-// Code and resource import edges from an architecture-fitness graph.
+// Code and resource import edges from an architecture-fitness graph, without
+// generated barrels (Convex _generated/api imports every module and would
+// connect every backend change to every dashboard feature).
 export function dependencyEdges(graph) {
-  return [...(graph.fileEdges ?? []), ...(graph.resourceEdges ?? [])];
+  return [...(graph.fileEdges ?? []), ...(graph.resourceEdges ?? [])].filter(
+    ([importer, target]) =>
+      !/\/_generated\//u.test(importer) && !/\/_generated\//u.test(target),
+  );
 }
 
 // The mapped paths plus every file they import, directly or transitively.

@@ -162,7 +162,8 @@
       "status": "draft",
       "sourceGlobs": [
         "apps/dashboard/src/app/dashboard-shell.tsx",
-        "apps/dashboard/src/navigation.ts"
+        "apps/dashboard/src/navigation.ts",
+        "apps/backend/convex/model/content/overview.ts"
       ],
       "sharedSourceGlobs": [
         "apps/dashboard/src/main.tsx",
@@ -203,7 +204,10 @@
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-leads/",
       "sideEffectMode": "none",
       "status": "draft",
-      "sourceGlobs": ["apps/dashboard/src/features/leads"],
+      "sourceGlobs": [
+        "apps/dashboard/src/features/leads",
+        "apps/backend/convex/leads.ts"
+      ],
       "sharedSourceGlobs": [
         "apps/dashboard/src/main.tsx",
         "apps/dashboard/src/lib/auth-client.ts",
@@ -243,7 +247,7 @@
       ],
       "beforeProbe": "Record resumeDrafts.updatedAt and contentJson hash for the locale.",
       "afterProbe": "Read the same draft and compare updatedAt and contentJson hash with the expected values.",
-      "cleanup": "Save the recorded original content for the locale and confirm the hash matches.",
+      "cleanup": "Save the recorded original content for the locale and confirm the contentJson hash matches. Residual effect, recorded in the evidence: updatedAt (the visible 'Last saved') advances, because the save handler always stamps a new time.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-resume-save/",
       "sideEffectMode": "authorized-writes",
       "status": "draft",
@@ -293,7 +297,7 @@
       ],
       "beforeProbe": "Record the project draft summary and updatedAt.",
       "afterProbe": "Read the same draft and compare summary and updatedAt.",
-      "cleanup": "Save the recorded original summary and confirm it is restored.",
+      "cleanup": "Save the recorded original summary and confirm it is restored. Residual effect, recorded in the evidence: the draft updatedAt advances, because the save handler always stamps a new time.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-project-save/",
       "sideEffectMode": "authorized-writes",
       "status": "draft",
@@ -343,7 +347,7 @@
       ],
       "beforeProbe": "Record the setting value and updatedAt.",
       "afterProbe": "Read the setting and compare value and updatedAt.",
-      "cleanup": "Save the recorded original value and confirm it is restored.",
+      "cleanup": "Save the recorded original value and confirm it is restored. Residual effect, recorded in the evidence: the setting updatedAt advances, because the save handler always stamps a new time.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-settings-save/",
       "sideEffectMode": "authorized-writes",
       "status": "draft",
