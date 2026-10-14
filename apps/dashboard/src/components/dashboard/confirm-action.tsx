@@ -1,6 +1,9 @@
 import { useState, type ComponentType, type ReactElement } from "react";
 import { Action, type ActionVariant } from "@/components/dashboard/action";
-import { DialogIcon } from "@/components/dashboard/notice-dialog";
+import {
+  DialogIcon,
+  useReturnFocus,
+} from "@/components/dashboard/notice-dialog";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -51,6 +54,7 @@ export function ConfirmAction({
   const controlled = controlledOpen !== undefined;
   const open = controlled ? controlledOpen : ownOpen;
   const setOpen = controlled ? onOpenChange : setOwnOpen;
+  const returnFocus = useReturnFocus();
 
   return (
     <AlertDialog
@@ -62,7 +66,7 @@ export function ConfirmAction({
       {trigger ? (
         <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
       ) : null}
-      <AlertDialogContent>
+      <AlertDialogContent {...(controlled ? returnFocus : {})}>
         <AlertDialogHeader>
           {Icon ? <DialogIcon icon={Icon} tone={variant} /> : null}
           <AlertDialogTitle>{title}</AlertDialogTitle>

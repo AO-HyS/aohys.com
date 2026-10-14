@@ -944,8 +944,8 @@ function ProjectImagesCard({
                       : "Content graph"}
                   </MetaBadge>
                   {image.status ? (
-                    <StatusBadge tone={mediaStatusTone[image.status]}>
-                      {image.status}
+                    <StatusBadge tone={mediaStatus[image.status].tone}>
+                      {mediaStatus[image.status].label}
                     </StatusBadge>
                   ) : null}
                   {image.previewStatus && image.previewStatus !== "ready" ? (
@@ -1071,11 +1071,12 @@ function ProjectImagesCard({
   );
 }
 
-const mediaStatusTone = {
-  draft: "pending",
-  published: "success",
-  archived: "neutral",
-} as const satisfies Record<MediaStatus, StatusTone>;
+// Draft matches resume versions: a resting state, not work in progress.
+const mediaStatus = {
+  draft: { label: "Draft", tone: "neutral" },
+  published: { label: "Published", tone: "success" },
+  archived: { label: "Archived", tone: "neutral" },
+} as const satisfies Record<MediaStatus, { label: string; tone: StatusTone }>;
 
 function mediaPreviewIssueLabel(
   status: NonNullable<DashboardProject["images"][number]["previewStatus"]>,

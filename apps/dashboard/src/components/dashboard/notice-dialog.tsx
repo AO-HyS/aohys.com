@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import { useRef, type ComponentType, type RefObject } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,6 +36,34 @@ export function DialogIcon({
   );
 }
 
+// Radix returns focus only to an AlertDialogTrigger. A dialog opened from state
+// returns it to the element that had focus when it opened, if still mounted.
+// `initialFocus` names the element to focus on open when the dialog has no
+// Cancel button, which is where Radix would put it.
+export function useReturnFocus(initialFocus?: RefObject<HTMLElement | null>) {
+  const opener = useRef<HTMLElement | null>(null);
+
+  return {
+    onOpenAutoFocus: (event: Event) => {
+      opener.current =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+      if (initialFocus?.current) {
+        event.preventDefault();
+        initialFocus.current.focus();
+      }
+    },
+    onCloseAutoFocus: (event: Event) => {
+      if (opener.current?.isConnected) {
+        event.preventDefault();
+        opener.current.focus();
+      }
+      opener.current = null;
+    },
+  };
+}
+
 export interface NoticeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -58,9 +86,12 @@ export function NoticeDialog({
   tone = "destructive",
   icon,
 }: NoticeDialogProps) {
+  const actionRef = useRef<HTMLButtonElement>(null);
+  const returnFocus = useReturnFocus(actionRef);
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="sm:max-w-md">
+      <AlertDialogContent className="sm:max-w-md" {...returnFocus}>
         <AlertDialogHeader>
           {icon ? <DialogIcon icon={icon} tone={tone} /> : null}
           <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -72,7 +103,7 @@ export function NoticeDialog({
           </div>
         ) : null}
         <AlertDialogFooter>
-          <AlertDialogAction>{actionLabel}</AlertDialogAction>
+          <AlertDialogAction ref={actionRef}>{actionLabel}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

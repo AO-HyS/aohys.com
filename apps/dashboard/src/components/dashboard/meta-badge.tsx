@@ -2,10 +2,11 @@ import { Badge } from "@/components/ui/badge";
 
 export type MetaBadgeEmphasis = "quiet" | "filled";
 
-const variantByEmphasis = {
-  quiet: "outline",
-  filled: "secondary",
-} as const satisfies Record<MetaBadgeEmphasis, "outline" | "secondary">;
+// Filled stays off the olive secondary hue, which reads as a success state.
+const classByEmphasis = {
+  quiet: "",
+  filled: "border-transparent bg-muted text-foreground",
+} as const satisfies Record<MetaBadgeEmphasis, string>;
 
 export interface MetaBadgeProps {
   children: string | number;
@@ -15,7 +16,11 @@ export interface MetaBadgeProps {
 // Counts and descriptive labels. A state the operator acts on is a StatusBadge.
 export function MetaBadge({ children, emphasis = "quiet" }: MetaBadgeProps) {
   return (
-    <Badge data-slot="meta-badge" variant={variantByEmphasis[emphasis]}>
+    <Badge
+      data-slot="meta-badge"
+      variant="outline"
+      className={classByEmphasis[emphasis]}
+    >
       {children}
     </Badge>
   );
