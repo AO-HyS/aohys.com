@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "primitives": [
+    {
+      "id": "resume-content-contract",
+      "category": "data",
+      "status": "active",
+      "summary": "Single resume content contract: shape, safe links, PDF path, safe JSON keys and size limit, shared by Convex, the dashboard and the publication build.",
+      "paths": [
+        "packages/content-graph/src/resume-content.ts",
+        "apps/backend/convex/model/content/resume.ts"
+      ],
+      "symbols": [
+        "packages/content-graph/src/resume-content.ts#parseResumePageContent",
+        "packages/content-graph/src/resume-content.ts#isResumePageContent"
+      ],
+      "guarantees": [
+        {
+          "statement": "content.upsertResumeDraft rejects contentJson that fails the contract with a ConvexError before any write.",
+          "verifiedBy": "apps/backend/convex/model/content/resume.ts#upsertResumeDraftHandler calls parseResumePageContent before ctx.db; private probe pr1-resume (aohys-primitives-20261013)"
+        },
+        {
+          "statement": "The dashboard editor and scripts/apply-dashboard-published-content.ts validate with the same contract; no other resume validator exists.",
+          "verifiedBy": "rg isResumePageContent|parseResumePageContent"
+        }
+      ],
+      "goals": [],
+      "replaces": [],
+      "docs": ["docs/public-content-graph.md"]
+    }
+  ]
+}
