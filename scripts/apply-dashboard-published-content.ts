@@ -153,7 +153,12 @@ const INPUT_FLAG = "--input";
 
 function inputPath(): string | undefined {
   const index = process.argv.indexOf(INPUT_FLAG);
-  return index >= 0 ? process.argv[index + 1] : undefined;
+  if (index < 0) return undefined;
+  const value = process.argv[index + 1];
+  if (!value || value.startsWith("--")) {
+    throw new Error(`${INPUT_FLAG} needs a payload file path.`);
+  }
+  return value;
 }
 
 async function loadDashboardContent(): Promise<unknown | null> {
@@ -226,6 +231,13 @@ function hasOptionalBoolean(
   return value[field] === undefined || typeof value[field] === "boolean";
 }
 
+function isVocabularyMember<T extends string>(
+  value: unknown,
+  vocabulary: readonly T[],
+): value is T {
+  return typeof value === "string" && isOneOf(value, vocabulary);
+}
+
 function isLocale(value: unknown): value is Locale {
   return isOneOf(typeof value === "string" ? value : undefined, LOCALES);
 }
@@ -266,13 +278,13 @@ function isDashboardMediaMetadata(
 ): value is DashboardMediaMetadata {
   return (
     hasStringFields(value, ["storageKey", "altText"]) &&
-    isOneOf(String(value.usage), MEDIA_USAGES) &&
-    isOneOf(String(value.status), MEDIA_STATUSES) &&
+    isVocabularyMember(value.usage, MEDIA_USAGES) &&
+    isVocabularyMember(value.status, MEDIA_STATUSES) &&
     typeof value.updatedAt === "number" &&
     typeof value.id === "string" &&
     hasOptionalString(value, "contentId") &&
     hasOptionalString(value, "publicUrl") &&
-    isOneOf(String(value.storageProvider), MEDIA_STORAGE_PROVIDERS) &&
+    isVocabularyMember(value.storageProvider, MEDIA_STORAGE_PROVIDERS) &&
     (value.locale === undefined || isLocale(value.locale)) &&
     hasOptionalBoolean(value, "selectedForPublic") &&
     hasOptionalNumber(value, "selectedForPublicAt")
@@ -282,8 +294,8 @@ function isDashboardMediaMetadata(
 function isDashboardSiteSetting(value: unknown): value is DashboardSiteSetting {
   return (
     hasStringFields(value, ["key", "value"]) &&
-    isOneOf(String(value.environment), ENVIRONMENTS) &&
-    isOneOf(String(value.classification), SITE_SETTING_CLASSIFICATIONS) &&
+    isVocabularyMember(value.environment, ENVIRONMENTS) &&
+    isVocabularyMember(value.classification, SITE_SETTING_CLASSIFICATIONS) &&
     typeof value.updatedAt === "number"
   );
 }
