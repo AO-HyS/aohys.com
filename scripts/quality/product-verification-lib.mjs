@@ -803,12 +803,14 @@ function matchesSourcePrefix(filePath, globs) {
 }
 
 // Code and resource import edges from an architecture-fitness graph, without
-// generated barrels (Convex _generated/api imports every module and would
-// connect every backend change to every dashboard feature).
+// the outgoing edges of the generated Convex API barrel: it imports every
+// module and would connect every backend change to every dashboard feature.
+// Other generated edges (the data model to the schema) are kept.
+const GENERATED_API_BARREL = /\/convex\/_generated\/api(?:\.d)?\.(?:ts|js)$/u;
+
 export function dependencyEdges(graph) {
   return [...(graph.fileEdges ?? []), ...(graph.resourceEdges ?? [])].filter(
-    ([importer, target]) =>
-      !/\/_generated\//u.test(importer) && !/\/_generated\//u.test(target),
+    ([importer]) => !GENERATED_API_BARREL.test(importer),
   );
 }
 

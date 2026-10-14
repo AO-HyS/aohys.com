@@ -163,7 +163,8 @@
       "sourceGlobs": [
         "apps/dashboard/src/app/dashboard-shell.tsx",
         "apps/dashboard/src/navigation.ts",
-        "apps/backend/convex/model/content/overview.ts"
+        "apps/backend/convex/model/content/overview.ts",
+        "apps/backend/convex/content.ts"
       ],
       "sharedSourceGlobs": [
         "apps/dashboard/src/main.tsx",
