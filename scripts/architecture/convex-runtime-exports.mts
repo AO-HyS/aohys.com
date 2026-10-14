@@ -6,19 +6,16 @@ import { pathToFileURL } from "node:url";
 // anonymous caller and a signed-in caller outside the allowlist invoke it
 // through the entry point Convex uses, plus the routes served by the http.ts
 // router. Used by public-function-guard.mjs, which runs it with a minimal
-// environment; types can be widened and registrations replaced, runtime
-// behavior cannot.
+// environment, a timeout and never on "use node" modules; types can be
+// widened and registrations replaced, runtime behavior cannot.
 
 const [root, ...modules] = process.argv.slice(2);
-// Modules whose directive prologue holds "use node", parsed by the guard.
-const nodeModules = new Set(
-  JSON.parse(process.env.GUARD_NODE_MODULES ?? "[]") as string[],
-);
 
 // The two reads safeGetAuthUser makes for a signed-in caller, each answered
 // once per invocation. Everything else (other syscalls, network) is refused and
 // recorded, so work done before the caller is rejected is visible; refusals
-// while importing are kept for the whole run.
+// outside an invocation (module scope, timers, late work) are kept for the
+// whole run, and the receipt is printed only once the event loop drains.
 const OUTSIDER = {
   identity: { subject: "guard-user", sessionId: "guard-session" },
   session: { _id: "guard-session", userId: "guard-user" },
@@ -29,10 +26,10 @@ const AUTH_LOOKUP = "_reference/childComponent/betterAuth/adapter/findOne";
 let caller: Caller = "anonymous";
 let answered = new Set<string>();
 const touched: string[] = [];
-const importRefusals: string[] = [];
-let importing = true;
+const strayRefusals: string[] = [];
+let invoking = false;
 const refuse = (operation: string): never => {
-  (importing ? importRefusals : touched).push(operation);
+  (invoking ? touched : strayRefusals).push(operation);
   throw new Error(`guard: ${operation} before authorization`);
 };
 
@@ -67,9 +64,9 @@ function authLookup(operation: string, argsJson: string): string | undefined {
 }
 
 async function asyncSyscall(operation: string, argsJson: string) {
-  if (!importing && operation === "1.0/getUserIdentity")
+  if (invoking && operation === "1.0/getUserIdentity")
     return caller === "anonymous" ? "null" : JSON.stringify(OUTSIDER.identity);
-  if (!importing && caller === "outsider") {
+  if (invoking && caller === "outsider") {
     const result = authLookup(operation, argsJson);
     if (result !== undefined) return result;
   }
@@ -122,20 +119,21 @@ async function outcome(flags: Flags, as: Caller) {
   caller = as;
   answered = new Set();
   touched.length = 0;
+  invoking = true;
   let rejection: string | null = null;
   try {
     await invoke(flags);
   } catch (error) {
     rejection = error instanceof Error ? error.message : String(error);
   }
+  invoking = false;
   return { rejection, touched: [...touched] };
 }
 
 type Entry = {
   name: string;
-  nodeRuntime: boolean;
-  anonymous?: Awaited<ReturnType<typeof outcome>>;
-  outsider?: Awaited<ReturnType<typeof outcome>>;
+  anonymous: Awaited<ReturnType<typeof outcome>>;
+  outsider: Awaited<ReturnType<typeof outcome>>;
 };
 
 const loadedModules = new Map<string, Record<string, unknown>>();
@@ -146,29 +144,18 @@ for (const relative of modules)
       pathToFileURL(path.join(root ?? ".", relative)).href
     )) as Record<string, unknown>,
   );
-// Let pending import-time work settle before invocations start.
-await new Promise((resolve) => setTimeout(resolve, 0));
-importing = false;
 
 const publicExports: Record<string, Entry[]> = {};
 let httpRoutes: string[] | undefined;
 for (const [relative, loaded] of loadedModules) {
-  // Node actions are never invoked here; the guard rejects public exports in
-  // them instead.
-  const nodeRuntime = nodeModules.has(relative);
   publicExports[relative] = [];
   for (const [name, value] of Object.entries(loaded)) {
     if (!isPublicRegistration(value)) continue;
-    publicExports[relative].push(
-      nodeRuntime
-        ? { name, nodeRuntime }
-        : {
-            name,
-            nodeRuntime,
-            anonymous: await outcome(value, "anonymous"),
-            outsider: await outcome(value, "outsider"),
-          },
-    );
+    publicExports[relative].push({
+      name,
+      anonymous: await outcome(value, "anonymous"),
+      outsider: await outcome(value, "outsider"),
+    });
   }
   const router = loaded.default as
     | { isRouter?: unknown; getRoutes?: () => Array<[string, string]> }
@@ -182,4 +169,10 @@ for (const [relative, loaded] of loadedModules) {
       .getRoutes()
       .map(([routePath, method]) => `${method} ${routePath}`);
 }
-console.log(JSON.stringify({ publicExports, httpRoutes, importRefusals }));
+
+let printed = false;
+process.on("beforeExit", () => {
+  if (printed) return;
+  printed = true;
+  console.log(JSON.stringify({ publicExports, httpRoutes, strayRefusals }));
+});

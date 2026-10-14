@@ -524,11 +524,14 @@ const EXPECTED_REJECTIONS = {
 // The evaluation never sees provider credentials; ADMIN_EMAIL holds an
 // address no caller in the evaluation uses.
 const EVALUATION_ADMIN_EMAIL = "admin@guard.invalid";
+// Work still pending after this long fails closed.
+const EVALUATION_TIMEOUT_MS = 60_000;
 const RUNTIME_EXPORTS_SCRIPT = fileURLToPath(
   new URL("./convex-runtime-exports.mts", import.meta.url),
 );
 
 // True when the directive prologue (comments allowed) holds "use node".
+// Those modules are never evaluated; nodeModuleViolations checks them.
 function usesNodeRuntime(sourceFile) {
   for (const statement of sourceFile.statements) {
     if (!ts.isPrologueDirective(statement)) return false;
@@ -537,9 +540,51 @@ function usesNodeRuntime(sourceFile) {
   return false;
 }
 
+// A "use node" module may only export consts declared by a direct
+// internalAction(...) call imported from ./_generated/server.
+function nodeModuleViolations(checker, relative, sourceFile) {
+  const moduleSymbol = checker.getSymbolAtLocation(sourceFile);
+  if (!moduleSymbol) return [];
+  const violations = [];
+  for (const exported of checker.getExportsOfModule(moduleSymbol)) {
+    const symbol = resolveAlias(checker, exported);
+    if (!symbol || (symbol.flags & ts.SymbolFlags.Value) === 0) continue;
+    const declaration = symbol.valueDeclaration;
+    const callee =
+      declaration &&
+      ts.isVariableDeclaration(declaration) &&
+      declaration.getSourceFile() === sourceFile &&
+      (declaration.parent.flags & ts.NodeFlags.Const) !== 0 &&
+      declaration.initializer &&
+      ts.isCallExpression(declaration.initializer) &&
+      ts.isIdentifier(declaration.initializer.expression)
+        ? declaration.initializer.expression
+        : undefined;
+    const specifier = callee
+      ? checker.getSymbolAtLocation(callee)?.declarations?.[0]
+      : undefined;
+    const importDeclaration = specifier?.parent?.parent?.parent;
+    const ok =
+      specifier !== undefined &&
+      ts.isImportSpecifier(specifier) &&
+      (specifier.propertyName ?? specifier.name).text === "internalAction" &&
+      importDeclaration !== undefined &&
+      ts.isImportDeclaration(importDeclaration) &&
+      ts.isStringLiteral(importDeclaration.moduleSpecifier) &&
+      /^\.\/(?:.*\/)?_generated\/server(?:\.js)?$/u.test(
+        importDeclaration.moduleSpecifier.text,
+      );
+    if (!ok)
+      violations.push(
+        `${relative}: "use node" modules may only export consts built with internalAction from _generated/server; ${exported.name} is not`,
+      );
+  }
+  return violations;
+}
+
 // Evaluates the modules once per deployment environment (AOHYS_ENV), since
 // a module can choose its exports from deployment configuration.
-function runtimeViolations(root, sources, adminExports, nodeModules) {
+function runtimeViolations(root, sources, adminExports) {
   const environments = [
     ...(readDomainVocabularies(root).find(({ name }) => name === "ENVIRONMENTS")
       ?.members ?? []),
@@ -552,20 +597,13 @@ function runtimeViolations(root, sources, adminExports, nodeModules) {
       root,
       sources,
       adminExports,
-      nodeModules,
       environment,
     ))
       violations.add(`${violation} (AOHYS_ENV=${environment})`);
   return [...violations];
 }
 
-function evaluatedViolations(
-  root,
-  sources,
-  adminExports,
-  nodeModules,
-  environment,
-) {
+function evaluatedViolations(root, sources, adminExports, environment) {
   const result = spawnSync(
     process.execPath,
     ["--import", "tsx", RUNTIME_EXPORTS_SCRIPT, root, ...sources],
@@ -573,7 +611,6 @@ function evaluatedViolations(
       cwd: root,
       encoding: "utf8",
       env: {
-        GUARD_NODE_MODULES: JSON.stringify(nodeModules),
         PATH: process.env.PATH ?? "",
         HOME: process.env.HOME ?? "",
         TMPDIR: process.env.TMPDIR ?? "",
@@ -581,6 +618,7 @@ function evaluatedViolations(
         ADMIN_EMAIL: EVALUATION_ADMIN_EMAIL,
       },
       maxBuffer: 16 * 1024 * 1024,
+      timeout: EVALUATION_TIMEOUT_MS,
     },
   );
   if (result.status !== 0) {
@@ -594,12 +632,12 @@ function evaluatedViolations(
     ];
   }
   const violations = [];
-  const { publicExports, httpRoutes, importRefusals } = JSON.parse(
+  const { publicExports, httpRoutes, strayRefusals } = JSON.parse(
     result.stdout.trim().split("\n").at(-1),
   );
-  if (importRefusals?.length)
+  if (strayRefusals?.length)
     violations.push(
-      `${CONVEX_DIR}: importing the Convex modules attempted ${[...new Set(importRefusals)].join(", ")}; module scope must not perform syscalls or network calls`,
+      `${CONVEX_DIR}: evaluating the Convex modules attempted ${[...new Set(strayRefusals)].join(", ")} outside any function call; module scope and background work must not perform syscalls or network calls`,
     );
   const served = (httpRoutes ?? []).slice().sort();
   if (served.join("\n") !== RUNTIME_HTTP_ROUTES.join("\n"))
@@ -612,12 +650,6 @@ function evaluatedViolations(
       if (!adminExports.has(`${relative}#${name}`)) {
         violations.push(
           `${relative}: export ${name} is a public Convex function at runtime but not a direct adminQuery/adminMutation/adminAction call`,
-        );
-        continue;
-      }
-      if (entry.nodeRuntime) {
-        violations.push(
-          `${relative}: "use node" modules may only export internal functions; move ${name} to a Convex runtime module`,
         );
         continue;
       }
@@ -650,7 +682,10 @@ export function publicFunctionGuardViolations(root) {
     }
     if (relative !== BUILDERS_FILE)
       violations.push(...rawBuilderViolations(relative, sourceFile));
-    if (usesNodeRuntime(sourceFile)) nodeModules.push(relative);
+    if (usesNodeRuntime(sourceFile)) {
+      nodeModules.push(relative);
+      violations.push(...nodeModuleViolations(checker, relative, sourceFile));
+    }
     violations.push(
       ...exportViolations(checker, root, relative, sourceFile, adminExports),
     );
@@ -660,9 +695,11 @@ export function publicFunctionGuardViolations(root) {
   violations.push(
     ...runtimeViolations(
       root,
-      sources.filter((relative) => relative !== APP_DEFINITION),
+      sources.filter(
+        (relative) =>
+          relative !== APP_DEFINITION && !nodeModules.includes(relative),
+      ),
       adminExports,
-      nodeModules,
     ),
   );
   return violations;
