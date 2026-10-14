@@ -324,7 +324,11 @@ export function literalCopyViolations(importer, source, vocabularies) {
 // The literals helper must be exactly
 // `return v.union(...values.map((value) => v.literal(value))) as …;`
 // over its single parameter, so a derived validator keeps every member.
-function literalsHelperIsCanonical(statement, isValidatorObject) {
+function literalsHelperIsCanonical(
+  statement,
+  isValidatorObject,
+  convexBindings,
+) {
   const parameter = statement.parameters[0];
   const body = statement.body?.statements ?? [];
   if (
@@ -337,9 +341,8 @@ function literalsHelperIsCanonical(statement, isValidatorObject) {
     return false;
   }
   const values = parameter.name.text;
-  // A parameter that shadows the imported Convex `v` breaks the binding.
-  const shadowsValidator = (name) =>
-    isValidatorObject(ts.factory.createIdentifier(name));
+  // A parameter that shadows any convex/values binding breaks the binding.
+  const shadowsValidator = (name) => convexBindings.has(name);
   if (shadowsValidator(values)) return false;
   const union = unwrapExpression(body[0].expression);
   const isMember = (node, object, name) =>
@@ -415,7 +418,16 @@ export function derivationViolations(root) {
       statement.name?.text === "literals" &&
       !hasModifier(ts.SyntaxKind.DefaultKeyword);
     if (literalsHelper) {
-      if (literalsHelperIsCanonical(statement, isValidatorsValidatorObject)) {
+      if (
+        literalsHelperIsCanonical(
+          statement,
+          isValidatorsValidatorObject,
+          new Set([
+            ...importedNames(validators, "convex/values").named.keys(),
+            ...importedNames(validators, "convex/values").namespaces,
+          ]),
+        )
+      ) {
         literalsVerified = true;
       } else {
         violations.push(
