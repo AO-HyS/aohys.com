@@ -519,7 +519,8 @@
         "scripts/validate-release-env.ts",
         "scripts/extract-cloudflare-pages-deployment-url.ts",
         "apps/site/scripts/build-resume-pdf.py",
-        "apps/site/scripts/requirements.txt"
+        "apps/site/scripts/requirements.txt",
+        "scripts/generate-environment-artifacts.ts"
       ],
       "environments": ["preview"],
       "sharedSourceGlobs": [
