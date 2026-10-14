@@ -14,10 +14,13 @@ import {
   getSharedI18n,
 } from "../packages/content-graph/src/i18n.js";
 import { assertPublicClaimsSafe } from "../packages/content-graph/src/public-claim-policy.js";
+import type { ResumePageContent } from "../packages/content-graph/src/index.ts";
 import {
   isResumePageContent,
   RESUME_CONTENT_MAX_LENGTH,
 } from "../packages/content-graph/src/resume-content.js";
+import type { internal } from "@aohys/backend/convex/_generated/api";
+import type { FunctionReturnType } from "convex/server";
 import { hasConvexDeploymentAccess, runConvexFunction } from "./convex-run.js";
 import {
   ENVIRONMENTS,
@@ -26,70 +29,26 @@ import {
   MEDIA_STORAGE_PROVIDERS,
   MEDIA_USAGES,
   SITE_SETTING_CLASSIFICATIONS,
-  type Environment,
   type Locale,
-  type MediaStatus,
-  type MediaStorageProvider,
-  type MediaUsage,
-  type SiteSettingClassification,
 } from "@aohys/core/domain";
+import { isRecord } from "@aohys/core/unknown-guards";
 
-interface DashboardProjectDraft {
-  contentId: string;
-  locale: Locale;
-  localizedSlug?: string;
-  title: string;
-  summary: string;
-  seoDescription: string;
-  projectUrl?: string;
-  ctaLabel: string;
-  ctaHref: string;
-  achievements: string;
-  structureNotes: string;
-  updatedAt?: number;
-  publishedAt?: number;
-}
-
-interface DashboardResumeDraft {
-  locale: Locale;
-  contentJson: string;
-  updatedAt?: number;
-  publishedAt?: number;
-}
-
-export interface DashboardMediaMetadata {
-  id?: string;
-  storageProvider?: MediaStorageProvider;
-  storageKey: string;
-  publicUrl?: string;
-  altText: string;
-  contentId?: string;
-  usage: MediaUsage;
-  status: MediaStatus;
-  locale?: Locale;
-  selectedForPublic?: boolean;
-  selectedForPublicAt?: number;
-  updatedAt: number;
-}
+type DashboardContent = FunctionReturnType<
+  typeof internal.content.listForDashboardInternal
+>;
+type DashboardProjectDraft = DashboardContent["projectDrafts"][number];
+type DashboardResumeDraft = DashboardContent["resumeDrafts"][number];
+export type DashboardMediaMetadata = DashboardContent["media"][number];
+type DashboardSiteSetting = DashboardContent["settings"][number];
 
 type PublicDashboardMediaMetadata = DashboardMediaMetadata & {
   publicUrl: string;
 };
 
-interface DashboardSiteSetting {
-  key: string;
-  environment: Environment;
-  value: string;
-  classification: SiteSettingClassification;
-  updatedAt: number;
-}
-
-export interface DashboardContentPayload {
-  projectDrafts: DashboardProjectDraft[];
-  resumeDrafts: DashboardResumeDraft[];
-  media: DashboardMediaMetadata[];
-  settings: DashboardSiteSetting[];
-}
+export type DashboardContentPayload = Pick<
+  DashboardContent,
+  "projectDrafts" | "resumeDrafts" | "media" | "settings"
+>;
 
 interface LocalizedEntry {
   approvedAt?: string;
@@ -124,7 +83,7 @@ interface LocalizedEntry {
     }>;
     confidentialityNote?: { title?: string; body?: string };
   };
-  resumeContent?: unknown;
+  resumeContent?: ResumePageContent;
 }
 
 type LocaleDictionary = Record<string, LocalizedEntry>;
@@ -189,7 +148,18 @@ export function shouldApplyDashboardDraft(
   return Boolean(updatedAt && updatedAt > approvedAt);
 }
 
+const DRY_RUN_FLAG = "--dry-run";
+const INPUT_FLAG = "--input";
+
+function inputPath(): string | undefined {
+  const index = process.argv.indexOf(INPUT_FLAG);
+  return index >= 0 ? process.argv[index + 1] : undefined;
+}
+
 async function loadDashboardContent(): Promise<unknown | null> {
+  const input = inputPath();
+  if (input) return JSON.parse(readFileSync(input, "utf8"));
+
   if (!hasConvexDeploymentAccess()) {
     console.log(
       "Dashboard published content bridge skipped: CONVEX_DEPLOY_KEY and CONVEX_DEPLOYMENT are missing.",
@@ -211,17 +181,12 @@ function readLocaleFile(locale: Locale): LocaleDictionary {
   );
 }
 
-function isJsonRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
 function hasStringFields(
   value: unknown,
   fields: readonly string[],
 ): value is Record<string, unknown> {
   return (
-    isJsonRecord(value) &&
-    fields.every((field) => typeof value[field] === "string")
+    isRecord(value) && fields.every((field) => typeof value[field] === "string")
   );
 }
 
@@ -327,7 +292,7 @@ export function parseDashboardContentPayload(
   value: unknown,
 ): DashboardContentPayload {
   if (
-    !isJsonRecord(value) ||
+    !isRecord(value) ||
     !isArrayOf(value.projectDrafts, isDashboardProjectDraft) ||
     !isArrayOf(value.resumeDrafts, isDashboardResumeDraft) ||
     !isArrayOf(value.media, isDashboardMediaMetadata) ||
@@ -354,7 +319,7 @@ function isSafeJsonValue(value: unknown): boolean {
   if (value === null || ["string", "number", "boolean"].includes(typeof value))
     return true;
   if (Array.isArray(value)) return value.every(isSafeJsonValue);
-  if (!isJsonRecord(value)) return false;
+  if (!isRecord(value)) return false;
   return Object.entries(value).every(
     ([key, nested]) =>
       !DANGEROUS_OBJECT_KEYS.has(key) && isSafeJsonValue(nested),
@@ -444,7 +409,7 @@ function isLocalizedEntry(value: unknown): value is LocalizedEntry {
   if (value.caseStudyContent === undefined) return true;
   const content = value.caseStudyContent;
   if (
-    !isJsonRecord(content) ||
+    !isRecord(content) ||
     !["statusLabel", "overview", "publicEvidenceTitle"].every((field) =>
       hasOptionalString(content, field),
     )
@@ -498,7 +463,7 @@ export function parseLocaleDictionary(
   } catch {
     throw new Error(`${source} must contain valid JSON.`);
   }
-  if (!isJsonRecord(parsed)) {
+  if (!isRecord(parsed)) {
     throw new Error(
       `${source} must contain an object of localized content entries.`,
     );
@@ -515,9 +480,7 @@ export function parseLocaleDictionary(
   return dictionary;
 }
 
-export function parseResumeContent(
-  serialized: string,
-): Record<string, unknown> {
+export function parseResumeContent(serialized: string): ResumePageContent {
   if (serialized.length > RESUME_CONTENT_MAX_LENGTH) {
     throw new Error(
       `Published resume content exceeds ${RESUME_CONTENT_MAX_LENGTH} characters.`,
@@ -1115,7 +1078,11 @@ export function applyValidatedDashboardContent<T>(
   return apply(content);
 }
 
-function applyDashboardContent(content: DashboardContentPayload): void {
+// With dryRun the content is applied in memory and nothing is written.
+function applyDashboardContent(
+  content: DashboardContentPayload,
+  dryRun = false,
+): void {
   const dictionaries: Record<Locale, LocaleDictionary> = {
     en: readLocaleFile("en"),
     es: readLocaleFile("es"),
@@ -1159,6 +1126,13 @@ function applyDashboardContent(content: DashboardContentPayload): void {
   const mediaLiteral = buildGeneratedPublicMedia(content.media);
   const settingsLiteral = buildGeneratedPublicSettings(content.settings);
 
+  if (dryRun) {
+    console.log(
+      `Dry run (nothing written): ${appliedProjects} published project draft(s), ${appliedResumes} published resume draft(s), ${Object.keys(mediaLiteral).length} media asset(s), ${Object.keys(settingsLiteral).length} public setting(s) and ${publicProjectIds.length} public project id(s) would be applied.`,
+    );
+    return;
+  }
+
   writeLocaleFile("en", dictionaries.en);
   writeLocaleFile("es", dictionaries.es);
   const generatedPublicProjects =
@@ -1177,7 +1151,10 @@ async function main(): Promise<void> {
   if (!content) {
     return;
   }
-  applyValidatedDashboardContent(content, applyDashboardContent);
+  const dryRun = process.argv.includes(DRY_RUN_FLAG);
+  applyValidatedDashboardContent(content, (payload) =>
+    applyDashboardContent(payload, dryRun),
+  );
 }
 
 const invokedScriptUrl = process.argv[1]

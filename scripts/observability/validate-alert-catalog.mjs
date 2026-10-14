@@ -1,12 +1,9 @@
 import { access, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { isRecord } from "@aohys/core/unknown-guards";
 
 const OPERATORS = new Set(["greater-than", "less-than-or-equal"]);
-
-function isRecord(value) {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 export function readJsonPointer(document, pointer) {
   if (pointer === "") return document;

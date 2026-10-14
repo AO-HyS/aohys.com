@@ -1,3 +1,5 @@
+import { isRecord } from "@aohys/core/unknown-guards";
+
 export type CloudflarePagesDomainStatus =
   | "initializing"
   | "pending"
@@ -27,12 +29,6 @@ interface CloudflareApiEnvelope<T> {
   success: boolean;
   result?: T;
   errors?: CloudflareApiError[];
-}
-
-type UnknownRecord = Record<string, unknown>;
-
-function isRecord(value: unknown): value is UnknownRecord {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function requiredString(value: unknown, field: string): string {

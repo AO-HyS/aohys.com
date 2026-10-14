@@ -14,6 +14,11 @@
       "types": "./src/domain.ts",
       "import": "./src/domain.ts",
       "default": "./src/domain.ts"
+    },
+    "./unknown-guards": {
+      "types": "./src/unknown-guards.ts",
+      "import": "./src/unknown-guards.ts",
+      "default": "./src/unknown-guards.ts"
     }
   },
   "scripts": {

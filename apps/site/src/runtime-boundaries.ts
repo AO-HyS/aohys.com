@@ -2,15 +2,12 @@ import {
   SELECTED_CONVERSION_EVENTS,
   type AnalyticsBootstrapPayload,
 } from "./analytics.js";
+import { isRecord } from "@aohys/core/unknown-guards";
 
 type JsonRecord = Record<string, unknown>;
 const selectedConversionEventNames = new Set<string>(
   SELECTED_CONVERSION_EVENTS,
 );
-
-export function isJsonRecord(value: unknown): value is JsonRecord {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 function hasStringFields(
   value: JsonRecord,
@@ -23,7 +20,7 @@ function hasPrimitiveProperties(
   value: unknown,
 ): value is Record<string, string | number | boolean> {
   return (
-    isJsonRecord(value) &&
+    isRecord(value) &&
     Object.values(value).every(
       (property) =>
         typeof property === "string" ||
@@ -35,7 +32,7 @@ function hasPrimitiveProperties(
 
 function hasValidAnalyticsConfig(value: unknown): boolean {
   if (
-    !isJsonRecord(value) ||
+    !isRecord(value) ||
     !hasStringFields(value, [
       "key",
       "host",
@@ -73,7 +70,7 @@ function hasValidAnalyticsConfig(value: unknown): boolean {
     value.capture_exceptions === false &&
     value.disable_session_recording === true &&
     value.respect_dnt === true &&
-    isJsonRecord(performance) &&
+    isRecord(performance) &&
     performance.web_vitals === true &&
     Array.isArray(performance.web_vitals_allowed_metrics) &&
     performance.web_vitals_allowed_metrics.join(",") === "LCP,INP,CLS"
@@ -97,8 +94,8 @@ function assertAnalyticsBootstrapPayload(
   value: unknown,
 ): asserts value is AnalyticsBootstrapPayload {
   if (
-    !isJsonRecord(value) ||
-    !isJsonRecord(value.context) ||
+    !isRecord(value) ||
+    !isRecord(value.context) ||
     !hasStringFields(value.context, [
       "contentId",
       "locale",
@@ -106,7 +103,7 @@ function assertAnalyticsBootstrapPayload(
       "canonicalUrl",
       "environment",
     ]) ||
-    !isJsonRecord(value.pageview) ||
+    !isRecord(value.pageview) ||
     value.pageview.name !== "$pageview" ||
     !hasPrimitiveProperties(value.pageview.properties) ||
     !Array.isArray(value.selectedConversionEvents) ||
@@ -128,24 +125,22 @@ export function parseAnalyticsEventDetail(value: unknown):
       properties?: Record<string, unknown>;
     }
   | undefined {
-  if (!isJsonRecord(value)) return undefined;
+  if (!isRecord(value)) return undefined;
   return {
     ...(typeof value.event === "string" ? { event: value.event } : {}),
-    ...(isJsonRecord(value.properties) ? { properties: value.properties } : {}),
+    ...(isRecord(value.properties) ? { properties: value.properties } : {}),
   };
 }
 
 export function parseCspReportPayload(value: unknown): Record<string, unknown> {
-  if (!isJsonRecord(value)) return {};
+  if (!isRecord(value)) return {};
   const nested = value["csp-report"];
-  if (nested !== undefined && !isJsonRecord(nested)) return {};
+  if (nested !== undefined && !isRecord(nested)) return {};
   return value;
 }
 
 export function parseBetterAuthRedirect(value: unknown): string | null {
-  return isJsonRecord(value)
-    ? parseBetterAuthRedirectLocation(value.url)
-    : null;
+  return isRecord(value) ? parseBetterAuthRedirectLocation(value.url) : null;
 }
 
 export function parseBetterAuthRedirectLocation(value: unknown): string | null {
@@ -166,8 +161,8 @@ export function parseBetterAuthSession(
   value: unknown,
 ): { user: { email: string } } | null {
   if (
-    !isJsonRecord(value) ||
-    !isJsonRecord(value.user) ||
+    !isRecord(value) ||
+    !isRecord(value.user) ||
     typeof value.user.email !== "string" ||
     !value.user.email.trim()
   ) {

@@ -1,4 +1,5 @@
 import { type ReleaseEnvironment } from "@aohys/core/domain";
+import { isRecord } from "@aohys/core/unknown-guards";
 
 export interface GitHubPublicationDispatch {
   targetEnvironment: ReleaseEnvironment;
@@ -144,10 +145,6 @@ function parseRunDetails(value: unknown):
     return undefined;
   }
   return { runId, runUrl };
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function permanentFailure(code: string, message: string) {

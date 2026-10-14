@@ -1,4 +1,5 @@
 import type { ResumePageContent } from "./index.js";
+import { isRecord } from "@aohys/core/unknown-guards";
 
 // Single resume content contract shared by the Convex mutation (trust
 // boundary), the dashboard editor and the publication build script.
@@ -35,10 +36,6 @@ const RESUME_STRING_FIELDS = [
   "educationTitle",
   "languagesTitle",
 ] as const;
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 function hasStringFields(
   value: unknown,
