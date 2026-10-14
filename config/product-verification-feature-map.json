@@ -52,7 +52,8 @@
       "status": "draft",
       "sourceGlobs": [
         "apps/site/src/pages/index.astro",
-        "apps/site/src/components/horizonte"
+        "apps/site/src/components/horizonte",
+        "apps/site/src/pages/[...path].astro"
       ]
     },
     {
@@ -116,7 +117,9 @@
       "status": "draft",
       "sourceGlobs": [
         "apps/dashboard/src/app/router.tsx",
-        "apps/dashboard/src/runtime-config.ts"
+        "apps/dashboard/src/runtime-config.ts",
+        "apps/dashboard/src/main.tsx",
+        "functions/dashboard/[[path]].ts"
       ]
     },
     {
@@ -149,7 +152,8 @@
       "status": "draft",
       "sourceGlobs": [
         "apps/dashboard/src/app/dashboard-shell.tsx",
-        "apps/dashboard/src/navigation.ts"
+        "apps/dashboard/src/navigation.ts",
+        "apps/dashboard/src/main.tsx"
       ]
     },
     {
@@ -179,7 +183,10 @@
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-leads/",
       "sideEffectMode": "none",
       "status": "draft",
-      "sourceGlobs": ["apps/dashboard/src/features/leads"]
+      "sourceGlobs": [
+        "apps/dashboard/src/features/leads",
+        "apps/dashboard/src/main.tsx"
+      ]
     },
     {
       "id": "dashboard-resume-save",
@@ -219,7 +226,8 @@
         "apps/backend/convex/content.ts",
         "apps/backend/convex/lib/validators.ts",
         "apps/backend/convex/auth.ts",
-        "apps/backend/convex/model/content/shared.ts"
+        "apps/backend/convex/model/content/shared.ts",
+        "apps/dashboard/src/main.tsx"
       ]
     },
     {
@@ -257,7 +265,8 @@
         "apps/backend/convex/content.ts",
         "apps/backend/convex/lib/validators.ts",
         "apps/backend/convex/auth.ts",
-        "apps/backend/src/project-identity.ts"
+        "apps/backend/src/project-identity.ts",
+        "apps/dashboard/src/main.tsx"
       ]
     },
     {
@@ -295,7 +304,8 @@
         "apps/backend/convex/model/content/settings.ts",
         "apps/backend/convex/content.ts",
         "apps/backend/convex/lib/validators.ts",
-        "apps/backend/convex/auth.ts"
+        "apps/backend/convex/auth.ts",
+        "apps/dashboard/src/main.tsx"
       ]
     },
     {
@@ -331,7 +341,8 @@
         "apps/site/src/dashboard-access-states.ts",
         "apps/backend/convex/auth.ts",
         "apps/backend/convex/content.ts",
-        "functions/dashboard/[[path]].ts"
+        "functions/dashboard/[[path]].ts",
+        "functions/api/auth/[[path]].ts"
       ],
       "environments": ["preview"]
     },
@@ -372,7 +383,8 @@
         "apps/backend/src/contact-abuse.ts",
         "apps/backend/src/lead-intake.ts",
         "apps/backend/convex/leads.ts",
-        "apps/backend/src/provider-responses.ts"
+        "apps/backend/src/provider-responses.ts",
+        "apps/site/src/pages/[...path].astro"
       ]
     },
     {
@@ -422,7 +434,13 @@
         "apps/backend/convex/model/content/shared.ts",
         "apps/backend/src/publication-contract.ts",
         "apps/dashboard/src/features/projects/projects-workflow.ts",
-        "apps/dashboard/src/features/resume/resume-screen.tsx"
+        "apps/dashboard/src/features/resume/resume-screen.tsx",
+        "apps/dashboard/src/main.tsx",
+        "apps/dashboard/src/features/projects/projects-screen.tsx",
+        "scripts/apply-dashboard-published-content.ts",
+        "scripts/smoke-release-url.ts",
+        "scripts/record-publication-outcome.ts",
+        "scripts/quality/release-plan.mjs"
       ],
       "environments": ["preview"]
     }
