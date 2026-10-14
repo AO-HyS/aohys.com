@@ -99,6 +99,23 @@ export const VARIABLE_CLASSIFICATIONS = [
 ] as const;
 export type VariableClassification = (typeof VARIABLE_CLASSIFICATIONS)[number];
 
+// Where an Environment Contract variable is delivered.
+export const VARIABLE_DESTINATIONS = [
+  "convex-runtime",
+  "pages-runtime",
+  "release-job",
+] as const;
+export type VariableDestination = (typeof VARIABLE_DESTINATIONS)[number];
+
+// How the release workflow supplies a variable to a release job.
+export const GITHUB_VALUE_SOURCES = [
+  "environment-name",
+  "release-sha",
+  "variable",
+  "secret",
+] as const;
+export type GithubValueSource = (typeof GITHUB_VALUE_SOURCES)[number];
+
 // Site settings are never secrets.
 export const SITE_SETTING_CLASSIFICATIONS = [
   "public-build-value",
