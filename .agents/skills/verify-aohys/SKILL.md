@@ -113,11 +113,18 @@ instead of reusing the fixture. Production remains read-only.
 The canonical map is `config/product-verification-feature-map.json`. It maps
 the real, drivable journeys: the public home, the mapped published case
 study, the dashboard auth gate, the authorized Overview readiness checklist,
-and the authorized Leads observation. Every entry starts `draft` and becomes
-`proven` for a specific candidate only after launch, doctor, Computer Use,
-before/after probes, private evidence, a verification verdict, and cleanup all exist
-for the same run. Use `pnpm verify:product:changed` to select mapped journeys
-whose `sourceGlobs` intersect the candidate diff without driving the UI.
+the authorized Leads observation, the denied-session refusal (an account
+outside the allowlist), and the write journeys: resume save with server
+rejection, project save, settings save, contact submission and publication to
+preview. Write journeys declare a run-scoped cleanup; contact submission and
+publication have provider effects and run only with the owner's authorization
+for that run. Every entry starts `draft` and becomes `proven` for a specific
+candidate only after launch, doctor, Computer Use, before/after probes, private
+evidence, a verification verdict, and cleanup all exist for the same run; a
+proven entry names its private run id and a local or preview environment.
+Every `sourceGlobs` path must exist. Use `pnpm verify:product:changed` to
+select mapped journeys whose `sourceGlobs` intersect the candidate diff
+without driving the UI.
 
 ## Truthfulness
 

@@ -27,7 +27,7 @@
       "launch": "SITE_URL or http://localhost:4321/",
       "identity": "anonymous",
       "identityClass": "anonymous",
-      "behavior": "The public home renders the sunlit product stage with the primary 'Let's talk' / 'Hablemos' ticket and the secondary selected-work link without authentication.",
+      "behavior": "The public Horizonte home renders the primary 'Let's talk' / 'Hablemos' action and the selected-work link without authentication.",
       "routes": ["/", "/es/"],
       "preconditions": [
         "The site app is ready on its authorized local origin.",
@@ -52,7 +52,7 @@
       "status": "draft",
       "sourceGlobs": [
         "apps/site/src/pages/index.astro",
-        "apps/site/src/components/sunlit/SunlitCtaBand.astro"
+        "apps/site/src/components/horizonte/HorizonteHome.astro"
       ]
     },
     {
@@ -180,6 +180,208 @@
       "sideEffectMode": "none",
       "status": "draft",
       "sourceGlobs": ["apps/dashboard/src/features/leads"]
+    },
+    {
+      "id": "dashboard-resume-save",
+      "surface": "dashboard",
+      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard/resume",
+      "identity": "host.dashboard-operator-session",
+      "identityClass": "authorized-session",
+      "behavior": "An authorized operator saves a resume edit, and the server rejects content that breaks the resume contract before writing.",
+      "routes": ["/dashboard/resume"],
+      "preconditions": [
+        "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
+        "Runs on local or preview only; production stays read-only.",
+        "The original resume draft for the selected locale is recorded before the run."
+      ],
+      "steps": [
+        "Open /dashboard/resume with the existing session.",
+        "Change one summary line to a run-scoped marker and save.",
+        "Replace one contact link with javascript:alert(1) and save.",
+        "Restore the original content and save."
+      ],
+      "expectedResults": [
+        "The valid save shows 'Resume saved' and the draft updatedAt advances.",
+        "The invalid save shows 'Resume save failed' with the server message and the draft updatedAt does not change.",
+        "After cleanup the draft content equals the recorded original."
+      ],
+      "beforeProbe": "Record resumeDrafts.updatedAt and contentJson hash for the locale.",
+      "afterProbe": "Read the same draft and compare updatedAt and contentJson hash with the expected values.",
+      "cleanup": "Save the recorded original content for the locale and confirm the hash matches.",
+      "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-resume-save/",
+      "sideEffectMode": "authorized-writes",
+      "status": "draft",
+      "sourceGlobs": [
+        "apps/dashboard/src/features/resume",
+        "apps/backend/convex/model/content/resume.ts",
+        "packages/content-graph/src/resume-content.ts"
+      ]
+    },
+    {
+      "id": "dashboard-project-save",
+      "surface": "dashboard",
+      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard/projects",
+      "identity": "host.dashboard-operator-session",
+      "identityClass": "authorized-session",
+      "behavior": "An authorized operator edits and saves a project draft and sees the saved state.",
+      "routes": ["/dashboard/projects"],
+      "preconditions": [
+        "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
+        "Runs on local or preview only; production stays read-only.",
+        "The original draft for the selected project and locale is recorded before the run."
+      ],
+      "steps": [
+        "Open /dashboard/projects with the existing session.",
+        "Change the summary of one project draft to a run-scoped marker and save.",
+        "Restore the original summary and save."
+      ],
+      "expectedResults": [
+        "The save succeeds and the project draft updatedAt advances.",
+        "After cleanup the summary equals the recorded original."
+      ],
+      "beforeProbe": "Record the project draft summary and updatedAt.",
+      "afterProbe": "Read the same draft and compare summary and updatedAt.",
+      "cleanup": "Save the recorded original summary and confirm it is restored.",
+      "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-project-save/",
+      "sideEffectMode": "authorized-writes",
+      "status": "draft",
+      "sourceGlobs": [
+        "apps/dashboard/src/features/projects",
+        "apps/backend/convex/model/content/projects.ts"
+      ]
+    },
+    {
+      "id": "dashboard-settings-save",
+      "surface": "dashboard",
+      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard/settings",
+      "identity": "host.dashboard-operator-session",
+      "identityClass": "authorized-session",
+      "behavior": "An authorized operator saves the public WhatsApp URL; an invalid URL is rejected without writing.",
+      "routes": ["/dashboard/settings"],
+      "preconditions": [
+        "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
+        "Runs on local or preview only; production stays read-only.",
+        "The current PUBLIC_WHATSAPP_URL setting for the environment is recorded before the run."
+      ],
+      "steps": [
+        "Open /dashboard/settings with the existing session.",
+        "Save an invalid URL such as http://example.com.",
+        "Save a valid direct wa.me URL.",
+        "Restore the recorded value."
+      ],
+      "expectedResults": [
+        "The invalid value is rejected and the setting updatedAt does not change.",
+        "The valid value saves and updatedAt advances.",
+        "After cleanup the value equals the recorded original."
+      ],
+      "beforeProbe": "Record the setting value and updatedAt.",
+      "afterProbe": "Read the setting and compare value and updatedAt.",
+      "cleanup": "Save the recorded original value and confirm it is restored.",
+      "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-settings-save/",
+      "sideEffectMode": "authorized-writes",
+      "status": "draft",
+      "sourceGlobs": [
+        "apps/dashboard/src/features/settings",
+        "apps/backend/convex/model/content/settings.ts"
+      ]
+    },
+    {
+      "id": "dashboard-denied-session",
+      "surface": "dashboard",
+      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard",
+      "identity": "host.dashboard-denied-session",
+      "identityClass": "denied-session",
+      "behavior": "A signed-in account outside the ADMIN_EMAIL allowlist is refused by the Pages guard and by Convex.",
+      "routes": ["/dashboard", "/dashboard/resume"],
+      "preconditions": [
+        "An existing Better Auth browser session for an account outside the allowlist exists; login is never automated.",
+        "Runs on local or preview only; production stays read-only."
+      ],
+      "steps": [
+        "Open /dashboard with the denied session.",
+        "Open /dashboard/resume with the same session.",
+        "Capture the response, screenshots, console and network observations."
+      ],
+      "expectedResults": [
+        "The dashboard shows the not-allowed state and no dashboard data loads.",
+        "Convex dashboard queries reject with 'This account is not allowed to use the dashboard.'",
+        "Nothing is written."
+      ],
+      "beforeProbe": "Record the response status and the visible access state.",
+      "afterProbe": "Repeat the same observation and assert it is unchanged.",
+      "cleanup": "none; sideEffectMode is none",
+      "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-denied-session/",
+      "sideEffectMode": "none",
+      "status": "draft",
+      "sourceGlobs": [
+        "apps/site/src/dashboard-access.ts",
+        "apps/backend/convex/auth.ts"
+      ]
+    },
+    {
+      "id": "site-contact-submit",
+      "surface": "site",
+      "launch": "SITE_URL or http://localhost:4321/contact/",
+      "identity": "anonymous",
+      "identityClass": "anonymous",
+      "behavior": "A visitor submits the contact form; an invalid submission is rejected before any write, and a valid one stores a lead and notifies the owner.",
+      "routes": ["/contact/", "/es/contacto/"],
+      "preconditions": [
+        "Runs on local or preview only; production stays read-only.",
+        "The valid submission creates a lead and sends a notification email, so it runs only with the owner's authorization for that run; the invalid submission has no side effect."
+      ],
+      "steps": [
+        "Submit a shape-valid payload with an unsupported intent.",
+        "With authorization, submit a valid run-scoped lead from /contact/.",
+        "Mark the run-scoped lead closed in the dashboard."
+      ],
+      "expectedResults": [
+        "The invalid submission returns 400 validation_error and no lead is created.",
+        "The valid submission returns ok and the lead appears in Leads with the run-scoped marker."
+      ],
+      "beforeProbe": "Record the newest lead createdAt.",
+      "afterProbe": "Read the newest leads and confirm only the run-scoped lead was added.",
+      "cleanup": "Set the run-scoped lead status to closed in the dashboard.",
+      "evidence": "$HOME/.development-system/private/verification/<run-id>/site-contact-submit/",
+      "sideEffectMode": "authorized-writes",
+      "status": "draft",
+      "sourceGlobs": [
+        "apps/site/src/components/PublicContentPage.astro",
+        "apps/backend/src/contact-workflow.ts",
+        "apps/backend/convex/http.ts"
+      ]
+    },
+    {
+      "id": "dashboard-publish-preview",
+      "surface": "dashboard",
+      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard/projects",
+      "identity": "host.dashboard-operator-session",
+      "identityClass": "authorized-session",
+      "behavior": "An authorized operator publishes saved drafts to preview and follows the durable publication request to a deployed receipt.",
+      "routes": ["/dashboard/projects", "/dashboard/resume"],
+      "preconditions": [
+        "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
+        "Preview only. Publishing dispatches the release workflow and deploys Cloudflare Pages, so every run needs the owner's explicit authorization for that operation."
+      ],
+      "steps": [
+        "Publish from the dashboard with the existing session.",
+        "Follow the publication request state until the release receipt is recorded.",
+        "Open the preview site and confirm the published change."
+      ],
+      "expectedResults": [
+        "The request moves to release-requested and then deployed with a receipt; a failed run ends release-failed or rollback-needed and is never retried from elapsed time.",
+        "The preview site shows the published content."
+      ],
+      "beforeProbe": "Record the latest publication request key and state.",
+      "afterProbe": "Read the same request and its attempts and receipt.",
+      "cleanup": "Republish the previous drafts if the run changed public preview content; publication records are kept.",
+      "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-publish-preview/",
+      "sideEffectMode": "authorized-writes",
+      "status": "draft",
+      "sourceGlobs": [
+        "apps/backend/convex/contentActions.ts",
+        "apps/backend/convex/publication.ts"
+      ]
     }
   ]
 }

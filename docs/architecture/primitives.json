@@ -117,6 +117,37 @@
         "docs/environment-contract.md",
         "docs/adr/0002-environment-contract-source-of-truth.md"
       ]
+    },
+    {
+      "id": "product-verification",
+      "category": "agent-tools",
+      "status": "active",
+      "summary": "Feature map of real, drivable journeys (read and write, allowed and denied) with launch, identity class, probes, cleanup, side-effect mode and private evidence, plus the contract checks and changed-file selection.",
+      "paths": [
+        "config/product-verification-feature-map.json",
+        "scripts/quality/product-verification-lib.mjs",
+        "scripts/quality/check-product-verification.mjs",
+        ".agents/skills/verify-aohys/SKILL.md"
+      ],
+      "symbols": [
+        "scripts/quality/product-verification-lib.mjs#validateFeatureMap",
+        "scripts/quality/product-verification-lib.mjs#selectMappedFeatures"
+      ],
+      "guarantees": [
+        {
+          "statement": "Every journey's sourceGlobs exist, write journeys declare a run-scoped cleanup, and a proven journey names its private run id and a local or preview environment.",
+          "verifiedBy": "pnpm verify:product (check-product-verification.mjs and validateFeatureMap)"
+        },
+        {
+          "statement": "The dashboard write surfaces (resume, projects, settings, publication), contact submission and the denied-session refusal each have a journey.",
+          "verifiedBy": "config/product-verification-feature-map.json"
+        }
+      ],
+      "goals": [
+        "Prove the write and denied journeys on preview once an operator session and a denied account exist."
+      ],
+      "replaces": [],
+      "docs": [".agents/skills/verify-aohys/SKILL.md"]
     }
   ]
 }

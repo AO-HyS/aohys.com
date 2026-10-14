@@ -394,7 +394,7 @@ export function validatePlan(plan) {
       errors.push(`invalid coverage role: ${entry.role}`);
     const identityClass =
       typeof entry.identityClass === "string" ? entry.identityClass.trim() : "";
-    if (!["anonymous", "authorized-session"].includes(identityClass))
+    if (!IDENTITY_CLASSES.includes(identityClass))
       errors.push(`invalid coverage identityClass: ${entry.identityClass}`);
     if (
       app === "dashboard" &&
@@ -494,6 +494,8 @@ export function validatePlan(plan) {
 
 const FEATURE_MAP_SURFACE_IDS = ["site", "dashboard", "backend"];
 const BROWSER_SURFACE_IDS = new Set(["site", "dashboard"]);
+// denied-session: an authenticated account outside the dashboard allowlist.
+const IDENTITY_CLASSES = ["anonymous", "authorized-session", "denied-session"];
 const JOURNEY_KEYS = new Set([
   "id",
   "surface",
@@ -549,12 +551,8 @@ export function validateFeatureMap(map) {
     }
   }
 
-  if (
-    !Array.isArray(map.journeys) ||
-    map.journeys.length < 3 ||
-    map.journeys.length > 5
-  )
-    errors.push("feature map must map between three and five journeys");
+  if (!Array.isArray(map.journeys) || map.journeys.length < 3)
+    errors.push("feature map must map at least three journeys");
 
   const journeyIds = [];
   for (const journey of map.journeys ?? []) {
@@ -601,18 +599,18 @@ export function validateFeatureMap(map) {
       errors.push(`journey ${journey.id} must map a browser surface`);
     if (
       journey.surface === "dashboard" &&
-      !["anonymous", "authorized-session"].includes(journey.identityClass)
+      !IDENTITY_CLASSES.includes(journey.identityClass)
     )
       errors.push(
-        `dashboard journey ${journey.id} requires an authorized or anonymous gate session`,
+        `dashboard journey ${journey.id} requires an anonymous, authorized or denied session`,
       );
     if (
       journey.surface === "dashboard" &&
-      journey.identityClass === "anonymous" &&
-      (journey.sideEffectMode !== "none" || journey.status !== "draft")
+      journey.identityClass !== "authorized-session" &&
+      journey.sideEffectMode !== "none"
     )
       errors.push(
-        `anonymous dashboard journeys must stay observation-only drafts: ${journey.id}`,
+        `anonymous and denied dashboard journeys must stay observation-only: ${journey.id}`,
       );
     if (!["none", "authorized-writes"].includes(journey.sideEffectMode))
       errors.push(`journey ${journey.id} has an invalid sideEffectMode`);
@@ -633,11 +631,11 @@ export function validateFeatureMap(map) {
     }
     if (
       journey.sideEffectMode === "authorized-writes" &&
-      journey.surface === "dashboard" &&
-      journey.status !== "proven"
+      (typeof journey.cleanup !== "string" ||
+        /^none\b/u.test(journey.cleanup.trim()))
     )
       errors.push(
-        `write journeys remain draft until an authorized run proves them: ${journey.id}`,
+        `write journey ${journey.id} must declare how its run-scoped writes are cleaned up`,
       );
   }
   if (new Set(journeyIds).size !== journeyIds.length)

@@ -8,6 +8,12 @@ export type Locale = (typeof LOCALES)[number];
 export const ENVIRONMENTS = ["local", "preview", "production"] as const;
 export type Environment = (typeof ENVIRONMENTS)[number];
 
+// Environments where verification may write; production stays read-only.
+export const VERIFICATION_ENVIRONMENTS = [
+  "local",
+  "preview",
+] as const satisfies readonly Environment[];
+
 export const RELEASE_ENVIRONMENTS = ["preview", "production"] as const;
 export type ReleaseEnvironment = (typeof RELEASE_ENVIRONMENTS)[number];
 

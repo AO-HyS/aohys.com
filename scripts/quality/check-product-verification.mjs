@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { VERIFICATION_ENVIRONMENTS } from "@aohys/core/domain";
 
 const ROOT = process.cwd();
 const failures = [];
@@ -86,29 +87,35 @@ if (!fs.existsSync(featureMapPath)) {
     if (/playwright|cypress|agent-browser/i.test(serialized))
       fail("feature map must never activate a browser harness");
     for (const journey of featureMap.journeys ?? []) {
-      if (journey.surface === "dashboard") {
+      if (
+        journey.surface === "dashboard" &&
+        journey.identityClass === "anonymous" &&
+        (journey.id !== "dashboard-auth-gate" ||
+          journey.sideEffectMode !== "none")
+      )
+        fail(
+          `journey ${journey.id} must be the observation-only auth-gate journey`,
+        );
+      if (journey.status === "draft") {
         if (
-          !["authorized-session", "anonymous"].includes(journey.identityClass)
-        )
-          fail(`journey ${journey.id} must require an authorized session`);
-        if (
-          journey.identityClass === "anonymous" &&
-          (journey.id !== "dashboard-auth-gate" ||
-            journey.sideEffectMode !== "none" ||
-            journey.status !== "draft")
+          journey.proofRunId ||
+          journey.proofEnvironment ||
+          journey.proofRoute
         )
           fail(
-            `journey ${journey.id} must be the observation-only auth-gate draft`,
+            `journey ${journey.id} cannot claim a proof run before evidence exists`,
+          );
+      } else if (journey.status === "proven") {
+        if (!/^[a-z0-9][a-z0-9._-]{2,79}$/u.test(journey.proofRunId ?? ""))
+          fail(`proven journey ${journey.id} needs a private evidence run id`);
+        if (!VERIFICATION_ENVIRONMENTS.includes(journey.proofEnvironment))
+          fail(
+            `proven journey ${journey.id} must be proven on local or preview`,
           );
       }
-      if (journey.status !== "draft")
-        fail(
-          `journey ${journey.id} must stay draft until a real run proves it`,
-        );
-      if (journey.proofRunId || journey.proofEnvironment || journey.proofRoute)
-        fail(
-          `journey ${journey.id} cannot claim a proof run before evidence exists`,
-        );
+      for (const glob of journey.sourceGlobs ?? [])
+        if (!fs.existsSync(path.join(ROOT, glob)))
+          fail(`journey ${journey.id} maps a missing source path: ${glob}`);
     }
   }
 }
