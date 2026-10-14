@@ -311,9 +311,7 @@ export const recordReceipt = internalMutation({
     runUrl: v.string(),
     sha: v.string(),
     smokePassed: v.literal(true),
-    // Optional while deployed workflow runs predate it; the event is always
-    // recorded with the deployment read on the server.
-    operator: v.optional(operatorInputValidator),
+    operator: operatorInputValidator,
   },
   returns: v.object({
     requestKey: v.string(),
@@ -321,6 +319,7 @@ export const recordReceipt = internalMutation({
     duplicate: v.boolean(),
   }),
   handler: async (ctx, args) => {
+    requireAuthorizationRef(args.operator);
     validateReceiptStrings(args);
     validateTargetGitRef(args.targetEnvironment, args.gitRef);
     const request = await ctx.db
@@ -439,9 +438,7 @@ export const reconcileWorkflowOutcome = internalMutation({
     runUrl: v.string(),
     releaseSha: v.string(),
     outcome: publicationWorkflowOutcomeValidator,
-    // Optional while deployed workflow runs predate it; the event is always
-    // recorded with the deployment read on the server.
-    operator: v.optional(operatorInputValidator),
+    operator: operatorInputValidator,
   },
   returns: v.object({
     requestKey: v.string(),
@@ -449,6 +446,7 @@ export const reconcileWorkflowOutcome = internalMutation({
     duplicate: v.boolean(),
   }),
   handler: async (ctx, args) => {
+    requireAuthorizationRef(args.operator);
     validateReceiptStrings({ ...args, sha: args.releaseSha });
     validateTargetGitRef(args.targetEnvironment, args.gitRef);
     const request = await ctx.db
@@ -619,6 +617,13 @@ function validateReceiptStrings(args: {
   if (!/^[a-f0-9]{40,64}$/i.test(args.sha)) {
     throw new Error("Publication release SHA is invalid.");
   }
+}
+
+// A writing operator transition names the authorization behind it (the owner's
+// approval, or the release run that produced the evidence).
+function requireAuthorizationRef(operator: { authorizationRef?: string }) {
+  if (!operator.authorizationRef?.trim())
+    throw new Error("This transition requires an authorization reference.");
 }
 
 // Binds an operator transition to its target before any write: the attempt

@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getFunctionName, type FunctionReference } from "convex/server";
+import { parse as parseDotenv } from "dotenv";
 import { type OperatorCredential } from "@aohys/core/domain";
 
 const BACKEND_DIRECTORY = path.resolve(
@@ -10,32 +11,23 @@ const BACKEND_DIRECTORY = path.resolve(
   "../apps/backend",
 );
 
-// The value one dotenv file gives a variable: `NAME=value` or
-// `export NAME=value`, optionally quoted; empty values count as unset.
-function dotenvValue(filePath: string, name: string): string | undefined {
-  if (!existsSync(filePath)) return undefined;
-  let value: string | undefined;
-  for (const line of readFileSync(filePath, "utf8").split(/\r?\n/u)) {
-    const match =
-      /^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/u.exec(line);
-    if (!match || match[1] !== name) continue;
-    let raw = (match[2] ?? "").trim();
-    const quoted = /^(["'`])(.*)\1$/u.exec(raw);
-    raw = quoted ? (quoted[2] ?? "") : raw.replace(/\s+#.*$/u, "").trim();
-    value = raw;
-  }
-  return value?.trim() ? value.trim() : undefined;
+function dotenvFile(filePath: string): Record<string, string> {
+  return existsSync(filePath) ? parseDotenv(readFileSync(filePath)) : {};
 }
 
-// What the Convex CLI resolves for a variable: the process environment wins,
-// then apps/backend/.env.local, then .env (dotenv never overrides).
+// What the Convex CLI resolves for a variable. dotenv never overrides a key
+// that is already present, so the first source that has the key wins, even
+// with an empty value: the process environment, then apps/backend/.env.local,
+// then .env. Empty values count as unset.
 function convexCliValue(name: string): string | undefined {
-  const fromProcess = process.env[name]?.trim();
-  if (fromProcess) return fromProcess;
-  return (
-    dotenvValue(path.join(BACKEND_DIRECTORY, ".env.local"), name) ??
-    dotenvValue(path.join(BACKEND_DIRECTORY, ".env"), name)
-  );
+  const sources = [
+    process.env,
+    dotenvFile(path.join(BACKEND_DIRECTORY, ".env.local")),
+    dotenvFile(path.join(BACKEND_DIRECTORY, ".env")),
+  ];
+  const source = sources.find((values) => Object.hasOwn(values, name));
+  const value = source?.[name]?.trim();
+  return value ? value : undefined;
 }
 
 // The credential the Convex CLI will use; a deploy key wins over a deployment

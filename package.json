@@ -71,6 +71,7 @@
     "@convex-dev/eslint-plugin": "^5.0.0",
     "@types/node": "^26.0.1",
     "convex": "^1.43.0",
+    "dotenv": "^17.4.2",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.2",
     "oxlint": "^1.87.0",
