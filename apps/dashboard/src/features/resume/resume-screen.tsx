@@ -1,4 +1,6 @@
 import { useMemo, useReducer, useState } from "react";
+import { parseResumePageContent } from "@aohys/content-graph/resume-content";
+import { ConvexError } from "convex/values";
 import {
   LoaderCircleIcon,
   PlusIcon,
@@ -73,7 +75,6 @@ import type {
   ResumeSkillGroup,
   ResumeContent,
 } from "./resume-types";
-import { parseDashboardResumeContent } from "./resume-boundary";
 import { useEditorListKeys } from "./use-editor-list-keys";
 import { publicationLabel } from "@/lib/publication-state";
 
@@ -104,7 +105,7 @@ export function ResumeScreen() {
 
     if (draft) {
       return (
-        parseDashboardResumeContent(draft.contentJson) ??
+        parseResumePageContent(draft.contentJson) ??
         payload.resumeContent[selectedLocale]
       );
     }
@@ -225,9 +226,11 @@ function ResumeWorkspace({
       toast.error("Resume save failed", {
         id: toastId,
         description:
-          saveError instanceof Error
-            ? saveError.message
-            : "Resume draft could not be saved.",
+          saveError instanceof ConvexError && typeof saveError.data === "string"
+            ? saveError.data
+            : saveError instanceof Error
+              ? saveError.message
+              : "Resume draft could not be saved.",
       });
     } finally {
       setIsSaving(false);

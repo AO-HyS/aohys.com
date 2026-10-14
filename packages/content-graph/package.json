@@ -14,6 +14,11 @@
       "types": "./src/static-case-study-routes.ts",
       "import": "./src/static-case-study-routes.ts",
       "default": "./src/static-case-study-routes.ts"
+    },
+    "./resume-content": {
+      "types": "./src/resume-content.ts",
+      "import": "./src/resume-content.ts",
+      "default": "./src/resume-content.ts"
     }
   },
   "scripts": {

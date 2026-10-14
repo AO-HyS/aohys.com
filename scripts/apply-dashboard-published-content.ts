@@ -13,6 +13,10 @@ import {
   getSharedI18n,
 } from "../packages/content-graph/src/i18n.js";
 import { assertPublicClaimsSafe } from "../packages/content-graph/src/public-claim-policy.js";
+import {
+  isResumePageContent,
+  RESUME_CONTENT_MAX_LENGTH,
+} from "../packages/content-graph/src/resume-content.js";
 import { hasConvexDeploymentAccess, runConvexFunction } from "./convex-run.js";
 
 type Locale = "en" | "es";
@@ -208,12 +212,6 @@ function hasStringFields(
   );
 }
 
-function isStringArray(value: unknown): value is string[] {
-  return (
-    Array.isArray(value) && value.every((item) => typeof item === "string")
-  );
-}
-
 function isArrayOf<T>(
   value: unknown,
   predicate: (item: unknown) => item is T,
@@ -345,16 +343,6 @@ const DANGEROUS_OBJECT_KEYS = new Set([
   "constructor",
   "prototype",
 ]);
-const RESUME_HTTPS_HOSTS = new Set([
-  "aohys.com",
-  "www.linkedin.com",
-  "github.com",
-]);
-const RESUME_EXPLICIT_LINKS = new Set([
-  "mailto:alejandro.ortiz@aohys.com",
-  "tel:+522299020825",
-]);
-
 function isSafeJsonValue(value: unknown): boolean {
   if (value === null || ["string", "number", "boolean"].includes(typeof value))
     return true;
@@ -404,32 +392,6 @@ function isSafeInternalHref(href: string): boolean {
   }
 }
 
-function isSafeResumeLinkHref(href: string): boolean {
-  if (RESUME_EXPLICIT_LINKS.has(href) || isSafeInternalHref(href)) return true;
-  try {
-    const parsed = new URL(href);
-    return (
-      hasSafeDecodedPath(href) &&
-      parsed.protocol === "https:" &&
-      !parsed.username &&
-      !parsed.password &&
-      !parsed.port &&
-      RESUME_HTTPS_HOSTS.has(parsed.hostname.toLowerCase()) &&
-      hasSafeDecodedPath(parsed.pathname)
-    );
-  } catch {
-    return false;
-  }
-}
-
-function isSafeResumePdfHref(href: string): boolean {
-  return (
-    isSafeInternalHref(href) &&
-    href.startsWith("/downloads/") &&
-    href.endsWith(".pdf")
-  );
-}
-
 function isSafePublicHttpsHref(href: string): boolean {
   if (isSafeInternalHref(href)) return true;
   try {
@@ -452,63 +414,6 @@ function isSafePublicHttpsHref(href: string): boolean {
   }
 }
 
-function isResumeContentValue(
-  value: unknown,
-): value is Record<string, unknown> {
-  const stringFields = [
-    "name",
-    "role",
-    "location",
-    "intro",
-    "contextTitle",
-    "summaryTitle",
-    "highlightsTitle",
-    "projectsTitle",
-    "experienceTitle",
-    "skillsTitle",
-    "educationTitle",
-    "languagesTitle",
-  ];
-  const isLink = (item: unknown) =>
-    hasStringFields(item, ["label", "href", "text"]) &&
-    typeof item.href === "string" &&
-    isSafeResumeLinkHref(item.href);
-  return (
-    hasStringFields(value, stringFields) &&
-    hasStringFields(value.pdf, ["label", "href", "fileName", "description"]) &&
-    typeof value.pdf.href === "string" &&
-    isSafeResumePdfHref(value.pdf.href) &&
-    hasStringFields(value.proof, ["label", "title", "body"]) &&
-    isArrayOf(value.contactLinks, isLink) &&
-    isArrayOf(value.contextLinks, isLink) &&
-    isStringArray(value.summary) &&
-    isArrayOf(value.highlights, (item) =>
-      hasStringFields(item, ["label", "text"]),
-    ) &&
-    isArrayOf(
-      value.projects,
-      (item) =>
-        hasStringFields(item, ["title", "summary"]) &&
-        isStringArray(item.bullets),
-    ) &&
-    isArrayOf(
-      value.experience,
-      (item) =>
-        hasStringFields(item, ["role", "company", "period"]) &&
-        isStringArray(item.bullets),
-    ) &&
-    isArrayOf(
-      value.skills,
-      (item) => hasStringFields(item, ["label"]) && isStringArray(item.items),
-    ) &&
-    isArrayOf(value.education, (item) =>
-      hasStringFields(item, ["degree", "institution", "period"]),
-    ) &&
-    isStringArray(value.languages) &&
-    isSafeJsonValue(value)
-  );
-}
-
 function isLocalizedEntry(value: unknown): value is LocalizedEntry {
   if (
     !hasStringFields(value, ["path", "title", "summary", "seoDescription"]) ||
@@ -526,7 +431,7 @@ function isLocalizedEntry(value: unknown): value is LocalizedEntry {
     return false;
   if (
     value.resumeContent !== undefined &&
-    !isResumeContentValue(value.resumeContent)
+    !isResumePageContent(value.resumeContent)
   )
     return false;
   if (value.caseStudyContent === undefined) return true;
@@ -606,13 +511,18 @@ export function parseLocaleDictionary(
 export function parseResumeContent(
   serialized: string,
 ): Record<string, unknown> {
+  if (serialized.length > RESUME_CONTENT_MAX_LENGTH) {
+    throw new Error(
+      `Published resume content exceeds ${RESUME_CONTENT_MAX_LENGTH} characters.`,
+    );
+  }
   let parsed: unknown;
   try {
     parsed = JSON.parse(serialized);
   } catch {
     throw new Error("Published resume content must contain valid JSON.");
   }
-  if (!isResumeContentValue(parsed)) {
+  if (!isResumePageContent(parsed)) {
     throw new Error(
       "Published resume content must match the resume JSON object contract.",
     );

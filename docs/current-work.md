@@ -1,10 +1,22 @@
-# Current work — shared tooling adoption cleanup
+# Current work — primitives gardener (fix mode)
 
-Canonical root: aohys. Branch: fix/shared-tooling-adoption-cleanup.
-Source cleanup replaces repo-local shared tool copies and generic CLI routing
-with the global installation. Product CI pin, Impeccable, verify-aohys, MCP,
-local rules, quality and release protections remain. Devin blueprint provisions
-the published shared package; live Devin execution has not been observed.
-Pending: focused validation, independent review and feature PR to develop.
-No provider data, secrets, paid infrastructure or product deployment changed.
-Private evidence: shared-tooling-cleanup-20261006 under the shared private reports.
+Canonical root: aohys. Base: develop. Branch per PR; current:
+fix/resume-server-validation.
+
+Goal: one source per primitive, recorded in
+`docs/architecture/primitives.json` and valid under
+`development-system check-primitives`. Accepted plan and inventory live in the
+shared private research `primitives-20261013` (inventory read at cdf47b0).
+
+Order: resume server validation (trust boundary) → domain vocabulary →
+Environment Contract destinations → `admin*` builders and one allowlist, then
+`auditEvents` → release and publication CLI verbs, retire `deploy:*` chains and
+`publishContentFromDashboard`, write journeys in the feature map → mandatory
+dashboard kit and one token source.
+
+Limits: publication keeps request keys, receipts and reconciliation (no generic
+retry). Deleting Cloudflare objects and destructive migrations are out of scope.
+Main and production wait for the owner.
+
+Private evidence: `aohys-primitives-20261013` under the shared private
+verification directory.
