@@ -168,7 +168,10 @@
         "tsconfig.base.json",
         "apps/backend/convex/tsconfig.json",
         "pnpm-lock.yaml",
-        "pnpm-workspace.yaml"
+        "pnpm-workspace.yaml",
+        "apps/backend/convex/http.ts",
+        "apps/site/src/auth-proxy.ts",
+        "functions/api/auth/[[path]].ts"
       ],
       "environments": ["preview"]
     },
@@ -229,7 +232,10 @@
         "tsconfig.base.json",
         "apps/backend/convex/tsconfig.json",
         "pnpm-lock.yaml",
-        "pnpm-workspace.yaml"
+        "pnpm-workspace.yaml",
+        "apps/backend/convex/http.ts",
+        "apps/site/src/auth-proxy.ts",
+        "functions/api/auth/[[path]].ts"
       ],
       "environments": ["preview"]
     },
@@ -285,7 +291,10 @@
         "tsconfig.base.json",
         "apps/backend/convex/tsconfig.json",
         "pnpm-lock.yaml",
-        "pnpm-workspace.yaml"
+        "pnpm-workspace.yaml",
+        "apps/backend/convex/http.ts",
+        "apps/site/src/auth-proxy.ts",
+        "functions/api/auth/[[path]].ts"
       ],
       "environments": ["preview"]
     },
@@ -350,7 +359,10 @@
         "tsconfig.base.json",
         "apps/backend/convex/tsconfig.json",
         "pnpm-lock.yaml",
-        "pnpm-workspace.yaml"
+        "pnpm-workspace.yaml",
+        "apps/backend/convex/http.ts",
+        "apps/site/src/auth-proxy.ts",
+        "functions/api/auth/[[path]].ts"
       ],
       "environments": ["preview"]
     },
@@ -415,7 +427,10 @@
         "tsconfig.base.json",
         "apps/backend/convex/tsconfig.json",
         "pnpm-lock.yaml",
-        "pnpm-workspace.yaml"
+        "pnpm-workspace.yaml",
+        "apps/backend/convex/http.ts",
+        "apps/site/src/auth-proxy.ts",
+        "functions/api/auth/[[path]].ts"
       ],
       "environments": ["preview"]
     },
@@ -477,7 +492,10 @@
         "tsconfig.base.json",
         "apps/backend/convex/tsconfig.json",
         "pnpm-lock.yaml",
-        "pnpm-workspace.yaml"
+        "pnpm-workspace.yaml",
+        "apps/backend/convex/http.ts",
+        "apps/site/src/auth-proxy.ts",
+        "functions/api/auth/[[path]].ts"
       ],
       "environments": ["preview"]
     },
@@ -528,7 +546,10 @@
         "tsconfig.base.json",
         "apps/backend/convex/tsconfig.json",
         "pnpm-lock.yaml",
-        "pnpm-workspace.yaml"
+        "pnpm-workspace.yaml",
+        "apps/backend/convex/http.ts",
+        "apps/site/src/auth-proxy.ts",
+        "functions/api/auth/[[path]].ts"
       ]
     },
     {
@@ -686,7 +707,10 @@
         "apps/backend/package.json",
         "packages/core/package.json",
         "packages/environment/package.json",
-        "packages/release-train/package.json"
+        "packages/release-train/package.json",
+        "apps/backend/convex/http.ts",
+        "apps/site/src/auth-proxy.ts",
+        "functions/api/auth/[[path]].ts"
       ]
     }
   ]
