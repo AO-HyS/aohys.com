@@ -1,8 +1,7 @@
+import { adminAction } from "./lib/functions.js";
 import { v, type Infer, type ObjectType } from "convex/values";
 import type { FunctionReference } from "convex/server";
-import { action } from "./_generated/server.js";
 import { internal } from "./_generated/api.js";
-import { requireAdmin } from "./auth.js";
 import {
   createCloudflareImagesDirectUpload,
   type PublishWorkflowResult,
@@ -46,7 +45,7 @@ function getPublishEnvironment(): ReleaseEnvironment {
   );
 }
 
-export const createMediaUploadUrl = action({
+export const createMediaUploadUrl = adminAction({
   args: {
     storageKey: v.string(),
     altText: v.string(),
@@ -61,8 +60,6 @@ export const createMediaUploadUrl = action({
     uploadURL: v.string(),
   }),
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
-
     return createCloudflareImagesDirectUpload(args, {
       ...(process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
         ? { accountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH }
@@ -77,7 +74,7 @@ export const createMediaUploadUrl = action({
   },
 });
 
-export const publishContent = action({
+export const publishContent = adminAction({
   args: {
     scope: publicationScopeValidator,
     contentId: v.optional(v.string()),
@@ -99,7 +96,6 @@ export const publishContent = action({
       workflow: PublishWorkflowResult;
     }
   > => {
-    const user = await requireAdmin(ctx);
     const environment = getPublishEnvironment();
     const providerConfigured = Boolean(
       process.env.PUBLISH_GITHUB_TOKEN?.trim(),
@@ -117,7 +113,7 @@ export const publishContent = action({
       {
         ...args,
         targetEnvironment: environment,
-        requestedBy: String(user._id),
+        requestedBy: String(ctx.admin._id),
         providerConfigured,
       },
     );

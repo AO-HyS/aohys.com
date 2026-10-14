@@ -577,7 +577,7 @@ export function validateEnvironmentContract(
     );
   }
 
-  const betterAuthTrustedOrigins = parseCommaSeparatedOrigins(
+  const betterAuthTrustedOrigins = parseTrustedOrigins(
     values.BETTER_AUTH_TRUSTED_ORIGINS,
   );
   const betterAuthUrl = values.BETTER_AUTH_URL;
@@ -597,7 +597,7 @@ export function validateEnvironmentContract(
     errors.push("BETTER_AUTH_TRUSTED_ORIGINS must include PUBLIC_SITE_URL.");
   }
 
-  const adminEmails = parseCommaSeparatedValues(values.ADMIN_EMAIL);
+  const adminEmails = parseAdminAllowlist(values.ADMIN_EMAIL);
   if (adminEmails.some((email) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
     errors.push("ADMIN_EMAIL must contain valid email addresses.");
   }
@@ -641,7 +641,13 @@ function hasExactOrigin(value: string, expectedOrigin: string): boolean {
   }
 }
 
-function parseCommaSeparatedOrigins(value: string | undefined): string[] {
+// ADMIN_EMAIL is a comma-separated allowlist; entries compare
+// case-insensitively.
+export function parseAdminAllowlist(value: string | undefined): string[] {
+  return parseCommaSeparatedValues(value).map((email) => email.toLowerCase());
+}
+
+export function parseTrustedOrigins(value: string | undefined): string[] {
   return parseCommaSeparatedValues(value);
 }
 

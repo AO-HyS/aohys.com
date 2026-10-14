@@ -2,7 +2,10 @@ import {
   renderDashboardSignIn,
   renderDashboardState,
 } from "./dashboard-access-states.js";
-import { validateEnvironmentContract } from "@aohys/environment";
+import {
+  parseAdminAllowlist,
+  validateEnvironmentContract,
+} from "@aohys/environment";
 import { capturePostHogServerEvent } from "./posthog-server.js";
 import {
   PRIVATE_HTML_HEADERS,
@@ -167,7 +170,7 @@ export async function handleDashboardRequest(
     return redirectToSignIn(path);
   }
 
-  const adminEmails = parseAdminEmails(environment.ADMIN_EMAIL);
+  const adminEmails = parseAdminAllowlist(environment.ADMIN_EMAIL);
   const sessionEmail = session.user.email.toLowerCase();
 
   if (!adminEmails.includes(sessionEmail)) {
@@ -431,11 +434,4 @@ function normalizeCallbackPath(path: string | null): string {
   }
 
   return path;
-}
-
-function parseAdminEmails(value: string): string[] {
-  return value
-    .split(",")
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
 }

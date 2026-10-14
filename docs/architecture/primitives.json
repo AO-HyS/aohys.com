@@ -152,6 +152,44 @@
       ],
       "replaces": [],
       "docs": [".agents/skills/verify-aohys/SKILL.md"]
+    },
+    {
+      "id": "admin-functions",
+      "category": "auth",
+      "status": "active",
+      "summary": "The only public Convex builders: adminQuery, adminMutation and adminAction run requireAdmin against the Better Auth session and the single ADMIN_EMAIL allowlist before the handler, and expose the operator as ctx.admin.",
+      "paths": [
+        "apps/backend/convex/lib/functions.ts",
+        "apps/backend/convex/auth.ts",
+        "packages/environment/src/index.ts",
+        "scripts/architecture/public-function-guard.mjs"
+      ],
+      "symbols": [
+        "apps/backend/convex/lib/functions.ts#adminQuery",
+        "apps/backend/convex/lib/functions.ts#adminMutation",
+        "apps/backend/convex/lib/functions.ts#adminAction",
+        "apps/backend/convex/auth.ts#requireAdmin",
+        "packages/environment/src/index.ts#parseAdminAllowlist"
+      ],
+      "guarantees": [
+        {
+          "statement": "No Convex module imports a public builder (query, mutation, action, their Generic forms, or httpAction outside http.ts) except lib/functions.ts, whose builders keep the closed requireAdmin form; every exported value of a Convex module root is an admin or internal registration or a named non-function export.",
+          "verifiedBy": "pnpm architecture:fitness (scripts/architecture/public-function-guard.mjs)"
+        },
+        {
+          "statement": "The public HTTP surface is exactly POST and OPTIONS /contact plus one Better Auth route registration.",
+          "verifiedBy": "pnpm architecture:fitness (scripts/architecture/public-function-guard.mjs)"
+        },
+        {
+          "statement": "ADMIN_EMAIL is parsed only by parseAdminAllowlist, used by the contract validator, the Pages dashboard gate and requireAdmin.",
+          "verifiedBy": "rg finds no other ADMIN_EMAIL parser in apps or packages"
+        }
+      ],
+      "goals": [
+        "Record admin, operator and system writes in auditEvents with the actor resolved by the builders."
+      ],
+      "replaces": [],
+      "docs": ["docs/environment-contract.md"]
     }
   ]
 }
