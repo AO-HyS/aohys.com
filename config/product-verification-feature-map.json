@@ -214,7 +214,8 @@
       "sourceGlobs": [
         "apps/dashboard/src/features/resume",
         "apps/backend/convex/model/content/resume.ts",
-        "packages/content-graph/src/resume-content.ts"
+        "packages/content-graph/src/resume-content.ts",
+        "apps/backend/convex/content.ts"
       ]
     },
     {
@@ -247,7 +248,8 @@
       "status": "draft",
       "sourceGlobs": [
         "apps/dashboard/src/features/projects",
-        "apps/backend/convex/model/content/projects.ts"
+        "apps/backend/convex/model/content/projects.ts",
+        "apps/backend/convex/content.ts"
       ]
     },
     {
@@ -282,20 +284,21 @@
       "status": "draft",
       "sourceGlobs": [
         "apps/dashboard/src/features/settings",
-        "apps/backend/convex/model/content/settings.ts"
+        "apps/backend/convex/model/content/settings.ts",
+        "apps/backend/convex/content.ts"
       ]
     },
     {
       "id": "dashboard-denied-session",
       "surface": "dashboard",
-      "launch": "DASHBOARD_URL or http://127.0.0.1:5180/dashboard",
+      "launch": "DASHBOARD_URL on a versioned *.aohys-com.pages.dev preview origin (the Pages guard does not run on the local Vite server)",
       "identity": "host.dashboard-denied-session",
       "identityClass": "denied-session",
       "behavior": "A signed-in account outside the ADMIN_EMAIL allowlist is refused by the Pages guard and by Convex.",
       "routes": ["/dashboard", "/dashboard/resume"],
       "preconditions": [
         "An existing Better Auth browser session for an account outside the allowlist exists; login is never automated.",
-        "Runs on local or preview only; production stays read-only."
+        "Preview only: the 403 comes from the Cloudflare Pages guard, which the local Vite server does not run."
       ],
       "steps": [
         "Open /dashboard with the denied session and record the HTTP status and page.",
@@ -316,7 +319,8 @@
       "sourceGlobs": [
         "apps/site/src/dashboard-access.ts",
         "apps/site/src/dashboard-access-states.ts",
-        "apps/backend/convex/auth.ts"
+        "apps/backend/convex/auth.ts",
+        "apps/backend/convex/content.ts"
       ]
     },
     {
@@ -388,7 +392,11 @@
         "apps/backend/convex/publication.ts",
         "apps/backend/convex/publicationActions.ts",
         "scripts/record-publication-receipt.ts",
-        ".github/workflows/release-train.yml"
+        ".github/workflows/release-train.yml",
+        "apps/backend/convex/model/publication.ts",
+        "apps/dashboard/src/features/projects/projects-api.ts",
+        "apps/dashboard/src/features/resume/resume-api.ts",
+        "apps/dashboard/src/lib/publication-state.ts"
       ]
     }
   ]

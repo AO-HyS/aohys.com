@@ -514,7 +514,40 @@ const JOURNEY_KEYS = new Set([
   "proofEnvironment",
   "proofRoute",
   "proofCandidateSha",
+  "proofJourneySha256",
 ]);
+const PROOF_KEYS = [
+  "proofRunId",
+  "proofEnvironment",
+  "proofRoute",
+  "proofCandidateSha",
+  "proofJourneySha256",
+];
+
+function canonicalValue(value) {
+  if (Array.isArray(value)) return value.map(canonicalValue);
+  if (value && typeof value === "object")
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((key) => [key, canonicalValue(value[key])]),
+    );
+  return value;
+}
+
+// Hash of the journey contract without its status and proof fields; a proof
+// is valid only for the contract it was collected against.
+export function computeJourneySha256(journey) {
+  const contract = Object.fromEntries(
+    Object.entries(journey).filter(
+      ([key]) => key !== "status" && !PROOF_KEYS.includes(key),
+    ),
+  );
+  return crypto
+    .createHash("sha256")
+    .update(JSON.stringify(canonicalValue(contract)))
+    .digest("hex");
+}
 const EVIDENCE_PREFIX = "$HOME/.development-system/private/verification/";
 
 // A proof holds only while the journey's mapped sources are unchanged since
@@ -651,12 +684,7 @@ export function validateFeatureMap(map, { root } = {}) {
     if (!["draft", "proven"].includes(journey.status))
       errors.push(`journey ${journey.id} has an invalid status`);
     if (journey.status === "proven") {
-      for (const key of [
-        "proofRunId",
-        "proofEnvironment",
-        "proofRoute",
-        "proofCandidateSha",
-      ])
+      for (const key of PROOF_KEYS)
         if (typeof journey[key] !== "string" || !journey[key].trim())
           errors.push(`proven journey ${journey.id} requires ${key}`);
       if (
@@ -665,6 +693,20 @@ export function validateFeatureMap(map, { root } = {}) {
       )
         errors.push(
           `proven journey ${journey.id} needs a private evidence run id`,
+        );
+      if (
+        typeof journey.proofRoute === "string" &&
+        !(journey.routes ?? []).includes(journey.proofRoute.trim())
+      )
+        errors.push(
+          `proven journey ${journey.id} proofRoute must be one of its routes`,
+        );
+      if (
+        typeof journey.proofJourneySha256 === "string" &&
+        journey.proofJourneySha256 !== computeJourneySha256(journey)
+      )
+        errors.push(
+          `proven journey ${journey.id} is stale: its contract changed after the proof`,
         );
       if (
         typeof journey.proofCandidateSha === "string" &&
@@ -690,12 +732,7 @@ export function validateFeatureMap(map, { root } = {}) {
         errors.push(
           `proven journey ${journey.id} must be proven on local or preview`,
         );
-    } else if (
-      journey.proofRunId ||
-      journey.proofEnvironment ||
-      journey.proofRoute ||
-      journey.proofCandidateSha
-    ) {
+    } else if (PROOF_KEYS.some((key) => journey[key])) {
       errors.push(
         `draft journey ${journey.id} cannot claim a proof run before evidence exists`,
       );

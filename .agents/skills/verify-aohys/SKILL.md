@@ -122,9 +122,11 @@ a browser cannot drive (a denied Convex query, an invalid contact payload) are
 host probes in `beforeProbe` and `afterProbe`. Every entry starts `draft` and becomes `proven` for a specific
 candidate only after launch, doctor, Computer Use, before/after probes, private
 evidence, a verification verdict, and cleanup all exist for the same run; a
-proven entry names its private run id, a local or preview environment and its
-`proofCandidateSha`, and `pnpm verify:product` marks it stale as soon as a mapped
-source changes after that commit.
+proven entry names its private run id, a local or preview environment, a
+`proofRoute` among its routes, its `proofCandidateSha` and the
+`proofJourneySha256` of its contract (`computeJourneySha256`), and
+`pnpm verify:product` marks it stale as soon as a mapped source or the journey
+contract changes after the proof.
 Every `sourceGlobs` path must exist. Use `pnpm verify:product:changed` to
 select mapped journeys whose `sourceGlobs` intersect the candidate diff
 without driving the UI.
