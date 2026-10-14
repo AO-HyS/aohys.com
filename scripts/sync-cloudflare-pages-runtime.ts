@@ -1,3 +1,4 @@
+import { CLOUDFLARE_PROJECT_NAME } from "@aohys/core/release-targets";
 import { pathToFileURL } from "node:url";
 import { type ReleaseEnvironment } from "@aohys/core/domain";
 import { getVariableNamesForDestination } from "@aohys/environment";
@@ -224,7 +225,7 @@ async function main(): Promise<void> {
   const accountId = requiredValue(process.env, "CLOUDFLARE_ACCOUNT_ID");
   const apiToken = requiredValue(process.env, "CLOUDFLARE_API_TOKEN");
   const projectName =
-    process.env.CLOUDFLARE_PROJECT_NAME?.trim() || "aohys-com";
+    process.env.CLOUDFLARE_PROJECT_NAME?.trim() || CLOUDFLARE_PROJECT_NAME;
   const values = collectCanonicalRuntimeValues(environment);
   const result = await synchronizeCloudflarePagesRuntime({
     environment,

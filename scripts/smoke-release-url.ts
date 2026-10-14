@@ -1,3 +1,4 @@
+import { CANONICAL_ORIGIN } from "@aohys/core/release-targets";
 import { buildCloudflarePagesDeployPlan } from "@aohys/release-train";
 import {
   RELEASE_ENVIRONMENTS,
@@ -421,10 +422,10 @@ async function assertCanonicalRedirect(sourceUrl: string): Promise<void> {
 
   if (
     ![301, 302, 308].includes(response.status) ||
-    !location?.startsWith("https://aohys.com/")
+    !location?.startsWith(`${CANONICAL_ORIGIN}/`)
   ) {
     throw new Error(
-      `Expected ${sourceUrl} to redirect to https://aohys.com/. Received ${response.status} ${location ?? "without Location header"}.`,
+      `Expected ${sourceUrl} to redirect to ${CANONICAL_ORIGIN}/. Received ${response.status} ${location ?? "without Location header"}.`,
     );
   }
 }

@@ -2,6 +2,11 @@
 
 import process from "node:process";
 import { ENVIRONMENTS } from "@aohys/core/domain";
+import {
+  CLOUDFLARE_PROJECT_NAME,
+  PAGES_DEV_SUFFIX,
+  PRODUCTION_ORIGINS,
+} from "@aohys/core/release-targets";
 
 export const DOCTOR_APPS = {
   site: {
@@ -15,9 +20,6 @@ export const DOCTOR_APPS = {
     path: "/dashboard",
   },
 };
-
-const PAGES_DEV_SUFFIX = ".aohys-com.pages.dev";
-const PRODUCTION_ORIGINS = ["https://aohys.com", "https://www.aohys.com"];
 
 export function resolveDoctorTarget(argv = process.argv.slice(2)) {
   const read = (name, fallback) => {
@@ -49,7 +51,7 @@ export function resolveDoctorTarget(argv = process.argv.slice(2)) {
     if (
       base.protocol !== "https:" ||
       !base.hostname.endsWith(PAGES_DEV_SUFFIX) ||
-      base.hostname === `aohys-com${PAGES_DEV_SUFFIX}`
+      base.hostname === `${CLOUDFLARE_PROJECT_NAME}${PAGES_DEV_SUFFIX}`
     )
       throw new Error(
         `${environment} ${app} Doctor requires a versioned Cloudflare Pages preview origin`,

@@ -19,6 +19,7 @@ import {
   publicationScopeValidator,
 } from "./lib/validators.js";
 import { type ReleaseEnvironment } from "@aohys/core/domain";
+import { PUBLISH_TARGET, RELEASE_TARGETS } from "@aohys/core/release-targets";
 
 const publishWorkflowValidator = v.union(
   v.object({
@@ -140,11 +141,11 @@ export const publishContent = adminAction({
             status: "queued",
             repository:
               process.env.PUBLISH_GITHUB_REPOSITORY?.trim() ||
-              "AO-HyS/aohys.com",
+              PUBLISH_TARGET.repository,
             workflowId:
               process.env.PUBLISH_GITHUB_WORKFLOW_ID?.trim() ||
-              "release-train.yml",
-            ref: environment === "production" ? "main" : "develop",
+              PUBLISH_TARGET.workflowId,
+            ref: RELEASE_TARGETS[environment].branch,
           }
         : {
             status: "not-configured",

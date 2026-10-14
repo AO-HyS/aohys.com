@@ -229,25 +229,36 @@
       "id": "release-cli",
       "category": "infra",
       "status": "active",
-      "summary": "pnpm release <preview|production> [--plan] runs the typed release plan (buildReleasePlan) step by step and stops at the first failure; the release workflow calls it and --plan prints the steps.",
+      "summary": "pnpm release <preview|production> [--plan] runs the typed release plan (buildReleasePlan) step by step and stops at the first failure; release and publication targets (Cloudflare project, repository, workflow, branches, site URLs, ingest host) come from @aohys/core/release-targets.",
       "paths": [
         "scripts/release.ts",
         "packages/release-train/src/release-plan.ts",
-        "packages/release-train/src/deploy-plan.ts"
+        "packages/release-train/src/deploy-plan.ts",
+        "packages/core/src/release-targets.ts"
       ],
       "symbols": [
         "packages/release-train/src/release-plan.ts#buildReleasePlan",
         "packages/release-train/src/release-plan.ts#formatReleaseStep",
-        "packages/release-train/src/deploy-plan.ts#buildCloudflarePagesDeployPlan"
+        "packages/release-train/src/deploy-plan.ts#buildCloudflarePagesDeployPlan",
+        "packages/core/src/release-targets.ts#CLOUDFLARE_PROJECT_NAME",
+        "packages/core/src/release-targets.ts#PUBLISH_TARGET",
+        "packages/core/src/release-targets.ts#RELEASE_TARGETS",
+        "packages/core/src/release-targets.ts#postHogIngestHost",
+        "packages/core/src/release-targets.ts#CANONICAL_ORIGIN",
+        "packages/core/src/release-targets.ts#PRODUCTION_ORIGINS"
       ],
       "guarantees": [
         {
           "statement": "The release workflow deploys preview and production only through pnpm release <environment>; the hand-written deploy:* chains no longer exist.",
           "verifiedBy": ".github/workflows/release-train.yml and package.json scripts (rg finds no deploy:preview or deploy:production)"
+        },
+        {
+          "statement": "The Cloudflare project, the publish repository and workflow, the release branches, site URLs and canonical production origins are named only in @aohys/core/release-targets for release, deploy, environment validation and product verification; the Convex PostHog ingest host derives from PUBLIC_SITE_URL.",
+          "verifiedBy": "rg for aohys-com, AO-HyS/aohys.com and release-train.yml in code finds only release-targets.ts, generated .env.example, the workflow path checks and public repository links in content"
         }
       ],
       "goals": [
-        "Read the Cloudflare project, repository, workflow and ingest host from one release target source (item 5b)."
+        "Site, dashboard and content-graph runtime hostname checks (analytics, CSP, dashboard guard, SITE_URL) read CANONICAL_HOST from release-targets."
       ],
       "replaces": [],
       "docs": ["docs/release-train.md", "packages/release-train/README.md"]

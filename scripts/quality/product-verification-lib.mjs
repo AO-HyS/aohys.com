@@ -3,6 +3,11 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { ENVIRONMENTS, VERIFICATION_ENVIRONMENTS } from "@aohys/core/domain";
+import {
+  CLOUDFLARE_PROJECT_NAME,
+  PAGES_DEV_SUFFIX,
+  PRODUCTION_ORIGINS,
+} from "@aohys/core/release-targets";
 
 export const OBSERVATION_ONLY_ACTIONS = new Set([
   "navigate",
@@ -70,12 +75,7 @@ export const LOCAL_APP_ORIGINS = {
   dashboard: ["http://127.0.0.1:5180"],
 };
 
-export const PRODUCTION_ORIGINS = [
-  "https://aohys.com",
-  "https://www.aohys.com",
-];
-
-const PAGES_DEV_SUFFIX = ".aohys-com.pages.dev";
+export { PRODUCTION_ORIGINS };
 
 const REF_PATTERN =
   /^(?:fixture|host|session|vault)\.[A-Za-z0-9][A-Za-z0-9._-]*$/u;
@@ -162,7 +162,7 @@ function isVersionedPagesOrigin(origin) {
     return (
       url.protocol === "https:" &&
       url.hostname.endsWith(PAGES_DEV_SUFFIX) &&
-      url.hostname !== `aohys-com${PAGES_DEV_SUFFIX}`
+      url.hostname !== `${CLOUDFLARE_PROJECT_NAME}${PAGES_DEV_SUFFIX}`
     );
   } catch {
     return false;

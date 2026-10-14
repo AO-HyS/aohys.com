@@ -1,35 +1,24 @@
 import { type ReleaseEnvironment } from "@aohys/core/domain";
+import {
+  CANONICAL_ORIGIN,
+  CLOUDFLARE_PROJECT_NAME,
+  RELEASE_TARGETS,
+} from "@aohys/core/release-targets";
+
+export { CLOUDFLARE_PROJECT_NAME };
 
 export interface CloudflarePagesDeployPlan {
   environment: ReleaseEnvironment;
   githubEnvironment: ReleaseEnvironment;
   branch: "develop" | "main";
-  projectName: "aohys-com";
+  projectName: typeof CLOUDFLARE_PROJECT_NAME;
   directory: "apps/site/dist";
   command: readonly string[];
-  siteUrl: "https://preview.aohys.com" | "https://aohys.com";
-  canonicalUrl: "https://aohys.com";
+  siteUrl: string;
+  canonicalUrl: string;
 }
 
-export const CLOUDFLARE_PROJECT_NAME = "aohys-com" as const;
 const SITE_DIST_DIRECTORY = "apps/site/dist" as const;
-
-const RELEASE_TARGETS = {
-  preview: {
-    branch: "develop",
-    siteUrl: "https://preview.aohys.com",
-  },
-  production: {
-    branch: "main",
-    siteUrl: "https://aohys.com",
-  },
-} as const satisfies Record<
-  ReleaseEnvironment,
-  {
-    branch: CloudflarePagesDeployPlan["branch"];
-    siteUrl: CloudflarePagesDeployPlan["siteUrl"];
-  }
->;
 
 export function buildCloudflarePagesDeployPlan(
   environment: ReleaseEnvironment,
@@ -53,6 +42,6 @@ export function buildCloudflarePagesDeployPlan(
       target.branch,
     ],
     siteUrl: target.siteUrl,
-    canonicalUrl: "https://aohys.com",
+    canonicalUrl: CANONICAL_ORIGIN,
   };
 }

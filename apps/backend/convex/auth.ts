@@ -1,3 +1,4 @@
+import { PAGES_DEV_SUFFIX } from "@aohys/core/release-targets";
 import { createClient, type GenericCtx } from "@convex-dev/better-auth";
 import { convex, crossDomain } from "@convex-dev/better-auth/plugins";
 import { betterAuth, type BetterAuthOptions } from "better-auth/minimal";
@@ -76,7 +77,7 @@ export function createBetterAuthBaseUrl(
         hostnameFromUrl(siteUrl),
         "localhost",
         "127.0.0.1",
-        "*.aohys-com.pages.dev",
+        `*${PAGES_DEV_SUFFIX}`,
       ].filter(isDefinedString),
     ),
     fallback: authBaseUrl,
