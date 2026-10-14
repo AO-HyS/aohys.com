@@ -528,7 +528,9 @@
         "scripts/extract-cloudflare-pages-deployment-url.ts",
         "apps/site/scripts/build-resume-pdf.py",
         "apps/site/scripts/requirements.txt",
-        "scripts/generate-environment-artifacts.ts"
+        "scripts/generate-environment-artifacts.ts",
+        "scripts/copy-dashboard-assets.mjs",
+        "scripts/sync-site-static-headers.ts"
       ],
       "environments": ["preview"],
       "sharedSourceGlobs": [
@@ -541,7 +543,10 @@
         "apps/dashboard/src/app/route-states.tsx",
         "apps/dashboard/src/navigation.ts",
         "apps/dashboard/src/runtime-config.ts",
-        "package.json"
+        "package.json",
+        "apps/dashboard/package.json",
+        "apps/site/package.json",
+        "packages/content-graph/package.json"
       ]
     }
   ]
