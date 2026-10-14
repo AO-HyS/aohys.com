@@ -47,8 +47,8 @@
       ],
       "guarantees": [
         {
-          "statement": "Every exported validator in convex/lib/validators.ts is literals(<array imported from @aohys/core/domain>), and every inventoried vocabulary field of convex/schema.ts references its validator from ./lib/validators.js (only a Convex v.optional wrapper is unwrapped).",
-          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-derivation, SCHEMA_VOCABULARY_FIELDS in scripts/architecture/domain-vocabulary.mjs); probes with v.string(), a local v.literal and a non-Convex optional wrapper rejected"
+          "statement": "Every exported validator in convex/lib/validators.ts wraps exactly the domain array mapped to it in VALIDATOR_VOCABULARIES (literals(<that array>)), and every inventoried vocabulary field of convex/schema.ts references its validator from ./lib/validators.js (only a Convex v.optional wrapper is unwrapped).",
+          "verifiedBy": "pnpm architecture:fitness (domain-vocabulary-derivation, SCHEMA_VOCABULARY_FIELDS in scripts/architecture/domain-vocabulary.mjs); probes with v.string(), a local v.literal and a non-Convex optional wrapper rejected; probes with a validator wired to the wrong array and an unmapped validator rejected"
         },
         {
           "statement": "convex/schema.ts and convex/lib/validators.ts hold no string v.literal.",

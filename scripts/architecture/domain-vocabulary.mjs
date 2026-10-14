@@ -12,6 +12,31 @@ const CONVEX_VALIDATORS = "apps/backend/convex/lib/validators.ts";
 const CONVEX_SCHEMA = "apps/backend/convex/schema.ts";
 const EXEMPTION = "// domain-vocabulary-ok";
 
+// Each exported Convex validator and the domain array it must wrap.
+const VALIDATOR_VOCABULARIES = {
+  localeValidator: "LOCALES",
+  environmentValidator: "ENVIRONMENTS",
+  releaseEnvironmentValidator: "RELEASE_ENVIRONMENTS",
+  leadIntentValidator: "LEAD_INTENTS",
+  leadStatusValidator: "LEAD_STATUSES",
+  preferredContactPathValidator: "PREFERRED_CONTACT_PATHS",
+  publicationScopeValidator: "PUBLICATION_SCOPES",
+  publicationRequestStateValidator: "PUBLICATION_REQUEST_STATES",
+  publicationAttemptStateValidator: "PUBLICATION_ATTEMPT_STATES",
+  publicationWorkflowOutcomeValidator: "PUBLICATION_WORKFLOW_OUTCOMES",
+  publicationProviderStatusValidator: "PUBLICATION_PROVIDER_STATUSES",
+  retryablePublicationProviderStatusValidator:
+    "RETRYABLE_PUBLICATION_PROVIDER_STATUSES",
+  mediaStorageProviderValidator: "MEDIA_STORAGE_PROVIDERS",
+  writableMediaStorageProviderValidator: "WRITABLE_MEDIA_STORAGE_PROVIDERS",
+  mediaUsageValidator: "MEDIA_USAGES",
+  mediaStatusValidator: "MEDIA_STATUSES",
+  siteSettingKeyValidator: "SITE_SETTING_KEYS",
+  siteSettingClassificationValidator: "SITE_SETTING_CLASSIFICATIONS",
+  caseStudyStatusValidator: "CASE_STUDY_STATUSES",
+  caseStudyEvidenceStatusValidator: "CASE_STUDY_EVIDENCE_STATUSES",
+};
+
 // Every schema field that holds a domain vocabulary, and the validator it must
 // reference. A new vocabulary field is added here in the same change.
 const SCHEMA_VOCABULARY_FIELDS = {
@@ -323,11 +348,12 @@ export function derivationViolations(root) {
         initializer.expression.text === "literals" &&
         initializer.arguments.length === 1 &&
         ts.isIdentifier(initializer.arguments[0]) &&
-        domainImports.has(initializer.arguments[0].text);
+        domainImports.get(initializer.arguments[0].text) ===
+          VALIDATOR_VOCABULARIES[name];
       if (ok) derived.add(name);
       else {
         violations.push(
-          `${CONVEX_VALIDATORS}: ${name} must be literals(<array imported from @aohys/core/domain>)`,
+          `${CONVEX_VALIDATORS}: ${name} must be literals(${VALIDATOR_VOCABULARIES[name] ?? "<add it to VALIDATOR_VOCABULARIES>"}) imported from @aohys/core/domain`,
         );
       }
     }
