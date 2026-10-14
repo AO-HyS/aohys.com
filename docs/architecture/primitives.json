@@ -173,11 +173,11 @@
       ],
       "guarantees": [
         {
-          "statement": "Every Convex module is .ts; none imports a public builder (query, mutation, action, their Generic forms, or httpAction outside http.ts) except lib/functions.ts, whose builders keep the closed requireAdmin form; the TypeScript checker classifies every export of every module, nested and re-exported ones included, and each public function or HTTP action must be a const declared by an adminQuery/adminMutation/adminAction call, with any or unknown exports rejected; the modules are also evaluated as a Convex push would, and every export that is public at runtime must be one of those admin registrations.",
+          "statement": "Every Convex module is .ts and none imports or re-exports a public builder (query, mutation, action, their Generic forms, or httpAction outside http.ts) except lib/functions.ts, whose builders keep the closed requireAdmin form. The TypeScript checker classifies every export of every module (nested, aliased, re-exported) and a public function or HTTP action must be a const declared by an adminQuery/adminMutation/adminAction call; any or unknown exports are rejected. Evaluated once per AOHYS_ENV as a Convex push would, every export that is public at runtime must be one of those admin registrations, and an anonymous call through its Convex entry point must be refused by requireAdmin before any other syscall. Scope: mistakes and copied patterns; code written to defeat the guard is left to review.",
           "verifiedBy": "pnpm architecture:fitness (scripts/architecture/public-function-guard.mjs)"
         },
         {
-          "statement": "The public HTTP surface is exactly POST and OPTIONS /contact plus one Better Auth route registration; the single router comes from convex/server's httpRouter and is used only through http.route with a literal path and method, registerRoutesLazy and the default export, and the evaluated router serves exactly the pinned route set.",
+          "statement": "The public HTTP surface is exactly POST and OPTIONS /contact plus one Better Auth route registration: the single router comes from convex/server's httpRouter, is used only through http.route with a literal path and method, registerRoutesLazy and the default export, and the evaluated router serves exactly the pinned route set.",
           "verifiedBy": "pnpm architecture:fitness (scripts/architecture/public-function-guard.mjs)"
         },
         {
@@ -186,7 +186,8 @@
         }
       ],
       "goals": [
-        "Record admin, operator and system writes in auditEvents with the actor resolved by the builders."
+        "Record admin, operator and system writes in auditEvents with the actor resolved by the builders.",
+        "After each release deploy, compare the deployed function spec (public functions and HTTP routes) with the admin registrations and the pinned routes."
       ],
       "replaces": [],
       "docs": ["docs/environment-contract.md"]

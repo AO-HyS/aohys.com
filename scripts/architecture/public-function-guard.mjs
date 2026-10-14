@@ -5,14 +5,23 @@ import { fileURLToPath } from "node:url";
 
 import ts from "typescript";
 
+import { readDomainVocabularies } from "./domain-vocabulary.mjs";
+
 // Guards the Convex authorization contract: every public function is built
 // with adminQuery/adminMutation/adminAction from convex/lib/functions.ts, whose
 // closed form runs requireAdmin before the handler. The export check is
 // semantic: the TypeScript checker classifies every export of every Convex
 // module, so aliases, re-exports, nested modules and library-made functions
 // are judged by what they are, not by how they are written. Because a type can
-// be widened, the modules are also evaluated as a Convex push would, and every
-// export that is public at runtime must be one of those admin registrations.
+// be widened and registrations replaced, the modules are also evaluated as a
+// Convex push would: every export that is public at runtime must be one of
+// those admin registrations, and invoking it anonymously through the Convex
+// entry point must be refused by requireAdmin before any other syscall. The
+// evaluation runs once per AOHYS_ENV value.
+//
+// Threat model: this catches the bypasses a contributor or agent writes by
+// copying a pattern or by mistake. Code written to defeat the guard, such as
+// exports chosen from other runtime state, is left to review.
 
 const CONVEX_DIR = "apps/backend/convex";
 const BUILDERS_FILE = `${CONVEX_DIR}/lib/functions.ts`;
@@ -72,7 +81,11 @@ function convexFiles(root) {
     })) {
       const child = `${relative}/${entry.name}`;
       if (entry.isDirectory()) {
-        if (entry.name !== "_generated" && entry.name !== "node_modules")
+        // Convex skips only the root _generated directory.
+        if (
+          relative !== CONVEX_DIR ||
+          (entry.name !== "_generated" && entry.name !== "node_modules")
+        )
           walk(child);
       } else if (entry.name.endsWith(".ts") && !entry.name.endsWith(".d.ts")) {
         files.sources.push(child);
@@ -501,16 +514,43 @@ function httpViolations(checker, relative, sourceFile) {
 // The app definition is bundled apart from function modules and only
 // evaluates inside the Convex runtime; the static checks still cover it.
 const APP_DEFINITION = `${CONVEX_DIR}/convex.config.ts`;
+// requireAdmin's refusal for a caller without a session (convex/auth.ts).
+const ANONYMOUS_REJECTION = "Authentication is required for dashboard access.";
 const RUNTIME_EXPORTS_SCRIPT = fileURLToPath(
   new URL("./convex-runtime-exports.mts", import.meta.url),
 );
 
-// Exports that are public functions when the modules are evaluated, by module.
+// Evaluates the modules once per deployment environment (AOHYS_ENV), since
+// a module can choose its exports from deployment configuration.
 function runtimeViolations(root, sources, adminExports) {
+  const environments = [
+    ...(readDomainVocabularies(root).find(({ name }) => name === "ENVIRONMENTS")
+      ?.members ?? []),
+  ];
+  if (environments.length === 0)
+    return ["packages/core/src/domain.ts: ENVIRONMENTS is missing"];
+  const violations = new Set();
+  for (const environment of environments)
+    for (const violation of evaluatedViolations(
+      root,
+      sources,
+      adminExports,
+      environment,
+    ))
+      violations.add(`${violation} (AOHYS_ENV=${environment})`);
+  return [...violations];
+}
+
+function evaluatedViolations(root, sources, adminExports, environment) {
   const result = spawnSync(
     process.execPath,
     ["--import", "tsx", RUNTIME_EXPORTS_SCRIPT, root, ...sources],
-    { cwd: root, encoding: "utf8", maxBuffer: 16 * 1024 * 1024 },
+    {
+      cwd: root,
+      encoding: "utf8",
+      env: { ...process.env, AOHYS_ENV: environment },
+      maxBuffer: 16 * 1024 * 1024,
+    },
   );
   if (result.status !== 0) {
     const reason = (result.stderr || result.error?.message || "")
@@ -531,12 +571,17 @@ function runtimeViolations(root, sources, adminExports) {
     violations.push(
       `${CONVEX_DIR}/http.ts: the evaluated router serves [${served.join(", ")}], expected exactly [${RUNTIME_HTTP_ROUTES.join(", ")}]`,
     );
-  for (const [relative, names] of Object.entries(publicExports))
-    for (const name of names)
+  for (const [relative, entries] of Object.entries(publicExports))
+    for (const { name, rejection, touched } of entries) {
       if (!adminExports.has(`${relative}#${name}`))
         violations.push(
           `${relative}: export ${name} is a public Convex function at runtime but not a direct adminQuery/adminMutation/adminAction call`,
         );
+      else if (rejection !== ANONYMOUS_REJECTION || touched.length > 0)
+        violations.push(
+          `${relative}: export ${name} invoked anonymously must be refused by requireAdmin before any syscall; got ${rejection === null ? "a result" : JSON.stringify(rejection)}${touched.length ? ` after ${touched.join(", ")}` : ""}`,
+        );
+    }
   return violations;
 }
 
