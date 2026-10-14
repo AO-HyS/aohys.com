@@ -53,7 +53,8 @@
       "sourceGlobs": [
         "apps/site/src/pages/index.astro",
         "apps/site/src/components/horizonte",
-        "apps/site/src/pages/[...path].astro"
+        "apps/site/src/pages/[...path].astro",
+        "apps/site/public"
       ]
     },
     {
@@ -85,7 +86,8 @@
       "status": "draft",
       "sourceGlobs": [
         "apps/site/src/pages/[...path].astro",
-        "packages/content-graph/src/static-case-study-routes.ts"
+        "packages/content-graph/src/static-case-study-routes.ts",
+        "apps/site/public"
       ]
     },
     {
@@ -447,7 +449,8 @@
         "apps/backend/src/lead-intake.ts",
         "apps/backend/convex/leads.ts",
         "apps/backend/src/provider-responses.ts",
-        "apps/site/src/pages/[...path].astro"
+        "apps/site/src/pages/[...path].astro",
+        "apps/site/public"
       ]
     },
     {

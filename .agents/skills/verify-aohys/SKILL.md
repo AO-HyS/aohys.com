@@ -131,8 +131,11 @@ contract changes after the proof.
 Every `sourceGlobs` path must exist. `sourceGlobs` name a journey's entry
 points; its dependencies follow from the architecture-fitness import graph,
 including imported JSON and CSS. `sharedSourceGlobs` list bootstrap files that
-import every feature (dashboard `main.tsx`, auth client, styles); they select
-the journey only when changed directly.
+import every feature (dashboard `main.tsx`, router, shell, auth client,
+styles); a change selects the journey when it touches a shared root or a
+dependency of one that no journey owns through its own `sourceGlobs` (shared
+UI, hooks, libraries). Public assets referenced by URL are mapped as
+directories (`apps/site/public`).
 `pnpm verify:product:changed` selects a journey when a changed file, or any
 file that transitively imports it, sits under its `sourceGlobs`, and a proof
 goes stale when an entry point or any transitive dependency changes after

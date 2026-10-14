@@ -746,7 +746,7 @@ export function validateFeatureMap(map, { root, fileEdges = [] } = {}) {
         Array.isArray(journey.sourceGlobs) &&
         !sourcesUnchangedSince(root, journey.proofCandidateSha, [
           ...withTransitiveDependencies(journey.sourceGlobs, fileEdges),
-          ...(journey.sharedSourceGlobs ?? []),
+          ...sharedDependencies(journey, map, fileEdges),
         ])
       )
         errors.push(
@@ -814,6 +814,19 @@ export function dependencyEdges(graph) {
   );
 }
 
+// Shared roots plus their transitive dependencies that no journey owns
+// through its own sourceGlobs.
+function sharedDependencies(journey, featureMap, fileEdges) {
+  const roots = journey.sharedSourceGlobs ?? [];
+  const owned = (featureMap?.journeys ?? []).flatMap(
+    (candidate) => candidate.sourceGlobs ?? [],
+  );
+  return withTransitiveDependencies(roots, fileEdges).filter(
+    (file) =>
+      matchesSourcePrefix(file, roots) || !matchesSourcePrefix(file, owned),
+  );
+}
+
 // The mapped paths plus every file they import, directly or transitively.
 function withTransitiveDependencies(sourceGlobs, fileEdges) {
   const targetsByImporter = new Map();
@@ -862,8 +875,10 @@ function withTransitiveImporters(files, fileEdges) {
 // A journey is selected when a changed file, or a file that imports it, sits
 // under one of its sourceGlobs, so journeys map entry points and their
 // dependencies follow from the import graph.
-// sharedSourceGlobs (bootstrap files that import every feature) match only a
-// direct change, so an unrelated feature edit never selects every journey.
+// sharedSourceGlobs are bootstrap files that import every feature. A change
+// selects the journey when it touches a shared root, or a dependency of one
+// that no journey owns through its sourceGlobs (shared UI, hooks, libraries),
+// so an unrelated feature edit never selects every journey.
 export function selectMappedFeatures({
   changedFiles,
   featureMap,
@@ -871,13 +886,15 @@ export function selectMappedFeatures({
 }) {
   const changed = [...new Set(changedFiles ?? [])].sort();
   const files = withTransitiveImporters(changed, fileEdges);
-  return (featureMap?.journeys ?? []).filter(
-    (journey) =>
+  return (featureMap?.journeys ?? []).filter((journey) => {
+    if (
       files.some((filePath) =>
         matchesSourcePrefix(filePath, journey.sourceGlobs ?? []),
-      ) ||
-      changed.some((filePath) =>
-        matchesSourcePrefix(filePath, journey.sharedSourceGlobs ?? []),
-      ),
-  );
+      )
+    )
+      return true;
+    if (!journey.sharedSourceGlobs?.length) return false;
+    const shared = new Set(sharedDependencies(journey, featureMap, fileEdges));
+    return changed.some((filePath) => shared.has(filePath));
+  });
 }
