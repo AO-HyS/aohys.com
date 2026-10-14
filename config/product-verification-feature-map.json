@@ -362,20 +362,24 @@
       "routes": ["/dashboard/projects", "/dashboard/resume"],
       "preconditions": [
         "An authorized existing Better Auth browser session for the dashboard operator exists; login is never automated and no profile is created.",
-        "Preview only. Publishing dispatches the release workflow and deploys Cloudflare Pages, so every run needs the owner's explicit authorization for that operation."
+        "Preview only. Publishing dispatches the release workflow and deploys Cloudflare Pages, so every run needs the owner's explicit authorization for that operation.",
+        "The original draft to be changed is snapshotted before the run."
       ],
       "steps": [
-        "Publish from the dashboard with the existing session and record the requestKey and publicationAttemptId returned by this publish operation.",
-        "Follow that requestKey and attempt until the release receipt is recorded.",
-        "Open the preview site and confirm the published change."
+        "Save a run-unique marker in one project or resume draft so the publication content differs from every earlier request.",
+        "Publish from the dashboard with the existing session and record the requestKey and publicationAttemptId returned.",
+        "Confirm that requestKey and attempt were created by this run (not an earlier deployed request returned for unchanged content).",
+        "Follow that attempt until the release receipt is recorded.",
+        "Open the preview site and confirm the run-unique marker is published."
       ],
       "expectedResults": [
-        "The request moves to release-requested and then deployed with a receipt; a failed run ends release-failed or rollback-needed and is never retried from elapsed time.",
-        "The preview site shows the published content."
+        "This run creates a new request and attempt; an existing deployed request returned for unchanged content does not count.",
+        "The new request moves to release-requested and then deployed with a receipt; a failed run ends release-failed or rollback-needed and is never retried from elapsed time.",
+        "The preview site shows the run-unique marker."
       ],
       "beforeProbe": "Record the latest publication request key and state, to tell this run's request from earlier ones.",
       "afterProbe": "Read the request and attempt identified by this run's requestKey and publicationAttemptId, and their receipt; earlier requests never count as this run's result.",
-      "cleanup": "Republish the previous drafts if the run changed public preview content; publication records are kept.",
+      "cleanup": "Restore the snapshotted draft and publish it again with the owner's authorization; publication records are kept.",
       "evidence": "$HOME/.development-system/private/verification/<run-id>/dashboard-publish-preview/",
       "sideEffectMode": "authorized-writes",
       "status": "draft",
