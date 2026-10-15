@@ -494,6 +494,7 @@
         "scripts/quality/run-changed-validation.mjs",
         "scripts/quality/changed-validation-lib.mjs",
         "scripts/quality/check-no-tests.mjs",
+        ".husky/pre-commit",
         ".husky/pre-push",
         ".github/workflows/quality-gates.yml"
       ],
