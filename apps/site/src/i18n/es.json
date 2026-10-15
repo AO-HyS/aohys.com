@@ -65,28 +65,19 @@
     }
   },
   "publicContent": {
-    "available": "Software para procesos reales",
     "work": "Trabajo",
     "practice": "Práctica",
     "architecture": "Arquitectura",
     "about": "Experiencia",
     "talk": "Hablemos",
-    "viewWork": "Ver trabajo",
-    "viewProject": "Abrir caso",
-    "publicProof": "Trabajo seleccionado",
-    "selectedStage": "Productos, experiencia profesional y método.",
-    "selectedStageIntro": "Seis ejemplos de productos, contribuciones profesionales y el método de ingeniería detrás de mi trabajo.",
     "process": "Los buenos resultados nacen de sistemas claros.",
     "workArchive": "Archivo de trabajo",
-    "workArchiveBody": "Productos, contribuciones profesionales y un método de ingeniería, con el contexto y el rol detrás de cada ejemplo.",
     "evidence": "Enlaces del proyecto",
     "readCase": "Leer caso",
-    "source": "Fuente pública",
     "role": "Rol",
     "constraints": "Restricciones",
     "businessNeed": "Necesidad del negocio",
     "considerations": "Consideraciones de diseño",
-    "related": "Trabajo relacionado",
     "profile": "Perfil de entrega",
     "experience": "Experiencia",
     "capabilities": "Capacidades",
@@ -95,95 +86,13 @@
     "download": "Abrir CV en PDF",
     "contactRail": "Una conversación concreta empieza con contexto útil.",
     "privacyRail": "Datos claros. Límites visibles.",
-    "formAside": "Cuéntame qué te gustaría crear y hacer posible.",
-    "direct": "Contacto directo",
-    "verified": "Sistema verificado",
-    "openLink": "Enlace en vivo",
-    "casePath": "Ruta del caso",
     "architectureNotes": "Notas de operación",
     "architectureNotesIntro": "Los seams que mantienen conectada la topología.",
-    "caseBeats": [
-      "Proyecto",
-      "Rol y sistema",
-      "Decisiones",
-      "Entrega y calidad"
-    ],
-    "serviceMode": "Formas de aportar",
     "serviceFit": "Cuándo encaja",
     "serviceResult": "Lo que cambia",
     "serviceCollaboration": "Cómo aporto",
     "serviceOutputs": "Lo que recibes",
-    "architectureLiveSystem": "Sistema AOHYS en producción",
-    "architectureFlow": "Una señal entra. El sistema conserva el contexto y llega a producción con un release visible.",
     "contactBriefTitle": "Un buen primer mensaje puede ser breve.",
-    "contactBriefReply": "Yo respondo con preguntas útiles y un siguiente paso concreto.",
-    "contactBriefLabel": "Tu brief de proyecto",
-    "seeServices": "Ver práctica",
-    "architectureSceneLabel": "Profundidad cinética detrás del mapa del sistema",
-    "contactSceneLabel": "Profundidad suave detrás del brief de proyecto",
-    "serviceModes": [
-      {
-        "kicker": "Producto nuevo",
-        "note": "Sitio · web app · app móvil",
-        "symbol": "↗"
-      },
-      {
-        "kicker": "Proyecto definido",
-        "note": "Producto · ingeniería · release",
-        "symbol": "+"
-      },
-      {
-        "kicker": "Sistema existente",
-        "note": "IA · datos · cloud · delivery",
-        "symbol": "→"
-      }
-    ],
-    "serviceSignals": [
-      {
-        "items": ["www", "app", "mobile"],
-        "emphasisIndex": -1
-      },
-      {
-        "items": ["PM", "DES", "AOHYS", "ENG", "QA"],
-        "emphasisIndex": 2
-      },
-      {
-        "items": ["now", "AI · DATA · CLOUD", "next"],
-        "emphasisIndex": 1
-      }
-    ],
-    "architectureHeroNodes": [
-      {
-        "id": "public",
-        "title": "Experiencia pública",
-        "detail": "Sitio bilingüe, casos, servicios y accesibilidad",
-        "meta": "Astro · EN / ES"
-      },
-      {
-        "id": "content",
-        "title": "Contenido, dashboard y datos",
-        "detail": "Publicación, ownership y contratos compartidos",
-        "meta": "Content Graph · Convex"
-      },
-      {
-        "id": "media",
-        "title": "Media y edge",
-        "detail": "Imágenes publicadas, fallbacks versionados y entrega rápida",
-        "meta": "Cloudflare"
-      },
-      {
-        "id": "signals",
-        "title": "Señales y contacto",
-        "detail": "Solicitudes, analíticas y errores con límites explícitos",
-        "meta": "Formulario · PostHog"
-      },
-      {
-        "id": "release",
-        "title": "Tren de release",
-        "detail": "Preview, checks, promoción y smoke de producción",
-        "meta": "develop → main"
-      }
-    ],
     "contactBriefPrompts": [
       ["Qué quieres hacer posible", "Crear, evolucionar o lanzar"],
       ["A quién debe servir", "Personas, equipo o negocio"],
