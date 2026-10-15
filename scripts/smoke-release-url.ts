@@ -434,9 +434,7 @@ try {
   const environment = parseEnvironment(process.argv[2]);
   const plan = buildCloudflarePagesDeployPlan(environment);
   const baseUrl = normalizeUrl(
-    process.env.SMOKE_BASE_URL?.trim() ||
-      process.env.PUBLIC_SITE_URL?.trim() ||
-      plan.siteUrl,
+    process.env.SMOKE_BASE_URL?.trim() || plan.liveUrl,
   );
   let smokeResultUrl = baseUrl;
 

@@ -15,6 +15,7 @@ export interface CloudflarePagesDeployPlan {
   directory: "apps/site/dist";
   command: readonly string[];
   siteUrl: string;
+  liveUrl: string;
   canonicalUrl: string;
 }
 
@@ -42,6 +43,7 @@ export function buildCloudflarePagesDeployPlan(
       target.branch,
     ],
     siteUrl: target.siteUrl,
+    liveUrl: target.liveUrl,
     canonicalUrl: CANONICAL_ORIGIN,
   };
 }

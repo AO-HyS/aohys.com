@@ -31,7 +31,7 @@ After merge to `develop`, wait for the Release Train preview job:
 ```sh
 gh run list --branch develop --limit 5
 pnpm run audit:posthog-env
-SMOKE_BASE_URL=https://develop.aohys-com.pages.dev pnpm run smoke:preview
+pnpm run smoke:preview
 ```
 
 If `pnpm run audit:posthog-env` fails, remove any preview key and set only the retained production project key:
