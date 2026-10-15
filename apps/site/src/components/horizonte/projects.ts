@@ -1,3 +1,4 @@
+import { brandPastels } from "@aohys/core/brand-tokens";
 import type { Locale } from "@aohys/core/domain";
 
 /*
@@ -41,15 +42,15 @@ export interface GhostPart {
 }
 
 export const HORIZONTE_PASTELS = {
-  honey: "#FCE3A6",
-  olive: "#D6E2B4",
-  apricot: "#FDD2B1",
+  honey: brandPastels.honey,
+  olive: brandPastels.olive,
+  apricot: brandPastels.apricot,
 } as const;
 
 export const HORIZONTE_PROJECTS: HorizonteProject[] = [
   {
     contentId: "case-study:the-barber-central",
-    tint: "#FDD2B1",
+    tint: brandPastels.apricot,
     texture: "/images/horizonte/lens-barber.jpg",
     size: [1600, 809],
     focus: { x: 0.5, y: 0.44, zoom: 0.62 },
@@ -69,7 +70,7 @@ export const HORIZONTE_PROJECTS: HorizonteProject[] = [
   },
   {
     contentId: "case-study:nutri-plan",
-    tint: "#D6E2B4",
+    tint: brandPastels.olive,
     texture: "/images/horizonte/lens-nutriplan.jpg",
     size: [1400, 1288],
     focus: { x: 0.5, y: 0.36, zoom: 0.62 },
@@ -89,7 +90,7 @@ export const HORIZONTE_PROJECTS: HorizonteProject[] = [
   },
   {
     contentId: "case-study:eteria",
-    tint: "#FCE3A6",
+    tint: brandPastels.honey,
     texture: "/images/horizonte/lens-eteria.jpg",
     size: [1200, 630],
     focus: { x: 0.52, y: 0.5, zoom: 0.94 },
@@ -112,7 +113,7 @@ export const HORIZONTE_PROJECTS: HorizonteProject[] = [
   },
   {
     contentId: "case-study:casa-roca",
-    tint: "#E7E6B0",
+    tint: brandPastels.lime,
     texture: "/images/horizonte/lens-casaroca.jpg",
     size: [1432, 960],
     focus: { x: 0.5, y: 0.47, zoom: 0.8 },
@@ -135,7 +136,7 @@ export const HORIZONTE_PROJECTS: HorizonteProject[] = [
   },
   {
     contentId: "architecture",
-    tint: "#FDDDAA",
+    tint: brandPastels.sand,
     texture: "/images/horizonte/lens-aohys.jpg",
     size: [1600, 845],
     focus: { x: 0.5, y: 0.47, zoom: 0.7 },
@@ -186,7 +187,7 @@ export const PAGE_LENS_PHOTOS: Record<
     texture: "/images/horizonte/lens-resume.jpg",
     size: [1024, 1024],
     focus: { x: 0.5, y: 0.54, zoom: 0.72 },
-    tint: "#D6E2B4",
+    tint: brandPastels.olive,
     alt: {
       es: "Escritorio de roble con un cuaderno de bocetos de interfaz, notas pastel y café.",
       en: "Oak desk with a notebook of interface sketches, pastel notes and coffee.",
@@ -196,7 +197,7 @@ export const PAGE_LENS_PHOTOS: Record<
     texture: "/images/horizonte/lens-practice.jpg",
     size: [1024, 1024],
     focus: { x: 0.5, y: 0.52, zoom: 0.74 },
-    tint: "#E7E6B0",
+    tint: brandPastels.lime,
     alt: {
       es: "Bloques pastel de cerámica y roble ensamblados en un sistema equilibrado.",
       en: "Pastel ceramic and oak blocks assembled into a balanced system.",
@@ -206,7 +207,7 @@ export const PAGE_LENS_PHOTOS: Record<
     texture: "/images/horizonte/lens-contact.jpg",
     size: [1024, 1024],
     focus: { x: 0.5, y: 0.53, zoom: 0.72 },
-    tint: "#FCE3A6",
+    tint: brandPastels.honey,
     alt: {
       es: "Dos tazas de café frente a frente en una mesa soleada, con un cuaderno y una pluma.",
       en: "Two coffee cups facing each other on a sunny table, with a notebook and pen.",
@@ -216,7 +217,7 @@ export const PAGE_LENS_PHOTOS: Record<
     texture: "/images/horizonte/lens-privacy.jpg",
     size: [1024, 1024],
     focus: { x: 0.5, y: 0.53, zoom: 0.72 },
-    tint: "#FDD2B1",
+    tint: brandPastels.apricot,
     alt: {
       es: "Un sobre detrás de vidrio esmerilado y una llave de latón sobre lino.",
       en: "An envelope behind frosted glass and a brass key on linen.",
@@ -226,7 +227,7 @@ export const PAGE_LENS_PHOTOS: Record<
     texture: "/images/horizonte/lens-architecture.jpg",
     size: [1024, 1024],
     focus: { x: 0.5, y: 0.5, zoom: 0.76 },
-    tint: "#FCE3A6",
+    tint: brandPastels.honey,
     alt: {
       es: "Maqueta de cinco capas translúcidas en pastel unidas por pernos de latón.",
       en: "Model of five translucent pastel layers joined by brass pins.",

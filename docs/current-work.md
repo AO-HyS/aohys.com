@@ -1,7 +1,7 @@
 # Current work — primitives gardener (fix mode)
 
 Canonical root: aohys. Base: develop. One branch per PR; current:
-`feat/dashboard-kit-required` (PR #221).
+`feat/brand-tokens` (brand tokens + Sunlit retirement).
 
 Goal: one source per primitive, recorded in
 `docs/architecture/primitives.json` and valid under
@@ -14,16 +14,16 @@ Done (merged to develop): #211 resume server validation, #212 domain
 vocabulary, #213 build-script payload types and unknown guards, #214
 Environment Contract destinations, #215 feature map write and denied journeys,
 #216 admin builders and allowlist, #217 `auditEvents`, #218–#219 release CLI
-and targets, #220 publication CLI.
+and targets, #220 publication CLI, #221 dashboard kit required, #222 projects
+save feedback through `SaveBar` and `AsyncSurface`.
 
 Priority 5 (finite list items 7, 7b, 7c), in order:
 
-1. #221 dashboard kit required for dialogs and badges (`dashboard-kit-bypass`
-   in `architecture:fitness`), single-screen classes out of `lib/`.
-2. Projects save feedback through `SaveBar` and `AsyncSurface`.
-3. `brand-tokens`: one source generating the dashboard and site theme.
-4. Retire Sunlit: move `proof-media` to Horizonte.
-5. Close `primitives.json` and move the repo to tend.
+1. Done: #221 dashboard kit required, #222 projects `SaveBar`.
+2. In review: `brand-tokens` (`packages/core/src/brand-tokens.ts`,
+   `pnpm brand:generate`, `pnpm brand:check` in lint) and Sunlit retired
+   (`proof-media` in Horizonte, copy under `publicContent`).
+3. Close `primitives.json` and move the repo to tend.
 
 Review budget (Development System 2.4.0): one Sol 6.1 High review per
 finished PR, a second only on the fix diff of a blocking finding; docs-only and
@@ -34,9 +34,9 @@ Limits: publication keeps request keys, receipts and reconciliation (no generic
 retry). Deleting Cloudflare objects and destructive migrations are out of scope.
 Effects on providers (publishing to preview, rescheduling a dispatch) need the
 owner's explicit authorization for that operation. Main and production wait
-for the owner. Authenticated dashboard captures need the owner's session on the
-preview; agents verify kit changes through a local harness that is never
-committed.
+for the owner. Authenticated dashboard checks use the owner's local Chrome cookies
+(expect MCP `open` with `cookies: true`); T3 preview tabs keep cookies per tab
+and Google rejects the delegated browser.
 
 Private evidence: `aohys-primitives-20261013` under the shared private
 verification directory.

@@ -11,6 +11,15 @@ lives in `apps/site/src/components/horizonte/`, `apps/site/src/scripts/` and
 `apps/site/src/styles/horizonte.css`. Where the Sunlit Systems Studio contract
 below conflicts with this, Horizonte governs; the rest is kept as history.
 
+**Palette source.** Every brand color lives in
+`packages/core/src/brand-tokens.ts`: the full colors, the Horizonte pastels
+(honey, olive, apricot, lime, sand), the site and dashboard themes and the
+Horizonte `:root`. `pnpm brand:generate` writes the theme variables and the
+`horizonte.css` `:root`; `pnpm brand:check` (in `pnpm lint`) rejects drift and
+any brand hex or OKLCH literal elsewhere in `apps/*/src`. The palettes below
+document intent; change a color in the token file, never here or in a
+component.
+
 This was the implemented design contract until September 2026. The July 2026 direction is **Sunlit Systems Studio**: warm, vivid, product-minded, and playful without becoming childish or decorative for its own sake.
 
 ## Register
@@ -31,7 +40,7 @@ Use a full-palette brand system with restrained application. The surface stays c
 
 Primary direction: honey + olive + apricot on neutral white, with brown ink for text, structure, and dark surfaces. The palette is warm, optimistic, slightly retro-modern, and playful without becoming childish. Honey carries primary actions and active rails. Olive carries stage doors, supportive fields, and positive states. Apricot carries hover, proof, and human energy. Brown ink replaces black, navy, and cold technical blue.
 
-Starter OKLCH palette:
+Starter OKLCH palette (history; the live values are in `brand-tokens.ts`):
 
 ```css
 :root {

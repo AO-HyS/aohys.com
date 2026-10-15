@@ -20,6 +20,11 @@
       "import": "./src/unknown-guards.ts",
       "default": "./src/unknown-guards.ts"
     },
+    "./brand-tokens": {
+      "types": "./src/brand-tokens.ts",
+      "import": "./src/brand-tokens.ts",
+      "default": "./src/brand-tokens.ts"
+    },
     "./release-targets": {
       "types": "./src/release-targets.ts",
       "import": "./src/release-targets.ts",
