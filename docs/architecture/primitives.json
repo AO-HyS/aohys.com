@@ -157,19 +157,21 @@
       "id": "admin-functions",
       "category": "auth",
       "status": "active",
-      "summary": "The only public Convex builders: adminQuery, adminMutation and adminAction run requireAdmin against the Better Auth session and the single ADMIN_EMAIL allowlist before the handler, and expose the operator as ctx.admin.",
+      "summary": "The only public Convex builders: adminQuery, adminMutation and adminAction run requireAdmin against the Better Auth session and the single ADMIN_EMAIL allowlist before the handler, and expose the operator as ctx.admin. The Pages dashboard gate (apps/site/src/dashboard-access.ts) applies the same allowlist before serving the dashboard shell.",
       "paths": [
         "apps/backend/convex/lib/functions.ts",
         "apps/backend/convex/auth.ts",
         "packages/environment/src/index.ts",
-        "scripts/architecture/public-function-guard.mjs"
+        "scripts/architecture/public-function-guard.mjs",
+        "apps/site/src/dashboard-access.ts"
       ],
       "symbols": [
         "apps/backend/convex/lib/functions.ts#adminQuery",
         "apps/backend/convex/lib/functions.ts#adminMutation",
         "apps/backend/convex/lib/functions.ts#adminAction",
         "apps/backend/convex/auth.ts#requireAdmin",
-        "packages/environment/src/index.ts#parseAdminAllowlist"
+        "packages/environment/src/index.ts#parseAdminAllowlist",
+        "apps/site/src/dashboard-access.ts#handleDashboardRequest"
       ],
       "guarantees": [
         {
@@ -359,6 +361,164 @@
       "goals": [],
       "replaces": [],
       "docs": ["DESIGN.md"]
+    },
+    {
+      "id": "durable-publication",
+      "category": "workflow",
+      "status": "active",
+      "summary": "Dashboard publication on Convex's scheduler: one mutation hashes the canonical source and creates or reuses a PublicationRequest with at most one eligible PublicationAttempt; the dispatcher claims scheduled work before calling GitHub, acknowledgement only moves the attempt to acknowledged, ambiguity becomes rollback-needed and is never retried automatically, and only a post-smoke PublicationReceipt marks it deployed.",
+      "paths": [
+        "apps/backend/convex/publication.ts",
+        "apps/backend/convex/model/publication.ts",
+        "apps/backend/convex/publicationActions.ts",
+        "apps/backend/src/publication-provider.ts",
+        "apps/backend/src/publication-contract.ts"
+      ],
+      "symbols": [
+        "apps/backend/convex/model/publication.ts#publishDurablyHandler",
+        "apps/backend/convex/publication.ts#claimAttempt",
+        "apps/backend/convex/publication.ts#recordReceipt",
+        "apps/backend/src/publication-contract.ts#canonicalizePublicationSource"
+      ],
+      "guarantees": [],
+      "goals": [
+        "Pass the preview acceptance gate in docs/architecture/publication-workflow.md: a controlled workflow_dispatch that keeps the request key and attempt id through deploy and smoke and writes a matching receipt.",
+        "Give the claim, dispatch and receipt transitions an executable check; today they are documented and enforced only in code."
+      ],
+      "replaces": [],
+      "docs": ["docs/architecture/publication-workflow.md"]
+    },
+    {
+      "id": "contact-intake",
+      "category": "workflow",
+      "status": "active",
+      "summary": "Public contact form intake: POST /contact parses and normalizes the submission (prepareLeadIntake), submitContactLead runs the workflow, and the internal leads.createFromContact inserts the lead after an indexed per-email limit of 3 submissions per 15 minutes (apps/backend/src/contact-abuse.ts).",
+      "paths": [
+        "apps/backend/convex/http.ts",
+        "apps/backend/convex/leads.ts",
+        "apps/backend/src/contact-workflow.ts",
+        "apps/backend/src/contact-http.ts",
+        "apps/backend/src/lead-intake.ts",
+        "apps/backend/src/contact-abuse.ts"
+      ],
+      "symbols": [
+        "apps/backend/src/contact-workflow.ts#submitContactLead",
+        "apps/backend/convex/leads.ts#createFromContact",
+        "apps/backend/src/lead-intake.ts#prepareLeadIntake"
+      ],
+      "guarantees": [
+        {
+          "statement": "Anonymous lead creation is reachable only through the pinned POST /contact route; createFromContact is not a public Convex function.",
+          "verifiedBy": "pnpm architecture:fitness (public-function-guard)"
+        }
+      ],
+      "goals": ["Give the per-email rate limit an executable check."],
+      "replaces": [],
+      "docs": []
+    },
+    {
+      "id": "public-content-graph",
+      "category": "data",
+      "status": "active",
+      "summary": "Typed graph of public content nodes from which the site derives its route map, SEO metadata and sitemap.",
+      "paths": ["packages/content-graph/src/index.ts"],
+      "symbols": [
+        "packages/content-graph/src/index.ts#PUBLIC_CONTENT_NODES",
+        "packages/content-graph/src/index.ts#getPublicRouteMap",
+        "packages/content-graph/src/index.ts#getSeoMetadata",
+        "packages/content-graph/src/index.ts#getSitemapEntries"
+      ],
+      "guarantees": [
+        {
+          "statement": "The content graph and the site that consumes it typecheck and build together.",
+          "verifiedBy": "pnpm verify:published-content"
+        }
+      ],
+      "goals": [],
+      "replaces": [],
+      "docs": [
+        "docs/public-content-graph.md",
+        "docs/adr/0003-public-content-graph.md"
+      ]
+    },
+    {
+      "id": "media-policy",
+      "category": "data",
+      "status": "active",
+      "summary": "Shared media rules: Cloudflare Images custom id validation, default project storage keys, public URL resolution and the media selected for publication.",
+      "paths": ["packages/core/src/media-policy.ts"],
+      "symbols": [
+        "packages/core/src/media-policy.ts#validateCloudflareImagesCustomId",
+        "packages/core/src/media-policy.ts#resolvePublicMediaUrl",
+        "packages/core/src/media-policy.ts#selectPublicationMedia",
+        "packages/core/src/media-policy.ts#defaultProjectMediaStorageKey"
+      ],
+      "guarantees": [],
+      "goals": [
+        "Add an executable check that no other module validates Cloudflare Images ids or resolves public media URLs."
+      ],
+      "replaces": [],
+      "docs": []
+    },
+    {
+      "id": "architecture-fitness",
+      "category": "agent-tools",
+      "status": "active",
+      "summary": "Import-graph and source rules for the monorepo: domain-vocabulary-redeclared, domain-vocabulary-derivation, dashboard-route-metadata-import, workspace-deep-import, dashboard-feature-to-app, dashboard-kit-bypass, cross-app-import, public-function-guard, dependency-cycle, workspace-dependency-cycle and generated-artifact-without-producer. The same graph feeds product-verification's changed-journey selection.",
+      "paths": [
+        "scripts/architecture/fitness-lib.mjs",
+        "scripts/architecture/run-fitness.mjs",
+        "scripts/architecture/public-function-guard.mjs",
+        "scripts/architecture/domain-vocabulary.mjs"
+      ],
+      "symbols": [
+        "scripts/architecture/fitness-lib.mjs#analyzeArchitecture",
+        "scripts/architecture/fitness-lib.mjs#formatFitnessReport"
+      ],
+      "guarantees": [
+        {
+          "statement": "A violation of any rule fails pnpm architecture:fitness, which runs in pnpm run verify:ci and in the pre-push changed validation when architecture paths change.",
+          "verifiedBy": "pnpm architecture:fitness; scripts/quality/changed-validation-lib.mjs architectureCommands"
+        }
+      ],
+      "goals": [],
+      "replaces": [],
+      "docs": []
+    },
+    {
+      "id": "quality-gates",
+      "category": "infra",
+      "status": "active",
+      "summary": "Local Husky gates are the source of truth: pre-commit runs lint-staged and quality:commit, pre-push refuses a dirty worktree and runs quality:push (the changed-file validation plan). quality:certify runs verify:ci once per integrated candidate. GitHub's Quality Gates job only enforces the release path (main accepts PRs from develop only); verify:ci runs in CI only on manual dispatch.",
+      "paths": [
+        "scripts/quality/run-changed-validation.mjs",
+        "scripts/quality/changed-validation-lib.mjs",
+        "scripts/quality/check-no-tests.mjs",
+        ".husky/pre-commit",
+        ".husky/pre-push",
+        ".github/workflows/quality-gates.yml"
+      ],
+      "symbols": [
+        "scripts/quality/changed-validation-lib.mjs#buildChangedValidationPlan",
+        "scripts/quality/changed-validation-lib.mjs#runChangedValidationPlan"
+      ],
+      "guarantees": [
+        {
+          "statement": "pnpm lint fails when the pinned development-system check-no-tests finds an automated test in the repository.",
+          "verifiedBy": "pnpm check:no-tests (part of pnpm lint)"
+        },
+        {
+          "statement": "A push is refused while the worktree has uncommitted or untracked non-ignored changes, so the validated tree is the pushed tree.",
+          "verifiedBy": ".husky/pre-push"
+        },
+        {
+          "statement": "A pull request into main from any branch other than develop of this repository fails.",
+          "verifiedBy": ".github/workflows/quality-gates.yml (Enforce the release path)"
+        }
+      ],
+      "goals": [],
+      "replaces": [],
+      "docs": ["docs/release-train.md"]
     }
   ]
 }
