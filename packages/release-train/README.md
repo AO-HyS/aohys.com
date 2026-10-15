@@ -17,7 +17,7 @@ This package owns the small public interface for deployment planning and release
 | `production` | `main`    | `https://aohys.com`         | `aohys-com`        |
 
 Both environments use `https://aohys.com` as the rendered canonical URL for public SEO pages.
-Preview smoke checks run against the unique Cloudflare Pages deployment URL emitted by Wrangler, such as `https://ff7ed5fa.aohys-com.pages.dev`, because branch deployments are available immediately even when a custom preview subdomain is not.
+Preview smoke checks run against the unique Cloudflare Pages deployment URL emitted by Wrangler, such as `https://ff7ed5fa.aohys-com.pages.dev`, because branch deployments are available immediately even when a custom preview subdomain is not. Without `SMOKE_BASE_URL`, smoke uses the target's `liveUrl`: `https://develop.aohys-com.pages.dev` for preview and `https://aohys.com` for production.
 
 Root commands:
 

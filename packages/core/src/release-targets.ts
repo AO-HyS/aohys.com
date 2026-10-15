@@ -21,9 +21,20 @@ export const PUBLISH_TARGET = {
   workflowId: "release-train.yml",
 } as const;
 
+// siteUrl is the configured public URL of the environment. liveUrl is the
+// URL that serves the branch's latest deploy today; preview.aohys.com has no
+// public DNS record, so preview smoke reaches the Pages branch alias instead.
 export const RELEASE_TARGETS = {
-  preview: { branch: "develop", siteUrl: `https://preview.${CANONICAL_HOST}` },
-  production: { branch: "main", siteUrl: CANONICAL_ORIGIN },
+  preview: {
+    branch: "develop",
+    siteUrl: `https://preview.${CANONICAL_HOST}`,
+    liveUrl: `https://develop${PAGES_DEV_SUFFIX}`,
+  },
+  production: {
+    branch: "main",
+    siteUrl: CANONICAL_ORIGIN,
+    liveUrl: CANONICAL_ORIGIN,
+  },
 } as const;
 
 // PostHog ingest is proxied by the public site of the environment.
