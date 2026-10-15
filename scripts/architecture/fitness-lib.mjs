@@ -1,5 +1,12 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
+
+import {
+  derivationViolations,
+  literalCopyViolations,
+  readDomainVocabularies,
+} from "./domain-vocabulary.mjs";
+import { publicFunctionGuardViolations } from "./public-function-guard.mjs";
 
 const SOURCE_EXTENSIONS = [
   ".ts",
@@ -19,6 +26,16 @@ const IGNORED_DIRECTORIES = new Set([
 ]);
 
 const DASHBOARD_ROUTE_METADATA = "apps/dashboard/src/navigation.ts";
+// Raw shadcn pieces a dashboard feature reaches through the kit instead:
+// ConfirmAction or NoticeDialog for alert dialogs, StatusBadge or MetaBadge for
+// badges. Matched on the resolved file, so an alias or relative path is caught.
+const DASHBOARD_KIT_ONLY = new Map([
+  [
+    "apps/dashboard/src/components/ui/alert-dialog.tsx",
+    "ConfirmAction or NoticeDialog",
+  ],
+  ["apps/dashboard/src/components/ui/badge.tsx", "StatusBadge or MetaBadge"],
+]);
 
 function normalize(filePath) {
   return filePath.replaceAll("\\", "/").replace(/^\.\//, "");
@@ -125,7 +142,10 @@ function trySourcePath(root, candidate) {
     }
   }
 
-  return candidates.find((filePath) => existsSync(path.join(root, filePath)));
+  return candidates.find((filePath) => {
+    const absolute = path.join(root, filePath);
+    return existsSync(absolute) && statSync(absolute).isFile();
+  });
 }
 
 function workspaceForSpecifier(specifier, workspaces) {
@@ -291,8 +311,22 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
   const imports = [];
   const violations = [];
 
+  const vocabularies = readDomainVocabularies(root);
+
   for (const importer of productionFiles) {
     const source = readFileSync(path.join(root, importer), "utf8");
+    for (const vocabulary of literalCopyViolations(
+      importer,
+      source,
+      vocabularies,
+    )) {
+      violations.push({
+        id: `domain-vocabulary-redeclared:${importer}:${vocabulary}`,
+        kind: "domain-vocabulary-redeclared",
+        importer,
+        message: `${importer} re-declares ${vocabulary}; import it from @aohys/core/domain (Convex: convex/lib/validators.ts)`,
+      });
+    }
     for (const specifier of extractImportSpecifiers(source)) {
       const workspace = workspaceForSpecifier(specifier, workspaces);
       const target = resolveSpecifier({
@@ -340,6 +374,19 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
       }
 
       if (
+        DASHBOARD_KIT_ONLY.has(target) &&
+        importer.startsWith("apps/dashboard/src/features/")
+      ) {
+        violations.push({
+          id: `dashboard-kit-bypass:${importer}:${target}`,
+          kind: "dashboard-kit-bypass",
+          importer,
+          target,
+          message: `${importer} imports ${target}; use ${DASHBOARD_KIT_ONLY.get(target)} from @/components/dashboard`,
+        });
+      }
+
+      if (
         !workspace &&
         target?.startsWith("apps/") &&
         importer.startsWith("apps/") &&
@@ -356,12 +403,40 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
     }
   }
 
+  for (const message of derivationViolations(root)) {
+    violations.push({
+      id: `domain-vocabulary-derivation:${message}`,
+      kind: "domain-vocabulary-derivation",
+      message,
+    });
+  }
+
+  for (const message of publicFunctionGuardViolations(root)) {
+    violations.push({
+      id: `public-function-guard:${message}`,
+      kind: "public-function-guard",
+      message,
+    });
+  }
+
   const fileEdges = imports
     .filter(
       ({ importer, target }) =>
         sourceSet.has(importer) && sourceSet.has(target),
     )
     .map(({ importer, target }) => [importer, target]);
+  // Imports of existing non-code resources (JSON, CSS); not part of cycle or
+  // boundary checks, but needed to know what a change can affect.
+  const resourceEdges = imports
+    .filter(
+      ({ importer, target }) =>
+        sourceSet.has(importer) &&
+        target &&
+        !sourceSet.has(target) &&
+        !SOURCE_EXTENSIONS.includes(path.extname(target)),
+    )
+    .map(({ importer, target }) => [importer, target])
+    .sort((left, right) => edgeId(...left).localeCompare(edgeId(...right)));
   const fileCycles = stronglyConnectedComponents(productionFiles, fileEdges);
   for (const component of fileCycles) {
     violations.push({
@@ -409,9 +484,9 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
 
   const packageEdges = workspaces.flatMap((workspace) =>
     Object.keys({
-      ...(workspace.manifest.dependencies ?? {}),
-      ...(workspace.manifest.devDependencies ?? {}),
-      ...(workspace.manifest.peerDependencies ?? {}),
+      ...workspace.manifest.dependencies,
+      ...workspace.manifest.devDependencies,
+      ...workspace.manifest.peerDependencies,
     })
       .filter((dependency) =>
         workspaces.some((candidate) => candidate.name === dependency),
@@ -445,6 +520,7 @@ export function analyzeArchitecture({ root = process.cwd() } = {}) {
       fileEdges: fileEdges.sort((left, right) =>
         edgeId(...left).localeCompare(edgeId(...right)),
       ),
+      resourceEdges,
       packages: workspaces.map((workspace) => workspace.name),
       packageEdges,
     },

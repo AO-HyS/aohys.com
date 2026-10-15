@@ -9,6 +9,26 @@
       "types": "./src/index.ts",
       "import": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./domain": {
+      "types": "./src/domain.ts",
+      "import": "./src/domain.ts",
+      "default": "./src/domain.ts"
+    },
+    "./unknown-guards": {
+      "types": "./src/unknown-guards.ts",
+      "import": "./src/unknown-guards.ts",
+      "default": "./src/unknown-guards.ts"
+    },
+    "./brand-tokens": {
+      "types": "./src/brand-tokens.ts",
+      "import": "./src/brand-tokens.ts",
+      "default": "./src/brand-tokens.ts"
+    },
+    "./release-targets": {
+      "types": "./src/release-targets.ts",
+      "import": "./src/release-targets.ts",
+      "default": "./src/release-targets.ts"
     }
   },
   "scripts": {

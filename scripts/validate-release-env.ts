@@ -2,17 +2,20 @@ import { getEnvironmentVariableDefinitions } from "@aohys/environment";
 import {
   buildCloudflarePagesDeployPlan,
   validateReleaseEnvironment,
-  type ReleaseDeploymentEnvironment,
 } from "@aohys/release-train";
+import {
+  RELEASE_ENVIRONMENTS,
+  type ReleaseEnvironment,
+} from "@aohys/core/domain";
 
-const RELEASE_ENVIRONMENTS = ["preview", "production"] as const;
-
-function parseEnvironment(input: string | undefined): ReleaseDeploymentEnvironment {
-  if (RELEASE_ENVIRONMENTS.includes(input as ReleaseDeploymentEnvironment)) {
-    return input as ReleaseDeploymentEnvironment;
+function parseEnvironment(input: string | undefined): ReleaseEnvironment {
+  if (RELEASE_ENVIRONMENTS.includes(input as ReleaseEnvironment)) {
+    return input as ReleaseEnvironment;
   }
 
-  throw new Error("Usage: tsx scripts/validate-release-env.ts <preview|production>");
+  throw new Error(
+    "Usage: tsx scripts/validate-release-env.ts <preview|production>",
+  );
 }
 
 function collectEnvironmentValues(): Record<string, string | undefined> {
@@ -27,7 +30,10 @@ function collectEnvironmentValues(): Record<string, string | undefined> {
 try {
   const environment = parseEnvironment(process.argv[2]);
   const plan = buildCloudflarePagesDeployPlan(environment);
-  const result = validateReleaseEnvironment(environment, collectEnvironmentValues());
+  const result = validateReleaseEnvironment(
+    environment,
+    collectEnvironmentValues(),
+  );
 
   if (!result.ok) {
     console.error(`${environment} release environment is not valid:`);
@@ -37,7 +43,9 @@ try {
     process.exit(1);
   }
 
-  console.log(`${environment} release environment is valid for ${plan.siteUrl}.`);
+  console.log(
+    `${environment} release environment is valid for ${plan.siteUrl}.`,
+  );
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);

@@ -1,3 +1,10 @@
+import {
+  CANONICAL_HOST,
+  CANONICAL_ORIGIN,
+  CLOUDFLARE_PROJECT_NAME,
+} from "@aohys/core/release-targets";
+import { isRecord } from "@aohys/core/unknown-guards";
+
 export type CloudflarePagesDomainStatus =
   | "initializing"
   | "pending"
@@ -27,12 +34,6 @@ interface CloudflareApiEnvelope<T> {
   success: boolean;
   result?: T;
   errors?: CloudflareApiError[];
-}
-
-type UnknownRecord = Record<string, unknown>;
-
-function isRecord(value: unknown): value is UnknownRecord {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function requiredString(value: unknown, field: string): string {
@@ -267,8 +268,8 @@ function apiFailure(
 export interface CloudflareProductionDomainConfig {
   accountId: string;
   apiToken: string;
-  projectName: "aohys-com";
-  domainName: "aohys.com";
+  projectName: typeof CLOUDFLARE_PROJECT_NAME;
+  domainName: typeof CANONICAL_HOST;
 }
 
 export function parseCloudflareProductionDomainEnvironment(
@@ -291,22 +292,22 @@ export function parseCloudflareProductionDomainEnvironment(
   };
   const publicSiteUrl = required("PUBLIC_SITE_URL");
 
-  if (publicSiteUrl !== "https://aohys.com") {
+  if (publicSiteUrl !== CANONICAL_ORIGIN) {
     throw new Error(
-      "Production Pages domain reconciliation requires PUBLIC_SITE_URL=https://aohys.com.",
+      `Production Pages domain reconciliation requires PUBLIC_SITE_URL=${CANONICAL_ORIGIN}.`,
     );
   }
-  if (required("CLOUDFLARE_PROJECT_NAME") !== "aohys-com") {
+  if (required("CLOUDFLARE_PROJECT_NAME") !== CLOUDFLARE_PROJECT_NAME) {
     throw new Error(
-      "Production Pages domain reconciliation requires CLOUDFLARE_PROJECT_NAME=aohys-com.",
+      `Production Pages domain reconciliation requires CLOUDFLARE_PROJECT_NAME=${CLOUDFLARE_PROJECT_NAME}.`,
     );
   }
 
   return {
     accountId: required("CLOUDFLARE_ACCOUNT_ID"),
     apiToken: required("CLOUDFLARE_API_TOKEN"),
-    projectName: "aohys-com",
-    domainName: "aohys.com",
+    projectName: CLOUDFLARE_PROJECT_NAME,
+    domainName: CANONICAL_HOST,
   };
 }
 

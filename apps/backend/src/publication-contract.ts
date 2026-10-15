@@ -1,12 +1,8 @@
-export type PublicationScope = "project" | "resume" | "all";
-export type PublicationTarget = "preview" | "production";
-export type PublicationState =
-  | "published-locally"
-  | "release-requested"
-  | "release-acknowledged"
-  | "release-failed"
-  | "deployed"
-  | "rollback-needed";
+import {
+  type Locale,
+  type PublicationScope,
+  type ReleaseEnvironment,
+} from "@aohys/core/domain";
 
 export interface PublicationSource {
   projects: unknown[];
@@ -27,8 +23,8 @@ export function canonicalizePublicationSource(source: PublicationSource) {
 export async function createPublicationIdentity(input: {
   scope: PublicationScope;
   contentId?: string;
-  locale?: "en" | "es";
-  targetEnvironment: PublicationTarget;
+  locale?: Locale;
+  targetEnvironment: ReleaseEnvironment;
   source: PublicationSource;
 }) {
   const canonicalSource = stableStringify(

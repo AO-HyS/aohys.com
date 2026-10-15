@@ -1,6 +1,11 @@
-import { v, type ObjectType } from "convex/values";
+import {
+  parseResumePageContent,
+  RESUME_CONTENT_MAX_LENGTH,
+} from "@aohys/content-graph/resume-content";
+import { ConvexError, v, type ObjectType } from "convex/values";
 import type { MutationCtx } from "../../_generated/server.js";
-import { localeValidator, withinLimit } from "./shared.js";
+import { withinLimit } from "./shared.js";
+import { localeValidator } from "../../lib/validators.js";
 
 export const upsertResumeDraftArgs = {
   locale: localeValidator,
@@ -28,6 +33,14 @@ export async function upsertResumeDraftHandler(
   ctx: MutationCtx,
   args: ObjectType<typeof upsertResumeDraftArgs>,
 ) {
+  if (
+    args.contentJson.length > RESUME_CONTENT_MAX_LENGTH ||
+    !parseResumePageContent(args.contentJson)
+  ) {
+    throw new ConvexError(
+      "Resume content does not match the resume contract; nothing was saved.",
+    );
+  }
   const updatedAt = Date.now();
   const existingResumeDraft = await ctx.db
     .query("resumeDrafts")

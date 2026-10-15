@@ -1,8 +1,4 @@
-type JsonRecord = Record<string, unknown>;
-
-function isRecord(value: unknown): value is JsonRecord {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
+import { isRecord } from "@aohys/core/unknown-guards";
 
 export function parseResendNotificationResponse(value: unknown): {
   notificationId?: string;
@@ -45,9 +41,4 @@ export function parseCloudflareImagesUploadResponse(
       : {}),
     errors,
   };
-}
-
-export function parseGitHubErrorResponse(value: unknown): { message?: string } {
-  if (!isRecord(value)) return {};
-  return typeof value.message === "string" ? { message: value.message } : {};
 }

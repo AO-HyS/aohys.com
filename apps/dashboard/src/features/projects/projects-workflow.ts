@@ -25,11 +25,8 @@ import { toast } from "@/components/ui/toast";
 import { publicationLabel } from "@/lib/publication-state";
 import { captureDashboardAction } from "@/lib/analytics";
 import { validateCloudflareImagesCustomId } from "./media-upload";
-import type {
-  DashboardCaseStudyStatus,
-  DashboardLocale,
-  DashboardProject,
-} from "./projects-types";
+import type { DashboardProject } from "./projects-types";
+import { type CaseStudyStatus, type Locale } from "@aohys/core/domain";
 
 export type ProjectFormState = ProjectDraftRequest;
 
@@ -39,7 +36,7 @@ export interface NewProjectInput {
   contentKey: string;
   englishSlug: string;
   spanishSlug: string;
-  status: DashboardCaseStudyStatus;
+  status: CaseStudyStatus;
 }
 
 export interface MediaUploadIssue {
@@ -149,7 +146,7 @@ export function useProjectsWorkflow({
   const [deleteRequest, setDeleteRequest] =
     useState<MediaSelectionRequest | null>(null);
 
-  async function saveProject(payload: ProjectFormState) {
+  async function saveProject(payload: ProjectFormState): Promise<boolean> {
     const key = `${payload.contentId}:${payload.locale}`;
     const toastId = toast.loading("Saving project draft", {
       description: `${payload.title} ${payload.locale.toUpperCase()}`,
@@ -164,6 +161,7 @@ export function useProjectsWorkflow({
         id: toastId,
         description: "Publish when this content is ready for the Astro build.",
       });
+      return true;
     } catch (error) {
       captureDashboardAction(
         "failed",
@@ -175,6 +173,7 @@ export function useProjectsWorkflow({
         id: toastId,
         description: errorMessage(error, "Project draft could not be saved."),
       });
+      return false;
     } finally {
       setSavingKey(null);
     }
@@ -192,9 +191,12 @@ export function useProjectsWorkflow({
         uploadFile: uploadMediaFile,
         saveMetadata: saveMediaMetadata,
       });
-      captureDashboardAction("succeeded", "projects", "upload_media", {
-        ...(payload.locale ? { locale: payload.locale } : {}),
-      });
+      captureDashboardAction(
+        "succeeded",
+        "projects",
+        "upload_media",
+        payload.locale ? { locale: payload.locale } : {},
+      );
       toast.success("Image uploaded", {
         id: toastId,
         description:
@@ -384,7 +386,7 @@ export function useProjectsWorkflow({
       | "select_media"
       | "archive_media"
       | "delete_media";
-    locale?: DashboardLocale;
+    locale?: Locale;
     operation: () => Promise<unknown>;
   }) {
     const toastId = toast.loading(config.loading);
@@ -438,7 +440,7 @@ export function useProjectsWorkflow({
 
 export function buildNewProjectDraft(
   input: NewProjectInput,
-  locale: DashboardLocale,
+  locale: Locale,
 ): ProjectFormState {
   const contentId = `case-study:${input.contentKey}`;
   const localizedTitle = getLocalizedValue(locale, {
@@ -498,7 +500,7 @@ function mediaUploadIssueFromError(error: unknown): MediaUploadIssue {
   };
 }
 
-function errorProperties(error: unknown, locale?: DashboardLocale) {
+function errorProperties(error: unknown, locale?: Locale) {
   return {
     error_type: error instanceof Error ? error.name : "UnknownError",
     ...(locale ? { locale } : {}),

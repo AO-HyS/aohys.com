@@ -3,41 +3,23 @@ import {
   getLocalizedPath,
   getLocaleVariant,
   type ContentId,
-  type Locale,
 } from "../packages/content-graph/src/index.ts";
 import { hasConvexDeploymentAccess, runConvexFunction } from "./convex-run.js";
+import type { internal } from "@aohys/backend/convex/_generated/api";
+import type { FunctionArgs } from "convex/server";
 import { parseDashboardContentPayload } from "./apply-dashboard-published-content.js";
 
-type DashboardCaseStudyStatus =
-  | "production-proof"
-  | "active-build"
-  | "private-build"
-  | "enterprise-confidential"
-  | "engineering-practice";
-
-type DashboardEvidenceStatus = "missing" | "sanitized" | "published";
-
-interface DashboardProjectDraftPayload {
-  contentId: string;
-  status: DashboardCaseStudyStatus;
-  evidenceStatus: DashboardEvidenceStatus;
-  locale: Locale;
-  title: string;
-  summary: string;
-  seoDescription: string;
-  projectUrl?: string;
-  ctaLabel: string;
-  ctaHref: string;
-  achievements: string;
-  structureNotes: string;
-}
-
-interface DashboardSiteSettingPayload {
-  key: string;
-  environment: "local" | "preview" | "production";
-  value: string;
-  classification: "public-build-value" | "provider-output" | "policy-value";
-}
+type DashboardProjectDraftPayload = FunctionArgs<
+  typeof internal.content.upsertProjectDraftFromDashboard
+>;
+type DashboardSiteSettingPayload = FunctionArgs<
+  typeof internal.content.upsertSiteSettingFromDashboard
+>;
+import {
+  LOCALES,
+  type CaseStudyEvidenceStatus,
+  type CaseStudyStatus,
+} from "@aohys/core/domain";
 
 const PROJECT_IDS = [
   "case-study:casa-roca",
@@ -47,29 +29,14 @@ const PROJECT_IDS = [
   "case-study:engineering-practice",
 ] as const satisfies readonly ContentId[];
 
-const LOCALES = ["en", "es"] as const satisfies readonly Locale[];
 const DEFAULT_WHATSAPP_URL = "https://wa.me/522299020825";
 const DRY_RUN_FLAG = "--dry-run";
 
 type ProjectId = (typeof PROJECT_IDS)[number];
 
-interface DashboardSeedState {
-  projectDrafts?: Array<{
-    contentId: string;
-    locale: Locale;
-    summary?: string;
-    achievements?: string;
-    structureNotes?: string;
-  }>;
-  settings?: Array<{
-    key: string;
-    environment: string;
-  }>;
-}
-
 interface ProjectSeedDefinition {
-  status: DashboardCaseStudyStatus;
-  evidenceStatus: DashboardEvidenceStatus;
+  status: CaseStudyStatus;
+  evidenceStatus: CaseStudyEvidenceStatus;
   projectUrl?: string;
 }
 
@@ -118,6 +85,12 @@ function projectPayloads(): DashboardProjectDraftPayload[] {
         );
       }
 
+      if (!variant.primaryActionContentId || !variant.primaryActionLabel) {
+        throw new Error(
+          `Missing primary action for approved content: ${contentId} (${locale}).`,
+        );
+      }
+
       return {
         contentId,
         status: definition.status,
@@ -126,7 +99,7 @@ function projectPayloads(): DashboardProjectDraftPayload[] {
         title: variant.title,
         summary: variant.summary,
         seoDescription: variant.seoDescription,
-        projectUrl: definition.projectUrl,
+        ...(definition.projectUrl ? { projectUrl: definition.projectUrl } : {}),
         ctaLabel: variant.primaryActionLabel,
         ctaHref: getLocalizedPath(variant.primaryActionContentId, locale),
         achievements: [
@@ -176,19 +149,19 @@ async function main(): Promise<void> {
     );
   }
 
-  const existingContent: DashboardSeedState = runConvexFunction(
+  const existingContent = runConvexFunction(
     "content:listForDashboardInternal",
     {},
     parseDashboardContentPayload,
   );
   const existingProjectsByKey = new Map(
-    (existingContent.projectDrafts ?? []).map((project) => [
+    existingContent.projectDrafts.map((project) => [
       `${project.contentId}:${project.locale}`,
       project,
     ]),
   );
   const existingSettingKeys = new Set(
-    (existingContent.settings ?? []).map(
+    existingContent.settings.map(
       (setting) => `${setting.environment}:${setting.key}`,
     ),
   );

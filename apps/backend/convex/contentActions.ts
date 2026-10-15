@@ -1,22 +1,25 @@
-import { v } from "convex/values";
+import { adminAction } from "./lib/functions.js";
+import { v, type Infer, type ObjectType } from "convex/values";
 import type { FunctionReference } from "convex/server";
-import { action } from "./_generated/server.js";
 import { internal } from "./_generated/api.js";
-import { requireAdmin } from "./auth.js";
 import {
+  ConfirmedProviderFailure,
   createCloudflareImagesDirectUpload,
   type PublishWorkflowResult,
 } from "../src/dashboard-providers.js";
-import { publicationSummaryValidator } from "./model/publication.js";
-
-const localeValidator = v.union(v.literal("en"), v.literal("es"));
-
-const mediaUsageValidator = v.union(
-  v.literal("case-study"),
-  v.literal("resume"),
-  v.literal("architecture"),
-  v.literal("site"),
-);
+import { auditTarget, sessionActor } from "./lib/audit.js";
+import {
+  publicationSummaryValidator,
+  type publishDurablyArgs,
+  type publishDurablyReturns,
+} from "./model/publication.js";
+import {
+  localeValidator,
+  mediaUsageValidator,
+  publicationScopeValidator,
+} from "./lib/validators.js";
+import { type ReleaseEnvironment } from "@aohys/core/domain";
+import { PUBLISH_TARGET, RELEASE_TARGETS } from "@aohys/core/release-targets";
 
 const publishWorkflowValidator = v.union(
   v.object({
@@ -31,32 +34,9 @@ const publishWorkflowValidator = v.union(
   }),
 );
 
-type DurablePublishResult = {
-  publishedAt: number;
-  projectDraftsPublished: number;
-  resumeDraftsPublished: number;
-  mediaPublished: number;
-  workflowPending: boolean;
-  publication: {
-    requestKey: string;
-    publicationAttemptId?: string;
-    scope: "project" | "resume" | "all";
-    contentId?: string;
-    locale?: "en" | "es";
-    targetEnvironment: "preview" | "production";
-    state:
-      | "published-locally"
-      | "release-requested"
-      | "release-acknowledged"
-      | "release-failed"
-      | "deployed"
-      | "rollback-needed";
-    retryable: boolean;
-    updatedAt: number;
-  };
-};
+type DurablePublishResult = Infer<typeof publishDurablyReturns>;
 
-function getPublishEnvironment(): "preview" | "production" {
+function getPublishEnvironment(): ReleaseEnvironment {
   const environment = process.env.AOHYS_ENV;
 
   if (environment === "preview" || environment === "production") {
@@ -68,7 +48,7 @@ function getPublishEnvironment(): "preview" | "production" {
   );
 }
 
-export const createMediaUploadUrl = action({
+export const createMediaUploadUrl = adminAction({
   args: {
     storageKey: v.string(),
     altText: v.string(),
@@ -83,25 +63,37 @@ export const createMediaUploadUrl = action({
     uploadURL: v.string(),
   }),
   handler: async (ctx, args) => {
-    await requireAdmin(ctx);
-
-    return createCloudflareImagesDirectUpload(args, {
-      ...(process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
-        ? { accountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH }
-        : {}),
-      ...(process.env.CLOUDFLARE_ACCOUNT_ID
-        ? { accountId: process.env.CLOUDFLARE_ACCOUNT_ID }
-        : {}),
-      ...(process.env.CLOUDFLARE_IMAGES_API_TOKEN
-        ? { apiToken: process.env.CLOUDFLARE_IMAGES_API_TOKEN }
-        : {}),
-    });
+    try {
+      return await createCloudflareImagesDirectUpload(args, {
+        ...(process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH
+          ? { accountHash: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH }
+          : {}),
+        ...(process.env.CLOUDFLARE_ACCOUNT_ID
+          ? { accountId: process.env.CLOUDFLARE_ACCOUNT_ID }
+          : {}),
+        ...(process.env.CLOUDFLARE_IMAGES_API_TOKEN
+          ? { apiToken: process.env.CLOUDFLARE_IMAGES_API_TOKEN }
+          : {}),
+      });
+    } catch (error) {
+      // The upload is never retried to repair the audit trail; if this write
+      // fails, the event stays attempted.
+      await ctx
+        .runMutation(internal.audit.recordOutcome, {
+          correlationId: ctx.auditCorrelationId,
+          outcome:
+            error instanceof ConfirmedProviderFailure ? "failed" : "unknown",
+          target: auditTarget(args),
+        })
+        .catch(() => undefined);
+      throw error;
+    }
   },
 });
 
-export const publishContent = action({
+export const publishContent = adminAction({
   args: {
-    scope: v.union(v.literal("project"), v.literal("resume"), v.literal("all")),
+    scope: publicationScopeValidator,
     contentId: v.optional(v.string()),
     locale: v.optional(localeValidator),
   },
@@ -121,7 +113,6 @@ export const publishContent = action({
       workflow: PublishWorkflowResult;
     }
   > => {
-    const user = await requireAdmin(ctx);
     const environment = getPublishEnvironment();
     const providerConfigured = Boolean(
       process.env.PUBLISH_GITHUB_TOKEN?.trim(),
@@ -131,14 +122,7 @@ export const publishContent = action({
       .publishFromDashboard as FunctionReference<
       "mutation",
       "internal",
-      {
-        scope: "project" | "resume" | "all";
-        contentId?: string;
-        locale?: "en" | "es";
-        targetEnvironment: "preview" | "production";
-        requestedBy: string;
-        providerConfigured: boolean;
-      },
+      ObjectType<typeof publishDurablyArgs>,
       DurablePublishResult
     >;
     const result: DurablePublishResult = await ctx.runMutation(
@@ -146,7 +130,8 @@ export const publishContent = action({
       {
         ...args,
         targetEnvironment: environment,
-        requestedBy: String(user._id),
+        requestedBy: String(ctx.admin._id),
+        actor: sessionActor(ctx.admin),
         providerConfigured,
       },
     );
@@ -156,11 +141,11 @@ export const publishContent = action({
             status: "queued",
             repository:
               process.env.PUBLISH_GITHUB_REPOSITORY?.trim() ||
-              "AO-HyS/aohys.com",
+              PUBLISH_TARGET.repository,
             workflowId:
               process.env.PUBLISH_GITHUB_WORKFLOW_ID?.trim() ||
-              "release-train.yml",
-            ref: environment === "production" ? "main" : "develop",
+              PUBLISH_TARGET.workflowId,
+            ref: RELEASE_TARGETS[environment].branch,
           }
         : {
             status: "not-configured",

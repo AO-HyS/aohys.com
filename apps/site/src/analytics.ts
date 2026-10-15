@@ -1,5 +1,6 @@
 import { assertOneOf } from "@aohys/core";
-import type { ContentId, Locale } from "@aohys/content-graph";
+import type { ContentId } from "@aohys/content-graph";
+import type { Locale } from "@aohys/core/domain";
 
 export const SELECTED_CONVERSION_EVENTS = [
   "contact_form_viewed",

@@ -26,13 +26,13 @@ The React app uses:
 
 Current app routes:
 
-| Route | Purpose |
-| --- | --- |
-| `/dashboard` | Private landing route for the dashboard app |
+| Route                 | Purpose                                                                       |
+| --------------------- | ----------------------------------------------------------------------------- |
+| `/dashboard`          | Private landing route for the dashboard app                                   |
 | `/dashboard/projects` | Manage project text, SEO, CTA, URL, achievements, structure notes, and images |
-| `/dashboard/leads` | Review and update lead status |
-| `/dashboard/resume` | Manage downloadable resume versions |
-| `/dashboard/settings` | Manage site-level public build values that do not belong to one project |
+| `/dashboard/leads`    | Review and update lead status                                                 |
+| `/dashboard/resume`   | Manage downloadable resume versions                                           |
+| `/dashboard/settings` | Manage site-level public build values that do not belong to one project       |
 
 Legacy URLs `/dashboard/case-studies` and `/dashboard/media` are routed to the project workspace.
 
@@ -73,6 +73,9 @@ The public Astro site still renders from the Public Content Graph for SEO stabil
 ## UI Rules
 
 - Use shadcn/ui components added through the CLI.
+- Features compose `@/components/dashboard`, not raw `components/ui` dialogs or badges: `ConfirmAction` for a decision, `NoticeDialog` for an acknowledgment, `StatusBadge` for a state the operator acts on, `MetaBadge` for counts and descriptive labels. `pnpm architecture:fitness` rejects `components/ui/{alert-dialog,badge}` imported from `features/*`.
+- `lib/dashboard-classes.ts` holds theme variables and layout classes that two or more screens share; a screen's own classes live next to it (`features/projects/project-classes.ts`).
+- Theme colors come from `packages/core/src/brand-tokens.ts` through the generated `lib/brand-theme.generated.ts`; run `pnpm brand:generate` after changing a token and never write a brand color literal in a component.
 - Use semantic tokens, not hardcoded color values in app components.
 - Use `FieldGroup` and `Field` for forms.
 - Keep the dashboard task-first, dense, and operational.

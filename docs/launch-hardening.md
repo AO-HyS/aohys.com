@@ -7,7 +7,7 @@ This checklist is the launch-readiness surface for issue #17. It is intentionall
 Run before every launch hardening PR:
 
 ```sh
-pnpm verify
+pnpm quality:certify
 pnpm --filter @aohys/backend exec tsc --noEmit -p convex/tsconfig.json
 ```
 

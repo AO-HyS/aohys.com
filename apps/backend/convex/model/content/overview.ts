@@ -1,23 +1,18 @@
 import { v, type ObjectType } from "convex/values";
 import type { QueryCtx } from "../../_generated/server.js";
 import { buildDashboardOverview } from "../../../src/dashboard-overview.js";
+import { projectDraftValidator } from "./projects.js";
+import { publicMediaUrl, withinLimit } from "./shared.js";
 import {
+  caseStudyEvidenceStatusValidator,
+  caseStudyStatusValidator,
+  environmentValidator,
+  localeValidator,
   mediaStatusValidator,
   mediaStorageProviderValidator,
   mediaUsageValidator,
-} from "./media.js";
-import {
-  caseStudyStatusValidator,
-  evidenceStatusValidator,
-  projectDraftValidator,
-} from "./projects.js";
-import {
-  environmentValidator,
-  localeValidator,
-  publicMediaUrl,
-  withinLimit,
-} from "./shared.js";
-import { settingClassificationValidator } from "./settings.js";
+  siteSettingClassificationValidator,
+} from "../../lib/validators.js";
 import { publicationSummaryValidator } from "../publication.js";
 
 const overviewPathValidator = v.union(
@@ -104,7 +99,7 @@ export const listForDashboardReturns = v.object({
     v.object({
       contentId: v.string(),
       status: caseStudyStatusValidator,
-      evidenceStatus: evidenceStatusValidator,
+      evidenceStatus: caseStudyEvidenceStatusValidator,
       updatedAt: v.number(),
     }),
   ),
@@ -138,7 +133,7 @@ export const listForDashboardReturns = v.object({
       key: v.string(),
       environment: environmentValidator,
       value: v.string(),
-      classification: settingClassificationValidator,
+      classification: siteSettingClassificationValidator,
       updatedAt: v.number(),
     }),
   ),

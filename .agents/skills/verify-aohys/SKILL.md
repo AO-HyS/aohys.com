@@ -17,8 +17,9 @@ The product is split by ownership and each run launches only the app it maps:
 - `apps/site`: public Astro marketing site, case studies, and calls to action;
   local origin `http://localhost:4321`.
 - `apps/dashboard`: private operations workspace (TanStack Router + Vite)
-  behind Better Auth; local origin `http://127.0.0.1:5180` with the
-  `/dashboard` base path.
+  behind Better Auth; local dev origin `http://127.0.0.1:5180` serves
+  `/dashboard-app/` while the router expects `/dashboard`, so dashboard
+  journeys run on a versioned preview origin.
 - `apps/backend`: Convex data and functions; the data authority with no
   browser surface.
 
@@ -113,11 +114,36 @@ instead of reusing the fixture. Production remains read-only.
 The canonical map is `config/product-verification-feature-map.json`. It maps
 the real, drivable journeys: the public home, the mapped published case
 study, the dashboard auth gate, the authorized Overview readiness checklist,
-and the authorized Leads observation. Every entry starts `draft` and becomes
-`proven` for a specific candidate only after launch, doctor, Computer Use,
-before/after probes, private evidence, a verification verdict, and cleanup all exist
-for the same run. Use `pnpm verify:product:changed` to select mapped journeys
-whose `sourceGlobs` intersect the candidate diff without driving the UI.
+the authorized Leads observation, the denied-session refusal (an account
+outside the allowlist), and the write journeys: resume save with server
+rejection, project save, settings save, contact rejection and publication to
+preview. Write journeys declare a run-scoped cleanup; publication has provider
+effects and runs only with the owner's authorization for that run. Checks that
+a browser cannot drive (a denied Convex query, an invalid contact payload) are
+host probes in `beforeProbe` and `afterProbe`. Every entry starts `draft` and becomes `proven` for a specific
+candidate only after launch, doctor, Computer Use, before/after probes, private
+evidence, a verification verdict, and cleanup all exist for the same run; a
+proven entry names its private run id, an environment among its own
+`environments` (default local or preview), a
+`proofRoute` among its routes, its `proofCandidateSha` and the
+`proofJourneySha256` of its contract (`computeJourneySha256`), and
+`pnpm verify:product` marks it stale as soon as a mapped source or the journey
+contract changes after the proof.
+Every `sourceGlobs` path must exist. `sourceGlobs` name a journey's entry
+points; its dependencies follow from the architecture-fitness import graph,
+including imported JSON and CSS. `sharedSourceGlobs` list bootstrap files that
+import every feature (dashboard `main.tsx`, router, shell, auth client,
+styles); a change selects the journey when it touches a shared root or a
+dependency of one that no journey owns through its own `sourceGlobs` (shared
+UI, hooks, libraries). Public assets referenced by URL are mapped as
+directories (`apps/site/public`).
+`pnpm verify:product:changed` (changed files from `--changed=`, else
+`CHANGED_FILES`, else the working tree, index and branch diff against
+`QUALITY_BASE_REF`, default `origin/develop`) selects a journey when a changed
+file, or any
+file that transitively imports it, sits under its `sourceGlobs`, and a proof
+goes stale when an entry point or any transitive dependency changes after
+`proofCandidateSha`. Selection never drives the UI.
 
 ## Truthfulness
 

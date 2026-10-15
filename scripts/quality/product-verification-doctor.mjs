@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 
 import process from "node:process";
+import { ENVIRONMENTS } from "@aohys/core/domain";
+import {
+  CLOUDFLARE_PROJECT_NAME,
+  PAGES_DEV_SUFFIX,
+  PRODUCTION_ORIGINS,
+} from "@aohys/core/release-targets";
 
 export const DOCTOR_APPS = {
   site: {
@@ -15,16 +21,6 @@ export const DOCTOR_APPS = {
   },
 };
 
-const PAGES_DEV_SUFFIX = ".aohys-com.pages.dev";
-const PRODUCTION_ORIGINS = ["https://aohys.com", "https://www.aohys.com"];
-const ENVIRONMENTS = new Set(["local", "preview", "production"]);
-
-function option(name, fallback) {
-  const prefix = `--${name}=`;
-  const value = process.argv.find((arg) => arg.startsWith(prefix));
-  return value ? value.slice(prefix.length) : fallback;
-}
-
 export function resolveDoctorTarget(argv = process.argv.slice(2)) {
   const read = (name, fallback) => {
     const prefix = `--${name}=`;
@@ -36,7 +32,7 @@ export function resolveDoctorTarget(argv = process.argv.slice(2)) {
   const environment = read("env", "local");
   const config = DOCTOR_APPS[app];
   if (!config) throw new Error(`Unknown app: ${app}. Use site or dashboard.`);
-  if (!ENVIRONMENTS.has(environment))
+  if (!ENVIRONMENTS.includes(environment))
     throw new Error(`Unknown environment: ${environment}`);
 
   const baseUrl = read("url", config.localOrigins[0]);
@@ -55,7 +51,7 @@ export function resolveDoctorTarget(argv = process.argv.slice(2)) {
     if (
       base.protocol !== "https:" ||
       !base.hostname.endsWith(PAGES_DEV_SUFFIX) ||
-      base.hostname === `aohys-com${PAGES_DEV_SUFFIX}`
+      base.hostname === `${CLOUDFLARE_PROJECT_NAME}${PAGES_DEV_SUFFIX}`
     )
       throw new Error(
         `${environment} ${app} Doctor requires a versioned Cloudflare Pages preview origin`,

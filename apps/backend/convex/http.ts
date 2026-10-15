@@ -1,3 +1,4 @@
+import { postHogIngestHost } from "@aohys/core/release-targets";
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server.js";
 import { internal } from "./_generated/api.js";
@@ -20,6 +21,11 @@ import {
   resolveContactEnvironment,
   shouldCaptureContactIntakeFailure,
 } from "../src/contact-environment.js";
+import { type Environment } from "@aohys/core/domain";
+import {
+  getVariableNamesForDestination,
+  parseTrustedOrigins,
+} from "@aohys/environment";
 
 const http = httpRouter();
 
@@ -27,10 +33,7 @@ authComponent.registerRoutesLazy(http, createAuth, {
   basePath: "/api/auth",
   cors: true,
   trustedOrigins: () =>
-    (process.env.BETTER_AUTH_TRUSTED_ORIGINS ?? "")
-      .split(",")
-      .map((origin) => origin.trim())
-      .filter(Boolean),
+    parseTrustedOrigins(process.env.BETTER_AUTH_TRUSTED_ORIGINS),
 });
 
 const corsHeaders = {
@@ -48,44 +51,21 @@ function jsonResponse(
     headers: {
       ...corsHeaders,
       "Content-Type": "application/json",
-      ...init.headers,
+      ...(init.headers as Record<string, string> | undefined),
     },
   });
 }
 
 function getContactEnvironmentValues(): Record<string, string | undefined> {
-  return {
-    AOHYS_ENV: process.env.AOHYS_ENV,
-    PUBLIC_SITE_URL: process.env.PUBLIC_SITE_URL,
-    PUBLIC_CONTACT_ENDPOINT: process.env.PUBLIC_CONTACT_ENDPOINT,
-    CONVEX_URL: process.env.CONVEX_URL,
-    CONVEX_DEPLOYMENT: process.env.CONVEX_DEPLOYMENT,
-    CONVEX_SITE_URL: process.env.CONVEX_SITE_URL,
-    CONVEX_DEPLOY_KEY: process.env.CONVEX_DEPLOY_KEY,
-    PUBLIC_POSTHOG_KEY: process.env.PUBLIC_POSTHOG_KEY,
-    PUBLIC_RELEASE_SHA: process.env.PUBLIC_RELEASE_SHA,
-    RESEND_API_KEY: process.env.RESEND_API_KEY,
-    RESEND_FROM: process.env.RESEND_FROM,
-    LEAD_NOTIFICATION_EMAIL: process.env.LEAD_NOTIFICATION_EMAIL,
-    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
-    BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
-    BETTER_AUTH_TRUSTED_ORIGINS: process.env.BETTER_AUTH_TRUSTED_ORIGINS,
-    ADMIN_EMAIL: process.env.ADMIN_EMAIL,
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID,
-    CLOUDFLARE_PROJECT_NAME: process.env.CLOUDFLARE_PROJECT_NAME,
-    CLOUDFLARE_IMAGES_ACCOUNT_HASH: process.env.CLOUDFLARE_IMAGES_ACCOUNT_HASH,
-    CLOUDFLARE_IMAGES_API_TOKEN: process.env.CLOUDFLARE_IMAGES_API_TOKEN,
-    PUBLISH_GITHUB_REPOSITORY: process.env.PUBLISH_GITHUB_REPOSITORY,
-    PUBLISH_GITHUB_TOKEN: process.env.PUBLISH_GITHUB_TOKEN,
-    PUBLISH_GITHUB_WORKFLOW_ID: process.env.PUBLISH_GITHUB_WORKFLOW_ID,
-    PUBLIC_CONTACT_EMAIL: process.env.PUBLIC_CONTACT_EMAIL,
-    PUBLIC_WHATSAPP_URL: process.env.PUBLIC_WHATSAPP_URL,
-  };
+  return Object.fromEntries(
+    getVariableNamesForDestination("convex-runtime").map((name) => [
+      name,
+      process.env[name],
+    ]),
+  );
 }
 
-function getContactEnvironment(): "local" | "preview" | "production" {
+function getContactEnvironment(): Environment {
   return resolveContactEnvironment(process.env.AOHYS_ENV);
 }
 
@@ -114,7 +94,7 @@ async function captureContactIntakeFailure(
       }),
       {
         apiKey,
-        host: "https://aohys.com/ingest",
+        host: postHogIngestHost(requiredSiteUrl()),
       },
     );
   } catch {
@@ -159,7 +139,7 @@ http.route({
           captureAnalyticsEvent: async (event) =>
             captureLeadAnalyticsWithPostHog(event, {
               apiKey: process.env.PUBLIC_POSTHOG_KEY ?? "",
-              host: "https://aohys.com/ingest",
+              host: postHogIngestHost(requiredSiteUrl()),
             }),
         },
       });
@@ -173,5 +153,12 @@ http.route({
     }
   }),
 });
+
+// PostHog ingest goes through the public site of this deployment.
+function requiredSiteUrl(): string {
+  const siteUrl = process.env.PUBLIC_SITE_URL?.trim();
+  if (!siteUrl) throw new Error("PUBLIC_SITE_URL is required for analytics.");
+  return siteUrl;
+}
 
 export default http;

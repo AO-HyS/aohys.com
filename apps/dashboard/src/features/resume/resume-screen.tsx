@@ -1,4 +1,6 @@
 import { useMemo, useReducer, useState } from "react";
+import { parseResumePageContent } from "@aohys/content-graph/resume-content";
+import { ConvexError } from "convex/values";
 import {
   LoaderCircleIcon,
   PlusIcon,
@@ -24,16 +26,10 @@ import {
 import { PageHeader } from "@/components/dashboard/page-header";
 import { SaveBar } from "@/components/dashboard/save-bar";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
+  saveBarState,
+  type SaveResult,
+} from "@/components/dashboard/save-state";
+import { StatusBadge } from "@/components/dashboard/status-badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -47,6 +43,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toast";
 import { captureDashboardAction } from "@/lib/analytics";
 import { dashboardClass } from "@/lib/dashboard-classes";
+import { resumeClass } from "./resume-classes";
 import {
   createResumeEditableState,
   reduceResumeEditableState,
@@ -63,7 +60,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type {
-  DashboardLocale,
   DashboardResumeContent,
   DashboardResumeVersion,
   ResumeEducation,
@@ -73,9 +69,9 @@ import type {
   ResumeSkillGroup,
   ResumeContent,
 } from "./resume-types";
-import { parseDashboardResumeContent } from "./resume-boundary";
 import { useEditorListKeys } from "./use-editor-list-keys";
 import { publicationLabel } from "@/lib/publication-state";
+import { type Locale } from "@aohys/core/domain";
 
 const resumeDateFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
@@ -83,7 +79,7 @@ const resumeDateFormatter = new Intl.DateTimeFormat(undefined, {
 });
 
 interface ResumeVersionForm {
-  locale: DashboardLocale;
+  locale: Locale;
   version: string;
   pdfPath: string;
   isPublished: boolean;
@@ -91,7 +87,7 @@ interface ResumeVersionForm {
 
 export function ResumeScreen() {
   const payload = useResumeContent();
-  const [selectedLocale, setSelectedLocale] = useState<DashboardLocale>("en");
+  const [selectedLocale, setSelectedLocale] = useState<Locale>("en");
 
   const baseline = useMemo(() => {
     if (!payload) {
@@ -104,7 +100,7 @@ export function ResumeScreen() {
 
     if (draft) {
       return (
-        parseDashboardResumeContent(draft.contentJson) ??
+        parseResumePageContent(draft.contentJson) ??
         payload.resumeContent[selectedLocale]
       );
     }
@@ -142,8 +138,8 @@ function ResumeWorkspace({
 }: {
   payload: ResumeContent;
   baseline: DashboardResumeContent;
-  selectedLocale: DashboardLocale;
-  onSelectLocale: (locale: DashboardLocale) => void;
+  selectedLocale: Locale;
+  onSelectLocale: (locale: Locale) => void;
 }) {
   const publishResume = usePublishResume();
   const saveResumeDraft = useSaveResumeDraft();
@@ -167,12 +163,8 @@ function ResumeWorkspace({
   const [isSaving, setIsSaving] = useState(false);
   const [isSavingVersion, setIsSavingVersion] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
-  const [saveResult, setSaveResult] = useState<"clean" | "saved" | "error">(
-    "clean",
-  );
-  const [pendingLocale, setPendingLocale] = useState<DashboardLocale | null>(
-    null,
-  );
+  const [saveResult, setSaveResult] = useState<SaveResult>("clean");
+  const [pendingLocale, setPendingLocale] = useState<Locale | null>(null);
   const [versionForm, setVersionForm] = useState<ResumeVersionForm>({
     locale: selectedLocale,
     version: "",
@@ -225,9 +217,11 @@ function ResumeWorkspace({
       toast.error("Resume save failed", {
         id: toastId,
         description:
-          saveError instanceof Error
-            ? saveError.message
-            : "Resume draft could not be saved.",
+          saveError instanceof ConvexError && typeof saveError.data === "string"
+            ? saveError.data
+            : saveError instanceof Error
+              ? saveError.message
+              : "Resume draft could not be saved.",
       });
     } finally {
       setIsSaving(false);
@@ -350,7 +344,7 @@ function ResumeWorkspace({
       />
 
       <SaveBar
-        state={isSaving ? "saving" : hasChanges ? "dirty" : saveResult}
+        state={saveBarState({ isSaving, hasChanges, result: saveResult })}
         onSave={() => void handleSave()}
         disabled={!hasChanges || validationErrors.length > 0 || isPublishing}
         description={
@@ -384,31 +378,18 @@ function ResumeWorkspace({
         onSubmit={handleVersionSubmit}
       />
 
-      <AlertDialog
+      <ConfirmAction
         open={pendingLocale !== null}
         onOpenChange={(open) => !open && setPendingLocale(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Discard unsaved locale changes?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Switching locale resets this editor to the other locale's saved
-              Convex baseline.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Keep editing</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (pendingLocale) onSelectLocale(pendingLocale);
-                setPendingLocale(null);
-              }}
-            >
-              Discard and switch
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        title="Discard unsaved locale changes?"
+        description="Switching locale resets this editor to the other locale's saved Convex baseline."
+        cancelLabel="Keep editing"
+        confirmLabel="Discard and switch"
+        onConfirm={() => {
+          if (pendingLocale) onSelectLocale(pendingLocale);
+          setPendingLocale(null);
+        }}
+      />
     </div>
   );
 }
@@ -442,9 +423,7 @@ function ResumeArtifactsSection({
               <LabeledSelect
                 label="Locale"
                 value={form.locale}
-                onValueChange={(value) =>
-                  onChange({ locale: value as DashboardLocale })
-                }
+                onValueChange={(value) => onChange({ locale: value as Locale })}
                 options={[
                   { value: "en", label: "English" },
                   { value: "es", label: "Spanish" },
@@ -489,12 +468,12 @@ function ResumeWorkspaceStatus({
   onRequestLocale,
   onRebase,
 }: {
-  selectedLocale: DashboardLocale;
+  selectedLocale: Locale;
   activeDraft: ResumeContent["resumeDrafts"][number] | undefined;
   publication?: import("@/lib/publication-state").DashboardPublication;
   validationErrors: string[];
   hasRemoteBaseline: boolean;
-  onRequestLocale: (locale: DashboardLocale) => void;
+  onRequestLocale: (locale: Locale) => void;
   onRebase: () => void;
 }) {
   return (
@@ -505,7 +484,7 @@ function ResumeWorkspaceStatus({
         actions={
           <Tabs
             value={selectedLocale}
-            onValueChange={(value) => onRequestLocale(value as DashboardLocale)}
+            onValueChange={(value) => onRequestLocale(value as Locale)}
           >
             <TabsList className={dashboardClass.localeTabsList}>
               <TabsTrigger value="en">English</TabsTrigger>
@@ -876,7 +855,7 @@ function TextArrayEditor({
           onValueChange={onTitleChange}
         />
         {values.map((value, index) => (
-          <div key={itemKeys.at(index)} className={dashboardClass.arrayRow}>
+          <div key={itemKeys.at(index)} className={resumeClass.arrayRow}>
             <LabeledTextarea
               label={`Item ${index + 1}`}
               value={value}
@@ -936,10 +915,7 @@ function HighlightsEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div
-            key={itemKeys.at(index)}
-            className={dashboardClass.nestedEditorRow}
-          >
+          <div key={itemKeys.at(index)} className={resumeClass.nestedEditorRow}>
             <div className={dashboardClass.formGrid2}>
               <LabeledInput
                 label={`Highlight ${index + 1} label`}
@@ -1007,10 +983,7 @@ function ProjectsEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div
-            key={itemKeys.at(index)}
-            className={dashboardClass.nestedEditorRow}
-          >
+          <div key={itemKeys.at(index)} className={resumeClass.nestedEditorRow}>
             <LabeledInput
               label={`Project ${index + 1} title`}
               value={item.title}
@@ -1093,10 +1066,7 @@ function ExperienceEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div
-            key={itemKeys.at(index)}
-            className={dashboardClass.nestedEditorRow}
-          >
+          <div key={itemKeys.at(index)} className={resumeClass.nestedEditorRow}>
             <div className={dashboardClass.formGrid3}>
               <LabeledInput
                 label={`Experience ${index + 1} role`}
@@ -1190,10 +1160,7 @@ function SkillsEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div
-            key={itemKeys.at(index)}
-            className={dashboardClass.nestedEditorRow}
-          >
+          <div key={itemKeys.at(index)} className={resumeClass.nestedEditorRow}>
             <LabeledInput
               label={`Skill group ${index + 1} label`}
               value={item.label}
@@ -1266,10 +1233,7 @@ function EducationEditor({
           onValueChange={onTitleChange}
         />
         {items.map((item, index) => (
-          <div
-            key={itemKeys.at(index)}
-            className={dashboardClass.nestedEditorRow}
-          >
+          <div key={itemKeys.at(index)} className={resumeClass.nestedEditorRow}>
             <div className={dashboardClass.formGrid3}>
               <LabeledInput
                 label={`Education ${index + 1} degree`}
@@ -1359,11 +1323,11 @@ function ResumeVersionsCard({
                     {version.pdfPath}
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant={version.isPublished ? "default" : "secondary"}
+                    <StatusBadge
+                      tone={version.isPublished ? "success" : "neutral"}
                     >
                       {version.isPublished ? "Published" : "Draft"}
-                    </Badge>
+                    </StatusBadge>
                   </TableCell>
                 </TableRow>
               ))}

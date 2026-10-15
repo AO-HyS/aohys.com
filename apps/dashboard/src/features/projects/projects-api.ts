@@ -3,13 +3,7 @@ import { api as convexApi } from "@aohys/backend/convex/_generated/api";
 import { useAction, useMutation, useQuery } from "convex/react";
 import type { FunctionArgs, FunctionReturnType } from "convex/server";
 import { buildDashboardProjectRows } from "./projects-model";
-import type {
-  DashboardCaseStudyStatus,
-  DashboardEvidenceStatus,
-  DashboardLocale,
-  DashboardMediaUsage,
-  ProjectsContent,
-} from "./projects-types";
+import type { ProjectsContent } from "./projects-types";
 import { dashboardRuntimeConfig } from "@/runtime-config";
 
 export type ProjectDraftRequest = FunctionArgs<

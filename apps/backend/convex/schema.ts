@@ -1,60 +1,26 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-
-const environmentValidator = v.union(
-  v.literal("local"),
-  v.literal("preview"),
-  v.literal("production"),
-);
-
-const localeValidator = v.union(v.literal("en"), v.literal("es"));
-
-const leadIntentValidator = v.union(
-  v.literal("project"),
-  v.literal("hiring"),
-  v.literal("architecture-review"),
-  v.literal("website"),
-  v.literal("other"),
-);
-
-const leadStatusValidator = v.union(
-  v.literal("new"),
-  v.literal("reviewing"),
-  v.literal("closed"),
-);
-
-const preferredContactPathValidator = v.union(
-  v.literal("email"),
-  v.literal("whatsapp"),
-);
-
-const publicationScopeValidator = v.union(
-  v.literal("project"),
-  v.literal("resume"),
-  v.literal("all"),
-);
-
-const publicationTargetValidator = v.union(
-  v.literal("preview"),
-  v.literal("production"),
-);
-
-const publicationRequestStateValidator = v.union(
-  v.literal("published-locally"),
-  v.literal("release-requested"),
-  v.literal("release-acknowledged"),
-  v.literal("release-failed"),
-  v.literal("deployed"),
-  v.literal("rollback-needed"),
-);
-
-const publicationAttemptStateValidator = v.union(
-  v.literal("scheduled"),
-  v.literal("dispatching"),
-  v.literal("acknowledged"),
-  v.literal("failed"),
-  v.literal("ambiguous"),
-);
+import {
+  caseStudyEvidenceStatusValidator,
+  caseStudyStatusValidator,
+  environmentValidator,
+  leadIntentValidator,
+  leadStatusValidator,
+  localeValidator,
+  mediaStatusValidator,
+  mediaStorageProviderValidator,
+  mediaUsageValidator,
+  preferredContactPathValidator,
+  publicationAttemptStateValidator,
+  publicationRequestStateValidator,
+  publicationScopeValidator,
+  publicationWorkflowOutcomeValidator,
+  releaseEnvironmentValidator,
+  siteSettingClassificationValidator,
+  auditActorKindValidator,
+  auditOutcomeValidator,
+  operatorCredentialValidator,
+} from "./lib/validators.js";
 
 export default defineSchema({
   leads: defineTable({
@@ -83,26 +49,13 @@ export default defineSchema({
     .index("by_email_and_created_at", ["email", "createdAt"]),
 
   mediaMetadata: defineTable({
-    storageProvider: v.union(
-      v.literal("cloudflare-images"),
-      v.literal("cloudflare-r2"),
-      v.literal("external"),
-    ),
+    storageProvider: mediaStorageProviderValidator,
     storageKey: v.string(),
     publicUrl: v.optional(v.string()),
     altText: v.string(),
     contentId: v.optional(v.string()),
-    usage: v.union(
-      v.literal("case-study"),
-      v.literal("resume"),
-      v.literal("architecture"),
-      v.literal("site"),
-    ),
-    status: v.union(
-      v.literal("draft"),
-      v.literal("published"),
-      v.literal("archived"),
-    ),
+    usage: mediaUsageValidator,
+    status: mediaStatusValidator,
     locale: v.optional(localeValidator),
     selectedForPublic: v.optional(v.boolean()),
     selectedForPublicAt: v.optional(v.number()),
@@ -116,28 +69,14 @@ export default defineSchema({
     key: v.string(),
     environment: environmentValidator,
     value: v.string(),
-    classification: v.union(
-      v.literal("public-build-value"),
-      v.literal("provider-output"),
-      v.literal("policy-value"),
-    ),
+    classification: siteSettingClassificationValidator,
     updatedAt: v.number(),
   }).index("by_environment_and_key", ["environment", "key"]),
 
   caseStudyMetadata: defineTable({
     contentId: v.string(),
-    status: v.union(
-      v.literal("production-proof"),
-      v.literal("active-build"),
-      v.literal("private-build"),
-      v.literal("enterprise-confidential"),
-      v.literal("engineering-practice"),
-    ),
-    evidenceStatus: v.union(
-      v.literal("missing"),
-      v.literal("sanitized"),
-      v.literal("published"),
-    ),
+    status: caseStudyStatusValidator,
+    evidenceStatus: caseStudyEvidenceStatusValidator,
     updatedAt: v.number(),
   }).index("by_content_id", ["contentId"]),
 
@@ -184,7 +123,7 @@ export default defineSchema({
     scope: publicationScopeValidator,
     contentId: v.optional(v.string()),
     locale: v.optional(localeValidator),
-    targetEnvironment: publicationTargetValidator,
+    targetEnvironment: releaseEnvironmentValidator,
     requestedBy: v.string(),
     state: publicationRequestStateValidator,
     retryable: v.optional(v.boolean()),
@@ -222,9 +161,7 @@ export default defineSchema({
     providerRunUrl: v.optional(v.string()),
     providerGitRef: v.optional(v.string()),
     providerReleaseSha: v.optional(v.string()),
-    workflowOutcome: v.optional(
-      v.union(v.literal("failure"), v.literal("cancelled")),
-    ),
+    workflowOutcome: v.optional(publicationWorkflowOutcomeValidator),
     workflowOutcomeAt: v.optional(v.number()),
     failureCode: v.optional(v.string()),
     failureMessage: v.optional(v.string()),
@@ -240,7 +177,7 @@ export default defineSchema({
     attemptId: v.id("publicationAttempts"),
     publicationAttemptId: v.string(),
     requestKey: v.string(),
-    targetEnvironment: publicationTargetValidator,
+    targetEnvironment: releaseEnvironmentValidator,
     gitRef: v.optional(v.string()),
     runId: v.string(),
     runUrl: v.string(),
@@ -251,4 +188,27 @@ export default defineSchema({
     .index("by_publication_attempt_id", ["publicationAttemptId"])
     .index("by_request_id", ["requestId"])
     .index("by_request_key", ["requestKey"]),
+
+  // Append-only: rows are never patched or deleted. Written only through
+  // convex/lib/audit.ts. The actor fields present depend on actorKind:
+  // session (actorId, actorEmail), operator (deployment, credential,
+  // authorizationRef, operatorLabel as a non-authoritative label) or system
+  // (causedBy).
+  auditEvents: defineTable({
+    actorKind: auditActorKindValidator,
+    actorId: v.optional(v.string()),
+    actorEmail: v.optional(v.string()),
+    deployment: v.optional(v.string()),
+    credential: v.optional(operatorCredentialValidator),
+    authorizationRef: v.optional(v.string()),
+    operatorLabel: v.optional(v.string()),
+    causedBy: v.optional(v.string()),
+    verb: v.string(),
+    target: v.record(v.string(), v.string()),
+    outcome: auditOutcomeValidator,
+    correlationId: v.optional(v.string()),
+    at: v.number(),
+  })
+    .index("by_at", ["at"])
+    .index("by_correlation_id", ["correlationId"]),
 });

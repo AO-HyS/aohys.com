@@ -11,6 +11,7 @@ const plan = buildChangedValidationPlan({
   changedFiles: resolveChangedFiles({ baseRef }),
   baseRef,
   baseCommands: [
+    ["pnpm", ["exec", "oxlint", "."]],
     ["node", ["scripts/verify-foundation.mjs"]],
     ["pnpm", ["run", "strict:boundaries"]],
   ],

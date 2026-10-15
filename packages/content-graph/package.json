@@ -14,12 +14,20 @@
       "types": "./src/static-case-study-routes.ts",
       "import": "./src/static-case-study-routes.ts",
       "default": "./src/static-case-study-routes.ts"
+    },
+    "./resume-content": {
+      "types": "./src/resume-content.ts",
+      "import": "./src/resume-content.ts",
+      "default": "./src/resume-content.ts"
     }
   },
   "scripts": {
     "build": "tsc --noEmit -p tsconfig.json",
     "lint": "tsc --noEmit -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@aohys/core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^26.0.1",

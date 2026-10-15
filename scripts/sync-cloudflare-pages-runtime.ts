@@ -1,6 +1,7 @@
+import { CLOUDFLARE_PROJECT_NAME } from "@aohys/core/release-targets";
 import { pathToFileURL } from "node:url";
-
-export type PagesEnvironmentName = "preview" | "production";
+import { type ReleaseEnvironment } from "@aohys/core/domain";
+import { getVariableNamesForDestination } from "@aohys/environment";
 
 export interface CloudflarePagesVariable {
   value?: string;
@@ -15,7 +16,7 @@ interface CloudflarePagesDeploymentConfig {
 
 export interface CloudflarePagesProject {
   deployment_configs?: Record<
-    PagesEnvironmentName,
+    ReleaseEnvironment,
     CloudflarePagesDeploymentConfig
   >;
 }
@@ -26,24 +27,24 @@ interface CloudflareApiResponse<T> {
   errors?: Array<{ message?: string }>;
 }
 
-export const RUNTIME_BINDING_NAMES = [
-  "ADMIN_EMAIL",
-  "AOHYS_ENV",
-  "BETTER_AUTH_TRUSTED_ORIGINS",
-  "BETTER_AUTH_URL",
-  "CONVEX_SITE_URL",
-  "CONVEX_URL",
-  "CLOUDFLARE_IMAGES_ACCOUNT_HASH",
-  "PUBLIC_RELEASE_SHA",
-  "PUBLIC_SITE_URL",
-] as const;
+// Bindings every release environment must carry; production adds the rest
+// of its Pages runtime variables (PUBLIC_POSTHOG_KEY).
+export const RUNTIME_BINDING_NAMES = getVariableNamesForDestination(
+  "pages-runtime",
+  "preview",
+)
+  .filter((name) =>
+    getVariableNamesForDestination("pages-runtime", "production").includes(
+      name,
+    ),
+  )
+  .sort();
 
-type RuntimeBindingName = (typeof RUNTIME_BINDING_NAMES)[number];
 type RuntimeValues = Record<string, string | undefined>;
 
 export function parsePagesEnvironment(
   input: string | undefined,
-): PagesEnvironmentName {
+): ReleaseEnvironment {
   if (input === "preview" || input === "production") return input;
   throw new Error(
     "Usage: tsx scripts/sync-cloudflare-pages-runtime.ts <preview|production>",
@@ -61,12 +62,15 @@ function requiredValue(values: RuntimeValues, name: string): string {
 }
 
 export function collectCanonicalRuntimeValues(
-  environment: PagesEnvironmentName,
+  environment: ReleaseEnvironment,
   values: RuntimeValues = process.env,
 ): Record<string, string> {
-  const runtimeValues = Object.fromEntries(
-    RUNTIME_BINDING_NAMES.map((name) => [name, requiredValue(values, name)]),
-  ) as Record<RuntimeBindingName, string>;
+  const runtimeValues: Record<string, string> = Object.fromEntries(
+    getVariableNamesForDestination("pages-runtime", environment).map((name) => [
+      name,
+      requiredValue(values, name),
+    ]),
+  );
 
   if (runtimeValues.AOHYS_ENV !== environment) {
     throw new Error(
@@ -74,12 +78,7 @@ export function collectCanonicalRuntimeValues(
     );
   }
 
-  return environment === "production"
-    ? {
-        ...runtimeValues,
-        PUBLIC_POSTHOG_KEY: requiredValue(values, "PUBLIC_POSTHOG_KEY"),
-      }
-    : runtimeValues;
+  return runtimeValues;
 }
 
 function apiUrl(accountId: string, projectName: string): string {
@@ -123,7 +122,7 @@ export async function readPagesProject({
 
 export function readPlainVariable(
   project: CloudflarePagesProject,
-  environment: PagesEnvironmentName,
+  environment: ReleaseEnvironment,
   name: string,
 ): string | undefined {
   const variable = project.deployment_configs?.[environment]?.env_vars?.[name];
@@ -134,7 +133,7 @@ export function readPlainVariable(
 
 function runtimeMatches(
   project: CloudflarePagesProject,
-  environment: PagesEnvironmentName,
+  environment: ReleaseEnvironment,
   values: Record<string, string>,
 ): boolean {
   return Object.entries(values).every(
@@ -160,7 +159,7 @@ export async function synchronizeCloudflarePagesRuntime({
   values,
   fetchImplementation = fetch,
 }: {
-  environment: PagesEnvironmentName;
+  environment: ReleaseEnvironment;
   accountId: string;
   apiToken: string;
   projectName: string;
@@ -226,7 +225,7 @@ async function main(): Promise<void> {
   const accountId = requiredValue(process.env, "CLOUDFLARE_ACCOUNT_ID");
   const apiToken = requiredValue(process.env, "CLOUDFLARE_API_TOKEN");
   const projectName =
-    process.env.CLOUDFLARE_PROJECT_NAME?.trim() || "aohys-com";
+    process.env.CLOUDFLARE_PROJECT_NAME?.trim() || CLOUDFLARE_PROJECT_NAME;
   const values = collectCanonicalRuntimeValues(environment);
   const result = await synchronizeCloudflarePagesRuntime({
     environment,

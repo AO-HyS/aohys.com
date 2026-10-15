@@ -1,15 +1,18 @@
-import type { EnvironmentName } from "@aohys/environment";
 import { CONTACT_SUBMISSION_RATE_LIMIT_MESSAGE } from "./contact-abuse.js";
 import {
-  PREFERRED_CONTACT_PATHS,
   type ContactLeadInput,
   type LeadAnalyticsEvent,
 } from "./contact-workflow.js";
-import { LEAD_INTENTS, LEAD_LOCALES } from "./lead-intake.js";
 import {
   normalizeContactReleaseSha,
   normalizeContactSourcePath,
 } from "./contact-environment.js";
+import {
+  LEAD_INTENTS,
+  LOCALES,
+  PREFERRED_CONTACT_PATHS,
+  type Environment,
+} from "@aohys/core/domain";
 
 /*
  * HTTP payloads are untrusted at runtime even though the successful workflow
@@ -38,7 +41,7 @@ export interface PublicContactError {
 }
 
 export interface ContactIntakeFailureEventInput {
-  environment: EnvironmentName;
+  environment: Environment;
   input?: ContactIntakeTelemetryInput;
   publicError: PublicContactError;
   error: unknown;
@@ -99,7 +102,7 @@ export function buildContactIntakeTelemetryEvent({
   releaseSha,
 }: ContactIntakeFailureEventInput): LeadAnalyticsEvent {
   const sourcePath = normalizeContactSourcePath(input?.sourcePath);
-  const locale = canonicalValue(input?.locale, LEAD_LOCALES);
+  const locale = canonicalValue(input?.locale, LOCALES);
   const intent = canonicalValue(input?.intent, LEAD_INTENTS);
   const preferredContactPath = canonicalValue(
     input?.preferredContactPath,

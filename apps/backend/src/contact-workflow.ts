@@ -1,21 +1,18 @@
 import { assertOneOf, escapeHtml, trimToUndefined } from "@aohys/core";
-import type { EnvironmentName } from "@aohys/environment";
 import {
   normalizeContactReleaseSha,
   normalizeContactSourcePath,
 } from "./contact-environment.js";
+import { prepareLeadIntake, type PreparedLeadIntake } from "./lead-intake.js";
 import {
   LEAD_INTENTS,
-  LEAD_LOCALES,
-  prepareLeadIntake,
+  LOCALES,
+  PREFERRED_CONTACT_PATHS,
+  type Environment,
   type LeadIntent,
-  type LeadLocale,
-  type PreparedLeadIntake,
-} from "./lead-intake.js";
-
-export const PREFERRED_CONTACT_PATHS = ["email", "whatsapp"] as const;
-
-export type PreferredContactPath = (typeof PREFERRED_CONTACT_PATHS)[number];
+  type Locale,
+  type PreferredContactPath,
+} from "@aohys/core/domain";
 
 export interface ContactLeadInput {
   name: string;
@@ -26,7 +23,7 @@ export interface ContactLeadInput {
   intent: LeadIntent;
   message: string;
   sourcePath: string;
-  locale: LeadLocale;
+  locale: Locale;
   referrer?: string;
   consentToContact: boolean;
   website?: string;
@@ -71,7 +68,7 @@ export interface ContactWorkflowAdapters {
 }
 
 export interface ContactWorkflowContext {
-  environment: EnvironmentName;
+  environment: Environment;
   values: Record<string, string | undefined>;
   adapters: ContactWorkflowAdapters;
   now?: number;
@@ -118,7 +115,7 @@ function hasAnalyticsSettings(
 }
 
 function buildProviderFailureEvent(
-  environment: EnvironmentName,
+  environment: Environment,
   provider: "posthog" | "resend",
   operation: "lead_analytics" | "lead_notification",
   error: unknown,
@@ -184,7 +181,7 @@ function prepareContactLead(
   }
 
   assertOneOf(input.intent, LEAD_INTENTS, "intent");
-  assertOneOf(input.locale, LEAD_LOCALES, "locale");
+  assertOneOf(input.locale, LOCALES, "locale");
   assertOneOf(
     input.preferredContactPath,
     PREFERRED_CONTACT_PATHS,
@@ -206,9 +203,9 @@ function prepareContactLead(
     ...(phone ? { phone } : {}),
     preferredContactPath: input.preferredContactPath,
     consentToContact: true,
-    spamSignals: {
-      ...(input.formStartedAt ? { elapsedMs: now - input.formStartedAt } : {}),
-    },
+    spamSignals: input.formStartedAt
+      ? { elapsedMs: now - input.formStartedAt }
+      : {},
   };
 }
 
@@ -216,7 +213,7 @@ function buildLeadNotification(
   leadId: string,
   lead: PreparedContactLead,
   values: Record<string, string | undefined>,
-  environment: EnvironmentName,
+  environment: Environment,
 ): LeadNotification {
   const to = values.LEAD_NOTIFICATION_EMAIL;
   const from = values.RESEND_FROM;
@@ -274,7 +271,7 @@ function renderLeadNotificationEmail({
   leadId: string;
   lead: PreparedContactLead;
   dashboardUrl?: string;
-  environment: EnvironmentName;
+  environment: Environment;
 }): string {
   const escapedMessage = escapeHtml(lead.message).replace(/\n/g, "<br />");
   const rows = [
@@ -351,7 +348,7 @@ function renderLeadNotificationEmail({
 
 function buildLeadAnalyticsEvent(
   lead: PreparedContactLead,
-  environment: EnvironmentName,
+  environment: Environment,
   release: string | undefined,
 ): LeadAnalyticsEvent {
   return {

@@ -6,21 +6,12 @@ import {
   requireSafeProjectKey,
   requireUnreservedStaticSlug,
 } from "../../../src/project-identity.js";
-import { localeValidator } from "./shared.js";
-
-export const caseStudyStatusValidator = v.union(
-  v.literal("production-proof"),
-  v.literal("active-build"),
-  v.literal("private-build"),
-  v.literal("enterprise-confidential"),
-  v.literal("engineering-practice"),
-);
-
-export const evidenceStatusValidator = v.union(
-  v.literal("missing"),
-  v.literal("sanitized"),
-  v.literal("published"),
-);
+import {
+  caseStudyEvidenceStatusValidator,
+  caseStudyStatusValidator,
+} from "../../lib/validators.js";
+import { localeValidator } from "../../lib/validators.js";
+import { LOCALES, type Locale } from "@aohys/core/domain";
 
 export const projectDraftValidator = v.object({
   contentId: v.string(),
@@ -41,7 +32,7 @@ export const projectDraftValidator = v.object({
 export const upsertProjectDraftArgs = {
   contentId: v.string(),
   status: caseStudyStatusValidator,
-  evidenceStatus: evidenceStatusValidator,
+  evidenceStatus: caseStudyEvidenceStatusValidator,
   locale: localeValidator,
   localizedSlug: v.optional(v.string()),
   title: v.string(),
@@ -68,7 +59,7 @@ const localizedProjectDraftArgs = {
 export const createProjectArgs = {
   contentKey: v.string(),
   status: caseStudyStatusValidator,
-  evidenceStatus: evidenceStatusValidator,
+  evidenceStatus: caseStudyEvidenceStatusValidator,
   en: v.object(localizedProjectDraftArgs),
   es: v.object(localizedProjectDraftArgs),
 };
@@ -87,7 +78,7 @@ export const createProjectReturns = v.object({
 async function requireAvailableLocalizedSlug(
   ctx: MutationCtx,
   contentId: string,
-  locale: "en" | "es",
+  locale: Locale,
   localizedSlug: string,
 ): Promise<void> {
   requireUnreservedStaticSlug(contentId, locale, localizedSlug);
@@ -231,7 +222,7 @@ export async function createProjectHandler(
     evidenceStatus: args.evidenceStatus,
     updatedAt,
   });
-  for (const locale of ["en", "es"] as const) {
+  for (const locale of LOCALES) {
     await ctx.db.insert("projectDrafts", {
       contentId,
       locale,

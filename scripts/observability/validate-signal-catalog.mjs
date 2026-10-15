@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import { isRecord } from "@aohys/core/unknown-guards";
 
 const SENSITIVE_PROPERTY_PARTS = [
   "admin",
@@ -15,10 +16,6 @@ const SENSITIVE_PROPERTY_PARTS = [
   "token",
 ];
 const SAFE_EXCEPTION_PROPERTY = "$exception_list";
-
-function isRecord(value) {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 export function validateSignalCatalog(catalog) {
   const errors = [];

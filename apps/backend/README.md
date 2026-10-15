@@ -58,13 +58,20 @@ The public contact endpoint is the only anonymous lead-intake boundary. It is im
 
 After persistence, the workflow sends a Resend notification through an injected provider adapter and captures a PostHog conversion event with metadata only. Provider drift is reported through sanitized operational events instead of rejecting the visitor request. Public failures return safe codes such as `validation_error`, `rate_limited`, and `backend_unavailable`; private provider messages and contact fields are not reflected back to the browser. Expected malformed, invalid, abusive, and rate-limited traffic is tracked as `lead_intake_rejected`; `lead_intake_failed` is reserved for a real backend failure that prevents intake.
 
-Private dashboard workflows are exposed as public Convex functions guarded by `requireAdmin(ctx)`, which validates the Better Auth session and `ADMIN_EMAIL` allowlist:
+Private dashboard workflows are public Convex functions built with `adminQuery`, `adminMutation` or `adminAction` from `convex/lib/functions.ts`. These builders run `requireAdmin(ctx)` (Better Auth session plus the `ADMIN_EMAIL` allowlist) before the handler and pass the operator as `ctx.admin`. Raw public builders are rejected by `pnpm architecture:fitness`; every other function is `internal*`:
 
 - `leads.listForDashboard` and `leads.updateStatus` power lead review.
 - `content.listForDashboard` returns project drafts, case-study status metadata, media metadata, site settings, resume drafts, and resume versions.
 - `content.upsertProjectDraft`, `content.createMediaMetadata`, `content.selectMediaForPublic`, `content.archiveMedia`, `content.upsertSiteSetting`, `content.upsertResumeDraft`, and `content.createResumeVersion` store dashboard edits.
 - `contentActions.createMediaUploadUrl` creates Cloudflare Images direct-upload URLs before the browser uploads the file.
 - `contentActions.publishContent` marks reviewed project/resume drafts as published and dispatches the Release Train workflow.
+
+Every write leaves an append-only row in `auditEvents`, written only through `convex/lib/audit.ts` and never patched or deleted. The actor always comes from the server, never from the client:
+
+- `adminMutation` appends a `committed` event in the same transaction as the write (session actor from `requireAdmin`, verb from the function name, target from identifying arguments only); a failed write leaves no event.
+- `adminAction` appends `attempted` before the handler and `succeeded` after it, correlated by `correlationId`. `createMediaUploadUrl` records `failed` only for a failure confirmed before the request or by Cloudflare's parsed error, and `unknown` otherwise; the effect is never repeated to repair the trail.
+- Publication records request creation and attempt scheduling with the session actor that requested them (`requestedBy` stays the original author), and dispatch claim and completion as `system` with `causedBy` set to the attempt.
+- Operator transitions (reconcile, retry, receipts, workflow outcome, seeds) will record `operator` provenance (deployment, credential class, `authorizationRef`) once the publication CLI exists.
 
 The content endpoints store metadata and public-safe references only. Cloudflare Images uploads use direct creator upload URLs so browser code never receives Cloudflare API credentials; Convex should not store image originals.
 

@@ -1,8 +1,11 @@
-import type { ReactElement } from "react";
-import { Action } from "@/components/dashboard/action";
+import { useState, type ComponentType, type ReactElement } from "react";
+import { Action, type ActionVariant } from "@/components/dashboard/action";
+import {
+  DialogIcon,
+  useReturnFocus,
+} from "@/components/dashboard/notice-dialog";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -12,43 +15,79 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export interface ConfirmActionProps {
-  trigger: ReactElement;
+interface ConfirmActionContent {
   title: string;
   description: string;
   confirmLabel: string;
+  cancelLabel?: string;
   onConfirm: () => void;
+  variant?: Extract<ActionVariant, "primary" | "destructive">;
+  icon?: ComponentType;
   pending?: boolean;
+  pendingLabel?: string;
 }
+
+// With a trigger the dialog owns its open state and closes on confirm. With
+// `open` the caller owns it and closes the dialog once the work is done, so a
+// pending action stays visible.
+export type ConfirmActionProps = ConfirmActionContent &
+  (
+    | { trigger: ReactElement; open?: never; onOpenChange?: never }
+    | { trigger?: never; open: boolean; onOpenChange: (open: boolean) => void }
+  );
 
 export function ConfirmAction({
   trigger,
+  open: controlledOpen,
+  onOpenChange,
   title,
   description,
   confirmLabel,
+  cancelLabel = "Cancel",
   onConfirm,
+  variant = "destructive",
+  icon: Icon,
   pending = false,
+  pendingLabel = "Working…",
 }: ConfirmActionProps) {
+  const [ownOpen, setOwnOpen] = useState(false);
+  const controlled = controlledOpen !== undefined;
+  const open = controlled ? controlledOpen : ownOpen;
+  const setOpen = controlled ? onOpenChange : setOwnOpen;
+  const returnFocus = useReturnFocus();
+
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
-      <AlertDialogContent>
+    <AlertDialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!pending) setOpen?.(next);
+      }}
+    >
+      {trigger ? (
+        <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+      ) : null}
+      <AlertDialogContent {...(controlled ? returnFocus : {})}>
         <AlertDialogHeader>
+          {Icon ? <DialogIcon icon={Icon} tone={variant} /> : null}
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <Action
-              variant="destructive"
-              pending={pending}
-              pendingLabel="Removing…"
-              onClick={onConfirm}
-            >
-              {confirmLabel}
-            </Action>
-          </AlertDialogAction>
+          <AlertDialogCancel disabled={pending}>
+            {cancelLabel}
+          </AlertDialogCancel>
+          <Action
+            variant={variant}
+            pending={pending}
+            pendingLabel={pendingLabel}
+            onClick={() => {
+              onConfirm();
+              if (!controlled) setOwnOpen(false);
+            }}
+          >
+            {Icon ? <Icon data-icon="inline-start" aria-hidden="true" /> : null}
+            {confirmLabel}
+          </Action>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

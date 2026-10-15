@@ -1,12 +1,29 @@
 import { v } from "convex/values";
 import { internal } from "./_generated/api.js";
-import { internalMutation } from "./_generated/server.js";
 import {
-  publicationTargetValidator,
+  internalMutation,
+  internalQuery,
+  type MutationCtx,
+} from "./_generated/server.js";
+import type { Doc } from "./_generated/dataModel.js";
+import {
+  insertAuditEvent,
+  operatorActor,
+  operatorInputValidator,
+  systemActor,
+} from "./lib/audit.js";
+import {
+  publicationProviderStatusValidator,
+  publicationWorkflowOutcomeValidator,
+  releaseEnvironmentValidator,
+  retryablePublicationProviderStatusValidator,
+} from "./lib/validators.js";
+import {
   publishDurablyArgs,
   publishDurablyHandler,
   publishDurablyReturns,
 } from "./model/publication.js";
+import { type ReleaseEnvironment } from "@aohys/core/domain";
 
 const DISPATCH_LEASE_MS = 5 * 60 * 1000;
 
@@ -17,7 +34,7 @@ const claimResultValidator = v.union(
     attemptId: v.id("publicationAttempts"),
     publicationAttemptId: v.string(),
     publicationRequestKey: v.string(),
-    targetEnvironment: publicationTargetValidator,
+    targetEnvironment: releaseEnvironmentValidator,
   }),
 );
 
@@ -44,6 +61,15 @@ export const claimAttempt = internalMutation({
       claimedAt: now,
       updatedAt: now,
     });
+    await insertAuditEvent(ctx, {
+      actor: systemActor(attempt.publicationAttemptId),
+      verb: "publication:claimAttempt",
+      target: {
+        requestKey: request.requestKey,
+        publicationAttemptId: attempt.publicationAttemptId,
+      },
+      outcome: "committed",
+    });
     return {
       status: "claimed" as const,
       attemptId: attempt._id,
@@ -57,8 +83,10 @@ export const claimAttempt = internalMutation({
 export const reconcileDispatchingAfterStatusCheck = internalMutation({
   args: {
     attemptId: v.id("publicationAttempts"),
-    providerStatus: v.union(v.literal("not-found"), v.literal("unknown")),
+    providerStatus: publicationProviderStatusValidator,
     statusCheckedAt: v.number(),
+    expectedTarget: releaseEnvironmentValidator,
+    operator: operatorInputValidator,
   },
   returns: v.object({
     state: v.union(v.literal("release-failed"), v.literal("rollback-needed")),
@@ -66,8 +94,21 @@ export const reconcileDispatchingAfterStatusCheck = internalMutation({
   }),
   handler: async (ctx, args) => {
     const attempt = await ctx.db.get("publicationAttempts", args.attemptId);
-    if (!attempt || attempt.state !== "dispatching" || !attempt.claimedAt) {
+    if (!attempt) throw new Error("Publication attempt not found.");
+    const boundRequest = await requireBoundTarget(
+      ctx,
+      attempt,
+      args.expectedTarget,
+    );
+    if (attempt.state !== "dispatching" || !attempt.claimedAt) {
       throw new Error("Only a claimed dispatching attempt can be reconciled.");
+    }
+    // A reconciliation changes publication state: it needs the owner's
+    // authorization for this operation.
+    if (!args.operator.authorizationRef?.trim()) {
+      throw new Error(
+        "Reconciling an attempt requires an authorization reference.",
+      );
     }
     const now = Date.now();
     if (
@@ -79,8 +120,8 @@ export const reconcileDispatchingAfterStatusCheck = internalMutation({
         "Provider status check is outside the stale claim window.",
       );
     }
-    const request = await ctx.db.get("publicationRequests", attempt.requestId);
-    if (!request || request.state !== "release-requested") {
+    const request = boundRequest;
+    if (request.state !== "release-requested") {
       throw new Error("Publication request is not awaiting dispatch evidence.");
     }
     const retryable = args.providerStatus === "not-found";
@@ -105,6 +146,17 @@ export const reconcileDispatchingAfterStatusCheck = internalMutation({
         updatedAt: now,
       }),
     ]);
+    await insertAuditEvent(ctx, {
+      actor: await operatorActor(ctx, args.operator),
+      verb: "publication:reconcileDispatchingAfterStatusCheck",
+      target: {
+        requestKey: request.requestKey,
+        publicationAttemptId: attempt.publicationAttemptId,
+        providerStatus: args.providerStatus,
+        result: requestState,
+      },
+      outcome: "committed",
+    });
     return { state: requestState, retryable };
   },
 });
@@ -147,6 +199,16 @@ export const completeAttempt = internalMutation({
       .unique();
     if (receipt) return null;
     const now = Date.now();
+    await insertAuditEvent(ctx, {
+      actor: systemActor(attempt.publicationAttemptId),
+      verb: "publication:completeAttempt",
+      target: {
+        requestKey: request.requestKey,
+        publicationAttemptId: attempt.publicationAttemptId,
+        result: args.result.status,
+      },
+      outcome: "committed",
+    });
     if (args.result.status === "acknowledged") {
       await Promise.all([
         ctx.db.patch("publicationAttempts", attempt._id, {
@@ -186,8 +248,10 @@ export const completeAttempt = internalMutation({
 export const retryScheduledAfterStatusCheck = internalMutation({
   args: {
     attemptId: v.id("publicationAttempts"),
-    providerStatus: v.literal("not-found"),
+    providerStatus: retryablePublicationProviderStatusValidator,
     statusCheckedAt: v.number(),
+    expectedTarget: releaseEnvironmentValidator,
+    operator: operatorInputValidator,
   },
   returns: v.id("_scheduled_functions"),
   handler: async (
@@ -197,8 +261,17 @@ export const retryScheduledAfterStatusCheck = internalMutation({
     import("./_generated/dataModel.js").Id<"_scheduled_functions">
   > => {
     const attempt = await ctx.db.get("publicationAttempts", args.attemptId);
-    if (!attempt || attempt.state !== "scheduled") {
+    if (!attempt) throw new Error("Publication attempt not found.");
+    const request = await requireBoundTarget(ctx, attempt, args.expectedTarget);
+    if (attempt.state !== "scheduled") {
       throw new Error("Only an unclaimed scheduled attempt can be recovered.");
+    }
+    // Rescheduling dispatches to GitHub again: it needs the owner's
+    // authorization for this operation.
+    if (!args.operator.authorizationRef?.trim()) {
+      throw new Error(
+        "Retrying a dispatch requires an authorization reference.",
+      );
     }
     if (
       args.statusCheckedAt > Date.now() ||
@@ -214,6 +287,16 @@ export const retryScheduledAfterStatusCheck = internalMutation({
       schedulerJobId: jobId,
       updatedAt: Date.now(),
     });
+    await insertAuditEvent(ctx, {
+      actor: await operatorActor(ctx, args.operator),
+      verb: "publication:retryScheduledAfterStatusCheck",
+      target: {
+        requestKey: request.requestKey,
+        publicationAttemptId: attempt.publicationAttemptId,
+        providerStatus: args.providerStatus,
+      },
+      outcome: "committed",
+    });
     return jobId;
   },
 });
@@ -222,12 +305,13 @@ export const recordReceipt = internalMutation({
   args: {
     publicationRequestKey: v.string(),
     publicationAttemptId: v.string(),
-    targetEnvironment: publicationTargetValidator,
+    targetEnvironment: releaseEnvironmentValidator,
     gitRef: v.string(),
     runId: v.string(),
     runUrl: v.string(),
     sha: v.string(),
     smokePassed: v.literal(true),
+    operator: operatorInputValidator,
   },
   returns: v.object({
     requestKey: v.string(),
@@ -235,6 +319,7 @@ export const recordReceipt = internalMutation({
     duplicate: v.boolean(),
   }),
   handler: async (ctx, args) => {
+    requireAuthorizationRef(args.operator);
     validateReceiptStrings(args);
     validateTargetGitRef(args.targetEnvironment, args.gitRef);
     const request = await ctx.db
@@ -308,6 +393,16 @@ export const recordReceipt = internalMutation({
       smokePassed: true,
       receivedAt: now,
     });
+    await insertAuditEvent(ctx, {
+      actor: await operatorActor(ctx, args.operator),
+      verb: "publication:recordReceipt",
+      target: {
+        requestKey: args.publicationRequestKey,
+        publicationAttemptId: args.publicationAttemptId,
+        runId: args.runId,
+      },
+      outcome: "committed",
+    });
     await Promise.all([
       ctx.db.patch("publicationRequests", request._id, {
         state: "deployed",
@@ -337,12 +432,13 @@ export const reconcileWorkflowOutcome = internalMutation({
   args: {
     publicationRequestKey: v.string(),
     publicationAttemptId: v.string(),
-    targetEnvironment: publicationTargetValidator,
+    targetEnvironment: releaseEnvironmentValidator,
     gitRef: v.string(),
     runId: v.string(),
     runUrl: v.string(),
     releaseSha: v.string(),
-    outcome: v.union(v.literal("failure"), v.literal("cancelled")),
+    outcome: publicationWorkflowOutcomeValidator,
+    operator: operatorInputValidator,
   },
   returns: v.object({
     requestKey: v.string(),
@@ -350,6 +446,7 @@ export const reconcileWorkflowOutcome = internalMutation({
     duplicate: v.boolean(),
   }),
   handler: async (ctx, args) => {
+    requireAuthorizationRef(args.operator);
     validateReceiptStrings({ ...args, sha: args.releaseSha });
     validateTargetGitRef(args.targetEnvironment, args.gitRef);
     const request = await ctx.db
@@ -462,6 +559,17 @@ export const reconcileWorkflowOutcome = internalMutation({
         updatedAt: now,
       }),
     ]);
+    await insertAuditEvent(ctx, {
+      actor: await operatorActor(ctx, args.operator),
+      verb: "publication:reconcileWorkflowOutcome",
+      target: {
+        requestKey: request.requestKey,
+        publicationAttemptId: attempt.publicationAttemptId,
+        runId: args.runId,
+        result: args.outcome,
+      },
+      outcome: "committed",
+    });
     return {
       requestKey: request.requestKey,
       state: "release-failed" as const,
@@ -471,7 +579,7 @@ export const reconcileWorkflowOutcome = internalMutation({
 });
 
 function validateTargetGitRef(
-  targetEnvironment: "preview" | "production",
+  targetEnvironment: ReleaseEnvironment,
   gitRef: string,
 ) {
   const expected =
@@ -510,3 +618,174 @@ function validateReceiptStrings(args: {
     throw new Error("Publication release SHA is invalid.");
   }
 }
+
+// A writing operator transition names the authorization behind it (the owner's
+// approval, or the release run that produced the evidence).
+function requireAuthorizationRef(operator: { authorizationRef?: string }) {
+  if (!operator.authorizationRef?.trim())
+    throw new Error("This transition requires an authorization reference.");
+}
+
+// Binds an operator transition to its target before any write: the attempt
+// belongs to its request, and the operator's expected target, the request's
+// target and this deployment's AOHYS_ENV all agree.
+async function requireBoundTarget(
+  ctx: MutationCtx,
+  attempt: Doc<"publicationAttempts">,
+  expectedTarget: ReleaseEnvironment,
+) {
+  const request = await ctx.db.get("publicationRequests", attempt.requestId);
+  if (!request || request._id !== attempt.requestId) {
+    throw new Error("Publication attempt does not belong to a request.");
+  }
+  if (
+    request.targetEnvironment !== expectedTarget ||
+    process.env.AOHYS_ENV !== expectedTarget
+  ) {
+    throw new Error(
+      `Target mismatch: expected ${expectedTarget}, request targets ${request.targetEnvironment}, deployment is ${process.env.AOHYS_ENV ?? "unset"}.`,
+    );
+  }
+  return request;
+}
+
+const STATUS_HISTORY_LIMIT = 50;
+
+// Read-only view for the publication CLI: this deployment's environment and,
+// for one request (by key or by one of its attempts), its attempts and
+// receipts.
+export const status = internalQuery({
+  args: {
+    requestKey: v.optional(v.string()),
+    publicationAttemptId: v.optional(v.string()),
+  },
+  returns: v.object({
+    deploymentEnvironment: v.union(v.string(), v.null()),
+    request: v.union(
+      v.null(),
+      v.object({
+        requestKey: v.string(),
+        targetEnvironment: releaseEnvironmentValidator,
+        state: v.string(),
+        retryable: v.optional(v.boolean()),
+        requestedBy: v.string(),
+        updatedAt: v.number(),
+      }),
+    ),
+    attempts: v.array(
+      v.object({
+        attemptId: v.id("publicationAttempts"),
+        publicationAttemptId: v.string(),
+        attemptNumber: v.number(),
+        state: v.string(),
+        retryable: v.optional(v.boolean()),
+        claimedAt: v.optional(v.number()),
+        failureCode: v.optional(v.string()),
+        providerRunUrl: v.optional(v.string()),
+        updatedAt: v.number(),
+      }),
+    ),
+    receipts: v.array(
+      v.object({
+        publicationAttemptId: v.string(),
+        runUrl: v.string(),
+        sha: v.string(),
+        receivedAt: v.number(),
+      }),
+    ),
+    // The attempt asked for by publicationAttemptId, whatever its position.
+    requestedAttemptId: v.optional(v.id("publicationAttempts")),
+    // True when the request has more attempts or receipts than listed.
+    truncated: v.boolean(),
+  }),
+  handler: async (ctx, args) => {
+    const deploymentEnvironment = process.env.AOHYS_ENV ?? null;
+    let request: Doc<"publicationRequests"> | null = null;
+    if (args.requestKey) {
+      request = await ctx.db
+        .query("publicationRequests")
+        .withIndex("by_request_key", (query) =>
+          query.eq("requestKey", args.requestKey ?? ""),
+        )
+        .unique();
+    }
+    let requested: Doc<"publicationAttempts"> | null = null;
+    if (!args.requestKey && args.publicationAttemptId) {
+      requested = await ctx.db
+        .query("publicationAttempts")
+        .withIndex("by_publication_attempt_id", (query) =>
+          query.eq("publicationAttemptId", args.publicationAttemptId ?? ""),
+        )
+        .unique();
+      request = requested
+        ? await ctx.db.get("publicationRequests", requested.requestId)
+        : null;
+    }
+    if (!request)
+      return {
+        deploymentEnvironment,
+        request: null,
+        attempts: [],
+        receipts: [],
+        truncated: false,
+      };
+    const requestId = request._id;
+    // The latest attempts, plus the requested one wherever it sits.
+    const latest = await ctx.db
+      .query("publicationAttempts")
+      .withIndex("by_request_id_and_attempt_number", (query) =>
+        query.eq("requestId", requestId),
+      )
+      .order("desc")
+      .take(STATUS_HISTORY_LIMIT + 1);
+    const receiptRows = await ctx.db
+      .query("publicationReceipts")
+      .withIndex("by_request_id", (query) => query.eq("requestId", requestId))
+      .take(STATUS_HISTORY_LIMIT + 1);
+    const truncated =
+      latest.length > STATUS_HISTORY_LIMIT ||
+      receiptRows.length > STATUS_HISTORY_LIMIT;
+    const attempts = latest.slice(0, STATUS_HISTORY_LIMIT);
+    if (requested && !attempts.some((attempt) => attempt._id === requested._id))
+      attempts.push(requested);
+    const receipts = receiptRows.slice(0, STATUS_HISTORY_LIMIT);
+    return {
+      deploymentEnvironment,
+      request: {
+        requestKey: request.requestKey,
+        targetEnvironment: request.targetEnvironment,
+        state: request.state,
+        ...(request.retryable === undefined
+          ? {}
+          : { retryable: request.retryable }),
+        requestedBy: request.requestedBy,
+        updatedAt: request.updatedAt,
+      },
+      attempts: attempts.map((attempt) => ({
+        attemptId: attempt._id,
+        publicationAttemptId: attempt.publicationAttemptId,
+        attemptNumber: attempt.attemptNumber,
+        state: attempt.state,
+        ...(attempt.retryable === undefined
+          ? {}
+          : { retryable: attempt.retryable }),
+        ...(attempt.claimedAt === undefined
+          ? {}
+          : { claimedAt: attempt.claimedAt }),
+        ...(attempt.failureCode ? { failureCode: attempt.failureCode } : {}),
+        ...(attempt.providerRunUrl
+          ? { providerRunUrl: attempt.providerRunUrl }
+          : {}),
+        updatedAt: attempt.updatedAt,
+      })),
+      receipts: receipts.map((receipt) => ({
+        publicationAttemptId: receipt.publicationAttemptId,
+        runUrl: receipt.runUrl,
+        sha: receipt.sha,
+        receivedAt: receipt.receivedAt,
+      })),
+      ...(requested ? { requestedAttemptId: requested._id } : {}),
+      truncated,
+    };
+  },
+});

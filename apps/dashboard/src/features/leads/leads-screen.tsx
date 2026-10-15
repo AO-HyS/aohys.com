@@ -12,11 +12,11 @@ import { useDashboardLeads, useSaveLeadStatus } from "./leads-api";
 import {
   Action,
   AsyncSurface,
+  MetaBadge,
   PageHeader,
   SectionPanel,
   StatusBadge,
 } from "@/components/dashboard";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -35,14 +35,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { captureDashboardAction } from "@/lib/analytics";
-import type { DashboardLead, DashboardLeadStatus } from "./leads-types";
+import type { DashboardLead } from "./leads-types";
 import {
   formatLeadIntent,
   formatLeadStatus,
   leadStatusTone,
 } from "./leads-view-model";
+import { LEAD_STATUSES, type LeadStatus } from "@aohys/core/domain";
 
-const statuses: DashboardLeadStatus[] = ["new", "reviewing", "closed"];
+const statuses = LEAD_STATUSES;
 const leadDateFormatter = new Intl.DateTimeFormat("en", {
   month: "short",
   day: "numeric",
@@ -83,7 +84,7 @@ function LeadsWorkspace({
   loadMore: (count: number) => void;
   saveLeadStatus: (
     leadId: DashboardLead["id"],
-    status: DashboardLeadStatus,
+    status: LeadStatus,
   ) => Promise<unknown>;
 }) {
   const [savingLeadId, setSavingLeadId] = useState<DashboardLead["id"] | null>(
@@ -96,10 +97,7 @@ function LeadsWorkspace({
     leads.find((lead) => lead.id === selectedLeadId) ?? leads[0];
   const isFirstPageLoading = paginationStatus === "LoadingFirstPage";
 
-  async function updateStatus(
-    leadId: DashboardLead["id"],
-    status: DashboardLeadStatus,
-  ) {
+  async function updateStatus(leadId: DashboardLead["id"], status: LeadStatus) {
     const previousStatus = leads.find((lead) => lead.id === leadId)?.status;
     setSavingLeadId(leadId);
     const toastId = toast.loading("Saving lead status", {
@@ -295,9 +293,9 @@ function LeadTable({
         accessorKey: "intent",
         header: "Intent",
         cell: ({ row }) => (
-          <Badge variant="secondary">
+          <MetaBadge emphasis="filled">
             {formatLeadIntent(row.original.intent)}
-          </Badge>
+          </MetaBadge>
         ),
       },
       {
@@ -423,10 +421,10 @@ function LeadDetail({
   isSaving: boolean;
   onSave: (
     leadId: DashboardLead["id"],
-    status: DashboardLeadStatus,
+    status: LeadStatus,
   ) => void | Promise<void>;
 }) {
-  const [status, setStatus] = useState<DashboardLeadStatus>(lead.status);
+  const [status, setStatus] = useState<LeadStatus>(lead.status);
 
   return (
     <aside
@@ -496,7 +494,7 @@ function LeadDetail({
         <div className="flex flex-col gap-3 sm:flex-row">
           <Select
             value={status}
-            onValueChange={(value) => setStatus(value as DashboardLeadStatus)}
+            onValueChange={(value) => setStatus(value as LeadStatus)}
           >
             <SelectTrigger
               id={`lead-status-${lead.id}`}

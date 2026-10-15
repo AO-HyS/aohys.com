@@ -1,4 +1,4 @@
-import { api as convexApi } from "@aohys/backend/convex/_generated/api";
+import { type api as convexApi } from "@aohys/backend/convex/_generated/api";
 import {
   PUBLIC_CONTENT_NODES,
   STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID,
@@ -16,6 +16,7 @@ import type {
   DashboardProjectImage,
 } from "./projects-types";
 import { resolvePublicMediaUrl } from "./media-upload";
+import { LOCALES, type Locale } from "@aohys/core/domain";
 
 export type DashboardConvexContentPayload = FunctionReturnType<
   typeof convexApi.content.listForDashboard
@@ -142,7 +143,7 @@ export function buildDashboardProjectRows(
       evidenceStatus: metadata?.evidenceStatus ?? "missing",
       ...(projectUrl ? { projectUrl } : {}),
       updatedAt: metadata?.updatedAt ?? 0,
-      locales: (["en", "es"] as const).map((locale) => {
+      locales: LOCALES.map((locale) => {
         const draft = draftsByContentIdAndLocale.get(`${contentId}:${locale}`);
         const oppositeDraft = draftsByContentIdAndLocale.get(
           `${contentId}:${getAlternateLocale(locale)}`,
@@ -198,11 +199,12 @@ export function buildDashboardProjectRows(
           };
         }),
         ...media.map((item) => {
-          const resolution = resolvePublicMediaUrl(item, {
-            ...(imagesAccountHash
+          const resolution = resolvePublicMediaUrl(
+            item,
+            imagesAccountHash
               ? { cloudflareImagesAccountHash: imagesAccountHash }
-              : {}),
-          });
+              : {},
+          );
           const deliveryUrl =
             resolution.status === "resolved" ? resolution.url : undefined;
 
@@ -273,7 +275,7 @@ function buildDashboardCaseStudyRows(
 
 function fallbackProjectVariant(
   contentId: string,
-  locale: "en" | "es",
+  locale: Locale,
   draft?: DashboardProjectDraft,
 ): {
   path: string;

@@ -1,4 +1,5 @@
 import { v, type ObjectType } from "convex/values";
+import { insertAuditEvent, sessionActorValidator } from "../lib/audit.js";
 import type { MutationCtx } from "../_generated/server.js";
 import { internal } from "../_generated/api.js";
 import {
@@ -10,21 +11,18 @@ import {
   publishContentArgs,
   publishContentHandler,
 } from "./content/publication.js";
-import { localeValidator, withinLimit } from "./content/shared.js";
-
-export const publicationTargetValidator = v.union(
-  v.literal("preview"),
-  v.literal("production"),
-);
-
-export const publicationStateValidator = v.union(
-  v.literal("published-locally"),
-  v.literal("release-requested"),
-  v.literal("release-acknowledged"),
-  v.literal("release-failed"),
-  v.literal("deployed"),
-  v.literal("rollback-needed"),
-);
+import { withinLimit } from "./content/shared.js";
+import {
+  publicationRequestStateValidator,
+  releaseEnvironmentValidator,
+} from "../lib/validators.js";
+import { localeValidator } from "../lib/validators.js";
+import {
+  type Locale,
+  type PublicationRequestState,
+  type PublicationScope,
+  type ReleaseEnvironment,
+} from "@aohys/core/domain";
 
 export const publicationSummaryValidator = v.object({
   requestKey: v.string(),
@@ -32,16 +30,19 @@ export const publicationSummaryValidator = v.object({
   scope: publishContentArgs.scope,
   contentId: v.optional(v.string()),
   locale: v.optional(localeValidator),
-  targetEnvironment: publicationTargetValidator,
-  state: publicationStateValidator,
+  targetEnvironment: releaseEnvironmentValidator,
+  state: publicationRequestStateValidator,
   retryable: v.boolean(),
   updatedAt: v.number(),
 });
 
 export const publishDurablyArgs = {
   ...publishContentArgs,
-  targetEnvironment: publicationTargetValidator,
+  targetEnvironment: releaseEnvironmentValidator,
   requestedBy: v.string(),
+  // Resolved by requireAdmin in the calling action; recorded on every
+  // transition this mutation writes. requestedBy stays the original author.
+  actor: sessionActorValidator,
   providerConfigured: v.boolean(),
 };
 
@@ -91,6 +92,12 @@ export async function publishDurablyHandler(
     });
     request = await ctx.db.get("publicationRequests", requestId);
     if (!request) throw new Error("Publication request could not be created.");
+    await insertAuditEvent(ctx, {
+      actor: args.actor,
+      verb: "publication:createRequest",
+      target: { requestKey: request.requestKey, scope: args.scope },
+      outcome: "committed",
+    });
   }
   if (!request) throw new Error("Publication request is missing.");
 
@@ -113,6 +120,12 @@ export async function publishDurablyHandler(
       internal.publicationActions.dispatch,
       { attemptId },
     );
+    await insertAuditEvent(ctx, {
+      actor: args.actor,
+      verb: "publication:scheduleAttempt",
+      target: { requestKey: request.requestKey, publicationAttemptId },
+      outcome: "committed",
+    });
     await Promise.all([
       ctx.db.patch("publicationAttempts", attemptId, { schedulerJobId }),
       ctx.db.patch("publicationRequests", request._id, {
@@ -166,17 +179,11 @@ function mayScheduleAttempt(request: {
 function summarizeRequest(
   request: {
     requestKey: string;
-    scope: "project" | "resume" | "all";
+    scope: PublicationScope;
     contentId?: string;
-    locale?: "en" | "es";
-    targetEnvironment: "preview" | "production";
-    state:
-      | "published-locally"
-      | "release-requested"
-      | "release-acknowledged"
-      | "release-failed"
-      | "deployed"
-      | "rollback-needed";
+    locale?: Locale;
+    targetEnvironment: ReleaseEnvironment;
+    state: PublicationRequestState;
     retryable?: boolean;
     updatedAt: number;
   },

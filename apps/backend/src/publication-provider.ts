@@ -1,7 +1,9 @@
-import type { PublicationTarget } from "./publication-contract.js";
+import { PUBLISH_TARGET, RELEASE_TARGETS } from "@aohys/core/release-targets";
+import { type ReleaseEnvironment } from "@aohys/core/domain";
+import { isRecord } from "@aohys/core/unknown-guards";
 
 export interface GitHubPublicationDispatch {
-  targetEnvironment: PublicationTarget;
+  targetEnvironment: ReleaseEnvironment;
   publicationRequestKey: string;
   publicationAttemptId: string;
   repository?: string;
@@ -42,9 +44,9 @@ export async function dispatchGitHubPublication(
       "GitHub publication provider is not configured.",
     );
   }
-  const repository = input.repository?.trim() || "AO-HyS/aohys.com";
-  const workflowId = input.workflowId?.trim() || "release-train.yml";
-  const ref = input.targetEnvironment === "production" ? "main" : "develop";
+  const repository = input.repository?.trim() || PUBLISH_TARGET.repository;
+  const workflowId = input.workflowId?.trim() || PUBLISH_TARGET.workflowId;
+  const ref = RELEASE_TARGETS[input.targetEnvironment].branch;
   let response: Response;
   try {
     response = await providerFetch(
@@ -144,10 +146,6 @@ function parseRunDetails(value: unknown):
     return undefined;
   }
   return { runId, runUrl };
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function permanentFailure(code: string, message: string) {

@@ -4,8 +4,8 @@ import {
   sanitizePostHogEnvelopeProperties,
   type AnalyticsBootstrapPayload,
 } from "./analytics";
+import { isRecord } from "@aohys/core/unknown-guards";
 import {
-  isJsonRecord,
   parseAnalyticsBootstrapPayload,
   parseAnalyticsEventDetail,
 } from "./runtime-boundaries";
@@ -148,9 +148,7 @@ function bindInteractionHooks(
 
   windowRef.addEventListener("aohys:analytics", (event) => {
     const detail = getCustomEventDetail(event);
-    const properties = isJsonRecord(detail?.properties)
-      ? detail.properties
-      : {};
+    const properties = isRecord(detail?.properties) ? detail.properties : {};
 
     captureConversion(posthog, payload, detail?.event, properties);
   });

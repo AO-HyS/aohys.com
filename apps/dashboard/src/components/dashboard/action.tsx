@@ -1,7 +1,7 @@
 import * as React from "react";
 import type { VariantProps } from "class-variance-authority";
 import { Button } from "@/components/ui/button";
-import { buttonVariants } from "@/components/ui/button-variants";
+import { type buttonVariants } from "@/components/ui/button-variants";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
@@ -52,6 +52,8 @@ export function Action({
     disabled: disabled || pending,
     className: cn(
       "min-h-11 transition-[background-color,color,border-color,box-shadow,transform] duration-200 ease-out sm:min-h-8",
+      // The pending label is the only progress signal; keep it readable.
+      "aria-busy:disabled:opacity-100",
       actionClassByVariant[variant],
       className,
     ),

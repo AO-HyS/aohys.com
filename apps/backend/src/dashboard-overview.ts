@@ -1,14 +1,24 @@
-export type DashboardEnvironment = "local" | "preview" | "production";
-export type DashboardLocale = "en" | "es";
+import {
+  LOCALES,
+  type CaseStudyEvidenceStatus,
+  type Environment,
+  type Locale,
+  type MediaStatus,
+  type PublicationRequestState,
+  type PublicationScope,
+  type ReleaseEnvironment,
+  type SiteSettingClassification,
+} from "@aohys/core/domain";
+
 export type DashboardOverviewPath = "/projects" | "/resume" | "/settings";
 export type DashboardGateStatus = "clear" | "ready" | "blocked" | "unavailable";
 
 export interface DashboardOverviewInput {
-  environment: DashboardEnvironment;
+  environment: Environment;
   truncated: boolean;
   projectDrafts: Array<{
     contentId: string;
-    locale: DashboardLocale;
+    locale: Locale;
     title: string;
     summary: string;
     seoDescription: string;
@@ -20,38 +30,32 @@ export interface DashboardOverviewInput {
   }>;
   caseStudies: Array<{
     contentId: string;
-    evidenceStatus: "missing" | "sanitized" | "published";
+    evidenceStatus: CaseStudyEvidenceStatus;
   }>;
   media: Array<{
     contentId?: string;
-    status: "draft" | "published";
+    status: Exclude<MediaStatus, "archived">;
     selectedForPublic?: boolean;
   }>;
   resumeDrafts: Array<{
-    locale: DashboardLocale;
+    locale: Locale;
     contentJson: string;
     publishedAt?: number;
   }>;
   settings: Array<{
     key: string;
     value: string;
-    classification: "public-build-value" | "provider-output" | "policy-value";
+    classification: SiteSettingClassification;
   }>;
   releaseProviderConfigured: boolean;
   publication?: {
     requestKey: string;
     publicationAttemptId?: string;
-    scope: "project" | "resume" | "all";
+    scope: PublicationScope;
     contentId?: string;
-    locale?: DashboardLocale;
-    targetEnvironment: "preview" | "production";
-    state:
-      | "published-locally"
-      | "release-requested"
-      | "release-acknowledged"
-      | "release-failed"
-      | "deployed"
-      | "rollback-needed";
+    locale?: Locale;
+    targetEnvironment: ReleaseEnvironment;
+    state: PublicationRequestState;
     retryable: boolean;
     updatedAt: number;
   };
@@ -86,7 +90,7 @@ export interface DashboardOverviewBlocker {
 }
 
 export interface DashboardOverview {
-  environment: DashboardEnvironment;
+  environment: Environment;
   state: "clear" | "action-required" | "ready-to-queue" | "partial";
   gates: DashboardOverviewGate[];
   blockers: DashboardOverviewBlocker[];
@@ -103,7 +107,6 @@ export interface DashboardOverview {
   publication?: NonNullable<DashboardOverviewInput["publication"]>;
 }
 
-const REQUIRED_LOCALES = ["en", "es"] as const;
 const MAX_BLOCKERS = 8;
 
 export function buildDashboardOverview(
@@ -120,7 +123,7 @@ export function buildDashboardOverview(
   );
 
   const projectCopyComplete = pendingProjectIds.every((contentId) =>
-    REQUIRED_LOCALES.every((locale) => {
+    LOCALES.every((locale) => {
       const draft = pendingProjectDrafts.find(
         (candidate) =>
           candidate.contentId === contentId && candidate.locale === locale,
@@ -145,7 +148,7 @@ export function buildDashboardOverview(
   });
   const resumeComplete =
     pendingResumeDrafts.length === 0 ||
-    REQUIRED_LOCALES.every((locale) => {
+    LOCALES.every((locale) => {
       const draft = pendingResumeDrafts.find(
         (candidate) => candidate.locale === locale,
       );

@@ -3,8 +3,8 @@ import {
   renderDashboardState,
 } from "./dashboard-access-states.js";
 import {
+  parseAdminAllowlist,
   validateEnvironmentContract,
-  type EnvironmentName,
 } from "@aohys/environment";
 import { capturePostHogServerEvent } from "./posthog-server.js";
 import {
@@ -16,12 +16,13 @@ import {
   parseBetterAuthRedirectLocation,
   parseBetterAuthSession,
 } from "./runtime-boundaries.js";
+import { type Environment } from "@aohys/core/domain";
 
 export interface DashboardAccessEnvironment extends Record<
   string,
   string | undefined
 > {
-  AOHYS_ENV: EnvironmentName;
+  AOHYS_ENV: Environment;
   PUBLIC_SITE_URL: string;
   CONVEX_URL: string;
   CONVEX_SITE_URL: string;
@@ -42,7 +43,7 @@ export interface DashboardRuntimeExceptionEvent {
   event: "dashboard_runtime_exception";
   distinctId: string;
   properties: {
-    environment: EnvironmentName;
+    environment: Environment;
     source: "cloudflare_pages_dashboard";
     path: string;
     errorType: string;
@@ -55,7 +56,7 @@ export interface DashboardRuntimeErrorReporter {
 
 export interface DashboardAppShellConfig {
   adminEmail: string;
-  environment: EnvironmentName;
+  environment: Environment;
   convexUrl: string;
   betterAuthUrl: string;
   imagesAccountHash?: string;
@@ -169,7 +170,7 @@ export async function handleDashboardRequest(
     return redirectToSignIn(path);
   }
 
-  const adminEmails = parseAdminEmails(environment.ADMIN_EMAIL);
+  const adminEmails = parseAdminAllowlist(environment.ADMIN_EMAIL);
   const sessionEmail = session.user.email.toLowerCase();
 
   if (!adminEmails.includes(sessionEmail)) {
@@ -208,7 +209,7 @@ function normalizeDashboardEnvironment(
 function normalizeEnvironmentName(
   value: string | undefined,
   request: Request,
-): EnvironmentName {
+): Environment {
   if (value === "local" || value === "preview" || value === "production") {
     return value;
   }
@@ -433,11 +434,4 @@ function normalizeCallbackPath(path: string | null): string {
   }
 
   return path;
-}
-
-function parseAdminEmails(value: string): string[] {
-  return value
-    .split(",")
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
 }
