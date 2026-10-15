@@ -13,16 +13,28 @@ export function resolveProofMedia(
   const dashboardMedia = DASHBOARD_PUBLIC_MEDIA_BY_CONTENT_ID[contentId];
   const staticMedia = STATIC_EVIDENCE_IMAGE_BY_CONTENT_ID[contentId];
   const candidates = [
-    ...(preferFull ? [dashboardMedia?.src, dashboardMedia?.thumbSrc] : [dashboardMedia?.thumbSrc, dashboardMedia?.src]),
-    ...(preferFull ? [staticMedia?.src, staticMedia?.thumbSrc] : [staticMedia?.thumbSrc, staticMedia?.src]),
+    ...(preferFull
+      ? [dashboardMedia?.src, dashboardMedia?.thumbSrc]
+      : [dashboardMedia?.thumbSrc, dashboardMedia?.src]),
+    ...(preferFull
+      ? [staticMedia?.src, staticMedia?.thumbSrc]
+      : [staticMedia?.thumbSrc, staticMedia?.src]),
     evidenceSrc,
     BRAND_FALLBACK_SRC,
-  ].filter((src, index, values): src is string => Boolean(src) && values.indexOf(src) === index);
+  ].filter(
+    (src, index, values): src is string =>
+      Boolean(src) && values.indexOf(src) === index,
+  );
 
   return {
     src: candidates[0] ?? BRAND_FALLBACK_SRC,
     candidates,
-    alt: dashboardMedia?.alt ?? evidenceAlt ?? staticMedia?.alt ?? "AOHYS product system",
-    kind: dashboardMedia?.kind ?? staticMedia?.kind ?? evidenceKind ?? "diagram",
+    alt:
+      dashboardMedia?.alt ??
+      evidenceAlt ??
+      staticMedia?.alt ??
+      "AOHYS product system",
+    kind:
+      dashboardMedia?.kind ?? staticMedia?.kind ?? evidenceKind ?? "diagram",
   };
 }

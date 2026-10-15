@@ -323,11 +323,42 @@
           "verifiedBy": "pnpm architecture:fitness (dashboard-kit-bypass, matched on the resolved import target)"
         }
       ],
-      "goals": [
-        "One brand-tokens source generates dashboardThemeVars and the site theme."
-      ],
+      "goals": [],
       "replaces": [],
       "docs": ["docs/dashboard-ui-kit.md", "docs/adr/0004-dashboard-ui-kit.md"]
+    },
+    {
+      "id": "brand-tokens",
+      "category": "ui",
+      "status": "active",
+      "summary": "packages/core/src/brand-tokens.ts is the single source of the AOHYS palette: full colors, Horizonte pastels as distinct tokens, the site and dashboard themes and the Horizonte :root. pnpm brand:generate writes dashboardColorVars, siteColorVars, dashboardAccessColorVars and the generated region of horizonte.css; site code imports brandPastels for project tints and HORIZONTE_PASTELS. It replaces the retired Sunlit layer (components/sunlit and the sunlit copy namespace).",
+      "paths": [
+        "packages/core/src/brand-tokens.ts",
+        "scripts/generate-brand-tokens.ts",
+        "apps/dashboard/src/lib/brand-theme.generated.ts",
+        "apps/site/src/styles/brand-theme.generated.ts",
+        "apps/site/src/styles/horizonte.css"
+      ],
+      "symbols": [
+        "packages/core/src/brand-tokens.ts#brandPastels",
+        "packages/core/src/brand-tokens.ts#dashboardTheme",
+        "packages/core/src/brand-tokens.ts#siteTheme",
+        "packages/core/src/brand-tokens.ts#horizonteRoot",
+        "apps/dashboard/src/lib/dashboard-classes.ts#dashboardThemeVars"
+      ],
+      "guarantees": [
+        {
+          "statement": "The generated theme modules and the horizonte.css brand region match brand-tokens.ts.",
+          "verifiedBy": "pnpm brand:check (in pnpm lint)"
+        },
+        {
+          "statement": "No brand hex or OKLCH literal appears in apps/site/src or apps/dashboard/src outside the generated artifacts.",
+          "verifiedBy": "pnpm brand:check (in pnpm lint)"
+        }
+      ],
+      "goals": [],
+      "replaces": [],
+      "docs": ["DESIGN.md"]
     }
   ]
 }

@@ -1,3 +1,5 @@
+import { siteColorVars } from "./brand-theme.generated";
+
 type ClassValue = false | null | string | undefined;
 
 export function cx(...values: ClassValue[]) {
@@ -10,21 +12,7 @@ const bodyFont = displayFont;
 
 export const themeVars = cx(
   "[color-scheme:light]",
-  "[--color-bg:oklch(1_0_0)]",
-  "[--color-surface:oklch(0.975_0.008_122)]",
-  "[--color-ink:oklch(0.3649_0.0215_61.4)]",
-  "[--color-muted:oklch(0.50_0.025_61.4)]",
-  "[--color-rule:oklch(0.86_0.025_80)]",
-  "[--color-primary:oklch(0.8623_0.129_80)]",
-  "[--color-primary-ink:oklch(0.3649_0.0215_61.4)]",
-  "[--color-secondary:oklch(0.7779_0.1104_121.8)]",
-  "[--color-secondary-ink:oklch(0.30_0.025_61.4)]",
-  "[--color-accent:oklch(0.8008_0.1283_55.5)]",
-  "[--color-accent-ink:oklch(0.30_0.025_61.4)]",
-  "[--color-dark:oklch(0.3649_0.0215_61.4)]",
-  "[--color-dark-surface:oklch(0.31_0.022_61.4)]",
-  "[--color-dark-ink:oklch(0.98_0.006_80)]",
-  "[--color-focus:oklch(0.3649_0.0215_61.4)]",
+  siteColorVars,
   "[--container:min(calc(100%_-_2rem),72rem)]",
   "[--narrow:min(calc(100%_-_2rem),52rem)]",
   "[--text-body:1rem]",

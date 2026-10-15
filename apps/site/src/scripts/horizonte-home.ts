@@ -4,6 +4,7 @@
   inhale 0–32%, swirl 28–62% (content swaps at 45%), resolve 45–75%, settle
   60–100% with one damped overshoot. Reduced motion swaps with a crossfade.
 */
+import { brandPastels } from "@aohys/core/brand-tokens";
 import { createLens, hexToVec, type Lens } from "./horizonte-lens";
 
 type GhostKind =
@@ -823,7 +824,7 @@ export function mountHorizonteStage(hero: HTMLElement) {
       part.name.textContent = spec.label;
       part.w = 0;
       part.ver.textContent = data.versions[k] ?? "";
-      part.dot.style.setProperty("--dot", data.dots[k] ?? "#FCE3A6");
+      part.dot.style.setProperty("--dot", data.dots[k] ?? brandPastels.honey);
     });
     stage!.setAttribute("aria-labelledby", tabs[i]?.id ?? "");
   }

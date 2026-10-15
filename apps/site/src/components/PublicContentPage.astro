@@ -16,7 +16,7 @@ import { getUiCopy } from "../i18n";
 import HorizonteHome from "./horizonte/HorizonteHome.astro";
 import MaLens from "./horizonte/MaLens.astro";
 import { HORIZONTE_PASTELS, HORIZONTE_PROJECTS, PAGE_LENS_PHOTOS, fitStyle, getHorizonteProject } from "./horizonte/projects";
-import { resolveProofMedia } from "./sunlit/proof-media";
+import { resolveProofMedia } from "./horizonte/proof-media";
 
 interface Props { route: PublicRoute; }
 
@@ -24,7 +24,7 @@ const { route } = Astro.props;
 const { id, locale, node, variant } = route;
 const uiCopy = getUiCopy(locale);
 const hz = uiCopy.horizonte;
-const labels = uiCopy.sunlit.publicContent;
+const labels = uiCopy.publicContent;
 const contactCopy = uiCopy.contactForm;
 const leadIntentLabels = {
   project: contactCopy.intentProject,
