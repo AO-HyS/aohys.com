@@ -4,7 +4,7 @@
   inhale 0–32%, swirl 28–62% (content swaps at 45%), resolve 45–75%, settle
   60–100% with one damped overshoot. Reduced motion swaps with a crossfade.
 */
-import { brandPastels } from "@aohys/core/brand-tokens";
+import { brandHex, brandPastels, rgbChannels } from "@aohys/core/brand-tokens";
 import { createLens, hexToVec, type Lens } from "./horizonte-lens";
 
 type GhostKind =
@@ -98,7 +98,7 @@ const seg = (x: number, a: number, b: number) => clamp((x - a) / (b - a), 0, 1);
 /* Synthetic earlier versions drawn in code: v1 sketch, v2 prototype, shipped. */
 function ghostSVG(kind: GhostKind, stageIdx: number, tint: string) {
   const o: string[] = [];
-  const ink = "rgba(71,60,51,";
+  const ink = `rgba(${rgbChannels(brandHex.ink)},`;
   const rect = (
     x: number,
     y: number,

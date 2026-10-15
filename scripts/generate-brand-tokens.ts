@@ -8,7 +8,9 @@ import {
   dashboardAccessThemeKeys,
   dashboardTheme,
   horizonteRoot,
+  horizonteRootChannels,
   neutralColors,
+  rgbChannels,
   siteTheme,
 } from "@aohys/core/brand-tokens";
 
@@ -86,7 +88,7 @@ function renderHorizonteCss(current: string): string {
     "}",
     "",
     ":root {",
-    ...Object.entries(horizonteRoot).map(
+    ...Object.entries({ ...horizonteRoot, ...horizonteRootChannels }).map(
       ([name, value]) => `  ${name}: ${value};`,
     ),
     "}",
@@ -119,6 +121,16 @@ const brandHexLiterals = new Set(
     .map((value) => value.toLowerCase())
     .filter((value) => !neutral.has(value)),
 );
+const brandRgbLiterals = new Set(
+  [...brandHexLiterals].map((hex) => rgbChannels(hex as `#${string}`)),
+);
+const normalizeRgb = (body: string) =>
+  body
+    .split(/[\s,/]+/)
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((part) => String(Number(part)))
+    .join(", ");
 const brandOklchLiterals = new Set(
   [
     ...Object.values(brandColors),
@@ -171,6 +183,13 @@ function brandLiterals(): string[] {
             body: normalizeOklch(body ?? ""),
           }),
         );
+        for (const [literal, body] of line.matchAll(/rgba?\(([^)]*)\)/gi)) {
+          if (brandRgbLiterals.has(normalizeRgb(body ?? ""))) {
+            findings.push(
+              `${path.relative(root, file)}:${index + 1} ${literal}`,
+            );
+          }
+        }
         for (const hex of hexes) {
           if (brandHexLiterals.has(hex.toLowerCase())) {
             findings.push(`${path.relative(root, file)}:${index + 1} ${hex}`);
@@ -222,7 +241,7 @@ function main(): void {
         : []),
       ...(literals.length > 0
         ? [
-            `Brand color literals outside ${SOURCE}; use the generated variables or import the token:\n  ${literals.join("\n  ")}`,
+            `Brand color literals (hex, rgb or OKLCH) outside ${SOURCE}; use the generated variables or import the token:\n  ${literals.join("\n  ")}`,
           ]
         : []),
     ];

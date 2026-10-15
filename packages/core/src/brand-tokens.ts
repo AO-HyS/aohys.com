@@ -107,6 +107,13 @@ export const dashboardAccessThemeKeys = [
   "--ring",
 ] as const satisfies readonly (keyof typeof dashboardTheme)[];
 
+/** `"71, 60, 51"` for a `#rrggbb` token, for `rgba()` alpha variants. */
+export function rgbChannels(hex: Hex): string {
+  return [1, 3, 5]
+    .map((start) => Number.parseInt(hex.slice(start, start + 2), 16))
+    .join(", ");
+}
+
 /** Horizonte `:root` color variables; `--wash` also seeds `@property --wash`. */
 export const horizonteRoot = {
   "--ink": brandHex.ink,
@@ -119,6 +126,11 @@ export const horizonteRoot = {
   "--honey-full": brandHex.honeyFull,
   "--wash": brandPastels.apricot,
 } as const satisfies Record<`--${string}`, Hex>;
+
+/** Space-separated channels for `rgb(var(--ink-rgb) / <alpha>)` in CSS. */
+export const horizonteRootChannels = {
+  "--ink-rgb": rgbChannels(brandHex.ink).replaceAll(",", ""),
+} as const;
 
 /** Neutral values that are not brand colors (white and black). */
 export const neutralColors: readonly string[] = [white, brandHex.paper];
