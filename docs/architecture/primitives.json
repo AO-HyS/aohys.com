@@ -369,11 +369,13 @@
       "summary": "Dashboard publication on Convex's scheduler: one mutation hashes the canonical source and creates or reuses a PublicationRequest with at most one eligible PublicationAttempt; the dispatcher claims scheduled work before calling GitHub, acknowledgement only moves the attempt to acknowledged, ambiguity becomes rollback-needed and is never retried automatically, and only a post-smoke PublicationReceipt marks it deployed.",
       "paths": [
         "apps/backend/convex/publication.ts",
+        "apps/backend/convex/model/publication.ts",
         "apps/backend/convex/publicationActions.ts",
         "apps/backend/src/publication-provider.ts",
         "apps/backend/src/publication-contract.ts"
       ],
       "symbols": [
+        "apps/backend/convex/model/publication.ts#publishDurablyHandler",
         "apps/backend/convex/publication.ts#claimAttempt",
         "apps/backend/convex/publication.ts#recordReceipt",
         "apps/backend/src/publication-contract.ts#canonicalizePublicationSource"
