@@ -1,7 +1,7 @@
-# Current work — primitives gardener (fix mode)
+# Current work — primitives gardener (tend mode)
 
 Canonical root: aohys. Base: develop. One branch per PR; current:
-`feat/brand-tokens` (brand tokens + Sunlit retirement).
+`docs/primitives-closing` (fix mode closed).
 
 Goal: one source per primitive, recorded in
 `docs/architecture/primitives.json` and valid under
@@ -15,15 +15,16 @@ vocabulary, #213 build-script payload types and unknown guards, #214
 Environment Contract destinations, #215 feature map write and denied journeys,
 #216 admin builders and allowlist, #217 `auditEvents`, #218–#219 release CLI
 and targets, #220 publication CLI, #221 dashboard kit required, #222 projects
-save feedback through `SaveBar` and `AsyncSurface`.
+save feedback through `SaveBar` and `AsyncSurface`, #223 `brand-tokens`
+(one palette source generating the site and dashboard themes) and Sunlit
+retired.
 
-Priority 5 (finite list items 7, 7b, 7c), in order:
-
-1. Done: #221 dashboard kit required, #222 projects `SaveBar`.
-2. In review: `brand-tokens` (`packages/core/src/brand-tokens.ts`,
-   `pnpm brand:generate`, `pnpm brand:check` in lint) and Sunlit retired
-   (`proof-media` in Horizonte, copy under `publicContent`).
-3. Close `primitives.json` and move the repo to tend.
+Fix mode is closed: the finite list is done and `primitives.json` records 17
+active primitives, adding the existing durable publication, contact intake,
+public content graph, media policy, architecture fitness and quality gates
+(the Pages dashboard gate folds into `admin-functions`). The repo is in tend:
+the Steward checks the map weekly (aohys is on its allowlist), and the
+recorded goals are the open follow-ups, not fix-mode work.
 
 Review budget (Development System 2.4.0): one Sol 6.1 High review per
 finished PR, a second only on the fix diff of a blocking finding; docs-only and
