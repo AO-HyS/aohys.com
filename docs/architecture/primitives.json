@@ -287,11 +287,11 @@
       "guarantees": [
         {
           "statement": "reconcile and retry reject without writing unless the attempt belongs to its request and the expected target, the request target and the deployment's AOHYS_ENV agree; retry also requires an authorization reference and a scheduled attempt.",
-          "verifiedBy": "apps/backend/convex/publication.ts (requireBoundTarget before any write) and the private syscall simulation recorded in the PR"
+          "verifiedBy": "apps/backend/convex/publication.ts (requireBoundTarget before any write); live preview operator fixtures, CLI and server denials, unchanged before/after state and audit in private verification/aohys-pending16-20261018/operator-execution.json and operator-denials.json (source d233b1e, 2026-10-18)"
         }
       ],
       "goals": [
-        "Observe status and rejected mismatches on preview with the preview deploy key."
+        "Prove the separate authenticated dashboard allowed/denied publication journey; operator CLI proof does not prove browser roles."
       ],
       "replaces": [],
       "docs": ["docs/architecture/publication-workflow.md"]
@@ -380,10 +380,14 @@
         "apps/backend/convex/publication.ts#recordReceipt",
         "apps/backend/src/publication-contract.ts#canonicalizePublicationSource"
       ],
-      "guarantees": [],
+      "guarantees": [
+        {
+          "statement": "A controlled preview operator-fixture dispatch preserved its request key and attempt id through deploy and smoke and wrote one matching receipt at source d233b1e; this is provider-path evidence, not authenticated dashboard publication proof.",
+          "verifiedBy": "GitHub Release Train run 39183569721 and private verification/aohys-pending16-20261018/operator-final-readback.json and operator-final-summary.json (2026-10-18)"
+        }
+      ],
       "goals": [
-        "Pass the preview acceptance gate in docs/architecture/publication-workflow.md: a controlled workflow_dispatch that keeps the request key and attempt id through deploy and smoke and writes a matching receipt.",
-        "Give the claim, dispatch and receipt transitions an executable check; today they are documented and enforced only in code."
+        "Prove authenticated dashboard publication from source hashing and draft publication through the existing provider receipt path with allowed/denied roles and cleanup."
       ],
       "replaces": [],
       "docs": ["docs/architecture/publication-workflow.md"]
