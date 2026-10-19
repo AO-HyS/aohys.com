@@ -5,9 +5,9 @@ Canonical root: `/Users/corrortiz/Documents/AO/aohys`. Base: `develop`
 The v5 implementation is delivered (#211–#224; production #225/#227).
 This continuation reopens only the remaining acceptance evidence; it does not
 reopen the finite implementation list or authorize production changes.
-Delivery branch: `docs/primitives-preview-write-proof` (PR recorded below
-before final review). No merge: the required authenticated allowed/denied
-QuickE2E gate is not reached. This file is the continuation handoff.
+Delivery branch: `docs/primitives-preview-write-proof`; draft PR #228:
+https://github.com/AO-HyS/aohys.com/pull/228. No merge: the required authenticated
+allowed/denied QuickE2E gate is not reached. This file is the continuation handoff.
 
 Goal: one source per primitive, recorded in
 `docs/architecture/primitives.json` and valid under
