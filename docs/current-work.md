@@ -82,8 +82,10 @@ No cross-review was requested or run. All auxiliary files/evidence stay under
    receipt is the reconciliation anchor. Preserve all synthetic publication
    and audit records rather than deleting them. Provider run
    https://github.com/AO-HyS/aohys.com/actions/runs/39183569721 completed
-   successfully at source `d233b1e`; preview `https://84be838b.aohys-com.pages.dev`
-   passed smoke and recorded one matching receipt. The retry request is
+   successfully at source `d233b1e`. The versioned deployment URL is
+   `https://84be838b.aohys-com.pages.dev`; the retained release log shows smoke
+   actually checked `https://develop.aohys-com.pages.dev`, then recorded one
+   matching receipt. Smoke on the versioned origin remains unproven. The retry request is
    `deployed`; its single scheduler job succeeded. Final protected-data
    comparison matched exactly. Four operator and two system audit events were
    observed. Server rejections for target, terminal state, unknown retry and
@@ -155,6 +157,9 @@ limit (`listen EINVAL`); a short private TMPDIR fixed it. Existing
 merged #211 and #220 report Codex `no-findings`; this does not certify the new
 acceptance evidence. The final PR review receipts and Codex status are recorded
 in the private run and PR; they do not waive the missing browser role gate.
+The one Sol review found a non-blocking smoke-URL overstatement, corrected by
+distinguishing the versioned deployment from the stable alias actually smoked.
+No second Sol round is spent on that documentary correction.
 
 Next owner: the agent resumes the already-authorized work once usable repository
 QA account/session access is actually available. Resolve the versioned callback
