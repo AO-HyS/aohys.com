@@ -11,9 +11,55 @@ The canonical request key includes the target environment and scope-specific sou
 
 ## Preview acceptance gate
 
-The provider integration remains unproven until a controlled preview `workflow_dispatch` preserves the request key and attempt id through a successful deploy and smoke, then writes a matching receipt. Retain the request key, attempt id, GitHub run id/URL/SHA, preview URL, and smoke output as evidence. This repository change does not perform that provider call.
+The controlled operator/provider path was observed on 2026-10-18 (local time)
+at source `d233b1eb9c352f8a68b9a2ca55f5ce2c561ff006`, using explicitly synthetic
+requests and attempts on preview backend `effervescent-minnow-483`:
 
-The environment's `CONVEX_DEPLOY_KEY` must permit running internal mutations in addition to deployment. Provider readiness must verify that permission before the controlled run; a deploy-only key cannot write the receipt.
+- `reconcile + not-found` produced retryable `release-failed` / `failed`.
+- `reconcile + unknown` produced non-retryable `rollback-needed` / `ambiguous`
+  without scheduling a dispatch.
+- `retry + not-found` created one successful scheduler job. GitHub Release Train
+  [run 39183569721](https://github.com/AO-HyS/aohys.com/actions/runs/39183569721)
+  deployed preview, passed smoke and wrote one matching `PublicationReceipt`;
+  its request ended `deployed`.
+
+The retry request key is
+`273ae10998120144dd98b9496791f26a35797da0b01e6f681ac2db6b2ffd3004`, attempt
+`273ae10998120144dd98b9496791f26a35797da0b01e6f681ac2db6b2ffd3004.1`.
+The receipt matches request/attempt IDs, target `preview`, `refs/heads/develop`,
+run ID/URL and the source SHA above. The versioned deployment is
+`https://84be838b.aohys-com.pages.dev`; the actual release log records smoke on
+`https://develop.aohys-com.pages.dev`. Smoke on the versioned origin remains
+unproven.
+
+Private evidence is under
+`~/.development-system/private/verification/aohys-pending16-20261018/`:
+`operator-plan.json`, `operator-execution.json`, `operator-denials-verdict.json`,
+`operator-final-readback.json`, `receipt-correlation-verdict.json` and
+`provider-release.log`. Invalid target/state/correlation/unknown/date inputs
+were refused without changing the terminal fixture, receipts or audit;
+protected drafts, versions, media, metadata and settings matched before/after.
+Three synthetic requests and attempts, one receipt, six audit events, one
+completed job and a release-smoke lead in `new` state are retained. Operator
+notification delivery is unconfirmed. These are synthetic setup and real
+provider effects, not recovery of an organic stuck attempt; do not replay the
+private execution script or repeat the dispatch to fill an already-proven gate.
+
+The separate authenticated dashboard gate is still **not reached**: source
+hashing/draft publication from the permitted UI, invalid resume rejection with
+an allowed admin, an authenticated account outside the allowlist, and the
+compare-before-restore dashboard cleanup require usable QA sessions. The
+operator/provider receipt above does not prove these browser behaviors.
+QuickE2E with Jev recorded two invalid flow definitions and a versioned-origin
+Google `redirect_uri_mismatch`; none passed the authenticated merge gate.
+Retained owner authorization covers develop and repository-account login;
+production and data deletions remain held.
+
+The environment's `CONVEX_DEPLOY_KEY` must permit running internal mutations in
+addition to deployment. The controlled run above observed a successful
+`recordReceipt` operator event with credential class `deploy-key` on the preview
+deployment. Future runs must recheck that capability; a deploy-only key cannot
+write the receipt.
 
 Manual publication dispatches are target-bound: preview must run from `refs/heads/develop`, production must run from `refs/heads/main`, and every checkout is pinned to the dispatch event SHA. Both terminal outcome and post-smoke receipt callbacks carry the Git ref; Convex rejects a target/ref mismatch even when the dispatch acknowledgement used the legacy `204` response and therefore has no provider run id.
 
@@ -38,4 +84,8 @@ pnpm publication retry --target preview --attempt <id> --provider-status not-fou
 
 The reconciliation job depends on release planning and both target deploy jobs with `if: always()`, then inspects the relevant `needs.*.result`. This automatically covers ordinary plan/deploy failures. GitHub's [workflow cancellation reference](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-cancellation) only guarantees condition re-evaluation for jobs that are already running; it does not guarantee that this pending downstream `needs` job will start after a concurrency or UI cancellation. If it does start, it records the cancellation. Otherwise, inspect the correlated GitHub run first and run `pnpm exec tsx scripts/record-publication-outcome.ts` manually with the original request key, attempt id, target, Git ref, run id/URL, release SHA, terminal outcome, and environment `CONVEX_DEPLOY_KEY`. A force-cancel, runner outage, or failure inside reconciliation uses the same manual path. A re-run of a workflow pinned before operator provenance existed omits `operator`; the backend rejects that callback in argument validation, before any write, and the same manual path with the current scripts (which declare provenance, with the run URL as reference) records it. If GitHub cannot prove a terminal run, use the stale-claim status-check path and record `unknown` as `rollback-needed`; never retry from elapsed time alone.
 
-The deterministic concurrency tests serialize simultaneous handler calls to model Convex mutation/OCC retry semantics and the unique request-key boundary. They prove application-level idempotency under that contract, not live provider scheduling; the controlled Preview acceptance gate remains the end-to-end concurrency and callback proof.
+Earlier handler-level simulations modeled Convex mutation/OCC retries and the
+unique request-key boundary; they did not prove live concurrency. The controlled
+preview run above proves the single-dispatch provider and receipt path.
+Concurrent authenticated dashboard publication remains unproven. The repository
+has no automated tests.

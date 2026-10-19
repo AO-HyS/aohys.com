@@ -159,7 +159,10 @@ acceptance evidence. The final PR review receipts and Codex status are recorded
 in the private run and PR; they do not waive the missing browser role gate.
 The one Sol review found a non-blocking smoke-URL overstatement, corrected by
 distinguishing the versioned deployment from the stable alias actually smoked.
-No second Sol round is spent on that documentary correction.
+No second Sol round is spent on that documentary correction. The first Codex
+round found that the canonical publication runbook still called this provider
+gate unproven; it now records the same run, synthetic setup and remaining
+authenticated gate. The second and final Codex request covers these fixes.
 
 Next owner: the agent resumes the already-authorized work once usable repository
 QA account/session access is actually available. Resolve the versioned callback
