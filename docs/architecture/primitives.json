@@ -185,6 +185,10 @@
         {
           "statement": "ADMIN_EMAIL is parsed only by parseAdminAllowlist, used by the contract validator, the Pages dashboard gate and requireAdmin.",
           "verifiedBy": "rg finds no other ADMIN_EMAIL parser in apps or packages"
+        },
+        {
+          "statement": "On live preview one real Google session is served and may write while its email is on ADMIN_EMAIL, and is refused by the Pages gate (403 on /dashboard and /dashboard/resume) and by requireAdmin on queries and mutations, with no write, once the allowlist excludes it.",
+          "verifiedBy": "QuickE2E allowed/denied pass, Convex calls and before/after data probes in private verification/aohys-item1-20261019/verification-summary.json (release runs 39371674175 and 39372145963, 2026-10-19)"
         }
       ],
       "goals": [

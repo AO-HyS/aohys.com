@@ -45,15 +45,17 @@ notification delivery is unconfirmed. These are synthetic setup and real
 provider effects, not recovery of an organic stuck attempt; do not replay the
 private execution script or repeat the dispatch to fill an already-proven gate.
 
-The separate authenticated dashboard gate is still **not reached**: source
-hashing/draft publication from the permitted UI, invalid resume rejection with
-an allowed admin, an authenticated account outside the allowlist, and the
-compare-before-restore dashboard cleanup require usable QA sessions. The
-operator/provider receipt above does not prove these browser behaviors.
-QuickE2E with Jev recorded two invalid flow definitions and a versioned-origin
-Google `redirect_uri_mismatch`; none passed the authenticated merge gate.
-Retained owner authorization covers develop and repository-account login;
-production and data deletions remain held.
+The authenticated dashboard gate ran on 2026-10-19 on the stable preview
+alias (`aohys-item1-20261019`): an allowed admin's invalid resume content was
+rejected server-side without writes, a valid save and byte-identical
+restoration were observed with their audit rows, and the same session was
+refused by Pages and Convex once the preview allowlist excluded it. The
+admin's dashboard Publish created a request and dispatched release run
+39372485104, which failed at the public claim check (`derived-percentage` in
+the preview resume draft). The request is preserved as `release-failed`;
+the draft was re-saved unchanged to clear `publishedAt`. Publish now runs
+the same claim policy before writing. The versioned-origin Google callback
+(`redirect_uri_mismatch`) is still unproven.
 
 The environment's `CONVEX_DEPLOY_KEY` must permit running internal mutations in
 addition to deployment. The controlled run above observed a successful

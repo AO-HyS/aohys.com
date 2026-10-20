@@ -3,11 +3,14 @@
 Canonical root: `/Users/corrortiz/Documents/AO/aohys`. Base: `develop`
 `d233b1eb9c352f8a68b9a2ca55f5ce2c561ff006` (2026-10-18).
 The v5 implementation is delivered (#211–#224; production #225/#227).
-This continuation reopens only the remaining acceptance evidence; it does not
-reopen the finite implementation list or authorize production changes.
-Delivery branch: `docs/primitives-preview-write-proof`; draft PR #228:
-https://github.com/AO-HyS/aohys.com/pull/228. No merge: the required authenticated
-allowed/denied QuickE2E gate is not reached. This file is the continuation handoff.
+This continuation reopens only the remaining acceptance evidence.
+Delivery branch: `docs/primitives-preview-write-proof`; PR #228:
+https://github.com/AO-HyS/aohys.com/pull/228. On 2026-10-19 the owner authorized
+everything through production ("No te detengas hasta que todo esté en
+producción… Te doy permiso de hacer todo lo que necesitas hacer"). The
+authenticated allowed/denied gate passed on 2026-10-19 (item 1 below); the
+dashboard publish it exercised found a defect fixed in
+`fix/publication-claims-preflight`. This file is the continuation handoff.
 
 Goal: one source per primitive, recorded in
 `docs/architecture/primitives.json` and valid under
@@ -59,13 +62,25 @@ No cross-review was requested or run. All auxiliary files/evidence stay under
 
 ## Remaining acceptance and exact resumption
 
-1. **Item 1 — NOT REACHED.** The accepted v5 item specifically requires a
-   server rejection of invalid resume content with an authenticated **allowed
-   admin**; a valid save, before/after draft/version/audit probes and restoration
-   prove the permitted path and effects. Also prove the separately requested
-   denied-session refusal: an account outside the allowlist receives Pages 403
-   on `/dashboard` and `/dashboard/resume`, and Convex rejects its query without
-   writes. Anonymous refusal does not replace either authenticated case.
+1. **Item 1 — PASSED on preview (stable alias), 2026-10-19.** Session: the
+   owner's real Google account `a.ortizcrr@gmail.com`, synced from their Chrome
+   (expect MCP cookies) into a two-cookie private storageState. Allowed admin:
+   `upsertResumeDraft` with non-JSON and wrong-shape content returned "Resume
+   content does not match the resume contract; nothing was saved." with no
+   audit row; QuickE2E `admin-resume-valid-save` PASS (Jev) changed the EN
+   location and wrote one `content:upsertResumeDraft` session audit event;
+   versions unchanged; the original contentJson was restored byte-identically.
+   Denied: the preview `ADMIN_EMAIL` GitHub environment variable was narrowed to
+   `alejandro.ortiz@aohys.com` (release run 39371674175 synced Pages and Convex);
+   the same session got Pages 403 on `/dashboard` and `/dashboard/resume`,
+   QuickE2E `denied-session-dashboard` and `denied-session-resume` PASS
+   (attack, control `/`), and Convex refused `listForDashboard` and
+   `upsertResumeDraft` ("This account is not allowed to use the dashboard.")
+   with no data change. The allowlist was restored and redeployed (run
+   39372145963): Pages 200 and Convex readback match. Evidence:
+   `aohys-item1-20261019/verification-summary.json`. Each of the two releases
+   left one synthetic smoke lead (`new`). The versioned-origin Google callback
+   (`redirect_uri_mismatch`) remains unresolved and unproven.
 2. **Item 6 — PASSED for the operator CLI and provider paths on preview.** Existing `publication-cli` (#220), unchanged source: three
    explicitly synthetic fixture requests/attempts were appended under
    `aohys-pending16-20261018-operator-v1`; no real request existed initially.
@@ -164,12 +179,23 @@ round found that the canonical publication runbook still called this provider
 gate unproven; it now records the same run, synthetic setup and remaining
 authenticated gate. The second and final Codex request covers these fixes.
 
-Next owner: the agent resumes the already-authorized work once usable repository
-QA account/session access is actually available. Resolve the versioned callback
-or establish a valid versioned-origin session without bypassing auth, then run
-all affected flows in one bounded pass and retain before/after/cleanup evidence.
-Only then close the remaining point, update this file and its PR with
-system-recap, run the independent Sol/Codex gates and merge to develop. Production stays held.
+3. **Dashboard publish — DEFECT FOUND, fix in progress.** QuickE2E
+   `admin-resume-publish-preview` PASS: the allowed admin's Publish created
+   request `36d2fea7…` and dispatched run 39372485104. That release failed at
+   `apply published dashboard content`: the preview EN resume draft (July seed)
+   contains "80% load-time reduction" (`derived-percentage`). The request is
+   `release-failed`, retryable, reconciled by the workflow; it is preserved.
+   Because publishing had marked the draft published, every later preview
+   release would have failed; the admin re-saved the identical content, which
+   cleared `publishedAt`. Fix: `fix/publication-claims-preflight` runs the same
+   public claim policy on the scoped publication source in
+   `publishDurablyHandler` and throws before any request, attempt or local
+   publish. The preview draft content was not edited: removing the claim is a
+   content decision for the owner.
+
+Next owner: the agent merges #228, then the fix PR after its gates, proves on
+preview that Publish of the unchanged draft is refused with no writes, and
+promotes develop to production under the 2026-10-19 authorization.
 
 Historical private evidence: `aohys-primitives-20261013` under the same shared
 private verification directory; it is not fresh acceptance for this candidate.
