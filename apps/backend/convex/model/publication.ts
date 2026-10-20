@@ -1,4 +1,5 @@
-import { v, type ObjectType } from "convex/values";
+import { findForbiddenPublicClaims } from "@aohys/content-graph/public-claim-policy";
+import { ConvexError, v, type ObjectType } from "convex/values";
 import { insertAuditEvent, sessionActorValidator } from "../lib/audit.js";
 import type { MutationCtx } from "../_generated/server.js";
 import { internal } from "../_generated/api.js";
@@ -60,6 +61,19 @@ export async function publishDurablyHandler(
   args: ObjectType<typeof publishDurablyArgs>,
 ) {
   const source = await readPublicationSource(ctx, args);
+  // The release refuses these claims in the project and resume dictionaries
+  // after dispatch; refuse them here first so a publish that cannot ship
+  // writes no request, attempt or local publish. Media and settings never
+  // reach those dictionaries, so they are not scanned.
+  const forbiddenClaims = findForbiddenPublicClaims({
+    projects: source.projects,
+    resume: source.resume,
+  });
+  if (forbiddenClaims.length > 0) {
+    throw new ConvexError(
+      `Publication source contains claims that cannot be public (${forbiddenClaims.join(", ")}); nothing was published.`,
+    );
+  }
   const identity = await createPublicationIdentity({
     scope: args.scope,
     ...(args.contentId ? { contentId: args.contentId } : {}),
