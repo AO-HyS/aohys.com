@@ -119,7 +119,8 @@ No cross-review was requested or run. All auxiliary files/evidence stay under
   in the inspected env files, QA docs, feature map or prior AOHyS evidence.
   `host.dashboard-operator-session` and `host.dashboard-denied-session` are
   references, not credentials. A prior cookie-import receipt is not a usable
-  current session. Account availability remains the real missing dependency.
+  current session. (2026-10-18 pass.) Superseded on 2026-10-19: the owner's
+  real Chrome session supplied the account, and item 1 passed.
 - Preview at the start of this pass was `https://be0e9ec6.aohys-com.pages.dev`, source
   `d233b1e`, stable alias `https://develop.aohys-com.pages.dev`. GitHub deployment
   `7103393808` / release run `38801046255` succeeded. The doctor observes only
@@ -136,7 +137,7 @@ No cross-review was requested or run. All auxiliary files/evidence stay under
   through the installed TypeSafe preload, clicked Google sign-in on the
   versioned preview. Google returned **`redirect_uri_mismatch`** for that
   versioned callback. The stable alias did not show that error in the T3 pass.
-  Authenticate on the stable alias once a repository account is available;
+  The 2026-10-19 item 1 pass authenticated on the stable alias;
   versioned-origin session readiness remains unproven. Do not mark its
   feature-map journeys proven from the stable alias alone.
 - Two initial anonymous gate flow definitions were rejected by QuickE2E as
@@ -162,8 +163,8 @@ stored one synthetic contact lead, retained in `new` state as a disclosed
 residual effect; no data deletion or unauthenticated status bypass was used to
 remove/close it. Operator notification delivery was not independently observed
 (`SMOKE_CONTACT_SUBMIT=true`). One post-smoke publication receipt is retained.
-No allowed/denied Google session, data deletion, merge or production action
-occurred.
+That 2026-10-18 pass had no allowed/denied Google session, data deletion,
+merge or production action; the 2026-10-19 session pass is item 1 above.
 
 `check-primitives`: PASSED (17 active). `check-no-tests`: PASSED.
 `quality:changed` and `quality:certify`: PASSED. The first certification attempt
@@ -171,7 +172,8 @@ failed because its nested private TMPDIR exceeded the tsx Unix-socket path
 limit (`listen EINVAL`); a short private TMPDIR fixed it. Existing
 merged #211 and #220 report Codex `no-findings`; this does not certify the new
 acceptance evidence. The final PR review receipts and Codex status are recorded
-in the private run and PR; they do not waive the missing browser role gate.
+in the private run and PR; the browser role gate itself passed on 2026-10-19
+(item 1).
 The one Sol review found a non-blocking smoke-URL overstatement, corrected by
 distinguishing the versioned deployment from the stable alias actually smoked.
 No second Sol round is spent on that documentary correction. The first Codex

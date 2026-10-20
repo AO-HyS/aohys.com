@@ -291,7 +291,7 @@
       "guarantees": [
         {
           "statement": "reconcile and retry reject without writing unless the attempt belongs to its request and the expected target, the request target and the deployment's AOHYS_ENV agree; retry also requires an authorization reference and a scheduled attempt.",
-          "verifiedBy": "apps/backend/convex/publication.ts (requireBoundTarget before any write); live preview operator fixtures, CLI and server denials, unchanged before/after state and audit in private verification/aohys-pending16-20261018/operator-execution.json and operator-denials.json (source d233b1e, 2026-10-18)"
+          "verifiedBy": "apps/backend/convex/publication.ts (requireBoundTarget before any write); live preview operator fixtures, CLI and server denials, unchanged before/after state and audit in private verification/aohys-pending16-20261018/operator-execution.json and operator-denials-verdict.json (source d233b1e, 2026-10-18)"
         }
       ],
       "goals": [
