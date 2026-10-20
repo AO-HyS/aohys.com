@@ -17,6 +17,7 @@ import {
   parseBetterAuthSession,
 } from "./runtime-boundaries.js";
 import { type Environment } from "@aohys/core/domain";
+import { PAGES_DEV_SUFFIX, RELEASE_TARGETS } from "@aohys/core/release-targets";
 
 export interface DashboardAccessEnvironment extends Record<
   string,
@@ -270,6 +271,28 @@ async function beginGoogleSignIn(
   authFetch: DashboardFetch,
 ): Promise<Response> {
   const incomingUrl = new URL(request.url);
+  // Google accepts only registered redirect URIs, and every Pages deployment
+  // gets a new versioned host. Start sign-in on the environment's stable URL
+  // instead, so the OAuth callback and the session cookie land on a host
+  // Google knows.
+  const stableUrl =
+    environment.AOHYS_ENV === "local"
+      ? incomingUrl
+      : new URL(RELEASE_TARGETS[environment.AOHYS_ENV].liveUrl);
+  if (
+    incomingUrl.hostname.endsWith(PAGES_DEV_SUFFIX) &&
+    incomingUrl.hostname !== stableUrl.hostname
+  ) {
+    const headers = new Headers(PRIVATE_NO_STORE_HEADERS);
+    headers.set(
+      "location",
+      new URL(
+        `${incomingUrl.pathname}${incomingUrl.search}`,
+        stableUrl,
+      ).toString(),
+    );
+    return new Response(null, { status: 302, headers });
+  }
   const forwardedProto = incomingUrl.protocol.replace(":", "");
   const callbackUrl = new URL(
     normalizeCallbackPath(callbackPath),
