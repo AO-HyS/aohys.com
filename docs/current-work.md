@@ -10,7 +10,7 @@ everything through production ("No te detengas hasta que todo esté en
 producción… Te doy permiso de hacer todo lo que necesitas hacer"). The
 authenticated allowed/denied gate passed on 2026-10-19 (item 1 below); the
 dashboard publish it exercised found a defect fixed in
-`fix/publication-claims-preflight`. This file is the continuation handoff.
+`fix/publish-claims-preflight`. This file is the continuation handoff.
 
 Goal: one source per primitive, recorded in
 `docs/architecture/primitives.json` and valid under
@@ -181,7 +181,7 @@ round found that the canonical publication runbook still called this provider
 gate unproven; it now records the same run, synthetic setup and remaining
 authenticated gate. The second and final Codex request covers these fixes.
 
-3. **Dashboard publish — DEFECT FOUND, fix in progress.** QuickE2E
+3. **Dashboard publish — DEFECT FOUND, fixed in `fix/publish-claims-preflight`.** QuickE2E
    `admin-resume-publish-preview` PASS: the allowed admin's Publish created
    request `36d2fea7…` and dispatched run 39372485104. That release failed at
    `apply published dashboard content`: the preview EN resume draft (July seed)
@@ -189,10 +189,14 @@ authenticated gate. The second and final Codex request covers these fixes.
    `release-failed`, retryable, reconciled by the workflow; it is preserved.
    Because publishing had marked the draft published, every later preview
    release would have failed; the admin re-saved the identical content, which
-   cleared `publishedAt`. Fix: `fix/publication-claims-preflight` runs the same
+   cleared `publishedAt`. Fix: `fix/publish-claims-preflight` runs the same
    public claim policy on the scoped publication source in
    `publishDurablyHandler` and throws before any request, attempt or local
-   publish. The preview draft content was not edited: removing the claim is a
+   publish. It scans only the project and resume parts of the source, the
+   only parts the release turns into the checked dictionaries (Sol finding:
+   archived media alt text must not block a safe publish). The adminAction
+   `attempted` audit row is still written for a refused call; that is the
+   action audit contract, not a publication write. The preview draft content was not edited: removing the claim is a
    content decision for the owner.
 
 Next owner: the agent merges #228, then the fix PR after its gates, proves on

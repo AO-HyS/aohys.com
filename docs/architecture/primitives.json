@@ -388,6 +388,10 @@
         {
           "statement": "A controlled preview operator-fixture dispatch preserved its request key and attempt id through deploy and smoke and wrote one matching receipt at source d233b1e; this is provider-path evidence, not authenticated dashboard publication proof.",
           "verifiedBy": "GitHub Release Train run 39183569721 and private verification/aohys-pending16-20261018/operator-final-readback.json and operator-final-summary.json (2026-10-18)"
+        },
+        {
+          "statement": "Publish refuses a scoped project or resume source that contains a claim forbidden by the public claim policy before hashing, request, local publish, attempt or publication audit row; only the adminAction attempted audit row remains.",
+          "verifiedBy": "apps/backend/convex/model/publication.ts (findForbiddenPublicClaims before createPublicationIdentity) and the post-merge preview refusal in private verification/aohys-item1-20261019/preflight-live.json"
         }
       ],
       "goals": [
