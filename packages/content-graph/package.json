@@ -15,6 +15,11 @@
       "import": "./src/static-case-study-routes.ts",
       "default": "./src/static-case-study-routes.ts"
     },
+    "./public-claim-policy": {
+      "types": "./src/public-claim-policy.ts",
+      "import": "./src/public-claim-policy.ts",
+      "default": "./src/public-claim-policy.ts"
+    },
     "./resume-content": {
       "types": "./src/resume-content.ts",
       "import": "./src/resume-content.ts",
