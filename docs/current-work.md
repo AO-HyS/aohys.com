@@ -9,8 +9,7 @@ https://github.com/AO-HyS/aohys.com/pull/228. On 2026-10-19 the owner authorized
 everything through production ("No te detengas hasta que todo esté en
 producción… Te doy permiso de hacer todo lo que necesitas hacer"). The
 authenticated allowed/denied gate passed on 2026-10-19 (item 1 below); the
-dashboard publish it exercised found a defect fixed in
-`fix/publish-claims-preflight`. This file is the continuation handoff.
+dashboard publish it exercised found a defect fixed by #229. This file is the continuation handoff.
 
 Goal: one source per primitive, recorded in
 `docs/architecture/primitives.json` and valid under
@@ -199,9 +198,17 @@ authenticated gate. The second and final Codex request covers these fixes.
    action audit contract, not a publication write. The preview draft content was not edited: removing the claim is a
    content decision for the owner.
 
-Next owner: the agent merges #228, then the fix PR after its gates, proves on
-preview that Publish of the unchanged draft is refused with no writes, and
-promotes develop to production under the 2026-10-19 authorization.
+State (2026-10-20): #228 and #229 merged to develop (develop release run
+39375912131 passed). Before merge, the #229 head's functions on preview Convex
+refused the admin's Publish of the unchanged draft: no request, no attempt, no
+draft change, one `attempted` action audit row (`preflight-live.json`).
+Production promotion: PR #230 (develop to main). Do not repeat the allowlist
+narrowing, the publish attempts or the promotion; their evidence is final.
+
+Open, with no authorized work pending: the versioned-origin Google callback
+(`redirect_uri_mismatch`) is unproven. The preview EN resume draft still
+contains "80% load-time reduction", so publish refuses it until the owner edits
+that copy. Synthetic smoke leads stay in `new`.
 
 Historical private evidence: `aohys-primitives-20261013` under the same shared
 private verification directory; it is not fresh acceptance for this candidate.

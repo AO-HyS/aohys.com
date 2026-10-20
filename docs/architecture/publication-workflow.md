@@ -53,9 +53,9 @@ refused by Pages and Convex once the preview allowlist excluded it. The
 admin's dashboard Publish created a request and dispatched release run
 39372485104, which failed at the public claim check (`derived-percentage` in
 the preview resume draft). The request is preserved as `release-failed`;
-the draft was re-saved unchanged to clear `publishedAt`. Until the separate
-claim-preflight fix is merged and deployed, publish still accepts such a
-source and only the release refuses it. The versioned-origin Google callback
+the draft was re-saved unchanged to clear `publishedAt`. Since #229, publish
+refuses such a project or resume source before any publication write; the
+release check remains the final guard. The versioned-origin Google callback
 (`redirect_uri_mismatch`) is still unproven.
 
 The environment's `CONVEX_DEPLOY_KEY` must permit running internal mutations in
