@@ -392,10 +392,14 @@
         {
           "statement": "Publish refuses a scoped project or resume source that contains a claim forbidden by the public claim policy before hashing, request, local publish, attempt or publication audit row; only the adminAction attempted audit row remains.",
           "verifiedBy": "apps/backend/convex/model/publication.ts (findForbiddenPublicClaims before createPublicationIdentity) and the post-merge preview refusal in private verification/aohys-item1-20261019/preflight-live.json"
+        },
+        {
+          "statement": "An allowed admin's dashboard Publish of a policy-clean preview resume draft created one request and attempt, dispatched one Release Train run that deployed preview and passed smoke, and wrote one matching receipt that moved the request to deployed.",
+          "verifiedBy": "GitHub Release Train run 39467984608 and private verification/aohys-item1-20261019/publish-ok-verdict.json and publish-ok-rows.txt (2026-10-20)"
         }
       ],
       "goals": [
-        "Prove authenticated dashboard publication from source hashing and draft publication through the existing provider receipt path with allowed/denied roles and cleanup."
+        "Prove that a session outside the allowlist is refused by the publish action itself, and prove concurrent authenticated dashboard publication."
       ],
       "replaces": [],
       "docs": ["docs/architecture/publication-workflow.md"]
