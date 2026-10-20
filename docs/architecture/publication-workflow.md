@@ -55,7 +55,10 @@ admin's dashboard Publish created a request and dispatched release run
 the preview resume draft). The request is preserved as `release-failed`;
 the draft was re-saved unchanged to clear `publishedAt`. Since #229, publish
 refuses such a project or resume source before any publication write; the
-release check remains the final guard. The versioned-origin Google callback
+release check remains the final guard. On 2026-10-20, after that label was
+replaced, the admin's dashboard Publish of the EN resume reached `deployed`
+through run 39467984608 (preview deploy and smoke passed) with one matching
+receipt (`publish-ok-verdict.json`). The versioned-origin Google callback
 (`redirect_uri_mismatch`) is still unproven.
 
 The environment's `CONVEX_DEPLOY_KEY` must permit running internal mutations in

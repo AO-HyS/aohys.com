@@ -195,8 +195,8 @@ authenticated gate. The second and final Codex request covers these fixes.
    only parts the release turns into the checked dictionaries (Sol finding:
    archived media alt text must not block a safe publish). The adminAction
    `attempted` audit row is still written for a refused call; that is the
-   action audit contract, not a publication write. The preview draft content was not edited: removing the claim is a
-   content decision for the owner.
+   action audit contract, not a publication write. The claim was later
+   replaced in the preview draft (see Happy path below).
 
 State (2026-10-20): #228 and #229 merged to develop (develop release run
 39375912131 passed). Before merge, the #229 head's functions on preview Convex
@@ -205,10 +205,23 @@ draft change, one `attempted` action audit row (`preflight-live.json`).
 Production promotion: PR #230 (develop to main). Do not repeat the allowlist
 narrowing, the publish attempts or the promotion; their evidence is final.
 
+Happy path (2026-10-20, owner's go-ahead to finish everything): the preview EN
+resume highlight label "80% load-time reduction" became "Sub-second load
+times", backed by the same entry's "3-5 seconds to under 1 second"; nothing
+else changed. A first QuickE2E edit changed the wrong label and its Publish was
+refused by the preflight (one `attempted` row, no request); the admin's direct
+save from the pre-attempt content replaced it. QuickE2E
+`admin-publish-clean-resume` PASS: request `71285723…` reached `deployed`
+through run 39467984608 (preview deploy and smoke passed) with one matching
+receipt, and `/resume/` on the preview alias shows the new label
+(`publish-ok-verdict.json`). Do not repeat this publish.
+
 Open, with no authorized work pending: the versioned-origin Google callback
-(`redirect_uri_mismatch`) is unproven. The preview EN resume draft still
-contains "80% load-time reduction", so publish refuses it until the owner edits
-that copy. Synthetic smoke leads stay in `new`.
+(`redirect_uri_mismatch`) is unproven. Google matches the exact redirect URI
+(`https://<versioned-host>/api/auth/callback/google`), and each deployment gets
+a new host, so sign-in stays on the stable alias unless the auth flow routes
+callbacks through a registered host. The publish action's refusal of a non-allowlisted session
+and concurrent publication are unproven. Synthetic smoke leads stay in `new`.
 
 Historical private evidence: `aohys-primitives-20261013` under the same shared
 private verification directory; it is not fresh acceptance for this candidate.
