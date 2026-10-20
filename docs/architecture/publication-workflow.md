@@ -58,8 +58,9 @@ refuses such a project or resume source before any publication write; the
 release check remains the final guard. On 2026-10-20, after that label was
 replaced, the admin's dashboard Publish of the EN resume reached `deployed`
 through run 39467984608 (preview deploy and smoke passed) with one matching
-receipt (`publish-ok-verdict.json`). The versioned-origin Google callback
-(`redirect_uri_mismatch`) is still unproven.
+receipt (`publish-ok-verdict.json`). Since #234, sign-in started on a
+versioned host is handed to the stable alias, so Google no longer sees an
+unregistered callback.
 
 The environment's `CONVEX_DEPLOY_KEY` must permit running internal mutations in
 addition to deployment. The controlled run above observed a successful
