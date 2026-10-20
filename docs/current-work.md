@@ -79,7 +79,7 @@ No cross-review was requested or run. All auxiliary files/evidence stay under
    39372145963): Pages 200 and Convex readback match. Evidence:
    `aohys-item1-20261019/verification-summary.json`. Each of the two releases
    left one synthetic smoke lead (`new`). The versioned-origin Google callback
-   (`redirect_uri_mismatch`) remains unresolved and unproven.
+   (`redirect_uri_mismatch`) was fixed later by #234 (see Versioned sign-in).
 2. **Item 6 — PASSED for the operator CLI and provider paths on preview.** Existing `publication-cli` (#220), unchanged source: three
    explicitly synthetic fixture requests/attempts were appended under
    `aohys-pending16-20261018-operator-v1`; no real request existed initially.
@@ -137,7 +137,8 @@ No cross-review was requested or run. All auxiliary files/evidence stay under
   versioned preview. Google returned **`redirect_uri_mismatch`** for that
   versioned callback. The stable alias did not show that error in the T3 pass.
   The 2026-10-19 item 1 pass authenticated on the stable alias;
-  versioned-origin session readiness remains unproven. Do not mark its
+  #234 now hands versioned-host sign-in to the stable alias; a login completed
+  from a versioned host remains unobserved. Do not mark its
   feature-map journeys proven from the stable alias alone.
 - Two initial anonymous gate flow definitions were rejected by QuickE2E as
   `WEAK_ASSERTION`: their absent-shell text was not present on the public
@@ -216,12 +217,17 @@ through run 39467984608 (preview deploy and smoke passed) with one matching
 receipt, and `/resume/` on the preview alias shows the new label
 (`publish-ok-verdict.json`). Do not repeat this publish.
 
-Open, with no authorized work pending: the versioned-origin Google callback
-(`redirect_uri_mismatch`) is unproven. Google matches the exact redirect URI
-(`https://<versioned-host>/api/auth/callback/google`), and each deployment gets
-a new host, so sign-in stays on the stable alias unless the auth flow routes
-callbacks through a registered host. The publish action's refusal of a non-allowlisted session
-and concurrent publication are unproven. Synthetic smoke leads stay in `new`.
+Versioned sign-in (2026-10-20, #234): Google matches the exact redirect URI
+and each deployment gets a new host, so a versioned host asked for an
+unregistered `https://<versioned-host>/api/auth/callback/google`. Sign-in
+started on a versioned Pages host now redirects to the environment's stable URL
+first. Live after release run 39486154048: the versioned host's sign-in reached
+Google's account chooser with the alias callback and no mismatch. Google
+refused to finish the interactive login in the automated browser, so a login
+started on a versioned host was not completed (`aohys-versioned-signin-20261020`).
+
+Open, with no authorized work pending: the publish action's refusal of a
+non-allowlisted session and concurrent publication are unproven. Synthetic smoke leads stay in `new`.
 
 Historical private evidence: `aohys-primitives-20261013` under the same shared
 private verification directory; it is not fresh acceptance for this candidate.
