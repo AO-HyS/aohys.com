@@ -217,8 +217,10 @@ receipt, and `/resume/` on the preview alias shows the new label
 (`publish-ok-verdict.json`). Do not repeat this publish.
 
 Open, with no authorized work pending: the versioned-origin Google callback
-(`redirect_uri_mismatch`) is unproven and needs that origin registered in the
-Google OAuth client. The publish action's refusal of a non-allowlisted session
+(`redirect_uri_mismatch`) is unproven. Google matches the exact redirect URI
+(`https://<versioned-host>/api/auth/callback/google`), and each deployment gets
+a new host, so sign-in stays on the stable alias unless the auth flow routes
+callbacks through a registered host. The publish action's refusal of a non-allowlisted session
 and concurrent publication are unproven. Synthetic smoke leads stay in `new`.
 
 Historical private evidence: `aohys-primitives-20261013` under the same shared
