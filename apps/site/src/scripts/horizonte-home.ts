@@ -809,7 +809,7 @@ export function mountHorizonteStage(hero: HTMLElement) {
     captionEl!.setAttribute("data-swap", "out");
     window.setTimeout(
       () => {
-        if (statusEl) statusEl.textContent = `${p.name} · ${p.status}`;
+        if (statusEl) statusEl.textContent = p.status;
         if (purposeEl) purposeEl.textContent = p.short;
         captionEl!.setAttribute("data-swap", "in");
       },
