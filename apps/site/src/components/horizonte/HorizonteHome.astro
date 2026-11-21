@@ -22,6 +22,26 @@ const resume = getResumePageContent(locale);
 const outcomes = new Map(home.selectedOutcomes.map((outcome) => [String(outcome.contentId), outcome]));
 const architecture = getLocaleVariant("architecture", locale);
 
+const localizeHomeLabel = (text: string) => {
+  if (locale !== "es") {
+    return text
+      .replace("Live hospitality experience", "Hospitality · In production")
+      .replace("Live website", "Live Casa Roca website");
+  }
+  return text
+    .replace("Acercándose a producción", "Próximamente en producción")
+    .replace("Testing y preparación para producción", "Pruebas y preparación para producción")
+    .replace("Experiencia de hospitalidad en producción", "Hospitalidad · En producción")
+    .replace("Landing ETERIA en producción", "Sitio público de ETERIA")
+    .replace("Preview de desarrollo", "Vista previa de desarrollo")
+    .replace("Preview de producto", "Vista previa del producto")
+    .replace("Sitio en producción", "Sitio de Casa Roca");
+};
+const deckCopy = home.deck.replaceAll("'", "\u2019");
+const sectionEyebrows = locale === "es"
+  ? { work: "Trabajo seleccionado", build: copy.buildLabel, career: "Experiencia", close: "Siguiente paso" }
+  : { work: "Selected work", build: copy.buildLabel, career: "Track record", close: "Next step" };
+
 const projects = HORIZONTE_PROJECTS.flatMap((project) => {
   if (project.contentId === "architecture") {
     return [{
@@ -42,12 +62,12 @@ const projects = HORIZONTE_PROJECTS.flatMap((project) => {
   const liveLinks = (detail?.publicEvidence ?? [])
     .filter((evidence) => /^https?:\/\//.test(evidence.href))
     .slice(0, 1)
-    .map((evidence) => ({ label: evidence.label, href: evidence.href }));
+    .map((evidence) => ({ label: localizeHomeLabel(evidence.label), href: evidence.href }));
   return [{
     project,
     slug: project.contentId.replace("case-study:", ""),
     name: outcome.title,
-    status: outcome.label,
+    status: localizeHomeLabel(outcome.label),
     href: outcome.path,
     outcome: outcome.outcome,
     role: outcome.role,
@@ -197,7 +217,7 @@ const periodLabel = (period: string) => period.replace(" - ", " – ");
       <span class="purpose">{first.project.short[locale]}</span>
     </p>
     <span class="hz-swipe" aria-hidden="true">{copy.swipe}</span>
-    <a class="hz-btn hz-btn-secondary hz-hero-cta" href={first.href} data-vt-from="[data-hz-lens]" data-hz-cta>
+    <a class="hz-btn hz-hero-cta" href={first.href} data-vt-from="[data-hz-lens]" data-hz-cta>
       <span>{copy.cta}</span> <span class="arrow" aria-hidden="true">→</span>
     </a>
   </div>
@@ -205,13 +225,14 @@ const periodLabel = (period: string) => period.replace(" - ", " – ");
   <script is:inline type="application/json" data-hz-stage-data set:html={stageJson}></script>
 </section>
 
-<section class="hz-section" aria-label={copy.homeTitle}>
-  <p class="hz-statement">{home.deck}</p>
+<section class="hz-section hz-section-statement" aria-label={copy.homeTitle}>
+  <p class="hz-statement">{deckCopy}</p>
 </section>
 
 <section class="hz-section" id="trabajo" aria-labelledby="hz-work-title">
   <div class="hz-head">
     <span class="hz-hairline" aria-hidden="true"></span>
+    <p class="ma-kicker">{sectionEyebrows.work}</p>
     <h2 id="hz-work-title">{copy.workHeading}</h2>
     <p>{copy.workIntro}</p>
   </div>
@@ -245,7 +266,7 @@ const periodLabel = (period: string) => period.replace(" - ", " – ");
 <section class="hz-section" id="como-construyo" aria-labelledby="hz-build-title">
   <div class="hz-head">
     <span class="hz-hairline" aria-hidden="true"></span>
-    <p>{copy.buildLabel}</p>
+    <p class="ma-kicker">{sectionEyebrows.build}</p>
     <h2 id="hz-build-title">{home.architectureHeading}</h2>
     <p>{home.architectureBody}</p>
   </div>
@@ -263,6 +284,7 @@ const periodLabel = (period: string) => period.replace(" - ", " – ");
 <section class="hz-section" id="trayectoria" aria-labelledby="hz-career-title">
   <div class="hz-head">
     <span class="hz-hairline" aria-hidden="true"></span>
+    <p class="ma-kicker">{sectionEyebrows.career}</p>
     <h2 id="hz-career-title">{copy.careerHeading}</h2>
     <p>{copy.careerIntro}</p>
   </div>
@@ -293,6 +315,7 @@ const periodLabel = (period: string) => period.replace(" - ", " – ");
 <section class="hz-section" id="contacto" aria-labelledby="hz-close-title">
   <div class="hz-head">
     <span class="hz-hairline" aria-hidden="true"></span>
+    <p class="ma-kicker">{sectionEyebrows.close}</p>
     <h2 id="hz-close-title">{copy.closeHeading}</h2>
     <p>{copy.closeIntro}</p>
   </div>
@@ -311,7 +334,7 @@ const periodLabel = (period: string) => period.replace(" - ", " – ");
       <p>{copy.buildBody}</p>
       <div class="links">
         <a class="hz-btn" href={getLocalizedPath("contact", locale)}>{copy.buildLink} <span class="arrow" aria-hidden="true">→</span></a>
-        <a class="hz-link" href={home.emailHref} data-analytics-event="email_cta_clicked" data-analytics-target="home_close">{home.emailLabel} <span aria-hidden="true">↗</span></a>
+        <a class="hz-link" href={home.emailHref} data-analytics-event="email_cta_clicked" data-analytics-target="home_close">{locale === "es" ? "Enviar correo" : home.emailLabel} <span aria-hidden="true">↗</span></a>
       </div>
     </div>
   </div>

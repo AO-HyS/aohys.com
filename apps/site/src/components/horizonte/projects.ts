@@ -51,9 +51,9 @@ export const HORIZONTE_PROJECTS: HorizonteProject[] = [
   {
     contentId: "case-study:the-barber-central",
     tint: brandPastels.apricot,
-    texture: "/images/horizonte/lens-barber.jpg",
-    size: [1600, 809],
-    focus: { x: 0.62, y: 0.34, zoom: 0.34 },
+    texture: "/images/proof/barber-central-salon-art.png",
+    size: [326, 326],
+    focus: { x: 0.5, y: 0.5, zoom: 0.96 },
     short: {
       es: "Reservas, WhatsApp y la operación diaria de un negocio de belleza.",
       en: "Booking, WhatsApp and the daily operations of a beauty business.",
@@ -71,16 +71,16 @@ export const HORIZONTE_PROJECTS: HorizonteProject[] = [
   {
     contentId: "case-study:nutri-plan",
     tint: brandPastels.olive,
-    texture: "/images/horizonte/lens-nutriplan.jpg",
-    size: [1400, 1288],
-    focus: { x: 0.54, y: 0.42, zoom: 0.78 },
+    texture: "/images/proof/nutri-plan-hero-art.png",
+    size: [316, 208],
+    focus: { x: 0.5, y: 0.5, zoom: 0.94 },
     short: {
       es: "La consulta de nutrición y el seguimiento del paciente entre citas.",
       en: "The nutrition consultation, and the patient’s follow-through between visits.",
     },
     alt: {
-      es: "Panel de NutriPlan con pacientes, citas y seguimiento; datos sanitizados.",
-      en: "NutriPlan dashboard with patients, appointments and follow-up; sanitized data.",
+      es: "Ilustración editorial de consulta nutricional en NutriPlan Digital.",
+      en: "Editorial illustration of a nutrition consultation in NutriPlan Digital.",
     },
     parts: [
       { kind: "calendar", label: { es: "Citas", en: "Appointments" } },
