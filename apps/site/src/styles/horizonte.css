@@ -1145,6 +1145,9 @@ body {
     left: 0;
     top: 6px;
   }
+  .hz-build h3 {
+    min-height: 0;
+  }
   .hz-build p {
     max-width: none;
   }
@@ -1555,6 +1558,16 @@ body {
   border-top: 1px solid var(--rule);
   padding-top: 40px;
 }
+.hz-btn-secondary {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule-strong);
+  box-shadow: 0 2px 10px rgb(var(--ink-rgb) / 0.06);
+}
+.hz-btn-secondary:hover {
+  background: var(--paper-warm);
+  border-color: var(--ink);
+}
 .ma-cycle-label {
   margin-top: 24px !important;
 }
@@ -1588,8 +1601,8 @@ body {
 }
 .ma-cycle-owner {
   margin-top: 6px;
-  font-size: 0.75rem;
-  letter-spacing: 0.04em;
+  font-size: 0.8125rem;
+  letter-spacing: 0.03em;
   color: var(--ink);
 }
 .ma-cycle-link {
@@ -2159,7 +2172,7 @@ body {
     min-height: 0;
   }
   .ma-hero-orb {
-    width: min(64vw, 240px);
+    width: min(56vw, 210px);
     justify-self: center;
   }
   .ma-hero .ma-hero-text,
@@ -2204,6 +2217,17 @@ body {
   }
   .ma-next .n-name {
     font-size: clamp(1.3rem, 1.05rem + 1.2vw, 1.75rem);
+  }
+}
+@media (max-width: 480px) {
+  .ma-actions .hz-btn {
+    flex-basis: 100%;
+    justify-content: center;
+  }
+  .ma-jumps {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 }
 
