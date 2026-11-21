@@ -2084,6 +2084,12 @@ body {
   display: flex;
   gap: 22px;
 }
+.ma-form input[type="checkbox"]:focus-visible,
+.ma-form input[type="radio"]:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
 .ma-form .honeypot {
   position: absolute;
   left: -10000px;
@@ -2198,8 +2204,10 @@ body {
 
 /* ---------- View transitions ---------- */
 
-@view-transition {
-  navigation: auto;
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
 }
 ::view-transition-group(lens) {
   animation-duration: 760ms;
@@ -2249,7 +2257,9 @@ body {
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {
-    animation-duration: 1ms !important;
+    animation: none !important;
+    animation-duration: 0ms !important;
+    animation-delay: 0ms !important;
   }
 }
 
