@@ -53,7 +53,7 @@ export const HORIZONTE_PROJECTS: HorizonteProject[] = [
     tint: brandPastels.apricot,
     texture: "/images/horizonte/lens-barber.jpg",
     size: [1600, 809],
-    focus: { x: 0.5, y: 0.44, zoom: 0.62 },
+    focus: { x: 0.62, y: 0.36, zoom: 0.36 },
     short: {
       es: "Reservas, WhatsApp y la operación diaria de un negocio de belleza.",
       en: "Booking, WhatsApp and the daily operations of a beauty business.",
@@ -73,7 +73,7 @@ export const HORIZONTE_PROJECTS: HorizonteProject[] = [
     tint: brandPastels.olive,
     texture: "/images/horizonte/lens-nutriplan.jpg",
     size: [1400, 1288],
-    focus: { x: 0.5, y: 0.36, zoom: 0.62 },
+    focus: { x: 0.54, y: 0.42, zoom: 0.78 },
     short: {
       es: "La consulta de nutrición y el seguimiento del paciente entre citas.",
       en: "The nutrition consultation, and the patient’s follow-through between visits.",
@@ -116,7 +116,7 @@ export const HORIZONTE_PROJECTS: HorizonteProject[] = [
     tint: brandPastels.lime,
     texture: "/images/horizonte/lens-casaroca.jpg",
     size: [1432, 960],
-    focus: { x: 0.5, y: 0.47, zoom: 0.8 },
+    focus: { x: 0.5, y: 0.58, zoom: 0.54 },
     short: {
       es: "El sitio de una estancia y las reservaciones que maneja su equipo.",
       en: "A hospitality website and the reservations its staff manage.",
@@ -137,9 +137,9 @@ export const HORIZONTE_PROJECTS: HorizonteProject[] = [
   {
     contentId: "architecture",
     tint: brandPastels.sand,
-    texture: "/images/horizonte/lens-aohys.jpg",
-    size: [1600, 845],
-    focus: { x: 0.5, y: 0.47, zoom: 0.7 },
+    texture: "/images/horizonte/lens-architecture.jpg",
+    size: [1024, 1024],
+    focus: { x: 0.5, y: 0.5, zoom: 0.76 },
     short: {
       es: "Este sitio, su CMS y el sistema con el que desarrollo.",
       en: "This website, its CMS and the system I build with.",

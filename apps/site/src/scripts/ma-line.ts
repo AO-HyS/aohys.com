@@ -126,7 +126,7 @@ export function mountMaLine(container: HTMLElement) {
     const reachY = reduced ? Infinity : window.innerHeight * 0.66 - box.top;
     const len = reduced ? total : lengthAtY(reachY);
     ink.style.strokeDashoffset = String(total - len);
-    glow.style.strokeDashoffset = String(total - Math.min(total, len + 40));
+    glow.style.strokeDashoffset = String(total - len);
     anchors.forEach((p, i) =>
       dots[i]?.setAttribute("data-on", String(reduced || p.y <= reachY)),
     );

@@ -87,7 +87,7 @@
     "contactRail": "Una conversación concreta empieza con contexto útil.",
     "privacyRail": "Datos claros. Límites visibles.",
     "architectureNotes": "Notas de operación",
-    "architectureNotesIntro": "Los seams que mantienen conectada la topología.",
+    "architectureNotesIntro": "Las uniones que mantienen conectada la topología.",
     "serviceFit": "Cuándo encaja",
     "serviceResult": "Lo que cambia",
     "serviceCollaboration": "Cómo aporto",
@@ -316,19 +316,19 @@
   },
   "horizonte": {
     "homeTitle": "Alejandro Ortiz Corro",
-    "role": "full stack development",
+    "role": "desarrollo full stack",
     "tabs": "Productos",
     "parts": "Partes del producto",
     "swipe": "Desliza la lente para cambiar de producto",
     "cta": "Conoce este trabajo",
     "aohysName": "Sitio AOHYS",
-    "aohysStatus": "Sitio público y Development System",
+    "aohysStatus": "Sitio público y sistema de desarrollo",
     "workHeading": "Cinco productos, cinco trabajos reales",
     "workIntro": "Cada uno empezó con algo concreto que alguien necesitaba resolver. Esto es lo que resuelve y lo que construí.",
     "readCase": "Ver caso",
     "readSystem": "Ver cómo está hecho",
     "buildLabel": "Cómo construyo",
-    "buildSystem": "Mi Development System",
+    "buildSystem": "Mi sistema de desarrollo",
     "buildAgents": "Cómo trabajo con agentes",
     "careerHeading": "Trayectoria",
     "careerIntro": "Desde 2018 en equipos de producto; desde 2015, construyendo los míos con AOHYS.",
@@ -350,6 +350,6 @@
     "experience": "Experiencia",
     "download": "Descargar CV en PDF",
     "direct": "Contacto directo",
-    "footerLine": "Alejandro Ortiz Corro · full stack development"
+    "footerLine": "Alejandro Ortiz Corro · desarrollo full stack"
   }
 }
