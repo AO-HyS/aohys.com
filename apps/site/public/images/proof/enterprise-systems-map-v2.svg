@@ -1,38 +1,56 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" role="img" aria-labelledby="title description">
-  <title id="title">Enterprise systems at operational scale</title>
-  <desc id="description">A warm systems map connects customer operations, product workflows, backend services, release controls, and production signals.</desc>
-  <rect width="1440" height="900" fill="#FFFFFF"/>
-  <path d="M36 36h1368v828H36z" fill="#FFFFFF" stroke="#473C33" stroke-width="4"/>
-  <path d="M36 36h1368v22H36z" fill="#ABC270"/>
-  <g font-family="Mona Sans, Arial, sans-serif" fill="#473C33">
-    <text x="84" y="122" font-size="18" font-weight="760" letter-spacing="2">ENTERPRISE SYSTEMS · OPERABLE AT SCALE</text>
-    <text x="84" y="198" font-size="58" font-weight="760">FROM PRESSURE</text>
-    <text x="84" y="258" font-size="58" font-weight="760">TO RELIABLE FLOW</text>
-    <text x="86" y="300" font-size="20">Clear ownership, resilient services, controlled releases, visible production signals.</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" role="img" aria-label="Enterprise systems workflow: from manual spreadsheet handoffs to auditable request, review, and release controls">
+  <rect width="960" height="560" rx="16" fill="#fbf8f3"/>
+  <rect x="24" y="24" width="912" height="512" rx="12" fill="#ffffff" stroke="#473c33" stroke-opacity="0.14"/>
+
+  <text x="64" y="76" fill="#6a6058" font-family="Jost, system-ui, sans-serif" font-size="13" letter-spacing="1.6">ENTERPRISE OPERATIONS · ANONYMIZED WORKFLOW</text>
+  <text x="64" y="114" fill="#473c33" font-family="Spectral, Georgia, serif" font-size="30" font-weight="400">From manual handoffs to auditable product flow</text>
+
+  <!-- Before lane -->
+  <rect x="64" y="150" width="832" height="122" rx="10" fill="#fbf8f3" stroke="#473c33" stroke-opacity="0.14"/>
+  <text x="88" y="182" fill="#6a6058" font-family="Jost, system-ui, sans-serif" font-size="13" letter-spacing="1.2">BEFORE · FRAGMENTED MANUAL STEPS</text>
+  <g font-family="Jost, system-ui, sans-serif" font-size="15" fill="#473c33">
+    <rect x="88" y="200" width="224" height="52" rx="8" fill="#ffffff" stroke="#473c33" stroke-opacity="0.22"/>
+    <text x="108" y="231">Ad-hoc spreadsheet intake</text>
+    <path d="M312 226 H364" stroke="#6a6058" stroke-width="1.4" stroke-dasharray="4 4"/>
+    <rect x="364" y="200" width="232" height="52" rx="8" fill="#ffffff" stroke="#473c33" stroke-opacity="0.22"/>
+    <text x="384" y="231">Email &amp; chat approvals</text>
+    <path d="M596 226 H648" stroke="#6a6058" stroke-width="1.4" stroke-dasharray="4 4"/>
+    <rect x="648" y="200" width="224" height="52" rx="8" fill="#ffffff" stroke="#473c33" stroke-opacity="0.22"/>
+    <text x="668" y="231">Manual audit reconciliation</text>
   </g>
-  <g transform="translate(1010 82)">
-    <circle cx="145" cy="145" r="140" fill="#FEC868" stroke="#473C33" stroke-width="4"/>
-    <path d="M69 103h152v112H69z" fill="#ABC270" stroke="#473C33" stroke-width="4"/>
-    <path d="M93 135h104M93 163h76M93 191h92" stroke="#FFFFFF" stroke-linecap="round" stroke-width="9"/>
-    <circle cx="224" cy="218" r="42" fill="#FDA769" stroke="#473C33" stroke-width="4"/>
-    <path d="m204 217 14 14 27-32" fill="none" stroke="#473C33" stroke-linecap="round" stroke-linejoin="round" stroke-width="7"/>
+
+  <!-- Arrow down -->
+  <path d="M480 282 V318 M472 310 L480 318 L488 310" fill="none" stroke="#473c33" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- After lane -->
+  <rect x="64" y="330" width="832" height="168" rx="10" fill="#ffffff" stroke="#473c33" stroke-opacity="0.2"/>
+  <text x="88" y="362" fill="#473c33" font-family="Jost, system-ui, sans-serif" font-size="13" letter-spacing="1.2">AFTER · STRUCTURED REQUEST &amp; REVIEW SYSTEM</text>
+
+  <g font-family="Jost, system-ui, sans-serif" fill="#473c33">
+    <rect x="88" y="382" width="184" height="90" rx="10" fill="#fce3a6" fill-opacity="0.65" stroke="#473c33" stroke-opacity="0.2"/>
+    <text x="106" y="408" font-size="12" fill="#6a6058">01 · Intake</text>
+    <text x="106" y="432" font-size="16" font-family="Spectral, Georgia, serif">Validated request</text>
+    <text x="106" y="454" font-size="13" fill="#6a6058">Typed rules &amp; context</text>
+
+    <path d="M272 427 H304" stroke="#473c33" stroke-width="1.4"/>
+
+    <rect x="304" y="382" width="184" height="90" rx="10" fill="#fdd2b1" fill-opacity="0.65" stroke="#473c33" stroke-opacity="0.2"/>
+    <text x="322" y="408" font-size="12" fill="#6a6058">02 · Review</text>
+    <text x="322" y="432" font-size="16" font-family="Spectral, Georgia, serif">Role-gated approval</text>
+    <text x="322" y="454" font-size="13" fill="#6a6058">Clear owner &amp; state</text>
+
+    <path d="M488 427 H520" stroke="#473c33" stroke-width="1.4"/>
+
+    <rect x="520" y="382" width="184" height="90" rx="10" fill="#d6e2b4" fill-opacity="0.65" stroke="#473c33" stroke-opacity="0.2"/>
+    <text x="538" y="408" font-size="12" fill="#6a6058">03 · Execution</text>
+    <text x="538" y="432" font-size="16" font-family="Spectral, Georgia, serif">Recorded decision</text>
+    <text x="538" y="454" font-size="13" fill="#6a6058">Traceable audit trail</text>
+
+    <path d="M704 427 H736" stroke="#473c33" stroke-width="1.4"/>
+
+    <rect x="736" y="382" width="136" height="90" rx="10" fill="#fbf8f3" stroke="#473c33" stroke-opacity="0.22"/>
+    <text x="752" y="408" font-size="12" fill="#6a6058">04 · Reporting</text>
+    <text x="752" y="432" font-size="16" font-family="Spectral, Georgia, serif">Live status</text>
+    <text x="752" y="454" font-size="13" fill="#6a6058">Zero drift</text>
   </g>
-  <path d="M126 476h1188" stroke="#473C33" stroke-width="6"/>
-  <path d="M126 476h1188" stroke="#FEC868" stroke-width="18"/>
-  <g font-family="Mona Sans, Arial, sans-serif" fill="#473C33" text-anchor="middle">
-    <g transform="translate(154 382)"><rect width="236" height="146" fill="#ABC270" stroke="#473C33" stroke-width="4"/><text x="118" y="50" font-size="16" font-weight="760">OPERATIONS</text><text x="118" y="82" font-size="22" font-weight="760">CUSTOMER FLOW</text><text x="118" y="113" font-size="16">Requests · support</text></g>
-    <g transform="translate(458 382)"><rect width="236" height="146" fill="#FEC868" stroke="#473C33" stroke-width="4"/><text x="118" y="50" font-size="16" font-weight="760">PRODUCT</text><text x="118" y="82" font-size="22" font-weight="760">WORKFLOWS</text><text x="118" y="113" font-size="16">Plans · payments</text></g>
-    <g transform="translate(762 382)"><rect width="236" height="146" fill="#FDA769" stroke="#473C33" stroke-width="4"/><text x="118" y="50" font-size="16" font-weight="760">BACKEND</text><text x="118" y="82" font-size="22" font-weight="760">SERVICES</text><text x="118" y="113" font-size="16">Contracts · integrations</text></g>
-    <g transform="translate(1066 382)"><rect width="236" height="146" fill="#ABC270" stroke="#473C33" stroke-width="4"/><text x="118" y="50" font-size="16" font-weight="760">DELIVERY</text><text x="118" y="82" font-size="22" font-weight="760">RELEASE CONTROL</text><text x="118" y="113" font-size="16">Review · rollback</text></g>
-  </g>
-  <g transform="translate(154 620)" font-family="Mona Sans, Arial, sans-serif" fill="#473C33">
-    <path d="M0 0h1148v134H0z" fill="#FFFFFF" stroke="#473C33" stroke-width="4"/>
-    <path d="M0 0h266v134H0z" fill="#FEC868" stroke="#473C33" stroke-width="4"/>
-    <text x="34" y="49" font-size="16" font-weight="760">PRODUCTION SIGNALS</text>
-    <text x="34" y="82" font-size="25" font-weight="760">VISIBLE &amp; OWNED</text>
-    <text x="310" y="48" font-size="17" font-weight="760">Operational clarity</text><text x="310" y="79" font-size="17">Errors have owners and recovery paths.</text>
-    <text x="650" y="48" font-size="17" font-weight="760">Change confidence</text><text x="650" y="79" font-size="17">Preview, checks, release, observe.</text>
-    <text x="960" y="48" font-size="17" font-weight="760">Scale</text><text x="960" y="79" font-size="17">Thousands of moving parts.</text>
-  </g>
-  <path d="M272 528v92M576 528v92M880 528v92M1184 528v92" stroke="#473C33" stroke-dasharray="8 9" stroke-width="4"/>
 </svg>
