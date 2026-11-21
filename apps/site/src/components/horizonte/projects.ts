@@ -114,9 +114,9 @@ export const HORIZONTE_PROJECTS: HorizonteProject[] = [
   {
     contentId: "case-study:casa-roca",
     tint: brandPastels.lime,
-    texture: "/images/horizonte/lens-casaroca.jpg",
+    texture: "/images/proof/casa-roca-value-v2.jpg",
     size: [1432, 960],
-    focus: { x: 0.5, y: 0.65, zoom: 0.3 },
+    focus: { x: 0.31, y: 0.56, zoom: 0.42 },
     short: {
       es: "El sitio de una estancia y las reservaciones que maneja su equipo.",
       en: "A hospitality website and the reservations its staff manage.",
