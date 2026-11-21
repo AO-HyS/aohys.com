@@ -71,37 +71,53 @@ const caseProject = isCaseStudy ? getHorizonteProject(String(id)) : undefined;
 const rawCaseMedia = isCaseStudy && caseStudyContent
   ? resolveProofMedia(String(id), caseStudyContent.publicEvidence[0]?.src, caseStudyContent.publicEvidence[0]?.altText, caseStudyContent.publicEvidence[0]?.kind, true)
   : undefined;
-const localizeDiagramSrc = (src: string) => {
+const localizeDiagramSrc = (src: string, contentId?: string) => {
+  if (contentId === "case-study:eteria") return "/images/proof/eteria-live-landing.png";
+  if (contentId === "case-study:the-barber-central") return "/images/proof/barber-central-ops.png";
   if (locale !== "es") return src;
   if (src === "/images/proof/enterprise-systems-map-v2.svg") return "/images/proof/enterprise-systems-map-v2-es.svg";
   if (src === "/images/proof/engineering-practice-release-cycle.svg") return "/images/proof/engineering-practice-release-cycle-es.svg";
   return src;
 };
-const caseMedia = rawCaseMedia ? { ...rawCaseMedia, src: localizeDiagramSrc(rawCaseMedia.src) } : undefined;
+const caseMedia = rawCaseMedia ? { ...rawCaseMedia, src: localizeDiagramSrc(rawCaseMedia.src, String(id)) } : undefined;
 const caseLiveLinks = caseStudyContent?.publicEvidence.filter((evidence) => evidence.href && evidence.href !== route.path) ?? [];
 const caseOrder = caseStudyIndexContent.entries;
 const caseIndex = caseOrder.findIndex((entry) => entry.contentId === id);
 const nextCase = caseIndex >= 0 ? caseOrder[(caseIndex + 1) % caseOrder.length] : undefined;
 const nextProject = nextCase ? getHorizonteProject(String(nextCase.contentId)) : undefined;
 const rawNextMedia = nextCase ? resolveProofMedia(String(nextCase.contentId)) : undefined;
-const nextMedia = rawNextMedia ? { ...rawNextMedia, src: localizeDiagramSrc(rawNextMedia.src) } : undefined;
+const nextMedia = rawNextMedia ? { ...rawNextMedia, src: localizeDiagramSrc(rawNextMedia.src, String(nextCase?.contentId ?? "")) } : undefined;
 const closeCtaCopy = locale === "es"
   ? { heading: "¿Tienes un sistema o producto en mente?", body: "Cuéntame el contexto y te respondo personalmente con un siguiente paso concreto." }
   : { heading: "Have a product or system in mind?", body: "Share the context and I will reply personally with a practical next step." };
 const releaseCycleSteps = locale === "es"
   ? [
-      { num: "01", label: "Alcance", title: "Intención y reglas", body: "Criterios escritos antes de editar.", owner: "Dueño: Humano" },
-      { num: "02", label: "Cambio", title: "PR acotado", body: "Lint, tipos y build en cada edición.", owner: "Dueño: Agente + lectura" },
-      { num: "03", label: "Evidencia", title: "Pruebas reales", body: "Navegador y humo en vista previa.", owner: "Dueño: Verificador fresco" },
-      { num: "04", label: "Publicación", title: "Promoción", body: "develop → main con reversión lista.", owner: "Dueño: Aprobación humana" },
+      { label: "Alcance", title: "Intención y reglas", body: "Criterios escritos antes de editar.", owner: "Responsable: humano" },
+      { label: "Cambio", title: "PR acotado", body: "Lint, tipos y build en cada edición.", owner: "Responsable: agente + revisión" },
+      { label: "Evidencia", title: "Pruebas reales", body: "Navegador y smoke en preview.", owner: "Responsable: verificador independiente" },
+      { label: "Publicación", title: "Promoción", body: "develop → main con reversión lista.", owner: "Responsable: aprobación humana" },
     ]
   : [
-      { num: "01", label: "Scope", title: "Intent & rules", body: "Written criteria before any edit.", owner: "Owner: Human" },
-      { num: "02", label: "Build", title: "Scoped PR", body: "Lint, types & build on every change.", owner: "Owner: Agent + Review" },
-      { num: "03", label: "Evidence", title: "Real checks", body: "Browser & smoke on preview deploy.", owner: "Owner: Fresh verifier" },
-      { num: "04", label: "Release", title: "Promotion", body: "develop → main with rollback path.", owner: "Owner: Human sign-off" },
+      { label: "Scope", title: "Intent & rules", body: "Written criteria before any edit.", owner: "Owner: Human" },
+      { label: "Build", title: "Scoped PR", body: "Lint, types & build on every change.", owner: "Owner: Agent + Review" },
+      { label: "Evidence", title: "Real checks", body: "Browser & smoke on preview deploy.", owner: "Owner: Fresh verifier" },
+      { label: "Release", title: "Promotion", body: "develop → main with rollback path.", owner: "Owner: Human sign-off" },
     ];
-const displayTitle = variant.title.replace("event-business", "event\u2011business");
+const enterpriseFlow = locale === "es"
+  ? {
+      beforeLabel: "Antes · trabajo manual y aislado",
+      beforeItems: ["Hojas de cálculo y correos dispersos", "Aprobaciones sin trazabilidad ni roles claros", "Correcciones manuales propensas a error"],
+      afterLabel: "Después · flujo auditable en producción",
+      afterItems: ["Solicitud validada con reglas de negocio", "Aprobación por rol con registro auditable", "Estado real visible para operación y liderazgo"],
+    }
+  : {
+      beforeLabel: "Before · manual, fragmented handoffs",
+      beforeItems: ["Spreadsheets and scattered email threads", "Approvals without role boundaries or audit trail", "Error-prone manual corrections across systems"],
+      afterLabel: "After · reviewable production workflow",
+      afterItems: ["Validated request with explicit domain rules", "Role-based approval with recorded decision", "Live operational state visible to every team"],
+    };
+const isEngineeringCase = id === "case-study:engineering-practice";
+const displayTitle = variant.title.replace("event-business", "event\u2011business").replace("patient-care", "patient\u2011care");
 /* Diagrams and maps are shown whole inside an orb; photographs and screens fill it. */
 const DIAGRAM_KINDS = new Set(["diagram", "architecture-note", "private-system"]);
 const orbImageClass = (kind?: string) => (kind && DIAGRAM_KINDS.has(kind) ? "contain" : "cover");
@@ -174,15 +190,44 @@ const lensLabels = {
         <section class="ma-section ma-grid" aria-labelledby="case-interface-title">
           <div class="ma-block pos-wide" data-ma-block>
             <h2 id="case-interface-title" data-ma-node="before" data-ma-color={pastel(0)}>{caseLiveLinks.length > 0 ? caseStudyContent.publicEvidenceTitle : (locale === "es" ? "Evidencia del sistema" : "System evidence")}</h2>
-            <figure class="ma-frame">
-              <img src={caseMedia.src} alt={caseMedia.alt} loading="eager" decoding="sync" />
-              <figcaption>
-                {caseStudyContent.publicEvidence[0]?.description && <span>{caseStudyContent.publicEvidence[0].description}</span>}
+            {isEnterpriseCase ? (
+              <div class="ma-flow" aria-label={caseMedia.alt}>
+                <div class="ma-flow-col">
+                  <span class="ma-kicker">{enterpriseFlow.beforeLabel}</span>
+                  <ul>{enterpriseFlow.beforeItems.map((item) => <li>{item}</li>)}</ul>
+                </div>
+                <div class="ma-flow-col ma-flow-after">
+                  <span class="ma-kicker">{enterpriseFlow.afterLabel}</span>
+                  <ul>{enterpriseFlow.afterItems.map((item) => <li>{item}</li>)}</ul>
+                </div>
+              </div>
+            ) : isEngineeringCase ? (
+              <div class="ma-cycle-wrap">
+                <ol class="ma-cycle" aria-label={caseMedia.alt}>
+                  {releaseCycleSteps.map((step, i) => (
+                    <li style={`--step-tint:${pastel(i)}`}>
+                      <span class="ma-kicker">{step.label}</span>
+                      <h3>{step.title}</h3>
+                      <p>{step.body}</p>
+                      <span class="ma-cycle-owner">{step.owner}</span>
+                    </li>
+                  ))}
+                </ol>
                 {caseLiveLinks[0] && (
-                  <a class="hz-link" href={caseLiveLinks[0].href} rel="noopener" target="_blank">{caseLiveLinks[0].label} <span aria-hidden="true">↗</span></a>
+                  <p class="ma-cycle-link"><a class="hz-link" href={caseLiveLinks[0].href} rel="noopener" target="_blank">{locale === "es" ? "Código y proceso" : caseLiveLinks[0].label} <span aria-hidden="true">↗</span></a></p>
                 )}
-              </figcaption>
-            </figure>
+              </div>
+            ) : (
+              <figure class="ma-frame">
+                <img src={caseMedia.src} alt={caseMedia.alt} loading="eager" decoding="sync" />
+                <figcaption>
+                  {caseStudyContent.publicEvidence[0]?.description && <span>{caseStudyContent.publicEvidence[0].description}</span>}
+                  {caseLiveLinks[0] && (
+                    <a class="hz-link" href={caseLiveLinks[0].href} rel="noopener" target="_blank">{caseLiveLinks[0].label} <span aria-hidden="true">↗</span></a>
+                  )}
+                </figcaption>
+              </figure>
+            )}
           </div>
         </section>
 
@@ -238,13 +283,14 @@ const lensLabels = {
               {caseStudyIndexContent.entries.map((entry) => {
                 const project = getHorizonteProject(String(entry.contentId));
                 const rawMedia = resolveProofMedia(String(entry.contentId));
-                const media = { ...rawMedia, src: localizeDiagramSrc(rawMedia.src) };
+                const media = { ...rawMedia, src: localizeDiagramSrc(rawMedia.src, String(entry.contentId)) };
+                const plateSrc = entry.contentId === "case-study:eteria" ? media.src : (project ? project.texture : media.src);
                 const slug = String(entry.contentId).replace("case-study:", "");
                 return (
                   <li class="hz-work-row" data-content-id={entry.contentId}>
                     <div class="w-plate">
                       <a class="hz-plate" href={entry.path} id={`hz-orb-${slug}`} style={`--tint:${project?.tint ?? HORIZONTE_PASTELS.olive}`} data-vt-from={`#hz-orb-${slug}`} aria-label={entry.title}>
-                        <img class={orbImageClass(media.kind)} src={project ? project.texture : media.src} alt="" loading="eager" decoding="async" />
+                        <img class={orbImageClass(media.kind)} src={plateSrc} alt="" loading="eager" decoding="sync" />
                       </a>
                     </div>
                     <div class="w-body">
@@ -344,10 +390,11 @@ const lensLabels = {
           <div class="ma-block pos-right" data-ma-block>
             <h2 id="system-map-title" data-ma-node="before" data-ma-color={pastel(0)}>{architectureContent.systemHeading}</h2>
             <p>{architectureContent.systemBody}</p>
-            <ol class="ma-cycle" aria-label={locale === "es" ? "Ciclo de publicación" : "Release cycle"}>
+            <p class="ma-kicker ma-cycle-label">{locale === "es" ? "Puntos de control de entrega" : "Delivery checkpoints"}</p>
+            <ol class="ma-cycle" aria-label={locale === "es" ? "Puntos de control de entrega" : "Delivery checkpoints"}>
               {releaseCycleSteps.map((step, i) => (
                 <li style={`--step-tint:${pastel(i)}`}>
-                  <span class="hz-num">{step.num} · {step.label}</span>
+                  <span class="ma-kicker">{step.label}</span>
                   <h3>{step.title}</h3>
                   <p>{step.body}</p>
                   <span class="ma-cycle-owner">{step.owner}</span>
@@ -477,13 +524,24 @@ const lensLabels = {
               {resumeContent.education.map((item) => (
                 <div>
                   <h3>{item.degree}</h3>
-                  <p class="ma-muted"><span class="hz-num">{item.period}</span> · {item.institution}</p>
+                  <p class="ma-muted"><span class="hz-num">{item.period.replace(" - ", " – ")}</span> · {item.institution}</p>
                 </div>
               ))}
             </div>
             <p class="ma-muted">{resumeContent.languagesTitle}: {resumeContent.languages.join(" · ")}</p>
+          </div>
+        </section>
+
+        <section class="ma-section ma-grid ma-close" aria-labelledby="resume-close-title">
+          <div class="ma-block pos-left" data-ma-block>
+            <h2 id="resume-close-title">{closeCtaCopy.heading}</h2>
+            <p class="ma-muted">{closeCtaCopy.body}</p>
+            <div class="ma-actions">
+              <a class="hz-btn" href={contactHref}>{labels.talk} <span class="arrow" aria-hidden="true">→</span></a>
+              <a class="hz-link" href={resumeContent.pdf.href}>{hz.download} <span aria-hidden="true">↓</span></a>
+            </div>
             <div class="ma-links">
-              {resumeContent.contactLinks.map((link) => <a class="hz-link" href={link.href}>{link.label} <span aria-hidden="true">↗</span></a>)}
+              {resumeContent.contactLinks.map((link) => <a class="hz-link" href={link.href}>{link.label === "Linkedin" ? "LinkedIn" : link.label} <span aria-hidden="true">↗</span></a>)}
             </div>
           </div>
         </section>
@@ -496,9 +554,9 @@ const lensLabels = {
             <h1 id="contact-title">{variant.title}</h1>
             <p class="ma-lede">{variant.summary}</p>
             <div class="ma-actions">
-              <a class="hz-link" href="#contact-form">{locale === "es" ? "Ir al formulario" : "Use the form"} <span aria-hidden="true">↓</span></a>
-              <a class="hz-link" href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_direct_panel">{contactCopy.whatsappLabel} <span aria-hidden="true">↗</span></a>
-              <a class="hz-link" href={directEmailHref} data-analytics-event="email_cta_clicked" data-analytics-target="contact_direct_panel">{publicContactEmail} <span aria-hidden="true">↗</span></a>
+              <a class="hz-btn" href="#contact-form">{locale === "es" ? "Ir al formulario" : "Use the form"} <span class="arrow" aria-hidden="true">↓</span></a>
+              <a class="hz-link" href={publicWhatsAppUrl} data-analytics-event="whatsapp_cta_clicked" data-analytics-target="contact_direct_panel">WhatsApp <span aria-hidden="true">↗</span></a>
+              <a class="hz-link" href={directEmailHref} data-analytics-event="email_cta_clicked" data-analytics-target="contact_direct_panel">{locale === "es" ? "Correo" : "Email"} <span aria-hidden="true">↗</span></a>
             </div>
           </div>
           <MaLens photos={[PAGE_LENS_PHOTOS.contact]} locale={locale} />

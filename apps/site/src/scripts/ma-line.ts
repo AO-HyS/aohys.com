@@ -174,7 +174,9 @@ export function mountInViewFlags(root: ParentNode = document) {
 /* Only one element may carry the "lens" view-transition name; move it to the orb the visitor clicked. */
 export function mountLensViewTransitionSource() {
   const holders = () =>
-    document.querySelectorAll<HTMLElement>(".hz-lens, .ma-hero-orb, .hz-orb");
+    document.querySelectorAll<HTMLElement>(
+      ".hz-lens, .ma-hero-orb, .hz-orb, .hz-plate",
+    );
   document.addEventListener("click", (event) => {
     const target = event.target;
     if (!(target instanceof Element)) return;

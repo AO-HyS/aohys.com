@@ -53,7 +53,7 @@ export const HORIZONTE_PROJECTS: HorizonteProject[] = [
     tint: brandPastels.apricot,
     texture: "/images/horizonte/lens-barber.jpg",
     size: [1600, 809],
-    focus: { x: 0.62, y: 0.36, zoom: 0.36 },
+    focus: { x: 0.62, y: 0.34, zoom: 0.34 },
     short: {
       es: "Reservas, WhatsApp y la operación diaria de un negocio de belleza.",
       en: "Booking, WhatsApp and the daily operations of a beauty business.",
@@ -116,7 +116,7 @@ export const HORIZONTE_PROJECTS: HorizonteProject[] = [
     tint: brandPastels.lime,
     texture: "/images/horizonte/lens-casaroca.jpg",
     size: [1432, 960],
-    focus: { x: 0.5, y: 0.58, zoom: 0.54 },
+    focus: { x: 0.5, y: 0.65, zoom: 0.3 },
     short: {
       es: "El sitio de una estancia y las reservaciones que maneja su equipo.",
       en: "A hospitality website and the reservations its staff manage.",
