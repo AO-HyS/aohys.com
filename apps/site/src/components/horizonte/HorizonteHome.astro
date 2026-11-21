@@ -310,7 +310,7 @@ const periodLabel = (period: string) => period.replace(" - ", " – ");
       <h3>{copy.buildHeading}</h3>
       <p>{copy.buildBody}</p>
       <div class="links">
-        <a class="hz-link" href={getLocalizedPath("contact", locale)}>{copy.buildLink} <span aria-hidden="true">→</span></a>
+        <a class="hz-btn" href={getLocalizedPath("contact", locale)}>{copy.buildLink} <span class="arrow" aria-hidden="true">→</span></a>
         <a class="hz-link" href={home.emailHref} data-analytics-event="email_cta_clicked" data-analytics-target="home_close">{home.emailLabel} <span aria-hidden="true">↗</span></a>
       </div>
     </div>

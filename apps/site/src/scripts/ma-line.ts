@@ -126,7 +126,7 @@ export function mountMaLine(container: HTMLElement) {
     const reachY = reduced ? Infinity : window.innerHeight * 0.66 - box.top;
     const len = reduced ? total : lengthAtY(reachY);
     ink.style.strokeDashoffset = String(total - len);
-    glow.style.strokeDashoffset = String(total - Math.min(total, len + 40));
+    glow.style.strokeDashoffset = String(total - len);
     anchors.forEach((p, i) =>
       dots[i]?.setAttribute("data-on", String(reduced || p.y <= reachY)),
     );
@@ -174,7 +174,9 @@ export function mountInViewFlags(root: ParentNode = document) {
 /* Only one element may carry the "lens" view-transition name; move it to the orb the visitor clicked. */
 export function mountLensViewTransitionSource() {
   const holders = () =>
-    document.querySelectorAll<HTMLElement>(".hz-lens, .ma-hero-orb, .hz-orb");
+    document.querySelectorAll<HTMLElement>(
+      ".hz-lens, .ma-hero-orb, .hz-orb, .hz-plate",
+    );
   document.addEventListener("click", (event) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
