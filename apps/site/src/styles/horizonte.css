@@ -2049,9 +2049,14 @@ body {
 .ma-form input:focus,
 .ma-form select:focus,
 .ma-form textarea:focus {
-  outline: none;
   background: var(--paper);
   border-color: var(--ink);
+}
+.ma-form input:focus-visible,
+.ma-form select:focus-visible,
+.ma-form textarea:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 .ma-form .grid-2 {
   display: grid;
