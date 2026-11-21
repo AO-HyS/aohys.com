@@ -349,6 +349,11 @@ body {
 .ma-nowrap {
   white-space: nowrap;
 }
+@media (max-width: 520px) {
+  .ma-hero h1 .ma-nowrap {
+    white-space: normal;
+  }
+}
 
 /* ---------- Daylight ---------- */
 
@@ -1839,7 +1844,15 @@ body {
   font-weight: 420;
 }
 .ma-flow-mobile-label {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -1863,6 +1876,13 @@ body {
     display: none;
   }
   .ma-flow-mobile-label {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
     display: block;
   }
 }
