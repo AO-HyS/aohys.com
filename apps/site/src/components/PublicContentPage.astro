@@ -11,6 +11,7 @@ import {
   type PublicRoute,
 } from "@aohys/content-graph";
 import { LEAD_INTENTS, type LeadIntent } from "@aohys/core/domain";
+import { DASHBOARD_PUBLIC_MEDIA_BY_CONTENT_ID } from "../generated/dashboard-public-media";
 import { DASHBOARD_PUBLIC_SETTINGS } from "../generated/dashboard-public-settings";
 import { getUiCopy } from "../i18n";
 import HorizonteHome from "./horizonte/HorizonteHome.astro";
@@ -71,11 +72,18 @@ const caseProject = isCaseStudy ? getHorizonteProject(String(id)) : undefined;
 const rawCaseMedia = isCaseStudy && caseStudyContent
   ? resolveProofMedia(String(id), caseStudyContent.publicEvidence[0]?.src, caseStudyContent.publicEvidence[0]?.altText, caseStudyContent.publicEvidence[0]?.kind, true)
   : undefined;
+const hasDashboardMediaOverride = (contentId?: string) => {
+  if (!contentId) return false;
+  const media = DASHBOARD_PUBLIC_MEDIA_BY_CONTENT_ID[contentId];
+  return Boolean(media?.src || media?.thumbSrc);
+};
 const localizeDiagramSrc = (src: string, contentId?: string) => {
-  if (contentId === "case-study:eteria") return "/images/proof/eteria-live-landing.png";
-  if (contentId === "case-study:the-barber-central") return "/images/proof/barber-central-live-hero.png";
-  if (contentId === "case-study:casa-roca") return "/images/proof/casa-roca-gallery-clean.png";
-  if (contentId === "case-study:nutri-plan") return "/images/proof/nutri-plan-table-clean.png";
+  if (!hasDashboardMediaOverride(contentId)) {
+    if (contentId === "case-study:eteria") return "/images/proof/eteria-live-landing.png";
+    if (contentId === "case-study:the-barber-central") return "/images/proof/barber-central-live-hero.png";
+    if (contentId === "case-study:casa-roca") return "/images/proof/casa-roca-gallery-clean.png";
+    if (contentId === "case-study:nutri-plan") return "/images/proof/nutri-plan-table-clean.png";
+  }
   if (locale !== "es") return src;
   if (src === "/images/proof/enterprise-systems-map-v2.svg") return "/images/proof/enterprise-systems-map-v2-es.svg";
   if (src === "/images/proof/engineering-practice-release-cycle.svg") return "/images/proof/engineering-practice-release-cycle-es.svg";
@@ -541,7 +549,7 @@ const lensLabels = {
                     </figcaption>
                   </figure>
                 )}
-                <p class="ma-meta-line" aria-label={labels.serviceOutputs}>{service.deliverables.join(" · ")}</p>
+                <p class="ma-meta-line" aria-label={labels.serviceOutputs}>{service.deliverables.join("\u00a0· ")}</p>
                 {proof && (
                   <div class="ma-links">
                     <a class="hz-link hz-link-inline" href={getLocalizedPath(proof.id, locale)}>{proof.label} <span class="ma-nowrap" aria-hidden="true">→</span></a>
@@ -560,7 +568,7 @@ const lensLabels = {
         <section class="ma-section ma-grid" aria-labelledby="practice-deliverables-title">
           <div class="ma-block pos-left" data-ma-block>
             <h2 id="practice-deliverables-title" data-ma-node="before" data-ma-color={pastel(2)}>{practiceContent.deliverablesHeading}</h2>
-            <p class="ma-meta-line">{practiceContent.deliverables.join(" · ")}</p>
+            <p class="ma-meta-line">{practiceContent.deliverables.join("\u00a0· ")}</p>
             <div class="ma-actions">
               <a class="hz-btn" href={contactHref}>{labels.talk} <span class="arrow" aria-hidden="true">→</span></a>
               {practiceContent.relatedContentIds.map((contentId) => (
@@ -742,7 +750,7 @@ const lensLabels = {
             <h2 id="capabilities-title" data-ma-node="before" data-ma-color={pastel(1)}>{resumeContent.skillsTitle}</h2>
             <dl class="ma-kv-list">
               {resumeContent.skills.map((group) => (
-                <div class="ma-kv-row"><dt>{group.label}</dt><dd>{group.items.join(" · ")}</dd></div>
+                <div class="ma-kv-row"><dt>{group.label}</dt><dd>{group.items.join("\u00a0· ")}</dd></div>
               ))}
             </dl>
           </div>
@@ -844,7 +852,7 @@ const lensLabels = {
               <p id="contact-path-help">{contactCopy.preferredContactHelp}</p>
             </fieldset>
             <label><span>{contactCopy.messageLabel}</span><textarea name="message" rows="6" placeholder={contactCopy.messagePlaceholder} required></textarea></label>
-            <label class="consent"><input name="consentToContact" type="checkbox" value="true" required /><span>{contactCopy.consentLabel}</span></label>
+            <label class="consent"><input name="consentToContact" type="checkbox" value="true" required /><span>{contactCopy.consentLabel} <a class="hz-link hz-link-inline" href={getLocalizedPath("privacy", locale)}>{locale === "es" ? "Privacidad" : "Privacy policy"}</a></span></label>
             <label class="honeypot" aria-hidden="true"><span>{contactCopy.honeypotLabel}</span><input name="website" type="text" autocomplete="off" tabindex="-1" /></label>
             <input name="formStartedAt" type="hidden" value="" />
             <input name="sourcePath" type="hidden" value={route.path} />
