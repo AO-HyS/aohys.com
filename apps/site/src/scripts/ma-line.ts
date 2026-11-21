@@ -49,7 +49,8 @@ export function mountMaLine(container: HTMLElement) {
         let x = r.left + r.width / 2 - box.left;
         let y = r.top + r.height / 2 - box.top;
         if (mode === "before") {
-          x = Math.max(10, r.left - box.left - 28);
+          const inset = box.width <= 860 ? 14 : 28;
+          x = Math.max(14, r.left - box.left - inset);
           y = r.top - box.top + Math.min(r.height / 2, 22);
         } else if (mode === "above") {
           y = r.top - box.top - 36;
