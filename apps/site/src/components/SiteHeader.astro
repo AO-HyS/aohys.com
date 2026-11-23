@@ -59,7 +59,7 @@ function isCurrent(contentId?: string) {
       {navItems.map((item) => (
         <a href={item.href} aria-current={isCurrent(item.contentId) ? "page" : undefined}>{item.label}</a>
       ))}
-      {contactAction && <a href={contactAction.href} aria-current={currentId === "contact" ? "page" : undefined}>{contactAction.label}</a>}
+      {contactAction && <a class="hz-talk" href={contactAction.href} aria-current={currentId === "contact" ? "page" : undefined}>{contactAction.label}</a>}
     </div>
   </nav>
 </header>

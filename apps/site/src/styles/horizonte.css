@@ -134,7 +134,7 @@ body {
   gap: clamp(14px, 2.2vw, 32px);
 }
 .hz-links a,
-.hz-mobile-panel a {
+.hz-mobile-panel a:not(.hz-talk) {
   font-size: 0.875rem;
   font-weight: 400;
   letter-spacing: 0.04em;
@@ -218,9 +218,12 @@ body {
 .hz-mobile-panel[hidden] {
   display: none;
 }
-.hz-mobile-panel a {
+.hz-mobile-panel a:not(.hz-talk) {
   font-size: 1rem;
   padding: 10px 6px;
+}
+.hz-mobile-panel .hz-talk {
+  min-height: 44px;
 }
 
 @media (max-width: 900px) {
@@ -228,7 +231,7 @@ body {
     --header-h: 64px;
   }
   .hz-links,
-  .hz-talk {
+  .hz-actions .hz-talk {
     display: none;
   }
   .hz-menu {
@@ -2611,7 +2614,7 @@ body {
 
 /* ---------- View transitions ---------- */
 
-@media (prefers-reduced-motion: no-preference) {
+@media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
   @view-transition {
     navigation: auto;
   }
