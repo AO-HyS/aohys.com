@@ -90,6 +90,7 @@ const localizeDiagramSrc = (src: string, contentId?: string) => {
   return src;
 };
 const caseMedia = rawCaseMedia ? { ...rawCaseMedia, src: localizeDiagramSrc(rawCaseMedia.src, String(id)) } : undefined;
+const isNutriLibraryImage = caseMedia?.src === "/images/proof/nutri-plan-table-clean.png";
 const normalizePath = (p: string) => p.replace(/\/+$/, "") || "/";
 const caseLiveLinks = caseStudyContent?.publicEvidence.filter((evidence) => evidence.href && normalizePath(evidence.href) !== normalizePath(route.path)) ?? [];
 const caseOrder = caseStudyIndexContent.entries;
@@ -381,10 +382,13 @@ const lensLabels = {
               </div>
             ) : (
               <>
-                <figure class="ma-frame">
+                <figure class:list={["ma-frame", { "ma-frame-library": isNutriLibraryImage }]}>
                   <img src={caseMedia.src} alt={caseMedia.alt} loading="eager" decoding="sync" />
                   <figcaption>
                     {caseFigureCaption && <span>{caseFigureCaption}</span>}
+                    {isNutriLibraryImage && (
+                      <a class="hz-link" href={caseMedia.src}>{locale === "es" ? "Ver la captura completa" : "View the full screenshot"} <span aria-hidden="true">→</span></a>
+                    )}
                     {caseLiveLinks[0] && (
                       <a class="hz-link" href={caseLiveLinks[0].href} rel="noopener" target="_blank">{localizeLabel(caseLiveLinks[0].label)} <span aria-hidden="true">↗</span></a>
                     )}
@@ -806,12 +810,6 @@ const lensLabels = {
           <div class="ma-block pos-aside" data-ma-block>
             <h2 data-ma-node="before" data-ma-color={pastel(1)}>{contactCopy.formTitle}</h2>
             <p>{contactCopy.formIntro}</p>
-            <div class="ma-pairs ma-contact-prompts">
-              <div>
-                <h3>{labels.contactBriefTitle}</h3>
-                <ol class="ma-list">{labels.contactBriefPrompts.map(([term, description]) => <li><div><strong>{term}</strong><span class="ma-muted">{description}</span></div></li>)}</ol>
-              </div>
-            </div>
           </div>
           <form
             class="ma-form pos-form"
@@ -851,6 +849,10 @@ const lensLabels = {
               </div>
               <p id="contact-path-help">{contactCopy.preferredContactHelp}</p>
             </fieldset>
+            <details class="ma-contact-prompts">
+              <summary>{labels.contactBriefTitle}</summary>
+              <ol class="ma-list">{labels.contactBriefPrompts.map(([term, description]) => <li><div><strong>{term}</strong><span class="ma-muted">{description}</span></div></li>)}</ol>
+            </details>
             <label><span>{contactCopy.messageLabel}</span><textarea name="message" rows="6" placeholder={contactCopy.messagePlaceholder} required></textarea></label>
             <label class="consent"><input name="consentToContact" type="checkbox" value="true" required /><span>{contactCopy.consentLabel} <a class="hz-link hz-link-inline" href={getLocalizedPath("privacy", locale)}>{locale === "es" ? "Privacidad" : "Privacy policy"}</a></span></label>
             <label class="honeypot" aria-hidden="true"><span>{contactCopy.honeypotLabel}</span><input name="website" type="text" autocomplete="off" tabindex="-1" /></label>
