@@ -124,7 +124,9 @@ export function mountMaLine(container: HTMLElement) {
     if (!total) return;
     const reduced = reducedMotion.matches;
     const box = container.getBoundingClientRect();
-    const reachY = reduced ? Infinity : window.innerHeight * 0.66 - box.top;
+    const reachY = reduced
+      ? Infinity
+      : Math.max(window.innerHeight * 0.66 - box.top, anchors[0]?.bottom ?? 0);
     const len = reduced ? total : lengthAtY(reachY);
     ink.style.strokeDashoffset = String(total - len);
     glow.style.strokeDashoffset = String(total - len);

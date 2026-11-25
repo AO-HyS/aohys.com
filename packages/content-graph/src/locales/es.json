@@ -3,14 +3,14 @@
     "path": "/es/",
     "title": "Alejandro Ortiz Corro",
     "seoTitle": "Desarrollador de software full stack | Alejandro Ortiz Corro",
-    "summary": "Alejandro Ortiz Corro — full stack development. Software para atención al cliente, seguimiento de pacientes, comercio y operación diaria de negocios.",
+    "summary": "Alejandro Ortiz Corro — desarrollo full stack. Software para atención al cliente, seguimiento de pacientes, comercio y operación diaria de negocios.",
     "seoDescription": "Desarrollador de software full stack en México. Construyo sistemas y aplicaciones web a la medida: reservas, pagos, WhatsApp e integraciones. Platiquemos tu proyecto.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Ver trabajo seleccionado",
     "secondaryActionContentId": "case-studies",
     "homeContent": {
-      "headline": "full stack development",
+      "headline": "desarrollo full stack",
       "headlineLines": ["full stack", "development"],
       "headlineEmphasisWords": ["development"],
       "deck": "Soy Alejandro Ortiz Corro, ingeniero de software con una base sólida en frontend. Construyo interfaces, funcionalidades backend e integraciones alrededor del trabajo que las personas necesitan resolver.",
@@ -312,7 +312,7 @@
         "title": "Calidad, seguridad y rendimiento",
         "body": "Las rutas públicas, conversión de leads, analíticas, estado backend, límites de privacidad y comportamiento responsivo se verifican como un sistema; la evidencia operativa privada se sanitiza o no se publica."
       },
-      "publicEvidenceTitle": "Enlaces públicos",
+      "publicEvidenceTitle": "Evidencia del producto",
       "publicEvidence": [
         {
           "label": "Landing ETERIA en producción",
@@ -373,7 +373,7 @@
         "title": "Calidad, seguridad y rendimiento",
         "body": "El sitio en vivo usa metadata explícita, layouts resilientes, media optimizada y páginas estables para huéspedes y motores de búsqueda."
       },
-      "publicEvidenceTitle": "Enlaces públicos",
+      "publicEvidenceTitle": "Evidencia del producto",
       "publicEvidence": [
         {
           "label": "Sitio en producción",
@@ -433,7 +433,7 @@
         "title": "Calidad, seguridad y rendimiento",
         "body": "El proyecto enfatiza entornos protegidos, comandos de verificación explícitos, browser QA, source checks y manejo cuidadoso de auth e integraciones antes de cada release."
       },
-      "publicEvidenceTitle": "Enlaces públicos",
+      "publicEvidenceTitle": "Evidencia del producto",
       "publicEvidence": [
         {
           "label": "Preview de desarrollo",
@@ -493,7 +493,7 @@
         "title": "Calidad, seguridad y rendimiento",
         "body": "Revisar el acceso a la información clínica y la continuidad entre los flujos del profesional y del paciente. Mantener los expedientes fuera de los ejemplos públicos."
       },
-      "publicEvidenceTitle": "Enlaces públicos",
+      "publicEvidenceTitle": "Evidencia del producto",
       "publicEvidence": [
         {
           "label": "Preview de producto",
@@ -553,7 +553,7 @@
         "title": "Despacho, entrega y modernización",
         "body": "Para despacho y entrega de cemento, contribuí a interfaces para solicitar camiones, capturar direcciones y seguir su avance, además de corregir errores en la aplicación existente. En venta de autopartes, también ayudé a migrar la aplicación web de React a Next.js."
       },
-      "publicEvidenceTitle": "Enlaces públicos",
+      "publicEvidenceTitle": "Evidencia del producto",
       "publicEvidence": [
         {
           "label": "Vista del sistema",
@@ -613,7 +613,7 @@
         "title": "Calidad, seguridad y rendimiento",
         "body": "Usar comprobaciones acordes con el comportamiento que cambia: revisar código y reglas de datos, recorrer los flujos e inspeccionar la interfaz que usan las personas. Mantener la información privada dentro de los límites de acceso previstos."
       },
-      "publicEvidenceTitle": "Enlaces públicos",
+      "publicEvidenceTitle": "Evidencia del producto",
       "publicEvidence": [
         {
           "label": "Source y proceso",
@@ -728,7 +728,7 @@
     "architectureContent": {
       "heading": "De la intención de negocio a producción.",
       "deck": "La ingeniería de producto AI-native es un lifecycle disciplinado: los agentes ejecutan trabajo significativo en cada etapa mientras conservo criterio de producto, responsabilidad y autoridad de release.",
-      "systemHeading": "Un lifecycle, seis etapas con responsabilidad.",
+      "systemHeading": "Un ciclo de vida, seis etapas con responsabilidad.",
       "systemBody": "La secuencia hace visibles decisiones, dependencias, verificación y límites de release. AOHYS es una implementación pública de esta práctica, no el límite de la arquitectura ni un mapa del Development System privado.",
       "layers": [
         {
@@ -883,7 +883,7 @@
     "secondaryActionContentId": "architecture",
     "resumeContent": {
       "name": "Alejandro Ortiz Corro",
-      "role": "full stack development",
+      "role": "desarrollo full stack",
       "location": "México",
       "intro": "Soy ingeniero de software, con una base sólida en frontend y experiencia construyendo productos completos. Me gusta entender cómo funcionan las cosas, aprender lo necesario y convertirlo en software útil. Me importa comunicarme con claridad y ser alguien con quien se disfrute trabajar.",
       "pdf": {
@@ -1121,13 +1121,13 @@
       "educationTitle": "Educación",
       "education": [
         {
-          "degree": "Bachelor of Engineering, Software Development",
-          "institution": "UNAD - Open and Distance University of Mexico",
+          "degree": "Ingeniería en Desarrollo de Software",
+          "institution": "UnADM - Universidad Abierta y a Distancia de México",
           "period": "2014 - 2018"
         },
         {
-          "degree": "Bachelor of Business Administration, Maritime Trade",
-          "institution": "ITBOCA - Technological Institute of Boca del Rio",
+          "degree": "Licenciatura en Administración, Comercio Marítimo",
+          "institution": "ITBOCA - Instituto Tecnológico de Boca del Río",
           "period": "2004 - 2008"
         }
       ],

@@ -383,7 +383,14 @@ const lensLabels = {
             ) : (
               <>
                 <figure class:list={["ma-frame", { "ma-frame-library": isNutriLibraryImage }]}>
-                  <img src={caseMedia.src} alt={caseMedia.alt} loading="eager" decoding="sync" />
+                  {isNutriLibraryImage ? (
+                    <picture>
+                      <source media="(max-width: 480px)" srcset="/images/proof/nutri-plan-table-names.png" />
+                      <img src={caseMedia.src} alt={caseMedia.alt} loading="eager" decoding="sync" />
+                    </picture>
+                  ) : (
+                    <img src={caseMedia.src} alt={caseMedia.alt} loading="eager" decoding="sync" />
+                  )}
                   <figcaption>
                     {caseFigureCaption && <span>{caseFigureCaption}</span>}
                     {isNutriLibraryImage && (

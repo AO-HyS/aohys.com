@@ -1455,7 +1455,7 @@ body {
 .ma-hero h1 {
   margin: 0;
   max-inline-size: 19ch;
-  font-size: clamp(2.1rem, 1.2rem + 2.7vw, 3.6rem);
+  font-size: clamp(2.1rem, 1.2rem + 2.2vw, 3.15rem);
   line-height: 1.06;
   font-weight: 280;
   font-family: var(--serif);
@@ -2221,6 +2221,9 @@ body {
   background: var(--paper-warm);
   border: 1px solid var(--rule);
 }
+.ma-frame picture {
+  display: block;
+}
 .ma-frame img {
   display: block;
   width: 100%;
@@ -2239,13 +2242,6 @@ body {
   font-size: 0.875rem;
   color: var(--ink-soft);
   text-align: left;
-}
-@media (max-width: 480px) {
-  .ma-frame-library img {
-    aspect-ratio: 5 / 4;
-    object-fit: cover;
-    object-position: left top;
-  }
 }
 .ma-links {
   display: flex;
