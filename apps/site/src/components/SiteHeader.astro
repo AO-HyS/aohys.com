@@ -89,9 +89,11 @@ function isCurrent(contentId?: string) {
         trigger.focus();
       }
     });
-    header.addEventListener("focusout", (event) => {
-      const next = event.relatedTarget;
-      if (!(next instanceof Node) || !header.contains(next)) setOpen(false);
-    });
+    const closeIfOutside = (event: Event) => {
+      const target = event.target;
+      if (target instanceof Node && !header.contains(target)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", closeIfOutside);
+    document.addEventListener("focusin", closeIfOutside);
   }
 </script>

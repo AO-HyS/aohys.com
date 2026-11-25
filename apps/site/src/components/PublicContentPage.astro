@@ -387,7 +387,7 @@ const lensLabels = {
                   <figcaption>
                     {caseFigureCaption && <span>{caseFigureCaption}</span>}
                     {isNutriLibraryImage && (
-                      <a class="hz-link" href={caseMedia.src}>{locale === "es" ? "Ver la captura completa" : "View the full screenshot"} <span aria-hidden="true">→</span></a>
+                      <a class="hz-link ma-frame-full-link" href={caseMedia.src} target="_blank" rel="noopener">{locale === "es" ? "Ver la captura completa" : "View the full screenshot"} <span aria-hidden="true">↗</span></a>
                     )}
                     {caseLiveLinks[0] && (
                       <a class="hz-link" href={caseLiveLinks[0].href} rel="noopener" target="_blank">{localizeLabel(caseLiveLinks[0].label)} <span aria-hidden="true">↗</span></a>

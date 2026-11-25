@@ -224,6 +224,7 @@ body {
 }
 .hz-mobile-panel .hz-talk {
   min-height: 44px;
+  margin-top: 8px;
 }
 
 @media (max-width: 900px) {
@@ -2372,10 +2373,17 @@ body {
   gap: 18px;
 }
 .ma-contact-prompts summary {
+  min-height: 44px;
+  box-sizing: border-box;
   width: fit-content;
-  padding-block: 8px;
+  padding-block: 10px;
   color: var(--ink);
   cursor: pointer;
+}
+.ma-contact-prompts summary:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 .ma-form label,
 .ma-form fieldset {
@@ -2618,6 +2626,13 @@ body {
   @view-transition {
     navigation: auto;
   }
+}
+.hz-header {
+  view-transition-name: site-header;
+}
+::view-transition-group(site-header) {
+  z-index: 2;
+  animation: none;
 }
 ::view-transition-group(lens) {
   animation-duration: 760ms;
@@ -2902,4 +2917,10 @@ body {
 .hz-actions {
   grid-column: 3;
   justify-self: end;
+}
+
+@media (min-width: 481px) {
+  .ma-frame-full-link {
+    display: none;
+  }
 }

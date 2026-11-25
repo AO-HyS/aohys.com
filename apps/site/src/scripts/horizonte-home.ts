@@ -765,6 +765,11 @@ export function mountHorizonteStage(hero: HTMLElement) {
         if (tr && tr.waiting && tr.to === i) {
           tr.waiting = false;
           tr.t0 = performance.now();
+          if (!glOn) domRun();
+          else if (images[i]!.img.naturalWidth === 0) {
+            domPrepare(i);
+            domRun();
+          }
           kick();
         }
       });
@@ -782,6 +787,10 @@ export function mountHorizonteStage(hero: HTMLElement) {
       tr.waiting = false;
       tr.t0 = performance.now();
       if (!glOn) domRun();
+      else if (images[to]!.img.naturalWidth === 0) {
+        domPrepare(to);
+        domRun();
+      }
       kick();
     });
     kick();
