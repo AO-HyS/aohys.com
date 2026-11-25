@@ -310,7 +310,7 @@
     "backendErrorMessage": "The contact backend is temporarily unavailable.",
     "endpointMissing": "Contact endpoint is not configured for this environment.",
     "retryLabel": "Try again, or use WhatsApp or email directly.",
-    "whatsappLabel": "WhatsApp Me",
+    "whatsappLabel": "WhatsApp me",
     "fallbackText": "Prefer direct contact?",
     "honeypotLabel": "Website"
   },

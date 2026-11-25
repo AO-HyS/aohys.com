@@ -34,6 +34,7 @@ export function mountMaLine(container: HTMLElement) {
   let total = 0;
   let anchors: Anchor[] = [];
   let ticking = false;
+  let lag = 0;
 
   function layout() {
     const box = container.getBoundingClientRect();
@@ -104,6 +105,12 @@ export function mountMaLine(container: HTMLElement) {
       svg!.appendChild(c);
       return c;
     });
+    const box0 = container.getBoundingClientRect();
+    const pageTop = box0.top + window.scrollY;
+    lag = Math.max(
+      0,
+      window.innerHeight * 0.66 - pageTop - (anchors[0]?.bottom ?? 0),
+    );
     update();
   }
 
@@ -126,7 +133,10 @@ export function mountMaLine(container: HTMLElement) {
     const box = container.getBoundingClientRect();
     const reachY = reduced
       ? Infinity
-      : Math.max(window.innerHeight * 0.66 - box.top, anchors[0]?.bottom ?? 0);
+      : Math.max(
+          window.innerHeight * 0.66 - box.top - lag,
+          anchors[0]?.bottom ?? 0,
+        );
     const len = reduced ? total : lengthAtY(reachY);
     ink.style.strokeDashoffset = String(total - len);
     glow.style.strokeDashoffset = String(total - len);

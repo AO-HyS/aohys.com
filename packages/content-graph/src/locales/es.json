@@ -27,7 +27,7 @@
           "outcome": "Operación de eventos que conecta prospectos, versiones de propuestas, precios, inventario y cierre, con una aplicación nativa para iPhone en Swift/SwiftUI.",
           "role": "Flujos operativos, web y móvil, backend compartido y medios",
           "evidence": {
-            "label": "Landing pública",
+            "label": "Página pública",
             "altText": "Mesa de celebración al aire libre de ETERIA con textiles azules, flores marfil y lugares montados",
             "kind": "public-site",
             "publicSafe": true,
@@ -41,8 +41,8 @@
           "outcome": "Un método para definir problemas, arquitectura y tareas revisables, manteniendo mi responsabilidad por la integración y el resultado.",
           "role": "Definición del problema, arquitectura, revisión e integración",
           "evidence": {
-            "label": "Lifecycle revisable",
-            "altText": "Lifecycle de desarrollo AI-native desde intención de negocio hasta release",
+            "label": "Ciclo de vida revisable",
+            "altText": "Ciclo de desarrollo nativo de IA, desde la intención de negocio hasta la publicación",
             "kind": "architecture-note",
             "publicSafe": true,
             "src": "/images/proof/engineering-practice-release-cycle.svg"
@@ -56,7 +56,7 @@
           "role": "Interfaces en React, contribuciones backend e integraciones",
           "evidence": {
             "label": "Mapa sanitizado",
-            "altText": "Mapa de sistemas de producto enterprise enfocado en delivery responsable y confiabilidad operativa",
+            "altText": "Mapa de sistemas de producto empresariales enfocado en entregas responsables y confiabilidad operativa",
             "kind": "private-system",
             "publicSafe": true,
             "src": "/images/proof/enterprise-systems-map-v2.svg"
@@ -69,8 +69,8 @@
           "outcome": "Reservas, disponibilidad del personal, historial de clientes y fila sin cita, conectados con WhatsApp, pagos y correo.",
           "role": "Flujos de reservas, operación del negocio e integraciones",
           "evidence": {
-            "label": "Preview pública",
-            "altText": "Preview pública de producto de The Barber Central",
+            "label": "Vista previa pública",
+            "altText": "Vista previa pública del producto The Barber Central",
             "kind": "development-preview",
             "publicSafe": true,
             "src": "/images/proof/barber-central-hero-v2.jpg"
@@ -84,7 +84,7 @@
           "role": "Interfaces en React, backend en Convex, roles e invitaciones",
           "evidence": {
             "label": "Vista sanitizada",
-            "altText": "Dashboard sanitizado de NutriPlan Digital sin datos clínicos ni de pacientes",
+            "altText": "Panel sanitizado de NutriPlan Digital sin datos clínicos ni de pacientes",
             "kind": "development-preview",
             "publicSafe": true,
             "src": "/images/proof/nutri-plan-dashboard-v2.png"
@@ -95,7 +95,7 @@
           "label": "Experiencia de hospitalidad en producción",
           "title": "Casa Roca",
           "outcome": "Un sitio de hospedaje con gestión de contenido y reservas, registro de entradas y salidas y validaciones para evitar reservas superpuestas.",
-          "role": "Contenido público, interfaces de reservas y reglas backend",
+          "role": "Contenido público, interfaces de reservas y reglas del servidor",
           "evidence": {
             "label": "Sitio en vivo",
             "altText": "Experiencia de hospitalidad Casa Roca en producción y ruta de contacto directo",
@@ -189,7 +189,7 @@
       "actions": [
         {
           "slotId": "login",
-          "label": "Dashboard",
+          "label": "Panel",
           "href": "/dashboard",
           "style": "secondary"
         },
@@ -263,7 +263,7 @@
     "title": "Trabajo seleccionado",
     "seoTitle": "Proyectos de software y sistemas a la medida | AOHYS",
     "summary": "Productos seleccionados, contribuciones profesionales y el método de ingeniería detrás de mi trabajo, con contexto, responsabilidades y ejemplos públicos.",
-    "seoDescription": "Sistemas y aplicaciones web que he construido para barberías, nutriólogos, eventos y hospedaje: reservas, pagos, WhatsApp, backend e integraciones.",
+    "seoDescription": "Sistemas y aplicaciones web que he construido para barberías, nutriólogos, eventos y hospedaje: reservas, pagos, WhatsApp, servidor e integraciones.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Leer arquitectura",
@@ -298,7 +298,7 @@
       },
       "constraints": {
         "title": "Consideraciones de diseño",
-        "body": "La historia pública debe demostrar un producto funcional y mantener el material operativo sensible dentro de sus límites de acceso. Aquí sólo aparecen arte público de la landing y descripciones sanitizadas."
+        "body": "La historia pública debe demostrar un producto funcional y mantener el material operativo sensible dentro de sus límites de acceso. Aquí sólo aparecen el arte público de la página principal y descripciones sanitizadas."
       },
       "architectureDecisions": {
         "title": "Decisiones de arquitectura",
@@ -310,15 +310,15 @@
       },
       "qualitySecurityPerformance": {
         "title": "Calidad, seguridad y rendimiento",
-        "body": "Las rutas públicas, conversión de leads, analíticas, estado backend, límites de privacidad y comportamiento responsivo se verifican como un sistema; la evidencia operativa privada se sanitiza o no se publica."
+        "body": "Las rutas públicas, conversión de leads, analíticas, estado del servidor, límites de privacidad y comportamiento responsivo se verifican como un sistema; la evidencia operativa privada se sanitiza o no se publica."
       },
       "publicEvidenceTitle": "Evidencia del producto",
       "publicEvidence": [
         {
-          "label": "Landing ETERIA en producción",
+          "label": "Página de ETERIA en producción",
           "description": "Abrir la experiencia pública de ETERIA en producción.",
           "href": "https://momentos-eteria.com",
-          "altText": "Landing pública de eventos ETERIA en producción",
+          "altText": "Página pública de eventos ETERIA en producción",
           "kind": "public-site",
           "publicSafe": true,
           "src": "/images/proof/eteria-garden-blue-table-og.jpg"
@@ -337,7 +337,7 @@
     "title": "Casa Roca: sitio de hospedaje y reservas",
     "seoTitle": "Casa Roca: sitio web y sistema de reservaciones | AOHYS",
     "summary": "Un sitio público de hospedaje con gestión de contenido y reservas para el personal, registro de entradas y salidas y validaciones para evitar reservas superpuestas.",
-    "seoDescription": "Casa Roca combina un sitio público de hospedaje con herramientas para actualizar contenido, gestionar reservas y registrar entradas y salidas, con reglas backend para evitar superposiciones.",
+    "seoDescription": "Casa Roca combina un sitio público de hospedaje con herramientas para actualizar contenido, gestionar reservas y registrar entradas y salidas, con reglas del servidor para evitar superposiciones.",
     "primaryActionLabel": "Hablemos",
     "primaryActionContentId": "contact",
     "secondaryActionLabel": "Volver a casos",
@@ -355,7 +355,7 @@
       },
       "role": {
         "title": "Rol",
-        "body": "Trabajo en el sitio público, las herramientas de contenido, las interfaces de reservas y las reglas backend que apoyan la operación del hospedaje."
+        "body": "Trabajo en el sitio público, las herramientas de contenido, las interfaces de reservas y las reglas del servidor que apoyan la operación del hospedaje."
       },
       "constraints": {
         "title": "Consideraciones de diseño",
@@ -371,7 +371,7 @@
       },
       "qualitySecurityPerformance": {
         "title": "Calidad, seguridad y rendimiento",
-        "body": "El sitio en vivo usa metadata explícita, layouts resilientes, media optimizada y páginas estables para huéspedes y motores de búsqueda."
+        "body": "El sitio en vivo usa metadatos explícitos, diseños adaptables, imágenes optimizadas y páginas estables para huéspedes y motores de búsqueda."
       },
       "publicEvidenceTitle": "Evidencia del producto",
       "publicEvidence": [
@@ -431,22 +431,22 @@
       },
       "qualitySecurityPerformance": {
         "title": "Calidad, seguridad y rendimiento",
-        "body": "El proyecto enfatiza entornos protegidos, comandos de verificación explícitos, browser QA, source checks y manejo cuidadoso de auth e integraciones antes de cada release."
+        "body": "El proyecto enfatiza entornos protegidos, comandos de verificación explícitos, pruebas en navegador, revisión del código y manejo cuidadoso de la autenticación y las integraciones antes de cada publicación."
       },
       "publicEvidenceTitle": "Evidencia del producto",
       "publicEvidence": [
         {
-          "label": "Preview de desarrollo",
-          "description": "Abrir la landing de desarrollo de The Barber Central.",
+          "label": "Vista previa de desarrollo",
+          "description": "Abrir la página de desarrollo de The Barber Central.",
           "href": "https://the-barber-central-landing.a-ortizcrr.workers.dev",
-          "altText": "Landing de desarrollo de The Barber Central",
+          "altText": "Página de desarrollo de The Barber Central",
           "kind": "development-preview",
           "publicSafe": true
         }
       ],
       "confidentialityNote": {
         "title": "Nota de alcance",
-        "body": "Este caso sigue la dirección activa del producto y su ruta de release."
+        "body": "Este caso sigue la dirección activa del producto y su ruta de publicación."
       }
     }
   },
@@ -496,10 +496,10 @@
       "publicEvidenceTitle": "Evidencia del producto",
       "publicEvidence": [
         {
-          "label": "Preview de producto",
-          "description": "Revisar la pantalla de producto y sus notas de workflow.",
+          "label": "Vista previa del producto",
+          "description": "Revisar la pantalla de producto y sus notas del flujo.",
           "href": "/es/casos/nutri-plan",
-          "altText": "Preview sanitizado de producto Nutri Plan",
+          "altText": "Vista previa sanitizada del producto NutriPlan",
           "kind": "development-preview",
           "publicSafe": true
         }
@@ -557,7 +557,7 @@
       "publicEvidence": [
         {
           "label": "Vista del sistema",
-          "description": "Revisar el sistema de entrega enterprise mediante responsabilidades, tradeoffs y resultados operativos.",
+          "description": "Revisar el sistema de entrega empresarial mediante responsabilidades, alternativas y resultados operativos.",
           "href": "/es/casos/sistemas-enterprise",
           "altText": "Vista general de sistemas enterprise",
           "kind": "private-system",
@@ -617,7 +617,7 @@
       "publicEvidence": [
         {
           "label": "Source y proceso",
-          "description": "Source, pruebas, documentación e historial de PRs muestran el workflow de ingeniería detrás del sitio.",
+          "description": "El código, las pruebas, la documentación y el historial de PRs muestran el flujo de ingeniería detrás del sitio.",
           "href": "https://github.com/AO-HyS/aohys.com",
           "altText": "Proceso de ingeniería y releases de AOHYS",
           "kind": "architecture-note",
@@ -642,44 +642,44 @@
     "secondaryActionContentId": "architecture",
     "practiceContent": {
       "heading": "Ingeniería de producto senior, aplicada donde aporta.",
-      "deck": "Contribuyo en decisiones de producto, arquitectura, implementación, verificación y release. La forma cambia con el contexto: un sistema de producto completo, un frente enfocado dentro de un equipo o una modernización que ya está en marcha.",
+      "deck": "Contribuyo en decisiones de producto, arquitectura, implementación, verificación y publicación. La forma cambia con el contexto: un sistema de producto completo, un frente enfocado dentro de un equipo o una modernización que ya está en marcha.",
       "services": [
         {
           "id": "product-systems",
-          "title": "Sistemas de producto end-to-end",
-          "problem": "Un producto necesita un camino coherente entre experiencia, operación, datos, arquitectura y release.",
-          "result": "Un sitio, aplicación web o app móvil funcionando, con workflows confiables, comportamiento medible y espacio para evolucionar.",
-          "engagement": "Conecto el encuadre de producto y el diseño del sistema con implementación, verificación, release y un handoff operativo que el equipo puede asumir.",
+          "title": "Sistemas de producto de principio a fin",
+          "problem": "Un producto necesita un camino coherente entre experiencia, operación, datos, arquitectura y publicación.",
+          "result": "Un sitio, aplicación web o app móvil funcionando, con flujos confiables, comportamiento medible y espacio para evolucionar.",
+          "engagement": "Conecto el encuadre de producto y el diseño del sistema con implementación, verificación, publicación y una entrega operativa que el equipo puede asumir.",
           "deliverables": [
             "Brief de producto y mapa de recorrido",
             "Sitio, web app o app móvil funcionando",
-            "Backend, datos y workflows operativos",
-            "Lanzamiento a producción y handoff de ownership"
+            "Backend, datos y flujos operativos",
+            "Lanzamiento a producción y traspaso de responsabilidad"
           ]
         },
         {
           "id": "architecture-modernization",
           "title": "Colaboración senior integrada",
-          "problem": "La dirección está definida y un equipo necesita ownership con experiencia en un frente relevante de producto o ingeniería.",
-          "result": "Decisiones más claras, implementación más fuerte, menos puntos ciegos y delivery más confiable alrededor del código.",
-          "engagement": "Trabajo dentro del ritmo existente de planeación, revisión, QA y release del equipo mientras asumo un área enfocada de delivery.",
+          "problem": "La dirección está definida y un equipo necesita a una persona con experiencia que asuma un frente relevante de producto o ingeniería.",
+          "result": "Decisiones más claras, implementación más fuerte, menos puntos ciegos y entregas más confiables alrededor del código.",
+          "engagement": "Trabajo dentro del ritmo existente de planeación, revisión, QA y publicación del equipo mientras asumo un área enfocada de entrega.",
           "deliverables": [
-            "Un frente de delivery con ownership claro",
+            "Un frente de entrega con responsable claro",
             "Código de producción y decisiones de producto",
             "Revisiones de arquitectura e implementación",
-            "Pruebas, evidencia de release y handoff al equipo"
+            "Pruebas, evidencia de publicación y traspaso al equipo"
           ]
         },
         {
           "id": "delivery-acceleration",
           "title": "Arquitectura y modernización",
-          "problem": "Un producto o proceso ya genera valor y necesita límites más claros, datos conectados, workflows modernos o una mejor ruta de delivery.",
+          "problem": "Un producto o proceso ya genera valor y necesita límites más claros, datos conectados, flujos modernos o una mejor ruta de entrega.",
           "result": "Un sistema más seguro y capaz que conserva el comportamiento útil mientras mejora las partes que limitan al producto.",
-          "engagement": "Mapeo el sistema actual, hago explícitos los tradeoffs y entrego incrementos verificados para que el trabajo continúe mientras mejora la base.",
+          "engagement": "Mapeo el sistema actual, hago explícitas las alternativas y sus costos y entrego incrementos verificados para que el trabajo continúe mientras mejora la base.",
           "deliverables": [
             "Mapa de estado actual y oportunidades",
-            "Arquitectura objetivo con tradeoffs explícitos",
-            "Integración de IA, datos, cloud o workflows",
+            "Arquitectura objetivo con alternativas explícitas",
+            "Integración de IA, datos, nube o flujos de trabajo",
             "Rollout incremental, verificación y playbook operativo"
           ]
         }
@@ -692,7 +692,7 @@
         },
         {
           "label": "Hacer visible el sistema",
-          "text": "Mapear experiencia, workflows, datos, límites, riesgos y tradeoffs antes de que el esfuerzo desaparezca en la implementación."
+          "text": "Mapear experiencia, flujos, datos, límites, riesgos y alternativas antes de que el esfuerzo desaparezca en la implementación."
         },
         {
           "label": "Entregar porciones útiles",
@@ -700,7 +700,7 @@
         },
         {
           "label": "Dejar claridad operativa",
-          "text": "Entregar software funcionando, decisiones explícitas, evidencia de release y un plan práctico para lo siguiente."
+          "text": "Entregar software funcionando, decisiones explícitas, evidencia de publicación y un plan práctico para lo siguiente."
         }
       ],
       "deliverablesHeading": "Resultados duraderos, no solo implementación.",
@@ -708,8 +708,8 @@
         "Un mapa compartido de producto y sistema",
         "Incrementos de software listos para producción",
         "Registros de arquitectura y decisiones",
-        "Evidencia de calidad, observabilidad y release",
-        "Un handoff operativo y práctico"
+        "Evidencia de calidad, observabilidad y publicación",
+        "Un traspaso operativo y práctico"
       ],
       "relatedHeading": "Revisa el trabajo y el sistema que lo sostiene.",
       "relatedContentIds": ["architecture", "case-studies"]
@@ -719,7 +719,7 @@
     "path": "/es/arquitectura",
     "title": "Arquitectura",
     "seoTitle": "Cómo desarrollo software: arquitectura y proceso | AOHYS",
-    "summary": "El lifecycle AI-native que lleva intención de negocio por dominio, specs, agentes, verificación, preview y producción.",
+    "summary": "El ciclo de desarrollo nativo de IA que lleva la intención de negocio por dominio, especificaciones, agentes, verificación, vista previa y producción.",
     "seoDescription": "Cómo llevo un sistema de la necesidad del negocio a producción: dominio, arquitectura, agentes de programación con revisión humana, QA en navegador y releases verificados.",
     "primaryActionLabel": "Revisar trabajo",
     "primaryActionContentId": "case-studies",
@@ -727,41 +727,41 @@
     "secondaryActionContentId": "contact",
     "architectureContent": {
       "heading": "De la intención de negocio a producción.",
-      "deck": "La ingeniería de producto AI-native es un lifecycle disciplinado: los agentes ejecutan trabajo significativo en cada etapa mientras conservo criterio de producto, responsabilidad y autoridad de release.",
+      "deck": "La ingeniería de producto nativa de IA es un ciclo de vida disciplinado: los agentes ejecutan trabajo significativo en cada etapa mientras conservo el criterio de producto, la responsabilidad y la autoridad para publicar.",
       "systemHeading": "Un ciclo de vida, seis etapas con responsabilidad.",
-      "systemBody": "La secuencia hace visibles decisiones, dependencias, verificación y límites de release. AOHYS es una implementación pública de esta práctica, no el límite de la arquitectura ni un mapa del Development System privado.",
+      "systemBody": "La secuencia hace visibles decisiones, dependencias, verificación y límites de publicación. AOHYS es una implementación pública de esta práctica, no el límite de la arquitectura ni un mapa del Development System privado.",
       "layers": [
         {
           "id": "experience",
           "label": "Intención de negocio",
-          "body": "Escuchar al negocio, aclarar el resultado de usuario, revelar restricciones y hacer grilling del lenguaje ambiguo antes de elegir un camino técnico.",
+          "body": "Escuchar al negocio, aclarar el resultado de usuario, revelar restricciones y cuestionar a fondo el lenguaje ambiguo antes de elegir un camino técnico.",
           "technologies": [
             "Intención de negocio",
             "Contexto de stakeholders",
-            "Grilling",
+            "Preguntas a fondo",
             "Definición de resultados"
           ]
         },
         {
           "id": "edge",
           "label": "Dominio y decisiones",
-          "body": "Modelar el dominio, nombrar conceptos estables, comparar tradeoffs y registrar decisiones que dan forma al producto y al sistema.",
+          "body": "Modelar el dominio, nombrar conceptos estables, comparar alternativas y registrar decisiones que dan forma al producto y al sistema.",
           "technologies": [
             "Modelado de dominio",
             "Decisiones de arquitectura",
             "Límites de producto",
-            "Tradeoffs"
+            "Alternativas"
           ]
         },
         {
           "id": "product-data",
-          "label": "Specs y grafo de dependencias",
-          "body": "Convertir la dirección acordada en specs, tickets ejecutables, ownership, seams de aceptación y dependencias que conservan el orden correcto.",
+          "label": "Especificaciones y grafo de dependencias",
+          "body": "Convertir la dirección acordada en especificaciones, tickets ejecutables, responsables, criterios de aceptación y dependencias que conservan el orden correcto.",
           "technologies": [
-            "Specs y tickets",
+            "Especificaciones y tickets",
             "Grafo de dependencias",
             "Criterios de aceptación",
-            "Límite de release"
+            "Límite de publicación"
           ]
         },
         {
@@ -777,44 +777,44 @@
         },
         {
           "id": "observability",
-          "label": "Verificación y browser QA",
-          "body": "Usar TDD proporcional, linting, type checks, pruebas de comportamiento, revisión independiente y browser QA para verificar el resultado real y visible.",
+          "label": "Verificación y QA en navegador",
+          "body": "Usar TDD proporcional, linting, type checks, pruebas de comportamiento, revisión independiente y QA en navegador para verificar el resultado real y visible.",
           "technologies": [
             "TDD",
             "Code review",
-            "Browser QA",
+            "QA en navegador",
             "Evidencia visual",
             "Observabilidad"
           ]
         },
         {
           "id": "delivery",
-          "label": "De preview a producción",
-          "body": "Construir un Preview Deployment, reunir revisión humana, promover mediante Release Train, verificar el Production Deployment y ejecutar smoke checks.",
+          "label": "De vista previa a producción",
+          "body": "Construir un despliegue de vista previa, reunir revisión humana, promover mediante el tren de publicación, verificar el despliegue en producción y ejecutar pruebas de humo.",
           "technologies": [
-            "Preview Deployment",
-            "Release Train",
+            "Despliegue de vista previa",
+            "Tren de publicación",
             "Production Deployment",
-            "Smoke checks"
+            "Pruebas de humo"
           ]
         }
       ],
-      "tradeoffsHeading": "La arquitectura es una secuencia de tradeoffs.",
+      "tradeoffsHeading": "La arquitectura es una secuencia de decisiones con costo.",
       "tradeoffs": [
         {
           "title": "Ejecución de agentes con responsabilidad humana",
-          "reason": "Los agentes amplían la capacidad de ejecución, pero no pueden asumir intención de negocio, aceptación de riesgo ni autoridad de release.",
-          "result": "Sigo siendo responsable de lo que se construye, cómo se verifica y si está listo para release."
+          "reason": "Los agentes amplían la capacidad de ejecución, pero no pueden asumir intención de negocio, aceptación de riesgo ni autoridad para publicar.",
+          "result": "Sigo siendo responsable de lo que se construye, cómo se verifica y si está listo para publicarse."
         },
         {
           "title": "Explicación pública sin publicar la herramienta privada",
-          "reason": "El lifecycle debe ser inspeccionable sin exponer instrucciones privadas, métodos operativos ni detalles de entrega.",
+          "reason": "El ciclo de vida debe ser inspeccionable sin exponer instrucciones privadas, métodos operativos ni detalles de entrega.",
           "result": "El Development System permanece privado y adaptable; productos entregados y artefactos sanitizados aportan la evidencia."
         },
         {
-          "title": "Preview antes que producción",
-          "reason": "Un build verde no demuestra que un release funciona en su ambiente real.",
-          "result": "Promoción protegida, Preview Deployment, revisión humana y smoke checks vuelven producción una decisión separada."
+          "title": "Vista previa antes que producción",
+          "reason": "Un build verde no demuestra que una publicación funciona en su ambiente real.",
+          "result": "Promoción protegida, despliegue de vista previa, revisión humana y pruebas de humo vuelven producción una decisión separada."
         }
       ],
       "sourceLabel": "Revisar el source",
@@ -828,7 +828,7 @@
           "href": "https://github.com/AO-HyS/aohys.com/blob/develop/README.md"
         },
         {
-          "label": "Release Train",
+          "label": "Tren de publicación",
           "href": "https://github.com/AO-HyS/aohys.com/blob/develop/docs/release-train.md"
         },
         {
@@ -843,19 +843,19 @@
       "sections": [
         {
           "title": "Responsabilidad humana",
-          "body": "Los agentes ejecutan requisitos, modelado, specs, tickets, implementación, pruebas, revisión y QA. Alejandro conserva criterio de producto, integra evidencia y autoriza el release."
+          "body": "Los agentes ejecutan requisitos, modelado, especificaciones, tickets, implementación, pruebas, revisión y QA. Alejandro conserva criterio de producto, integra evidencia y autoriza la publicación."
         },
         {
-          "title": "Public Source Site y Private Work",
-          "body": "El Public Source Site permite inspeccionar decisiones de implementación de AOHYS. Private Work —código de clientes, datos, pantallas operativas, credenciales y Development System— permanece privado."
+          "title": "Sitio de código público y trabajo privado",
+          "body": "El sitio de código público permite inspeccionar decisiones de implementación de AOHYS. El trabajo privado —código de clientes, datos, pantallas operativas, credenciales y el Development System— permanece privado."
         },
         {
-          "title": "Release Train",
-          "body": "Primero se construye y revisa un Preview Deployment. Producción avanza mediante promoción separada con autoridad explícita, checks de ambiente, verificación de deployment y smoke checks en el dominio canónico."
+          "title": "Tren de publicación",
+          "body": "Primero se construye y revisa un despliegue de vista previa. Producción avanza mediante una promoción separada con autoridad explícita, revisiones del ambiente, verificación del despliegue y pruebas de humo en el dominio canónico."
         },
         {
           "title": "AOHYS como implementación visible",
-          "body": "AOHYS demuestra rutas públicas localizadas, workflows privados autenticados, contenido tipado, observabilidad y una ruta de release protegida. Es un ejemplo concreto de una arquitectura profesional más amplia."
+          "body": "AOHYS demuestra rutas públicas localizadas, flujos privados autenticados, contenido tipado, observabilidad y una ruta de publicación protegida. Es un ejemplo concreto de una arquitectura profesional más amplia."
         },
         {
           "title": "Development System privado",
@@ -863,7 +863,7 @@
         },
         {
           "title": "Feedback de producción",
-          "body": "Observabilidad, analíticas, errores, smoke checks y feedback de stakeholders regresan el comportamiento real a la siguiente decisión de producto; release no es el final del lifecycle."
+          "body": "Observabilidad, analíticas, errores, pruebas de humo y feedback de stakeholders regresan el comportamiento real a la siguiente decisión de producto; publicar no es el final del ciclo de vida."
         }
       ],
       "boundaryNote": "Este repositorio es una muestra pública funcional. No vuelve públicos código de clientes, código de producto, credenciales, capturas privadas ni datos operativos."
@@ -934,7 +934,7 @@
         {
           "label": "Arquitectura",
           "href": "/es/arquitectura",
-          "text": "Capas de experiencia, release train, environment contract y límites operativos."
+          "text": "Capas de experiencia, tren de publicación, contrato de ambiente y límites operativos."
         },
         {
           "label": "Contacto",
@@ -1013,7 +1013,7 @@
           ]
         },
         {
-          "role": "Founder",
+          "role": "Fundador",
           "company": "AOHYS",
           "period": "2015 - Presente",
           "bullets": [
@@ -1165,14 +1165,14 @@
         },
         {
           "title": "Analíticas y errores",
-          "body": "PostHog se usa sólo en aohys.com para pageviews explícitos, eventos seleccionados de CTAs/formulario, Core Web Vitals, contexto general de país/dispositivo y señales de errores del navegador. Un identificador anónimo se conserva en el almacenamiento local para no contar cada pageview como una persona nueva; la automatización conocida se filtra. Autocapture y session replay están desactivados, y el texto del mensaje no se envía a analíticas."
+          "body": "PostHog se usa sólo en aohys.com para vistas de página explícitas, eventos seleccionados de botones de acción/formulario, Core Web Vitals, contexto general de país/dispositivo y señales de errores del navegador. Un identificador anónimo se conserva en el almacenamiento local para no contar cada vista de página como una persona nueva; la automatización conocida se filtra. La captura automática y la grabación de sesiones están desactivadas, y el texto del mensaje no se envía a analíticas."
         },
         {
           "title": "Límites de proyectos privados",
-          "body": "Este repositorio es público para revisión. El código privado de clientes, credenciales, registros operativos y datos del dashboard no son públicos."
+          "body": "Este repositorio es público para revisión. El código privado de clientes, credenciales, registros operativos y datos del panel privado no son públicos."
         }
       ],
-      "boundaryNote": "El dashboard privado bajo /dashboard está autenticado, noindex, excluido del sitemap y separado de las páginas públicas SEO."
+      "boundaryNote": "El panel privado bajo /dashboard requiere autenticación, no se indexa, está excluido del mapa del sitio y está separado de las páginas públicas."
     }
   }
 }
