@@ -29,13 +29,24 @@ change is a plateau.
 - `ef0cd7a` R10 candidate: Ma line reaches the hero bottom, smaller case h1,
   NutriPlan mobile name-column crop, "Product evidence" heading, Spanish
   leftovers.
+- `2abe17d` R11: hero line ends at the text, enterprise hero lists four
+  anonymized domains, architecture honey primary action, tighter section
+  rhythm, privacy and contact details, Spanish localization pass.
 
 ## Scores
 
 - `r0-j4` (old R0 captures): 7.71 mean, 17 pages with a critical defect.
 - `r9-full` (`6cf3c6b`): 8.18 mean (8.30 without Opus), 2 critical (NutriPlan
   mobile crop EN/ES), 0/26 pass.
-- `r10` (`ef0cd7a`): jury running.
+- `r10` (`ef0cd7a`): 8.18 mean, 0 critical, 0/26 pass. Not kept (+0.00).
+- `r11` (`2abe17d`): 8.22 mean (8.29 without Opus), 0 critical, 0/26 pass.
+  Not kept by the strict rule: `en--resume` dropped 0.15 (limit 0.10).
+
+Status: plateau, the climb is stopped. The branch stays at R11 because a
+revert to `baa626c` would bring back the two critical defects; the owner
+decides at merge. Next gains need content, not layout: real sanitized
+product screens on case studies and resume projects, desktop use of the
+right column below the hero, and stronger small-text contrast.
 
 No automated tests; checks are `pnpm quality:changed` and T3 browser
 observation.
