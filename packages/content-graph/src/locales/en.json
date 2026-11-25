@@ -312,7 +312,7 @@
         "title": "Quality, security, and performance",
         "body": "Public routes, lead conversion, analytics, backend state, privacy boundaries, and responsive behavior are verified as one system while private operational evidence remains sanitized or unpublished."
       },
-      "publicEvidenceTitle": "Public links",
+      "publicEvidenceTitle": "Product evidence",
       "publicEvidence": [
         {
           "label": "Live ETERIA landing",
@@ -373,7 +373,7 @@
         "title": "Quality, security, and performance",
         "body": "The live site uses explicit metadata, resilient layouts, optimized media, and stable pages that remain readable to guests and search engines."
       },
-      "publicEvidenceTitle": "Public links",
+      "publicEvidenceTitle": "Product evidence",
       "publicEvidence": [
         {
           "label": "Live website",
@@ -433,7 +433,7 @@
         "title": "Quality, security, and performance",
         "body": "The project emphasizes protected environments, explicit verification commands, browser QA, source checks, and careful handling of auth/provider configuration before public launch."
       },
-      "publicEvidenceTitle": "Public links",
+      "publicEvidenceTitle": "Product evidence",
       "publicEvidence": [
         {
           "label": "Development preview",
@@ -493,7 +493,7 @@
         "title": "Quality, security, and performance",
         "body": "Review access to clinical information and the continuity between professional and patient workflows. Keep patient records out of public examples."
       },
-      "publicEvidenceTitle": "Public links",
+      "publicEvidenceTitle": "Product evidence",
       "publicEvidence": [
         {
           "label": "Sanitized preview",
@@ -553,7 +553,7 @@
         "title": "Dispatch, delivery and modernization",
         "body": "For cement dispatch and delivery, I contributed to interfaces for requesting trucks, entering addresses and tracking their progress, with bug fixes across the existing application. In auto-parts retail, I also helped migrate the web application from React to Next.js."
       },
-      "publicEvidenceTitle": "Public links",
+      "publicEvidenceTitle": "Product evidence",
       "publicEvidence": [
         {
           "label": "Systems overview",
@@ -613,7 +613,7 @@
         "title": "Quality, security, and performance",
         "body": "Use checks that match the behavior being changed: review code and data rules, exercise workflows, and inspect the interface where people use it. Keep private information within its intended access boundaries."
       },
-      "publicEvidenceTitle": "Public links",
+      "publicEvidenceTitle": "Product evidence",
       "publicEvidence": [
         {
           "label": "Source and process",

@@ -134,7 +134,7 @@ body {
   gap: clamp(14px, 2.2vw, 32px);
 }
 .hz-links a,
-.hz-mobile-panel a {
+.hz-mobile-panel a:not(.hz-talk) {
   font-size: 0.875rem;
   font-weight: 400;
   letter-spacing: 0.04em;
@@ -186,9 +186,13 @@ body {
     opacity 200ms ease,
     transform 200ms var(--ease-out);
 }
-.hz-talk:hover,
-.hz-talk[aria-current="page"] {
+.hz-talk:hover {
   opacity: 0.9;
+}
+.hz-talk[aria-current="page"] {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--rule-strong);
+  opacity: 1;
 }
 .hz-menu {
   display: none;
@@ -218,9 +222,13 @@ body {
 .hz-mobile-panel[hidden] {
   display: none;
 }
-.hz-mobile-panel a {
+.hz-mobile-panel a:not(.hz-talk) {
   font-size: 1rem;
   padding: 10px 6px;
+}
+.hz-mobile-panel .hz-talk {
+  min-height: 44px;
+  margin-top: 8px;
 }
 
 @media (max-width: 900px) {
@@ -228,7 +236,7 @@ body {
     --header-h: 64px;
   }
   .hz-links,
-  .hz-talk {
+  .hz-actions .hz-talk {
     display: none;
   }
   .hz-menu {
@@ -805,6 +813,8 @@ body {
 @media (max-width: 760px) {
   .hz-hero {
     --D: min(68vw, 35svh, 280px);
+    min-height: auto;
+    padding-bottom: 24px;
   }
   .hz-intro .hz-mark {
     letter-spacing: 0.1em;
@@ -1424,7 +1434,7 @@ body {
   row-gap: 32px;
   align-items: center;
   /* Leave the next block visible above the fold so the page reads as a path, not a poster. */
-  min-height: min(calc(100svh - var(--header-h) - 160px), 620px);
+  min-height: min(calc(100svh - var(--header-h) - 220px), 540px);
   padding-block: clamp(32px, 5vw, 68px) clamp(20px, 2.5vw, 32px);
 }
 .ma-hero .ma-hero-text {
@@ -1449,7 +1459,7 @@ body {
 .ma-hero h1 {
   margin: 0;
   max-inline-size: 19ch;
-  font-size: clamp(2.1rem, 1.2rem + 2.7vw, 3.6rem);
+  font-size: clamp(2.1rem, 1.2rem + 2.2vw, 3.15rem);
   line-height: 1.06;
   font-weight: 280;
   font-family: var(--serif);
@@ -1571,7 +1581,7 @@ body {
 
 .ma-section {
   align-content: center;
-  padding-block: clamp(40px, 5vw, 72px);
+  padding-block: clamp(32px, 4vw, 56px);
 }
 .ma-section-tight {
   padding-top: clamp(16px, 2.5vw, 28px);
@@ -1592,13 +1602,6 @@ body {
 .hz-btn-secondary:hover {
   background: var(--paper-warm);
   border-color: var(--ink);
-}
-.ma-hero-compact {
-  min-height: 0;
-  padding-block: clamp(16px, 2.5vw, 32px) clamp(4px, 1vw, 10px);
-}
-.ma-hero-compact .ma-hero-orb {
-  width: min(24vw, 270px);
 }
 .ma-hero-proof {
   grid-column: 7 / span 5;
@@ -1638,6 +1641,40 @@ body {
 .ma-proof-arrow {
   font-size: 1rem;
   color: var(--ink-soft);
+}
+.ma-proof-domains {
+  display: grid;
+  margin: 0;
+}
+.ma-proof-domains > div {
+  display: grid;
+  gap: 2px;
+  padding-block: 10px;
+  border-top: 1px solid var(--rule);
+}
+.ma-proof-domains > div:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.ma-proof-domains dt {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+.ma-proof-domains dd {
+  margin: 0;
+  font-size: 0.975rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+#system-map-title {
+  max-inline-size: 22ch;
+  text-wrap: balance;
+}
+.ma-privacy-boundary {
+  font-size: 1rem !important;
+  max-width: 60ch !important;
 }
 .ma-proof-list {
   display: grid;
@@ -1804,6 +1841,11 @@ body {
 .ma-flow-pairs {
   display: grid;
   margin-top: 8px;
+}
+.ma-flow-pairs + .ma-privacy-note {
+  border-top: 0;
+  padding-top: 0;
+  margin-top: 16px;
 }
 .ma-flow-head {
   display: grid;
@@ -2222,6 +2264,9 @@ body {
   background: var(--paper-warm);
   border: 1px solid var(--rule);
 }
+.ma-frame picture {
+  display: block;
+}
 .ma-frame img {
   display: block;
   width: 100%;
@@ -2365,6 +2410,19 @@ body {
 .ma-form {
   display: grid;
   gap: 18px;
+}
+.ma-contact-prompts summary {
+  min-height: 44px;
+  box-sizing: border-box;
+  width: fit-content;
+  padding-block: 10px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.ma-contact-prompts summary:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 .ma-form label,
 .ma-form fieldset {
@@ -2603,10 +2661,17 @@ body {
 
 /* ---------- View transitions ---------- */
 
-@media (prefers-reduced-motion: no-preference) {
+@media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
   @view-transition {
     navigation: auto;
   }
+}
+.hz-header {
+  view-transition-name: site-header;
+}
+::view-transition-group(site-header) {
+  z-index: 2;
+  animation: none;
 }
 ::view-transition-group(lens) {
   animation-duration: 760ms;
@@ -2866,12 +2931,44 @@ body {
   grid-column: 2 / span 6;
   grid-row: 1;
 }
+.ma-hero.solo.ma-hero-compact {
+  min-height: 0;
+  padding-block: clamp(24px, 4vw, 56px) clamp(16px, 3vw, 40px);
+}
+.ma-hero-compact .ma-hero-text {
+  align-self: center;
+}
+.ma-hero.solo.ma-hero-compact .ma-lens {
+  width: clamp(172px, 21vw, 270px);
+}
 @media (max-width: 860px) {
   .ma-hero.solo .ma-hero-text {
     grid-column: 1 / -1;
+  }
+  .ma-hero.solo.ma-hero-compact {
+    row-gap: 16px;
+  }
+  .ma-hero.solo.ma-hero-compact .ma-lens {
+    margin-top: 0;
+    width: min(40vw, 180px);
   }
 }
 .hz-actions {
   grid-column: 3;
   justify-self: end;
+}
+
+@media (min-width: 481px) {
+  .ma-frame-full-link {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .ma-frame-full-link {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+    box-sizing: border-box;
+  }
 }

@@ -59,7 +59,7 @@ function isCurrent(contentId?: string) {
       {navItems.map((item) => (
         <a href={item.href} aria-current={isCurrent(item.contentId) ? "page" : undefined}>{item.label}</a>
       ))}
-      {contactAction && <a href={contactAction.href} aria-current={currentId === "contact" ? "page" : undefined}>{contactAction.label}</a>}
+      {contactAction && <a class="hz-talk" href={contactAction.href} aria-current={currentId === "contact" ? "page" : undefined}>{contactAction.label}</a>}
     </div>
   </nav>
 </header>
@@ -89,9 +89,11 @@ function isCurrent(contentId?: string) {
         trigger.focus();
       }
     });
-    header.addEventListener("focusout", (event) => {
-      const next = event.relatedTarget;
-      if (!(next instanceof Node) || !header.contains(next)) setOpen(false);
-    });
+    const closeIfOutside = (event: Event) => {
+      const target = event.target;
+      if (target instanceof Node && !header.contains(target)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", closeIfOutside);
+    document.addEventListener("focusin", closeIfOutside);
   }
 </script>
